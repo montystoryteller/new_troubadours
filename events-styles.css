@@ -1,0 +1,254 @@
+/* =============================================================
+   1. LAYOUT GRID
+   Two-column layout for the events page (controls + map + list).
+   Note: .layout-container is also used in tour-styles.css with
+   different rules (flex-based) for the tour page.
+   ============================================================= */
+
+.page-events .layout-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+    .page-events .layout-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =============================================================
+   2. CONTROLS PANEL
+   Filter buttons, date range inputs, search bar, filter checkboxes
+   ============================================================= */
+
+.controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    grid-column: 1 / -1;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.date-inputs {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-controls {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-row label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+/* =============================================================
+   3. EVENTS LIST
+   ============================================================= */
+
+.events-list {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+
+/* =============================================================
+   4. INFO BANNER TABS
+   ============================================================= */
+
+.info-banner-tabs {
+    background: white;
+    border-radius: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.info-banner-tabs-header {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #4CAF50 0%, #66bb6a 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tab-content-area {
+    padding: 20px;
+    border: 2px solid #4CAF50;
+    border-top: none;
+    background-color: #f9f9f9;
+    animation: slideDown 0.3s ease-out;
+}
+
+.tab-content-area p {
+    margin: 0 0 15px 0;
+    line-height: 1.6;
+    color: #333;
+}
+
+.tab-content-area p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =============================================================
+   5. BADGES
+   ============================================================= */
+
+.touring-badge {
+    background-color: #ff9800;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+
+/* =============================================================
+   6. EVENT DISPLAY UTILITIES
+   Classes that replace inline styles set by event_display.js
+   ============================================================= */
+
+/* Flex row of expand buttons (More info / Flyer / Bio) */
+.expand-button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+/* Performer name line */
+.event-performer {
+    font-style: italic;
+}
+
+/* Performer link inside the performer line */
+.event-performer-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Top margin on 2nd, 3rd… flyer images in the flyer expandable */
+.event-flyer-subsequent {
+    margin-top: 15px;
+}
+
+/* Facebook event inline icon — sized and blue on event cards */
+.page-events .event-facebook-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+    text-decoration: none !important;
+    border: none !important;
+    border-bottom: none !important;
+}
+
+.page-events .event-facebook-inline svg {
+    width: 20px;
+    height: 20px;
+    fill: #1877f2;
+    transition: fill 0.3s;
+}
+
+.page-events .event-facebook-inline:hover svg {
+    fill: #145dbf;
+}
+
+/* =============================================================
+   7. SHARE BAR
+   The pin-map / copy-link bar below the main controls
+   ============================================================= */
+
+.share-bar {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.share-bar-pin-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.share-bar-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Colour overrides for specific buttons in the event guide */
+.btn-search-upcoming {
+    background-color: #2e7d32;
+}
+
+.btn-copy-link {
+    background-color: #2196F3;
+}
+
+
+/* =============================================================
+   8. RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 768px) {
+    .button-group {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .date-inputs {
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+    }
+}

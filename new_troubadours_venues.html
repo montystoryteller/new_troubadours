@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue — New Troubadours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="venue-styles.css">
+</head>
+
+<body class="page-venue">
+
+    <div class="page-header">
+        <a href="new_troubadours_event_guide.html" class="back-link">← Events Calendar</a>
+        <a href="new_troubadours_tour_guide.html" class="back-link">Tour Guide →</a>
+    </div>
+
+    <div id="loadingState" class="loading-state">Loading venue…</div>
+    <div id="notFoundState" class="not-found-state" style="display:none;">
+        <p>Venue not found. <a href="new_troubadours_event_guide.html">Return to events calendar.</a></p>
+    </div>
+
+    <div id="venueContent" style="display:none;">
+
+        <div class="venue-hero">
+            <div class="venue-hero-top">
+                <div class="venue-hero-text">
+                    <h1 id="venueName"></h1>
+                    <div id="venueAddress" class="venue-address"></div>
+                    <div id="venueLinks" class="venue-links"></div>
+                </div>
+                <div class="venue-map-small" id="venueMapSmall"></div>
+            </div>
+            <div id="venueDescription" class="venue-description" style="display:none;"></div>
+        </div>
+
+        <div class="two-col-layout">
+
+            <div class="left-col">
+
+                <div id="regularClubsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Regular club nights</h3>
+                    <div id="regularClubsList"></div>
+                </div>
+
+                <div id="folkNightsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Folk nights &amp; open mics</h3>
+                    <div id="folkNightsList"></div>
+                </div>
+
+                <div id="irishSessionsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Irish sessions</h3>
+                    <div id="irishSessionsList"></div>
+                </div>
+
+                <div id="upcomingSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Upcoming events</h3>
+                    <div id="upcomingList"></div>
+                </div>
+
+                <div id="pastSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Past events</h3>
+                    <div id="pastList"></div>
+                </div>
+
+            </div>
+
+            <div class="right-col">
+                <div class="content-section">
+                    <h3 class="section-heading">Location</h3>
+                    <div id="map-container">
+                        <div id="map"></div>
+                    </div>
+                    <div id="venueInfoTable" class="venue-info-table"></div>
+                </div>
+
+                <div id="nearbySection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Nearby venues</h3>
+                    <div id="nearbyList"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai and Gemini.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt></em></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="shared_utils.js"></script>
+    <script>
+
+        // ---------------------------------------------------------------------------
+        // Data + state
+        // ---------------------------------------------------------------------------
+
+        let eventsData = null;
+        let venuesLookup = {};
+        let performersLookup = {};
+        let toursLookup = {};
+        let venueId = null;
+        let venue = null;
+        let map = null;
+
+        // ---------------------------------------------------------------------------
+        // Bootstrap
+        // ---------------------------------------------------------------------------
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            venueId = params.get("venue");
+
+            if (!venueId) { showNotFound(); return; }
+
+            const loaded = await loadEventsData();
+            if (!loaded) { showNotFound(); return; }
+
+            eventsData = loaded.eventsData;
+            venuesLookup = loaded.venuesLookup;
+            performersLookup = loaded.performersLookup;
+            toursLookup = loaded.toursLookup;
+
+            venue = venuesLookup[venueId];
+            if (!venue) { showNotFound(); return; }
+
+            renderVenue();
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("venueContent").style.display = "";
+            // Leaflet needs the container to be visible before it can measure dimensions
+            if (map) setTimeout(() => map.invalidateSize(), 0);
+        });
+
+        function showNotFound() {
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("notFoundState").style.display = "";
+        }
+
+        // ---------------------------------------------------------------------------
+        // Main render
+        // ---------------------------------------------------------------------------
+
+        function renderVenue() {
+            document.title = `${venue.name} — New Troubadours`;
+
+            document.getElementById("venueName").textContent = venue.name;
+
+            // Address
+            if (venue.full_address) {
+                const addr = document.getElementById("venueAddress");
+                addr.textContent = venue.full_address;
+            }
+
+            // External links
+            const linksDiv = document.getElementById("venueLinks");
+            if (venue.url) {
+                const a = document.createElement("a");
+                a.href = sanitizeUrl(venue.url) || "#";
+                a.target = "_blank";
+                a.textContent = "Website";
+                linksDiv.appendChild(a);
+            }
+            if (venue.email) {
+                if (linksDiv.children.length > 0) linksDiv.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                a.href = `mailto:${escapeHtml(venue.email)}`;
+                a.textContent = "Email";
+                linksDiv.appendChild(a);
+            }
+            // Google Maps link
+            if (venue.latlon) {
+                if (linksDiv.children.length > 0) linksDiv.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                const q = encodeURIComponent(venue.full_address || venue.name);
+                a.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+                a.target = "_blank";
+                a.textContent = "Google Maps";
+                linksDiv.appendChild(a);
+            }
+
+            // Description
+            if (venue.description) {
+                const descDiv = document.getElementById("venueDescription");
+                descDiv.style.display = "";
+                appendParagraphs(descDiv, venue.description);
+            }
+
+            // Info table
+            renderInfoTable();
+
+            // Map
+            if (venue.latlon) {
+                initVenueMap();
+            } else {
+                document.getElementById("map-container").style.display = "none";
+            }
+
+            // Gather all events at this venue
+            const regularClubs = (eventsData.events || []).filter(e => e.venue_id === venueId);
+            const folkNights = (eventsData.folkNights || []).filter(e => e.venue_id === venueId);
+            const irishSessions = (eventsData.irishSessions || []).filter(e => e.venue_id === venueId);
+            const specificEvents = (eventsData.specificEvents || []).filter(e => e.venue_id === venueId);
+            const musicEvents = (eventsData.musicEvents || []).filter(e => e.venue_id === venueId);
+
+            // Tour dates at this venue
+            const tourDatesHere = [];
+            Object.entries(toursLookup).forEach(([tourId, tour]) => {
+                (tour.tour_dates || []).forEach(td => {
+                    if (td.venue_id === venueId) {
+                        tourDatesHere.push({ tour, tourId, tourDate: td });
+                    }
+                });
+            });
+
+            // Touring show dates at this venue
+            const showDatesHere = [];
+            Object.entries(eventsData.touring_shows || {}).forEach(([tsId, ts]) => {
+                (ts.show_dates || []).forEach(sd => {
+                    if (sd.venue_id === venueId) {
+                        showDatesHere.push({ ts, tsId, showDate: sd });
+                    }
+                });
+            });
+
+            // Festival at this venue
+            const festivalsHere = Object.entries(eventsData.festivals || {})
+                .filter(([, f]) => f.venue_id === venueId);
+
+            // Regular clubs
+            if (regularClubs.length > 0) {
+                document.getElementById("regularClubsSection").style.display = "";
+                regularClubs.forEach(e => renderRegularClub(document.getElementById("regularClubsList"), e, "storyclub"));
+            }
+
+            if (folkNights.length > 0) {
+                document.getElementById("folkNightsSection").style.display = "";
+                folkNights.forEach(e => renderRegularClub(document.getElementById("folkNightsList"), e, "folk"));
+            }
+
+            if (irishSessions.length > 0) {
+                document.getElementById("irishSessionsSection").style.display = "";
+                irishSessions.forEach(e => renderRegularClub(document.getElementById("irishSessionsList"), e, "session"));
+            }
+
+            // Sort specific + music + tour dates by date
+            const today = getTodayMidnight();
+            const allDated = [
+                ...specificEvents.map(e => ({ type: "specific", date: parseDateString(e.date), data: e })),
+                ...musicEvents.map(e => ({ type: "music", date: parseDateString(e.date), data: e })),
+                ...tourDatesHere.map(t => ({ type: "tour", date: parseDateString(t.tourDate.date), data: t })),
+                ...showDatesHere.map(s => ({ type: "show", date: parseDateString(s.showDate.date), data: s })),
+                ...festivalsHere.map(([fid, f]) => ({ type: "festival", date: parseDateString(f.start_date), data: { fid, festival: f } })),
+            ].filter(e => e.date).sort((a, b) => a.date - b.date);
+
+            const upcoming = allDated.filter(e => e.date >= today);
+            const past = allDated.filter(e => e.date < today);
+
+            if (upcoming.length > 0) {
+                document.getElementById("upcomingSection").style.display = "";
+                upcoming.forEach(e => renderEventRow(document.getElementById("upcomingList"), e, false));
+            }
+
+            if (past.length > 0) {
+                document.getElementById("pastSection").style.display = "";
+                // Show most recent first for past
+                [...past].reverse().forEach(e => renderEventRow(document.getElementById("pastList"), e, true));
+            }
+
+            // Nearby venues
+            renderNearbyVenues();
+        }
+
+        // ---------------------------------------------------------------------------
+        // Info table
+        // ---------------------------------------------------------------------------
+
+        function renderInfoTable() {
+            const table = document.getElementById("venueInfoTable");
+
+            const rows = [
+                venue.city && ["City", venue.city],
+                venue.postcode && ["Postcode", venue.postcode],
+            ].filter(Boolean);
+
+            if (rows.length === 0) return;
+
+            rows.forEach(([label, value]) => {
+                const row = document.createElement("div");
+                row.className = "info-table-row";
+                const l = document.createElement("span");
+                l.className = "info-table-label";
+                l.textContent = label;
+                const v = document.createElement("span");
+                v.className = "info-table-value";
+                v.textContent = value;
+                row.appendChild(l);
+                row.appendChild(v);
+                table.appendChild(row);
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Map
+        // ---------------------------------------------------------------------------
+
+        function initVenueMap() {
+            const [lat, lon] = venue.latlon;
+            map = L.map("map", { minZoom: 5, maxZoom: 18 }).setView([lat, lon], 14);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "© OpenStreetMap contributors",
+            }).addTo(map);
+
+            const marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup(`<strong>${escapeHtml(venue.name)}</strong><br>${escapeHtml(venue.city || "")}`).openPopup();
+        }
+
+        // ---------------------------------------------------------------------------
+        // Regular club card
+        // ---------------------------------------------------------------------------
+
+        function renderRegularClub(container, event, type) {
+            const typeClass = { storyclub: "club-story", folk: "club-folk", session: "club-session" }[type] || "";
+            const card = document.createElement("div");
+            card.className = `regular-club-card ${typeClass}`;
+
+            const nameRow = document.createElement("div");
+            nameRow.className = "regular-club-name";
+            nameRow.textContent = event.name;
+            card.appendChild(nameRow);
+
+            const metaRow = document.createElement("div");
+            metaRow.className = "regular-club-meta";
+            if (event.schedule) {
+                const sched = document.createElement("span");
+                sched.className = "regular-club-schedule";
+                sched.textContent = capitalise(event.schedule);
+                metaRow.appendChild(sched);
+            }
+            if (event.time) {
+                metaRow.appendChild(document.createTextNode(event.schedule ? " · " + event.time : event.time));
+            }
+            if (event.price) {
+                metaRow.appendChild(document.createTextNode(" · " + event.price));
+            }
+            if (metaRow.childNodes.length > 0) card.appendChild(metaRow);
+
+            if (event.description) {
+                const desc = document.createElement("div");
+                desc.className = "regular-club-desc";
+                desc.textContent = event.description;
+                card.appendChild(desc);
+            }
+
+            // Links row
+            const links = document.createElement("div");
+            links.className = "regular-club-links";
+            const linkSrc = event.link || event.url;
+            if (linkSrc) {
+                const a = document.createElement("a");
+                a.href = sanitizeUrl(linkSrc) || "#";
+                a.target = "_blank";
+                a.textContent = "Website";
+                links.appendChild(a);
+            }
+            if (event.facebook) {
+                if (links.children.length > 0) links.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                a.href = normaliseFacebookUrl(event.facebook);
+                a.target = "_blank";
+                a.textContent = "Facebook";
+                links.appendChild(a);
+            }
+            if (event.email) {
+                if (links.children.length > 0) links.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                a.href = `mailto:${escapeHtml(event.email)}`;
+                a.textContent = "Email";
+                links.appendChild(a);
+            }
+            if (links.children.length > 0) card.appendChild(links);
+
+            // Exceptions / notes
+            if (Array.isArray(event.exceptions) && event.exceptions.length > 0) {
+                const exc = document.createElement("div");
+                exc.className = "regular-club-exceptions";
+                exc.textContent = `Note: not on ${event.exceptions.join(", ")}`;
+                card.appendChild(exc);
+            }
+            if (event.storiesWelcome) {
+                const sw = document.createElement("span");
+                sw.className = "badge badge-stories-welcome";
+                sw.textContent = "Stories welcome";
+                card.appendChild(sw);
+            }
+            if (event.byInvitation) {
+                const bi = document.createElement("span");
+                bi.className = "badge badge-by-invite";
+                bi.textContent = "By invitation";
+                card.appendChild(bi);
+            }
+
+            container.appendChild(card);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Dated event row (specific, music, tour date, festival)
+        // ---------------------------------------------------------------------------
+
+        function renderEventRow(container, entry, isPast) {
+            const row = document.createElement("div");
+            row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+            const dateCol = document.createElement("div");
+            dateCol.className = "event-row-date";
+            dateCol.textContent = entry.date ? formatMediumDate(entry.date) : "TBC";
+            row.appendChild(dateCol);
+
+            const detail = document.createElement("div");
+            detail.className = "event-row-detail";
+
+            if (entry.type === "specific" || entry.type === "music") {
+                const e = entry.data;
+                const title = document.createElement("div");
+                title.className = "event-row-title";
+                title.textContent = e.showname || e.name;
+                detail.appendChild(title);
+
+                if (e.time) {
+                    const t = document.createElement("span");
+                    t.className = "event-row-time";
+                    t.textContent = e.time;
+                    detail.appendChild(t);
+                }
+
+                // Performer link
+                if (e.performer_id && performersLookup[e.performer_id]) {
+                    const perf = performersLookup[e.performer_id];
+                    const p = document.createElement("div");
+                    p.className = "event-row-performer";
+                    const a = document.createElement("a");
+                    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(e.performer_id)}`;
+                    a.textContent = perf.name;
+                    p.appendChild(a);
+                    detail.appendChild(p);
+                }
+
+                const badges = document.createElement("div");
+                badges.className = "badge-row";
+                if (e.isMusic) { const b = document.createElement("span"); b.className = "badge badge-music"; b.textContent = "Music"; badges.appendChild(b); }
+                else { const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Story show"; badges.appendChild(b); }
+                if (e.price) { const b = document.createElement("span"); b.className = "badge badge-price"; b.textContent = e.price; badges.appendChild(b); }
+                if (e.ticket_url && !isPast) {
+                    const a = document.createElement("a"); a.href = sanitizeUrl(e.ticket_url) || "#"; a.target = "_blank"; a.className = "ticket-link"; a.textContent = "Tickets"; badges.appendChild(a);
+                }
+                detail.appendChild(badges);
+
+            } else if (entry.type === "tour") {
+                const { tour, tourId, tourDate } = entry.data;
+                const title = document.createElement("div");
+                title.className = "event-row-title";
+                title.textContent = tour.tour_name || tour.name;
+                detail.appendChild(title);
+
+                if (tourDate.time) {
+                    const t = document.createElement("span"); t.className = "event-row-time"; t.textContent = tourDate.time; detail.appendChild(t);
+                }
+
+                if (tour.performer_id && performersLookup[tour.performer_id]) {
+                    const perf = performersLookup[tour.performer_id];
+                    const p = document.createElement("div"); p.className = "event-row-performer";
+                    const a = document.createElement("a");
+                    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
+                    a.textContent = perf.name; p.appendChild(a); detail.appendChild(p);
+                }
+
+                const badges = document.createElement("div"); badges.className = "badge-row";
+                const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Tour date"; badges.appendChild(b);
+                if (tourDate.price) { const bp = document.createElement("span"); bp.className = "badge badge-price"; bp.textContent = tourDate.price; badges.appendChild(bp); }
+                if (tourDate.ticket_url && !isPast) {
+                    const a = document.createElement("a"); a.href = sanitizeUrl(tourDate.ticket_url) || "#"; a.target = "_blank"; a.className = "ticket-link"; a.textContent = "Tickets"; badges.appendChild(a);
+                }
+                const viewLink = document.createElement("a");
+                viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+                viewLink.className = "ticket-link";
+                viewLink.textContent = "View tour";
+                badges.appendChild(viewLink);
+                detail.appendChild(badges);
+
+            } else if (entry.type === "show") {
+                const { ts, tsId, showDate } = entry.data;
+                const title = document.createElement("div");
+                title.className = "event-row-title";
+                title.textContent = ts.showname || ts.name;
+                detail.appendChild(title);
+
+                if (showDate.time) {
+                    const t = document.createElement("span"); t.className = "event-row-time"; t.textContent = showDate.time; detail.appendChild(t);
+                }
+
+                if (ts.performer_id && performersLookup[ts.performer_id]) {
+                    const perf = performersLookup[ts.performer_id];
+                    const p = document.createElement("div"); p.className = "event-row-performer";
+                    const a = document.createElement("a");
+                    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(ts.performer_id)}`;
+                    a.textContent = perf.name; p.appendChild(a); detail.appendChild(p);
+                }
+
+                const badges = document.createElement("div"); badges.className = "badge-row";
+                const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Touring show"; badges.appendChild(b);
+                if (showDate.ticket_url && !isPast) {
+                    const a = document.createElement("a"); a.href = sanitizeUrl(showDate.ticket_url) || "#"; a.target = "_blank"; a.className = "ticket-link"; a.textContent = "Tickets"; badges.appendChild(a);
+                }
+                detail.appendChild(badges);
+
+            } else if (entry.type === "festival") {
+                const { fid, festival } = entry.data;
+                const title = document.createElement("div");
+                title.className = "event-row-title";
+                title.textContent = festival.name;
+                detail.appendChild(title);
+
+                const endDate = parseDateString(festival.end_date);
+                if (endDate && endDate.toDateString() !== entry.date.toDateString()) {
+                    const t = document.createElement("span"); t.className = "event-row-time";
+                    t.textContent = `until ${formatShortDate(endDate)}`; detail.appendChild(t);
+                }
+
+                const badges = document.createElement("div"); badges.className = "badge-row";
+                const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Festival"; badges.appendChild(b);
+                if (festival.ticket_url && !isPast) {
+                    const a = document.createElement("a"); a.href = sanitizeUrl(festival.ticket_url) || "#"; a.target = "_blank"; a.className = "ticket-link"; a.textContent = "Tickets"; badges.appendChild(a);
+                }
+                detail.appendChild(badges);
+            }
+
+            row.appendChild(detail);
+            container.appendChild(row);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Nearby venues
+        // ---------------------------------------------------------------------------
+
+        function renderNearbyVenues() {
+            if (!venue.latlon) return;
+            const [lat, lon] = venue.latlon;
+            const RADIUS_KM = 20;
+
+            const nearby = Object.entries(venuesLookup)
+                .filter(([vid, v]) => vid !== venueId && v.latlon)
+                .map(([vid, v]) => {
+                    const dist = haversineKm(lat, lon, v.latlon[0], v.latlon[1]);
+                    return { vid, v, dist };
+                })
+                .filter(x => x.dist <= RADIUS_KM)
+                .sort((a, b) => a.dist - b.dist)
+                .slice(0, 8);
+
+            if (nearby.length === 0) return;
+
+            document.getElementById("nearbySection").style.display = "";
+            const list = document.getElementById("nearbyList");
+
+            nearby.forEach(({ vid, v, dist }) => {
+                const row = document.createElement("div");
+                row.className = "nearby-row";
+
+                const a = document.createElement("a");
+                a.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`;
+                a.className = "nearby-name";
+                a.textContent = v.name;
+                row.appendChild(a);
+
+                if (v.city) {
+                    const city = document.createElement("span");
+                    city.className = "nearby-city";
+                    city.textContent = v.city;
+                    row.appendChild(city);
+                }
+
+                const distSpan = document.createElement("span");
+                distSpan.className = "nearby-dist";
+                distSpan.textContent = `${dist.toFixed(1)} km`;
+                row.appendChild(distSpan);
+
+                list.appendChild(row);
+            });
+        }
+
+        function haversineKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // ---------------------------------------------------------------------------
+        // Date formatting helpers
+        // ---------------------------------------------------------------------------
+
+        const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        function formatShortDate(d) {
+            return d ? `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}` : "";
+        }
+
+        function formatMediumDate(d) {
+            return d ? `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}` : "";
+        }
+
+        function capitalise(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+        }
+
+    </script>
+</body>
+
+</html>

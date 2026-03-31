@@ -1,0 +1,744 @@
+/* =============================================================
+   1. BASE
+   body, headings
+   ============================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    overflow-x: hidden;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin: 5px 0 10px 0;
+}
+
+h2 {
+    text-align: center;
+    font-style: italic;
+    color: #898b89;
+    margin: 5px 0 20px 0;
+    font-size: 18px;
+}
+
+
+/* =============================================================
+   2. BUTTONS
+   ============================================================= */
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button.active {
+    background-color: #2e7d32;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.3);
+}
+
+
+/* =============================================================
+   3. FORM INPUTS
+   ============================================================= */
+
+input[type="date"],
+select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+
+/* =============================================================
+   4. MAP
+   Base map container and popup styles.
+   Note: tour-styles.css overrides #map-container for the tour page.
+   ============================================================= */
+
+#map-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 600px;
+}
+
+#map {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+}
+
+.popup-content h3 {
+    margin: 0 0 10px 0;
+    color: #2e7d32;
+}
+
+.popup-content p {
+    margin: 5px 0;
+}
+
+
+/* =============================================================
+   5. EVENT CARDS — BASE & VARIANTS
+   .event base, then colour/style variants: special, music, folk,
+   session, highlighted, cancelled
+   ============================================================= */
+
+.event {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.event:hover {
+    background-color: #f0f0f0;
+}
+
+.event.special {
+    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+    border: 2px solid #2e7d32;
+    color: white;
+}
+
+.event.music {
+    background: linear-gradient(135deg, #443cd7 0%, #8e9df3 100%);
+    border: 2px solid #1006c6;
+    color: white;
+}
+
+.event.folk {
+    background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+    border: 2px solid #654321;
+    color: white;
+}
+
+.event.session {
+    background: linear-gradient(135deg, #90ee90 0%, #98fb98 100%);
+    border: 2px solid #228b22;
+    color: #1a5c1a;
+}
+
+.event.highlighted {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    border-left-width: 8px;
+}
+
+.event.event-cancelled {
+    border-left: 4px solid #c62828 !important;
+    background: repeating-linear-gradient(
+        -45deg,
+        #e8ede8, #e8ede8 8px,
+        #dfe6df 8px, #dfe6df 16px
+    );
+    color: #555;
+}
+
+
+/* =============================================================
+   6. EVENT CARD CONTENT
+   Name, date, location — base styles then per-variant overrides
+   ============================================================= */
+
+.event-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.event-date {
+    margin-top: 5px;
+}
+
+.event-location {
+    color: #777;
+    font-style: italic;
+    margin-top: 3px;
+    font-size: 14px;
+}
+
+.special .event-location {
+    color: #c8e6c9;
+}
+
+.music .event-location {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.folk .event-location {
+    color: #f5deb3;
+}
+
+.session .event-location {
+    color: #2d5a2d;
+}
+
+.event.event-cancelled .event-location {
+    color: #178232;
+}
+
+/* Date status indicators */
+.event-date-cancelled {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.special .event-date-cancelled {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.special .event-location .event-date-cancelled,
+.music .event-location .event-date-cancelled {
+    color: #649f66;
+}
+
+.event-date-rescheduled-notice {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.event-date-usually {
+    color: #2e7d32;
+    font-style: italic;
+}
+
+/* Venue links */
+.venue-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.venue-link:hover {
+    text-decoration: underline;
+}
+
+
+/* =============================================================
+   7. ICONS  (website / email / facebook)
+   Base icon rules, then colour overrides grouped by variant:
+   default → music → folk → session → facebook-inline
+   ============================================================= */
+
+.event-facebook,
+.event-email,
+.event-website {
+    display: inline-block;
+    margin-left: 10px;
+    text-decoration: none !important;
+    vertical-align: middle;
+    border: none;
+    border-bottom: none !important;
+}
+
+.event-facebook svg,
+.event-email svg,
+.event-website svg {
+    width: 20px;
+    height: 20px;
+    transition: fill 0.3s;
+}
+
+/* Default icon colours */
+/* Facebook colours are baked into the SVG itself */
+
+.event-email svg {
+    fill: #ffffff;
+}
+
+.event-email:hover svg {
+    fill: #77ee77;
+}
+
+.event-website svg {
+    fill: #555555;
+}
+
+.event-website:hover svg {
+    fill: #1eb868;
+}
+
+.event.special .event-website svg {
+    fill: #d9d5d5;
+}
+
+/* Music variant icon overrides */
+/* Invert facebook on blue background so it reads as white circle / blue f */
+.event.music .event-facebook svg {
+    filter: invert(1);
+}
+
+.event.music .event-email svg {
+    fill: #77ee77;
+}
+
+.event.music .event-email:hover svg {
+    fill: #ffffff;
+}
+
+.event.music .event-website svg {
+    fill: rgba(255, 255, 255, 0.85);
+}
+
+.event.music .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Folk variant icon overrides */
+.event.folk .event-email svg,
+.event.folk .event-website svg {
+    fill: #f5deb3;
+}
+
+.event.folk .event-email:hover svg,
+.event.folk .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Session variant icon overrides */
+.event.session .event-email svg,
+.event.session .event-website svg {
+    fill: #228b22;
+}
+
+.event.session .event-email:hover svg,
+.event.session .event-website:hover svg {
+    fill: #1a5c1a;
+}
+
+
+
+/* =============================================================
+   8. TICKETS & LINKS
+   ============================================================= */
+
+.event-tickets {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-tickets a {
+    color: #2e7d32;
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 2px solid #4CAF50;
+}
+
+.event.special .event-tickets a,
+.event.music .event-tickets a {
+    color: #ffeb3b;
+    border-bottom: 2px solid #fff59d;
+}
+
+.event-tickets a:hover {
+    border-bottom-color: #ffffff;
+}
+
+.event-tickets .separator {
+    color: #ffeb3b;
+    margin: 0 8px;
+}
+
+.event.event-cancelled .event-tickets a {
+    color: #e65100;
+    border-bottom-color: #e65100;
+}
+
+
+/* =============================================================
+   9. BADGES
+   ============================================================= */
+
+.event-badge {
+    background: rgba(76, 175, 80, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.event-badge-cancelled {
+    background-color: #c62828 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.event-badge-sold-out {
+    background-color: #e65100 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+
+/* =============================================================
+   10. EXPANDABLE SECTIONS
+   ============================================================= */
+
+.event-expand-btn {
+    display: block;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: fit-content;
+}
+
+.event.special .event-expand-btn,
+.event.music .event-expand-btn,
+.event.folk .event-expand-btn,
+.event.session .event-expand-btn {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event.special .event-expand-btn:hover,
+.event.music .event-expand-btn:hover,
+.event.folk .event-expand-btn:hover,
+.event.session .event-expand-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.event.event-cancelled .event-expand-btn {
+    background: #2e7d32;
+    color: white;
+}
+
+.event.event-cancelled .event-expand-btn:hover {
+    background: #1b5e20;
+}
+
+.event-expandable {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+.event-description {
+    margin-bottom: 15px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.event-description p {
+    margin: 0 0 10px 0;
+}
+
+.event-flyer-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* =============================================================
+   11. UTILITIES
+   ============================================================= */
+
+/* Spacing for the icons span appended to a venue line */
+.venue-icons {
+    margin-left: 8px;
+}
+
+/* Spacing for the VIEW TOUR link in the tickets row */
+.tour-link {
+    margin-right: 0;
+}
+
+.event.hidden {
+    display: none;
+}
+
+.no-events {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+
+/* =============================================================
+   12. RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    button {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+}
+
+/* =============================================================
+   13. FESTIVAL CARDS
+   White-background card with bold green left border.
+   primary_type="music" gets a blue variant via .festival-music.
+   The .festival class must NOT also carry .special so that
+   filterEvents() DOM-based detection stays unambiguous.
+   ============================================================= */
+
+.event.festival {
+    background: #daf3d8;
+    border-left: 6px solid #2e7d32;
+    border-top: 1px solid #c8e6c9;
+    border-right: 1px solid #c8e6c9;
+    border-bottom: 1px solid #c8e6c9;
+    border-radius: 4px;
+}
+
+.event.festival:hover {
+    background: #f1f8f1;
+}
+
+/* Music-primary festival — blue border variant */
+.event.festival.festival-music {
+    background: #dbe4f1;
+    border-left-color: #1006c6;
+    border-top-color: #c5caf5;
+    border-right-color: #c5caf5;
+    border-bottom-color: #c5caf5;
+}
+
+.event.festival.festival-music:hover {
+    background: #f0f1fc;
+}
+
+/* Event name — dark green for storytelling, dark blue for music */
+.event.festival .event-name {
+    color: #1b5e20;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.event.festival.festival-music .event-name {
+    color: #0d0671;
+}
+
+/* Performer list */
+.event.festival .festival-performers {
+    font-style: italic;
+    color: #444;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Venue */
+.event.festival .event-location {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Date range */
+.event.festival .festival-date-range {
+    color: #2e7d32;
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.event.festival.festival-music .festival-date-range {
+    color: #1006c6;
+}
+
+.festival-day-count {
+    color: #555;
+    font-weight: normal;
+}
+
+/* Festival badge — sits inline after the event name */
+.event-badge.festival-badge {
+    background: #e8f5e9;
+    color: #2e7d32 !important;
+    border: 1px solid #a5d6a7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.event.festival.festival-music .event-badge.festival-badge {
+    background: #e8eaf6;
+    color: #1a237e !important;
+    border-color: #9fa8da;
+}
+
+/* Ticket / programme link row */
+.event.festival .event-tickets a {
+    color: #2e7d32;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid #4caf50;
+}
+
+.event.festival.festival-music .event-tickets a {
+    color: #1006c6;
+    border-bottom-color: #443cd7;
+}
+
+.event.festival .event-tickets a:hover {
+    border-bottom-color: #1b5e20;
+}
+
+/* Programme TBA / Full programme link — pill-style button */
+a.festival-programme-link {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 10px;
+    background: #e8f5e9;
+    color: #2e7d32 !important;
+    border: 1px solid #a5d6a7;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+a.festival-programme-link:hover {
+    background: #c8e6c9;
+    color: #1b5e20 !important;
+}
+
+.event.festival.festival-music a.festival-programme-link {
+    background: #e8eaf6;
+    color: #1a237e !important;
+    border-color: #9fa8da;
+}
+
+.event.festival.festival-music a.festival-programme-link:hover {
+    background: #c5caf5;
+}
+
+/* =============================================================
+   14. VENUE & PERFORMER PAGE LINKS
+   Small profile/info link appended to venue and performer lines.
+   Uses a pill style so it reads clearly on any card colour.
+   ============================================================= */
+
+.venue-page-link {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #555;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+    padding: 1px 5px;
+    text-decoration: none;
+    vertical-align: middle;
+    line-height: 1.4;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+
+.venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.18);
+    color: #000;
+    text-decoration: none;
+}
+
+/* On coloured cards: white pill with dark text */
+.event.special .venue-page-link,
+.event.music .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.event.special .venue-page-link:hover,
+.event.music .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.event.folk .venue-page-link {
+    color: #f5deb3;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.event.folk .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+}
+
+.event.session .venue-page-link {
+    color: #1a5c1a;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.event.session .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.tour-date-item .venue-page-link {
+    color: #555;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.tour-date-item .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.14);
+    color: #000;
+}
+
+.tour-date-item.music .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tour-date-item.music .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}

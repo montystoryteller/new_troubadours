@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Details - New Troubadours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="tour-styles.css">
+</head>
+
+<body class="page-tour">
+    <h1>The New Troubadours — Storytelling, Music and Punk Poet Tour Details</h1>
+
+    <a href="new_troubadours_event_guide.html" class="back-link">View Complete Events Calendar Map</a>
+
+    <div id="pastToursPanel">
+        <details class="past-tours-details">
+            <summary class="upcoming-tours-summary">
+                <span class="upcoming-tours-summary-label">📜 Previous Tours</span>
+                <span class="upcoming-tours-summary-hint">click to expand</span>
+            </summary>
+            <div class="upcoming-tours-body" id="pastToursBody">
+                <!-- Populated by renderPastToursPanel() in tour_display.js -->
+            </div>
+        </details>
+    </div>
+
+    <div id="nowTouringPanel">
+        <details class="now-touring-details" open>
+            <summary class="upcoming-tours-summary">
+                <span class="upcoming-tours-summary-label">🎭 Now Touring</span>
+                <span class="upcoming-tours-summary-hint">click to collapse</span>
+            </summary>
+            <div class="upcoming-tours-body" id="nowTouringBody">
+                <!-- Populated by renderNowTouringPanel() in tour_display.js -->
+            </div>
+        </details>
+    </div>
+
+    <div id="upcomingToursPanel">
+        <details class="upcoming-tours-details">
+            <summary class="upcoming-tours-summary">
+                <span class="upcoming-tours-summary-label">🗓️ Upcoming Tours</span>
+                <span class="upcoming-tours-summary-hint">click to expand</span>
+            </summary>
+            <div class="upcoming-tours-body" id="upcomingToursBody">
+                <!-- Populated by renderUpcomingToursPanel() in tour_display.js -->
+            </div>
+        </details>
+    </div>
+
+    <a href="new_troubadours_event_guide.html" class="back-link">View Complete Events Calendar Map</a>
+
+    <div class="tour-controls">
+        <div class="tour-selector">
+            <label for="performerSelect">Performer:</label>
+            <select id="performerSelect" onchange="handlePerformerChange()">
+                <option value="">Select a performer...</option>
+            </select>
+
+            <label for="tourSelect">Tour:</label>
+            <select id="tourSelect" onchange="handleTourChange()">
+                <option value="">Select a tour...</option>
+            </select>
+
+            <button onclick="loadTour()" class="btn-primary">Show Tour</button>
+        </div>
+
+        <div class="share-container">
+            <button onclick="shareTourLink()" class="btn-secondary">🔗 Copy Shareable Link</button>
+        </div>
+    </div>
+
+    <div id="tourContent" style="display: none;">
+        <div class="tour-header">
+            <h2 class="tour-title" id="tourTitle"></h2>
+            <h3 class="tour-subtitle" id="tourSubtitle"></h3>
+
+            <div id="tourFlyerContainer" class="tour-flyer" style="display: none;">
+                <img id="tourFlyerImage" alt="Tour flyer">
+            </div>
+
+            <div id="tourDescriptionContainer" class="tour-description" style="display: none;"></div>
+
+        </div>
+
+        <div class="layout-container">
+            <div id="map-container">
+                <div class="map-toolbar">
+                    <button onclick="resetMapZoom()" class="btn-reset">
+                        ⟲ Reset Map View
+                    </button>
+                </div>
+                <div id="map"></div>
+            </div>
+            <div class="tour-dates-list">
+                <div class="tour-dates-header">
+                    <div>
+                        <h3>Tour Dates</h3>
+                        <div class="tour-dates-subtitle" id="tourDatesSubtitle"></div>
+                    </div>
+                    <label class="hide-past-label" id="hidePastLabel" style="display:none;">
+                        <input type="checkbox" id="hidePastDates" checked onchange="updateEventDisplayFilters()">
+                        Hide past dates
+                    </label>
+                    <label class="hide-cancelled-label" id="hideCancelledLabel">
+                        <input type="checkbox" id="hideCancelledDates" checked onchange="updateEventDisplayFilters()">
+                        Hide cancelled dates
+                    </label>
+                    <label class="hide-soldout-label" id="hideSoldOutLabel">
+                        <input type="checkbox" id="hideSoldOutDates" onchange="updateEventDisplayFilters()">
+                        Hide sold out dates
+                    </label>
+                </div>
+                <div id="tourDatesList"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="new_troubadours_event_guide.html" class="back-link">View Complete Events Calendar Map</a>
+
+    <div class="about" id="colophon">
+        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai and Gemini.</p>
+        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt> / web: <a
+                    href="https://montystoryteller.org/"><tt>montystoryteller.org</tt></a> / fb: <a
+                    href="https://www.facebook.com/montystoryteller/"><tt>montystoryteller</tt></a> / insta: <a
+                    href="https://www.instagram.com/montystoryteller/"><tt>montystoryteller</tt></a>. Tour listings for
+                story shows are for shows that are run several times in reasonably quick succession. I need to think
+                about tour*ing* shows over longer timeframes. Music tours are subject to my personal and opinionated
+                music policy: musicians I like to see, plus I ones I could imagine on a bill that includes a storyteller
+                as support...</em></p>
+        <p><em>Show your appreciation by booking me for a gig, or by buying a little something for yourself: <a
+                    href="https://www.amazon.co.uk/dp/B0FVYBY4V8">Island Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FY3TZW81">Protest Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FW286JLD">Dark Tales</a>.</em></p>
+        <p><tt>If you're looking for a ticketing service, how about <a
+                    href="https://get.tickettailor.com/z0iazwduw3fe"><strong>TicketTailor</strong> <em>[affiliate
+                        link]</em></a>?</tt></p>
+        <p><tt>Ticket links to <a href="https://clients.wegottickets.com/">WeGotTickets</a> are affiliate links tied to
+                this website. I get a few pennies commission for any tickets purchased on <a
+                    href="https://clients.wegottickets.com/">WeGotTickets</a> from clicks through to that website that
+                originated on this website.</tt></p>
+        <p><em><tt>This website does not collect cookies or tracking information, The only externally loaded resources
+                    are ones required to render the map.</tt></em></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="shared_utils.js"></script>
+    <script src="tour_display.js"></script>
+</body>
+
+</html>

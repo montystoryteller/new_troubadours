@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>New Troubadour Events with Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="events-styles.css">
+</head>
+
+<body class="page-events">
+    <h1>The New Troubadours — Storytelling, Music and Punk Poet Events Calendar (UK)</h1>
+    <h2>Appropriate all ages, aimed at adults.</h2>
+
+    <div class="controls">
+        <div class="button-group">
+            <button id="lastWeekBtn" onclick="showWeek(-1)">Last Week</button>
+            <button id="thisWeekBtn" onclick="showThisWeek()">This Week</button>
+            <button id="nextWeekBtn" onclick="showWeek()">Next Week</button>
+            <button id="afterThatWeekBtn" onclick="showWeek(2)">Week After</button>
+            <button id="andAnotherWeekBtn" onclick="showWeek(3)">And Another</button>
+        </div>
+        <div class="date-inputs">
+            <label>From:</label>
+            <input type="date" id="startDate" onchange="handleStartDateChange()">
+            <label>To:</label>
+            <input type="date" id="endDate" onchange="handleEndDateChange()">
+            <button id="showBtn" onclick="showDateRange()">Show Events</button>
+        </div>
+
+        <div class="search-controls">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Search events..." onkeyup="filterEvents()">
+                <button onclick="clearSearch()">Clear</button>
+                <button onclick="searchAllUpcoming()" class="btn-search-upcoming">Search All Upcoming</button>
+            </div>
+            <div class="filter-row">
+                <label>
+                    <input type="checkbox" checked id="storyclubsOn" onchange="filterEvents()">
+                    Story clubs
+                </label>
+                <label>
+                    <input type="checkbox" checked id="specialOn" onchange="filterEvents()">
+                    Story shows &amp; festivals
+                </label>
+                <label>
+                    <input type="checkbox" id="showFolk" onchange="filterEvents()">
+                    Folk clubs
+                </label>
+                <label>
+                    <input type="checkbox" id="showSessions" onchange="filterEvents()">
+                    Irish sessions
+                </label>
+                <label>
+                    <input type="checkbox" id="showMusic" onchange="filterEvents()">
+                    Music events
+                </label>
+                <label>
+                    <input type="checkbox" checked id="hideCancelled" onchange="filterEvents()">
+                    Hide cancelled
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="share-bar">
+        <label class="share-bar-pin-label">
+            <input type="checkbox" id="pinMapView" onchange="togglePinMapView()">
+            <span>Pin current map view (don't auto-zoom when changing dates)</span>
+        </label>
+        <div class="share-bar-actions">
+            <button onclick="copyShareableLink()" class="btn-copy-link">
+                📋 Copy Shareable Link
+            </button>
+            <span id="copyFeedback" style="color: #4CAF50; font-size: 14px; display: none;">✓ Link copied!</span>
+        </div>
+    </div>
+
+    <div class="layout-container">
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+        <div class="events-list" id="eventsList"></div>
+    </div>
+
+    <div class="info-banner-tabs">
+        <div class="info-banner-tabs-header">
+            <span class="header-label">What is/are:</span>
+            <button class="header-tab-button" onclick="toggleTabContent('storytelling', event)">storytelling?</button>
+            <span class="separator">|</span>
+            <button class="header-tab-button" onclick="toggleTabContent('circles', event)">story circles /
+                clubs?</button>
+            <span class="separator">|</span>
+            <button class="header-tab-button" onclick="toggleTabContent('performance', event)">performance
+                storytelling?</button>
+            <span class="separator">|</span>
+            <button class="header-tab-button" onclick="toggleTabContent('storytellingshows', event)">storytelling
+                shows?</button>
+            <span class="separator">|</span>
+            <button class="header-tab-button" onclick="toggleTabContent('folknopenmic', event)">folk club
+                etiquette?</button>
+            <span class="separator">|</span>
+            <button class="header-tab-button" onclick="toggleTabContent('musicpolicy', event)">music policy?</button>
+        </div>
+
+        <div class="tab-content-area" id="storytelling" style="display: none;">
+            <p>For starters, <em>storytelling</em> is not (just) for children... It's an entertaining way of passing the
+                time. But it's also a lot more than that: a way of sharing epic tales and passing on common sense
+                smarts, explaining the landscape, recounting local legends and keeping the memory of people and place
+                alive.</p>
+        </div>
+
+        <div class="tab-content-area" id="circles" style="display: none;">
+            <p><em>Story circles</em> and <em>story clubs</em> are often informal gatherings of tellers and listeners
+                who meet up every so often, in a casual setting, to sit around a table and share tales that last 5 to 8
+                minutes. Stories are <em>told</em> rather than read, and often take the form of folk or traditional
+                tales, as well as myths, legends, and lies, that have been "heard", or "found", rather than "authored",
+                even though they may have been heavily worked on by the teller. By agreement, some story clubs or story
+                circles may provide opportunities for longer stories to be told. Some story clubs may feature
+                <em>performance storytelling</em> from local storytellers or guest storytellers, as well open
+                performance storytelling floor spots.</em>
+            </p>
+        </div>
+
+        <div class="tab-content-area" id="performance" style="display: none;">
+            <p><em>Performance storytelling</em> moves the teller or tellers rather more to centre stage, adopting a
+                more formal setting than a sharing of stories in a story circle, and with the teller clearly taking on a
+                performer role. Stories often take longer in the telling than tales told in story circles, 8 to 15
+                minutes or so, or even longer, up to an hour for many longer traditional tales.</p>
+        </div>
+
+        <div class="tab-content-area" id="storytellingshows" style="display: none;">
+            <p>A <em>storytelling show</em> is a performance event in which one or more storytellers tell one or more
+                tales in a formal or semi-formal setting. A storytelling set, or show, show often shapes several stories
+                to fit an overarching narrative or theme. Not comedy, not theatre, storytelling shows take the performer
+                and audience alike into an eternal moment of remembered times and places that never existed. Which is to
+                say, into a time of <em>once</em>...</p>
+        </div>
+
+        <div class="tab-content-area" id="folknopenmic" style="display: none;">
+            <p>For the purpose of this list, <em>folk nights</em>, <em>folk clubs</em> and <em>open mics</em> are open
+                invitation events where storytellers have previously had a slot. (Folk nights as listed here often
+                define "folk music" in quite broad terms..) <em>Folk nights</em> often have a one or two song policy, so
+                a short 3-5 minute tale. By invitation, (particularly if you have travelled and can demonstrate a
+                performance reputation elsewhere) you may be able to get a longer slot. <em>Folk clubs</em> are slightly
+                more formal and more traditional in their
+                repertoire. Sometimes you might get a second turn, which means you can split a longer tale at a
+                cliff-hanger. <em>Open mics</em> are typically amplified events, though you can often get away with not
+                using the mic. The slots may be more generous, with an up to four song policy, or a 10-12 minute tale,
+                though you should probably work up to that over several sessions to build trust with the organiser and
+                from the audience. To take part in any of these events, give your name to the person running the
+                club/session. Contacting organisers beforehand can also put them on the look out for you.</p>
+        </div>
+
+        <div class="tab-content-area" id="musicpolicy" style="display: none;">
+            <p>The performers listed under the <em>music</em> filter are : a) ones that I like and don't want to miss if
+                they
+                happen to be playing somewhere where I'm near; and b) that I can imagine as part of a small (intimate)
+                venue
+                <em>New Troubadours</em> acoustic set billing with support from, or co-billing with, a storyteller.
+            </p>
+            <p>Typically, they are likely to fall into the folk/protest/narrative ballad singer category. Although, not
+                necessarily...</p>
+        </div>
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai, inspired by <a
+                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
+                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
+                Saturday, November 29th, 2025.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt> / web: <a
+                    href="https://montystoryteller.org/"><tt>montystoryteller.org</tt></a> / fb: <a
+                    href="https://www.facebook.com/montystoryteller/"><tt>montystoryteller</tt></a> / insta: <a
+                    href="https://www.instagram.com/montystoryteller/"><tt>montystoryteller</tt></a>. If you're a
+                regular teller at a folk night / open mic that would welcome other tellers, I can add those to the list
+                too... That said, this list is opinionated. So for folk nights and open mics, I may not add the listing
+                until I've visited to check that tellers are welcome.</em></p>
+        <p><em>Show your appreciation by booking me for a gig, or by buying a little something for yourself: <a
+                    href="https://www.amazon.co.uk/dp/B0FVYBY4V8">Island Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FY3TZW81">Protest Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FW286JLD">Dark Tales</a>.</em></p>
+        <p><tt>If you're looking for a ticketing service, how about <a
+                    href="https://get.tickettailor.com/z0iazwduw3fe"><strong>TicketTailor</strong> <em>[affiliate
+                        link]</em></a>?</tt></p>
+        <p><tt>Ticket links to <a href="https://clients.wegottickets.com/">WeGotTickets</a> are affiliate links tied to
+                this website. I get a few pennies commission for any tickets purchased on <a
+                    href="https://clients.wegottickets.com/">WeGotTickets</a> from clicks through to that website that
+                originated on this website.</tt></p>
+        <p><em><tt>This website does not collect cookies or tracking information, The only externally loaded resources
+                    are ones required to render the map.</tt></em></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="shared_utils.js"></script>
+    <script src="event_display.js"></script>
+    <script>
+
+    </script>
+</body>
+
+</html>

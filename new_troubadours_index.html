@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The New Troubadours</title>
+    <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        .page-intro {
+            text-align: center;
+            color: #555;
+            font-style: italic;
+            max-width: 640px;
+            margin: 0 auto 36px auto;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tile {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4CAF50;
+            padding: 24px 20px 20px 20px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .tile:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .tile-music {
+            border-left-color: #1006c6;
+        }
+
+        .tile-icon {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .tile-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .tile-music .tile-title {
+            color: #1006c6;
+        }
+
+        .tile-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .tile-arrow {
+            margin-top: auto;
+            padding-top: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .tile-music .tile-arrow {
+            color: #1006c6;
+        }
+
+        .tile-grey {
+            border-left-color: #888;
+        }
+
+        .tile-grey .tile-title {
+            color: #555;
+        }
+
+        .tile-grey .tile-arrow {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>The New Troubadours</h1>
+    <h2>Storytelling, Music &amp; Punk Poetry</h2>
+
+    <p class="page-intro">A guide to story clubs, storytelling shows, folk nights, and touring performers across the UK.
+        Appropriate for all ages; aimed at adults.</p>
+
+    <div class="tile-grid">
+
+        <a class="tile" href="new_troubadours_event_guide.html">
+            <div class="tile-icon">🗺️</div>
+            <div class="tile-title">Events Calendar</div>
+            <p class="tile-desc">Browse upcoming story clubs, shows, folk nights, and music events on an interactive
+                map.</p>
+            <div class="tile-arrow">Open calendar →</div>
+        </a>
+
+        <a class="tile" href="new_troubadours_tour_guide.html">
+            <div class="tile-icon">🎭</div>
+            <div class="tile-title">Tour Details</div>
+            <p class="tile-desc">See current and upcoming tours by performer, with mapped dates and a shareable link.
+            </p>
+            <div class="tile-arrow">View tours →</div>
+        </a>
+
+        <a class="tile" href="new_troubadours_performers.html">
+            <div class="tile-icon">🎤</div>
+            <div class="tile-title">Performers</div>
+            <p class="tile-desc">Profiles of the storytellers, singers, and punk poets on the circuit.</p>
+            <div class="tile-arrow">Meet the performers →</div>
+        </a>
+
+        <a class="tile" href="new_troubadours_venues.html">
+            <div class="tile-icon">📍</div>
+            <div class="tile-title">Venues</div>
+            <p class="tile-desc">Pubs, halls, and clubs that host storytelling and music nights, with regular listings.
+            </p>
+            <div class="tile-arrow">Browse venues →</div>
+        </a>
+
+        <a class="tile" href="new_troubadours_storyclub.html">
+            <div class="tile-icon">📖</div>
+            <div class="tile-title">Story Clubs</div>
+            <p class="tile-desc">Find and learn about story circles and clubs near you.</p>
+            <div class="tile-arrow">Find a club →</div>
+        </a>
+
+        <a class="tile" href="new_troubadours_flyers.html">
+            <div class="tile-icon">📋</div>
+            <div class="tile-title">Flyers</div>
+            <p class="tile-desc">Promotional materials and event flyers from shows on the tour.</p>
+            <div class="tile-arrow">See flyers →</div>
+        </a>
+
+        <a class="tile tile-grey" href="new_troubadours_stats.html">
+            <div class="tile-icon">📊</div>
+            <div class="tile-title">Stats</div>
+            <p class="tile-desc">Numbers and summaries across events, venues, and performers.</p>
+            <div class="tile-arrow">View stats →</div>
+        </a>
+
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai and Gemini.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt> / web: <a
+                    href="https://montystoryteller.org/"><tt>montystoryteller.org</tt></a> / fb: <a
+                    href="https://www.facebook.com/montystoryteller/"><tt>montystoryteller</tt></a> / insta: <a
+                    href="https://www.instagram.com/montystoryteller/"><tt>montystoryteller</tt></a>.</em></p>
+        <p><em>Show your appreciation by booking me for a gig, or by buying a little something for yourself: <a
+                    href="https://www.amazon.co.uk/dp/B0FVYBY4V8">Island Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FY3TZW81">Protest Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FW286JLD">Dark Tales</a>.</em></p>
+        <p><tt>If you're looking for a ticketing service, how about <a
+                    href="https://get.tickettailor.com/z0iazwduw3fe"><strong>TicketTailor</strong> <em>[affiliate
+                        link]</em></a>?</tt></p>
+        <p><em><tt>This website does not collect cookies or tracking information. The only externally loaded resources
+                    are ones required to render the map.</tt></em></p>
+    </div>
+</body>
+
+</html>

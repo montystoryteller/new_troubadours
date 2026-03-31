@@ -1,0 +1,909 @@
+/* =============================================================
+   1. TOUR HEADER
+   Title, subtitle, description, flyer image
+   ============================================================= */
+
+.tour-header {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tour-title {
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.tour-subtitle {
+    color: #666;
+    font-style: italic;
+    margin: 0 0 20px 0;
+}
+
+.tour-description {
+    line-height: 1.6;
+    color: #333;
+    margin: 20px 0;
+}
+
+.tour-flyer {
+    max-width: 600px;
+    margin: 20px 0;
+}
+
+.tour-flyer img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#tourFlyerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#tourFlyerImage {
+    display: block;
+    margin: 15px 0;
+}
+
+.performer-link {
+    display: block;
+    color: #0056b3 !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    font-size: 1.1em;
+    margin: 10px 0;
+    transition: color 0.2s;
+}
+
+.performer-link:hover {
+    color: #003d80 !important;
+    text-decoration: underline !important;
+}
+
+.site-link-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.site-link-footer {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+
+/* =============================================================
+   2. CONTROLS & NAVIGATION
+   Tour selector dropdowns, back link, share button
+   ============================================================= */
+
+.tour-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tour-selector {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .tour-selector {
+        grid-template-columns: auto 1fr;
+    }
+
+    .tour-selector button {
+        grid-column: 1 / -1;
+    }
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.back-link {
+    display: block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.back-link:hover {
+    background-color: #45a049;
+}
+
+.share-container {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-primary {
+    background-color: #2e7d32;
+}
+
+.btn-secondary {
+    padding: 8px 15px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #333;
+}
+
+.btn-reset {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background-color: #e2e2e2;
+    border-color: #999;
+}
+
+
+/* =============================================================
+   3. LAYOUT
+   Map + dates list side-by-side on desktop, stacked on mobile.
+   Note: .layout-container is also used in events-styles.css with
+   different rules (grid-based) for the events page.
+   ============================================================= */
+
+.page-tour .layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+#map-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 500px;
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#map {
+    height: 100%;
+    border: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+}
+
+.tour-dates-list {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.tour-dates-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.tour-dates-header h3 {
+    margin: 0;
+}
+
+.tour-dates-subtitle {
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.hide-past-label, .hide-cancelled-label, .hide-soldout-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+}
+
+@media (min-width: 1024px) {
+    .page-tour .layout-container {
+        flex-direction: row;
+    }
+
+    #map-container {
+        flex: 1.5;
+        position: sticky;
+        top: 20px;
+        height: 600px;
+    }
+
+    .tour-dates-list {
+        flex: 1;
+        max-height: none;
+    }
+}
+
+
+/* =============================================================
+   4. TOUR DATE ITEMS
+   Base card styles, music variant, hover/transition effects,
+   and past-date greying. Merged from two previously separate blocks.
+   ============================================================= */
+
+.tour-date-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-date-item:hover {
+    transform: translateX(5px);
+    box-shadow: -4px 0 0 #2e7d32;
+    background-color: #f0f0f0;
+    border-left-color: #2e7d32;
+}
+
+.tour-date-item.music {
+    background: linear-gradient(135deg, #443cd7 0%, #8e9df3 100%);
+    border: 2px solid #1006c6;
+    color: white;
+}
+
+.tour-date-item.music:hover {
+    filter: brightness(1.1);
+    transform: translateX(5px);
+}
+
+/* Past date styling */
+.tour-date-item.date-past {
+    opacity: 0.55;
+    filter: grayscale(40%);
+    border-left-color: #aaa !important;
+    background: #f0f0f0 !important;
+    color: #888 !important;
+}
+
+.tour-date-item.music.date-past {
+    background: linear-gradient(135deg, #777 0%, #aaa 100%) !important;
+    border-color: #999 !important;
+    color: #ddd !important;
+    opacity: 0.6;
+}
+
+.tour-date-item.date-past .event-name::after {
+    content: " — past";
+    font-size: 0.8em;
+    color: #ddd;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.tour-date-item.event.music.event-cancelled {
+    border-left: 4px solid #c62828 !important;
+    background: repeating-linear-gradient(
+        -45deg,
+        #e8ede8, #e8ede8 8px,
+        #dfe6df 8px, #dfe6df 16px
+    ) !important;
+    color: #555 !important;
+}
+
+
+/* =============================================================
+   5. LINK & ICON COLOUR OVERRIDES
+   Ticket links, venue links, separators, and facebook inline icon
+   for standard and music/folk card variants.
+   ============================================================= */
+
+/* Standard card links */
+.tour-date-item .event-location a {
+    color: #99999f !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+}
+
+.tour-date-item .event-tickets a {
+    color: #1b9317 !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+}
+
+.tour-date-item .event-location a:hover,
+.tour-date-item .event-tickets a:hover {
+    color: #003d80 !important;
+    text-decoration: underline !important;
+}
+
+.event-tickets .separator {
+    color: #0c7b31;
+    margin: 0 8px;
+}
+
+/* Music / Folk card link overrides */
+.tour-date-item.music .event-location a,
+.tour-date-item.folk .event-location a {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tour-date-item.music .event-tickets a,
+.tour-date-item.folk .event-tickets a {
+    color: #fefa16 !important;
+    text-decoration: none !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.music .event-tickets .separator {
+    color: #e9edee;
+    margin: 0 8px;
+}
+
+/* Facebook inline icon — full base rules live here because shared-styles.css
+   only sets fill:#ffffff for this class (used as a base that this block overrides).
+   Loaded after shared-styles.css so these take precedence on the tour page. */
+.page-tour .event-facebook-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+    text-decoration: none !important;
+    border: none !important;
+    border-bottom: none !important;
+}
+
+.page-tour .event-facebook-inline svg {
+    width: 20px;
+    height: 20px;
+    fill: #1877f2;
+    transition: fill 0.3s;
+}
+
+.page-tour .event-facebook-inline svg path {
+    stroke: #1877f2;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+}
+
+.page-tour .event-facebook-inline:hover svg {
+    fill: #145dbf;
+}
+
+/* Music card variant */
+.music .event-facebook-inline svg {
+    fill: #ffffff;
+}
+
+.music .event-facebook-inline svg path {
+    stroke: #1877f2;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+}
+
+/* Website icon on music cards */
+.event.music .event-website svg {
+    fill: #f6f3ed;
+}
+
+.event.music .event-email:hover svg,
+.event.music .event-website:hover svg {
+    fill: #ffffff;
+}
+
+
+/* =============================================================
+   7. TOUR DISPLAY UTILITIES
+   Classes that replace inline styles set by tour_display.js
+   ============================================================= */
+
+/* Performer name when no URL is available (plain span, not a link) */
+.performer-name-plain {
+    color: #333;
+}
+
+/* Extra top margin on the expand button inside tour date cards */
+.expand-btn-spaced {
+    margin-top: 8px;
+}
+
+
+/* =============================================================
+   8. NOW TOURING / UPCOMING / PAST PANELS
+   Shared card grid styles. The <details> chrome lives in section 9.
+   ============================================================= */
+
+/* Row wrapper — one per category (stories / music) */
+.now-touring-row {
+    margin-bottom: 16px;
+}
+
+.now-touring-row:last-child {
+    margin-bottom: 0;
+}
+
+.now-touring-row-label {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    padding-left: 2px;
+}
+
+.now-touring-row-label.label-stories {
+    color: #2e7d32;
+}
+
+.now-touring-row-label.label-music {
+    color: #443cd7;
+}
+
+.now-touring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+/* --- Story card (green theme) --- */
+.now-touring-card {
+    padding: 14px 16px;
+    border-radius: 6px;
+    background: #f1f8f1;
+    border: 1px solid #a5d6a7;
+    border-left: 4px solid #4CAF50;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.now-touring-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    background: #e8f5e9;
+}
+
+/* --- Music card (blue gradient) --- */
+.now-touring-card.music {
+    background: linear-gradient(135deg, #443cd7 0%, #8e9df3 100%);
+    border: 1px solid #1006c6;
+    border-left: 4px solid #fff176;
+    color: white;
+}
+
+.now-touring-card.music:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px rgba(68, 60, 215, 0.35);
+    transform: translateY(-2px);
+}
+
+/* Show name */
+.now-touring-show-name {
+    font-weight: 700;
+    font-size: 0.95em;
+    margin-bottom: 3px;
+    color: #1b5e20;
+}
+
+.now-touring-card.music .now-touring-show-name {
+    color: #fff;
+}
+
+/* Performer */
+.now-touring-performer {
+    font-size: 0.85em;
+    color: #4a7c4a;
+    margin-bottom: 6px;
+    font-style: italic;
+}
+
+.now-touring-card.music .now-touring-performer {
+    color: #c8e6c9;
+}
+
+/* Date range */
+.now-touring-dates {
+    font-size: 0.8em;
+    color: #6a9e6a;
+    margin-bottom: 8px;
+}
+
+.now-touring-card.music .now-touring-dates {
+    color: #b3c9ff;
+}
+
+/* Remaining-dates badge */
+.now-touring-badge {
+    display: inline-block;
+    background: rgba(46, 125, 50, 0.12);
+    color: #2e7d32;
+    border: 1px solid rgba(76, 175, 80, 0.35);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+.now-touring-card.music .now-touring-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    .now-touring-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =============================================================
+   6. TOUR STATUS BANNERS
+   Shown at top of tour date list to indicate past / current / future
+   ============================================================= */
+
+.tour-banner {
+    padding: 8px 14px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.tour-banner-past {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.tour-banner-future {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.tour-banner-current {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+
+/* =============================================================
+   9. UPCOMING TOURS PANEL
+   Collapsible <details> wrapper. Card content reuses all the
+   .now-touring-* classes from section 8 — only the chrome and
+   the slate accent colour are new here.
+   ============================================================= */
+
+#upcomingToursPanel.no-upcoming {
+    display: none;
+}
+
+#pastToursPanel.no-past {
+    display: none;
+}
+
+#nowTouringPanel.no-now-touring {
+    display: none;
+}
+
+/* margin-bottom on both panels comes from .upcoming-tours-details / .past-tours-details below */
+.upcoming-tours-details,
+.past-tours-details,
+.now-touring-details {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.upcoming-tours-details,
+.past-tours-details {
+    border-top: 4px solid #3a5f8a;
+}
+
+.now-touring-details {
+    border-top: 4px solid #6d4c2a;
+}
+
+.now-touring-details .upcoming-tours-summary-label {
+    color: #6d4c2a;
+}
+
+.now-touring-details .upcoming-tours-summary:hover {
+    background: #fdf6f0;
+}
+
+.upcoming-tours-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.upcoming-tours-summary::-webkit-details-marker { display: none; }
+.upcoming-tours-summary:hover { background: #f5f8fb; }
+
+.upcoming-tours-summary-label {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: #3a5f8a;
+    letter-spacing: 0.02em;
+}
+
+.upcoming-tours-summary-label::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.upcoming-tours-details[open] .upcoming-tours-summary-label::before,
+.past-tours-details[open] .upcoming-tours-summary-label::before,
+.now-touring-details[open] .upcoming-tours-summary-label::before {
+    transform: rotate(90deg);
+}
+
+.upcoming-tours-summary-hint {
+    font-size: 0.8em;
+    color: #888;
+    font-style: italic;
+    transition: opacity 0.2s;
+}
+
+.upcoming-tours-details[open] .upcoming-tours-summary-hint,
+.past-tours-details[open] .upcoming-tours-summary-hint,
+.now-touring-details[open] .upcoming-tours-summary-hint { opacity: 0; }
+
+.upcoming-tours-body {
+    padding: 0 20px 20px;
+    animation: slideDown 0.25s ease-out;
+}
+
+/* =============================================================
+   10. TOUR FLYER GALLERY
+   Horizontal scrolling strip of thumbnails shown on the tour
+   page when a tour has a tour_flyer and/or per-date event_flyers.
+   ============================================================= */
+
+.tour-flyer-gallery {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px 20px 20px;
+    margin-bottom: 20px;
+}
+
+.tour-flyer-details {
+    /* no extra chrome — the gallery wrapper provides the card */
+}
+
+.tour-flyer-details > summary {
+    list-style: none;
+}
+
+.tour-flyer-details > summary::-webkit-details-marker { display: none; }
+
+.tour-flyer-summary {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tour-flyer-summary::before {
+    content: "\25B8";   /* ▸ */
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 1em;
+    color: #888;
+}
+
+.tour-flyer-details[open] > .tour-flyer-summary::before {
+    transform: rotate(90deg);
+}
+
+.tour-flyer-summary:hover {
+    color: #333;
+}
+
+.tour-flyer-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tour-flyer-strip::-webkit-scrollbar {
+    height: 5px;
+}
+
+.tour-flyer-strip::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.tour-flyer-strip::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.tour-flyer-thumb {
+    flex: 0 0 auto;
+    width: 130px;
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.tour-flyer-thumb:hover {
+    transform: translateY(-2px);
+}
+
+.tour-flyer-thumb img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: block;
+    /* placeholder colour shown before lazy image loads */
+    background: linear-gradient(135deg, #e8f5e9 0%, #f0f0f0 100%);
+}
+
+.tour-flyer-thumb-label {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+    text-align: center;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =============================================================
+   11. TOUR FLYER LIGHTBOX
+   Simple overlay triggered when a thumbnail is clicked.
+   ============================================================= */
+
+.tf-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.tf-lightbox.open {
+    display: flex;
+}
+
+.tf-lb-inner {
+    position: relative;
+    max-width: 560px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tf-lb-inner img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    object-fit: contain;
+    display: block;
+}
+
+.tf-lb-caption {
+    color: #ccc;
+    font-size: 13px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.tf-lb-close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 18px;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 0;
+}
+
+.tf-lb-close:hover {
+    background: #eee;
+}
+
+.tf-lb-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: none;
+    font-size: 48px;
+    line-height: 1;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+    z-index: 10000;
+}
+
+.tf-lb-nav:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.tf-lb-nav:disabled {
+    opacity: 0.2;
+    cursor: default;
+}
+
+.tf-lb-prev { left: 10px; }
+.tf-lb-next { right: 10px; }
+
+@media (max-width: 600px) {
+    .tf-lb-nav { display: none; }
+    .tour-flyer-thumb { width: 105px; }
+}

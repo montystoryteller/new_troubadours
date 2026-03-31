@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performer — New Troubadours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="performer-styles.css">
+    <style>
+        /* ── Compound performer: linked individual names in the h1 ── */
+        #performerName a.performer-member-link {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        #performerName a.performer-member-link:hover {
+            color: #2e7d32;
+            border-bottom-color: #2e7d32;
+        }
+
+        /* ── Member chips row ── */
+        .performer-member-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .performer-member-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 12px 5px 6px;
+            background: #f1f8e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #2e7d32;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .performer-member-chip:hover {
+            background: #dcedc8;
+            border-color: #a5d6a7;
+        }
+
+        .chip-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #a5d6a7;
+            color: #1b5e20;
+            font-size: 0.65rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body class="page-performer">
+
+    <div class="page-header">
+        <a href="new_troubadours_event_guide.html" class="back-link">← Events Calendar</a>
+        <a href="new_troubadours_tour_guide.html" class="back-link">Tour Guide →</a>
+    </div>
+
+    <div id="loadingState" class="loading-state">Loading performer…</div>
+    <div id="notFoundState" class="not-found-state" style="display:none;">
+        <p>Performer not found. <a href="new_troubadours_event_guide.html">Return to events calendar.</a></p>
+    </div>
+
+    <div id="performerContent" style="display:none;">
+
+        <div class="performer-hero">
+            <div class="performer-hero-main">
+                <div class="performer-avatar" id="performerAvatar"></div>
+                <div class="performer-hero-text">
+                    <h1 id="performerName"></h1>
+                    <div id="performerWebsite" class="performer-website"></div>
+                </div>
+            </div>
+            <div id="performerBio" class="performer-bio"></div>
+        </div>
+
+        <div class="stats-row" id="statsRow"></div>
+
+        <div id="toursSection" class="content-section" style="display:none;">
+            <h3 class="section-heading">Tours</h3>
+            <div id="toursList"></div>
+        </div>
+
+        <div id="touringShowsSection" class="content-section" style="display:none;">
+            <h3 class="section-heading">Repertoire</h3>
+            <div id="touringShowsList"></div>
+        </div>
+
+        <div id="eventsSection" class="content-section" style="display:none;">
+            <h3 class="section-heading" id="eventsSectionHeading">Other appearances</h3>
+            <div id="eventsList"></div>
+        </div>
+
+        <div id="festivalsSection" class="content-section" style="display:none;">
+            <h3 class="section-heading">Festivals</h3>
+            <div id="festivalsList"></div>
+        </div>
+
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai and Gemini.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt></em></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="shared_utils.js"></script>
+    <script>
+
+        // ---------------------------------------------------------------------------
+        // Data + state
+        // ---------------------------------------------------------------------------
+
+        let eventsData = null;
+        let venuesLookup = {};
+        let performersLookup = {};
+        let toursLookup = {};
+        let performerId = null;
+        let performer = null;
+        let compoundIdsForMe = new Set();
+
+        // ---------------------------------------------------------------------------
+        // Bootstrap
+        // ---------------------------------------------------------------------------
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            performerId = params.get("performer");
+
+            if (!performerId) {
+                showNotFound();
+                return;
+            }
+
+            const loaded = await loadEventsData();
+            if (!loaded) { showNotFound(); return; }
+
+            eventsData = loaded.eventsData;
+            venuesLookup = loaded.venuesLookup;
+            performersLookup = loaded.performersLookup;
+            toursLookup = loaded.toursLookup;
+
+            performer = performersLookup[performerId];
+            if (!performer) { showNotFound(); return; }
+
+            renderPerformer();
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("performerContent").style.display = "";
+        });
+
+        function showNotFound() {
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("notFoundState").style.display = "";
+        }
+
+        // ---------------------------------------------------------------------------
+        // Main render
+        // ---------------------------------------------------------------------------
+
+        function renderPerformer() {
+            document.title = `${performer.name} — New Troubadours`;
+
+            // Avatar initials
+            const initials = performer.name
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(w => w[0].toUpperCase())
+                .slice(0, 2)
+                .join("");
+            document.getElementById("performerAvatar").textContent = initials;
+
+            // For compound performers, render each member name as a link to their individual page.
+            // Members may be declared via performer_ids/ids, or inferred from the compound ID
+            // by splitting on known separators (e.g. "daniel-morden-hugh-lupton-sarah-lianne-lewis").
+            const nameEl = document.getElementById("performerName");
+            const members = performer.performer_ids || performer.ids || (() => {
+                // Fallback: infer members by finding individual performer IDs that appear
+                // as substrings of the compound performer ID (longest matches first).
+                const candidateIds = Object.keys(performersLookup)
+                    .filter(id => id !== performerId && performersLookup[id] && !(performersLookup[id].performer_ids || performersLookup[id].ids))
+                    .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
+                const remaining = [performerId];
+                const found = [];
+                let slug = performerId;
+                for (const id of candidateIds) {
+                    if (slug.includes(id)) {
+                        found.push(id);
+                        slug = slug.replace(id, "").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-");
+                    }
+                    if (!slug) break;
+                }
+                return found.length > 1 ? found : [];
+            })();
+            if (members.length > 1) {
+                // Tokenise the display name by common separators, preserving them as delimiters.
+                // e.g. "Daniel Morden | Hugh Lupton & Sarah Lianne Lewis" → parts + separators.
+                const separatorRe = /(\s*[\|&\/]\s*|\s+and\s+|\s+feat\.\s*)/i;
+                const rawParts = performer.name.split(separatorRe);
+                // rawParts alternates: [name, sep, name, sep, name, …]
+                rawParts.forEach((part, i) => {
+                    if (i % 2 === 1) {
+                        // Separator token — keep it as plain text
+                        nameEl.appendChild(document.createTextNode(part));
+                    } else {
+                        const trimmed = part.trim();
+                        if (!trimmed) return;
+                        // Try to find the matching individual performer record by name.
+                        const matchId = members.find(id => {
+                            const p = performersLookup[id];
+                            return p && p.name.toLowerCase() === trimmed.toLowerCase();
+                        });
+                        if (matchId) {
+                            const a = document.createElement("a");
+                            a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(matchId)}`;
+                            a.textContent = trimmed;
+                            a.className = "performer-member-link";
+                            nameEl.appendChild(a);
+                        } else {
+                            nameEl.appendChild(document.createTextNode(trimmed));
+                        }
+                    }
+                });
+            } else if (members.length === 1) {
+                // Single declared member — link it
+                const a = document.createElement("a");
+                a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(members[0])}`;
+                a.textContent = performer.name;
+                a.className = "performer-member-link";
+                nameEl.appendChild(a);
+            } else {
+                nameEl.textContent = performer.name;
+            }
+
+            // Also render member chips beneath the name when performer_ids are declared
+            if (members.length > 1) {
+                const chipsDiv = document.createElement("div");
+                chipsDiv.className = "performer-member-chips";
+                members.forEach(id => {
+                    const p = performersLookup[id];
+                    if (!p) return;
+                    const chip = document.createElement("a");
+                    chip.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+                    chip.className = "performer-member-chip";
+                    // Avatar initials
+                    const initials = p.name.split(/\s+/).filter(Boolean).map(w => w[0].toUpperCase()).slice(0, 2).join("");
+                    const av = document.createElement("span");
+                    av.className = "chip-avatar";
+                    av.textContent = initials;
+                    chip.appendChild(av);
+                    chip.appendChild(document.createTextNode(p.name));
+                    chipsDiv.appendChild(chip);
+                });
+                // Insert after the h1
+                nameEl.parentNode.insertBefore(chipsDiv, nameEl.nextSibling);
+            }
+
+            // Website link
+            if (performer.url) {
+                const safeUrl = sanitizeUrl(performer.url);
+                if (safeUrl) {
+                    const websiteDiv = document.getElementById("performerWebsite");
+                    const a = document.createElement("a");
+                    a.href = safeUrl;
+                    a.target = "_blank";
+                    a.textContent = performer.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+                    websiteDiv.appendChild(a);
+                }
+            }
+
+            // Bio
+            if (performer.bio) {
+                const bioDiv = document.getElementById("performerBio");
+                appendParagraphs(bioDiv, performer.bio);
+            }
+
+            // Build a set of all compound performer IDs that include this performer.
+            // Checks both performer_ids and the legacy ids field on performer records.
+            // e.g. if performerId = "sarah-liisa-wilkinson", this set will contain
+            // "lucy-lill-sarah-liisa-wilkinson" so events with that performer_id are found.
+            compoundIdsForMe = new Set();
+            Object.entries(performersLookup).forEach(([pid, p]) => {
+                const members = p.performer_ids || p.ids || [];
+                if (Array.isArray(members) && members.includes(performerId)) {
+                    compoundIdsForMe.add(pid);
+                }
+            });
+
+            // Helper: returns true if an event/tour/show belongs to this performer.
+            // Checks: direct performer_id match, performer_ids array on the event itself
+            // (used on tours like Haggarty/Brittain), and compound performer records
+            // whose ids/performer_ids include this performer (used on specificEvents
+            // like Queen of Between which carry a compound performer_id).
+            function performerMatches(obj) {
+                if (obj.performer_id === performerId) return true;
+                if (Array.isArray(obj.performer_ids) && obj.performer_ids.includes(performerId)) return true;
+                if (obj.performer_id && compoundIdsForMe.has(obj.performer_id)) return true;
+                return false;
+            }
+
+            // Gather all data for this performer
+            const myTours = Object.entries(toursLookup).filter(([, t]) => performerMatches(t));
+            const myTouringShows = Object.entries(eventsData.touring_shows || {}).filter(([, ts]) => performerMatches(ts));
+            const mySpecific = (eventsData.specificEvents || []).filter(e => performerMatches(e));
+            const myMusic = (eventsData.musicEvents || []).filter(e => performerMatches(e));
+            const myFestivals = Object.entries(eventsData.festivals || {}).filter(([, f]) =>
+                (f.performers || []).some(p => p.performer_id === performerId)
+            );
+
+            // Count all tour dates
+            const totalTourDates = myTours.reduce((sum, [, t]) => sum + (t.tour_dates || []).length, 0);
+            const totalTouringDates = myTouringShows.reduce((sum, [, ts]) => sum + (ts.show_dates || []).length, 0);
+
+            // Count unique venues across all events
+            const venueIds = new Set();
+            myTours.forEach(([, t]) => (t.tour_dates || []).forEach(td => td.venue_id && venueIds.add(td.venue_id)));
+            myTouringShows.forEach(([, ts]) => (ts.show_dates || []).forEach(sd => sd.venue_id && venueIds.add(sd.venue_id)));
+            [...mySpecific, ...myMusic].forEach(e => e.venue_id && venueIds.add(e.venue_id));
+
+            // Stats row
+            const hasToursOrShows = myTours.length > 0 || myTouringShows.length > 0;
+            const otherEventsCount = mySpecific.length + myMusic.length;
+            const otherEventsLabel = hasToursOrShows ? "Other events" : (otherEventsCount === 1 ? "Event" : "Events");
+            const stats = [
+                { n: myTours.length, label: myTours.length === 1 ? "Tour" : "Tours" },
+                { n: totalTourDates + totalTouringDates, label: "Tour dates" },
+                { n: otherEventsCount, label: otherEventsLabel },
+                { n: venueIds.size, label: "Venues" },
+            ];
+            const statsRow = document.getElementById("statsRow");
+            stats.forEach(s => {
+                if (s.n === 0) return;
+                const card = document.createElement("div");
+                card.className = "stat-card";
+                card.innerHTML = `<div class="stat-n">${s.n}</div><div class="stat-l">${escapeHtml(s.label)}</div>`;
+                statsRow.appendChild(card);
+            });
+
+            // Tours
+            if (myTours.length > 0) {
+                document.getElementById("toursSection").style.display = "";
+                const list = document.getElementById("toursList");
+                myTours.forEach(([tourId, tour]) => renderTourCard(list, tourId, tour));
+            }
+
+            // Touring shows
+            if (myTouringShows.length > 0) {
+                document.getElementById("touringShowsSection").style.display = "";
+                const list = document.getElementById("touringShowsList");
+                myTouringShows.forEach(([tsId, ts]) => renderTouringShowCard(list, tsId, ts));
+            }
+
+            // Specific + music events
+            const allOther = [...mySpecific, ...myMusic].sort((a, b) => {
+                const da = parseDateString(a.date), db = parseDateString(b.date);
+                if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
+                return da - db;
+            });
+            if (allOther.length > 0) {
+                document.getElementById("eventsSection").style.display = "";
+                // Heading: "Appearances" when sole content, "Other appearances" when alongside tours/shows
+                document.getElementById("eventsSectionHeading").textContent =
+                    hasToursOrShows ? "Other appearances" : "Appearances";
+                // Annotate the stat card if all events are TBC
+                const tbcCount = allOther.filter(e => !parseDateString(e.date) && !(Array.isArray(e.datetimes) && e.datetimes.length > 0)).length;
+                if (tbcCount === allOther.length && tbcCount > 0) {
+                    // All are TBC — add a small note to the stat card label
+                    const statCards = document.getElementById("statsRow").querySelectorAll(".stat-card");
+                    statCards.forEach(card => {
+                        const label = card.querySelector(".stat-l");
+                        if (label && (label.textContent === "Event" || label.textContent === "Events" || label.textContent === "Other events")) {
+                            label.textContent += " (date TBC)";
+                        }
+                    });
+                } else if (tbcCount > 0) {
+                    // Some are TBC — note how many
+                    const statCards = document.getElementById("statsRow").querySelectorAll(".stat-card");
+                    statCards.forEach(card => {
+                        const label = card.querySelector(".stat-l");
+                        if (label && (label.textContent === "Event" || label.textContent === "Events" || label.textContent === "Other events")) {
+                            label.textContent += ` (${tbcCount} TBC)`;
+                        }
+                    });
+                }
+                const list = document.getElementById("eventsList");
+                allOther.forEach(e => renderEventRow(list, e));
+            }
+
+            // Festivals
+            if (myFestivals.length > 0) {
+                document.getElementById("festivalsSection").style.display = "";
+                const list = document.getElementById("festivalsList");
+                myFestivals.forEach(([fid, f]) => renderFestivalRow(list, fid, f));
+            }
+        }
+
+        // ---------------------------------------------------------------------------
+        // Tour card
+        // ---------------------------------------------------------------------------
+
+        function renderTourCard(container, tourId, tour) {
+            const today = getTodayMidnight();
+            const dates = tour.tour_dates || [];
+
+            const futureDates = dates.filter(d => {
+                const parsed = parseDateString(d.date);
+                return parsed && parsed >= today;
+            });
+            const pastDates = dates.filter(d => {
+                const parsed = parseDateString(d.date);
+                return parsed && parsed < today;
+            });
+
+            const firstDate = dates[0] ? parseDateString(dates[0].date) : null;
+            const lastDate = dates[dates.length - 1] ? parseDateString(dates[dates.length - 1].date) : null;
+
+            const isMusic = tour.isMusic;
+            const card = document.createElement("div");
+            card.className = `tour-card${isMusic ? " tour-card-music" : ""}`;
+
+            // Header row
+            const header = document.createElement("div");
+            header.className = "tour-card-header";
+
+            const nameEl = document.createElement("div");
+            nameEl.className = "tour-card-name";
+            nameEl.textContent = tour.tour_name || tour.name;
+            header.appendChild(nameEl);
+
+            // Badge: remaining dates
+            if (futureDates.length > 0) {
+                const badge = document.createElement("span");
+                badge.className = "tour-remaining-badge";
+                badge.textContent = `${futureDates.length} date${futureDates.length !== 1 ? "s" : ""} remaining`;
+                header.appendChild(badge);
+            } else {
+                const badge = document.createElement("span");
+                badge.className = "tour-completed-badge";
+                badge.textContent = "Completed";
+                header.appendChild(badge);
+            }
+
+            card.appendChild(header);
+
+            // Co-performers line — shown when this tour has multiple performers
+            // and we are viewing it from one of their individual pages
+            if (Array.isArray(tour.performer_ids) && tour.performer_ids.length > 1) {
+                const coPerformers = tour.performer_ids
+                    .filter(id => id !== performerId)
+                    .map(id => {
+                        const p = performersLookup[id];
+                        if (!p) return null;
+                        const a = document.createElement("a");
+                        a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+                        a.textContent = p.name;
+                        a.className = "tour-view-link";
+                        a.onclick = e => e.stopPropagation();
+                        return a;
+                    })
+                    .filter(Boolean);
+                if (coPerformers.length > 0) {
+                    const coDiv = document.createElement("div");
+                    coDiv.className = "tour-card-meta";
+                    coDiv.appendChild(document.createTextNode("with "));
+                    coPerformers.forEach((a, i) => {
+                        if (i > 0) coDiv.appendChild(document.createTextNode(" & "));
+                        coDiv.appendChild(a);
+                    });
+                    card.appendChild(coDiv);
+                }
+            }
+
+            // Description
+            if (tour.tour_description) {
+                const desc = document.createElement("div");
+                desc.className = "tour-card-desc";
+                const firstPara = tour.tour_description.split("\n\n\n\n")[0].replace(/\n\n/g, " ").trim();
+                desc.textContent = firstPara.length > 200 ? firstPara.slice(0, 197) + "…" : firstPara;
+                card.appendChild(desc);
+            }
+
+            // Date range + count
+            if (firstDate && lastDate) {
+                const meta = document.createElement("div");
+                meta.className = "tour-card-meta";
+                meta.textContent = `${formatShortDate(firstDate)} – ${formatShortDate(lastDate)} · ${dates.length} date${dates.length !== 1 ? "s" : ""}`;
+                card.appendChild(meta);
+            }
+
+            // Upcoming date pills
+            const upcoming = futureDates.slice(0, 6);
+            if (upcoming.length > 0) {
+                const pips = document.createElement("div");
+                pips.className = "tour-date-pips";
+                upcoming.forEach(td => {
+                    const d = parseDateString(td.date);
+                    const pip = document.createElement("span");
+                    pip.className = "date-pip";
+                    pip.textContent = formatShortDate(d);
+                    pips.appendChild(pip);
+                });
+                if (futureDates.length > 6) {
+                    const more = document.createElement("span");
+                    more.className = "date-pip date-pip-more";
+                    more.textContent = `+${futureDates.length - 6} more`;
+                    pips.appendChild(more);
+                }
+                card.appendChild(pips);
+            }
+
+            // View tour link
+            const footer = document.createElement("div");
+            footer.className = "tour-card-footer";
+            const viewLink = document.createElement("a");
+            viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+            viewLink.className = "tour-view-link";
+            viewLink.textContent = "View full tour →";
+            footer.appendChild(viewLink);
+            card.appendChild(footer);
+
+            container.appendChild(card);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Repertoire show card
+        // The show itself is the primary thing; dates are secondary context.
+        // ---------------------------------------------------------------------------
+
+        function renderTouringShowCard(container, tsId, ts) {
+            const today = getTodayMidnight();
+            const dates = ts.show_dates || [];
+            const futureDates = dates.filter(d => { const p = parseDateString(d.date); return p && p >= today; });
+            const pastDates = dates.filter(d => { const p = parseDateString(d.date); return p && p < today; });
+
+            const card = document.createElement("div");
+            card.className = "tour-card repertoire-card";
+
+            // Header: show name + badge
+            const header = document.createElement("div");
+            header.className = "tour-card-header";
+
+            const nameEl = document.createElement("div");
+            nameEl.className = "tour-card-name";
+            nameEl.textContent = ts.showname || ts.name;
+            header.appendChild(nameEl);
+
+            const badge = document.createElement("span");
+            badge.className = futureDates.length > 0 ? "tour-remaining-badge" : "tour-completed-badge";
+            badge.textContent = futureDates.length > 0
+                ? `${futureDates.length} upcoming date${futureDates.length !== 1 ? "s" : ""}`
+                : pastDates.length > 0 ? `${pastDates.length} past date${pastDates.length !== 1 ? "s" : ""}` : "No dates listed";
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            // Full description — the show is the thing, so give it room
+            if (ts.description) {
+                const desc = document.createElement("div");
+                desc.className = "tour-card-desc repertoire-desc";
+                const paras = ts.description.split("\n\n\n\n").map(p => p.replace(/\n\n/g, " ").trim()).filter(Boolean);
+                paras.forEach(p => {
+                    const el = document.createElement("p");
+                    el.textContent = p;
+                    desc.appendChild(el);
+                });
+                card.appendChild(desc);
+            }
+
+            // Upcoming dates as compact pills — venue city + ticket link
+            if (futureDates.length > 0) {
+                const pipsLabel = document.createElement("div");
+                pipsLabel.className = "repertoire-dates-label";
+                pipsLabel.textContent = "Upcoming dates:";
+                card.appendChild(pipsLabel);
+
+                const pips = document.createElement("div");
+                pips.className = "tour-date-pips";
+                futureDates.forEach(sd => {
+                    const d = parseDateString(sd.date);
+                    const venue = sd.venue_id ? venuesLookup[sd.venue_id] : null;
+                    const pip = document.createElement("span");
+                    pip.className = "date-pip";
+
+                    const dateText = d ? formatShortDate(d) : "TBC";
+                    const venueText = venue ? (venue.city || venue.name) : "";
+                    pip.textContent = venueText ? `${dateText} · ${venueText}` : dateText;
+
+                    if (sd.ticket_url) {
+                        const a = document.createElement("a");
+                        a.href = sanitizeUrl(sd.ticket_url) || "#";
+                        a.target = "_blank";
+                        a.className = "ticket-link";
+                        a.textContent = "tickets";
+                        a.onclick = e => e.stopPropagation();
+                        pip.appendChild(document.createTextNode(" "));
+                        pip.appendChild(a);
+                    }
+                    pips.appendChild(pip);
+                });
+                card.appendChild(pips);
+            }
+
+            container.appendChild(card);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Other event row
+        // ---------------------------------------------------------------------------
+
+        function renderEventRow(container, event) {
+            // If the event has no single date but has a datetimes array, use the first entry's date.
+            // datetimes entries look like "01/04/2026 : 7.30pm"
+            let dateStr = event.date;
+            let timeStr = event.time;
+            const hasDatesArray = Array.isArray(event.datetimes) && event.datetimes.length > 0;
+            if (!dateStr && hasDatesArray) {
+                const firstDt = event.datetimes[0];
+                const parts = firstDt.split(/\s*:\s*/);
+                dateStr = parts[0] ? parts[0].trim() : "";
+                if (!timeStr && parts[1]) timeStr = parts[1].trim();
+            }
+            const date = parseDateString(dateStr);
+            // isPast: for multi-date events use the *last* datetime to decide
+            let isPast = false;
+            if (hasDatesArray) {
+                const lastDt = event.datetimes[event.datetimes.length - 1];
+                const lastDateStr = lastDt.split(/\s*:\s*/)[0].trim();
+                const lastDate = parseDateString(lastDateStr);
+                isPast = lastDate && lastDate < getTodayMidnight();
+            } else {
+                isPast = date && date < getTodayMidnight();
+            }
+            const venue = event.venue_id ? venuesLookup[event.venue_id] : null;
+
+            const row = document.createElement("div");
+            row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+            const dateCol = document.createElement("div");
+            dateCol.className = "event-row-date";
+            if (date) {
+                dateCol.textContent = hasDatesArray && event.datetimes.length > 1
+                    ? `${formatMediumDate(date)} +${event.datetimes.length - 1} more`
+                    : formatMediumDate(date);
+            } else {
+                dateCol.textContent = "Date TBC";
+            }
+            if (isPast) dateCol.classList.add("muted");
+            row.appendChild(dateCol);
+
+            const detail = document.createElement("div");
+            detail.className = "event-row-detail";
+
+            const title = document.createElement("div");
+            title.className = "event-row-title";
+            title.textContent = event.showname || event.name;
+            detail.appendChild(title);
+
+            if (timeStr) {
+                const t = document.createElement("span");
+                t.className = "event-row-time";
+                t.textContent = timeStr;
+                detail.appendChild(t);
+            }
+
+            // Co-performer credit for joint shows (e.g. "with Lucy Lill")
+            if (event.performer_id && compoundIdsForMe.has(event.performer_id)) {
+                const compound = performersLookup[event.performer_id];
+                const members = compound && (compound.performer_ids || compound.ids || []);
+                const coPerformers = (members || []).filter(id => id !== performerId);
+                if (coPerformers.length > 0) {
+                    const coDiv = document.createElement("div");
+                    coDiv.className = "event-row-time";
+                    coDiv.appendChild(document.createTextNode("with "));
+                    coPerformers.forEach((id, i) => {
+                        if (i > 0) coDiv.appendChild(document.createTextNode(" & "));
+                        const p = performersLookup[id];
+                        if (p) {
+                            const a = document.createElement("a");
+                            a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+                            a.textContent = p.name;
+                            a.onclick = e => e.stopPropagation();
+                            coDiv.appendChild(a);
+                        } else {
+                            coDiv.appendChild(document.createTextNode(id));
+                        }
+                    });
+                    detail.appendChild(coDiv);
+                }
+            }
+
+            if (venue) {
+                const v = document.createElement("div");
+                v.className = "event-row-venue";
+                if (venue.url) {
+                    const a = document.createElement("a");
+                    a.href = sanitizeUrl(venue.url) || "#";
+                    a.target = "_blank";
+                    a.textContent = venue.name;
+                    v.appendChild(a);
+                    if (venue.city) v.appendChild(document.createTextNode(`, ${venue.city}`));
+                } else {
+                    v.textContent = venue.name + (venue.city ? `, ${venue.city}` : "");
+                }
+                detail.appendChild(v);
+            }
+
+            const badges = document.createElement("div");
+            badges.className = "badge-row";
+            if (event.isMusic) { const b = document.createElement("span"); b.className = "badge badge-music"; b.textContent = "Music"; badges.appendChild(b); }
+            if (event.isSpecial && !event.isMusic) { const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Story show"; badges.appendChild(b); }
+            if (isPast) { const b = document.createElement("span"); b.className = "badge badge-past"; b.textContent = "Past"; badges.appendChild(b); }
+            if (event.ticket_url && !isPast) {
+                const a = document.createElement("a");
+                a.href = sanitizeUrl(event.ticket_url) || "#";
+                a.target = "_blank";
+                a.className = "ticket-link";
+                a.textContent = "Tickets";
+                badges.appendChild(a);
+            }
+            detail.appendChild(badges);
+
+            row.appendChild(detail);
+            container.appendChild(row);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Festival row
+        // ---------------------------------------------------------------------------
+
+        function renderFestivalRow(container, fid, festival) {
+            const start = parseDateString(festival.start_date);
+            const end = parseDateString(festival.end_date);
+            const isPast = end && end < getTodayMidnight();
+
+            const row = document.createElement("div");
+            row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+            const dateCol = document.createElement("div");
+            dateCol.className = "event-row-date";
+            if (start && end) {
+                dateCol.textContent = start.toDateString() === end.toDateString()
+                    ? formatMediumDate(start)
+                    : `${formatShortDate(start)} – ${formatShortDate(end)}`;
+            }
+            row.appendChild(dateCol);
+
+            const detail = document.createElement("div");
+            detail.className = "event-row-detail";
+
+            const title = document.createElement("div");
+            title.className = "event-row-title";
+            title.textContent = festival.name;
+            detail.appendChild(title);
+
+            const role = (festival.performers || []).find(p => p.performer_id === performerId);
+            if (role && role.role) {
+                const r = document.createElement("span");
+                r.className = "event-row-time";
+                r.textContent = role.role;
+                detail.appendChild(r);
+            }
+
+            const venue = festival.venue_id ? venuesLookup[festival.venue_id] : null;
+            if (venue) {
+                const v = document.createElement("div");
+                v.className = "event-row-venue";
+                v.textContent = venue.name + (venue.city ? `, ${venue.city}` : "");
+                detail.appendChild(v);
+            }
+
+            const badges = document.createElement("div");
+            badges.className = "badge-row";
+            const b = document.createElement("span");
+            b.className = "badge badge-special";
+            b.textContent = "Festival";
+            badges.appendChild(b);
+            if (isPast) { const bp = document.createElement("span"); bp.className = "badge badge-past"; bp.textContent = "Past"; badges.appendChild(bp); }
+            if (festival.ticket_url && !isPast) {
+                const a = document.createElement("a");
+                a.href = sanitizeUrl(festival.ticket_url) || "#";
+                a.target = "_blank";
+                a.className = "ticket-link";
+                a.textContent = "Tickets";
+                badges.appendChild(a);
+            }
+            detail.appendChild(badges);
+
+            row.appendChild(detail);
+            container.appendChild(row);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Date formatting helpers
+        // ---------------------------------------------------------------------------
+
+        const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        function formatShortDate(d) {
+            if (!d) return "";
+            return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
+        }
+
+        function formatMediumDate(d) {
+            if (!d) return "";
+            return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+    </script>
+</body>
+
+</html>

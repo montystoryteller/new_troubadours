@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Event Flyers — New Troubadours</title>
+    <link rel="stylesheet" href="shared-styles.css">
+    <style>
+        /* ── Filter bar ──────────────────────────────────────── */
+        .filter-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-bar-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            background: white;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: normal;
+        }
+
+        .filter-btn:hover {
+            border-color: #4CAF50;
+            color: #2e7d32;
+            background: #f1f8f1;
+        }
+
+        .filter-btn.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: none;
+        }
+
+        .filter-btn[data-type="music"].active {
+            background: #443cd7;
+            border-color: #443cd7;
+        }
+
+        .filter-btn[data-type="tour"].active {
+            background: #795548;
+            border-color: #795548;
+        }
+
+        .filter-btn[data-type="festival"].active {
+            background: #e65100;
+            border-color: #e65100;
+        }
+
+        .filter-btn[data-type="club"].active {
+            background: #558b2f;
+            border-color: #558b2f;
+        }
+
+        .filter-btn[data-type="music"]:not(.active):hover {
+            border-color: #443cd7;
+            color: #443cd7;
+            background: white;
+        }
+
+        .filter-btn[data-type="tour"]:not(.active):hover {
+            border-color: #795548;
+            color: #795548;
+            background: white;
+        }
+
+        .filter-btn[data-type="festival"]:not(.active):hover {
+            border-color: #e65100;
+            color: #e65100;
+            background: white;
+        }
+
+        .filter-btn[data-type="club"]:not(.active):hover {
+            border-color: #558b2f;
+            color: #558b2f;
+            background: white;
+        }
+
+        .filter-divider {
+            width: 1px;
+            height: 24px;
+            background: #ddd;
+            margin: 0 4px;
+        }
+
+        /* ── Section headings ────────────────────────────────── */
+        .section-heading {
+            font-size: 19px;
+            font-weight: bold;
+            color: #1b5e20;
+            margin: 28px 0 14px;
+            padding-bottom: 7px;
+            border-bottom: 3px solid #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-heading.past {
+            color: #888;
+            border-bottom-color: #ccc;
+        }
+
+        .section-heading .count {
+            font-size: 13px;
+            font-weight: normal;
+            color: #999;
+        }
+
+        /* ── Grid ────────────────────────────────────────────── */
+        .flyer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        /* ── Card ────────────────────────────────────────────── */
+        .flyer-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .flyer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+        }
+
+        .flyer-card.past {
+            opacity: 0.55;
+            filter: grayscale(40%);
+        }
+
+        .flyer-card.past:hover {
+            opacity: 0.85;
+            filter: grayscale(10%);
+        }
+
+        /* ── Tonight / tomorrow highlights ──────────────────── */
+        @keyframes tonightPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.0), 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(211, 47, 47, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .flyer-card.tonight {
+            animation: tonightPulse 2s ease-in-out infinite;
+        }
+
+        .flyer-card.tonight::before {
+            background: #d32f2f;
+        }
+
+        .flyer-card.tonight .flyer-date {
+            color: #d32f2f;
+            font-size: 12px;
+        }
+
+        .flyer-card.tomorrow::before {
+            background: #f57c00;
+        }
+
+        .flyer-card.tomorrow .flyer-date {
+            color: #e65100;
+        }
+
+        /* urgency label sits above the date */
+        .urgency-label {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1px;
+        }
+
+        .tonight .urgency-label {
+            color: #d32f2f;
+        }
+
+        .tomorrow .urgency-label {
+            color: #e65100;
+        }
+
+        .urgency-detail {
+            font-size: 12px;
+            font-weight: normal;
+            font-style: italic;
+            margin-top: 1px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .tonight .urgency-detail {
+            color: #b71c1c;
+        }
+
+        .tomorrow .urgency-detail {
+            color: #bf360c;
+        }
+
+        /* colour accent strip */
+        .flyer-card::before {
+            content: "";
+            display: block;
+            height: 4px;
+            background: #4CAF50;
+            flex-shrink: 0;
+        }
+
+        .flyer-card[data-type="music"]::before {
+            background: #443cd7;
+        }
+
+        .flyer-card[data-type="tour"]::before {
+            background: #795548;
+        }
+
+        .flyer-card[data-type="festival"]::before {
+            background: #e65100;
+        }
+
+        .flyer-card[data-type="club"]::before {
+            background: #558b2f;
+        }
+
+        /* ── Image wrapper ───────────────────────────────────── */
+        .flyer-img-wrap {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #eee;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Loading placeholder */
+        .flyer-img-wrap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f0f0f0 100%);
+            z-index: 0;
+            transition: opacity 0.4s;
+        }
+
+        .flyer-img-wrap.loaded::after {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .flyer-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+
+        .flyer-img-wrap img.revealed {
+            opacity: 1;
+        }
+
+        .flyer-img-wrap .img-error {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 12px;
+            z-index: 2;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* type badge overlaid on image */
+        .type-badge {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            z-index: 2;
+            color: white;
+            background: rgba(76, 175, 80, 0.88);
+        }
+
+        [data-type="music"] .type-badge {
+            background: rgba(68, 60, 215, 0.88);
+        }
+
+        [data-type="tour"] .type-badge {
+            background: rgba(121, 85, 72, 0.88);
+        }
+
+        [data-type="festival"] .type-badge {
+            background: rgba(230, 81, 0, 0.88);
+        }
+
+        [data-type="club"] .type-badge {
+            background: rgba(85, 139, 47, 0.88);
+        }
+
+        /* ── Caption ─────────────────────────────────────────── */
+        .flyer-caption {
+            padding: 10px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .flyer-date {
+            font-size: 11px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .flyer-card.past .flyer-date {
+            color: #aaa;
+        }
+
+        .flyer-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #222;
+            line-height: 1.35;
+        }
+
+        .flyer-performer {
+            font-size: 12px;
+            font-style: italic;
+            color: #555;
+        }
+
+        .flyer-venue {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .flyer-actions {
+            margin-top: 8px;
+        }
+
+        .flyer-actions a {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-decoration: none;
+            border-bottom: 1px solid #4CAF50;
+        }
+
+        .flyer-actions a:hover {
+            color: #1b5e20;
+            border-bottom-color: #1b5e20;
+        }
+
+        /* ── Empty / no selection ────────────────────────────── */
+        .no-flyers {
+            color: #999;
+            text-align: center;
+            padding: 40px 20px;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+
+        /* ── Lightbox ─────────────────────────────────────────── */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #lightbox.open {
+            display: flex;
+        }
+
+        #lightbox-inner {
+            position: relative;
+            max-width: 580px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #lightbox img {
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            object-fit: contain;
+            display: block;
+        }
+
+        #lightbox-caption {
+            color: white;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #lightbox-caption .lb-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        #lightbox-caption .lb-performer {
+            font-style: italic;
+            color: #ccc;
+        }
+
+        #lightbox-caption .lb-meta {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        #lightbox-close {
+            position: absolute;
+            top: -14px;
+            right: -14px;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 18px;
+            line-height: 32px;
+            text-align: center;
+            cursor: pointer;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            padding: 0;
+        }
+
+        #lightbox-close:hover {
+            background: #eee;
+        }
+
+        .lb-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: white;
+            font-size: 30px;
+            width: 52px;
+            height: 72px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 10000;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lb-nav:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .lb-nav:disabled {
+            opacity: 0.15;
+            cursor: default;
+        }
+
+        #lb-prev {
+            left: 10px;
+        }
+
+        #lb-next {
+            right: 10px;
+        }
+
+        /* ── Context menu ────────────────────────────────────── */
+        #ctx-menu {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+            padding: 6px 0;
+            min-width: 210px;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        #ctx-menu.open {
+            display: block;
+        }
+
+        .ctx-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px;
+            cursor: pointer;
+            color: #333;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .ctx-item:hover {
+            background: #f1f8f1;
+            color: #1b5e20;
+        }
+
+        .ctx-item .ctx-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .ctx-divider {
+            height: 1px;
+            background: #eee;
+            margin: 4px 0;
+        }
+
+        .ctx-label {
+            padding: 5px 16px 3px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Back link ───────────────────────────────────────── */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #2e7d32;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Date override banner ────────────────────────────── */
+        #date-override-banner {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            border-radius: 6px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #e65100;
+        }
+
+        #date-override-banner a {
+            color: #e65100;
+            font-weight: bold;
+        }
+
+        /* ── Filter bar compact buttons (All / None) ─────────── */
+        .filter-btn-compact {
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+
+        /* ── Tour selector row ───────────────────────────────── */
+        .filter-tour-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 10px;
+            margin-top: 4px;
+            border-top: 1px solid #eee;
+        }
+
+        .filter-tour-row label {
+            font-size: 13px;
+            color: #666;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #tourFilterSelect {
+            flex: 1;
+            min-width: 160px;
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            background: white;
+            color: #555;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        #tourFilterSelect:focus,
+        #tourFilterSelect:hover {
+            border-color: #795548;
+            outline: none;
+        }
+
+        #tourFilterSelect.active {
+            border-color: #795548;
+            background: #efebe9;
+            color: #3e2723;
+            font-weight: bold;
+        }
+
+        .tour-filter-clear {
+            font-size: 12px;
+            padding: 5px 12px;
+            background: white;
+            color: #795548;
+            border: 2px solid #795548;
+            border-radius: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .tour-filter-clear.visible {
+            display: inline-block;
+        }
+
+        .tour-filter-clear:hover {
+            background: #efebe9;
+        }
+
+        /* ── Status messages (loading, error) ────────────────── */
+        .status-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .status-message--loading {
+            color: #999;
+        }
+
+        .status-message--error {
+            color: #c00;
+        }
+
+        /* ── Lightbox caption actions ─────────────────────────── */
+        .lb-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .lb-actions a {
+            text-decoration: none;
+        }
+
+        .lb-actions-primary {
+            color: #90ee90;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .lb-actions-secondary {
+            color: #aed9ae;
+            font-size: 13px;
+        }
+
+        /* ── Responsive ──────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .flyer-grid {
+                grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+                gap: 10px;
+            }
+
+            .lb-nav {
+                display: none;
+            }
+
+            .filter-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a class="back-link" href="new_troubadours_event_guide.html">← Back to all events</a>
+    <h1>The New Troubadours — Event Flyers</h1>
+    <h2>Upcoming shows, tours and story nights</h2>
+
+    <div id="date-override-banner" style="display:none;">
+        🗓 <strong>Test mode:</strong> viewing flyers as if today were <strong id="date-override-label"></strong>
+        — <a href="?">back to real today</a>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <span class="filter-bar-label">Show:</span>
+        <button class="filter-btn active" data-type="story" onclick="toggleFilter('story')">📖 Story shows</button>
+        <button class="filter-btn active" data-type="club" onclick="toggleFilter('club')">🏠 Club regulars</button>
+        <button class="filter-btn active" data-type="tour" onclick="toggleFilter('tour')">🎭 Tours</button>
+        <button class="filter-btn active" data-type="music" onclick="toggleFilter('music')">🎵 Music</button>
+        <button class="filter-btn active" data-type="festival" onclick="toggleFilter('festival')">🎪 Festivals</button>
+        <div class="filter-divider"></div>
+        <button class="filter-btn filter-btn-compact" onclick="selectAll()">All</button>
+        <button class="filter-btn filter-btn-compact" onclick="selectNone()">None</button>
+    </div>
+
+    <div class="filter-bar" id="tourFilterBar" style="display:none;">
+        <div class="filter-tour-row">
+            <label for="tourFilterSelect">🎭 Limit to tour:</label>
+            <select id="tourFilterSelect" onchange="handleTourFilterChange()">
+                <option value="">— All tours —</option>
+            </select>
+            <button class="tour-filter-clear" id="tourFilterClear" onclick="clearTourFilter()">✕ Clear</button>
+        </div>
+    </div>
+
+    <div id="page-content">
+        <p class="status-message status-message--loading">Loading…</p>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Flyer viewer">
+        <button class="lb-nav" id="lb-prev" aria-label="Previous">&#8249;</button>
+        <div id="lightbox-inner">
+            <button id="lightbox-close" aria-label="Close">×</button>
+            <img id="lightbox-img" src="" alt="">
+            <div id="lightbox-caption"></div>
+        </div>
+        <button class="lb-nav" id="lb-next" aria-label="Next">&#8250;</button>
+    </div>
+
+    <!-- Context menu -->
+    <div id="ctx-menu" role="menu" aria-label="Flyer options"></div>
+
+    <script>
+        // ── Constants ─────────────────────────────────────────────────────────────
+        const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const BASE_EVENT = "./storyclub_assets/event_flyers/";
+        const BASE_CLUB = "./storyclub_assets/club_flyers/";
+
+        const CALENDAR = "new_troubadours_event_guide.html";
+
+        // ── Calendar link builder ─────────────────────────────────────────────────
+        // Constructs a URL back to the events calendar, pre-filtered to the event's
+        // date window and pre-searched for the show name.
+        function calendarLink(item) {
+            const p = new URLSearchParams();
+
+            if (item.isClubGeneric) {
+                // No specific date — just search by club name
+                p.set("q", item.name);
+                p.set("storyclubs", "1");
+                p.set("special", "1");
+            } else {
+                // Use the event date as both start and end, with a ±3-day window
+                const d = new Date(item.date);
+                const from = new Date(d); from.setDate(from.getDate() - 3);
+                const to = new Date(d); to.setDate(to.getDate() + 3);
+                p.set("start", fmtDate(from));
+                p.set("end", fmtDate(to));
+                // Search term: show name stripped of [bracketed performer] suffix
+                const search = (item.name || "").replace(/\s*\[.*?\]\s*$/, "").trim();
+                if (search) p.set("q", search);
+                p.set("storyclubs", "1");
+                p.set("special", "1");
+                if (item.type === "music") p.set("music", "1");
+                if (item.type === "tour") { p.set("special", "1"); }
+            }
+
+            return `${CALENDAR}?${p.toString()}`;
+        }
+
+        function fmtDate(d) {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        // ── Context menu ──────────────────────────────────────────────────────────
+        const ctxMenu = document.getElementById("ctx-menu");
+        let ctxItem = null;      // the flyer item the menu was opened for
+        let longPressTimer = null;
+
+        function openCtxMenu(item, x, y) {
+            ctxItem = item;
+            ctxMenu.innerHTML = "";
+
+            // Header label
+            const lbl = document.createElement("div");
+            lbl.className = "ctx-label";
+            lbl.textContent = item.name.length > 30 ? item.name.slice(0, 28) + "…" : item.name;
+            ctxMenu.appendChild(lbl);
+
+            const div1 = document.createElement("div");
+            div1.className = "ctx-divider";
+            ctxMenu.appendChild(div1);
+
+            // Build menu items based on what links are available
+            const dest = resolveLink(item);
+            const cal = calendarLink(item);
+
+            function menuItem(icon, label, href) {
+                const a = document.createElement("a");
+                a.className = "ctx-item";
+                a.href = href;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.innerHTML = `<span class="ctx-icon">${icon}</span><span>${label}</span>`;
+                a.addEventListener("click", () => closeCtxMenu());
+                ctxMenu.appendChild(a);
+            }
+
+            if (item.ticketUrl?.trim()) menuItem("🎟", "Buy tickets", item.ticketUrl.trim());
+            if (item.performerUrl?.trim()) menuItem("🎤", "Performer website", item.performerUrl.trim());
+            if (item.clubLink?.trim() && item.type !== "story")
+                menuItem("🏠", "Club website", item.clubLink.trim());
+            if (item.festWebsite?.trim()) menuItem("🎪", "Festival website", item.festWebsite.trim());
+
+            // Internal pages
+            if (item.type === "tour" && item.tourKey) {
+                let tourUrl = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(item.tourKey)}`;
+                if (item.performerId) tourUrl += `&performer=${encodeURIComponent(item.performerId)}`;
+                menuItem("🗺", "Tour dates & map", tourUrl);
+            }
+            if ((item.type === "story" || item.type === "club") && item.clubId) {
+                menuItem("ℹ️", "Club page", `new_troubadours_storyclub.html?club=${encodeURIComponent(item.clubId)}`);
+            }
+
+            // Always show calendar link
+            const div2 = document.createElement("div");
+            div2.className = "ctx-divider";
+            ctxMenu.appendChild(div2);
+            menuItem("📅", "Find on events calendar", cal);
+
+            // Lightbox
+            menuItem("🔍", "View full flyer", "__lightbox__");
+            // Fix up the lightbox item — it's not a real URL
+            const lbItem = ctxMenu.lastElementChild;
+            lbItem.removeAttribute("href");
+            lbItem.removeAttribute("target");
+            lbItem.addEventListener("click", e => {
+                e.preventDefault();
+                closeCtxMenu();
+                // find this item in allItems
+                const idx = allItems.filter(i => activeTypes.has(i.type)).indexOf(item);
+                if (idx >= 0) openLightbox(allItems.filter(i => activeTypes.has(i.type)), idx);
+            });
+
+            // Facebook last — only if it's the only option or explicitly present
+            if (item.fbEvent?.trim() && !dest) menuItem("📘", "Facebook event", item.fbEvent.trim());
+            else if (item.fbEvent?.trim()) menuItem("📘", "Facebook event", item.fbEvent.trim());
+            if (item.clubFacebook?.trim() && item.type === "club")
+                menuItem("📘", "Club Facebook", item.clubFacebook.trim());
+
+            // Position — keep within viewport
+            ctxMenu.classList.add("open");
+            const mw = ctxMenu.offsetWidth || 220;
+            const mh = ctxMenu.offsetHeight || 200;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            ctxMenu.style.left = Math.min(x, vw - mw - 8) + "px";
+            ctxMenu.style.top = Math.min(y, vh - mh - 8) + "px";
+        }
+
+        function closeCtxMenu() {
+            ctxMenu.classList.remove("open");
+            ctxItem = null;
+        }
+
+        // Close on outside click or Escape
+        document.addEventListener("click", e => { if (!ctxMenu.contains(e.target)) closeCtxMenu(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closeCtxMenu(); });
+        document.addEventListener("scroll", () => closeCtxMenu(), { passive: true });
+
+        // ── Attach context menu + long-press to a card ────────────────────────────
+        function attachContextMenu(card, item) {
+            // Right-click
+            card.addEventListener("contextmenu", e => {
+                e.preventDefault();
+                openCtxMenu(item, e.clientX, e.clientY);
+            });
+
+            // Long-press (touch)
+            card.addEventListener("touchstart", e => {
+                const touch = e.touches[0];
+                longPressTimer = setTimeout(() => {
+                    longPressTimer = null;
+                    openCtxMenu(item, touch.clientX, touch.clientY);
+                }, 500);
+            }, { passive: true });
+
+            card.addEventListener("touchend", () => { clearTimeout(longPressTimer); longPressTimer = null; });
+            card.addEventListener("touchmove", () => { clearTimeout(longPressTimer); longPressTimer = null; });
+        }
+
+
+        const activeTypes = new Set(["story", "club", "tour", "music", "festival"]);
+        let allItems = [];
+        let lbItems = [];
+        let lbIndex = 0;
+        let activeTourKey = "";   // "" = no filter; set to a tourKey to limit to that tour
+
+        // ── URL param sync ────────────────────────────────────────────────────────
+        function readUrlParams() {
+            const p = new URLSearchParams(location.search);
+            if (p.has("types")) {
+                const requested = p.get("types").split(",").map(s => s.trim()).filter(Boolean);
+                activeTypes.clear();
+                requested.forEach(t => activeTypes.add(t));
+            }
+            if (p.has("tour")) {
+                activeTourKey = p.get("tour").trim();
+                // Ensure the 'tour' type is active when filtering to a specific tour
+                activeTypes.add("tour");
+                activeTypes.add("music"); // music tours use type "tour" with isMusic flag
+            }
+            if (p.has("date")) {
+                const raw = p.get("date"); // expects YYYY-MM-DD
+                const parsed = new Date(raw + "T00:00:00");
+                if (!isNaN(parsed)) {
+                    _todayOverride = parsed;
+                    const banner = document.getElementById("date-override-banner");
+                    const label = document.getElementById("date-override-label");
+                    label.textContent = `${DAYS[parsed.getDay()]} ${parsed.getDate()} ${MONTHS[parsed.getMonth()]} ${parsed.getFullYear()}`;
+                    // Preserve other params on the "back to real today" link
+                    const back = new URLSearchParams(p);
+                    back.delete("date");
+                    const backHref = back.toString() ? `?${back}` : "?";
+                    banner.querySelector("a").href = backHref;
+                    banner.style.display = "block";
+                }
+            }
+        }
+
+        function writeUrlParams() {
+            const p = new URLSearchParams(location.search);
+            p.set("types", [...activeTypes].sort().join(","));
+            if (activeTourKey) p.set("tour", activeTourKey);
+            else p.delete("tour");
+            history.replaceState(null, "", `${location.pathname}?${p}`);
+        }
+
+        // ── Filter controls ───────────────────────────────────────────────────────
+        function toggleFilter(type) {
+            if (activeTypes.has(type)) activeTypes.delete(type);
+            else activeTypes.add(type);
+            syncFilterButtons();
+            writeUrlParams();
+            renderAll();
+        }
+
+        function selectAll() {
+            ["story", "club", "tour", "music", "festival"].forEach(t => activeTypes.add(t));
+            syncFilterButtons(); writeUrlParams(); renderAll();
+        }
+
+        function selectNone() {
+            activeTypes.clear();
+            syncFilterButtons(); writeUrlParams(); renderAll();
+        }
+
+        function syncFilterButtons() {
+            document.querySelectorAll(".filter-btn[data-type]").forEach(btn => {
+                btn.classList.toggle("active", activeTypes.has(btn.dataset.type));
+            });
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────────────
+        function parseDate(s) {
+            if (!s) return null;
+            const parts = s.split("/");
+            if (parts.length !== 3) return null;
+            const [d, m, y] = parts.map(Number);
+            if (!d || !m || !y) return null;
+            return new Date(y, m - 1, d);
+        }
+
+        // ── Date override (for testing) ───────────────────────────────────────
+        // Set via ?date=YYYY-MM-DD in the URL.
+        let _todayOverride = null;
+
+        function today() {
+            if (_todayOverride) return new Date(_todayOverride);
+            const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+        }
+
+        function formatDate(dt) {
+            return `${DAYS[dt.getDay()]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
+        }
+
+        function formatDateShort(dt) {
+            return `${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
+        }
+
+        // ── Lazy image loading via IntersectionObserver ───────────────────────────
+        const imgObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const img = entry.target;
+                const src = img.dataset.src;
+                if (!src) return;
+                img.src = src;
+                img.removeAttribute("data-src");
+                img.addEventListener("load", () => {
+                    img.classList.add("revealed");
+                    img.closest(".flyer-img-wrap")?.classList.add("loaded");
+                });
+                img.addEventListener("error", () => {
+                    const wrap = img.closest(".flyer-img-wrap");
+                    if (wrap) wrap.innerHTML = `<div class="img-error">Flyer image<br>not available</div>`;
+                });
+                imgObserver.unobserve(img);
+            });
+        }, { rootMargin: "250px 0px" }); // preload 250px before entering viewport
+
+        // ── Data loading ──────────────────────────────────────────────────────────
+        // ── Schedule matcher ──────────────────────────────────────────────────────
+        // Lightweight check: does a recurring schedule string fire on a given date?
+        // Handles: "Nth dayname", "last dayname", "every dayname", "Nth and Mth dayname",
+        // "Nth dayname (even|odd months)", pipe-separated alternating patterns.
+        const DAY_MAP = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+        const OCC_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, "last": "last" };
+
+        function findNthDay(year, month, targetDay, occurrence) {
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            if (occurrence === "last") {
+                for (let d = lastDay; d >= 1; d--) {
+                    const t = new Date(year, month, d);
+                    if (t.getDay() === targetDay) return t;
+                }
+            } else {
+                let count = 0;
+                for (let d = 1; d <= lastDay; d++) {
+                    const t = new Date(year, month, d);
+                    if (t.getDay() === targetDay && ++count === occurrence) return t;
+                }
+            }
+            return null;
+        }
+
+        function scheduleMatchesDate(schedule, date) {
+            if (!schedule || !date) return false;
+            const s = schedule.toLowerCase().trim();
+            const y = date.getFullYear(), m = date.getMonth();
+            const ds = date.toDateString();
+
+            // Specific date DD/MM/YYYY
+            if (s.includes("/")) {
+                const [d, mo, yr] = s.split("/").map(Number);
+                return new Date(yr, mo - 1, d).toDateString() === ds;
+            }
+
+            // Pipe-separated alternating: "1st wed (even months) | 1st thu (odd months)"
+            if (s.includes("|")) {
+                return s.split("|").some(part => scheduleMatchesDate(part.trim(), date));
+            }
+
+            // Strip parenthetical month parity constraint: "1st wednesday (even months)"
+            const parityMatch = s.match(/^(.+?)\s*\((even|odd)\s+months\)$/);
+            if (parityMatch) {
+                const monthNum = m + 1;
+                const isEven = monthNum % 2 === 0;
+                const condition = parityMatch[2];
+                if (condition === "even" && !isEven) return false;
+                if (condition === "odd" && isEven) return false;
+                return scheduleMatchesDate(parityMatch[1].trim(), date);
+            }
+
+            // "every dayname"
+            if (s.startsWith("every ")) {
+                const dayName = s.replace("every ", "").trim();
+                const targetDay = DAY_MAP[dayName];
+                return targetDay !== undefined && date.getDay() === targetDay;
+            }
+
+            // "Nth and Mth dayname"
+            if (s.includes(" and ")) {
+                const [occ1str, rest] = s.split(" and ");
+                const parts = rest.trim().split(/\s+/);
+                const occ2str = parts[0], dayName = parts[1];
+                const targetDay = DAY_MAP[dayName];
+                if (targetDay === undefined) return false;
+                const occ1 = OCC_MAP[occ1str.trim()], occ2 = OCC_MAP[occ2str.trim()];
+                const d1 = findNthDay(y, m, targetDay, occ1);
+                const d2 = findNthDay(y, m, targetDay, occ2);
+                return (d1 && d1.toDateString() === ds) || (d2 && d2.toDateString() === ds);
+            }
+
+            // Standard "Nth dayname" or "last dayname"
+            const parts = s.split(/\s+/);
+            if (parts.length >= 2) {
+                const occ = OCC_MAP[parts[0]], targetDay = DAY_MAP[parts[1]];
+                if (occ !== undefined && targetDay !== undefined) {
+                    const d = findNthDay(y, m, targetDay, occ);
+                    return d && d.toDateString() === ds;
+                }
+            }
+
+            return false;
+        }
+
+        async function loadFlyers() {
+            const r = await fetch("events_normalized.json");
+            const data = await r.json();
+
+            const now = today();
+            const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+            const cutoff = new Date(now);
+            cutoff.setMonth(cutoff.getMonth() - 3);
+
+            const performers = data.performers || {};
+            const venues = data.venues || {};
+            const items = [];
+            const seen = new Set();
+
+            function perf(id) { return id && performers[id] ? performers[id].name : null; }
+            function perfUrl(id) { return id && performers[id] ? performers[id].url || "" : ""; }
+            function ven(id) { return venues[id] || {}; }
+
+            function push(flyer, flyerBase, dateStr, type, name, performerId, venueId, ticketUrl, extra) {
+                if (!flyer || !flyer.trim()) return;
+                const dt = parseDate(dateStr);
+                if (!dt || dt < cutoff) return;
+                const key = `${flyer.trim()}|${dateStr}`;
+                if (seen.has(key)) return;
+                seen.add(key);
+                const v = ven(venueId);
+                items.push({
+                    flyer: flyer.trim(),
+                    flyerBase,
+                    date: dt,
+                    dateStr,
+                    type,
+                    name,
+                    performer: perf(performerId),
+                    performerId: performerId || "",
+                    performerUrl: perfUrl(performerId),
+                    venue: v.name || "",
+                    city: v.city || "",
+                    ticketUrl: ticketUrl || "",
+                    isPast: dt < now,
+                    isTonight: dt.toDateString() === now.toDateString(),
+                    isTomorrow: dt.toDateString() === tomorrow.toDateString(),
+                    ...extra,
+                });
+            }
+
+            // Find any tonight/tomorrow specific date and resolve its venue
+            function resolveSpotlight(d) {
+                if (!d) return null;
+                const v = ven(d.venue_id);
+                return { time: d.time || "", venue: v.name || "", city: v.city || "", postcode: v.postcode || "", ticketUrl: d.ticket_url || "" };
+            }
+
+            // specificEvents — story shows and any marked as music
+            for (const e of data.specificEvents || []) {
+                if (!e.event_flyer?.trim()) continue;
+                const type = e.isMusic ? "music" : "story";
+                const clubRec = e.club ? (data.events || []).find(c => c.club === e.club) : null;
+                push(e.event_flyer, "event", e.date, type,
+                    e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
+                    clubId: e.club || "",
+                    fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
+                    clubLink: clubRec?.link || "",
+                });
+            }
+
+            // musicEvents
+            for (const e of data.musicEvents || []) {
+                if (!e.event_flyer?.trim()) continue;
+                push(e.event_flyer, "event", e.date, "music",
+                    e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
+                    fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
+                });
+            }
+
+            // tours — one card per tour keyed on earliest date in window
+            for (const [tourKey, tour] of Object.entries(data.tours || {})) {
+                const datesInWindow = (tour.tour_dates || [])
+                    .map(d => ({ ...d, _dt: parseDate(d.date) }))
+                    .filter(d => d._dt && d._dt >= cutoff)
+                    .sort((a, b) => a._dt - b._dt);
+                if (!datesInWindow.length) continue;
+                const rep = datesInWindow.find(d => d._dt >= now) || datesInWindow[0];
+                const last = datesInWindow[datesInWindow.length - 1];
+
+                const tonightDate = datesInWindow.find(d => d._dt.toDateString() === now.toDateString());
+                const tomorrowDate = datesInWindow.find(d => d._dt.toDateString() === tomorrow.toDateString());
+
+                const tourExtra = {
+                    isMusic: tour.isMusic === true,
+                    tourKey: tourKey,
+                    tourDateRange: datesInWindow.length > 1
+                        ? `${formatDateShort(datesInWindow[0]._dt)} – ${formatDateShort(last._dt)}`
+                        : null,
+                    tourDateCount: datesInWindow.length,
+                    fbEvent: rep.fb_event ? `https://www.facebook.com/events/${rep.fb_event}` : "",
+                    tonightSpotlight: resolveSpotlight(tonightDate),
+                    tomorrowSpotlight: resolveSpotlight(tomorrowDate),
+                };
+
+                // tour-level flyer — one card representing the whole tour
+                if (tour.tour_flyer?.trim()) {
+                    push(tour.tour_flyer, "event", rep.date, "tour",
+                        tour.tour_name || tour.name, tour.performer_id, rep.venue_id, rep.ticket_url, tourExtra);
+                }
+
+                // per-date event flyers — one card each for individual dates that have their own flyer
+                for (const d of datesInWindow) {
+                    if (!d.event_flyer?.trim()) continue;
+                    push(d.event_flyer, "event", d.date, "tour",
+                        tour.tour_name || tour.name, tour.performer_id, d.venue_id, d.ticket_url, {
+                        ...tourExtra,
+                        tourDateRange: null,   // single-date card — no range label
+                        tourDateCount: 1,
+                        fbEvent: d.fb_event ? `https://www.facebook.com/events/${d.fb_event}` : "",
+                        tonightSpotlight: resolveSpotlight(d._dt.toDateString() === now.toDateString() ? d : null),
+                        tomorrowSpotlight: resolveSpotlight(d._dt.toDateString() === tomorrow.toDateString() ? d : null),
+                    });
+                }
+            }
+
+            // touring_shows — per show_date individual flyers (show-level touring_event_flyer not populated in data)
+            for (const [, show] of Object.entries(data.touring_shows || {})) {
+                for (const sd of show.show_dates || []) {
+                    const flyer = sd.event_flyer?.trim();
+                    if (!flyer) continue;
+                    push(flyer, "event", sd.date, "story",
+                        show.showname || show.name, show.performer_id, sd.venue_id, sd.ticket_url, {});
+                }
+            }
+
+            // festivals
+            for (const [, fest] of Object.entries(data.festivals || {})) {
+                const flyer = fest.event_flyer?.trim();
+                if (!flyer) continue;
+                push(flyer, "event", fest.start_date, "festival",
+                    fest.name, null, fest.venue_id, fest.ticket_url, {
+                    festEnd: fest.end_date ? parseDate(fest.end_date) : null,
+                    festWebsite: fest.website || "",
+                    festFacebook: fest.facebook || "",
+                });
+            }
+
+            // club generic flyers — shown for clubs that have no upcoming specific event flyers
+            const clubsWithUpcomingFlyer = new Set(
+                items.filter(i => !i.isPast && i.clubId).map(i => i.clubId)
+            );
+            for (const e of data.events || []) {
+                const flyer = e.club_flyer?.trim();
+                if (!flyer || !e.club) continue;
+                if (clubsWithUpcomingFlyer.has(e.club)) continue;
+                const key = `${flyer}|club|${e.club}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                const v = ven(e.venue_id);
+                const clubTonight = scheduleMatchesDate(e.schedule, now);
+                const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow);
+                items.push({
+                    flyer,
+                    flyerBase: "club",
+                    date: now,
+                    dateStr: null,
+                    type: "club",
+                    name: e.name,
+                    performer: null,
+                    performerId: "",
+                    performerUrl: "",
+                    venue: v.name || "",
+                    city: v.city || "",
+                    ticketUrl: e.tickets_url || "",
+                    clubLink: e.link || "",
+                    clubFacebook: e.facebook || "",
+                    isPast: false,
+                    isClubGeneric: true,
+                    isTonight: clubTonight,
+                    isTomorrow: clubTomorrow,
+                    schedule: e.schedule || "",
+                    clubId: e.club,
+                });
+            }
+
+            items.sort((a, b) => a.date - b.date);
+            return items;
+        }
+
+        // ── Lightbox ──────────────────────────────────────────────────────────────
+        function openLightbox(visibleItems, index) {
+            lbItems = visibleItems;
+            lbIndex = index;
+            showLbSlide();
+            document.getElementById("lightbox").classList.add("open");
+            document.addEventListener("keydown", lbKey);
+        }
+
+        function closeLightbox() {
+            document.getElementById("lightbox").classList.remove("open");
+            document.removeEventListener("keydown", lbKey);
+        }
+
+        function showLbSlide() {
+            const item = lbItems[lbIndex];
+            const img = document.getElementById("lightbox-img");
+            img.src = item.flyerBase === "club" ? `${BASE_CLUB}${item.flyer}` : `${BASE_EVENT}${item.flyer}`;
+            img.alt = item.name;
+
+            let dateLine = "";
+            if (item.isClubGeneric) dateLine = item.schedule ? `Meets ${item.schedule}` : "Regular club";
+            else if (item.tourDateRange) dateLine = `${item.tourDateRange} (${item.tourDateCount} dates)`;
+            else dateLine = formatDate(item.date);
+
+            const dest = resolveLink(item);
+            const cal = calendarLink(item);
+            const destLabel = dest === item.ticketUrl?.trim() ? "Tickets →"
+                : item.type === "club" && item.clubLink?.trim() ? "Club website →"
+                    : dest === item.performerUrl?.trim() ? "Performer website →"
+                        : dest ? "More info →" : "";
+
+            document.getElementById("lightbox-caption").innerHTML = `
+        <div class="lb-title">${item.name}</div>
+        ${item.performer ? `<div class="lb-performer">${item.performer}</div>` : ""}
+        ${item.venue ? `<div class="lb-meta">${item.venue}${item.city ? ", " + item.city : ""}</div>` : ""}
+        <div class="lb-meta">${dateLine}</div>
+        <div class="lb-actions">
+            ${dest ? `<a href="${dest}" target="_blank" rel="noopener noreferrer" class="lb-actions-primary">${destLabel}</a>` : ""}
+            <a href="${cal}" target="_blank" rel="noopener noreferrer" class="lb-actions-secondary">📅 Events calendar</a>
+        </div>
+    `;
+            document.getElementById("lb-prev").disabled = lbIndex <= 0;
+            document.getElementById("lb-next").disabled = lbIndex >= lbItems.length - 1;
+        }
+
+        function lbKey(e) {
+            if (e.key === "Escape") closeLightbox();
+            if (e.key === "ArrowLeft" && lbIndex > 0) { lbIndex--; showLbSlide(); }
+            if (e.key === "ArrowRight" && lbIndex < lbItems.length - 1) { lbIndex++; showLbSlide(); }
+        }
+
+        document.getElementById("lightbox-close").onclick = closeLightbox;
+        document.getElementById("lightbox").addEventListener("click", e => {
+            if (e.target === document.getElementById("lightbox")) closeLightbox();
+        });
+        document.getElementById("lb-prev").onclick = () => { if (lbIndex > 0) { lbIndex--; showLbSlide(); } };
+        document.getElementById("lb-next").onclick = () => { if (lbIndex < lbItems.length - 1) { lbIndex++; showLbSlide(); } };
+
+        // ── Link resolution — priority order by type ─────────────────────────────
+        // story/music: ticket → performer site → club site → fb event
+        // tour:        ticket → performer site → fb event
+        // club:        club site → performer site → club facebook
+        // festival:    ticket → festival website → festival facebook
+        function resolveLink(item) {
+            const t = item.ticketUrl?.trim();
+            const p = item.performerUrl?.trim();
+            const c = item.clubLink?.trim();
+            const fb = item.fbEvent?.trim();
+            const cf = item.clubFacebook?.trim();
+            const fw = item.festWebsite?.trim();
+            const ff = item.festFacebook?.trim();
+
+            if (item.type === "story" || item.type === "music") {
+                return t || p || c || fb || "";
+            }
+            if (item.type === "tour") {
+                // For a tour-level flyer (multiple dates), the performer site is the
+                // best primary link; tickets belong to individual dates, not the tour.
+                // For a single-date tour card, ticket is fine as primary.
+                if (item.tourDateCount > 1) {
+                    return p || fw || t || fb || "";
+                }
+                return t || p || fb || "";
+            }
+            if (item.type === "club") {
+                return c || p || cf || "";
+            }
+            if (item.type === "festival") {
+                return t || fw || ff || "";
+            }
+            return t || p || "";
+        }
+
+
+        const TYPE_LABELS = { story: "Story show", club: "Club", tour: "Tour", music: "Music", festival: "Festival" };
+
+        function makeCard(item, visibleItems, indexInVisible) {
+            const card = document.createElement("div");
+            let cls = "flyer-card";
+            if (item.isPast && !item.isClubGeneric) cls += " past";
+            if (item.isTonight) cls += " tonight";
+            if (item.isTomorrow) cls += " tomorrow";
+            card.className = cls;
+            card.dataset.type = item.type;
+
+            // Image wrapper with lazy image
+            const wrap = document.createElement("div");
+            wrap.className = "flyer-img-wrap";
+
+            const img = document.createElement("img");
+            img.dataset.src = item.flyerBase === "club"
+                ? `${BASE_CLUB}${item.flyer}`
+                : `${BASE_EVENT}${item.flyer}`;
+            img.alt = item.name;
+            imgObserver.observe(img);
+            wrap.appendChild(img);
+
+            const badge = document.createElement("span");
+            badge.className = "type-badge";
+            badge.textContent = TYPE_LABELS[item.type] || item.type;
+            wrap.appendChild(badge);
+
+            card.appendChild(wrap);
+
+            // Caption
+            const cap = document.createElement("div");
+            cap.className = "flyer-caption";
+
+            const dateEl = document.createElement("div");
+            dateEl.className = "flyer-date";
+            if (item.isTonight || item.isTomorrow) {
+                const urgency = document.createElement("div");
+                urgency.className = "urgency-label";
+                urgency.textContent = item.isTonight ? "🔴 Tonight!" : "🟠 Tomorrow";
+                dateEl.appendChild(urgency);
+
+                // For tour flyers add the specific date's venue + time;
+                // for club generics the card venue is already the right one
+                const spotlight = item.isTonight ? item.tonightSpotlight : item.tomorrowSpotlight;
+                if (item.type === "tour" && spotlight) {
+                    const detail = document.createElement("div");
+                    detail.className = "urgency-detail";
+                    const parts = [spotlight.venue, spotlight.city].filter(Boolean).join(", ");
+                    detail.textContent = parts + (spotlight.time ? " · " + spotlight.time : "");
+                    dateEl.appendChild(detail);
+                } else if (item.type === "club" && (item.venue || item.city)) {
+                    const detail = document.createElement("div");
+                    detail.className = "urgency-detail";
+                    detail.textContent = [item.venue, item.city].filter(Boolean).join(", ")
+                        + (item.schedule ? " · " + item.schedule : "");
+                    dateEl.appendChild(detail);
+                }
+            }
+            const dateText = document.createElement("span");
+            if (item.isClubGeneric) dateText.textContent = item.schedule ? `Meets ${item.schedule}` : "Regular club";
+            else if (item.tourDateRange) dateText.textContent = `${item.tourDateRange} · ${item.tourDateCount} dates`;
+            else dateText.textContent = formatDate(item.date);
+            dateEl.appendChild(dateText);
+            cap.appendChild(dateEl);
+
+            const title = document.createElement("div");
+            title.className = "flyer-title";
+            title.textContent = item.name;
+            cap.appendChild(title);
+
+            if (item.performer) {
+                const p = document.createElement("div");
+                p.className = "flyer-performer";
+                p.textContent = item.performer;
+                cap.appendChild(p);
+            }
+
+            if (item.venue) {
+                const v = document.createElement("div");
+                v.className = "flyer-venue";
+                v.textContent = item.venue + (item.city ? `, ${item.city}` : "");
+                cap.appendChild(v);
+            }
+
+            const cardDest = resolveLink(item);
+            if (cardDest) {
+                const actions = document.createElement("div");
+                actions.className = "flyer-actions";
+                const a = document.createElement("a");
+                a.href = cardDest;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = cardDest === item.ticketUrl?.trim() ? "Tickets →"
+                    : item.type === "club" && item.clubLink?.trim() ? "Club website →"
+                        : cardDest === item.performerUrl?.trim() ? "Performer →"
+                            : "More info →";
+                a.addEventListener("click", e => e.stopPropagation());
+                actions.appendChild(a);
+                cap.appendChild(actions);
+            }
+
+            card.appendChild(cap);
+
+            // Image click → best link, or calendar as fallback, lightbox only if truly nothing
+            const cal = calendarLink(item);
+            wrap.style.cursor = "pointer";
+            wrap.addEventListener("click", e => {
+                e.stopPropagation();
+                window.open(cardDest || cal, "_blank", "noopener,noreferrer");
+            });
+
+            // Caption / title area always opens lightbox for full flyer view
+            cap.style.cursor = "zoom-in";
+            cap.addEventListener("click", e => {
+                e.stopPropagation();
+                openLightbox(visibleItems, indexInVisible);
+            });
+
+            attachContextMenu(card, item);
+            return card;
+        }
+
+        // ── Tour filter ───────────────────────────────────────────────────────────
+        function populateTourDropdown() {
+            const sel = document.getElementById("tourFilterSelect");
+            // Collect tours that actually have flyers in allItems
+            const tourItems = allItems.filter(i => i.type === "tour" && i.tourKey);
+            if (!tourItems.length) return;
+
+            // Build map: tourKey → "Artist — Tour name"
+            const tourMap = new Map();
+            tourItems.forEach(i => {
+                if (!tourMap.has(i.tourKey)) {
+                    const label = i.performer ? `${i.performer} — ${i.name}` : i.name;
+                    tourMap.set(i.tourKey, label);
+                }
+            });
+
+            // Sort by display label
+            const sorted = [...tourMap.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+            sorted.forEach(([key, name]) => {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = name;
+                sel.appendChild(opt);
+            });
+
+            // Show the tour filter bar and pre-select if URL had ?tour=
+            document.getElementById("tourFilterBar").style.display = "";
+            if (activeTourKey) {
+                sel.value = activeTourKey;
+                syncTourFilterUI();
+            }
+        }
+
+        function handleTourFilterChange() {
+            activeTourKey = document.getElementById("tourFilterSelect").value;
+            syncTourFilterUI();
+            writeUrlParams();
+            renderAll();
+        }
+
+        function clearTourFilter() {
+            activeTourKey = "";
+            document.getElementById("tourFilterSelect").value = "";
+            syncTourFilterUI();
+            writeUrlParams();
+            renderAll();
+        }
+
+        function syncTourFilterUI() {
+            const sel = document.getElementById("tourFilterSelect");
+            const clearBtn = document.getElementById("tourFilterClear");
+            sel.classList.toggle("active", !!activeTourKey);
+            clearBtn.classList.toggle("visible", !!activeTourKey);
+        }
+
+        // ── Render ────────────────────────────────────────────────────────────────
+        function renderAll() {
+            const root = document.getElementById("page-content");
+            let visible = allItems.filter(i =>
+                activeTypes.has(i.type) ||
+                (i.type === "tour" && i.isMusic && activeTypes.has("music"))
+            );
+
+            // Apply tour key filter — only show flyers belonging to the selected tour
+            if (activeTourKey) {
+                visible = visible.filter(i => i.tourKey === activeTourKey);
+            }
+
+            root.innerHTML = "";
+
+            if (!visible.length) {
+                root.innerHTML = `<p class="no-flyers">${activeTypes.size === 0
+                    ? "No types selected — use the filters above."
+                    : "No flyers to show for the selected types."
+                    }</p>`;
+                return;
+            }
+
+            const upcoming = visible.filter(i => !i.isPast || i.isClubGeneric);
+            const past = visible.filter(i => i.isPast && !i.isClubGeneric).reverse();
+
+            function section(heading, items, isPast) {
+                if (!items.length) return;
+                const h = document.createElement("h2");
+                h.className = "section-heading" + (isPast ? " past" : "");
+                h.innerHTML = `${heading} <span class="count">${items.length} flyer${items.length !== 1 ? "s" : ""}</span>`;
+                root.appendChild(h);
+                const grid = document.createElement("div");
+                grid.className = "flyer-grid";
+                items.forEach(item => {
+                    grid.appendChild(makeCard(item, visible, visible.indexOf(item)));
+                });
+                root.appendChild(grid);
+            }
+
+            section("Upcoming", upcoming, false);
+            section("Recent past", past, true);
+        }
+
+        // ── Boot ──────────────────────────────────────────────────────────────────
+        (async () => {
+            readUrlParams();
+            syncFilterButtons();
+            try {
+                allItems = await loadFlyers();
+            } catch (e) {
+                console.error("flyers.html boot error:", e);
+                document.getElementById("page-content").innerHTML =
+                    `<p class="status-message status-message--error">Could not load events data.<br><small>${e.message}</small></p>`;
+                return;
+            }
+            populateTourDropdown();
+            renderAll();
+        })();
+    </script>
+</body>
+
+</html>
