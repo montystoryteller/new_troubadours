@@ -153,7 +153,7 @@ select {
     border-left-width: 8px;
 }
 
-.event.event-cancelled {
+.event.event-cancelled, .event.event-rescheduled {
     border-left: 4px solid #c62828 !important;
     background: repeating-linear-gradient(
         -45deg,

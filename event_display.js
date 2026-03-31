@@ -809,7 +809,8 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
       const rescheduledTo = rescheduleMap.get(dateKey);
 
       if (rescheduledTo) {
-        eventData.isCancelled = true;
+        //eventData.isCancelled = true;
+        eventData.isRescheduledAway = true;
         eventData.rescheduledTo = rescheduledTo;
         eventData.rescheduledToStr = rescheduledTo.toLocaleDateString("en-GB", {
           weekday: "short",
@@ -1174,6 +1175,10 @@ function createEventElement(event) {
     eventDiv.classList.add("event-cancelled");
   }
 
+  if (event.isRescheduledAway) {
+      eventDiv.classList.add("event-rescheduled");
+  }
+
   // Add click handler
   if (event.coords?.lat && event.coords?.lon) {
     eventDiv.onclick = () => zoomToEvent(event.coords.lat, event.coords.lon);
@@ -1256,6 +1261,13 @@ function createEventHeader(event) {
   if (event.isCancelled) {
     header.appendChild(document.createTextNode(" "));
     const cancelBadge = createBadge("❌ CANCELLED");
+    cancelBadge.className = "event-badge event-badge-cancelled";
+    header.appendChild(cancelBadge);
+  }
+
+  if (event.isRescheduledAway) {
+    header.appendChild(document.createTextNode(" "));
+    const cancelBadge = createBadge("❌ RESCHEDULED");
     cancelBadge.className = "event-badge event-badge-cancelled";
     header.appendChild(cancelBadge);
   }
@@ -1379,13 +1391,11 @@ function createDateSection(event) {
     cancelledSpan.className = "event-date-cancelled";
     cancelledSpan.textContent = `${dayName}, ${day} ${month} ${year} ${scheduleText}`;
     dateDiv.appendChild(cancelledSpan);
-
-    if (event.rescheduledTo) {
-      const rescheduledSpan = document.createElement("span");
-      rescheduledSpan.className = "event-date-rescheduled-notice";
-      rescheduledSpan.textContent = ` (Rescheduled to ${event.rescheduledToStr})`;
-      dateDiv.appendChild(rescheduledSpan);
-    }
+  } else if (event.rescheduledTo) {
+    const rescheduledSpan = document.createElement("span");
+    rescheduledSpan.className = "event-date-rescheduled-notice";
+    rescheduledSpan.textContent = ` (Rescheduled to ${event.rescheduledToStr})`;
+    dateDiv.appendChild(rescheduledSpan);
   } else {
     dateDiv.appendChild(document.createTextNode(dateText));
 
