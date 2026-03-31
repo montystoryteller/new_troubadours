@@ -88,6 +88,8 @@
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .tour-selector {
@@ -183,6 +185,8 @@ select {
     flex-direction: column;
     gap: 20px;
     align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
 }
 
 #map-container {
@@ -192,6 +196,8 @@ select {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 500px;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     margin-bottom: 20px;
     position: relative;
 }
@@ -208,6 +214,8 @@ select {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .tour-dates-header {
