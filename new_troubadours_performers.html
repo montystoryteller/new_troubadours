@@ -137,15 +137,78 @@
         let compoundIdsForMe = new Set();
 
         // ---------------------------------------------------------------------------
+        // DOM helpers
+        // ---------------------------------------------------------------------------
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (text !== undefined) e.textContent = text;
+            return e;
+        }
+
+        // ---------------------------------------------------------------------------
         // Bootstrap
         // ---------------------------------------------------------------------------
+
+        function simpleList(panel, items) {
+            // items: [{label, href, meta}]
+            const list = el('div', '');
+            list.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;margin-top:4px;';
+            items.forEach(item => {
+                const row = el('div', '');
+                row.style.cssText = 'font-family:Arial,sans-serif;font-size:13px;padding:4px 0;border-bottom:1px solid #f0ebe3;display:flex;justify-content:space-between;gap:8px;';
+                const nameEl = el('span', '');
+                if (item.href) {
+                    const a = document.createElement('a');
+                    a.href = item.href;
+                    a.textContent = item.label;
+                    a.style.cssText = 'color:#2e7d32;text-decoration:none;';
+                    a.onmouseover = () => a.style.textDecoration = 'underline';
+                    a.onmouseout = () => a.style.textDecoration = 'none';
+                    nameEl.appendChild(a);
+                } else {
+                    nameEl.textContent = item.label;
+                }
+                row.appendChild(nameEl);
+                if (item.meta !== undefined) {
+                    const m = el('span', '');
+                    m.style.cssText = 'color:#888;white-space:nowrap;';
+                    m.textContent = item.meta;
+                    row.appendChild(m);
+                }
+                list.appendChild(row);
+            });
+            panel.appendChild(list);
+        }
+
+        function renderAllPerformers() {
+            const container = document.getElementById("performerContent");
+
+            const items = Object.entries(performersLookup)
+                .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                .map(([pid, p]) => ({
+                    label: p.name,
+                    href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
+                    meta: ""
+                }));
+
+            container.innerHTML = "<h2>All performers</h2>";
+            simpleList(container, items);
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const params = new URLSearchParams(window.location.search);
             performerId = params.get("performer");
 
             if (!performerId) {
-                showNotFound();
+                await loadEventsData().then(loaded => {
+                    if (!loaded) return showNotFound();
+                    performersLookup = loaded.performersLookup;
+                    renderAllPerformers();
+                    document.getElementById("loadingState").style.display = "none";
+                    document.getElementById("performerContent").style.display = "";
+                });
                 return;
             }
 

@@ -108,14 +108,84 @@
         let map = null;
 
         // ---------------------------------------------------------------------------
+        // DOM helpers
+        // ---------------------------------------------------------------------------
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (text !== undefined) e.textContent = text;
+            return e;
+        }
+
+        // ---------------------------------------------------------------------------
         // Bootstrap
         // ---------------------------------------------------------------------------
+
+        function simpleList(panel, items) {
+            // items: [{label, href, meta}]
+            const list = el('div', '');
+            list.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;margin-top:4px;';
+            items.forEach(item => {
+                const row = el('div', '');
+                row.style.cssText = 'font-family:Arial,sans-serif;font-size:13px;padding:4px 0;border-bottom:1px solid #f0ebe3;display:flex;justify-content:space-between;gap:8px;';
+                const nameEl = el('span', '');
+                if (item.href) {
+                    const a = document.createElement('a');
+                    a.href = item.href;
+                    a.textContent = item.label;
+                    a.style.cssText = 'color:#2e7d32;text-decoration:none;';
+                    a.onmouseover = () => a.style.textDecoration = 'underline';
+                    a.onmouseout = () => a.style.textDecoration = 'none';
+                    nameEl.appendChild(a);
+                } else {
+                    nameEl.textContent = item.label;
+                }
+                row.appendChild(nameEl);
+                if (item.meta !== undefined) {
+                    const m = el('span', '');
+                    m.style.cssText = 'color:#888;white-space:nowrap;';
+                    m.textContent = item.meta;
+                    row.appendChild(m);
+                }
+                list.appendChild(row);
+            });
+            panel.appendChild(list);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Bootstrap
+        // ---------------------------------------------------------------------------
+
+        function renderAllVenues() {
+            const container = document.getElementById("venueContent");
+
+            const items = Object.entries(venuesLookup)
+                .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                .map(([vid, v]) => ({
+                    label: v.name,
+                    href: `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`,
+                    meta: v.city || ""
+                }));
+
+            container.innerHTML = "<h2>All venues</h2>";
+            simpleList(container, items);
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const params = new URLSearchParams(window.location.search);
             venueId = params.get("venue");
 
-            if (!venueId) { showNotFound(); return; }
+            if (!venueId) {
+                await loadEventsData().then(loaded => {
+                    if (!loaded) return showNotFound();
+                    venuesLookup = loaded.venuesLookup;
+                    renderAllVenues();
+                    document.getElementById("loadingState").style.display = "none";
+                    document.getElementById("venueContent").style.display = "";
+                });
+                return;
+            }
 
             const loaded = await loadEventsData();
             if (!loaded) { showNotFound(); return; }
