@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Club — New Troubadours</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="shared-styles.css">
     <style>
@@ -296,13 +297,15 @@
 
 <body>
 
-    <a class="back-link" href="/">← Back to New Troubadours Homepage</a>
+    <a class="back-link" href="new_troubadours_event_guide.html">← Back to all events</a>
 
     <div id="page-content">
         <p class="status-message status-message--loading">Loading…</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="shared_utils.js"></script>
     <script>
         // ── Constants (mirrors event_display.js) ─────────────────────────────────
         const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -847,121 +850,371 @@
             const root = document.getElementById('page-content');
             root.innerHTML = '';
 
-            const h1 = document.createElement('h1');
-            h1.textContent = 'Story Clubs';
-            root.appendChild(h1);
-
-            // Group clubs by day of week for a more useful directory layout
             const DAYS_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
             const clubs = data.events.filter(e => e.club);
 
-            // Sort: by day of week, then by week-of-month ordinal, then by name
-            const DAY_IDX = {};
-            DAYS_ORDER.forEach((d, i) => { DAY_IDX[d.toLowerCase()] = i; });
-            const WEEK_IDX = { '1st': 0, '2nd': 1, '3rd': 2, '4th': 3, 'last': 4, 'every': -1 };
-
-            function clubSortKey(c) {
+            // ── Parse day and week from schedule string ──────────────────────────
+            function clubDay(c) {
                 const lower = (c.schedule || '').toLowerCase();
-                const di = DAYS_ORDER.findIndex(d => lower.includes(d.toLowerCase()));
-                const wi = Object.entries(WEEK_IDX).find(([k]) => lower.includes(k));
-                return `${di >= 0 ? di : 99}-${wi ? wi[1] : 99}-${c.name}`;
+                return DAYS_ORDER.find(d => lower.includes(d.toLowerCase())) || null;
             }
-            clubs.sort((a, b) => clubSortKey(a).localeCompare(clubSortKey(b)));
-
-            // Group by day for section headings
-            function dayOfClub(c) {
+            function clubWeeks(c) {
                 const lower = (c.schedule || '').toLowerCase();
-                const d = DAYS_ORDER.find(d => lower.includes(d.toLowerCase()));
-                return d || null;
+                if (lower.startsWith('every')) return ['every'];
+                return ['1st', '2nd', '3rd', '4th', 'last'].filter(w => lower.includes(w));
             }
 
-            let currentDay = null;
-            const list = document.createElement('div');
-
-            clubs.forEach(c => {
-                const venue = data.venues[c.venue_id];
-                const day = dayOfClub(c);
-
-                // Day heading
-                if (day !== currentDay) {
-                    currentDay = day;
-                    const h2 = document.createElement('h2');
-                    h2.className = 'section-heading';
-                    h2.textContent = day ? day + 's' : 'Variable / irregular';
-                    h2.style.cssText = 'font-size:15px;font-weight:bold;color:#2e7d32;margin:24px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
-                    list.appendChild(h2);
-                }
-
-                const card = document.createElement('div');
-                card.className = 'event';
-                card.style.cursor = 'pointer';
-                card.onclick = () => location.href = `new_troubadours_storyclub.html?club=${c.club}`;
-
-                // Name
-                const name = document.createElement('div');
-                name.className = 'event-name';
-                name.textContent = c.name;
-                card.appendChild(name);
-
-                // Schedule + time
-                if (c.schedule) {
-                    const s = document.createElement('div');
-                    s.className = 'event-date';
-                    s.textContent = 'Meets ' + c.schedule.charAt(0).toUpperCase() + c.schedule.slice(1)
-                        + (c.time ? ' \u2022 ' + c.time : '');
-                    card.appendChild(s);
-                }
-
-                // Venue + city
-                if (venue) {
-                    const loc = document.createElement('div');
-                    loc.className = 'event-location';
-                    loc.textContent = venue.name + (venue.city ? `, ${venue.city}` : '');
-                    card.appendChild(loc);
-                } else if (c.location) {
-                    const loc = document.createElement('div');
-                    loc.className = 'event-location';
-                    loc.textContent = c.location;
-                    card.appendChild(loc);
-                }
-
-                // Links row
-                const meta = document.createElement('div');
-                meta.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;';
-
-                const linkSrc = c.link || c.website || c.tickets_url;
-                if (linkSrc) {
-                    const a = document.createElement('a');
-                    a.href = linkSrc; a.target = '_blank';
-                    a.style.cssText = 'font-size:12px;color:#2e7d32;text-decoration:none;';
-                    a.textContent = 'website';
-                    a.onclick = e => e.stopPropagation();
-                    meta.appendChild(a);
-                }
-                if (c.facebook) {
-                    const a = document.createElement('a');
-                    const fbHref = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
-                    a.href = fbHref; a.target = '_blank';
-                    a.style.cssText = 'font-size:12px;color:#1877f2;text-decoration:none;';
-                    a.textContent = 'facebook';
-                    a.onclick = e => e.stopPropagation();
-                    meta.appendChild(a);
-                }
-                if (c.email) {
-                    const a = document.createElement('a');
-                    a.href = `mailto:${c.email}`;
-                    a.style.cssText = 'font-size:12px;color:#555;text-decoration:none;';
-                    a.textContent = 'email';
-                    a.onclick = e => e.stopPropagation();
-                    meta.appendChild(a);
-                }
-                if (meta.childNodes.length) card.appendChild(meta);
-
-                list.appendChild(card);
+            // Sort: day order → week ordinal → name
+            const WEEK_IDX = { 'every': -1, '1st': 0, '2nd': 1, '3rd': 2, '4th': 3, 'last': 4 };
+            clubs.sort((a, b) => {
+                const da = DAYS_ORDER.indexOf(clubDay(a)); const db = DAYS_ORDER.indexOf(clubDay(b));
+                if (da !== db) return (da < 0 ? 99 : da) - (db < 0 ? 99 : db);
+                const wa = Math.min(...(clubWeeks(a).map(w => WEEK_IDX[w] ?? 99)));
+                const wb = Math.min(...(clubWeeks(b).map(w => WEEK_IDX[w] ?? 99)));
+                if (wa !== wb) return wa - wb;
+                return a.name.localeCompare(b.name);
             });
 
-            root.appendChild(list);
+            // ── Filter state ─────────────────────────────────────────────────────
+            let activeDay = null;   // null = All
+            let activeWeek = null;  // null = All
+            let searchTerm = '';
+
+            // Build search index: { club, name, venueName, city, address, searchText }
+            const clubIndex = clubs.map(c => {
+                const venue = data.venues[c.venue_id] || {};
+                const parts = [c.name, venue.name, venue.city, venue.full_address, c.location].filter(Boolean);
+                return { c, searchText: parts.join(' ').toLowerCase() };
+            });
+
+            function isVisible(entry) {
+                const { c } = entry;
+                if (activeDay && clubDay(c) !== activeDay) return false;
+                if (activeWeek) {
+                    const weeks = clubWeeks(c);
+                    if (!weeks.includes(activeWeek)) return false;
+                }
+                if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase())) return false;
+                return true;
+            }
+
+            // ── Page title ───────────────────────────────────────────────────────
+            const h1 = document.createElement('h1');
+            h1.textContent = 'Story Clubs';
+            root.appendChild(h1);
+
+            // ── Collapsible map ──────────────────────────────────────────────────
+            const mapToggle = document.createElement('details');
+            mapToggle.style.cssText = 'background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.08);margin-bottom:16px;overflow:hidden;';
+            const mapSummary = document.createElement('summary');
+            mapSummary.style.cssText = 'padding:12px 16px;cursor:pointer;font-size:14px;font-weight:bold;color:#2e7d32;list-style:none;user-select:none;';
+            mapSummary.textContent = '🗺 Show map of all clubs';
+            mapToggle.appendChild(mapSummary);
+
+            const mapDiv = document.createElement('div');
+            mapDiv.id = 'dir-map';
+            mapDiv.style.cssText = 'height:360px;';
+            mapToggle.appendChild(mapDiv);
+            root.appendChild(mapToggle);
+
+            let dirMap = null;
+            let mapInitialised = false;
+            mapToggle.addEventListener('toggle', () => {
+                if (mapToggle.open && !mapInitialised) {
+                    mapInitialised = true;
+                    dirMap = L.map('dir-map', { maxBounds: UK_IRELAND_BOUNDS, maxBoundsViscosity: 1.0, minZoom: 5, maxZoom: 16 }).setView([53.0, -2.0], 6);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(dirMap);
+                    clubs.forEach(c => {
+                        const venue = data.venues[c.venue_id];
+                        if (!venue || !venue.latlon) return;
+                        const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ', ' + venue.city : ''}<br><em>${c.schedule || ''}</em>`;
+                        L.circleMarker(venue.latlon, { radius: 7, fillColor: '#4CAF50', color: '#2e7d32', weight: 2, fillOpacity: 0.85 })
+                            .addTo(dirMap).bindPopup(popup);
+                    });
+                }
+                mapSummary.textContent = mapToggle.open ? '🗺 Hide map' : '🗺 Show map of all clubs';
+            });
+
+            // ── Filter controls ──────────────────────────────────────────────────
+            const controls = document.createElement('div');
+            controls.style.cssText = 'background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.08);padding:16px 18px;margin-bottom:16px;';
+
+            // Two-column button grid
+            const filterGrid = document.createElement('div');
+            filterGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:14px;';
+
+            // Day buttons
+            const dayGroup = document.createElement('div');
+            const dayLabel = document.createElement('div');
+            dayLabel.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:6px;';
+            dayLabel.textContent = 'Day of week';
+            dayGroup.appendChild(dayLabel);
+            const dayBtns = document.createElement('div');
+            dayBtns.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+
+            function makeDayBtn(label, value) {
+                const btn = document.createElement('button');
+                btn.textContent = label;
+                btn.style.cssText = 'padding:5px 10px;font-size:12px;border-radius:4px;border:1px solid #ccc;background:white;color:#555;cursor:pointer;transition:all 0.15s;';
+                if (value === activeDay) { btn.style.background = '#2e7d32'; btn.style.color = 'white'; btn.style.borderColor = '#2e7d32'; }
+                btn.addEventListener('click', () => {
+                    activeDay = (activeDay === value) ? null : value;
+                    refreshDayBtns();
+                    renderList();
+                });
+                return btn;
+            }
+            let dayBtnEls = [];
+            function refreshDayBtns() {
+                dayBtnEls.forEach((btn, i) => {
+                    const val = i === 0 ? null : DAYS_ORDER[i - 1];
+                    const active = activeDay === val;
+                    btn.style.background = active ? '#2e7d32' : 'white';
+                    btn.style.color = active ? 'white' : '#555';
+                    btn.style.borderColor = active ? '#2e7d32' : '#ccc';
+                });
+            }
+            // All button first, then Mon-Sun abbreviated
+            const allDayBtn = makeDayBtn('All', null);
+            dayBtns.appendChild(allDayBtn);
+            dayBtnEls.push(allDayBtn);
+            DAYS_ORDER.forEach(d => {
+                const btn = makeDayBtn(d.slice(0, 3), d);
+                dayBtns.appendChild(btn);
+                dayBtnEls.push(btn);
+            });
+            dayGroup.appendChild(dayBtns);
+            filterGrid.appendChild(dayGroup);
+
+            // Week buttons
+            const weekGroup = document.createElement('div');
+            const weekLabel = document.createElement('div');
+            weekLabel.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:6px;';
+            weekLabel.textContent = 'Week of month';
+            weekGroup.appendChild(weekLabel);
+            const weekBtns = document.createElement('div');
+            weekBtns.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+
+            const WEEK_DISPLAY = ['All', 'Every', '1st', '2nd', '3rd', '4th', 'Last'];
+            const WEEK_VALUES = [null, 'every', '1st', '2nd', '3rd', '4th', 'last'];
+            let weekBtnEls = [];
+            function refreshWeekBtns() {
+                weekBtnEls.forEach((btn, i) => {
+                    const val = WEEK_VALUES[i];
+                    const active = activeWeek === val;
+                    btn.style.background = active ? '#00796b' : 'white';
+                    btn.style.color = active ? 'white' : '#555';
+                    btn.style.borderColor = active ? '#00796b' : '#ccc';
+                });
+            }
+            WEEK_DISPLAY.forEach((label, i) => {
+                const val = WEEK_VALUES[i];
+                const btn = document.createElement('button');
+                btn.textContent = label;
+                btn.style.cssText = 'padding:5px 10px;font-size:12px;border-radius:4px;border:1px solid #ccc;background:white;color:#555;cursor:pointer;transition:all 0.15s;';
+                btn.addEventListener('click', () => {
+                    activeWeek = (activeWeek === val) ? null : val;
+                    refreshWeekBtns();
+                    renderList();
+                });
+                weekBtns.appendChild(btn);
+                weekBtnEls.push(btn);
+            });
+            weekGroup.appendChild(weekBtns);
+            filterGrid.appendChild(weekGroup);
+
+            controls.appendChild(filterGrid);
+
+            // ── Search box with dropdown suggestions ────────────────────────────
+            const searchWrap = document.createElement('div');
+            searchWrap.style.cssText = 'position:relative;';
+
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search clubs by name, venue or location…';
+            searchInput.style.cssText = 'width:100%;padding:9px 36px 9px 12px;border:2px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;';
+
+            const clearBtn = document.createElement('button');
+            clearBtn.textContent = '✕';
+            clearBtn.title = 'Clear search';
+            clearBtn.style.cssText = 'position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent !important;background-color:transparent !important;border:none;color:#aaa;font-size:16px;cursor:pointer;padding:0;line-height:1;display:none;box-shadow:none;';
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchTerm = '';
+                clearBtn.style.display = 'none';
+                dropdown.style.display = 'none';
+                renderList();
+            });
+
+            const dropdown = document.createElement('div');
+            dropdown.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #ddd;border-top:none;border-radius:0 0 4px 4px;box-shadow:0 4px 8px rgba(0,0,0,0.1);z-index:1000;max-height:220px;overflow-y:auto;display:none;';
+
+            searchInput.addEventListener('input', () => {
+                searchTerm = searchInput.value.trim();
+                clearBtn.style.display = searchTerm ? 'block' : 'none';
+                // Build suggestions: up to 8 matching clubs
+                dropdown.innerHTML = '';
+                if (searchTerm.length >= 1) {
+                    const term = searchTerm.toLowerCase();
+                    const matches = clubIndex.filter(e => e.searchText.includes(term)).slice(0, 8);
+                    if (matches.length > 0) {
+                        matches.forEach(({ c }) => {
+                            const venue = data.venues[c.venue_id] || {};
+                            const item = document.createElement('div');
+                            item.style.cssText = 'padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;';
+                            const strong = document.createElement('strong');
+                            strong.textContent = c.name;
+                            item.appendChild(strong);
+                            if (venue.city) {
+                                const city = document.createElement('span');
+                                city.style.cssText = 'color:#888;margin-left:8px;font-size:12px;';
+                                city.textContent = venue.city;
+                                item.appendChild(city);
+                            }
+                            item.addEventListener('mousedown', e => {
+                                e.preventDefault();
+                                searchInput.value = c.name;
+                                searchTerm = c.name;
+                                clearBtn.style.display = 'block';
+                                dropdown.style.display = 'none';
+                                renderList();
+                                // Scroll to the card for this club
+                                setTimeout(() => {
+                                    const el = document.getElementById('club-card-' + c.club);
+                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 80);
+                            });
+                            item.addEventListener('mouseover', () => item.style.background = '#f5f5f5');
+                            item.addEventListener('mouseout', () => item.style.background = '');
+                            dropdown.appendChild(item);
+                        });
+                        dropdown.style.display = 'block';
+                    } else {
+                        dropdown.style.display = 'none';
+                    }
+                } else {
+                    dropdown.style.display = 'none';
+                }
+                renderList();
+            });
+
+            searchInput.addEventListener('blur', () => { setTimeout(() => { dropdown.style.display = 'none'; }, 150); });
+            searchInput.addEventListener('focus', () => { if (dropdown.children.length) dropdown.style.display = 'block'; });
+
+            searchWrap.appendChild(searchInput);
+            searchWrap.appendChild(clearBtn);
+            searchWrap.appendChild(dropdown);
+            controls.appendChild(searchWrap);
+
+            root.appendChild(controls);
+
+            // ── Result count line ────────────────────────────────────────────────
+            const countLine = document.createElement('p');
+            countLine.style.cssText = 'font-size:13px;color:#888;margin:0 0 8px 4px;';
+            root.appendChild(countLine);
+
+            // ── Club list container ──────────────────────────────────────────────
+            const listWrap = document.createElement('div');
+            root.appendChild(listWrap);
+
+            // ── Render function ──────────────────────────────────────────────────
+            function renderList() {
+                listWrap.innerHTML = '';
+                const visible = clubIndex.filter(isVisible);
+                const total = clubIndex.length;
+                countLine.textContent = visible.length === total
+                    ? `${total} clubs`
+                    : `${visible.length} of ${total} clubs`;
+
+                if (visible.length === 0) {
+                    const p = document.createElement('p');
+                    p.style.cssText = 'text-align:center;color:#aaa;padding:30px;font-style:italic;';
+                    p.textContent = 'No clubs match the current filters.';
+                    listWrap.appendChild(p);
+                    return;
+                }
+
+                let currentDay = null;
+                visible.forEach(({ c }) => {
+                    const venue = data.venues[c.venue_id];
+                    const day = clubDay(c);
+
+                    // Day heading (only when not filtered to single day)
+                    if (!activeDay && day !== currentDay) {
+                        currentDay = day;
+                        const h2 = document.createElement('h2');
+                        h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
+                        h2.textContent = day ? day + 's' : 'Variable / irregular';
+                        listWrap.appendChild(h2);
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'event';
+                    card.id = 'club-card-' + c.club;
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => location.href = `new_troubadours_storyclub.html?club=${c.club}`;
+
+                    const name = document.createElement('div');
+                    name.className = 'event-name';
+                    name.textContent = c.name;
+                    card.appendChild(name);
+
+                    if (c.schedule) {
+                        const s = document.createElement('div');
+                        s.className = 'event-date';
+                        s.textContent = 'Meets ' + c.schedule.charAt(0).toUpperCase() + c.schedule.slice(1)
+                            + (c.time ? ' \u2022 ' + c.time : '');
+                        card.appendChild(s);
+                    }
+
+                    if (venue) {
+                        const loc = document.createElement('div');
+                        loc.className = 'event-location';
+                        loc.textContent = venue.name + (venue.city ? `, ${venue.city}` : '');
+                        card.appendChild(loc);
+                    } else if (c.location) {
+                        const loc = document.createElement('div');
+                        loc.className = 'event-location';
+                        loc.textContent = c.location;
+                        card.appendChild(loc);
+                    }
+
+                    const meta = document.createElement('div');
+                    meta.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;';
+                    const linkSrc = c.link || c.website || c.tickets_url;
+                    if (linkSrc) {
+                        const a = document.createElement('a');
+                        a.href = linkSrc; a.target = '_blank';
+                        a.style.cssText = 'font-size:12px;color:#2e7d32;text-decoration:none;';
+                        a.textContent = 'website'; a.onclick = e => e.stopPropagation();
+                        meta.appendChild(a);
+                    }
+                    if (c.facebook) {
+                        const a = document.createElement('a');
+                        a.href = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
+                        a.target = '_blank';
+                        a.style.cssText = 'font-size:12px;color:#1877f2;text-decoration:none;';
+                        a.textContent = 'facebook'; a.onclick = e => e.stopPropagation();
+                        meta.appendChild(a);
+                    }
+                    if (c.email) {
+                        const a = document.createElement('a');
+                        a.href = `mailto:${c.email}`;
+                        a.style.cssText = 'font-size:12px;color:#555;text-decoration:none;';
+                        a.textContent = 'email'; a.onclick = e => e.stopPropagation();
+                        meta.appendChild(a);
+                    }
+                    if (meta.childNodes.length) card.appendChild(meta);
+
+                    listWrap.appendChild(card);
+                });
+            }
+
+            // Initial render
+            refreshDayBtns();
+            refreshWeekBtns();
+            renderList();
         }
     </script>
 </body>
