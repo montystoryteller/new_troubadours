@@ -88,7 +88,7 @@
     </div>
 
     <div class="about" id="colophon">
-        <p><em>Hacked together by Tony Hirst in conversation with Claude.ai and Gemini.</em></p>
+        <p><em>Hacked together by Tony Hirst in conversation with <tt></tt>Claude.ai</tt>.</em></p>
         <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt></em></p>
     </div>
 
@@ -113,7 +113,7 @@
         // ---------------------------------------------------------------------------
 
         function renderAllVenues() {
-            
+
             const root = document.getElementById("venueContent");
             root.innerHTML = '';
 
@@ -129,100 +129,40 @@
             // Collect unique cities for filter
             const cities = [...new Set(venueList.map(([, v]) => v.city).filter(Boolean))].sort();
 
-            // Build search index
+            // Build search index — pre-classify venue type so it's available for
+            // both the listing cards and the shared type filter.
             const venueIndex = venueList.map(([vid, v]) => ({
                 vid, v,
+                vtype: classifyVenueType(v.name),
                 searchText: [v.name, v.city, v.full_address, v.postcode].filter(Boolean).join(' ').toLowerCase()
             }));
+
+            // Collect the types that actually appear (in canonical order).
+            const presentTypes = VTYPE_ORDER.filter(t => venueIndex.some(e => e.vtype === t));
 
             // ── Filter state ─────────────────────────────────────────────────────
             let activeCity = null;
             let searchTerm = '';
+            let activeVenueType = null; // null = show all types
+            let mapBounds = null;       // null = no bounds filter (map closed / never panned)
+
+            // vid → marker, so city filter can show/hide individual markers
+            const markerByVid = {};
 
             function isVisible(entry) {
+                if (activeVenueType && entry.vtype !== activeVenueType) return false;
                 if (activeCity && entry.v.city !== activeCity) return false;
                 if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase())) return false;
+                if (mapBounds && entry.v.latlon) {
+                    if (!mapBounds.contains(entry.v.latlon)) return false;
+                }
                 return true;
             }
 
-            // ── Collapsible map with venue-type filter ───────────────────────────
-            // Build per-type marker sets so we can show/hide by type.
-            // markersByType: { [typeLabel]: L.Layer[] }
+            // ── Marker registry (populated lazily when the map first opens) ──────
             const markersByType = {};
-            let activeMapType = null; // null = show all
 
-            const mapHandle = createCollapsibleMap(root, 'venues-dir-map', 'Show map of all venues', 400, map => {
-                venueList.forEach(([vid, v]) => {
-                    if (!v.latlon || v.latlon.length == 0) return;
-                    const vtype = classifyVenueType(v.name);
-                    const colour = VTYPE_COLOURS[vtype] || '#999';
-                    const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? '<br>' + escapeHtml(v.city) : ''}<br><em style="color:${colour}">${vtype}</em>`;
-                    const marker = L.circle(v.latlon, { radius: 3000, fillColor: colour, color: colour, weight: 2, fillOpacity: 0.8 })
-                        .addTo(map)
-                        .bindPopup(popup)
-                        .on('click', () => { location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`; });
-                    if (!markersByType[vtype]) markersByType[vtype] = [];
-                    markersByType[vtype].push(marker);
-                });
-                // ── Type filter buttons rendered inside the <details> ─────────────
-                const filterBar = document.createElement('div');
-                filterBar.style.cssText = 'padding:10px 14px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid #eee;';
-
-                const filterLabel = document.createElement('span');
-                filterLabel.className = 'dir-filter-label';
-                filterLabel.style.marginBottom = '0';
-                filterLabel.textContent = 'Show:';
-                filterBar.appendChild(filterLabel);
-
-                // "All" button
-                const allBtn = document.createElement('button');
-                allBtn.className = 'dir-filter-btn active-teal';
-                allBtn.textContent = 'All';
-                filterBar.appendChild(allBtn);
-                // One button per type that has at least one mappable venue
-                const typeBtns = [];
-                VTYPE_ORDER.forEach(vtype => {
-                    if (!markersByType[vtype]) return;
-                    const colour = VTYPE_COLOURS[vtype] || '#999';
-                    const btn = document.createElement('button');
-                    btn.className = 'dir-filter-btn';
-                    btn.style.borderLeftColor = colour;
-                    btn.style.borderLeftWidth = '4px';
-
-                    // Colour swatch dot
-                    const swatch = document.createElement('span');
-                    swatch.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;background:${colour};margin-right:5px;vertical-align:middle;flex-shrink:0;`;
-                    btn.appendChild(swatch);
-                    btn.appendChild(document.createTextNode(vtype));
-
-                    typeBtns.push({ btn, vtype });
-                    filterBar.appendChild(btn);
-                });
-                function applyTypeFilter(selected) {
-                    activeMapType = selected;
-                    // Update button states
-                    allBtn.classList.toggle('active-teal', selected === null);
-                    typeBtns.forEach(({ btn, vtype }) => {
-                        btn.classList.toggle('active-teal', selected === vtype);
-                    });
-                    // Show/hide markers
-                    Object.entries(markersByType).forEach(([vtype, markers]) => {
-                        const visible = selected === null || selected === vtype;
-                        markers.forEach(m => {
-                            if (visible) { m.addTo(map); } else { m.remove(); }
-                        });
-                    });
-                }
-                allBtn.addEventListener('click', () => applyTypeFilter(null));
-                typeBtns.forEach(({ btn, vtype }) => {
-                    btn.addEventListener('click', () => {
-                        applyTypeFilter(activeMapType === vtype ? null : vtype);
-                    });
-                });
-                mapHandle.details.appendChild(filterBar);
-            });
-
-            // ── Controls: search + city filter ──────────────────────────────────
+            // ── Controls: search + venue-type filter + city filter ───────────────
             const controls = document.createElement('div');
             controls.className = 'dir-controls';
 
@@ -256,15 +196,90 @@
                 onChange: term => { searchTerm = term; renderList(); }
             });
 
-            // City filter buttons (only if there are meaningful cities)
+            // ── Venue-type filter buttons ────────────────────────────────────────
+            {
+                const typeLabel = document.createElement('div');
+                typeLabel.className = 'dir-filter-label';
+                typeLabel.textContent = 'Filter by venue type';
+                controls.appendChild(typeLabel);
+
+                const typeBtnsWrap = document.createElement('div');
+                typeBtnsWrap.className = 'dir-filter-btns';
+
+                const allTypeBtn = document.createElement('button');
+                allTypeBtn.textContent = 'All';
+                allTypeBtn.className = 'dir-filter-btn active-teal';
+                typeBtnsWrap.appendChild(allTypeBtn);
+
+                const typeBtnEls = [{ btn: allTypeBtn, vtype: null }];
+
+                presentTypes.forEach(vtype => {
+                    const colour = VTYPE_COLOURS[vtype] || '#999';
+                    const btn = document.createElement('button');
+                    btn.className = 'dir-filter-btn';
+                    btn.style.borderLeftColor = colour;
+                    btn.style.borderLeftWidth = '4px';
+
+                    const swatch = document.createElement('span');
+                    swatch.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;background:${colour};margin-right:5px;vertical-align:middle;flex-shrink:0;`;
+                    btn.appendChild(swatch);
+                    btn.appendChild(document.createTextNode(vtype));
+
+                    typeBtnEls.push({ btn, vtype });
+                    typeBtnsWrap.appendChild(btn);
+                });
+
+                function applyTypeFilter(selected) {
+                    activeVenueType = selected;
+
+                    // Update button active states
+                    typeBtnEls.forEach(({ btn, vtype }) => {
+                        btn.classList.toggle('active-teal', selected === vtype);
+                    });
+
+                    // Re-render listing
+                    renderList();
+
+                    // If the map is already open, update marker visibility respecting both filters
+                    if (mapHandle.map) {
+                        venueIndex.forEach(({ vid, v, vtype }) => {
+                            const marker = markerByVid[vid];
+                            if (!marker) return;
+                            const typeOk = selected === null || vtype === selected;
+                            const cityOk = activeCity === null || v.city === activeCity;
+                            if (typeOk && cityOk) { marker.addTo(mapHandle.map); } else { marker.remove(); }
+                        });
+                    }
+                }
+
+                allTypeBtn.addEventListener('click', () => applyTypeFilter(null));
+                typeBtnEls.slice(1).forEach(({ btn, vtype }) => {
+                    btn.addEventListener('click', () => {
+                        applyTypeFilter(activeVenueType === vtype ? null : vtype);
+                    });
+                });
+
+                controls.appendChild(typeBtnsWrap);
+            }
+
+            // ── City filter — collapsible <details> with buttons ──────────────────
             if (cities.length > 0) {
-                const cityLabel = document.createElement('div');
-                cityLabel.className = 'dir-filter-label';
-                cityLabel.textContent = 'Filter by city';
-                controls.appendChild(cityLabel);
+                const cityDetails = document.createElement('details');
+                cityDetails.className = 'dir-card';
+                cityDetails.style.cssText = 'margin-top:6px;';
+
+                const citySummary = document.createElement('summary');
+                citySummary.className = 'dir-map-summary';
+                citySummary.style.cssText = 'font-size:13px;padding:7px 12px;cursor:pointer;';
+
+                function updateCitySummary() {
+                    citySummary.textContent = activeCity ? `📍 City: ${activeCity}` : '📍 Filter by city';
+                }
+                updateCitySummary();
+                cityDetails.appendChild(citySummary);
 
                 const cityBtnsWrap = document.createElement('div');
-                cityBtnsWrap.className = 'dir-filter-btns';
+                cityBtnsWrap.style.cssText = 'padding:8px 12px 10px;display:flex;flex-wrap:wrap;gap:5px;';
 
                 let cityBtnEls = [];
                 function refreshCityBtns() {
@@ -272,12 +287,33 @@
                         const val = i === 0 ? null : cities[i - 1];
                         btn.classList.toggle('active-teal', activeCity === val);
                     });
+                    updateCitySummary();
+                }
+
+                function applyCityFilter(city) {
+                    activeCity = city;
+                    refreshCityBtns();
+                    renderList();
+
+                    // Sync map markers — hide any that don't match the active city
+                    if (mapHandle.map) {
+                        Object.entries(markerByVid).forEach(([vid, marker]) => {
+                            const entry = venueIndex.find(e => e.vid === vid);
+                            if (!entry) return;
+                            const typeOk = activeVenueType === null || entry.vtype === activeVenueType;
+                            const cityOk = activeCity === null || entry.v.city === activeCity;
+                            if (typeOk && cityOk) { marker.addTo(mapHandle.map); } else { marker.remove(); }
+                        });
+                    }
+
+                    // Close the panel once a selection is made (except "All")
+                    if (city !== null) cityDetails.open = false;
                 }
 
                 const allCityBtn = document.createElement('button');
                 allCityBtn.textContent = 'All';
                 allCityBtn.className = 'dir-filter-btn active-teal';
-                allCityBtn.addEventListener('click', () => { activeCity = null; refreshCityBtns(); renderList(); });
+                allCityBtn.addEventListener('click', () => applyCityFilter(null));
                 cityBtnsWrap.appendChild(allCityBtn);
                 cityBtnEls.push(allCityBtn);
 
@@ -286,18 +322,59 @@
                     btn.textContent = city;
                     btn.className = 'dir-filter-btn';
                     btn.addEventListener('click', () => {
-                        activeCity = (activeCity === city) ? null : city;
-                        refreshCityBtns();
-                        renderList();
+                        applyCityFilter(activeCity === city ? null : city);
                     });
                     cityBtnsWrap.appendChild(btn);
                     cityBtnEls.push(btn);
                 });
 
-                controls.appendChild(cityBtnsWrap);
+                cityDetails.appendChild(cityBtnsWrap);
+                controls.appendChild(cityDetails);
             }
 
             root.appendChild(controls);
+
+            // ── Collapsible map ───────────────────────────────────────────────────
+            const mapHandle = createCollapsibleMap(root, 'venues-dir-map', 'Show map of all venues', 400, map => {
+                venueIndex.forEach(({ vid, v, vtype }) => {
+                    if (!v.latlon || v.latlon.length === 0) return;
+                    const colour = VTYPE_COLOURS[vtype] || '#999';
+                    const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? '<br>' + escapeHtml(v.city) : ''}<br><em style="color:${colour}">${vtype}</em>`;
+                    const marker = L.circle(v.latlon, { radius: 3000, fillColor: colour, color: colour, weight: 2, fillOpacity: 0.8 })
+                        .addTo(map)
+                        .bindPopup(popup)
+                        .on('click', () => { location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`; });
+                    if (!markersByType[vtype]) markersByType[vtype] = [];
+                    markersByType[vtype].push(marker);
+                    markerByVid[vid] = marker;
+                });
+
+                // Apply any filters already active before the map was opened
+                if (activeVenueType !== null || activeCity !== null) {
+                    venueIndex.forEach(({ vid, v, vtype }) => {
+                        const marker = markerByVid[vid];
+                        if (!marker) return;
+                        const typeOk = activeVenueType === null || vtype === activeVenueType;
+                        const cityOk = activeCity === null || v.city === activeCity;
+                        if (typeOk && cityOk) { marker.addTo(map); } else { marker.remove(); }
+                    });
+                }
+
+                // ── Bounds filter on zoom/pan (mirrors events page behaviour) ───
+                function updateFromMapBounds() {
+                    mapBounds = map.getBounds();
+                    renderList();
+                }
+                map.on('moveend', updateFromMapBounds);
+
+                // Clear bounds filter when the map panel is collapsed
+                mapHandle.details.addEventListener('toggle', () => {
+                    if (!mapHandle.details.open) {
+                        mapBounds = null;
+                        renderList();
+                    }
+                });
+            });
 
             // ── Count line ───────────────────────────────────────────────────────
             const countLine = document.createElement('p');
@@ -326,10 +403,12 @@
                     return;
                 }
 
-                visible.forEach(({ vid, v }) => {
+                visible.forEach(({ vid, v, vtype }) => {
+                    const colour = VTYPE_COLOURS[vtype] || '#999';
+
                     const row = document.createElement('div');
                     row.id = 'venue-row-' + vid;
-                    row.style.cssText = 'background:white;border-radius:6px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;border-left:4px solid #00796b;transition:box-shadow 0.15s;';
+                    row.style.cssText = `background:white;border-radius:6px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;border-left:4px solid ${colour};transition:box-shadow 0.15s;`;
                     row.addEventListener('mouseover', () => row.style.boxShadow = '0 2px 8px rgba(0,0,0,0.14)');
                     row.addEventListener('mouseout', () => row.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)');
                     row.onclick = () => { location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`; };
@@ -346,11 +425,17 @@
                         row.appendChild(locEl);
                     }
 
+                    // Venue-type badge
+                    const typeBadge = document.createElement('span');
+                    typeBadge.style.cssText = `display:inline-block;margin-top:5px;font-size:10px;padding:1px 6px;border-radius:3px;background:${colour}22;color:${colour};border:1px solid ${colour}55;font-weight:500;`;
+                    typeBadge.textContent = vtype;
+                    row.appendChild(typeBadge);
+
                     if (v.url) {
                         const a = document.createElement('a');
                         a.href = sanitizeUrl(v.url) || '#';
                         a.target = '_blank';
-                        a.style.cssText = 'font-size:11px;color:#2e7d32;text-decoration:none;margin-top:4px;display:inline-block;';
+                        a.style.cssText = 'font-size:11px;color:#2e7d32;text-decoration:none;margin-top:4px;margin-left:6px;display:inline-block;';
                         a.textContent = 'website';
                         a.onclick = e => e.stopPropagation();
                         row.appendChild(a);
