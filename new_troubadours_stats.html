@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data &amp; Stats — New Troubadours</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <script src="shared_utils.js"></script>
+    <link rel="stylesheet" href="shared-styles.css">
     <style>
         *,
         *::before,
@@ -1276,37 +1278,6 @@
                 t.appendChild(el('div', 'tile-hint', 'click to expand'));
                 t.addEventListener('click', () => openDrilldown(t, title, buildFn));
                 return t;
-            }
-
-            function simpleList(panel, items) {
-                // items: [{label, href, meta}]
-                const list = el('div', '');
-                list.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;margin-top:4px;';
-                items.forEach(item => {
-                    const row = el('div', '');
-                    row.style.cssText = 'font-family:Arial,sans-serif;font-size:13px;padding:4px 0;border-bottom:1px solid #f0ebe3;display:flex;justify-content:space-between;gap:8px;';
-                    const nameEl = el('span', '');
-                    if (item.href) {
-                        const a = document.createElement('a');
-                        a.href = item.href;
-                        a.textContent = item.label;
-                        a.style.cssText = 'color:#2e7d32;text-decoration:none;';
-                        a.onmouseover = () => a.style.textDecoration = 'underline';
-                        a.onmouseout = () => a.style.textDecoration = 'none';
-                        nameEl.appendChild(a);
-                    } else {
-                        nameEl.textContent = item.label;
-                    }
-                    row.appendChild(nameEl);
-                    if (item.meta !== undefined) {
-                        const m = el('span', '');
-                        m.style.cssText = 'color:#888;white-space:nowrap;';
-                        m.textContent = item.meta;
-                        row.appendChild(m);
-                    }
-                    list.appendChild(row);
-                });
-                panel.appendChild(list);
             }
 
             // ---- render ----

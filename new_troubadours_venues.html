@@ -109,52 +109,6 @@
         let map = null;
 
         // ---------------------------------------------------------------------------
-        // DOM helpers
-        // ---------------------------------------------------------------------------
-
-        function el(tag, cls, text) {
-            const e = document.createElement(tag);
-            if (cls) e.className = cls;
-            if (text !== undefined) e.textContent = text;
-            return e;
-        }
-
-        // ---------------------------------------------------------------------------
-        // Bootstrap
-        // ---------------------------------------------------------------------------
-
-        function simpleList(panel, items) {
-            // items: [{label, href, meta}]
-            const list = el('div', '');
-            list.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;margin-top:4px;';
-            items.forEach(item => {
-                const row = el('div', '');
-                row.style.cssText = 'font-family:Arial,sans-serif;font-size:13px;padding:4px 0;border-bottom:1px solid #f0ebe3;display:flex;justify-content:space-between;gap:8px;';
-                const nameEl = el('span', '');
-                if (item.href) {
-                    const a = document.createElement('a');
-                    a.href = item.href;
-                    a.textContent = item.label;
-                    a.style.cssText = 'color:#2e7d32;text-decoration:none;';
-                    a.onmouseover = () => a.style.textDecoration = 'underline';
-                    a.onmouseout = () => a.style.textDecoration = 'none';
-                    nameEl.appendChild(a);
-                } else {
-                    nameEl.textContent = item.label;
-                }
-                row.appendChild(nameEl);
-                if (item.meta !== undefined) {
-                    const m = el('span', '');
-                    m.style.cssText = 'color:#888;white-space:nowrap;';
-                    m.textContent = item.meta;
-                    row.appendChild(m);
-                }
-                list.appendChild(row);
-            });
-            panel.appendChild(list);
-        }
-
-        // ---------------------------------------------------------------------------
         // Bootstrap
         // ---------------------------------------------------------------------------
 
@@ -447,11 +401,6 @@
             // Leaflet needs the container to be visible before it can measure dimensions
             if (map) setTimeout(() => map.invalidateSize(), 0);
         });
-
-        function showNotFound() {
-            document.getElementById("loadingState").style.display = "none";
-            document.getElementById("notFoundState").style.display = "";
-        }
 
         // ---------------------------------------------------------------------------
         // Main render
@@ -926,10 +875,6 @@
 
         function formatMediumDate(d) {
             return d ? `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}` : "";
-        }
-
-        function capitalise(str) {
-            return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
         }
 
     </script>

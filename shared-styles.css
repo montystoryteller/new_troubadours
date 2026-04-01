@@ -746,3 +746,39 @@ a.festival-programme-link:hover {
     background: rgba(255, 255, 255, 0.35);
     color: #fff;
 }
+
+/* =============================================================
+   15. SIMPLE LIST
+   Used by simpleList() in shared_utils.js — a compact linked
+   grid used in venue and performer detail panels.
+   ============================================================= */
+
+.simple-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 4px 16px;
+    margin-top: 4px;
+}
+
+.simple-list-row {
+    font-size: 13px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0ebe3; /* warm off-white, unique to this component */
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.simple-list-row a {
+    color: #2e7d32;
+    text-decoration: none;
+}
+
+.simple-list-row a:hover {
+    text-decoration: underline;
+}
+
+.simple-list-meta {
+    color: #888;
+    white-space: nowrap;
+}

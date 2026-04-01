@@ -150,9 +150,48 @@ function sanitizeFlyerPath(filename) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "");
 }
 
+
+// ---------------------------------------------------------------------------
+// DOM helpers
+// ---------------------------------------------------------------------------
+
+function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+}
+
 // ---------------------------------------------------------------------------
 // DOM / UI utilities
 // ---------------------------------------------------------------------------
+
+function simpleList(panel, items) {
+  const list = el("div", "simple-list");
+  items.forEach((item) => {
+    const row = el("div", "simple-list-row");
+    const nameEl = el("span", "");
+    if (item.href) {
+      const a = document.createElement("a");
+      a.href = item.href;
+      a.textContent = item.label;
+      nameEl.appendChild(a);
+    } else {
+      nameEl.textContent = item.label;
+    }
+    row.appendChild(nameEl);
+    if (item.meta !== undefined) {
+      row.appendChild(el("span", "simple-list-meta", item.meta));
+    }
+    list.appendChild(row);
+  });
+  panel.appendChild(list);
+}
+
+function showNotFound() {
+  document.getElementById("loadingState").style.display = "none";
+  document.getElementById("notFoundState").style.display = "";
+}
 
 /**
  * Append a social/contact icon link to a container element.
@@ -396,6 +435,10 @@ function appendParagraphs(container, text) {
       container.appendChild(pElem);
     }
   });
+}
+
+function capitalise(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }
 
 // ---------------------------------------------------------------------------

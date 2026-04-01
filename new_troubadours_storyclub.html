@@ -308,7 +308,7 @@
     <script src="shared_utils.js"></script>
     <script>
         // ── Constants (mirrors event_display.js) ─────────────────────────────────
-        const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -325,11 +325,7 @@
         }
 
         function formatDate(date) {
-            return `${DAYS_OF_WEEK[date.getDay()]}, ${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
-        }
-
-        function capitalise(s) {
-            return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+            return `${DAYS[date.getDay()]}, ${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
         }
 
         function scheduleLabel(schedule) {
