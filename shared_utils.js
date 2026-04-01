@@ -513,3 +513,262 @@ async function forEachDateInRange(items, startDate, endDate, label, callback) {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// Venue type classification
+// ---------------------------------------------------------------------------
+
+/**
+ * Canonical display order for venue types.
+ * @type {string[]}
+ */
+const VTYPE_ORDER = [
+  "Pub / bar / café",
+  "Village / community hall",
+  "Arts centre / venue",
+  "Theatre",
+  "Church / faith venue",
+  "Museum / historic",
+  "Barn / rural / outdoor",
+  "Online",
+  "Other / unknown",
+];
+
+/**
+ * Fill colour per venue type, used for map markers and legend swatches.
+ * @type {Object.<string,string>}
+ */
+const VTYPE_COLOURS = {
+  "Pub / bar / café": "#795548",
+  "Village / community hall": "#00796b",
+  "Arts centre / venue": "#443cd7",
+  Theatre: "#c62828",
+  "Church / faith venue": "#e8a020",
+  "Museum / historic": "#546e7a",
+  "Barn / rural / outdoor": "#2e7d32",
+  Online: "#888",
+  "Other / unknown": "#bbb",
+};
+
+/**
+ * Infer a venue type label from the venue name string.
+ * Returns one of the keys in VTYPE_ORDER.
+ * @param {string} name
+ * @returns {string}
+ */
+function classifyVenueType(name) {
+  if (!name) return "Other / unknown";
+  const n = name.toLowerCase();
+  if (
+    /village hall|memorial hall|parish hall|community hall|town hall|assembly room|public hall|welfare hall|memorial institute|parish room|working men|community centre|community center|bowling club|\binstitute\b|kingsley hall|lowther parish|mcgrigor hall|public rooms|pullens centre|imperial rooms|adastra hall|david hall|alexander centre|three villages hall|mushroom hall|torriano meeting|folk preservation|joinery|malt cross|liskeard|folk of gloucester|old customs house|ventnor british legion|bolton socialist|\bnewstead\b|scout hut/.test(
+      n,
+    )
+  )
+    return "Village / community hall";
+  if (
+    /church hall|church room|\bchurch\b|st\.\s|saint\s|\bpriory\b|\bchapel\b|quaker|salvation army|buddhist|assumption|our lady|st john|st peter|st mary|st nicholas|st anne|st lawrence|meeting house/.test(
+      n,
+    )
+  )
+    return "Church / faith venue";
+  if (
+    /\btheatre\b|\btheater\b|playhouse|lyric\b|wardrobe|backyard theatre|front room theatre|omnibus|storyhouse|unicorn|dragon|torch|palace theatre|borough theatre|alphabetti|capstone|cygnet|knutsford little|lantern|georgian|\bcube\b|burton taylor|prohibition recording|palladium club/.test(
+      n,
+    )
+  )
+    return "Theatre";
+  if (
+    /arts cent|art cent|arts centr|artcentre|centre for the arts|arts center|llanover|pontardawe|ropetackle|exeter phoenix|chapter arts|quay arts|pound arts|bureau|wycombe|barnoldswick|gregson|moor imagination|riverfront|cambridge junction|john peel centre|ruskin mill|ffwrnes|theatr clwyd|royal welsh college|university|making space|st anne.s arts|rougemont|corn exchange|yellow book|october books|riff factory|spin the black|portico|next door at|\bstudio\b/.test(
+      n,
+    )
+  )
+    return "Arts centre / venue";
+  if (
+    /\bpub\b|tavern|\binn\b|\barms\b|\btap\b|brewery|\bbar\b|\bale house\b|the fleece|brunswick|britons|half moon|station pub|black swan|fountain inn|dove st|locks inn|three swans|stubbing|dairyman|portland arms|porter club|rat and ratchet|duke william|embankment|castle tap|castle inn|bodega|star coffee|temperance|chillingham|the hoops|the grove|the victoria|waverley|hop sun|ropemakers|bear club|hop inn|foxtails|bargeman|alder\b|hearth\b|the fold|the elm tree|katie fitzgerald|chagford inn|ship inn|the acorn|joiners|love shack|\byes\b|department\b|lock 91|cafe|coffee|kitchen garden|merlin|carvel lane|foremans|travellers joy|fat cat|nelly|angels cut|ltb showroom|stables at the bull|snapdragons|avalon|calverts|hotel indigo|swiss cottage|micklethwait|better days|b side|cwrw|\bsocial club\b|crown.*sceptre/.test(
+      n,
+    )
+  )
+    return "Pub / bar / café";
+  if (
+    /museum|library|guildhall|roman villa|darwin house|physic garden|dr johnson|food museum|haslemere museum|story museum|the hold\b/.test(
+      n,
+    )
+  )
+    return "Museum / historic";
+  if (
+    /\bbarn\b|farm|retreat|vineyard|earthhouse|ancient farm|harta|caddaford|circle barn|arty barn|old stables|rectory|plot 9|cranborne|wroot|the big retreat|dart music festival|gibraltar/.test(
+      n,
+    )
+  )
+    return "Barn / rural / outdoor";
+  if (/online/.test(n)) return "Online";
+  return "Other / unknown";
+}
+
+// ---------------------------------------------------------------------------
+// Collapsible map
+// ---------------------------------------------------------------------------
+
+/**
+ * Build and append a lazy-initialised collapsible map inside a <details> element.
+ *
+ * The map is only created the first time the user opens the panel, avoiding a
+ * Leaflet layout bug where tiles don't render correctly in a hidden container.
+ *
+ * @param {HTMLElement} container       - Parent element to append the toggle to.
+ * @param {string}      mapDivId        - Unique id for the inner map div (must be page-unique).
+ * @param {string}      labelText       - Text shown in the summary, e.g. "Show map of all venues".
+ * @param {number}      [mapHeight=400] - Height of the map div in px.
+ * @param {Function}    onInit          - Called once with the initialised L.Map instance.
+ *                                        Add markers / layers here.
+ * @returns {{ details: HTMLElement, map: L.Map|null }}
+ *   `details` is the <details> element (appended to container).
+ *   `map` starts null and is populated after the first open.
+ */
+function createCollapsibleMap(
+  container,
+  mapDivId,
+  labelText,
+  mapHeight,
+  onInit,
+) {
+  if (mapHeight == null) mapHeight = 400;
+
+  const mapToggle = document.createElement("details");
+  mapToggle.className = "dir-card";
+
+  const mapSummary = document.createElement("summary");
+  mapSummary.className = "dir-map-summary";
+  mapSummary.textContent = "\uD83D\uDDFA " + labelText;
+  mapToggle.appendChild(mapSummary);
+
+  const mapDiv = document.createElement("div");
+  mapDiv.id = mapDivId;
+  mapDiv.className = "dir-map-div";
+  mapDiv.style.height = mapHeight + "px";
+  mapToggle.appendChild(mapDiv);
+
+  container.appendChild(mapToggle);
+
+  const handle = { details: mapToggle, map: null };
+  let mapInitialised = false;
+
+  const openLabel = "\uD83D\uDDFA Hide map";
+  const closeLabel = "\uD83D\uDDFA " + labelText;
+
+  mapToggle.addEventListener("toggle", () => {
+    if (mapToggle.open && !mapInitialised) {
+      mapInitialised = true;
+      handle.map = initMap(mapDivId, null);
+      // invalidateSize must be called after the container becomes visible;
+      // without it Leaflet measures a 0×0 box and only renders a tiny tile region,
+      // causing most markers to be silently dropped.
+      handle.map.invalidateSize();
+      onInit(handle.map);
+    }
+    mapSummary.textContent = mapToggle.open ? openLabel : closeLabel;
+  });
+
+  return handle;
+}
+
+// ---------------------------------------------------------------------------
+// Search box with autocomplete dropdown
+// ---------------------------------------------------------------------------
+
+/**
+ * Build and append a search input with a live autocomplete dropdown.
+ *
+ * The caller supplies:
+ *   - a search function that receives the lowercased term and returns an array
+ *     of result objects (max results should be applied inside the function),
+ *   - a renderer that turns one result object into a populated <div> item
+ *     (the div will receive the shared CSS classes automatically),
+ *   - an onSelect callback fired when the user clicks a suggestion,
+ *   - an onChange callback fired on every keystroke (for re-filtering the list).
+ *
+ * The clear button, dropdown show/hide, blur/focus wiring, and hover styling
+ * are all handled here; callers never touch those.
+ *
+ * @param {HTMLElement} container
+ * @param {{
+ *   placeholder: string,
+ *   search:    (term: string) => object[],
+ *   renderItem: (result: object) => HTMLElement,
+ *   onSelect:  (result: object, searchInput: HTMLInputElement, clearBtn: HTMLButtonElement, dropdown: HTMLElement) => void,
+ *   onChange:  (term: string) => void
+ * }} options
+ * @returns {{ wrap: HTMLElement, input: HTMLInputElement, clearBtn: HTMLButtonElement, dropdown: HTMLElement }}
+ */
+function createSearchBox(container, options) {
+  const { placeholder, search, renderItem, onSelect, onChange } = options;
+
+  const searchWrap = document.createElement("div");
+  searchWrap.className = "dir-search-wrap";
+
+  const searchInput = document.createElement("input");
+  searchInput.type = "text";
+  searchInput.placeholder = placeholder;
+  searchInput.className = "dir-search-input";
+
+  const clearBtn = document.createElement("button");
+  clearBtn.textContent = "\u2715";
+  clearBtn.title = "Clear search";
+  clearBtn.className = "dir-search-clear";
+  clearBtn.style.display = "none";
+
+  const dropdown = document.createElement("div");
+  dropdown.className = "dir-search-dropdown";
+  dropdown.style.display = "none";
+
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    clearBtn.style.display = "none";
+    dropdown.style.display = "none";
+    dropdown.innerHTML = "";
+    onChange("");
+  });
+
+  searchInput.addEventListener("input", () => {
+    const term = searchInput.value.trim();
+    clearBtn.style.display = term ? "block" : "none";
+    dropdown.innerHTML = "";
+
+    if (term.length >= 1) {
+      const results = search(term.toLowerCase());
+      if (results.length > 0) {
+        results.forEach((result) => {
+          const item = renderItem(result);
+          item.classList.add("dir-search-dropdown-item");
+          item.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            onSelect(result, searchInput, clearBtn, dropdown);
+          });
+          dropdown.appendChild(item);
+        });
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    } else {
+      dropdown.style.display = "none";
+    }
+    onChange(term);
+  });
+
+  searchInput.addEventListener("blur", () => {
+    setTimeout(() => {
+      dropdown.style.display = "none";
+    }, 150);
+  });
+  searchInput.addEventListener("focus", () => {
+    if (dropdown.children.length) dropdown.style.display = "block";
+  });
+
+  searchWrap.appendChild(searchInput);
+  searchWrap.appendChild(clearBtn);
+  searchWrap.appendChild(dropdown);
+  container.appendChild(searchWrap);
+
+  return { wrap: searchWrap, input: searchInput, clearBtn, dropdown };
+}

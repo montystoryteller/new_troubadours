@@ -901,40 +901,19 @@
             root.appendChild(h1);
 
             // ── Collapsible map ──────────────────────────────────────────────────
-            const mapToggle = document.createElement('details');
-            mapToggle.style.cssText = 'background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.08);margin-bottom:16px;overflow:hidden;';
-            const mapSummary = document.createElement('summary');
-            mapSummary.style.cssText = 'padding:12px 16px;cursor:pointer;font-size:14px;font-weight:bold;color:#2e7d32;list-style:none;user-select:none;';
-            mapSummary.textContent = '🗺 Show map of all clubs';
-            mapToggle.appendChild(mapSummary);
-
-            const mapDiv = document.createElement('div');
-            mapDiv.id = 'dir-map';
-            mapDiv.style.cssText = 'height:360px;';
-            mapToggle.appendChild(mapDiv);
-            root.appendChild(mapToggle);
-
-            let dirMap = null;
-            let mapInitialised = false;
-            mapToggle.addEventListener('toggle', () => {
-                if (mapToggle.open && !mapInitialised) {
-                    mapInitialised = true;
-                    dirMap = L.map('dir-map', { maxBounds: UK_IRELAND_BOUNDS, maxBoundsViscosity: 1.0, minZoom: 5, maxZoom: 16 }).setView([53.0, -2.0], 6);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(dirMap);
-                    clubs.forEach(c => {
-                        const venue = data.venues[c.venue_id];
-                        if (!venue || !venue.latlon) return;
-                        const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ', ' + venue.city : ''}<br><em>${c.schedule || ''}</em>`;
-                        L.circleMarker(venue.latlon, { radius: 7, fillColor: '#4CAF50', color: '#2e7d32', weight: 2, fillOpacity: 0.85 })
-                            .addTo(dirMap).bindPopup(popup);
-                    });
-                }
-                mapSummary.textContent = mapToggle.open ? '🗺 Hide map' : '🗺 Show map of all clubs';
+            createCollapsibleMap(root, 'dir-map', 'Show map of all clubs', 360, map => {
+                clubs.forEach(c => {
+                    const venue = data.venues[c.venue_id];
+                    if (!venue || !venue.latlon || venue.latlon.length == 0) return;
+                    const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ', ' + venue.city : ''}<br><em>${c.schedule || ''}</em>`;
+                    L.circleMarker(venue.latlon, { radius: 7, fillColor: '#4CAF50', color: '#2e7d32', weight: 2, fillOpacity: 0.85 })
+                        .addTo(map).bindPopup(popup);
+                });
             });
 
             // ── Filter controls ──────────────────────────────────────────────────
             const controls = document.createElement('div');
-            controls.style.cssText = 'background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.08);padding:16px 18px;margin-bottom:16px;';
+            controls.className = 'dir-controls';
 
             // Two-column button grid
             const filterGrid = document.createElement('div');
@@ -943,17 +922,16 @@
             // Day buttons
             const dayGroup = document.createElement('div');
             const dayLabel = document.createElement('div');
-            dayLabel.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:6px;';
+            dayLabel.className = 'dir-filter-label';
             dayLabel.textContent = 'Day of week';
             dayGroup.appendChild(dayLabel);
             const dayBtns = document.createElement('div');
-            dayBtns.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+            dayBtns.className = 'dir-filter-btns';
 
             function makeDayBtn(label, value) {
                 const btn = document.createElement('button');
                 btn.textContent = label;
-                btn.style.cssText = 'padding:5px 10px;font-size:12px;border-radius:4px;border:1px solid #ccc;background:white;color:#555;cursor:pointer;transition:all 0.15s;';
-                if (value === activeDay) { btn.style.background = '#2e7d32'; btn.style.color = 'white'; btn.style.borderColor = '#2e7d32'; }
+                btn.className = 'dir-filter-btn' + (value === activeDay ? ' active-green' : '');
                 btn.addEventListener('click', () => {
                     activeDay = (activeDay === value) ? null : value;
                     refreshDayBtns();
@@ -965,10 +943,7 @@
             function refreshDayBtns() {
                 dayBtnEls.forEach((btn, i) => {
                     const val = i === 0 ? null : DAYS_ORDER[i - 1];
-                    const active = activeDay === val;
-                    btn.style.background = active ? '#2e7d32' : 'white';
-                    btn.style.color = active ? 'white' : '#555';
-                    btn.style.borderColor = active ? '#2e7d32' : '#ccc';
+                    btn.classList.toggle('active-green', activeDay === val);
                 });
             }
             // All button first, then Mon-Sun abbreviated
@@ -986,29 +961,25 @@
             // Week buttons
             const weekGroup = document.createElement('div');
             const weekLabel = document.createElement('div');
-            weekLabel.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:6px;';
+            weekLabel.className = 'dir-filter-label';
             weekLabel.textContent = 'Week of month';
             weekGroup.appendChild(weekLabel);
             const weekBtns = document.createElement('div');
-            weekBtns.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+            weekBtns.className = 'dir-filter-btns';
 
             const WEEK_DISPLAY = ['All', 'Every', '1st', '2nd', '3rd', '4th', 'Last'];
             const WEEK_VALUES = [null, 'every', '1st', '2nd', '3rd', '4th', 'last'];
             let weekBtnEls = [];
             function refreshWeekBtns() {
                 weekBtnEls.forEach((btn, i) => {
-                    const val = WEEK_VALUES[i];
-                    const active = activeWeek === val;
-                    btn.style.background = active ? '#00796b' : 'white';
-                    btn.style.color = active ? 'white' : '#555';
-                    btn.style.borderColor = active ? '#00796b' : '#ccc';
+                    btn.classList.toggle('active-teal', activeWeek === WEEK_VALUES[i]);
                 });
             }
             WEEK_DISPLAY.forEach((label, i) => {
                 const val = WEEK_VALUES[i];
                 const btn = document.createElement('button');
                 btn.textContent = label;
-                btn.style.cssText = 'padding:5px 10px;font-size:12px;border-radius:4px;border:1px solid #ccc;background:white;color:#555;cursor:pointer;transition:all 0.15s;';
+                btn.className = 'dir-filter-btn';
                 btn.addEventListener('click', () => {
                     activeWeek = (activeWeek === val) ? null : val;
                     refreshWeekBtns();
@@ -1023,85 +994,36 @@
             controls.appendChild(filterGrid);
 
             // ── Search box with dropdown suggestions ────────────────────────────
-            const searchWrap = document.createElement('div');
-            searchWrap.style.cssText = 'position:relative;';
-
-            const searchInput = document.createElement('input');
-            searchInput.type = 'text';
-            searchInput.placeholder = 'Search clubs by name, venue or location…';
-            searchInput.style.cssText = 'width:100%;padding:9px 36px 9px 12px;border:2px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;';
-
-            const clearBtn = document.createElement('button');
-            clearBtn.textContent = '✕';
-            clearBtn.title = 'Clear search';
-            clearBtn.style.cssText = 'position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent !important;background-color:transparent !important;border:none;color:#aaa;font-size:16px;cursor:pointer;padding:0;line-height:1;display:none;box-shadow:none;';
-            clearBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                searchTerm = '';
-                clearBtn.style.display = 'none';
-                dropdown.style.display = 'none';
-                renderList();
-            });
-
-            const dropdown = document.createElement('div');
-            dropdown.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #ddd;border-top:none;border-radius:0 0 4px 4px;box-shadow:0 4px 8px rgba(0,0,0,0.1);z-index:1000;max-height:220px;overflow-y:auto;display:none;';
-
-            searchInput.addEventListener('input', () => {
-                searchTerm = searchInput.value.trim();
-                clearBtn.style.display = searchTerm ? 'block' : 'none';
-                // Build suggestions: up to 8 matching clubs
-                dropdown.innerHTML = '';
-                if (searchTerm.length >= 1) {
-                    const term = searchTerm.toLowerCase();
-                    const matches = clubIndex.filter(e => e.searchText.includes(term)).slice(0, 8);
-                    if (matches.length > 0) {
-                        matches.forEach(({ c }) => {
-                            const venue = data.venues[c.venue_id] || {};
-                            const item = document.createElement('div');
-                            item.style.cssText = 'padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;';
-                            const strong = document.createElement('strong');
-                            strong.textContent = c.name;
-                            item.appendChild(strong);
-                            if (venue.city) {
-                                const city = document.createElement('span');
-                                city.style.cssText = 'color:#888;margin-left:8px;font-size:12px;';
-                                city.textContent = venue.city;
-                                item.appendChild(city);
-                            }
-                            item.addEventListener('mousedown', e => {
-                                e.preventDefault();
-                                searchInput.value = c.name;
-                                searchTerm = c.name;
-                                clearBtn.style.display = 'block';
-                                dropdown.style.display = 'none';
-                                renderList();
-                                // Scroll to the card for this club
-                                setTimeout(() => {
-                                    const el = document.getElementById('club-card-' + c.club);
-                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }, 80);
-                            });
-                            item.addEventListener('mouseover', () => item.style.background = '#f5f5f5');
-                            item.addEventListener('mouseout', () => item.style.background = '');
-                            dropdown.appendChild(item);
-                        });
-                        dropdown.style.display = 'block';
-                    } else {
-                        dropdown.style.display = 'none';
+            createSearchBox(controls, {
+                placeholder: 'Search clubs by name, venue or location…',
+                search: term => clubIndex.filter(e => e.searchText.includes(term)).slice(0, 8),
+                renderItem: ({ c }) => {
+                    const venue = data.venues[c.venue_id] || {};
+                    const item = document.createElement('div');
+                    const strong = document.createElement('strong');
+                    strong.textContent = c.name;
+                    item.appendChild(strong);
+                    if (venue.city) {
+                        const city = document.createElement('span');
+                        city.className = 'dir-search-item-meta';
+                        city.textContent = venue.city;
+                        item.appendChild(city);
                     }
-                } else {
+                    return item;
+                },
+                onSelect: ({ c }, searchInput, clearBtn, dropdown) => {
+                    searchInput.value = c.name;
+                    searchTerm = c.name;
+                    clearBtn.style.display = 'block';
                     dropdown.style.display = 'none';
-                }
-                renderList();
+                    renderList();
+                    setTimeout(() => {
+                        const el = document.getElementById('club-card-' + c.club);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 80);
+                },
+                onChange: term => { searchTerm = term; renderList(); }
             });
-
-            searchInput.addEventListener('blur', () => { setTimeout(() => { dropdown.style.display = 'none'; }, 150); });
-            searchInput.addEventListener('focus', () => { if (dropdown.children.length) dropdown.style.display = 'block'; });
-
-            searchWrap.appendChild(searchInput);
-            searchWrap.appendChild(clearBtn);
-            searchWrap.appendChild(dropdown);
-            controls.appendChild(searchWrap);
 
             root.appendChild(controls);
 
