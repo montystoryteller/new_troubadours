@@ -252,3 +252,207 @@
         gap: 8px;
     }
 }
+
+
+/* =============================================================
+   9. NEW EVENTS COLLAPSIBLE PANEL
+   Shows records that have a date_added field within the chosen
+   lookback period (this week / last 2 weeks / last month).
+   ============================================================= */
+
+.new-events-panel {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.new-events-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;   /* remove default triangle in Firefox */
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Remove default disclosure triangle in WebKit */
+.new-events-summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Custom chevron via ::after */
+.new-events-summary::after {
+    content: '▸';
+    margin-left: auto;
+    transition: transform 0.25s ease;
+    font-size: 0.9em;
+}
+
+.new-events-panel[open] > .new-events-summary::after {
+    transform: rotate(90deg);
+}
+
+.new-events-label {
+    flex: 0 0 auto;
+}
+
+.new-events-counts {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: 4px;
+}
+
+.nec-chip {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 10px;
+    padding: 1px 9px;
+    font-size: 0.78em;
+    font-weight: 600;
+    white-space: nowrap;
+    color: white;
+    /* reset button defaults */
+    font-family: inherit;
+    cursor: pointer;
+    line-height: inherit;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.nec-chip:hover,
+.nec-chip:focus-visible {
+    background: rgba(255,255,255,0.32);
+    border-color: rgba(255,255,255,0.75);
+    outline: none;
+}
+
+.nec-sep {
+    opacity: 0.55;
+    font-size: 0.85em;
+}
+
+/* Body shown when panel is open */
+.new-events-body {
+    padding: 16px 20px 20px;
+    border-top: 3px solid #1565c0;
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Period-selector buttons */
+.new-events-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.new-events-btn {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 2px solid #90caf9;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-weight: 500;
+}
+
+.new-events-btn:hover {
+    background: #bbdefb;
+    border-color: #1976d2;
+}
+
+.new-events-btn.active {
+    background: #1565c0;
+    color: white;
+    border-color: #0d47a1;
+}
+
+/* Results list */
+.new-events-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.new-events-placeholder {
+    color: #777;
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 8px 0;
+}
+
+/* Individual event card */
+.new-event-card {
+    background: #f5f9ff;
+    border: 1px solid #bbdefb;
+    border-left: 4px solid #1976d2;
+    border-radius: 6px;
+    padding: 10px 14px;
+    min-width: 220px;
+    flex: 1 1 220px;
+    max-width: 360px;
+}
+
+.new-event-name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.new-event-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+}
+
+.new-event-type-badge {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.73em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.new-event-added {
+    font-size: 0.78rem;
+    color: #888;
+    margin-bottom: 3px;
+}
+
+.new-event-date {
+    font-size: 0.85rem;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.new-event-location {
+    font-size: 0.82rem;
+    color: #555;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .new-events-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .new-event-card {
+        max-width: 100%;
+    }
+}

@@ -18,6 +18,41 @@
     <h1>The New Troubadours — Storytelling, Music and Punk Poet Events Calendar (UK)</h1>
     <h2>Appropriate all ages, aimed at adults.</h2>
 
+    <!-- ============================================================
+         NEW EVENTS collapsible panel
+         Events are flagged by a date_added field (DD/MM/YYYY) on
+         each JSON record.  Records without that field are silently
+         skipped so older data never breaks the panel.
+         ============================================================ -->
+    <details id="newEventsPanel" class="new-events-panel">
+        <summary class="new-events-summary">
+            <span class="new-events-label">🆕 New events</span>
+            <span class="new-events-counts" id="newEventsCounts" style="display:none">
+                <button class="nec-chip" id="necWeek"
+                    onclick="openNewEventsPanelFor('week', 'newEventsThisWeekBtn', event)"></button>
+                <span class="nec-sep">·</span>
+                <button class="nec-chip" id="necTwoWeeks"
+                    onclick="openNewEventsPanelFor('twoweeks', 'newEventsTwoWeeksBtn', event)"></button>
+                <span class="nec-sep">·</span>
+                <button class="nec-chip" id="necMonth"
+                    onclick="openNewEventsPanelFor('month', 'newEventsMonthBtn', event)"></button>
+            </span>
+        </summary>
+        <div class="new-events-body">
+            <div class="new-events-controls">
+                <button class="new-events-btn active" id="newEventsThisWeekBtn"
+                    onclick="showNewEvents('week', this)">Added this week</button>
+                <button class="new-events-btn" id="newEventsTwoWeeksBtn" onclick="showNewEvents('twoweeks', this)">Added
+                    in last 2 weeks</button>
+                <button class="new-events-btn" id="newEventsMonthBtn" onclick="showNewEvents('month', this)">Added in
+                    last month</button>
+            </div>
+            <div id="newEventsList" class="new-events-list">
+                <div class="new-events-placeholder">Open to see recently added events</div>
+            </div>
+        </div>
+    </details>
+
     <div class="controls">
         <div class="button-group">
             <button id="lastWeekBtn" onclick="showWeek(-1)">Last Week</button>
@@ -201,7 +236,392 @@
     <script src="shared_utils.js"></script>
     <script src="event_display.js"></script>
     <script>
+        // -----------------------------------------------------------------------
+        // NEW EVENTS PANEL
+        // -----------------------------------------------------------------------
 
+        /** Currently-selected period for the New Events panel. */
+        let newEventsPeriod = 'week';
+
+        /**
+         * Parse a date_added string (DD/MM/YYYY) and return a midnight Date,
+         * or null if the field is missing, empty, or malformed.
+         * @param {string|undefined} dateAddedStr
+         * @returns {Date|null}
+         */
+        function parseDateAdded(dateAddedStr) {
+            if (!dateAddedStr || typeof dateAddedStr !== 'string') return null;
+            const trimmed = dateAddedStr.trim();
+            if (!trimmed) return null;
+            // parseDateString() is defined in shared_utils.js (DD/MM/YYYY)
+            return parseDateString(trimmed);
+        }
+
+        /**
+         * Return the cutoff Date (midnight) for the chosen period.
+         * @param {'week'|'twoweeks'|'month'} period
+         * @returns {Date}
+         */
+        function newEventsCutoff(period) {
+            const today = getTodayMidnight();  // shared_utils.js
+            const cutoff = new Date(today);
+            if (period === 'week') cutoff.setDate(cutoff.getDate() - 7);
+            else if (period === 'twoweeks') cutoff.setDate(cutoff.getDate() - 14);
+            else cutoff.setMonth(cutoff.getMonth() - 1);
+            return cutoff;
+        }
+
+        /**
+         * Check whether a raw JSON record was added within the period.
+         * @param {object} record
+         * @param {Date}   cutoff
+         * @returns {boolean}
+         */
+        function isNewlyAdded(record, cutoff) {
+            const d = parseDateAdded(record.date_added);
+            return d !== null && d >= cutoff;
+        }
+
+        /**
+         * Build a lightweight display card for a newly-added event.
+         * We intentionally keep this simple — just name, type badge, upcoming
+         * date(s) and location — so as not to duplicate the full card machinery.
+         * @param {object} info  - { name, typeBadge, dateStr, location, dateAdded }
+         * @returns {HTMLElement}
+         */
+        function buildNewEventCard(info) {
+            const card = document.createElement('div');
+            card.className = 'new-event-card';
+
+            // Name + badge row
+            const nameRow = document.createElement('div');
+            nameRow.className = 'new-event-name-row';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'new-event-name';
+            nameSpan.textContent = info.name;
+            nameRow.appendChild(nameSpan);
+
+            if (info.typeBadge) {
+                const badge = document.createElement('span');
+                badge.className = 'new-event-type-badge';
+                badge.textContent = info.typeBadge;
+                nameRow.appendChild(badge);
+            }
+
+            card.appendChild(nameRow);
+
+            // "Added" date
+            if (info.dateAdded) {
+                const addedRow = document.createElement('div');
+                addedRow.className = 'new-event-added';
+                addedRow.textContent = `Added: ${info.dateAdded}`;
+                card.appendChild(addedRow);
+            }
+
+            // Next / upcoming event date(s)
+            if (info.dateStr) {
+                const dateRow = document.createElement('div');
+                dateRow.className = 'new-event-date';
+                dateRow.textContent = info.dateStr;
+                card.appendChild(dateRow);
+            }
+
+            // Location
+            if (info.location) {
+                const locRow = document.createElement('div');
+                locRow.className = 'new-event-location';
+                locRow.textContent = info.location;
+                card.appendChild(locRow);
+            }
+
+            return card;
+        }
+
+        /**
+         * Format a Date as "Day DD Mon YYYY" for display.
+         * Reuses the module-level DAYS_OF_WEEK / MONTHS_SHORT constants from
+         * event_display.js which is loaded before this inline script.
+         * @param {Date} d
+         * @returns {string}
+         */
+        function formatNewEventDate(d) {
+            return `${DAYS_OF_WEEK[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        /**
+         * Collect all records newly added within `cutoff`, across every source in
+         * eventsData, and return an array of display-info objects sorted by name.
+         *
+         * Recurring events (storyclubs, folk nights, Irish sessions) are searched
+         * for their next upcoming occurrence; if none is found within 6 months they
+         * still appear but without a date.
+         *
+         * @param {Date} cutoff
+         * @returns {object[]}
+         */
+        function collectNewlyAddedEvents(cutoff) {
+            if (!eventsData) return [];
+
+            const today = getTodayMidnight();
+            const sixMonths = new Date(today);
+            sixMonths.setMonth(sixMonths.getMonth() + 6);
+
+            const results = [];
+
+            // --- Helper: resolve venue location string ---
+            function locationFor(venue_id) {
+                if (!venue_id || !venuesLookup[venue_id]) return '';
+                const v = venuesLookup[venue_id];
+                return v.full_address || v.name || '';
+            }
+
+            // --- 1. Recurring events (storyclubs) ---
+            for (const ev of eventsData.events || []) {
+                if (!isNewlyAdded(ev, cutoff)) continue;
+                const dates = parseSchedule(ev.schedule, today, sixMonths);
+                const venue = locationFor(ev.venue_id);
+                results.push({
+                    name: ev.name || ev.club || '(unnamed)',
+                    typeBadge: 'Story club',
+                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
+                    location: venue || ev.location || '',
+                    dateAdded: ev.date_added,
+                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                });
+            }
+
+            // --- 2. Folk nights ---
+            for (const ev of eventsData.folkNights || []) {
+                if (!isNewlyAdded(ev, cutoff)) continue;
+                const dates = parseSchedule(ev.schedule, today, sixMonths);
+                const venue = locationFor(ev.venue_id);
+                results.push({
+                    name: ev.name || ev.club || '(unnamed)',
+                    typeBadge: 'Folk club',
+                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
+                    location: venue || ev.location || '',
+                    dateAdded: ev.date_added,
+                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                });
+            }
+
+            // --- 3. Irish sessions ---
+            for (const ev of eventsData.irishSessions || []) {
+                if (!isNewlyAdded(ev, cutoff)) continue;
+                const dates = parseSchedule(ev.schedule, today, sixMonths);
+                const venue = locationFor(ev.venue_id);
+                results.push({
+                    name: ev.name || ev.club || '(unnamed)',
+                    typeBadge: 'Irish session',
+                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
+                    location: venue || ev.location || '',
+                    dateAdded: ev.date_added,
+                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                });
+            }
+
+            // --- 4. Specific / story-show events ---
+            for (const ev of eventsData.specificEvents || []) {
+                if (!isNewlyAdded(ev, cutoff)) continue;
+                const expanded = expandDatetimes(ev);  // event_display.js
+                const upcoming = expanded
+                    .filter(({ date }) => date >= today)
+                    .sort((a, b) => a.date - b.date);
+                const venue = locationFor(ev.venue_id);
+                const firstDate = upcoming.length > 0
+                    ? formatNewEventDate(upcoming[0].date)
+                    : (ev.date ? ev.date : '');
+                results.push({
+                    name: ev.name || '(unnamed)',
+                    typeBadge: 'Story show',
+                    dateStr: firstDate ? firstDate : '',
+                    location: venue || ev.location || '',
+                    dateAdded: ev.date_added,
+                    _sortKey: (ev.name || '').toLowerCase(),
+                });
+            }
+
+            // --- 5. Music events ---
+            for (const ev of eventsData.musicEvents || []) {
+                if (!isNewlyAdded(ev, cutoff)) continue;
+                const eventDate = parseDateString(ev.date);
+                const venue = locationFor(ev.venue_id);
+                results.push({
+                    name: ev.name || '(unnamed)',
+                    typeBadge: 'Music',
+                    dateStr: eventDate ? formatNewEventDate(eventDate) : '',
+                    location: venue || ev.location || '',
+                    dateAdded: ev.date_added,
+                    _sortKey: (ev.name || '').toLowerCase(),
+                });
+            }
+
+            // --- 6. Tours ---
+            const tours = eventsData.tours || {};
+            for (const tourKey in tours) {
+                const tour = tours[tourKey];
+                if (!isNewlyAdded(tour, cutoff)) continue;
+                // Find first upcoming tour date
+                const upcomingDates = (tour.tour_dates || [])
+                    .map(td => parseDateString(td.date))
+                    .filter(d => d && d >= today)
+                    .sort((a, b) => a - b);
+                const firstVenueId = (tour.tour_dates || []).length > 0
+                    ? tour.tour_dates[0].venue_id : null;
+                results.push({
+                    name: tour.name || '(unnamed)',
+                    typeBadge: tour.isMusic ? 'Music tour' : 'Story tour',
+                    dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
+                    location: locationFor(firstVenueId),
+                    dateAdded: tour.date_added,
+                    _sortKey: (tour.name || '').toLowerCase(),
+                });
+            }
+
+            // --- 7. Touring shows ---
+            const touringShows = eventsData.touring_shows || {};
+            for (const showKey in touringShows) {
+                const show = touringShows[showKey];
+                if (!isNewlyAdded(show, cutoff)) continue;
+                const upcomingDates = (show.show_dates || [])
+                    .map(sd => parseDateString(sd.date))
+                    .filter(d => d && d >= today)
+                    .sort((a, b) => a - b);
+                const firstVenueId = (show.show_dates || []).length > 0
+                    ? show.show_dates[0].venue_id : null;
+                results.push({
+                    name: show.name || show.showname || '(unnamed)',
+                    typeBadge: 'Touring show',
+                    dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
+                    location: locationFor(firstVenueId),
+                    dateAdded: show.date_added,
+                    _sortKey: (show.name || show.showname || '').toLowerCase(),
+                });
+            }
+
+            // --- 8. Festivals ---
+            const festivals = eventsData.festivals || {};
+            for (const [, fest] of Object.entries(festivals)) {
+                if (!isNewlyAdded(fest, cutoff)) continue;
+                const startDate = parseDateString(fest.start_date);
+                const venue = locationFor(fest.venue_id);
+                results.push({
+                    name: fest.name || '(unnamed)',
+                    typeBadge: 'Festival',
+                    dateStr: startDate ? formatNewEventDate(startDate) : '',
+                    location: venue || '',
+                    dateAdded: fest.date_added,
+                    _sortKey: (fest.name || '').toLowerCase(),
+                });
+            }
+
+            // Sort alphabetically by name
+            results.sort((a, b) => a._sortKey.localeCompare(b._sortKey));
+            return results;
+        }
+
+        /**
+         * Render the New Events panel for the selected period.
+         * Called by the three period buttons and also on first open of the panel.
+         *
+         * @param {'week'|'twoweeks'|'month'} period
+         * @param {HTMLElement|null}          [activeBtn]  - The button that was clicked (for styling).
+         */
+        function showNewEvents(period, activeBtn) {
+            newEventsPeriod = period;
+
+            // Update active button styling
+            document.querySelectorAll('.new-events-btn').forEach(b => b.classList.remove('active'));
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const listEl = document.getElementById('newEventsList');
+
+            if (!eventsData) {
+                listEl.innerHTML = '<div class="new-events-placeholder">Events data not yet loaded — please wait a moment and try again.</div>';
+                return;
+            }
+
+            const cutoff = newEventsCutoff(period);
+            const records = collectNewlyAddedEvents(cutoff);
+
+            listEl.innerHTML = '';
+
+            if (records.length === 0) {
+                const msg = document.createElement('div');
+                msg.className = 'new-events-placeholder';
+                msg.textContent = 'No events with a date_added field found for this period.';
+                listEl.appendChild(msg);
+                return;
+            }
+
+            records.forEach(info => listEl.appendChild(buildNewEventCard(info)));
+        }
+
+        /**
+         * Compute counts for all three periods and populate the summary chips.
+         * Called once when the panel is first opened.
+         */
+        function refreshNewEventsCounts() {
+            const countsEl = document.getElementById('newEventsCounts');
+
+            const weekCount = collectNewlyAddedEvents(newEventsCutoff('week')).length;
+            const twoWeekCount = collectNewlyAddedEvents(newEventsCutoff('twoweeks')).length;
+            const monthCount = collectNewlyAddedEvents(newEventsCutoff('month')).length;
+
+            document.getElementById('necWeek').textContent = `${weekCount} this week`;
+            document.getElementById('necTwoWeeks').textContent = `${twoWeekCount} last 2 weeks`;
+            document.getElementById('necMonth').textContent = `${monthCount} last month`;
+
+            countsEl.style.display = 'inline-flex';
+        }
+
+        /**
+         * Called when a count chip in the summary bar is clicked.
+         * Sets the desired period, opens the panel if collapsed, and renders
+         * the matching event list — all without letting the click also
+         * re-toggle the <details> element (which would close it again).
+         *
+         * @param {'week'|'twoweeks'|'month'} period
+         * @param {string}                    btnId   - ID of the matching period button inside the panel
+         * @param {MouseEvent}                e
+         */
+        function openNewEventsPanelFor(period, btnId, e) {
+            e.stopPropagation();
+            const panel = document.getElementById('newEventsPanel');
+            panel._openedByChip = true;   // signal to the toggle listener
+            panel.open = true;
+            newEventsPeriod = period;
+            showNewEvents(period, document.getElementById(btnId));
+        }
+
+        /** (set by event_display.js's load handler),
+         * then compute all three counts so they appear in the collapsed title bar
+         * without the user needing to open the panel first.
+         */
+        function waitForDataThenCount() {
+            // eventsData is initialised to null in event_display.js; wait until
+            // loadEventsData() has replaced it with a real object.
+            if (eventsData !== null && eventsData !== undefined &&
+                (eventsData.events || eventsData.specificEvents || eventsData.musicEvents)) {
+                refreshNewEventsCounts();
+            } else {
+                setTimeout(waitForDataThenCount, 150);
+            }
+        }
+        window.addEventListener('load', () => setTimeout(waitForDataThenCount, 200));
+
+        // When the panel is opened, render the event cards for the selected period.
+        document.getElementById('newEventsPanel').addEventListener('toggle', function () {
+            if (this.open) {
+                if (this._openedByChip) {
+                    this._openedByChip = false;  // consume the flag; showNewEvents already called
+                    return;
+                }
+                showNewEvents(newEventsPeriod,
+                    document.getElementById('newEventsThisWeekBtn'));
+            }
+        });
     </script>
 </body>
 
