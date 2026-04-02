@@ -311,11 +311,19 @@
 
             card.appendChild(nameRow);
 
-            // "Added" date
+            // "Added" date — label lowercase, value normalised to DD/MM/YYYY
             if (info.dateAdded) {
                 const addedRow = document.createElement('div');
                 addedRow.className = 'new-event-added';
-                addedRow.textContent = `Added: ${info.dateAdded}`;
+                // info.dateAdded is already DD/MM/YYYY from the JSON field;
+                // parseDateAdded + manual format guards against any variation.
+                const addedDate = parseDateAdded(info.dateAdded);
+                const addedFormatted = addedDate
+                    ? String(addedDate.getDate()).padStart(2, '0') + '/'
+                    + String(addedDate.getMonth() + 1).padStart(2, '0') + '/'
+                    + addedDate.getFullYear()
+                    : info.dateAdded;
+                addedRow.textContent = `added: ${addedFormatted}`;
                 card.appendChild(addedRow);
             }
 
@@ -376,6 +384,30 @@
                 return v.full_address || v.name || '';
             }
 
+            /**
+             * Convert a DD/MM/YYYY date_added string to a numeric sort key
+             * (milliseconds) for reverse-chronological ordering.
+             * Returns 0 if the string is absent or unparseable.
+             */
+            function dateAddedSortKey(dateAddedStr) {
+                const d = parseDateAdded(dateAddedStr);
+                return d ? d.getTime() : 0;
+            }
+
+            /**
+             * Return a numeric sort key for the event's own date (the date the
+             * event *happens*), for secondary chronological ordering within the
+             * same date_added group.  Returns Infinity when there is no date so
+             * undated entries sink to the bottom of each group.
+             */
+            function eventDateSortKey(dateStr) {
+                // dateStr is already a human-readable string built by
+                // formatNewEventDate(), so we can't re-parse it directly.
+                // Instead we store the raw Date on the result object (_eventDate).
+                // This helper is just a placeholder; see push() calls below.
+                return Infinity;
+            }
+
             // --- 1. Recurring events (storyclubs) ---
             for (const ev of eventsData.events || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
@@ -387,7 +419,8 @@
                     dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
                     location: venue || ev.location || '',
                     dateAdded: ev.date_added,
-                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(ev.date_added),
+                    _eventDate: dates.length > 0 ? dates[0] : null,
                 });
             }
 
@@ -402,7 +435,8 @@
                     dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
                     location: venue || ev.location || '',
                     dateAdded: ev.date_added,
-                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(ev.date_added),
+                    _eventDate: dates.length > 0 ? dates[0] : null,
                 });
             }
 
@@ -417,7 +451,8 @@
                     dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
                     location: venue || ev.location || '',
                     dateAdded: ev.date_added,
-                    _sortKey: (ev.name || ev.club || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(ev.date_added),
+                    _eventDate: dates.length > 0 ? dates[0] : null,
                 });
             }
 
@@ -438,7 +473,8 @@
                     dateStr: firstDate ? firstDate : '',
                     location: venue || ev.location || '',
                     dateAdded: ev.date_added,
-                    _sortKey: (ev.name || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(ev.date_added),
+                    _eventDate: upcoming.length > 0 ? upcoming[0].date : null,
                 });
             }
 
@@ -453,7 +489,8 @@
                     dateStr: eventDate ? formatNewEventDate(eventDate) : '',
                     location: venue || ev.location || '',
                     dateAdded: ev.date_added,
-                    _sortKey: (ev.name || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(ev.date_added),
+                    _eventDate: eventDate || null,
                 });
             }
 
@@ -475,7 +512,8 @@
                     dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
                     location: locationFor(firstVenueId),
                     dateAdded: tour.date_added,
-                    _sortKey: (tour.name || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(tour.date_added),
+                    _eventDate: upcomingDates.length > 0 ? upcomingDates[0] : null,
                 });
             }
 
@@ -496,7 +534,8 @@
                     dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
                     location: locationFor(firstVenueId),
                     dateAdded: show.date_added,
-                    _sortKey: (show.name || show.showname || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(show.date_added),
+                    _eventDate: upcomingDates.length > 0 ? upcomingDates[0] : null,
                 });
             }
 
@@ -512,12 +551,21 @@
                     dateStr: startDate ? formatNewEventDate(startDate) : '',
                     location: venue || '',
                     dateAdded: fest.date_added,
-                    _sortKey: (fest.name || '').toLowerCase(),
+                    _dateAddedMs: dateAddedSortKey(fest.date_added),
+                    _eventDate: startDate || null,
                 });
             }
 
-            // Sort alphabetically by name
-            results.sort((a, b) => a._sortKey.localeCompare(b._sortKey));
+            // Sort: primary = reverse-chronological by date_added (newest first);
+            //       secondary = chronological by the event's own date within each group.
+            results.sort((a, b) => {
+                // 1. Reverse-chronological date_added (higher ms = more recent = first)
+                if (b._dateAddedMs !== a._dateAddedMs) return b._dateAddedMs - a._dateAddedMs;
+                // 2. Chronological event date within same date_added group
+                const aMs = a._eventDate ? a._eventDate.getTime() : Infinity;
+                const bMs = b._eventDate ? b._eventDate.getTime() : Infinity;
+                return aMs - bMs;
+            });
             return results;
         }
 
