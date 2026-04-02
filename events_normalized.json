@@ -85,7 +85,18 @@
           "event_flyer": "",
           "ticket_url": "https://www.eventbrite.co.uk/e/strange-girls-beautiful-monsters-sarah-lisa-wilkinson-tickets-1983296728905?aff=montystoryteller.org",
           "venue_id": "alder-sheffield"
-        }]},
+        },
+        {
+          "date": "30/04/2026",
+          "time": "7pm",
+          "date_added": "02/04/2026",
+          "club": "crickcrack",
+          "price": "£15",
+          "event_flyer": "",
+          "ticket_url": "https://events.bl.uk/events/strange-girls-beautiful-monsters",
+          "venue_id": "pavilion-british-library"
+        }
+        ]},
 
     "sally-pomme-clayton-mighty-goddess": {
       "name": "The Mighty Goddess [Sally Pomme Clayton]",
@@ -691,15 +702,15 @@
       "fb_event": 2102203970315114,
       "venue_id": "llanover-hall-arts-center-cardiff"
     },
-        {"date": "10/02/2026",
-          "time": "7.30-10pm",
-          "club": "guesthouseST",
-          "price": "£12 / £8",
-          "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2034002",
-          "isSpecial": true,
-          "venue_id": "hillcrest-community-centre-newhaven"
-        },
-        {
+    {"date": "10/02/2026",
+      "time": "7.30-10pm",
+      "club": "guesthouseST",
+      "price": "£12 / £8",
+      "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2034002",
+      "isSpecial": true,
+      "venue_id": "hillcrest-community-centre-newhaven"
+    },
+    {
       "date": "04/03/2026",
       "time": "7.15-9.45pm",
       "club": "crickcrack",
@@ -3102,6 +3113,7 @@
       "venue_id": "erasmus-darwin-house-lichfield",
       "performer_id": "maria-credali"
     },
+
     {
       "name": "Crazy Kings & Killer Queens [Merl Fluin & Holly Medland]",
       "showname": "Crazy Kings & Killer Queens",
@@ -3558,7 +3570,6 @@
     {
       "name": "Uncanny [Nell Phoenix]",
       "showname": "Uncanny",
-      "promoter_link": "http://nellphoenix.co.uk/",
       "date": "19/03/2026",
       "time": "7.30pm",
       "club": "crickcrack",
@@ -3777,6 +3788,35 @@
       "performer_id": "monty-the-anywhens"
     },
     {
+      "name": "Uncanny [Nell Phoenix]",
+      "showname": "Uncanny",
+      "date": "22/04/2026",
+      "date_added": "02/04/2026",
+      "time": "7pm",
+      "club": "crickcrack",
+      "price": "£13.50",
+      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
+      "event_flyer": "",
+      "ticket_url": "https://dice.fm/event/v39r5v-fairytales-for-grown-ups-uncanny-22nd-apr-folklore-hoxton-london-tickets",
+      "isSpecial": true,
+      "venue_id": "folklore-hoxton",
+      "performer_id": "nell-phoenix"
+    },
+    {
+      "name": "How to Spin Enchantment [Time Ralphs]",
+      "showname": "How to Spin Enchantment",
+      "date": "30/04/2026",
+      "date_added": "02/04/2026",
+      "time": "7-9pm",
+      "price": "£10 (£8)",
+      "description": "Adapted from The Pentamerone: The Tale of Tales, these high-energy, whimsical, funny wonder tales are cleverly intertwined and a lot of fun.\n\n\n\nSpin and weave the tangled roving into one thread of magic. Snap the scissors shut right before the happily ever after. 17th Century Italian Giambattista Basile travelled from Venice to Naples collecting the most marvelous fairytales.\n\n\n\nTim Ralphs (British Award for Storytelling Excellence winner 2012, **** Fringe Guru, Edinburgh Fringe 2014) rouses them from their inky sleep in a joyful performance that dances from the frivolous to the magical.\n\n\n\nThis is a panoply of some of the most lyrical, characterful and hysterical fairytale stories ever offered up for performance. Seven Godmothers, a sleeping Prince, a weeping girl and an enchanted doll that makes its owner crave more stories. MORE STORIES!",
+      "event_flyer": "",
+      "ticket_url": "https://www.leicestermuseums.org/event-details/?id=0b02c1e0-d387-44fb-9c61-edc3e5229517",
+      "isSpecial": true,
+      "venue_id": "leicester-guildhall",
+      "performer_id": "tim-ralphs"
+    },
+    {
       "name": "Stories for a May Evening",
       "showname": "Stories for a May Evening",
       "date": "06/05/2026",
@@ -3847,14 +3887,29 @@
       "performer_id": "amelia-ace-armande"
     },
     {
+      "name": "Downright Rude! [TUUP, Tim Ralphs, Nell Phoenix & Sarah Liisa Wilkinson]",
+      "showname": "Downright Rude!",
+      "date": "21/05/2026",
+      "date_added": "02/04/2026",
+      "time": "7.30-10.30pm",
+      "club": "crickcrack",
+      "price": "£12.50",
+      "description": "Four Crick Crack Club storytellers take to the stage for a night of gloriously rude folk and fairytales. This no-holds-barred evening of innuendo and bawdiness will peep beneath the petticoats of flirtation, raise a suggestive eyebrow at forbidden love, and take the urges of men and women firmly in hand.\n\n\n\nLowering the tone for your delight are the glint-toothed, unprecedented preacher man TUUP, the oh-so-knowing Sarah Liisa Wilkinson, the irreverent reverend Tim Ralphs, and the naughty-but-nice Nell Phoenix.\n\n\n\nExpect funny, saucy, and deliciously improper stories that stray below the belt.",
+      "event_flyer": "",
+      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-21-may-downright-rude--150796#e150796",
+      "isSpecial": true,
+      "venue_id": "the-cube-kingsdown",
+      "performer_ids": ["tuup", "xanthe-gresham-knight", "tim-ralphs", "nell-phoenix", "sarah-liisa-wilkinson"]
+    },
+    {
       "name": "Another Stranger: Cressida's Tale [Stephe Harrop]",
       "showname": "Another Stranger: Cressida's Tale",
-      "date": "18/04/2026",
+      "date": "04/06/2026",
       "time": "5.45-8pm",
       "club": "",
       "price": "£14.25 (concesssions £8.83",
       "description": "In a world where the lives of strangers & survivors are weighed & traded for political gain, this Cressida is determined to define her value.\n\n\n\nThe wind whips her hair, as she watches the soldiers go by. And a bright face is lifted towards her, full of longing. He swears she's fair and rare as a pearl. But he doesn’t know the grit within her. For Troy must fall, and Cressida — alone; among strangers - must learn the arts of survival and transformation.\n\n\n\nTo the medieval poets who shaped her legend, changeful Cressida was fickle, false, and heartless. But Cressida's Tale follows this anti-heroine's journeys from mythic Troy to England's royal court, the bitter cold of the Scottish coast, and an Elizabethan London seething with anti-migrant rage. In the process, it discovers a Cressida for our own times: a girl with a gift for resilience and reinvention.\n\n\n\nIn a world where the lives of strangers and survivors are weighed and traded for political gain, this Cressida is determined to define her own value.",
-      "event_flyer": "2026_04_18_Faery_Tale_Blues.png",
+      "event_flyer": "",
       "ticket_url": "https://www.eventbrite.co.uk/e/another-stranger-cressidas-tale-tickets-1975572679064?aff=montystoryteller.org",
       "isSpecial": true,
       "venue_id": "portico-library-manchester",
@@ -3890,6 +3945,21 @@
       "performer_id": "sarah-rundle"
     },
     {
+      "name": "The  Shahnameh [Xanthe Gresham]",
+      "showname": "The  Shahnameh",
+      "date": "18/06/2026",
+      "date_added": "02/04/2026",
+      "time": "7.30-10.30pm",
+      "club": "crickcrack",
+      "price": "£12.50",
+      "description": "Aerial artiste of the spoken word, Xanthe Gresham, dives headlong into the wild mythology of Persia, to perform sections of The Shahnameh - the epic masterpiece The Book of Kings - accompanied by the remarkable Iranian musician Arash Moradi.\n\n\n\nMagical horses, epic heroes, and consuming passions abound in this world of romance, lust, tragedy and war. Here fathers and sons may be strangers in battle; selfish Kings move others like chess pieces across the board for their own amusement; beauty can be both a gift and a curse, and strong women break free and conquer their fate.",
+      "event_flyer": "",
+      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-19-mar-uncanny-146375",
+      "isSpecial": true,
+      "venue_id": "the-cube-kingsdown",
+      "performer_id": "xanthe-gresham-knight"
+    },
+    {
       "name": "Open Tellers' Special Night [feat. Steve Dimmer]",
       "showname": "Open Tellers' Special Night [feat. Steve Dimmer]",
       "date": "01/07/2026",
@@ -3901,6 +3971,21 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": ""
+    },
+        {
+      "name": "Downright Rude! [TUUP, Tim Ralphs, Nell Phoenix & Sarah Liisa Wilkinson]",
+      "showname": "Downright Rude!",
+      "date": "11/07/2026",
+      "date_added": "02/04/2026",
+      "time": "7.30-10.30pm",
+      "club": "crickcrack",
+      "price": "£13.90",
+      "description": "Four Crick Crack Club storytellers take to the stage for a night of gloriously rude folk and fairytales. This no-holds-barred evening of innuendo and bawdiness will peep beneath the petticoats of flirtation, raise a suggestive eyebrow at forbidden love, and take the urges of men and women firmly in hand.\n\n\n\nLowering the tone for your delight are the glint-toothed, unprecedented preacher man TUUP, the oh-so-knowing Sarah Liisa Wilkinson, the irreverent reverend Tim Ralphs, and the naughty-but-nice Nell Phoenix.\n\n\n\nExpect funny, saucy, and deliciously improper stories that stray below the belt.",
+      "event_flyer": "",
+      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-kddlozr",
+      "isSpecial": true,
+      "venue_id": "cranborne-earthouse",
+      "performer_ids": ["tuup", "xanthe-gresham-knight", "tim-ralphs", "nell-phoenix", "sarah-liisa-wilkinson"]
     },
     {
       "name": "Lamentable Tales, Merry Gestes and Pleasant Histories [Dave Tonge]",
@@ -5499,11 +5584,23 @@
         -1.2580933
       ]
     },
+    "folklore-hoxton": {
+      "id": "folklore-hoxton",
+      "name": "Folklore Hoxton",
+      "city": "Hoxton",
+      "postcode": "E2 7QL",
+      "full_address": "Folklore Hoxton, 186 Hackney Rd, London, E2 7QL",
+      "url": "https://folklorehoxton.co.uk/",
+      "latlon": [
+        51.53073,
+        -0.0723
+      ]
+    },
     "the-old-stables-behind": {
       "id": "the-old-stables-behind",
-      "name": "The Old Stables",
-      "city": "behind The White Hart",
-      "postcode": "Cricklade",
+      "name": "The Old Stables (behind The White Hart), Cricklade",
+      "city": "Swindon",
+      "postcode": "SN6 6AA",
       "full_address": "The Old Stables, behind The White Hart, Cricklade, Swindon, SN6 6AA",
       "url": "https://www.thewhitehartcricklade.co.uk/",
       "latlon": [
@@ -6689,6 +6786,18 @@
       "latlon": [
         51.72677,
         -4.87266
+      ]
+    },
+    "pavilion-british-library": {
+      "id": "pavilion-british-library",
+      "name": "Pavilion Theatre, British Library",
+      "city": "London",
+      "postcode": "NW1 2DB",
+      "full_address": "Pavilion Theatre, British Library, 96 Euston Road, London, NW1 2DB",
+      "url": "https://events.bl.uk/",
+      "latlon": [
+        51.52953,
+        -0.12754
       ]
     },
     "orepool-inn-sling": {
