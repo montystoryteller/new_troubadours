@@ -234,6 +234,7 @@ function displayTour(tourId) {
         const topLink = document.createElement("a");
         topLink.href = safeUrl;
         topLink.target = "_blank";
+        topLink.rel = "noopener noreferrer";
         topLink.className = "performer-link site-link-header";
         topLink.textContent = `Visit ${perf.name}'s Website`;
         topLinks.push(topLink);
@@ -241,6 +242,7 @@ function displayTour(tourId) {
         const bottomLink = document.createElement("a");
         bottomLink.href = safeUrl;
         bottomLink.target = "_blank";
+        bottomLink.rel = "noopener noreferrer";
         bottomLink.className = "performer-link site-link-footer";
         bottomLink.textContent = `Official Website: ${perf.name}`;
         bottomLinks.push(bottomLink);

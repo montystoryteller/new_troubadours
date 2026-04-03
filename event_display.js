@@ -809,7 +809,6 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
       const rescheduledTo = rescheduleMap.get(dateKey);
 
       if (rescheduledTo) {
-        //eventData.isCancelled = true;
         eventData.isRescheduledAway = true;
         eventData.rescheduledTo = rescheduledTo;
         eventData.rescheduledToStr = rescheduledTo.toLocaleDateString("en-GB", {
@@ -1226,8 +1225,7 @@ function createEventHeader(event) {
     nameLink.target = "_blank";
     nameLink.rel = "noopener noreferrer";
     nameLink.textContent = event.name;
-    nameLink.style.cssText =
-      "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(0,0,0,0.3);";
+    nameLink.className = "event-storyclub-name-link";
     nameLink.addEventListener("click", (e) => e.stopPropagation());
     header.appendChild(nameLink);
   } else {
@@ -1239,10 +1237,9 @@ function createEventHeader(event) {
     const infoLink = document.createElement("a");
     infoLink.href = `new_troubadours_storyclub.html?club=${encodeURIComponent(event.club)}`;
     infoLink.title = `More about ${event.name}`;
-    infoLink.style.cssText =
-      "display:inline-block;margin-left:7px;vertical-align:middle;text-decoration:none;";
+    infoLink.className = "event-club-info-link";
     infoLink.addEventListener("click", (e) => e.stopPropagation());
-    infoLink.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="width:17px;height:17px;vertical-align:middle;">
+    infoLink.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="event-club-info-icon">
       <circle cx="10" cy="10" r="10" fill="#1976d2"/>
       <text x="10" y="15" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="white">i</text>
     </svg>`;
@@ -1322,6 +1319,7 @@ function createPerformerSection(event) {
       const performerLink = document.createElement("a");
       performerLink.href = safePerformerUrl;
       performerLink.target = "_blank";
+      performerLink.rel = "noopener noreferrer";
       performerLink.className = "event-performer-link";
       performerLink.onclick = (e) => e.stopPropagation();
       const performerStrong = document.createElement("strong");
@@ -1459,6 +1457,7 @@ function createTicketsSection(event) {
       const tourLink = document.createElement("a");
       tourLink.href = `new_troubadours_tour_guide.html?tour=${tid}`;
       tourLink.target = "_blank";
+      tourLink.rel = "noopener noreferrer";
       tourLink.textContent = `VIEW: ${tourName}`;
       tourLink.className = "tour-link";
       tourLink.addEventListener("click", (e) => e.stopPropagation());
@@ -1484,6 +1483,7 @@ function createTicketsSection(event) {
         const a = document.createElement("a");
         a.href = safeUrl;
         a.target = "_blank";
+        a.rel = "noopener noreferrer";
         a.textContent = st.time ? `${st.time} show` : `Show ${i + 1}`;
         a.addEventListener("click", (e) => e.stopPropagation());
         ticketsDiv.appendChild(a);
@@ -1763,6 +1763,7 @@ function createFestivalElement(fest) {
       const a = document.createElement("a");
       a.href = safeUrl;
       a.target = "_blank";
+      a.rel = "noopener noreferrer";
       a.textContent = "🎟 Tickets";
       a.onclick = (ev) => ev.stopPropagation();
       ticketDiv.appendChild(a);
@@ -2161,7 +2162,7 @@ async function searchAllUpcoming() {
 
   if (allEventsData.length === 0) {
     const eventsList = document.getElementById("eventsList");
-    eventsList.innerHTML = `<div class="no-events">No upcoming events found matching "${searchTerm}"</div>`;
+    eventsList.innerHTML = `<div class="no-events">No upcoming events found matching "${escapeHtml(searchTerm)}"</div>`;
   }
 }
 function getWeekStart(date) {

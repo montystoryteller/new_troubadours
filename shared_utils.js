@@ -207,6 +207,7 @@ function createIcon(container, type, url) {
   const link = document.createElement("a");
   link.href = safeUrl;
   link.target = "_blank";
+  link.rel = "noopener noreferrer";
   link.className = `event-${type}`;
   link.title = String(type).charAt(0).toUpperCase() + String(type).slice(1);
   link.onclick = (e) => e.stopPropagation();
@@ -249,6 +250,7 @@ function createVenueElement(venue) {
       const venueLink = document.createElement("a");
       venueLink.href = safeUrl;
       venueLink.target = "_blank";
+      venueLink.rel = "noopener noreferrer";
       venueLink.className = "venue-link";
       venueLink.addEventListener("click", (e) => e.stopPropagation());
       const strong = document.createElement("strong");
@@ -301,6 +303,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
     const tourLink = document.createElement("a");
     tourLink.href = `new_troubadours_tour_guide.html?tour=${tid}`;
     tourLink.target = "_blank";
+    tourLink.rel = "noopener noreferrer";
     tourLink.textContent = `VIEW: ${tourName}`;
     tourLink.className = "tour-link";
     tourLink.addEventListener("click", (e) => e.stopPropagation());
@@ -316,6 +319,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
       const ticketLink = document.createElement("a");
       ticketLink.href = safeUrl;
       ticketLink.target = "_blank";
+      ticketLink.rel = "noopener noreferrer";
       ticketLink.textContent = past
         ? "Tickets were available here"
         : "Tickets available here";
@@ -335,6 +339,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
       const fbLink = document.createElement("a");
       fbLink.href = fbEventUrl;
       fbLink.target = "_blank";
+      fbLink.rel = "noopener noreferrer";
       fbLink.className = "event-facebook-inline";
       fbLink.title = "Facebook Event";
       fbLink.onclick = (e) => e.stopPropagation();

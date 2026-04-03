@@ -883,6 +883,13 @@
 
         const CALENDAR = "new_troubadours_event_guide.html";
 
+        function escapeHtml(text) {
+            if (!text) return "";
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // ── Calendar link builder ─────────────────────────────────────────────────
         // Constructs a URL back to the events calendar, pre-filtered to the event's
         // date window and pre-searched for the show name.
@@ -1457,8 +1464,8 @@
             img.alt = item.name;
 
             let dateLine = "";
-            if (item.isClubGeneric) dateLine = item.schedule ? `Meets ${item.schedule}` : "Regular club";
-            else if (item.tourDateRange) dateLine = `${item.tourDateRange} (${item.tourDateCount} dates)`;
+            if (item.isClubGeneric) dateLine = item.schedule ? `Meets ${escapeHtml(item.schedule)}` : "Regular club";
+            else if (item.tourDateRange) dateLine = `${escapeHtml(item.tourDateRange)} (${escapeHtml(String(item.tourDateCount))} dates)`;
             else dateLine = formatDate(item.date);
 
             const dest = resolveLink(item);
@@ -1469,9 +1476,9 @@
                         : dest ? "More info →" : "";
 
             document.getElementById("lightbox-caption").innerHTML = `
-        <div class="lb-title">${item.name}</div>
-        ${item.performer ? `<div class="lb-performer">${item.performer}</div>` : ""}
-        ${item.venue ? `<div class="lb-meta">${item.venue}${item.city ? ", " + item.city : ""}</div>` : ""}
+        <div class="lb-title">${escapeHtml(item.name)}</div>
+        ${item.performer ? `<div class="lb-performer">${escapeHtml(item.performer)}</div>` : ""}
+        ${item.venue ? `<div class="lb-meta">${escapeHtml(item.venue)}${item.city ? ", " + escapeHtml(item.city) : ""}</div>` : ""}
         <div class="lb-meta">${dateLine}</div>
         <div class="lb-actions">
             ${dest ? `<a href="${dest}" target="_blank" rel="noopener noreferrer" class="lb-actions-primary">${destLabel}</a>` : ""}

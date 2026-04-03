@@ -758,7 +758,7 @@
                         .split('\n\n\n\n')
                         .map(p => p.trim())
                         .filter(Boolean)
-                        .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+                        .map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
                         .join('');
                     expandable.appendChild(desc);
 
