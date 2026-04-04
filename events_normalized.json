@@ -645,7 +645,7 @@
         {
           "date": "12/06/2026",
           "venue_id": "cygnet-theatre-exeter",
-          "ticket_url": "https://wegottickets.com/event/682807/"
+          "ticket_url": "https://wegottickets.com/af/671/event/682807/"
         }
       ]
     }, 
@@ -1025,7 +1025,7 @@
           "date": "25/04/2026",
           "time": "7.30pm",
           "price": "£15 (+£1.50 booking fee)",
-          "ticket_url": "https://wegottickets.com/f/15769",
+          "ticket_url": "https://wegottickets.com/af/671/event/15769",
           "venue_id": "swiss-cottage-twyford"
         },
         {
@@ -1040,7 +1040,7 @@
           "date": "29/04/2026",
           "time": "7.30pm",
           "price": "£15 (+£1.50 booking fee)",
-          "ticket_url": "https://wegottickets.com/f/15505",
+          "ticket_url": "https://wegottickets.com/af/671/event/15505",
           "venue_id": "kitchen-garden-cafe-birmingham"
         },
         {
@@ -1190,7 +1190,7 @@
           "fb_event": 818935460576685,
           "date": "16/04/2026",
           "time": "7.30pm",
-          "ticket_url": "https://wegottickets.com/f/14322",
+          "ticket_url": "https://wegottickets.com/af/671/event/14322",
           "price": "£16.50",
           "venue_id": "kitchen-garden-cafe-birmingham"
         },
@@ -1571,7 +1571,7 @@
           "date": "07/03/2026",
           "time": "Doors 6.30pm, start 8.15pm",
           "price": "£12.50 + £1.30 booking fee",
-          "ticket_url": "https://wegottickets.com/f/15208",
+          "ticket_url": "https://wegottickets.com/af/671/event/15208",
           "venue_id": "katie-fitzgeralds-stourbridge"
         },
         {
@@ -3589,10 +3589,9 @@
       "club": "talestattledtold",
       "price": "£7.70 advance, £8 on the door",
       "description": "Join Tales Tattled & Told for another night of wild and wonderful words!\n\n\n\nThe evening's headline storyteller is Lichfield's amazing Janet Crouch, who brings us 'Myths and Mysteries of the Maltese Islands.'\n\n\n\nWith the wonderful music of the a capella choir Gracenotes!\n\n\n\nStephen Eames hosts another joyous evening of storytelling and acoustic music at the historic Rectory Cottages at 49 Church Green Rd, Bletchley, MK3 6BJ.\n\n\n\nWith more stories by Lynette Hill, Stephen Hobbs and Lou Tribus.",
-      "ticket_url": "https://wegottickets.com/af/671/event/694668",
       "isSpecial": true,
       "event_flyer": "2026-04-21-tales-tattled-crouch-malta.jpg",
-      "ticket_url": "https://wegottickets.com/event/662621/",
+      "ticket_url": "https://wegottickets.com/af/671/event/662621/",
       "fb_event": 1236436004929176,
       "venue_id": "rectory-cottages-bletchley",
       "performer_id": "janet-crouch"
@@ -3620,7 +3619,7 @@
       "club": "feastoffools",
       "price": "£10.05",
       "description": "For our 11th birthday, on 1st April — what better date for the Feast of Fools?! — we are seriously delighted to welcome Maria Gillen from Cork City as our guest professional performer.\n\n\n\nStorytellers come to the art through many routes; Maria's may be unique, having spent 22 years in a Global Multinational environment, with her last 4.5 years as a European Operations Manager.  She became a Biodynamic Therapist in 2007 and has an MA in Dramatherapy since 2010.\n\n\n\nBut she wears this formidable CV very lightly when performing. What you get is a great enthusiasm for the art and value of storytelling, for its traditions and material, with spontaneous warmth, an infectious sense of humour, and a wonderful ability to convey emotional depth with just a few beautifully chosen words.\n\n\n\nShe comes from a family where stories are cherished and is very interested in what the wisdoms of yesteryear have to offer us in today’s world.\n\n\n\nAnd the Five Deep Wells of her title? Maria describes them as: myths & legends, stories of our stones, Diaspora Stories, Bean Feasa (Wise Woman) stories & co-created stories.\n\n\n\nAdd all this to the Feast of Fools' famously welcoming atmosphere, the possibly even more famous Janet's home made cakes, and the lovely surroundings of Northampton's Quaker Meeting House and we really can't think of anything better you could possibly want to spend your Wednesday evening doing!",
-      "ticket_url": "https://wegottickets.com/event/695348",
+      "ticket_url": "https://wegottickets.com/af/671/event/695348",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "maria-gillen"
@@ -3782,7 +3781,7 @@
       "club": "lichfieldST",
       "price": "£7.70",
       "description": "In these traditional stories we will encounter banshees, selkies, people of the underworld and more.\n\n\n\nLiz is an Irish storyteller with an international reputation. She has told across the world in venues ranging from prisons to the Albert Hall.\n\n\n\nShe is an outstanding teller.",
-      "ticket_url": "https://wegottickets.com/event/696950",
+      "ticket_url": "https://wegottickets.com/af/671/event/696950",
       "isSpecial": true,
       "fb_event": 918408767498376,
       "venue_id": "kings-head-lichfield",
@@ -3854,7 +3853,7 @@
       "club": "feastoffools",
       "price": "£10.05",
       "description": "A series of 10 minute tales from our excellent team of tellers.",
-      "ticket_url": "https://wegottickets.com/event/697183",
+      "ticket_url": "https://wegottickets.com/af/671/event/697183",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton"
     },
