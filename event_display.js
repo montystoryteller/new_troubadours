@@ -496,17 +496,37 @@ function createEventData(baseEvent, date, eventType) {
 
   if (eventType === "special" || eventType === "music") {
     eventData.tour_id = baseEvent.tour_id || null;
-    eventData.performer_id = baseEvent.performer_id || null;
 
-    // Look up performer details from collection
-    const performer_id = baseEvent.performer_id;
-    if (performer_id && performersLookup[performer_id]) {
-      eventData.performer = performersLookup[performer_id].name;
-      eventData.performer_url = performersLookup[performer_id].url || null;
+    // Collect all performer IDs: singular + array, deduplicated, preserving order
+    const allPerformerIds = [];
+    if (baseEvent.performer_id) allPerformerIds.push(baseEvent.performer_id);
+    if (Array.isArray(baseEvent.performer_ids)) {
+      baseEvent.performer_ids.forEach((id) => {
+        if (!allPerformerIds.includes(id)) allPerformerIds.push(id);
+      });
+    }
+
+    if (allPerformerIds.length > 0) {
+      const names = allPerformerIds
+        .map((id) => performersLookup[id]?.name)
+        .filter(Boolean);
+      eventData.performer = names.length
+        ? names.join(", ")
+        : baseEvent.performer || null;
+      // performer_url only meaningful for a single performer
+      eventData.performer_url =
+        allPerformerIds.length === 1
+          ? performersLookup[allPerformerIds[0]]?.url || null
+          : null;
     } else {
       eventData.performer = baseEvent.performer || null;
       eventData.performer_url = null;
     }
+
+    // Keep both fields: singular for tour-merge key compat, array for profile links
+    eventData.performer_id = baseEvent.performer_id || null;
+    eventData.performer_ids = allPerformerIds;
+
     eventData.description = baseEvent.description || null;
     eventData.event_flyer = baseEvent.event_flyer || null;
     eventData.tour_flyer = baseEvent.tour_flyer || null;
@@ -536,7 +556,8 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
   return {
     name: tour.name,
     tour_id: tourKey,
-    performer_id: tour.performer_id,
+    performer_id: tour.performer_id || null,
+    performer_ids: Array.isArray(tour.performer_ids) ? tour.performer_ids : [],
     date: tourDate.date,
     time: tourDate.time || tour.time || null,
     price: tourDate.price || tour.price || null,
@@ -1174,7 +1195,7 @@ function createEventElement(event) {
   }
 
   if (event.isRescheduledAway) {
-      eventDiv.classList.add("event-rescheduled");
+    eventDiv.classList.add("event-rescheduled");
   }
 
   // Add click handler
@@ -1220,7 +1241,8 @@ function createEventHeader(event) {
   // Club name: link to their own website if they have one, else plain text
   if (event.isStoryclub && event.link) {
     const nameLink = createExternalLink(event.link, event.name, {
-      style: "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(0,0,0,0.3);",
+      style:
+        "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(0,0,0,0.3);",
     });
     if (nameLink) header.appendChild(nameLink);
   } else {
@@ -1327,16 +1349,23 @@ function createPerformerSection(event) {
     performerDiv.textContent = event.performer;
   }
 
-  // Secondary link: performer profile page (small icon, only if we have a performer_id)
-  if (event.performer_id) {
+  // Secondary link(s): performer profile page (small icon per performer)
+  const profileIds = event.performer_ids?.length
+    ? event.performer_ids
+    : event.performer_id
+      ? [event.performer_id]
+      : [];
+
+  profileIds.forEach((id) => {
+    const perf = performersLookup[id];
     const perfPageLink = document.createElement("a");
-    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(event.performer_id)}`;
+    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
     perfPageLink.className = "venue-page-link";
-    perfPageLink.title = "View performer profile";
+    perfPageLink.title = `View ${perf?.name || "performer"} profile`;
     perfPageLink.textContent = "i";
     perfPageLink.onclick = (e) => e.stopPropagation();
     performerDiv.appendChild(perfPageLink);
-  }
+  });
 
   return performerDiv;
 }
