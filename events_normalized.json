@@ -3688,7 +3688,7 @@
       "performer_id": "maria-credali"
     },
     {
-      "name": "Wild May — Stories for the Springtime [Dartmoor Storytellers]",
+      "name": "Wild May — Stories for the Springtime [Henry Everett | Shane Ibbs | Lisa Schneida]",
       "showname": "Faery Tale Blues",
       "date": "18/04/2026",
       "time": "7.30-9.30pm",
@@ -3701,7 +3701,7 @@
       "fb_event": 1518743683216282,
       "date_added": "04/04/2026",
       "venue_id": "moor-barton-wilding",
-      "performer_id": ""
+      "performer_ids": ["henry-everett", "lisa-schneidau", "shane-ibbs"]
     },
     {
       "name": "Living on the Ceiling: Storytelling with Sarah Rundle",
@@ -3773,6 +3773,20 @@
       "isSpecial": true,
       "venue_id": "ropetackle-arts-centre-shoreham",
       "performer_id": "am-hellberg-moberg"
+    },
+    {
+      "name": "Across the Water — A Medley of Heart-Warming Tales from Ireland [Liz Weir]",
+      "showname": "Across the Water — A Medley of Heart-Warming Tales from Ireland",
+      "date": "14/04/2026",
+      "time": "7-10pm",
+      "club": "lichfieldST",
+      "price": "£7.70",
+      "description": "In these traditional stories we will encounter banshees, selkies, people of the underworld and more.\n\n\n\nLiz is an Irish storyteller with an international reputation. She has told across the world in venues ranging from prisons to the Albert Hall.\n\n\n\nShe is an outstanding teller.",
+      "ticket_url": "https://wegottickets.com/event/696950",
+      "isSpecial": true,
+      "fb_event": 918408767498376,
+      "venue_id": "kings-head-lichfield",
+      "performer_id": "liz-weir"
     },
     {
       "name": "STOOPID [Alys Torrance]",
@@ -8220,6 +8234,18 @@
       "name": "Lynette Hill",
       "url": "https://www.facebook.com/lynettehilluk",
       "bio": "Joyous creator and teller of tall tales and 2023 Bard of Stony Stratford"
+    },
+    "liz-weir": {
+      "id": "liz-weir",
+      "name": "Liz Weir",
+      "url": "https://www.lizweirstoryteller.com/",
+      "bio": "Liz Weir MBE is an award-winning Irish storyteller who has shared stories on five continents — from pubs, prisons, and hospital rooms to the Royal Albert Hall and New York's Grand Central Station."
+    },
+    "lisa-schneidau": {
+      "id": "lisa-schneidau",
+      "name": "Lisa Schneidau",
+      "url": "https://www.lisaschneidau.co.uk/",
+      "bio": "Lisa Schneidau finds and tells stories that inspire, provoke curiosity and build stronger connections between people and nature.\n\n\n\n She works with the oral storytelling tradition, where traditional and modern stories are remembered, shared and passed on to others. You'll find her telling stories at events and venues all over the South West and beyond. Lisa's repertoire includes storytelling evenings for adults, shows and collaborations, schools and museums work, story walks and workshops.\n\n\n\nLisa has written four books on traditional folk tales published by The History Press."
     },
     "shonaleigh": {
       "id": "shonaleigh",
