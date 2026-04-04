@@ -279,6 +279,98 @@
             }
         }
 
+        /* ── "What's on" period quick-filters ───────────────────── */
+        .period-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8f5e9;
+        }
+
+        .period-filter-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-right: 4px;
+        }
+
+        .period-btn {
+            padding: 5px 13px;
+            border: 1.5px solid #c8e6c9;
+            border-radius: 20px;
+            background: white;
+            color: #2e7d32;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            font-weight: 500;
+        }
+
+        .period-btn:hover {
+            background: #f1f8f1;
+            border-color: #4CAF50;
+        }
+
+        .period-btn.active {
+            background: #4CAF50;
+            border-color: #2e7d32;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* ── Next-meeting badge on club cards ────────────────────── */
+        .next-meeting-badge {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            letter-spacing: 0.01em;
+        }
+
+        .next-meeting-badge.today {
+            background: #e53935;
+            color: white;
+        }
+
+        .next-meeting-badge.tomorrow {
+            background: #ff6f00;
+            color: white;
+        }
+
+        .next-meeting-badge.thisweek {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #a5d6a7;
+        }
+
+        .next-meeting-badge.nextweek {
+            background: #f5f5f5;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .next-meeting-badge.later {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .period-filter-row {
+                gap: 4px;
+            }
+
+            .period-btn {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+        }
+
         /* ── Status messages (loading, error) ────────────────── */
         .status-message {
             text-align: center;
@@ -349,6 +441,120 @@
         function normaliseFacebook(fb) {
             if (!fb) return null;
             return fb.startsWith('http') ? fb : `https://facebook.com/${fb}`;
+        }
+
+        // ── Shared schedule engine (used by both single-club view and directory) ──
+        // Kept at module scope so renderDirectory can call it without duplication.
+        const _SCHED_DAY_MAP = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+        const _SCHED_OCC_MAP = { '1st': 1, '2nd': 2, '3rd': 3, '4th': 4, 'last': 'last' };
+
+        function _findNthDayInMonth(year, month, targetDay, occurrence) {
+            const lastDay = new Date(year, month + 1, 0);
+            if (occurrence === 'last') {
+                for (let d = lastDay.getDate(); d >= 1; d--) {
+                    const t = new Date(year, month, d); t.setHours(0, 0, 0, 0);
+                    if (t.getDay() === targetDay) return t;
+                }
+            } else {
+                let count = 0;
+                for (let d = 1; d <= lastDay.getDate(); d++) {
+                    const t = new Date(year, month, d); t.setHours(0, 0, 0, 0);
+                    if (t.getDay() === targetDay && ++count === occurrence) return t;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Return all scheduled dates for a club in [from, to], respecting exceptions.
+         * @param {string}   schedule   – e.g. "2nd tuesday", "every monday", "1st and 3rd wednesday"
+         * @param {Date}     from       – start of window (midnight-normalised)
+         * @param {Date}     to         – end of window (midnight-normalised)
+         * @param {string[]} exceptions – array of DD/MM/YYYY strings to skip
+         * @returns {Date[]}
+         */
+        function scheduledDatesInRange(schedule, from, to, exceptions) {
+            if (!schedule) return [];
+            const exSet = new Set((exceptions || []).map(s => {
+                const parts = s.split('/').map(Number);
+                if (parts.length !== 3) return null;
+                const d = new Date(parts[2], parts[1] - 1, parts[0]); d.setHours(0, 0, 0, 0);
+                return d.getTime();
+            }).filter(Boolean));
+
+            const results = [];
+            function addIfInRange(dt) {
+                if (!dt) return;
+                if (dt >= from && dt <= to && !exSet.has(dt.getTime())) results.push(dt);
+            }
+
+            // Pipe-separated alternating months: "1st wed (even months) | 1st thu (odd months)"
+            if (schedule.includes('|')) {
+                for (const part of schedule.split('|').map(s => s.trim())) {
+                    const m = part.match(/^(.+?)\s*\((\w+)\s+months\)$/i);
+                    if (!m) continue;
+                    const [occ, day] = m[1].trim().toLowerCase().split(/\s+/);
+                    const cond = m[2].toLowerCase();
+                    const tDay = _SCHED_DAY_MAP[day]; const occNum = _SCHED_OCC_MAP[occ];
+                    const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
+                    const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
+                    while (cur <= end) {
+                        const mo = cur.getMonth() + 1;
+                        const ok = (cond === 'even' && mo % 2 === 0) || (cond === 'odd' && mo % 2 !== 0);
+                        if (ok) addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
+                        cur.setMonth(cur.getMonth() + 1);
+                    }
+                }
+                return results.sort((a, b) => a - b);
+            }
+
+            // "X and Y dayname"
+            if (schedule.toLowerCase().includes(' and ')) {
+                const [occ1str, rest] = schedule.toLowerCase().split(' and ');
+                const [occ2str, dayName] = rest.trim().split(/\s+/);
+                const tDay = _SCHED_DAY_MAP[dayName];
+                const occ1 = _SCHED_OCC_MAP[occ1str.trim()], occ2 = _SCHED_OCC_MAP[occ2str.trim()];
+                const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
+                const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
+                while (cur <= end) {
+                    addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occ1));
+                    addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occ2));
+                    cur.setMonth(cur.getMonth() + 1);
+                }
+                return results.sort((a, b) => a - b);
+            }
+
+            // "every dayname"
+            if (schedule.toLowerCase().startsWith('every ')) {
+                const tDay = _SCHED_DAY_MAP[schedule.toLowerCase().replace('every ', '').trim()];
+                const cur = new Date(from);
+                while (cur.getDay() !== tDay) cur.setDate(cur.getDate() + 1);
+                while (cur <= to) { addIfInRange(new Date(cur)); cur.setDate(cur.getDate() + 7); }
+                return results;
+            }
+
+            // Standard "Nth dayname"
+            const [occ, dayName] = schedule.toLowerCase().split(/\s+/);
+            const tDay = _SCHED_DAY_MAP[dayName]; const occNum = _SCHED_OCC_MAP[occ];
+            if (tDay === undefined || !occNum) return results;
+            const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
+            const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
+            while (cur <= end) {
+                addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
+                cur.setMonth(cur.getMonth() + 1);
+            }
+            return results.sort((a, b) => a - b);
+        }
+
+        /**
+         * Return the next scheduled date from today (within 6 months), or null.
+         */
+        function nextMeetingDate(schedule, exceptions) {
+            if (!schedule) return null;
+            const from = getTodayMidnight();
+            const to = new Date(from); to.setMonth(to.getMonth() + 6);
+            const dates = scheduledDatesInRange(schedule, from, to, exceptions || []);
+            return dates.find(d => d >= from) || null;
         }
 
         // ── Main ──────────────────────────────────────────────────────────────────
@@ -875,13 +1081,20 @@
             // ── Filter state ─────────────────────────────────────────────────────
             let activeDay = null;   // null = All
             let activeWeek = null;  // null = All
+            let activePeriod = null; // null | 'today' | 'week' | 'weekend' | '7days'
             let searchTerm = '';
 
-            // Build search index: { club, name, venueName, city, address, searchText }
+            // Build search index: { c, searchText, nextMeeting }
+            // nextMeeting is pre-computed once (Date or null) for badge + period filtering
+            const today = getTodayMidnight();
             const clubIndex = clubs.map(c => {
                 const venue = data.venues[c.venue_id] || {};
                 const parts = [c.name, venue.name, venue.city, venue.full_address, c.location].filter(Boolean);
-                return { c, searchText: parts.join(' ').toLowerCase() };
+                return {
+                    c,
+                    searchText: parts.join(' ').toLowerCase(),
+                    nextMeeting: nextMeetingDate(c.schedule, c.exceptions),
+                };
             });
 
             var isVisible = function (entry) {
@@ -892,6 +1105,29 @@
                     if (!weeks.includes(activeWeek)) return false;
                 }
                 if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase())) return false;
+                if (activePeriod) {
+                    // Compute the window for the chosen period
+                    const from = new Date(today);
+                    const to = new Date(today);
+                    if (activePeriod === 'today') {
+                        // to stays = today
+                    } else if (activePeriod === 'week') {
+                        // Rest of this calendar week (Mon–Sun). Find Sunday.
+                        const dayOfWeek = today.getDay(); // 0=Sun,6=Sat
+                        const daysToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+                        to.setDate(to.getDate() + daysToSunday);
+                    } else if (activePeriod === 'weekend') {
+                        // Next Saturday and Sunday
+                        const dow = today.getDay();
+                        const daysToSat = dow === 6 ? 0 : (6 - dow + 7) % 7 || 7;
+                        to.setDate(to.getDate() + daysToSat + 1); // through Sunday
+                        from.setDate(from.getDate() + (daysToSat === 0 ? 0 : daysToSat));
+                    } else if (activePeriod === '7days') {
+                        to.setDate(to.getDate() + 6);
+                    }
+                    const dates = scheduledDatesInRange(c.schedule, from, to, c.exceptions || []);
+                    if (dates.length === 0) return false;
+                }
                 return true;
             };
 
@@ -964,6 +1200,44 @@
             // ── Filter controls ──────────────────────────────────────────────────
             const controls = document.createElement('div');
             controls.className = 'dir-controls';
+
+            // ── "What's on" period quick-filter row ──────────────────────────────
+            const periodRow = document.createElement('div');
+            periodRow.className = 'period-filter-row';
+
+            const periodLabel = document.createElement('span');
+            periodLabel.className = 'period-filter-label';
+            periodLabel.textContent = "What's on:";
+            periodRow.appendChild(periodLabel);
+
+            let periodBtnEls = [];
+            function refreshPeriodBtns() {
+                periodBtnEls.forEach(b => b.classList.toggle('active', b.dataset.period === (activePeriod || '')));
+            }
+
+            [
+                { label: 'All dates', value: null },
+                { label: 'Today', value: 'today' },
+                { label: 'This week', value: 'week' },
+                { label: 'This weekend', value: 'weekend' },
+                { label: 'Next 7 days', value: '7days' },
+            ].forEach(({ label, value }) => {
+                const btn = document.createElement('button');
+                btn.textContent = label;
+                btn.className = 'period-btn' + (value === activePeriod ? ' active' : '');
+                btn.dataset.period = value || '';
+                btn.addEventListener('click', () => {
+                    activePeriod = (activePeriod === value) ? null : value;
+                    // Period filter and day/week filters are complementary; clear
+                    // day/week when switching to a period so results aren't empty.
+                    if (activePeriod) { activeDay = null; activeWeek = null; refreshDayBtns(); refreshWeekBtns(); }
+                    refreshPeriodBtns();
+                    renderList();
+                });
+                periodRow.appendChild(btn);
+                periodBtnEls.push(btn);
+            });
+            controls.appendChild(periodRow);
 
             // Two-column button grid
             const filterGrid = document.createElement('div');
@@ -1112,11 +1386,37 @@
             const listWrap = document.createElement('div');
             root.appendChild(listWrap);
 
+            // ── Badge helpers ────────────────────────────────────────────────────
+            function nextMeetingBadge(nextDate) {
+                if (!nextDate) return null;
+                const msPerDay = 86400000;
+                const diffDays = Math.round((nextDate - today) / msPerDay);
+                let cls, label;
+                if (diffDays === 0) {
+                    cls = 'today'; label = '🔴 Tonight';
+                } else if (diffDays === 1) {
+                    cls = 'tomorrow'; label = '🟠 Tomorrow';
+                } else if (diffDays <= 6) {
+                    cls = 'thisweek';
+                    label = '🟢 ' + DAYS[nextDate.getDay()] + ' ' + nextDate.getDate() + ' ' + MONTHS_SHORT[nextDate.getMonth()];
+                } else if (diffDays <= 13) {
+                    cls = 'nextweek';
+                    label = DAYS[nextDate.getDay()] + ' ' + nextDate.getDate() + ' ' + MONTHS_SHORT[nextDate.getMonth()];
+                } else {
+                    return null; // .later is display:none, skip building element
+                }
+                const badge = document.createElement('div');
+                badge.className = 'next-meeting-badge ' + cls;
+                badge.textContent = label;
+                return badge;
+            }
+
             // ── Render function ──────────────────────────────────────────────────
             function renderList() {
                 renderMapMarkers(); // keep map in sync with current filters
                 listWrap.innerHTML = '';
-                const visible = clubIndex.filter(isVisible);
+
+                let visible = clubIndex.filter(isVisible);
                 const total = clubIndex.length;
                 countLine.textContent = visible.length === total
                     ? `${total} clubs`
@@ -1130,13 +1430,24 @@
                     return;
                 }
 
+                // When a period filter is active: sort by next meeting date ascending,
+                // suppress day-of-week headings (chronological order is more useful).
+                if (activePeriod) {
+                    visible = [...visible].sort((a, b) => {
+                        const am = a.nextMeeting ? a.nextMeeting.getTime() : Infinity;
+                        const bm = b.nextMeeting ? b.nextMeeting.getTime() : Infinity;
+                        return am - bm;
+                    });
+                }
+
                 let currentDay = null;
-                visible.forEach(({ c }) => {
+                visible.forEach((entry) => {
+                    const { c } = entry;
                     const venue = data.venues[c.venue_id];
                     const day = clubDay(c);
 
-                    // Day heading (only when not filtered to single day)
-                    if (!activeDay && day !== currentDay) {
+                    // Day headings: show only when no period or day filter is narrowing things down
+                    if (!activePeriod && !activeDay && day !== currentDay) {
                         currentDay = day;
                         const h2 = document.createElement('h2');
                         h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
@@ -1154,6 +1465,10 @@
                     name.className = 'event-name';
                     name.textContent = c.name;
                     card.appendChild(name);
+
+                    // Next-meeting badge (shown when meeting is within ~2 weeks)
+                    const badge = nextMeetingBadge(entry.nextMeeting);
+                    if (badge) card.appendChild(badge);
 
                     if (c.schedule) {
                         const s = document.createElement('div');
@@ -1209,6 +1524,7 @@
             // Initial render
             refreshDayBtns();
             refreshWeekBtns();
+            refreshPeriodBtns();
             renderList();
         }
     </script>
