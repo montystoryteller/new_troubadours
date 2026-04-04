@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data &amp; Stats — New Troubadours</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <script src="shared_utils.js"></script>
     <link rel="stylesheet" href="shared-styles.css">
     <style>
@@ -640,7 +640,6 @@
         .drilldown-close:hover {
             color: #333;
         }
-
     </style>
 </head>
 
@@ -664,9 +663,9 @@
     <div id="statsContent" style="display:none;"></div>
 
     <div class="about" id="colophon">
-        <p>Hacked together by Tony Hirst in conversation with <tt>Claude.ai</tt>. For corrections: <tt>montystoryteller
+        <p>Hacked together by Tony Hirst in conversation with <code>Claude.ai</code>. For corrections: <code>montystoryteller
                 AT gmail
-                DOT com</tt></p>
+                DOT com</code></p>
     </div>
 
     <script>
@@ -1074,12 +1073,13 @@
         }
 
         async function loadAndRender() {
-            const resp = await fetch(`events_normalized.json?v=${Date.now()}`);
-            const data = await resp.json();
+            const result = await loadEventsData();
+            if (!result) return;
+            const data = result.eventsData;
 
-            const venues = data.venues || {};
-            const performers = data.performers || {};
-            const tours = data.tours || {};
+            const venues = result.venuesLookup;
+            const performers = result.performersLookup;
+            const tours = result.toursLookup;
             const tourShows = data.touring_shows || {};
             const specific = data.specificEvents || [];
             const music = data.musicEvents || [];

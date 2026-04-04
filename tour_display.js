@@ -136,8 +136,7 @@ function handlePerformerChange() {
     // Optional: If there are multiple tours, you might want to clear
     // the previous tour's view until they pick one from the new list
     document.getElementById("tourContent").style.display = "none";
-    markers.forEach((marker) => map.removeLayer(marker));
-    markers = [];
+    markers = clearMarkers(map, markers);
   }
 }
 
@@ -234,6 +233,7 @@ function displayTour(tourId) {
         const topLink = document.createElement("a");
         topLink.href = safeUrl;
         topLink.target = "_blank";
+        topLink.rel = "noopener noreferrer";
         topLink.className = "performer-link site-link-header";
         topLink.textContent = `Visit ${perf.name}'s Website`;
         topLinks.push(topLink);
@@ -241,6 +241,7 @@ function displayTour(tourId) {
         const bottomLink = document.createElement("a");
         bottomLink.href = safeUrl;
         bottomLink.target = "_blank";
+        bottomLink.rel = "noopener noreferrer";
         bottomLink.className = "performer-link site-link-footer";
         bottomLink.textContent = `Official Website: ${perf.name}`;
         bottomLinks.push(bottomLink);
@@ -759,8 +760,7 @@ function updateMapView() {
 
 function addTourMarkersToMap(tour) {
   // Clear existing markers
-  markers.forEach((marker) => map.removeLayer(marker));
-  markers = [];
+  markers = clearMarkers(map, markers);
 
   if (!tour.tour_dates || tour.tour_dates.length === 0) {
     console.warn("No tour dates found for tour:", tour.name || tour);

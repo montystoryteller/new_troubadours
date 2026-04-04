@@ -10,10 +10,13 @@
 
 const PARAGRAPH_SEPARATOR = "\n\n\n\n";
 
-const UK_IRELAND_BOUNDS = L.latLngBounds(
-  [49.5, -11.0], // SW corner (Atlantic)
-  [61.0, 2.5], // NE corner (North Sea)
-);
+const UK_IRELAND_BOUNDS =
+  typeof L !== "undefined"
+    ? L.latLngBounds(
+        [49.5, -11.0], // SW corner (Atlantic)
+        [61.0, 2.5], // NE corner (North Sea)
+      )
+    : null;
 
 // Icon SVGs used for website, email, and Facebook links.
 // The email icon uses a stroked envelope style (from the event guide).
@@ -207,6 +210,7 @@ function createIcon(container, type, url) {
   const link = document.createElement("a");
   link.href = safeUrl;
   link.target = "_blank";
+  link.rel = "noopener noreferrer";
   link.className = `event-${type}`;
   link.title = String(type).charAt(0).toUpperCase() + String(type).slice(1);
   link.onclick = (e) => e.stopPropagation();
@@ -244,16 +248,10 @@ function createVenueElement(venue) {
   const remainder = commaIndex > 0 ? fullAddress.substring(commaIndex) : "";
 
   if (venue.url) {
-    const safeUrl = sanitizeUrl(venue.url);
-    if (safeUrl) {
-      const venueLink = document.createElement("a");
-      venueLink.href = safeUrl;
-      venueLink.target = "_blank";
-      venueLink.className = "venue-link";
-      venueLink.addEventListener("click", (e) => e.stopPropagation());
-      const strong = document.createElement("strong");
-      strong.textContent = venueName;
-      venueLink.appendChild(strong);
+    const strong = document.createElement("strong");
+    strong.textContent = venueName;
+    const venueLink = createExternalLink(venue.url, strong, { className: "venue-link" });
+    if (venueLink) {
       venueDiv.appendChild(venueLink);
       if (remainder) venueDiv.appendChild(document.createTextNode(remainder));
     } else {
@@ -301,6 +299,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
     const tourLink = document.createElement("a");
     tourLink.href = `new_troubadours_tour_guide.html?tour=${tid}`;
     tourLink.target = "_blank";
+    tourLink.rel = "noopener noreferrer";
     tourLink.textContent = `VIEW: ${tourName}`;
     tourLink.className = "tour-link";
     tourLink.addEventListener("click", (e) => e.stopPropagation());
@@ -316,6 +315,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
       const ticketLink = document.createElement("a");
       ticketLink.href = safeUrl;
       ticketLink.target = "_blank";
+      ticketLink.rel = "noopener noreferrer";
       ticketLink.textContent = past
         ? "Tickets were available here"
         : "Tickets available here";
@@ -335,6 +335,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
       const fbLink = document.createElement("a");
       fbLink.href = fbEventUrl;
       fbLink.target = "_blank";
+      fbLink.rel = "noopener noreferrer";
       fbLink.className = "event-facebook-inline";
       fbLink.title = "Facebook Event";
       fbLink.onclick = (e) => e.stopPropagation();
@@ -410,6 +411,21 @@ async function loadEventsData(cacheBuster) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Map utilities
+// ---------------------------------------------------------------------------
+
+/**
+ * Remove all markers from the map and return an empty array.
+ * Replaces the repeated: markers.forEach(m => map.removeLayer(m)); markers = [];
+ * @param {L.Map} map
+ * @param {L.CircleMarker[]} markersArray
+ * @returns {[]}  Always returns an empty array to reassign the variable.
+ */
+function clearMarkers(map, markersArray) {
+  markersArray.forEach((marker) => map.removeLayer(marker));
+  return [];
+}
 
 // ---------------------------------------------------------------------------
 // Badge creation and formatting
@@ -420,6 +436,33 @@ function createBadge(text) {
   badge.className = "event-badge";
   badge.textContent = text;
   return badge;
+}
+
+/**
+ * Create an anchor element pointing to an external URL.
+ * Returns null if the URL fails sanitization.
+ * @param {string} href          - Raw URL (will be sanitized).
+ * @param {string|Node} content  - Text content or DOM node for the link.
+ * @param {{ className?: string, title?: string, rel?: string, style?: string }} [options]
+ * @returns {HTMLAnchorElement|null}
+ */
+function createExternalLink(href, content, options = {}) {
+  const safeUrl = sanitizeUrl(href);
+  if (!safeUrl) return null;
+  const link = document.createElement("a");
+  link.href = safeUrl;
+  link.target = "_blank";
+  link.rel = options.rel || "noopener noreferrer";
+  if (options.className) link.className = options.className;
+  if (options.title) link.title = options.title;
+  if (options.style) link.style.cssText = options.style;
+  if (typeof content === "string") {
+    link.textContent = content;
+  } else {
+    link.appendChild(content);
+  }
+  link.addEventListener("click", (e) => e.stopPropagation());
+  return link;
 }
 
 // ---------------------------------------------------------------------------

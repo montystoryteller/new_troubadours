@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performer — New Troubadours</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="performer-styles.css">
@@ -117,8 +117,9 @@
     </div>
 
     <div class="about" id="colophon">
-        <p><em>Hacked together by Tony Hirst in conversation with <tt>Claude.ai</tt>.</em></p>
-        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt></em></p>
+        <p><em>Hacked together by Tony Hirst in conversation with <code>Claude.ai</code>.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
+        </p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -296,6 +297,7 @@
                     const a = document.createElement("a");
                     a.href = safeUrl;
                     a.target = "_blank";
+                    a.rel = "noopener noreferrer";
                     a.textContent = performer.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
                     websiteDiv.appendChild(a);
                 }
@@ -621,6 +623,7 @@
                         const a = document.createElement("a");
                         a.href = sanitizeUrl(sd.ticket_url) || "#";
                         a.target = "_blank";
+                        a.rel = "noopener noreferrer";
                         a.className = "ticket-link";
                         a.textContent = "tickets";
                         a.onclick = e => e.stopPropagation();
@@ -727,6 +730,7 @@
                     const a = document.createElement("a");
                     a.href = sanitizeUrl(venue.url) || "#";
                     a.target = "_blank";
+                    a.rel = "noopener noreferrer";
                     a.textContent = venue.name;
                     v.appendChild(a);
                     if (venue.city) v.appendChild(document.createTextNode(`, ${venue.city}`));
@@ -745,6 +749,7 @@
                 const a = document.createElement("a");
                 a.href = sanitizeUrl(event.ticket_url) || "#";
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.className = "ticket-link";
                 a.textContent = "Tickets";
                 badges.appendChild(a);
@@ -811,6 +816,7 @@
                 const a = document.createElement("a");
                 a.href = sanitizeUrl(festival.ticket_url) || "#";
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.className = "ticket-link";
                 a.textContent = "Tickets";
                 badges.appendChild(a);

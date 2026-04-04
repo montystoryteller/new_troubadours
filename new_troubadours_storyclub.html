@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Club — New Troubadours</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="shared-styles.css">
     <style>
@@ -563,15 +563,13 @@
             const clubId = params.get('club');
 
             // Load data
-            let data;
-            try {
-                const r = await fetch('events_normalized.json');
-                data = await r.json();
-            } catch (e) {
+            const result = await loadEventsData();
+            if (!result) {
                 document.getElementById('page-content').innerHTML =
                     '<p class="not-found">Could not load events data.</p>';
                 return;
-            }
+                }
+            const data = result.eventsData;
 
             // Find the recurring club record (events[])
             const clubRecord = data.events.find(e => e.club === clubId) || null;
@@ -584,12 +582,12 @@
 
             if (!clubRecord) {
                 document.getElementById('page-content').innerHTML =
-                    `<div class="not-found"><h2>Club not found</h2><p>No club with id <tt>${clubId}</tt>.</p></div>`;
+                    `<div class="not-found"><h2>Club not found</h2><p>No club with id <code>${clubId}</code>.</p></div>`;
                 return;
             }
 
             // Find all specific events for this club
-            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const today = getTodayMidnight();
 
             const allSpecific = data.specificEvents
                 .filter(e => e.club === clubId)
@@ -964,7 +962,7 @@
                         .split('\n\n\n\n')
                         .map(p => p.trim())
                         .filter(Boolean)
-                        .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+                        .map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
                         .join('');
                     expandable.appendChild(desc);
 

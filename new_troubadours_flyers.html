@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Event Flyers — New Troubadours</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="shared-styles.css">
+    <script src="shared_utils.js"></script>
     <style>
         /* ── Filter bar ──────────────────────────────────────── */
         .filter-bar {
@@ -883,6 +884,13 @@
 
         const CALENDAR = "new_troubadours_event_guide.html";
 
+        function escapeHtml(text) {
+                if (!text) return "";
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
         // ── Calendar link builder ─────────────────────────────────────────────────
         // Constructs a URL back to the events calendar, pre-filtered to the event's
         // date window and pre-searched for the show name.
@@ -1241,16 +1249,17 @@
         }
 
         async function loadFlyers() {
-            const r = await fetch("events_normalized.json");
-            const data = await r.json();
+            const result = await loadEventsData();
+            if (!result) return;
+            const data = result.eventsData;
 
             const now = today();
             const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
             const cutoff = new Date(now);
             cutoff.setMonth(cutoff.getMonth() - 3);
 
-            const performers = data.performers || {};
-            const venues = data.venues || {};
+            const performers = result.performersLookup;
+            const venues = result.venuesLookup;
             const items = [];
             const seen = new Set();
 
@@ -1457,8 +1466,8 @@
             img.alt = item.name;
 
             let dateLine = "";
-            if (item.isClubGeneric) dateLine = item.schedule ? `Meets ${item.schedule}` : "Regular club";
-            else if (item.tourDateRange) dateLine = `${item.tourDateRange} (${item.tourDateCount} dates)`;
+            if (item.isClubGeneric) dateLine = item.schedule ? `Meets ${escapeHtml(item.schedule)}` : "Regular club";
+            else if (item.tourDateRange) dateLine = `${escapeHtml(item.tourDateRange)} (${escapeHtml(String(item.tourDateCount))} dates)`;
             else dateLine = formatDate(item.date);
 
             const dest = resolveLink(item);
@@ -1469,9 +1478,9 @@
                         : dest ? "More info →" : "";
 
             document.getElementById("lightbox-caption").innerHTML = `
-        <div class="lb-title">${item.name}</div>
-        ${item.performer ? `<div class="lb-performer">${item.performer}</div>` : ""}
-        ${item.venue ? `<div class="lb-meta">${item.venue}${item.city ? ", " + item.city : ""}</div>` : ""}
+        <div class="lb-title">${escapeHtml(item.name)}</div>
+        ${item.performer ? `<div class="lb-performer">${escapeHtml(item.performer)}</div>` : ""}
+        ${item.venue ? `<div class="lb-meta">${escapeHtml(item.venue)}${item.city ? ", " + escapeHtml(item.city) : ""}</div>` : ""}
         <div class="lb-meta">${dateLine}</div>
         <div class="lb-actions">
             ${dest ? `<a href="${dest}" target="_blank" rel="noopener noreferrer" class="lb-actions-primary">${destLabel}</a>` : ""}

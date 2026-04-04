@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venue — New Troubadours</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="venue-styles.css">
@@ -88,8 +88,9 @@
     </div>
 
     <div class="about" id="colophon">
-        <p><em>Hacked together by Tony Hirst in conversation with <tt></tt>Claude.ai</tt>.</em></p>
-        <p><em>For corrections, additions, removals, etc., email: <tt>montystoryteller AT gmail DOT com</tt></em></p>
+        <p><em>Hacked together by Tony Hirst in conversation with <code></code>Claude.ai</code>.</em></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
+        </p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -502,6 +503,7 @@
                 const a = document.createElement("a");
                 a.href = sanitizeUrl(venue.url) || "#";
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.textContent = "Website";
                 linksDiv.appendChild(a);
             }
@@ -519,6 +521,7 @@
                 const q = encodeURIComponent(venue.full_address || venue.name);
                 a.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.textContent = "Google Maps";
                 linksDiv.appendChild(a);
             }
@@ -704,6 +707,7 @@
                 const a = document.createElement("a");
                 a.href = sanitizeUrl(linkSrc) || "#";
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.textContent = "Website";
                 links.appendChild(a);
             }
@@ -712,6 +716,7 @@
                 const a = document.createElement("a");
                 a.href = normaliseFacebookUrl(event.facebook);
                 a.target = "_blank";
+                a.rel = "noopener noreferrer";
                 a.textContent = "Facebook";
                 links.appendChild(a);
             }
