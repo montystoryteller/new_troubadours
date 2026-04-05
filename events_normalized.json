@@ -1931,6 +1931,15 @@
       "venue_id": "calverts-hotel-newport"
     },
     {
+      "name": "Furness Tradition",
+      "schedule": "",
+      "time": "",
+      "link": "https://furnesstradition.org.uk/",
+      "facebook": "https://www.facebook.com/profile.php?id=100064874014884",
+      "club": "furnesstradition",
+      "venue_id": ""
+    },
+    {
       "name": "Surrey: Three Heads In A Well storytelling circle",
       "schedule": "4th friday",
       "time": "7.30pm",
@@ -3721,13 +3730,28 @@
       "showname": "Beguiling for Beginners: An evening of trickster tales",
       "date": "09/04/2026",
       "time": "7-10pm",
-      "club": "lichfieldST",
+      "club": "settle-stories",
       "price": "£7.70",
       "description": "A celebration of cunning men, cunning women, coney catching, and all manner of artful deceit.\n\n\n\nThere's a figure on the road. Sometimes in robes, sometimes in rags. Selling pots one day, pardons the next. Potions to pins, prayers to promises.\n\n\n\nEverything for sale. Nothing quite true.\n\n\n\nJoin us for an evening of delicious deceit with Dave Tonge, the Yarnsmith of Norwich, as he conjures the tricksters, rogues, and cunning folk who walked England's roads and worked their craft upon the foolish, the greedy, and the gullible.\n\n\n\nThese aren’t gentle stories. They're sharp-edged and irreverent. The kind of tales that got whispered in alehouses and shared on market days, stories the common folk told about those who lived by their wits when the world offered nothing else.\n\n\n\nThis is storytelling as it was meant to be: profane, philosophical, and utterly compelling.",
       "ticket_url": "https://wegottickets.com/af/671/event/694668",
       "isSpecial": true,
       "online": "hybrid",
       "venue_id": "the-joinery-settle",
+      "performer_id": "dave-tonge"
+    },
+    {
+      "name": "Beguiling for Beginners: An evening of trickster tales [Dave Tonge]",
+      "showname": "Beguiling for Beginners: An evening of trickster tales",
+      "date": "10/04/2026",
+      "time": "7-10pm",
+      "club": "furnesstradition",
+      "price": "£12",
+      "description": "Being a celebration of cunning men, cunning women, coney catching and all manner of counterfeit craftiness.\n\n\n\nA lone trickster wanders the road, from town to town, village to village and house to house, wearing many different disguises. Sometimes a priest, sometimes a potter, and sometimes a pedlar of wares. From pots to pardons,  potions to pins, he sells them all occasionally, but always he gifts lies. His trade is deceit and he practices his craft upon the foolish, the greedy and the gullible.\n\n\n\nWe are delighted to welcome Dave Tonge, otherwise know as the Yarnsmith of Norwich, is a jobbing teller of tales. An itinerant journeyman who performs at festivals, museums, heritage sites and schools, from Lindisfarne Holy Island in the north, to Arundel Castle in the south. He works regularly for English Heritage and national museums like the Ashmolean in Oxford. He has written three books, Tudor Folk Tales, Norfolk Folk tales for Children and Medieval Folk tales for Children. Dave specialises in telling period rich and often irreverent tales shared by the poorer folk long ago on heritage sites, but he is happy to ditch his costume in favour of a fine trilby hat and can be heard at storytelling events including Taffy Thomas's Tales in Trust and Festival at the Edge.",
+      "ticket_url": "https://www.trybooking.com/uk/events/landing/107647",
+      "isSpecial": true,
+      "event_flyer": "2026_04_10_tonge_beguiling_shed1.jpg",
+      "date_added": "05/04/2026",
+      "venue_id": "shed1-distillery",
       "performer_id": "dave-tonge"
     },
     {
@@ -5506,11 +5530,23 @@
         -1.5549986
       ]
     },
+    "shed1-distillery": {
+      "id": "shed1-distillery",
+      "name": "Shed One Distillery",
+      "city": "Ulverston",
+      "postcode": "LA12 9AU",
+      "full_address": "Shed One Distillery, North Lonsdale Road, The Old Calf Shed, Ulverston, LA12 9AU",
+      "url": "https://shed1distillery.com",
+      "latlon": [
+        54.19631,
+        -3.08328
+      ]
+    },
     "plot-9-maze-hill-greenwich": {
       "id": "plot-9-maze-hill-greenwich",
       "name": "Plot 9 Maze Hill",
       "city": "Greenwich",
-      "postcode": "London",
+      "postcode": "SE3 7RD",
       "full_address": "Plot 9 Maze Hill, Greenwich, London, SE3 7RD",
       "url": "https://greenwichsky.com/plot9/",
       "latlon": [
