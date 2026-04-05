@@ -1931,6 +1931,15 @@
       "venue_id": "calverts-hotel-newport"
     },
     {
+      "name": "South Lakeland Storytelling Club",
+      "schedule": "1st tuesday",
+      "time": "7.30pm",
+      "link": "",
+      "facebook": "",
+      "club": "southlakeland",
+      "venue_id": "watermill-inn-ings"
+    },
+    {
       "name": "Furness Tradition",
       "schedule": "",
       "time": "",
@@ -6866,12 +6875,25 @@
         -0.12754
       ]
     },
+    "watermill-inn-ings": {
+      "id": "watermill-inn-ings",
+      "name": "Orepool Inn, Ings",
+      "city": "Windermere",
+      "postcode": "LA8 9PY",
+      "full_address": "Watermill Inn & Windermere Brewing Co., Ings, Nr. Windermere, LA8 9PY",
+      "url": "https://lakelandpub.co.uk/",
+      "email": "info@lakelandpub.co.uk",
+      "latlon": [
+        54.37958,
+        -2.90639
+      ]
+    },
     "orepool-inn-sling": {
       "id": "orepool-inn-sling",
       "name": "Orepool Inn",
       "city": "Sling",
-      "postcode": "Coleford GL16 8LH",
-      "full_address": "Orepool Inn, Sling, Coleford GL16 8LH",
+      "postcode": "GL16 8LH",
+      "full_address": "Orepool Inn, Sling, Coleford, GL16 8LH",
       "url": "https://www.orepoolinn.co.uk/",
       "latlon": [
         51.76702,
