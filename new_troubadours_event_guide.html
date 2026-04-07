@@ -617,9 +617,9 @@
             const twoWeekCount = collectNewlyAddedEvents(newEventsCutoff('twoweeks')).length;
             const monthCount = collectNewlyAddedEvents(newEventsCutoff('month')).length;
 
-            document.getElementById('necWeek').textContent = `${weekCount} this week`;
-            document.getElementById('necTwoWeeks').textContent = `${twoWeekCount} last 2 weeks`;
-            document.getElementById('necMonth').textContent = `${monthCount} last month`;
+            document.getElementById('necWeek').textContent = `${weekCount} over last 7 days`;
+            document.getElementById('necTwoWeeks').textContent = `${twoWeekCount} over last 2 weeks`;
+            document.getElementById('necMonth').textContent = `${monthCount} over last month`;
 
             countsEl.style.display = 'inline-flex';
         }
