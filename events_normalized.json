@@ -1931,6 +1931,16 @@
       "venue_id": "calverts-hotel-newport"
     },
     {
+      "name": "Legendaery, Norwich",
+      "schedule": "2nd sunday",
+      "time": "5.30-8.30pm",
+      "link": "",
+      "facebook": "",
+      "club": "legendaery_norwich",
+      "club_flyer": "legendaery_norwich_2nd_sunday.jpg",
+      "venue_id": "white-lion-norwich"
+    },
+    {
       "name": "South Lakeland Storytelling Club",
       "schedule": "1st tuesday",
       "time": "7.30pm",
@@ -3919,6 +3929,20 @@
       "venue_id": "castle-inn-aberteifi",
       "performer_id": "jessie-wild-cath-little"
     },
+     {
+      "name": "Stories From Between Worlds [Shane Ibbs]",
+      "showname": "Stories From Between Worlds",
+      "date": "09/05/2026",
+      "time": "7-9pm",
+      "club": "",
+      "price": "£12 / £10",
+      "description": "An evening of beguiling fol tales by storyteller Shane Ibbs.\n\n\n\nSometinmes mysterious and dark, sometimes warm hearted and funny, these tales explore what happens when humans meet nature.",
+      "event_flyer": "2026_05_09_between_worlds_fps.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "the-folk-preservation-society-teignmouth",
+      "performer_id": "shane-ibbs"
+    },
     {
       "name": "The Green Knight (But it's Gay) [Ropetackle Storytellers]",
       "showname": "The Green Knight (But it's Gay)",
@@ -4760,6 +4784,18 @@
       "latlon": [
         50.70051,
         -1.29359
+      ]
+    },
+    "white-lion-norwich": {
+      "id": "white-lion-norwich",
+      "name": "White Lion pub, Norwich",
+      "city": "Norwich",
+      "postcode": "NR3 3AQ",
+      "full_address": "White Lion, 73 Oak Street, Norwich, Norwich, NR3 3AQ",
+      "url": "",
+      "latlon": [
+        52.63501,
+        1.28924
       ]
     },
     "rectory-cottages-bletchley": {
@@ -8155,7 +8191,7 @@
       "id": "shane-ibbs",
       "name": "Shane Ibbs",
       "url": "https://www.shaneibbsstoryteller.com/",
-      "bio": ""
+      "bio": "Shane is a modern day Oral Storyteller.\n\n\n\nShane first heard traditional stories as a child from his father and often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane’s storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight."
     },
     "marcus-pibworth": {
       "id": "marcus-pibworth",
