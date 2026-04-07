@@ -3737,20 +3737,20 @@
       "performer_id": "dave-tonge"
     },
     {
-      "name": "Wild May — Stories for the Springtime [Henry Everett | Shane Ibbs | Lisa Schneidau]",
-      "showname": "Wild May — Stories for the Springtime",
+      "name": "Lisa Schneidau + Tales Tattled & Told tellers",
+      "showname": "Lisa Schneidau + Tales Tattled & Told tellers",
       "date": "18/04/2026",
-      "time": "7.30-9.30pm",
-      "club": "dartmoorStorytellers",
-      "price": "£8",
-      "description": "Sizzling storytelling for grownups to celebrate the spirit of the May!\n\n\n\nJoin Devon storytellers Henry Everett, Shane Ibbs and Lisa Schneidau around the fire in the woods for an evening of tantalising, tricksy tales. You will never look at trees and birds in the same way again...\n\n\n\nHenry Everett is a performance storyteller, author, artist and poet. He is author of 'Pixie Folk Tales' a collection of 50 traditional folk tales of our infamous magical neighbours.\n\n\n\nShane Ibbs first heard storytelling around the family hearth. He is a festival storyteller, a Bushcraft instructor, Therapist and woodland immersion facilitator. with storytelling experience in Canada, Morrocco, Holland, Sweden, Ireland and Sri Lanka. \n\n\n\nLisa Schneidau is a storyteller, folklorist and environmentalist. She works with creative storytelling to enable better connection with nature and landscape. Lisa is the author of four bestselling books of folk tales, and the founder of Dartmoor Storytellers.\n\n\n\nThis is the first of a series of Wild Stories events on Dartmoor in the summer of 2026: we aim to showcase amazing storytelling in extraordinary places. It is hosted jointly by Dartmoor Storytellers and Moor Barton Wilding.\n\n\n\nAge suitability 16+.\n\n\n\nThis event will be in the woods, held outdoors around the fire under the shelter of White Deer Lodge at Moor Barton. Come prepared for the outdoors with suitable clothing and footwear. Refreshments will be available, and there are compost toilets. You can park nearby; there is a short walk to the venue, with an earth path which can be uneven underfoot.\n\n\n\nDetails of how to get to the site, and what to bring, will be sent through to all ticket holders near to the date of the event.",
-      "event_flyer": "",
-      "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2151838",
+      "time": "7pm",
+      "club": "talestattledtold",
+      "price": "£7.70 advance, £9 on the door",
+      "description": "Environmental storyteller and Newton Longville native Lisa Schneidau headlines another night of wild and wonderful words at the Rectory Cottages in Bletchley.\n\n\n\nLisa Schneidau shares stories that inspire, provoke curiosity and build stronger connections between people and nature. She tells stories at theatres, festivals, schools and events all over the UK.\n\n\n\nHosted by Pete Boyce! With stories from Lynette Hill, Stephen Hobbs and Stella Girvin. Supported by the fantastic music of Rowland Dexter!",
       "isSpecial": true,
-      "fb_event": 1518743683216282,
-      "date_added": "04/04/2026",
-      "venue_id": "moor-barton-wilding",
-      "performer_ids": ["henry-everett", "lisa-schneidau", "shane-ibbs"]
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/af/671/event/662624/",
+      "fb_event": 2387051161663204,
+      "date_added": "08/04/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_id": "lisa-schneidau"
     },
     {
       "name": "An Afternoon of Stories [Daniel Morden]",
@@ -3937,6 +3937,22 @@
       "ticket_url": "https://wegottickets.com/af/671/event/697183",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton"
+    },
+    {
+      "name": "Wild May — Stories for the Springtime [Henry Everett | Shane Ibbs | Lisa Schneidau]",
+      "showname": "Wild May — Stories for the Springtime",
+      "date": "06/05/2026",
+      "time": "7.30-9.30pm",
+      "club": "dartmoorStorytellers",
+      "price": "£8",
+      "description": "Sizzling storytelling for grownups to celebrate the spirit of the May!\n\n\n\nJoin Devon storytellers Henry Everett, Shane Ibbs and Lisa Schneidau around the fire in the woods for an evening of tantalising, tricksy tales. You will never look at trees and birds in the same way again...\n\n\n\nHenry Everett is a performance storyteller, author, artist and poet. He is author of 'Pixie Folk Tales' a collection of 50 traditional folk tales of our infamous magical neighbours.\n\n\n\nShane Ibbs first heard storytelling around the family hearth. He is a festival storyteller, a Bushcraft instructor, Therapist and woodland immersion facilitator. with storytelling experience in Canada, Morrocco, Holland, Sweden, Ireland and Sri Lanka. \n\n\n\nLisa Schneidau is a storyteller, folklorist and environmentalist. She works with creative storytelling to enable better connection with nature and landscape. Lisa is the author of four bestselling books of folk tales, and the founder of Dartmoor Storytellers.\n\n\n\nThis is the first of a series of Wild Stories events on Dartmoor in the summer of 2026: we aim to showcase amazing storytelling in extraordinary places. It is hosted jointly by Dartmoor Storytellers and Moor Barton Wilding.\n\n\n\nAge suitability 16+.\n\n\n\nThis event will be in the woods, held outdoors around the fire under the shelter of White Deer Lodge at Moor Barton. Come prepared for the outdoors with suitable clothing and footwear. Refreshments will be available, and there are compost toilets. You can park nearby; there is a short walk to the venue, with an earth path which can be uneven underfoot.\n\n\n\nDetails of how to get to the site, and what to bring, will be sent through to all ticket holders near to the date of the event.",
+      "event_flyer": "",
+      "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2151838",
+      "isSpecial": true,
+      "fb_event": 1518743683216282,
+      "date_added": "04/04/2026",
+      "venue_id": "moor-barton-wilding",
+      "performer_ids": ["henry-everett", "lisa-schneidau", "shane-ibbs"]
     },
     {
       "name": "Two Tales: Mumming, Puppetry & Storytelling [The Roving Jewel]",
