@@ -1758,7 +1758,8 @@
       "facebook": "https://www.facebook.com/groups/beestontales",
       "club": "beestontales",
       "tickets_url": "https://www.tickettailor.com/events/beestontales/",
-      "venue_id": "our-lady-of-the-assumption-church-hall-beeston"
+      "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
+      "feature_slots": [["17/12/2025", "steph-brittain"], ["21/01/2026", "nick-hennessey"], ["15/04/2026", "alys-torrance"],["20/05/2026", "amelia-ace-armande"]]
     },
     {
       "name": "Matlock Storytelling Cafe",
@@ -1983,7 +1984,8 @@
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/lynettehilluk",
       "club": "talestattledtold",
-      "venue_id": "rectory-cottages-bletchley"
+      "venue_id": "rectory-cottages-bletchley",
+      "feature_slots" : [ ["21/03/2026", "janet-crouch"], ["18/04/2026", "lisa-schneidau"]]
     },
     {
       "name": "Northampton: Feast of Fools",
@@ -1992,7 +1994,8 @@
       "link": "https://www.storyfeast.uk/",
       "facebook": "https://www.facebook.com/StorytellingFeast",
       "club": "feastoffools",
-      "venue_id": "quaker-meeting-house-northampton"
+      "venue_id": "quaker-meeting-house-northampton",
+      "feature_slots": [["04/02/2026", "shonaleigh"], ["03/06/2026", "hugh-lupton"], ["02/09/2026", "tim-ralphs"], ["04/11/2026", "baden-prince"]]
     },
     {
       "name": "South Devon storytellers",
@@ -2386,7 +2389,8 @@
       "fb_event": 1149093117173169,
       "geocode_missing": true,
       "venue_id": "bowland-bridge-south",
-      "performer_id": "nick-hennessey-emily-hennessey"
+      "performer_id": "nick-hennessey-emily-hennessey",
+      "performer_ids": ["nick-hennessey", "emily-hennessey"]
     },
     {
       "name": "Fen, Folk and Fable",
@@ -4102,8 +4106,8 @@
       "performer_id": "sarah-rundle"
     },
     {
-      "name": "The  Shahnameh [Xanthe Gresham]",
-      "showname": "The  Shahnameh",
+      "name": "The Shahnameh [Xanthe Gresham]",
+      "showname": "The Shahnameh",
       "date": "18/06/2026",
       "date_added": "02/04/2026",
       "time": "7.30-10.30pm",
@@ -4237,7 +4241,7 @@
       "ticket_url": "",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
-      "performer_id": "tim-ralphs"
+      "performer_id": ""
     }
   ],
   "musicEvents": [
