@@ -4472,7 +4472,7 @@
       "id": "the-britons-protection-great",
       "name": "The Britons Protection",
       "city": "Great Bridgewater St.",
-      "postcode": "Manchester",
+      "postcode": "M1 5LE",
       "full_address": "The Britons Protection, Great Bridgewater St., Manchester, M1 5LE",
       "url": "https://www.thebritonsprotection.co.uk/index",
       "latlon": [
@@ -4532,7 +4532,7 @@
       "id": "locks-inn-geldeston",
       "name": "Locks Inn",
       "city": "Geldeston",
-      "postcode": "Norwich",
+      "postcode": "NR34 0HW",
       "full_address": "Locks Inn, Geldeston, Norwich, NR34 0HW",
       "url": "https://thelocksinn.com/",
       "latlon": [
@@ -4592,7 +4592,7 @@
       "id": "rougemont-room-exeter",
       "name": "Rougemont Room",
       "city": "Exeter Library",
-      "postcode": "Exeter",
+      "postcode": "EX4 3PQ",
       "full_address": "Rougemont Room, Exeter Library, Exeter, EX4 3PQ",
       "url": "https://discover.librariesunlimited.org.uk/-/exeter-library#/",
       "latlon": [
@@ -4616,7 +4616,7 @@
       "id": "pullens-centre",
       "name": "The Pullens Centre",
       "city": "184 Crampton Street",
-      "postcode": "London",
+      "postcode": "SE17 3AE",
       "full_address": "The Pullens Centre, 184 Crampton Street, London, SE17 3AE",
       "url": "https://www.pullenstra.org/space-rental/",
       "latlon": [
@@ -4650,9 +4650,9 @@
     },
     "our-lady-of-the-assumption-church-hall-beeston": {
       "id": "our-lady-of-the-assumption-church-hall-beeston",
-      "name": "Our Lady of the Assumption Church Hall",
-      "city": "Beeston",
-      "postcode": "Nottingham",
+      "name": "Our Lady of the Assumption Church Hall, Beeston",
+      "city": "Nottingham",
+      "postcode": "NG9 1AE",
       "full_address": "Our Lady of the Assumption Church Hall, Beeston, Nottingham, NG9 1AE",
       "url": "https://theassumption.co.uk/",
       "latlon": [
@@ -4686,9 +4686,9 @@
     },
     "b-side-cafe-john": {
       "id": "b-side-cafe-john",
-      "name": "B Side cafe",
-      "city": "John Peel Centre",
-      "postcode": "Stowmarket",
+      "name": "B Side cafe, John Peel Centre",
+      "city": "Stowmarket",
+      "postcode": "IP14 1ET",
       "full_address": "B Side cafe, John Peel Centre, Stowmarket, IP14 1ET",
       "url": "",
       "latlon": [
@@ -4735,8 +4735,8 @@
     "storyhouse-hunter": {
       "id": "storyhouse-hunter",
       "name": "Storyhouse",
-      "city": "Hunter St",
-      "postcode": "Chester",
+      "city": "Chester",
+      "postcode": "CH1 2AR",
       "full_address": "Storyhouse, Hunter St, Chester, CH1 2AR",
       "url": "https://www.storyhouse.com/whats-on/triple-spiral-storytellers/",
       "latlon": [
@@ -4776,9 +4776,9 @@
     },
     "calverts-hotel-newport": {
       "id": "calverts-hotel-newport",
-      "name": "Calverts Hotel",
-      "city": "Newport",
-      "postcode": "Isle of Wight",
+      "name": "Calverts Hotel, Newport",
+      "city": "Isle of Wight",
+      "postcode": "PO30 5BA",
       "full_address": "Calverts Hotel, Newport, Isle of Wight, PO30 5BA",
       "url": "https://www.calvertshotel.co.uk/",
       "latlon": [
@@ -4836,9 +4836,9 @@
     },
     "snapdragons-victoria": {
       "id": "snapdragons-victoria",
-      "name": "Snapdragons",
-      "city": "Victoria Park",
-      "postcode": "Plymouth",
+      "name": "Snapdragons, Victoria Park",
+      "city": "Plymouth",
+      "postcode": "PL1 5NJ",
       "full_address": "Snapdragons, Victoria Park, Plymouth, PL1 5NJ",
       "url": "https://www.snapdragonsplymouth.co.uk/",
       "latlon": [
@@ -4861,8 +4861,8 @@
     "liskeard-public-rooms-west": {
       "id": "liskeard-public-rooms-west",
       "name": "Liskeard Public Rooms",
-      "city": "West Street",
-      "postcode": "Liskeard",
+      "city": "Liskeard",
+      "postcode": "PL14 6BW",
       "full_address": "Liskeard Public Rooms, West Street, Liskeard, PL14 6BW",
       "url": "https://visitliskeard.co.uk/venue/liskeard-public-hall/",
       "latlon": [
@@ -4884,9 +4884,9 @@
     },
     "making-space-1": {
       "id": "making-space-1",
-      "name": "Making Space",
-      "city": "1 Gilroy Road",
-      "postcode": "West Kirby",
+      "name": "Making Space, 1 Gilroy Road",
+      "city": "West Kirby",
+      "postcode": "CH48 6DP",
       "full_address": "Making Space, 1 Gilroy Road, West Kirby, CH48 6DP",
       "url": "",
       "latlon": [
@@ -4956,9 +4956,9 @@
     },
     "the-chillingham-south": {
       "id": "the-chillingham-south",
-      "name": "The Chillingham",
-      "city": "South Heaton",
-      "postcode": "Newcastle",
+      "name": "The Chillingham, South Heaton",
+      "city": "Newcastle",
+      "postcode": "NE6 5XN",
       "full_address": "The Chillingham, South Heaton, Newcastle, NE6 5XN",
       "url": "https://sjf.co.uk/the-chillingham/",
       "latlon": [
@@ -4968,9 +4968,9 @@
     },
     "chapter-arts-centre-canton": {
       "id": "chapter-arts-centre-canton",
-      "name": "Chapter Arts Centre",
-      "city": "Canton",
-      "postcode": "Cardiff",
+      "name": "Chapter Arts Centre, Canton",
+      "city": "Cardiff",
+      "postcode": "CF5 1QE",
       "full_address": "Chapter Arts Centre, Canton, Cardiff, CF5 1QE",
       "url": "https://www.chapter.org/",
       "latlon": [
@@ -5112,9 +5112,9 @@
     },
     "the-hoops-barton": {
       "id": "the-hoops-barton",
-      "name": "The Hoops",
-      "city": "Barton",
-      "postcode": "Cambridge",
+      "name": "The Hoops, Barton",
+      "city": "Cambridge",
+      "postcode": "CB23 7BD",
       "full_address": "The Hoops, Barton, Cambridge, CB23 7BD",
       "url": "https://the-hoops.co.uk/",
       "latlon": [
@@ -5266,8 +5266,8 @@
     "ketteringham-village-hall": {
       "id": "ketteringham-village-hall",
       "name": "Ketteringham Village Hall",
-      "city": "Ketteringham",
-      "postcode": "Wymondham",
+      "city": "Wymondham",
+      "postcode": "NR18 9RU",
       "full_address": "Ketteringham Village Hall, Ketteringham, Wymondham, NR18 9RU",
       "url": "https://www.facebook.com/profile.php?id=100083280073970",
       "latlon": [
@@ -5529,9 +5529,9 @@
     },
     "the-circle-barn-beden": {
       "id": "the-circle-barn-beden",
-      "name": "The Circle Barn",
-      "city": "Beden",
-      "postcode": "Sampford Spiney",
+      "name": "The Circle Barn, Beden",
+      "city": "Sampford Spiney",
+      "postcode": "PL20 6LF",
       "full_address": "The Circle Barn, Beden, Sampford Spiney, PL20 6LF",
       "url": "https://www.moorimagination.org/",
       "latlon": [
@@ -5542,8 +5542,8 @@
     "asylum-chapel": {
       "id": "asylum-chapel",
       "name": "Asylum Chapel",
-      "city": "Asylum Rd",
-      "postcode": "London",
+      "city": "London",
+      "postcode": "SE15 2SQ",
       "full_address": "Asylum Chapel, Asylum Rd, London, SE15 2SQ",
       "url": "https://asylumchapel.co.uk/",
       "latlon": [
@@ -5553,9 +5553,9 @@
     },
     "the-old-customs-house-arnside": {
       "id": "the-old-customs-house-arnside",
-      "name": "The Old Customs House",
-      "city": "Arnside",
-      "postcode": "Carnforth",
+      "name": "The Old Customs House, Arnside",
+      "city": "Carnforth",
+      "postcode": "LA5 0HD",
       "full_address": "The Old Customs House, Arnside, Carnforth, LA5 0HD",
       "url": "",
       "latlon": [
@@ -5661,9 +5661,9 @@
     },
     "the-hold-fore": {
       "id": "the-hold-fore",
-      "name": "The Hold",
-      "city": "Fore St",
-      "postcode": "Ipswich",
+      "name": "The Hold, Ipswich",
+      "city": "Ipswich",
+      "postcode": "IP4 1LR",
       "full_address": "The Hold, Fore St, Ipswich, IP4 1LR",
       "url": "https://www.suffolkarchives.co.uk/about-suffolk-archives/the-hold/",
       "latlon": [
@@ -5721,9 +5721,9 @@
     },
     "university-of-south-wales-cardiff": {
       "id": "university-of-south-wales-cardiff",
-      "name": "University of South Wales",
-      "city": "Cardiff Campus (CAB218)",
-      "postcode": "Cardiff CF24 2FN",
+      "name": "University of South Wales, Cardiff Campus (CAB218)",
+      "city": "Cardiff",
+      "postcode": "CF24 2FN",
       "full_address": "University of South Wales, Cardiff Campus (CAB218), Cardiff CF24 2FN",
       "url": "https://www.facebook.com/folk.preservation.society",
       "latlon": [
@@ -5745,9 +5745,9 @@
     },
     "quay-arts-newport": {
       "id": "quay-arts-newport",
-      "name": "Quay Arts",
-      "city": "Newport",
-      "postcode": "Isle of Wight",
+      "name": "Quay Arts, Newport",
+      "city": "Isle of Wight",
+      "postcode": "PO30 5BD",
       "full_address": "Quay Arts, Newport, Isle of Wight, PO30 5BD",
       "url": "https://www.quayarts.org/",
       "latlon": [
@@ -5769,9 +5769,9 @@
     },
     "everflyht-vineyard-ditchling": {
       "id": "everflyht-vineyard-ditchling",
-      "name": "Everflyht vineyard",
+      "name": "Everflyht vineyard, Ditchling",
       "city": "Ditchling",
-      "postcode": "East Sussex",
+      "postcode": "BN6 8XB",
       "full_address": "Everflyht vineyard, Ditchling, East Sussex, BN6 8XB",
       "url": "https://www.everflyht.com/",
       "latlon": [
@@ -5783,7 +5783,7 @@
       "id": "the-backyard-theatre-watchet",
       "name": "The Backyard Theatre",
       "city": "Watchet",
-      "postcode": "West Somerset",
+      "postcode": "TA23 0AZ",
       "full_address": " The Backyard Theatre, Watchet, West Somerset, TA23 0AZ",
       "url": "",
       "latlon": [
@@ -5805,9 +5805,9 @@
     },
     "bargemans-rest-newport": {
       "id": "bargemans-rest-newport",
-      "name": "Bargeman's Rest",
-      "city": "Newport",
-      "postcode": "Isle of Wight",
+      "name": "Bargeman's Rest, Newport",
+      "city": "Isle of Wight",
+      "postcode": "PO30 5BS",
       "full_address": "Bargeman's Rest, Newport, Isle of Wight, PO30 5BS",
       "url": "https://bargemansrest.com/",
       "latlon": [
@@ -5913,9 +5913,9 @@
     },
     "the-riverfront-newport": {
       "id": "the-riverfront-newport",
-      "name": "The Riverfront",
-      "city": "Newport",
-      "postcode": "Wales",
+      "name": "The Riverfront, Newport",
+      "city": "Newport, Wales",
+      "postcode": "NP20 1HG",
       "full_address": "The Riverfront, Newport, Wales, NP20 1HG",
       "url": "https://www.newportlive.co.uk/en/venues/riverfront/",
       "latlon": [
@@ -5937,9 +5937,9 @@
     },
     "hearth-henbant": {
       "id": "hearth-henbant",
-      "name": "Hearth",
-      "city": "Henbant",
-      "postcode": "Carmarthenshire",
+      "name": "Hearth, Henbant",
+      "city": "Carmarthenshire",
+      "postcode": "LL54 5DF",
       "full_address": "Hearth, Henbant, Carmarthenshire, LL54 5DF",
       "url": "https://www.henbant.org/",
       "latlon": [
@@ -6117,9 +6117,9 @@
     },
     "the-cube-kingsdown": {
       "id": "the-cube-kingsdown",
-      "name": "The Cube",
-      "city": "Kingsdown",
-      "postcode": "Bristol",
+      "name": "The Cube, Kingsdown",
+      "city": "Bristol",
+      "postcode": "BS2 8NQ",
       "full_address": "The Cube, Kingsdown, Bristol, BS2 8NQ",
       "url": "https://www.headfirstbristol.co.uk/whats-on/the-cube",
       "latlon": [
@@ -6390,9 +6390,9 @@
     },
     "wroot-rocks": {
       "id": "wroot-rocks",
-      "name": "Wroot Rocks",
-      "city": "Wroot",
-      "postcode": "Doncaster",
+      "name": "Wroot Rocks, Wroot",
+      "city": "Doncaster",
+      "postcode": "DN9 2BN",
       "full_address": "Wroot Rocks, Wroot, Doncaster, DN9 2BN",
       "url": "https://www.ticketsource.co.uk/wroot-rocks?ref=montystoryteller.org",
       "latlon": [
@@ -6498,9 +6498,9 @@
     },
     "hook-village-hall-royal": {
       "id": "hook-village-hall-royal",
-      "name": "Hook Village Hall",
-      "city": "Royal Wootton Bassett",
-      "postcode": "Swindon",
+      "name": "Hook Village Hall, Royal Wootton Bassett",
+      "city": "Swindon",
+      "postcode": "SN4 8EF",
       "full_address": "Hook Village Hall, Royal Wootton Bassett, Swindon, SN4 8EF",
       "url": "https://hookvillagehall.co.uk/",
       "latlon": [
@@ -6772,9 +6772,9 @@
     },
     "swiss-cottage-twyford": {
       "id": "swiss-cottage-twyford",
-      "name": "Swiss Cottage",
-      "city": "Twyford",
-      "postcode": "Winchester",
+      "name": "Swiss Cottage, Twyford",
+      "city": "Winchester",
+      "postcode": "SO21 1QB",
       "full_address": "Swiss Cottage, Twyford, Winchester, SO21 1QB",
       "url": "https://sc4m.co.uk/",
       "latlon": [
@@ -6938,9 +6938,9 @@
     },
     "travellers-joy-northwood": {
       "id": "travellers-joy-northwood",
-      "name": "Travellers Joy",
-      "city": "Northwood",
-      "postcode": "Cowes",
+      "name": "Travellers Joy, Northwood",
+      "city": "Cowes",
+      "postcode": "PO31 8LS",
       "full_address": "Travellers Joy, Northwood, Cowes, PO31 8LS",
       "url": "https://www.thetravellersjoy-iow.co.uk/",
       "latlon": [
@@ -6962,9 +6962,9 @@
     },
     "the-waverley-carisbrooke": {
       "id": "the-waverley-carisbrooke",
-      "name": "The Waverley",
-      "city": "Carisbrooke",
-      "postcode": "Isle of Wight",
+      "name": "The Waverley, Carisbrooke",
+      "city": "Isle of Wight",
+      "postcode": "PO30 1PA",
       "full_address": "The Waverley, Carisbrooke, Isle of Wight, PO30 1PA",
       "url": "https://www.waverleyinn.co.uk/index",
       "latlon": [
