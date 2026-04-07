@@ -3915,6 +3915,22 @@
       "venue_id": "quaker-meeting-house-northampton"
     },
     {
+      "name": "Two Tales: Mumming, Puppetry & Storytelling [The Roving Jewel]",
+      "showname": "Two Tales: Mumming, Puppetry & Storytelling",
+      "date": "15/05/2026",
+      "time": "7-8.30pm",
+      "club": "",
+      "price": "£8",
+      "description": "We are pleased to welcome back The Roving Jewel after a highly popular re-telling of Sir Gawain & The Green Knight last year.\n\n\n\nIn an evolution of the Jewel, this time there will be two tales told which combine mumming, puppetry and storytelling.\n\n\n\nThis event is not aimed at children specifically but is suitable for all ages and best for ages 12+\n\n\n\n7.00-8.30pm — £8  |  Booking required (no proof of purchase/ticket required as we have your details from purchase, just come along at the right time and date)",
+      "event_flyer": "2026_05_15_Roving_jewel.jpg",
+      "ticket_url": "gwortandmistletoe.co.uk/home/product/jewel/",
+      "isSpecial": true,
+      "fb_event": 2148510572614168,
+      "date_added": "07/04/2026",
+      "venue_id": "mugwort-and-mistletoe",
+      "performer_id": "roving-jewel"
+    },
+    {
       "name": "Under a Hill, a King Lays Sleeping [Bernadette Russell]",
       "showname": "Under a Hill, a King Lays Sleeping",
       "description": "Come join local author and storyteller Bernadette Russell for a wild and magical evening of Hampshire myth and folklore - featuring the tales of the King asleep beneath a hill which is perhaps a slumbering dragon, the giant Ascapart and his battles with Bevis of Hampton, an enchanted stone circle and a ghostly horse, our local witches and their spells, incantations and potions, the Otherworld and the Bentworth Thorn, and the grampus that lives in a Yew Tree. With stories, songs, poetry and even a spell from a Hampshire Grimoire - this will be a night to remember - guaranteed fun and packed full of ancient wisdom too!\n\n\n\n Come and let yourself be re-enchanted by this beautiful region full of chalk downlands, heathland, forest and coastline, bustling with rich legends and fairytales. With stories, songs, and poetry this will be a night to remember- guaranteed fun and packed full of ancient wisdom too!",
@@ -5026,6 +5042,18 @@
       "latlon": [
         52.82174,
         1.38552
+      ]
+    },
+    "mugwort-and-mistletoe": {
+      "id": "mugwort-and-mistletoe",
+      "name": "Mugwort & Mistletoe, Ipswich",
+      "city": "Ipswich",
+      "postcode": "IP1 1TW",
+      "full_address": "Mugwort & Mistletoe, 47 St Nicholas Street, Ipswich, IP1 1TW",
+      "url": "https://www.mugwortandmistletoe.co.uk/home/",
+      "latlon": [
+        52.05491,
+        1.15289
       ]
     },
     "the-yellow-book-brighton": {
@@ -8366,6 +8394,12 @@
       "name": "Lisa Schneidau",
       "url": "https://www.lisaschneidau.co.uk/",
       "bio": "Lisa Schneidau finds and tells stories that inspire, provoke curiosity and build stronger connections between people and nature.\n\n\n\n She works with the oral storytelling tradition, where traditional and modern stories are remembered, shared and passed on to others. You'll find her telling stories at events and venues all over the South West and beyond. Lisa's repertoire includes storytelling evenings for adults, shows and collaborations, schools and museums work, story walks and workshops.\n\n\n\nLisa has written four books on traditional folk tales published by The History Press."
+    },
+    "roving-jewel":{
+      "id": "roving-jewel",
+      "name": "The Roving Jewel",
+      "url": "https://www.patreon.com/posts/stories-told-and-154096518",
+      "bio": "The Roving Jewel Mummers are storytellers, puppeteers and mummers from the East of Albion. Our goal is to return the wealth of British folk tales to the commons! We tell subversive, obscure and occasionally bawdy tales, using the heritage crafts of oral storytelling and puppetry. We travel around the region with our miniature theatre and marionettes - all built by us in Norwich - with a core band of mummers and journeying performers and musicians.\n\n\n\nWe are hedge bards at the beginning of our careers! We're learning our craft by doing: our collective background as artists, writers, medievalists and performers have brought us here. We want to learn from seasoned storytellers, master craftspeople and lifelong practitioners to keep the traditional crafts of puppetry and storytelling alive, accessible and folk to the bones. We are signatories of the Folk Union Charter, our practise champions those traditionally underrepresented in folk arts. We are a gender and neurodiverse group with a wide array of socio-economic backgrounds, and we want to see more people like us (and different) in the folk scene."
     },
     "shonaleigh": {
       "id": "shonaleigh",
