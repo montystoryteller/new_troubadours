@@ -3715,8 +3715,21 @@
       "performer_id": "maria-credali"
     },
     {
-      "name": "Wild May — Stories for the Springtime [Henry Everett | Shane Ibbs | Lisa Schneida]",
-      "showname": "Faery Tale Blues",
+      "name": "Tavern Tales (Beer Festival) [Dave Tonge]",
+      "showname": "Tavern Tales (Beer Festival)",
+      "date": "05/04/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "Free",
+      "description": "From lazy, long limbed lads, to deals with the Devil himself, and even a tale about a plain and simple radish worth over 100 gold coins!",
+      "event_flyer": "2026_04_05_tonge_peasants_tavern.jpg",
+      "isSpecial": true,
+      "venue_id": "peasants-tavern",
+      "performer_id": "dave-tonge"
+    },
+    {
+      "name": "Wild May — Stories for the Springtime [Henry Everett | Shane Ibbs | Lisa Schneidau]",
+      "showname": "Wild May — Stories for the Springtime",
       "date": "18/04/2026",
       "time": "7.30-9.30pm",
       "club": "dartmoorStorytellers",
@@ -5001,6 +5014,18 @@
       "latlon": [
         51.2304249,
         -2.3204812
+      ]
+    },
+    "peasants-tavern":  {
+      "id": "peasants-tavern",
+      "name": "Peasants' Tavern",
+      "city": "North Walsham",
+      "postcode": "NR28 9BZ",
+      "full_address": "Peasants' Tavern, 18, Market Street, North Walsham, NR28 9BZ",
+      "url": "https://www.thepeasantstavern.com/",
+      "latlon": [
+        52.82174,
+        1.38552
       ]
     },
     "the-yellow-book-brighton": {
