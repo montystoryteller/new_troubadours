@@ -153,16 +153,15 @@ function sanitizeFlyerPath(filename) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "");
 }
 
-
 // ---------------------------------------------------------------------------
 // DOM helpers
 // ---------------------------------------------------------------------------
 
 function el(tag, cls, text) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text !== undefined) e.textContent = text;
-    return e;
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
 }
 
 // ---------------------------------------------------------------------------
@@ -250,7 +249,9 @@ function createVenueElement(venue) {
   if (venue.url) {
     const strong = document.createElement("strong");
     strong.textContent = venueName;
-    const venueLink = createExternalLink(venue.url, strong, { className: "venue-link" });
+    const venueLink = createExternalLink(venue.url, strong, {
+      className: "venue-link",
+    });
     if (venueLink) {
       venueDiv.appendChild(venueLink);
       if (remainder) venueDiv.appendChild(document.createTextNode(remainder));
@@ -409,6 +410,27 @@ async function loadEventsData(cacheBuster) {
     console.error("Error loading events:", error);
     return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Troupe helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns true if this performer record is a troupe configuration
+ * (i.e. one specific lineup of a parent troupe) rather than a
+ * standalone performer or the troupe itself.
+ * Troupe configs carry a "troupe" field pointing to their parent.
+ */
+function isTroupeConfig(performer) {
+  return !!(performer && performer.troupe);
+}
+
+/**
+ * Returns true if this performer record is a troupe (the parent).
+ */
+function isTroupe(performer) {
+  return !!(performer && performer.type === "troupe");
 }
 
 // ---------------------------------------------------------------------------

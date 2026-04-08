@@ -1186,6 +1186,7 @@
             allShowDates.forEach(sd => addPerf(sd.performer_id, !!sd.ticket_url));
 
             const topPerfByDates = Object.entries(perfEvents)
+                .filter(([pid]) => !isTroupeConfig(performers[pid]))
                 .sort((a, b) => b[1] - a[1]).slice(0, 12)
                 .map(([pid, n]) => ({
                     label: performers[pid]?.name || pid,
@@ -1193,6 +1194,7 @@
                     n
                 }));
             const topPerfByTickets = Object.entries(perfTickets)
+                .filter(([pid]) => !isTroupeConfig(performers[pid]))
                 .sort((a, b) => b[1] - a[1]).slice(0, 12)
                 .map(([pid, n]) => ({
                     label: performers[pid]?.name || pid,
@@ -1234,10 +1236,10 @@
             const venueUsedOnce = Object.values(venueEvents).filter(n => n === 1).length;
             const venueUsedMore = Object.values(venueEvents).filter(n => n > 1).length;
 
-            // ---- performer bios ----
-            const perfWithBio = Object.values(performers).filter(p => p.bio).length;
-            const perfWithoutBio = Object.values(performers).length - perfWithBio;
-            const compoundPerfs = Object.values(performers).filter(p => p.performer_ids || p.ids).length;
+            // ---- performer bios (troupe configs excluded from counts) ----
+            const perfWithBio = Object.values(performers).filter(p => !isTroupeConfig(p) && p.bio).length;
+            const perfWithoutBio = Object.values(performers).filter(p => !isTroupeConfig(p) && !p.bio).length;
+            const compoundPerfs = Object.values(performers).filter(p => !isTroupeConfig(p) && (p.performer_ids || p.ids)).length;
 
             // -----------------------------------------------------------------------
             // Shared drilldown helper
@@ -1282,11 +1284,12 @@
             // Summary tiles
             const grid = el('div', 'summary-grid');
 
-            // Performers tile → A-Z list
+            // Performers tile → A-Z list (troupe configs excluded)
+            const visiblePerformers = Object.entries(performers).filter(([, p]) => !isTroupeConfig(p));
             grid.appendChild(clickableTile(
-                Object.keys(performers).length, 'Performers', '', 'All performers',
+                visiblePerformers.length, 'Performers', '', 'All performers',
                 panel => {
-                    const items = Object.entries(performers)
+                    const items = visiblePerformers
                         .sort((a, b) => a[1].name.localeCompare(b[1].name))
                         .map(([pid, p]) => ({
                             label: p.name,
@@ -1530,19 +1533,30 @@
                 perfTable.style.marginTop = '20px';
                 perfTable.innerHTML = `<thead><tr><th>Metric</th><th class="n">Count</th><th class="pct">%</th><th style="width:60px"></th></tr></thead>`;
                 const tbody = document.createElement('tbody');
-                const totalPerfs = Object.keys(performers).length;
-                const withWebsite = Object.values(performers).filter(p => p.url).length;
+                // Exclude troupe configs from all performer metadata counts
+                const visPerfs = Object.entries(performers).filter(([, p]) => !isTroupeConfig(p));
+                const totalPerfs = visPerfs.length;
+                const withWebsite = visPerfs.filter(([, p]) => p.url).length;
+                const visPerfWithBio = visPerfs.filter(([, p]) => p.bio).length;
+                const visPerfWithoutBio = totalPerfs - visPerfWithBio;
+                const visCompoundPerfs = visPerfs.filter(([, p]) => (p.performer_ids || p.ids) && !isTroupe(p)).length;
+                const visTroupeCount = visPerfs.filter(([, p]) => isTroupe(p)).length;
 
-                tbody.appendChild(makeTableRow('With bio', perfWithBio, totalPerfs, null));
-                tbody.appendChild(makeTableRow('Without bio', perfWithoutBio, totalPerfs, panel => {
-                    simpleList(panel, Object.entries(performers).filter(([, p]) => !p.bio).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
+                tbody.appendChild(makeTableRow('With bio', visPerfWithBio, totalPerfs, null));
+                tbody.appendChild(makeTableRow('Without bio', visPerfWithoutBio, totalPerfs, panel => {
+                    simpleList(panel, visPerfs.filter(([, p]) => !p.bio).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
                 }));
-                tbody.appendChild(makeTableRow('Compound acts', compoundPerfs, totalPerfs, panel => {
-                    simpleList(panel, Object.entries(performers).filter(([, p]) => p.performer_ids || p.ids).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
+                tbody.appendChild(makeTableRow('Compound acts', visCompoundPerfs, totalPerfs, panel => {
+                    simpleList(panel, visPerfs.filter(([, p]) => (p.performer_ids || p.ids) && !isTroupe(p)).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
                 }));
+                if (visTroupeCount > 0) {
+                    tbody.appendChild(makeTableRow('Troupes', visTroupeCount, totalPerfs, panel => {
+                        simpleList(panel, visPerfs.filter(([, p]) => isTroupe(p)).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
+                    }));
+                }
                 tbody.appendChild(makeTableRow('With website', withWebsite, totalPerfs, null));
                 tbody.appendChild(makeTableRow('Without website', totalPerfs - withWebsite, totalPerfs, panel => {
-                    simpleList(panel, Object.entries(performers).filter(([, p]) => !p.url).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
+                    simpleList(panel, visPerfs.filter(([, p]) => !p.url).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([pid, p]) => ({ label: p.name, href: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}` })));
                 }));
 
                 perfTable.appendChild(tbody);

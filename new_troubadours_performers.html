@@ -466,6 +466,77 @@
             padding: 4px 16px 16px;
             border-top: 1px solid #eee;
         }
+
+        /* ── Troupe lineup config sub-sections ───────────────── */
+        .troupe-config-details {
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #8d6e63;
+            border-radius: 4px;
+            background: #fafaf8;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .troupe-config-details:last-child {
+            margin-bottom: 0;
+        }
+
+        .troupe-config-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+
+        .troupe-config-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .troupe-config-summary::before {
+            content: "▶";
+            font-size: 10px;
+            color: #8d6e63;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .troupe-config-details[open]>.troupe-config-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .troupe-config-summary:hover {
+            background: #f5f0ed;
+        }
+
+        .troupe-config-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4e342e;
+            flex: 1;
+        }
+
+        .troupe-config-badge {
+            font-size: 11px;
+            background: #efebe9;
+            color: #6d4c41;
+            border: 1px solid #d7ccc8;
+            border-radius: 20px;
+            padding: 2px 9px;
+            white-space: nowrap;
+        }
+
+        .troupe-config-body {
+            padding: 10px 14px 14px;
+            border-top: 1px solid #eee;
+        }
+
+        .troupe-config-chips {
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 
@@ -567,6 +638,7 @@
             const container = document.getElementById("performerContent");
 
             const items = Object.entries(performersLookup)
+                .filter(([, p]) => !isTroupeConfig(p))
                 .sort((a, b) => a[1].name.localeCompare(b[1].name))
                 .map(([pid, p]) => ({
                     label: p.name,
@@ -758,6 +830,20 @@
                 }
             });
 
+            // If viewing a troupe, also treat all its alias configs as "me"
+            if (isTroupe(performer)) {
+                (performer.aliases || []).forEach(aid => compoundIdsForMe.add(aid));
+            }
+            // If viewing a troupe config, treat the parent troupe as "me" too
+            if (isTroupeConfig(performer) && performer.troupe) {
+                compoundIdsForMe.add(performer.troupe);
+                // ...and the sibling configs
+                const parent = performersLookup[performer.troupe];
+                (parent?.aliases || []).forEach(aid => {
+                    if (aid !== performerId) compoundIdsForMe.add(aid);
+                });
+            }
+
             // Helper: returns true if an event/tour/show belongs to this performer.
             // Checks: direct performer_id match, performer_ids array on the event itself
             // (used on tours like Haggarty/Brittain), and compound performer records
@@ -867,6 +953,11 @@
 
             // Flyer gallery — collects all flyers across tours, shows and events
             renderFlyerGallery(myTours, myTouringShows, allOther);
+
+            // If this is a troupe, render each alias config as a collapsible sub-section
+            if (isTroupe(performer)) {
+                renderTroupeConfigs(performer);
+            }
         }
 
 
@@ -1005,6 +1096,127 @@
                     strip.querySelectorAll("img[data-pf-src]").forEach(img => pfImgObserver.observe(img));
                 }
             });
+        }
+
+
+        // ---------------------------------------------------------------------------
+        // Troupe config sub-sections
+        // Shown at the bottom of a troupe's performer page.
+        // Each alias (e.g. tis-tales-hsf) gets its own collapsible block listing
+        // its events, so that the specific lineup is visible without cluttering
+        // the main performer listing.
+        // ---------------------------------------------------------------------------
+
+        function renderTroupeConfigs(troupe) {
+            const aliases = troupe.aliases || [];
+            if (aliases.length === 0) return;
+
+            const configs = aliases
+                .map(aid => [aid, performersLookup[aid]])
+                .filter(([, p]) => p); // only render configs that exist in data
+
+            if (configs.length === 0) return;
+
+            // Wrapper section
+            const section = document.createElement("div");
+            section.className = "content-section";
+            section.style.marginTop = "20px";
+
+            const heading = document.createElement("h3");
+            heading.className = "section-heading";
+            heading.textContent = "Lineup configurations";
+            section.appendChild(heading);
+
+            configs.forEach(([configId, config]) => {
+                // Gather events for this specific config ID
+                const configTours = Object.entries(toursLookup).filter(([, t]) =>
+                    t.performer_id === configId ||
+                    (Array.isArray(t.performer_ids) && t.performer_ids.includes(configId))
+                );
+                const configShows = Object.entries(eventsData.touring_shows || {}).filter(([, ts]) =>
+                    ts.performer_id === configId
+                );
+                const configSpecific = (eventsData.specificEvents || []).filter(e => e.performer_id === configId);
+                const configMusic = (eventsData.musicEvents || []).filter(e => e.performer_id === configId);
+
+                const totalDates = configTours.reduce((s, [, t]) => s + (t.tour_dates || []).length, 0)
+                    + configShows.reduce((s, [, ts]) => s + (ts.show_dates || []).length, 0)
+                    + configSpecific.length + configMusic.length;
+
+                // Collapsible card for this config
+                const details = document.createElement("details");
+                details.className = "troupe-config-details";
+
+                const summary = document.createElement("summary");
+                summary.className = "troupe-config-summary";
+
+                const summaryLabel = document.createElement("span");
+                summaryLabel.className = "troupe-config-label";
+                summaryLabel.textContent = config.name;
+                summary.appendChild(summaryLabel);
+
+                if (totalDates > 0) {
+                    const badge = document.createElement("span");
+                    badge.className = "troupe-config-badge";
+                    badge.textContent = `${totalDates} date${totalDates !== 1 ? "s" : ""}`;
+                    summary.appendChild(badge);
+                }
+
+                details.appendChild(summary);
+
+                const body = document.createElement("div");
+                body.className = "troupe-config-body";
+
+                // Member chips for this lineup
+                const configMembers = config.performer_ids || config.ids || [];
+                if (configMembers.length > 0) {
+                    const chipsDiv = document.createElement("div");
+                    chipsDiv.className = "performer-member-chips troupe-config-chips";
+                    configMembers.forEach(mid => {
+                        const m = performersLookup[mid];
+                        if (!m) return;
+                        const chip = document.createElement("a");
+                        chip.href = `new_troubadours_performers.html?performer=${encodeURIComponent(mid)}`;
+                        chip.className = "performer-member-chip";
+                        const initials = m.name.split(/\s+/).filter(Boolean).map(w => w[0].toUpperCase()).slice(0, 2).join("");
+                        const av = document.createElement("span");
+                        av.className = "chip-avatar";
+                        av.textContent = initials;
+                        chip.appendChild(av);
+                        chip.appendChild(document.createTextNode(m.name));
+                        chipsDiv.appendChild(chip);
+                    });
+                    body.appendChild(chipsDiv);
+                }
+
+                if (totalDates === 0) {
+                    const none = document.createElement("p");
+                    none.style.cssText = "font-size:13px;color:#999;font-style:italic;margin-top:10px";
+                    none.textContent = "No events listed for this lineup.";
+                    body.appendChild(none);
+                } else {
+                    // Tours
+                    configTours.forEach(([tid, tour]) => renderTourCard(body, tid, tour));
+                    // Touring shows
+                    configShows.forEach(([tsId, ts]) => renderTouringShowCard(body, tsId, ts));
+                    // Other events
+                    const otherEvents = [...configSpecific, ...configMusic].sort((a, b) => {
+                        const da = parseDateString(a.date), db = parseDateString(b.date);
+                        if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
+                        return da - db;
+                    });
+                    if (otherEvents.length > 0) {
+                        const evtList = document.createElement("div");
+                        otherEvents.forEach(e => renderEventRow(evtList, e));
+                        body.appendChild(evtList);
+                    }
+                }
+
+                details.appendChild(body);
+                section.appendChild(details);
+            });
+
+            document.getElementById("performerContent").appendChild(section);
         }
 
         // ---------------------------------------------------------------------------
