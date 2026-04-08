@@ -2863,7 +2863,7 @@
       "showname": "Tall Tales and Tiny Truths",
       "date": "23/01/2026",
       "time": "7.30pm",
-      "club": "islandstorytellers",
+      "troupe": "tis-tales",
       "price": "£10 (£8 u26)",
       "description": "Tall Tales and Tiny Truths - stories of wit, wisdom and wonder, with maybe just a tiny touch of truth woven in. Myths and mischief, legends and lies, these stories are made to be spoken and shared in good company. Brought to you by Holly Medland, Sue Bailey and Tony 'Monty' Hirst.",
       "event_flyer": "2026_01_23_tistales_department_talltalestinytruths.jpg",
@@ -2871,7 +2871,7 @@
       "isSpecial": true,
       "fb_event": 3353518201472270,
       "venue_id": "department-ryde",
-      "performer_id": "tis-tales"
+      "performer_id": "tis-tales-hms"
     },
     {
       "name": "Dark tales for dark nights [Amy Douglas and Jason Buck]",
@@ -3570,6 +3570,7 @@
       "showname": "World's Weirdest Folk Tales",
       "date": "14/03/2026",
       "time": "7-9pm",
+      "troupe": "tis-tales",
       "price": "£10",
       "description": "Mirror, mirror on the wall, who's the weirdest of them all?\n\n\n\n Once upon a time there were three storytellers who never stopped squabbling. All three of them loved weird folktales, but they couldn't agree which one had the weirdest, whackiest folktales in the world. They bragged and boasted, they beefed and brawled, they blew their own trumpets and tooted their horns... \n\n\n\nUntil finally they decided to settle things once and for all. They decided to have a Weird Tales contest.\n\n\n\nSo come and join us for a battle of the bizarre, a folktale fracas, a funny-peculiar feud — a contest to see which storyteller really has the world's weirdest folktale. Hear the stories, weigh up the evidence, and vote to choose the tale you think is weirdest. It may not quite be a battle to the death, but you'll certainly see some folklore feathers fly.\n\n\n\nStories told by Sue Bailey, Merl Fluin and Holly Medland \n\n\n\nRefreshments provided or BYOB \n\n\n\nSuitable for age 16+",
       "event_flyer": "2026-03-14-tis-weird-ventnor.jpg",
@@ -8220,6 +8221,7 @@
     },
     "tis-tales-hsf":{
       "id": "tis-tales-hsf",
+      "troupe": "tis-tales",
       "performer_ids": ["holly-medland", "sue-bailey", "merl-fluin"],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Merl Fluin",
       "url": "https://tistales.org.uk/",
@@ -8227,6 +8229,7 @@
     },
     "tis-tales-hms":{
       "id": "tis-tales-hms",
+      "troupe": "tis-tales",
       "performer_ids": ["holly-medland", "sue-bailey", "tony-monty-hirst"],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Tony 'Monty' Hirst",
       "url": "https://tistales.org.uk/",

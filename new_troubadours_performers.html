@@ -64,6 +64,408 @@
             font-weight: 700;
             flex-shrink: 0;
         }
+
+        /* ── Flyer thumbnails on performer page ── */
+        .perf-flyer-thumb {
+            float: right;
+            margin: 0 0 8px 12px;
+            width: 68px;
+            height: 86px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            cursor: zoom-in;
+            flex-shrink: 0;
+        }
+
+        .perf-flyer-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .perf-flyer-thumb img.pf-loaded {
+            opacity: 1;
+        }
+
+        .tour-card-music .perf-flyer-thumb {
+            background: #e8eaf6;
+            border-color: #9fa8da;
+        }
+
+        .repertoire-card .perf-flyer-thumb {
+            background: #efebe9;
+            border-color: #bcaaa4;
+        }
+
+        /* Expand-button for event-row flyers */
+        .event-row-flyer-btn {
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-radius: 10px;
+            padding: 1px 8px;
+            cursor: pointer;
+            background: #f1f8f1;
+            user-select: none;
+        }
+
+        .event-row-flyer-btn:hover {
+            background: #e8f5e9;
+        }
+
+        .event-row-flyer-expandable {
+            display: none;
+            margin-top: 6px;
+        }
+
+        .event-row-flyer-expandable img {
+            max-width: 180px;
+            border-radius: 4px;
+            display: block;
+            cursor: zoom-in;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Performer-page flyer lightbox */
+        #perfFlyerLightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #perfFlyerLightbox.pf-open {
+            display: flex;
+        }
+
+        #perfFlyerLightbox .pf-inner {
+            position: relative;
+            max-width: 520px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #perfFlyerLightbox img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            object-fit: contain;
+            display: block;
+        }
+
+        #perfFlyerLightbox .pf-caption {
+            color: white;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        #perfFlyerLightbox .pf-close {
+            position: absolute;
+            top: -14px;
+            right: -14px;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 18px;
+            line-height: 32px;
+            text-align: center;
+            cursor: pointer;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            padding: 0;
+        }
+
+        #perfFlyerLightbox .pf-close:hover {
+            background: #eee;
+        }
+
+        .pf-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: white;
+            font-size: 30px;
+            width: 52px;
+            height: 72px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 10000;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pf-nav:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .pf-nav:disabled {
+            opacity: 0.15;
+            cursor: default;
+        }
+
+        #pfPrev {
+            left: 10px;
+        }
+
+        #pfNext {
+            right: 10px;
+        }
+
+        /* ── Flyer gallery section ─────────────────────────────── */
+        .perf-flyer-gallery {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .perf-flyer-gallery-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: #2e7d32;
+            letter-spacing: 0.03em;
+        }
+
+        .perf-flyer-gallery-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .perf-flyer-gallery-summary::before {
+            content: "▶";
+            font-size: 10px;
+            margin-right: 8px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .perf-flyer-gallery-summary:hover {
+            background: #f9fdf9;
+        }
+
+        .perf-flyer-gallery-hint {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: normal;
+            letter-spacing: 0;
+        }
+
+        .perf-flyer-strip {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 0 16px 16px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .perf-flyer-strip::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .perf-flyer-strip::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .perf-flyer-strip::-webkit-scrollbar-thumb {
+            background: #c8e6c9;
+            border-radius: 3px;
+        }
+
+        .perf-gallery-card {
+            flex: 0 0 120px;
+            scroll-snap-align: start;
+            cursor: zoom-in;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .perf-gallery-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.13);
+        }
+
+        .perf-gallery-card.gc-music {
+            border-color: #9fa8da;
+            background: #f5f6ff;
+        }
+
+        .perf-gallery-card.gc-past {
+            opacity: 0.7;
+        }
+
+        .perf-gallery-img-wrap {
+            width: 120px;
+            height: 152px;
+            overflow: hidden;
+            background: #eee;
+            position: relative;
+        }
+
+        .perf-gallery-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .perf-gallery-img-wrap img.pf-loaded {
+            opacity: 1;
+        }
+
+        .perf-gallery-type-badge {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 2px 6px;
+            border-radius: 8px;
+            color: white;
+            background: rgba(46, 125, 50, 0.85);
+        }
+
+        .gc-music .perf-gallery-type-badge {
+            background: rgba(68, 60, 215, 0.85);
+        }
+
+        .perf-gallery-caption {
+            padding: 7px 8px 9px;
+        }
+
+        .perf-gallery-caption-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gc-music .perf-gallery-caption-title {
+            color: #1006c6;
+        }
+
+        .perf-gallery-caption-date {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 600px) {
+            .perf-gallery-card {
+                flex: 0 0 105px;
+            }
+
+            .perf-gallery-img-wrap {
+                width: 105px;
+                height: 133px;
+            }
+        }
+
+        /* ── All-performers collapsible (no-performer landing) ── */
+        .all-performers-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .all-performers-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+
+        .all-performers-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .all-performers-summary::before {
+            content: "▶";
+            font-size: 10px;
+            margin-right: 10px;
+            transition: transform 0.2s;
+            display: inline-block;
+            color: #2e7d32;
+        }
+
+        .all-performers-details[open]>.all-performers-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .all-performers-label {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .all-performers-hint {
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .all-performers-details[open] .all-performers-hint {
+            opacity: 0;
+        }
+
+        .all-performers-summary:hover {
+            background: #f9fdf9;
+            border-radius: 8px;
+        }
+
+        .all-performers-body {
+            padding: 4px 16px 16px;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 
@@ -93,6 +495,14 @@
         </div>
 
         <div class="stats-row" id="statsRow"></div>
+
+        <details class="perf-flyer-gallery" id="perfGallerySection" style="display:none;">
+            <summary class="perf-flyer-gallery-summary">
+                🖼 Flyers
+                <span class="perf-flyer-gallery-hint" id="perfGalleryHint">click to expand</span>
+            </summary>
+            <div class="perf-flyer-strip" id="perfGalleryStrip"></div>
+        </details>
 
         <div id="toursSection" class="content-section" style="display:none;">
             <h3 class="section-heading">Tours</h3>
@@ -127,6 +537,17 @@
     <script>
 
         // ---------------------------------------------------------------------------
+        // Flyer helpers (used by render functions below)
+        // ---------------------------------------------------------------------------
+
+        const BASE_FLYER = "./storyclub_assets/event_flyers/";
+
+        function sanitizeFlyerName(name) {
+            if (!name) return "";
+            return name.replace(/[^a-zA-Z0-9._\-]/g, "");
+        }
+
+        // ---------------------------------------------------------------------------
         // Data + state
         // ---------------------------------------------------------------------------
 
@@ -153,8 +574,24 @@
                     meta: ""
                 }));
 
-            container.innerHTML = "<h2>All performers</h2>";
-            simpleList(container, items);
+            container.innerHTML = "";
+
+            const details = document.createElement("details");
+            details.className = "all-performers-details";
+
+            const summary = document.createElement("summary");
+            summary.className = "all-performers-summary";
+            summary.innerHTML =
+                `<span class="all-performers-label">All performers (${items.length})</span>` +
+                `<span class="all-performers-hint">click to expand</span>`;
+            details.appendChild(summary);
+
+            const body = document.createElement("div");
+            body.className = "all-performers-body";
+            simpleList(body, items);
+            details.appendChild(body);
+
+            container.appendChild(details);
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -427,6 +864,147 @@
                 const list = document.getElementById("festivalsList");
                 myFestivals.forEach(([fid, f]) => renderFestivalRow(list, fid, f));
             }
+
+            // Flyer gallery — collects all flyers across tours, shows and events
+            renderFlyerGallery(myTours, myTouringShows, allOther);
+        }
+
+
+        // ---------------------------------------------------------------------------
+        // Flyer gallery
+        // Collects all flyers for this performer (tour-level, per-date, event, show)
+        // and renders a horizontally-scrolling strip of thumbnails.
+        // ---------------------------------------------------------------------------
+
+        // Shared list that the lightbox navigates — populated by renderFlyerGallery
+        let perfGalleryItems = [];
+
+        function renderFlyerGallery(myTours, myTouringShows, allOther) {
+            const items = [];
+            const seen = new Set();
+
+            function add(flyerName, label, dateStr, isMusic, isPast) {
+                if (!flyerName?.trim()) return;
+                const key = flyerName.trim() + "|" + (dateStr || "");
+                if (seen.has(key)) return;
+                seen.add(key);
+                items.push({
+                    src: BASE_FLYER + sanitizeFlyerName(flyerName.trim()),
+                    label: label || "",
+                    dateStr: dateStr || "",
+                    isMusic: !!isMusic,
+                    isPast: !!isPast,
+                });
+            }
+
+            const today = getTodayMidnight();
+
+            // Tours — tour-level flyer first, then per-date flyers
+            myTours.forEach(([, tour]) => {
+                if (tour.tour_flyer?.trim()) {
+                    const dates = tour.tour_dates || [];
+                    const first = dates[0] ? parseDateString(dates[0].date) : null;
+                    const last = dates[dates.length - 1] ? parseDateString(dates[dates.length - 1].date) : null;
+                    const range = (first && last && first.getTime() !== last.getTime())
+                        ? `${formatShortDate(first)} – ${formatShortDate(last)}`
+                        : (first ? formatShortDate(first) : "");
+                    const allPast = last && last < today;
+                    add(tour.tour_flyer, tour.tour_name || tour.name, range, tour.isMusic, allPast);
+                }
+                (tour.tour_dates || []).forEach(td => {
+                    if (!td.event_flyer?.trim()) return;
+                    const d = parseDateString(td.date);
+                    add(td.event_flyer, tour.tour_name || tour.name,
+                        d ? formatShortDate(d) : (td.date || ""), tour.isMusic, d && d < today);
+                });
+            });
+
+            // Touring shows — show-level flyer, then per-date
+            myTouringShows.forEach(([, ts]) => {
+                const tsFlyer = ts.touring_event_flyer || ts.event_flyer;
+                if (tsFlyer?.trim()) {
+                    add(tsFlyer, ts.showname || ts.name, "", false, false);
+                }
+                (ts.show_dates || []).forEach(sd => {
+                    if (!sd.event_flyer?.trim()) return;
+                    const d = parseDateString(sd.date);
+                    add(sd.event_flyer, ts.showname || ts.name,
+                        d ? formatShortDate(d) : (sd.date || ""), false, d && d < today);
+                });
+            });
+
+            // Specific + music events
+            allOther.forEach(e => {
+                if (!e.event_flyer?.trim()) return;
+                const d = parseDateString(e.date);
+                add(e.event_flyer, e.showname || e.name,
+                    d ? formatShortDate(d) : (e.date || ""), !!e.isMusic, d && d < today);
+            });
+
+            if (items.length === 0) return;
+
+            // Store globally so lightbox can navigate
+            perfGalleryItems = items;
+
+            // Show the section
+            const section = document.getElementById("perfGallerySection");
+            section.style.display = "";
+            document.getElementById("perfGalleryHint").textContent =
+                `${items.length} flyer${items.length !== 1 ? "s" : ""} — click to expand`;
+
+            // Build thumbnail cards
+            const strip = document.getElementById("perfGalleryStrip");
+            strip.innerHTML = "";
+
+            items.forEach((item, idx) => {
+                const card = document.createElement("div");
+                card.className = "perf-gallery-card" +
+                    (item.isMusic ? " gc-music" : "") +
+                    (item.isPast ? " gc-past" : "");
+                card.title = item.label + (item.dateStr ? " · " + item.dateStr : "");
+                card.addEventListener("click", () => openPerfFlyer(perfGalleryItems, idx));
+
+                const wrap = document.createElement("div");
+                wrap.className = "perf-gallery-img-wrap";
+
+                const img = document.createElement("img");
+                img.dataset.pfSrc = item.src;
+                img.alt = item.label;
+                pfImgObserver.observe(img);
+                wrap.appendChild(img);
+
+                const badge = document.createElement("span");
+                badge.className = "perf-gallery-type-badge";
+                badge.textContent = item.isMusic ? "Music" : "Show";
+                wrap.appendChild(badge);
+
+                card.appendChild(wrap);
+
+                const cap = document.createElement("div");
+                cap.className = "perf-gallery-caption";
+
+                const capTitle = document.createElement("div");
+                capTitle.className = "perf-gallery-caption-title";
+                capTitle.textContent = item.label;
+                cap.appendChild(capTitle);
+
+                const capDate = document.createElement("div");
+                capDate.className = "perf-gallery-caption-date";
+                capDate.textContent = item.dateStr || (item.isPast ? "Past" : "Upcoming");
+                cap.appendChild(capDate);
+
+                card.appendChild(cap);
+                strip.appendChild(card);
+            });
+
+            // Lazy-load images when <details> is opened
+            let observed = false;
+            section.addEventListener("toggle", () => {
+                if (section.open && !observed) {
+                    observed = true;
+                    strip.querySelectorAll("img[data-pf-src]").forEach(img => pfImgObserver.observe(img));
+                }
+            });
         }
 
         // ---------------------------------------------------------------------------
@@ -452,6 +1030,11 @@
             const isMusic = tour.isMusic;
             const card = document.createElement("div");
             card.className = `tour-card${isMusic ? " tour-card-music" : ""}`;
+
+            // Flyer thumbnail (floated right)
+            if (tour.tour_flyer?.trim()) {
+                card.appendChild(makePerfFlyerThumb(tour.tour_flyer, tour.tour_name || tour.name));
+            }
 
             // Header row
             const header = document.createElement("div");
@@ -569,6 +1152,13 @@
 
             const card = document.createElement("div");
             card.className = "tour-card repertoire-card";
+
+            // Flyer thumbnail from touring_event_flyer or first show_date event_flyer
+            const tsFlyer = ts.touring_event_flyer || ts.event_flyer ||
+                (dates.length > 0 && dates[0].event_flyer) || null;
+            if (tsFlyer?.trim()) {
+                card.appendChild(makePerfFlyerThumb(tsFlyer, ts.showname || ts.name));
+            }
 
             // Header: show name + badge
             const header = document.createElement("div");
@@ -756,6 +1346,43 @@
             }
             detail.appendChild(badges);
 
+            // Flyer expand-button (if available)
+            if (event.event_flyer?.trim()) {
+                const flyerSrc = BASE_FLYER + sanitizeFlyerName(event.event_flyer.trim());
+                const btn = document.createElement("span");
+                btn.className = "event-row-flyer-btn";
+                btn.textContent = "🖼 View flyer";
+                const expandable = document.createElement("div");
+                expandable.className = "event-row-flyer-expandable";
+                const fimg = document.createElement("img");
+                fimg.alt = event.showname || event.name || "Flyer";
+                let flyerLoaded = false;
+                btn.addEventListener("click", e => {
+                    e.stopPropagation();
+                    const isOpen = expandable.style.display === "block";
+                    if (isOpen) {
+                        expandable.style.display = "none";
+                        btn.textContent = "🖼 View flyer";
+                    } else {
+                        if (!flyerLoaded) { fimg.src = flyerSrc; flyerLoaded = true; }
+                        expandable.style.display = "block";
+                        btn.textContent = "🖼 Hide flyer";
+                    }
+                });
+                fimg.addEventListener("click", e => {
+                    e.stopPropagation();
+                    const galleryIdx = perfGalleryItems.findIndex(i => i.src === flyerSrc);
+                    if (galleryIdx >= 0) {
+                        openPerfFlyer(perfGalleryItems, galleryIdx);
+                    } else {
+                        openPerfFlyer([{ src: flyerSrc, label: event.showname || event.name || "" }], 0);
+                    }
+                });
+                expandable.appendChild(fimg);
+                detail.appendChild(btn);
+                detail.appendChild(expandable);
+            }
+
             row.appendChild(detail);
             container.appendChild(row);
         }
@@ -845,6 +1472,98 @@
             return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
         }
 
+    </script>
+
+    <!-- Performer-page flyer lightbox -->
+    <div id="perfFlyerLightbox" role="dialog" aria-modal="true">
+        <button class="pf-nav" id="pfPrev" aria-label="Previous">&#8249;</button>
+        <div class="pf-inner">
+            <button class="pf-close" id="pfClose" aria-label="Close">×</button>
+            <img id="pfImg" src="" alt="">
+            <div class="pf-caption" id="pfCaption"></div>
+        </div>
+        <button class="pf-nav" id="pfNext" aria-label="Next">&#8250;</button>
+    </div>
+
+    <script>
+        // ── Performer-page flyer lightbox ──────────────────────────────────────
+        // (BASE_FLYER and sanitizeFlyerName defined in the main script block above)
+
+        let _pfItems = [];
+        let _pfIdx = 0;
+
+        function openPerfFlyer(items, idx) {
+            _pfItems = items;
+            _pfIdx = idx;
+            showPfSlide();
+            document.getElementById("perfFlyerLightbox").classList.add("pf-open");
+            document.addEventListener("keydown", pfLbKey);
+        }
+
+        function closePerfFlyer() {
+            document.getElementById("perfFlyerLightbox").classList.remove("pf-open");
+            document.removeEventListener("keydown", pfLbKey);
+        }
+
+        function showPfSlide() {
+            const item = _pfItems[_pfIdx];
+            document.getElementById("pfImg").src = item.src;
+            document.getElementById("pfImg").alt = item.label || "";
+            document.getElementById("pfCaption").textContent = item.label || "";
+            document.getElementById("pfPrev").disabled = _pfIdx <= 0;
+            document.getElementById("pfNext").disabled = _pfIdx >= _pfItems.length - 1;
+        }
+
+        function pfLbKey(e) {
+            if (e.key === "Escape") closePerfFlyer();
+            if (e.key === "ArrowLeft" && _pfIdx > 0) { _pfIdx--; showPfSlide(); }
+            if (e.key === "ArrowRight" && _pfIdx < _pfItems.length - 1) { _pfIdx++; showPfSlide(); }
+        }
+
+        document.getElementById("pfClose").onclick = closePerfFlyer;
+        document.getElementById("pfPrev").onclick = () => { if (_pfIdx > 0) { _pfIdx--; showPfSlide(); } };
+        document.getElementById("pfNext").onclick = () => { if (_pfIdx < _pfItems.length - 1) { _pfIdx++; showPfSlide(); } };
+        document.getElementById("perfFlyerLightbox").addEventListener("click", e => {
+            if (e.target === document.getElementById("perfFlyerLightbox")) closePerfFlyer();
+        });
+
+        // Lazy-image observer for performer-page flyer thumbnails
+        const pfImgObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const img = entry.target;
+                const src = img.dataset.pfSrc;
+                if (!src) return;
+                img.src = src;
+                img.removeAttribute("data-pf-src");
+                img.addEventListener("load", () => img.classList.add("pf-loaded"));
+                pfImgObserver.unobserve(img);
+            });
+        }, { rootMargin: "300px 0px" });
+
+        // Helper used by renderTourCard / renderTouringShowCard / renderEventRow
+        function makePerfFlyerThumb(flyerName, label, extraClass) {
+            const src = BASE_FLYER + sanitizeFlyerName(flyerName.trim());
+            const wrap = document.createElement("div");
+            wrap.className = "perf-flyer-thumb" + (extraClass ? " " + extraClass : "");
+            wrap.title = "View flyer";
+            const img = document.createElement("img");
+            img.dataset.pfSrc = src;
+            img.alt = label || "Flyer";
+            pfImgObserver.observe(img);
+            wrap.appendChild(img);
+            wrap.addEventListener("click", e => {
+                e.stopPropagation();
+                // Open in the full gallery list if available, so prev/next works
+                const galleryIdx = perfGalleryItems.findIndex(i => i.src === src);
+                if (galleryIdx >= 0) {
+                    openPerfFlyer(perfGalleryItems, galleryIdx);
+                } else {
+                    openPerfFlyer([{ src, label: label || "" }], 0);
+                }
+            });
+            return wrap;
+        }
     </script>
 </body>
 

@@ -867,6 +867,32 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
   card.className = "now-touring-card";
   if (tour.isMusic) card.classList.add("music");
 
+  // Flyer thumbnail — floats right, clicks to open lightbox
+  if (tour.tour_flyer?.trim()) {
+    const thumb = document.createElement("div");
+    thumb.className = "now-touring-flyer-thumb";
+    thumb.title = "View flyer";
+    const img = document.createElement("img");
+    img.dataset.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`;
+    img.alt = `${tour.showname || tour.name} flyer`;
+    img.addEventListener("load", () => img.classList.add("loaded"));
+    flyerImgObserver.observe(img);
+    thumb.appendChild(img);
+    thumb.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openTourFlyerLightbox(
+        [
+          {
+            src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`,
+            label: tour.showname || tour.name,
+          },
+        ],
+        0,
+      );
+    });
+    card.appendChild(thumb);
+  }
+
   const showName = document.createElement("div");
   showName.className = "now-touring-show-name";
   showName.textContent = tour.showname || tour.name;
