@@ -487,6 +487,7 @@ function createEventData(baseEvent, date, eventType) {
     eventData.alternate_locations = baseEvent.alternate_locations || null;
     eventData.exceptions = baseEvent.exceptions || null;
     eventData.club_flyer = baseEvent.club_flyer || null;
+    eventData.feature_slots = baseEvent.feature_slots || null;
 
     if (eventType === "folk") {
       eventData.storiesWelcome = baseEvent.storiesWelcome || false;
@@ -513,10 +514,10 @@ function createEventData(baseEvent, date, eventType) {
       eventData.performer = names.length
         ? names.join(", ")
         : baseEvent.performer || null;
-      // performer_url only meaningful for a single performer
+      // performer_url only meaningful for a single performer; resolve config → troupe
       eventData.performer_url =
         allPerformerIds.length === 1
-          ? performersLookup[allPerformerIds[0]]?.url || null
+          ? resolvePerformerDisplay(allPerformerIds[0], performersLookup).record?.url || null
           : null;
     } else {
       eventData.performer = baseEvent.performer || null;
@@ -605,7 +606,9 @@ function buildShowMergedEvent(show, showKey, showDate) {
 
 /** @returns {string} Performer display name, or "" if not found. */
 function resolvePerformerName(performer_id) {
-  return (performer_id && performersLookup[performer_id]?.name) || "";
+  if (!performer_id) return "";
+  const { record } = resolvePerformerDisplay(performer_id, performersLookup);
+  return record?.name || "";
 }
 
 /** @returns {{venueName: string, venueLocation: string}} */
@@ -824,6 +827,25 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
 
     for (const date of dates) {
       const eventData = createEventData(event, date, eventType);
+
+      // Check if this date has a featured guest via feature_slots: [["DD/MM/YYYY", "performer-id"], ...]
+      if (eventData.feature_slots && eventData.feature_slots.length > 0) {
+        const dd = String(date.getDate()).padStart(2, "0");
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const yyyy = date.getFullYear();
+        const dateStr = `${dd}/${mm}/${yyyy}`;
+        const slot = eventData.feature_slots.find((s) => s[0] === dateStr);
+        if (slot && slot[1]) {
+          const { id: guestId, record: guestRecord } = resolvePerformerDisplay(slot[1], performersLookup);
+          if (guestRecord) {
+            eventData.featured_guest = {
+              id: guestId,
+              name: guestRecord.name,
+              url: guestRecord.url || null,
+            };
+          }
+        }
+      }
 
       // Check if THIS specific date was cancelled
       const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -1215,6 +1237,31 @@ function createEventElement(event) {
     eventDiv.appendChild(createPerformerSection(event));
   }
 
+  // Featured guest slot (e.g. "feat. Lisa Schneidau") for story club recurring events
+  if (event.featured_guest) {
+    const featDiv = document.createElement("div");
+    featDiv.className = "event-featured-guest";
+    const guestUrl = event.featured_guest.url ? sanitizeUrl(event.featured_guest.url) : null;
+    const profileUrl = `new_troubadours_performers.html?performer=${encodeURIComponent(event.featured_guest.id)}`;
+    featDiv.appendChild(document.createTextNode("feat. "));
+    const nameEl = document.createElement("a");
+    nameEl.href = guestUrl || profileUrl;
+    if (guestUrl) { nameEl.target = "_blank"; nameEl.rel = "noopener noreferrer"; }
+    nameEl.textContent = event.featured_guest.name;
+    nameEl.onclick = (e) => e.stopPropagation();
+    featDiv.appendChild(nameEl);
+    // Small profile-page icon
+    const profLink = document.createElement("a");
+    profLink.href = profileUrl;
+    profLink.className = "venue-page-link";
+    profLink.title = `View ${event.featured_guest.name} profile`;
+    profLink.textContent = "i";
+    profLink.onclick = (e) => e.stopPropagation();
+    featDiv.appendChild(document.createTextNode(" "));
+    featDiv.appendChild(profLink);
+    eventDiv.appendChild(featDiv);
+  }
+
   if (event.location) {
     eventDiv.appendChild(createLocationSection(event));
   }
@@ -1357,9 +1404,9 @@ function createPerformerSection(event) {
       : [];
 
   profileIds.forEach((id) => {
-    const perf = performersLookup[id];
+    const { id: resolvedId, record: perf } = resolvePerformerDisplay(id, performersLookup);
     const perfPageLink = document.createElement("a");
-    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(resolvedId)}`;
     perfPageLink.className = "venue-page-link";
     perfPageLink.title = `View ${perf?.name || "performer"} profile`;
     perfPageLink.textContent = "i";

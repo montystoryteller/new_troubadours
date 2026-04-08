@@ -77,18 +77,19 @@ function shareTourLink() {
 function populatePerformerDropdown() {
   const performerSelect = document.getElementById("performerSelect");
 
-  // Get unique performers who have tours
-  const performersWithTours = new Set();
+  // Get unique performers who have tours, resolving troupe configs to their parent
+  const performersWithTours = new Map(); // resolved id -> name
 
   Object.values(toursLookup).forEach((tour) => {
     if (tour.performer_id && performersLookup[tour.performer_id]) {
-      performersWithTours.add(tour.performer_id);
+      const { id, record } = resolvePerformerDisplay(tour.performer_id, performersLookup);
+      if (record) performersWithTours.set(id, record.name);
     }
   });
 
   // Sort performers by name
-  const sortedPerformers = Array.from(performersWithTours)
-    .map((id) => ({ id, name: performersLookup[id].name }))
+  const sortedPerformers = Array.from(performersWithTours.entries())
+    .map(([id, name]) => ({ id, name }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   sortedPerformers.forEach((performer) => {
@@ -112,9 +113,11 @@ function handlePerformerChange() {
     return;
   }
 
-  // Find tours for this performer
+  // Find tours for this performer (including any troupe config aliases)
+  const troupeRecord = performersLookup[performerId];
+  const aliasIds = new Set([performerId, ...(troupeRecord?.aliases || [])]);
   const performerTours = Object.entries(toursLookup)
-    .filter(([_, tour]) => tour.performer_id === performerId)
+    .filter(([_, tour]) => aliasIds.has(tour.performer_id))
     .map(([id, tour]) => ({ id, name: tour.tour_name || tour.name }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -861,7 +864,7 @@ function tourAllDates(tour) {
  * @param {string}   badgeText  e.g. "3 dates remaining" or "4 dates"
  */
 function buildTouringCard(tourId, tour, allDates, badgeText) {
-  const performer = performersLookup[tour.performer_id];
+  const { record: performer } = resolvePerformerDisplay(tour.performer_id, performersLookup);
 
   const card = document.createElement("div");
   card.className = "now-touring-card";
@@ -880,15 +883,10 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
     thumb.appendChild(img);
     thumb.addEventListener("click", (e) => {
       e.stopPropagation();
-      openTourFlyerLightbox(
-        [
-          {
-            src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`,
-            label: tour.showname || tour.name,
-          },
-        ],
-        0,
-      );
+      openTourFlyerLightbox([{
+        src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`,
+        label: tour.showname || tour.name,
+      }], 0);
     });
     card.appendChild(thumb);
   }

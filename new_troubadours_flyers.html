@@ -1263,8 +1263,16 @@
             const items = [];
             const seen = new Set();
 
-            function perf(id) { return id && performers[id] ? performers[id].name : null; }
-            function perfUrl(id) { return id && performers[id] ? performers[id].url || "" : ""; }
+            function perf(id) {
+                if (!id || !performers[id]) return null;
+                const { record } = resolvePerformerDisplay(id, performers);
+                return record ? record.name : performers[id].name;
+            }
+            function perfUrl(id) {
+                if (!id || !performers[id]) return "";
+                const { record } = resolvePerformerDisplay(id, performers);
+                return record ? (record.url || "") : (performers[id].url || "");
+            }
             function ven(id) { return venues[id] || {}; }
 
             function push(flyer, flyerBase, dateStr, type, name, performerId, venueId, ticketUrl, extra) {

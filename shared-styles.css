@@ -206,6 +206,24 @@ select {
     font-size: 14px;
 }
 
+/* Featured guest slot on recurring club events — "feat. Performer Name" */
+.event-featured-guest {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-top: 3px;
+}
+
+.event-featured-guest a {
+    color: #2e7d32;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.event-featured-guest a:hover {
+    text-decoration: underline;
+}
+
 .special .event-location {
     color: #c8e6c9;
 }

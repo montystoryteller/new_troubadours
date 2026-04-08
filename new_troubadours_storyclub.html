@@ -53,6 +53,32 @@
             margin-top: 4px;
         }
 
+        /* Featured guest: "feat. Name" on single-club upcoming/scheduled dates */
+        .club-featured-guest {
+            font-size: 14px;
+            font-style: italic;
+            color: #555;
+            margin: 3px 0 0 0;
+        }
+
+        .club-featured-guest a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-style: italic;
+        }
+
+        .club-featured-guest a:hover {
+            text-decoration: underline;
+        }
+
+        /* Featured guest on directory listing cards */
+        .club-dir-featured-guest {
+            font-size: 12px;
+            font-style: italic;
+            color: #888;
+            margin-top: 2px;
+        }
+
         .club-venue {
             font-size: 15px;
             color: #555;
@@ -727,6 +753,36 @@
                 return id && performers[id] ? performers[id].url || null : null;
             }
 
+            // Resolve feature_slots for a given Date → { name, url, id } or null
+            function featuredGuestForDate(date) {
+                const slots = clubRecord.feature_slots;
+                if (!slots || !slots.length) return null;
+                const dd = String(date.getDate()).padStart(2, '0');
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const yyyy = date.getFullYear();
+                const dateStr = `${dd}/${mm}/${yyyy}`;
+                const slot = slots.find(s => s[0] === dateStr);
+                if (!slot || !slot[1]) return null;
+                const pid = slot[1];
+                const rec = performers[pid];
+                if (!rec) return null;
+                const safeUrl = rec.url ? sanitizeUrl(rec.url) : null;
+                return { id: pid, name: rec.name, url: safeUrl };
+            }
+
+            // Render a small "feat. NAME" element for a featured guest
+            function featuredGuestEl(guest) {
+                const div = document.createElement('div');
+                div.className = 'club-featured-guest';
+                div.appendChild(document.createTextNode('feat. '));
+                const a = document.createElement('a');
+                a.href = guest.url || `new_troubadours_performers.html?performer=${encodeURIComponent(guest.id)}`;
+                if (guest.url) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+                a.textContent = guest.name;
+                div.appendChild(a);
+                return div;
+            }
+
             // ── Render ─────────────────────────────────────────────────────────
             document.title = `${clubRecord.name} — New Troubadours`;
 
@@ -991,6 +1047,8 @@
                         note.style.cssText = 'margin:10px 0 0;color:#888;font-size:13px;font-style:italic;';
                         note.textContent = `Next regular meeting date: ${formatDate(next)}`;
                         root.appendChild(note);
+                        const nextGuest = featuredGuestForDate(next);
+                        if (nextGuest) root.appendChild(featuredGuestEl(nextGuest));
                     }
                 }
             } else {
@@ -1011,6 +1069,8 @@
                         p.style.cssText = 'margin:0 0 6px;color:#2e7d32;font-weight:bold;';
                         p.textContent = `Next regular meeting: ${formatDate(next)}`;
                         schedDiv.appendChild(p);
+                        const nextGuest = featuredGuestForDate(next);
+                        if (nextGuest) schedDiv.appendChild(featuredGuestEl(nextGuest));
                     }
                     if (prev) {
                         const p = document.createElement('p');
@@ -1063,6 +1123,20 @@
                 const lower = (c.schedule || '').toLowerCase();
                 if (lower.startsWith('every')) return ['every'];
                 return ['1st', '2nd', '3rd', '4th', 'last'].filter(w => lower.includes(w));
+            }
+
+            // Resolve a feature slot for a given club record + Date
+            function dirFeaturedGuest(c, date) {
+                const slots = c.feature_slots;
+                if (!slots || !slots.length || !date) return null;
+                const dd = String(date.getDate()).padStart(2, '0');
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const yyyy = date.getFullYear();
+                const dateStr = `${dd}/${mm}/${yyyy}`;
+                const slot = slots.find(s => s[0] === dateStr);
+                if (!slot || !slot[1]) return null;
+                const rec = data.performers[slot[1]];
+                return rec ? rec.name : null;
             }
 
             // Sort: day order → week ordinal → name
@@ -1474,6 +1548,16 @@
                         s.textContent = 'Meets ' + c.schedule.charAt(0).toUpperCase() + c.schedule.slice(1)
                             + (c.time ? ' \u2022 ' + c.time : '');
                         card.appendChild(s);
+                    }
+
+
+                    // Featured guest for the next meeting date
+                    const dirGuest = dirFeaturedGuest(c, entry.nextMeeting);
+                    if (dirGuest) {
+                        const featDiv = document.createElement('div');
+                        featDiv.className = 'club-dir-featured-guest';
+                        featDiv.textContent = `feat. ${dirGuest}`;
+                        card.appendChild(featDiv);
                     }
 
                     if (venue) {

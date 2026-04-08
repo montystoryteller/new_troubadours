@@ -153,15 +153,16 @@ function sanitizeFlyerPath(filename) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "");
 }
 
+
 // ---------------------------------------------------------------------------
 // DOM helpers
 // ---------------------------------------------------------------------------
 
 function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
 }
 
 // ---------------------------------------------------------------------------
@@ -249,9 +250,7 @@ function createVenueElement(venue) {
   if (venue.url) {
     const strong = document.createElement("strong");
     strong.textContent = venueName;
-    const venueLink = createExternalLink(venue.url, strong, {
-      className: "venue-link",
-    });
+    const venueLink = createExternalLink(venue.url, strong, { className: "venue-link" });
     if (venueLink) {
       venueDiv.appendChild(venueLink);
       if (remainder) venueDiv.appendChild(document.createTextNode(remainder));
@@ -412,6 +411,7 @@ async function loadEventsData(cacheBuster) {
   }
 }
 
+
 // ---------------------------------------------------------------------------
 // Troupe helpers
 // ---------------------------------------------------------------------------
@@ -423,14 +423,37 @@ async function loadEventsData(cacheBuster) {
  * Troupe configs carry a "troupe" field pointing to their parent.
  */
 function isTroupeConfig(performer) {
-  return !!(performer && performer.troupe);
+    return !!(performer && performer.troupe);
 }
 
 /**
  * Returns true if this performer record is a troupe (the parent).
  */
 function isTroupe(performer) {
-  return !!(performer && performer.type === "troupe");
+    return !!(performer && performer.type === "troupe");
+}
+
+
+/**
+ * Resolve a performer ID to its display record.
+ * If the ID belongs to a troupe configuration (has a "troupe" field),
+ * return the parent troupe record instead, so names and URLs are shown
+ * as the troupe rather than the specific lineup config.
+ * Falls back to the original record if the parent isn't found.
+ *
+ * @param {string} id
+ * @param {object} performersLookup
+ * @returns {{ id, record }} — resolved id and performer record
+ */
+function resolvePerformerDisplay(id, performersLookup) {
+    if (!id || !performersLookup) return { id, record: null };
+    const record = performersLookup[id];
+    if (!record) return { id, record: null };
+    if (isTroupeConfig(record) && record.troupe) {
+        const parentRecord = performersLookup[record.troupe];
+        if (parentRecord) return { id: record.troupe, record: parentRecord };
+    }
+    return { id, record };
 }
 
 // ---------------------------------------------------------------------------
