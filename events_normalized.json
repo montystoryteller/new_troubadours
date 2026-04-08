@@ -3577,7 +3577,7 @@
       "isSpecial": true,
       "fb_event": 1196997405555935,
       "venue_id": "ventnor-library",
-      "performer_id": "tis-tales-hms"
+      "performer_id": "tis-tales-hsf"
     },
     {
       "name": "Walk By Night & Storymaking [Giles Abbott]",
@@ -8218,12 +8218,19 @@
       "url": "",
       "bio": ""
     },
-    "tis-tales-hms":{
-      "id": "tis-tales-hms",
+    "tis-tales-hsf":{
+      "id": "tis-tales-hsf",
       "performer_ids": ["holly-medland", "sue-bailey", "merl-fluin"],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Merl Fluin",
       "url": "https://tistales.org.uk/",
       "bio": "'Tis Tales is a storytelling troupe telling tales to adult audience on the Isle of Wight [Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin]. \n\n\n\n Performing in various combinations, this performance features tales from Holly Medland, Sue Bailey and Merl Fluin."
+    },
+    "tis-tales-hms":{
+      "id": "tis-tales-hms",
+      "performer_ids": ["holly-medland", "sue-bailey", "tony-monty-hirst"],
+      "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Tony 'Monty' Hirst",
+      "url": "https://tistales.org.uk/",
+      "bio": "'Tis Tales is a storytelling troupe telling tales to adult audience on the Isle of Wight [Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin]. \n\n\n\n Performing in various combinations, this performance features tales from Holly Medland, Sue Bailey and Tony 'Monty' Hirst."
     },
     "ronnie-conboy": {
       "id": "ronnie-conboy",
@@ -8271,9 +8278,12 @@
     },
     "tis-tales": {
       "id": "tis-tales",
+      "aliases": ["tis-tales-hms", "tis-tales-hsf"],
       "name": "'Tis Tales",
+      "type": "troupe",
+      "members": ["holly-medland", "tony-monty-hirst", "sue-bailey", "merl-fluin"],
       "url": "https://tistales.org.uk/",
-      "bio": "'Tis Tales is a storytelling troupe (Holly Medland, Sue Bailey and Tony 'Monty' Hirst) telling tales to adult audience on the Isle of Wight."
+      "bio": "'Tis Tales is a storytelling troupe (Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin) telling tales, in various combinations, to adult audiences on the Isle of Wight."
     },
     "amy-douglas": {
       "id": "amy-douglas",
