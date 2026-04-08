@@ -630,7 +630,8 @@
           "price": "£12",
           "event_flyer": "2026-04-23-harragin-troubled-waters-cilgerran.jpg",
           "club": "tell-tales-club",
-          "ticket_url": "https://ticketlab.app/event/38031#/"
+          "ticket_url": "https://ticketlab.app/event/38031#/",
+          "fb_event": 1622974482283663
         },
         {
           "date": "01/05/2026",
@@ -643,9 +644,32 @@
           "ticket_url": "https://www.ticketsource.co.uk/whats-on/manchester/lock-91/troubled-waters-corrine-harragin/e-pdyzop"
         },
         {
+          "date": "11/06/2026",
+          "price": "£14",
+          "venue_id": "lyric-theatre-bridport",
+          "ticket_url": "https://bridportandwestbay.co.uk/product/troubled-waters-at-the-lyric-theatre-thursday-11-june/",
+          "fb_event": 1613671759871356
+        },
+        {
           "date": "12/06/2026",
           "venue_id": "cygnet-theatre-exeter",
-          "ticket_url": "https://wegottickets.com/af/671/event/682807/"
+          "price": "£16.50",
+          "ticket_url": "https://wegottickets.com/af/671/event/682807/",
+          "fb_event": 933507869545214
+        },
+        {
+          "date": "13/06/2026",
+          "venue_id": "helston-old-chapel",
+          "price": "£20 / £15 / £11",
+          "ticket_url": "https://www.trevowhelston.co.uk/event-details/troubled-waters",
+          "fb_event": 2446888415746965
+        },
+        {
+          "date": "26/06/2026",
+          "venue_id": "hearth-henbant",
+          "price": "£10 (£8)",
+          "ticket_url": "https://www.tickettailor.com/events/henbant/2070549",
+          "fb_event": 1298398022433754
         }
       ]
     }, 
@@ -5140,6 +5164,18 @@
       "latlon": [
         53.1164,
         -4.11915
+      ]
+    },
+    "helston-old-chapel": {
+      "id": "helston-old-chapel",
+      "name": "Helston Old Chapel",
+      "city": "Helston",
+      "postcode": "TR13 8BH",
+      "full_address": "Helston Old Chapel, Meneage Rd, Helston, TR13 8BH",
+      "url": "https://www.trevowhelston.co.uk/",
+      "latlon": [
+        50.09445,
+        -5.26714
       ]
     },
     "the-yellow-book-brighton": {
