@@ -577,19 +577,6 @@
             letter-spacing: 0.05em;
         }
 
-        /* ── Back link ───────────────────────────────────────── */
-        .back-link {
-            display: inline-block;
-            margin-bottom: 16px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         /* ── Date override banner ────────────────────────────── */
         #date-override-banner {
             background: #fff3e0;
@@ -817,7 +804,17 @@
 
 <body>
 
-    <a class="back-link" href="new_troubadours_event_guide.html">← Back to all events</a>
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_flyers.html" aria-current="page">📋 Flyers</a>
+        <a href="new_troubadours_stats.html">📊 Stats</a>
+    </nav>
+
     <h1>The New Troubadours — Event Flyers</h1>
     <h2>Upcoming shows, tours and story nights</h2>
 
@@ -885,11 +882,11 @@
         const CALENDAR = "new_troubadours_event_guide.html";
 
         function escapeHtml(text) {
-                if (!text) return "";
-                const div = document.createElement("div");
-                div.textContent = text;
-                return div.innerHTML;
-            }
+            if (!text) return "";
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         // ── Calendar link builder ─────────────────────────────────────────────────
         // Constructs a URL back to the events calendar, pre-filtered to the event's

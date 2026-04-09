@@ -266,19 +266,6 @@
             margin-bottom: 20px;
         }
 
-        /* ── Back link ───────────────────────────────────────── */
-        .back-link {
-            display: inline-block;
-            margin-bottom: 18px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
         /* ── Error / not found ───────────────────────────────── */
         .not-found {
             text-align: center;
@@ -423,7 +410,16 @@
 
 <body>
 
-    <a class="back-link" href="new_troubadours_event_guide.html">← Back to all events</a>
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_storyclub.html" aria-current="page">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_stats.html">📊 Stats</a>
+    </nav>
 
     <div id="page-content">
         <p class="status-message status-message--loading">Loading…</p>

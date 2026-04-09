@@ -116,22 +116,6 @@ select {
     font-size: 14px;
 }
 
-.back-link {
-    display: block;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.9em;
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-.back-link:hover {
-    background-color: #45a049;
-}
-
 .share-container {
     margin-top: 15px;
     display: flex;

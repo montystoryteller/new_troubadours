@@ -34,21 +34,6 @@
             margin-bottom: 30px;
         }
 
-        .back-link {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-        }
-
-        .back-link:hover {
-            background: #45a049;
-        }
-
         /* ---- PAGE TITLE ---- */
         h1 {
             font-size: 32px;
@@ -645,10 +630,16 @@
 
 <body>
 
-    <div class="page-header">
-        <a href="new_troubadours_event_guide.html" class="back-link">← Events Calendar</a>
-        <a href="new_troubadours_tour_guide.html" class="back-link">Tour Guide →</a>
-    </div>
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_stats.html" aria-current="page">📊 Stats</a>
+    </nav>
 
     <h1>Data &amp; Statistics</h1>
     <p class="page-subtitle">The New Troubadours — computed live from events_normalized.json</p>
