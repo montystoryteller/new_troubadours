@@ -517,7 +517,8 @@ function createEventData(baseEvent, date, eventType) {
       // performer_url only meaningful for a single performer; resolve config → troupe
       eventData.performer_url =
         allPerformerIds.length === 1
-          ? resolvePerformerDisplay(allPerformerIds[0], performersLookup).record?.url || null
+          ? resolvePerformerDisplay(allPerformerIds[0], performersLookup).record
+              ?.url || null
           : null;
     } else {
       eventData.performer = baseEvent.performer || null;
@@ -836,7 +837,10 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
         const dateStr = `${dd}/${mm}/${yyyy}`;
         const slot = eventData.feature_slots.find((s) => s[0] === dateStr);
         if (slot && slot[1]) {
-          const { id: guestId, record: guestRecord } = resolvePerformerDisplay(slot[1], performersLookup);
+          const { id: guestId, record: guestRecord } = resolvePerformerDisplay(
+            slot[1],
+            performersLookup,
+          );
           if (guestRecord) {
             eventData.featured_guest = {
               id: guestId,
@@ -1241,12 +1245,17 @@ function createEventElement(event) {
   if (event.featured_guest) {
     const featDiv = document.createElement("div");
     featDiv.className = "event-featured-guest";
-    const guestUrl = event.featured_guest.url ? sanitizeUrl(event.featured_guest.url) : null;
+    const guestUrl = event.featured_guest.url
+      ? sanitizeUrl(event.featured_guest.url)
+      : null;
     const profileUrl = `new_troubadours_performers.html?performer=${encodeURIComponent(event.featured_guest.id)}`;
     featDiv.appendChild(document.createTextNode("feat. "));
     const nameEl = document.createElement("a");
     nameEl.href = guestUrl || profileUrl;
-    if (guestUrl) { nameEl.target = "_blank"; nameEl.rel = "noopener noreferrer"; }
+    if (guestUrl) {
+      nameEl.target = "_blank";
+      nameEl.rel = "noopener noreferrer";
+    }
     nameEl.textContent = event.featured_guest.name;
     nameEl.onclick = (e) => e.stopPropagation();
     featDiv.appendChild(nameEl);
@@ -1404,7 +1413,10 @@ function createPerformerSection(event) {
       : [];
 
   profileIds.forEach((id) => {
-    const { id: resolvedId, record: perf } = resolvePerformerDisplay(id, performersLookup);
+    const { id: resolvedId, record: perf } = resolvePerformerDisplay(
+      id,
+      performersLookup,
+    );
     const perfPageLink = document.createElement("a");
     perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(resolvedId)}`;
     perfPageLink.className = "venue-page-link";
@@ -2043,7 +2055,27 @@ async function searchRecurringEvents(
     if (searchableText.includes(searchTerm)) {
       const dates = parseSchedule(event.schedule, today, futureDate);
       if (dates.length > 0) {
-        const eventData = createEventData(event, dates[0], eventType);
+        const date = dates[0];
+        const eventData = createEventData(event, date, eventType);
+        // Match feature_slots for this specific date (same logic as processRecurringEvents)
+        if (eventData.feature_slots && eventData.feature_slots.length > 0) {
+          const dd = String(date.getDate()).padStart(2, "0");
+          const mm = String(date.getMonth() + 1).padStart(2, "0");
+          const yyyy = date.getFullYear();
+          const dateStr = `${dd}/${mm}/${yyyy}`;
+          const slot = eventData.feature_slots.find((s) => s[0] === dateStr);
+          if (slot && slot[1]) {
+            const { id: guestId, record: guestRecord } =
+              resolvePerformerDisplay(slot[1], performersLookup);
+            if (guestRecord) {
+              eventData.featured_guest = {
+                id: guestId,
+                name: guestRecord.name,
+                url: guestRecord.url || null,
+              };
+            }
+          }
+        }
         allEventsData.push(eventData);
         await addMarkerForEvent(eventData);
       }

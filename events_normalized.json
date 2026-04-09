@@ -4502,6 +4502,16 @@
       "venue_id": "orepool-inn-sling"
     },
     {
+      "name": "Folk On The Moor",
+      "schedule": "every Sunday",
+      "time": "7.45pm",
+      "price": "",
+      "link": "http://www.moorfolk.co.uk/",
+      "storiesWelcome": true,
+      "exceptions": [],
+      "venue_id": "moorland-hotel-wotter"
+    },
+    {
       "name": "Travellers Joy Folk Club",
       "schedule": "1st and 3rd Thursday",
       "time": "2-4pm",
@@ -5298,6 +5308,18 @@
       "latlon": [
         50.15364,
         -5.06841
+      ]
+    },
+    "moorland-hotel-wotter": {
+      "id": "moorland-hotel-wotter",
+      "name": "Moorland Hotel, Wotter",
+      "city": "Brighton",
+      "postcode": "PL7 5HP",
+      "full_address": "Moorland Hotel, Wotter, PL7 5HP",
+      "url": "https://www.yellowbook.bar/",
+      "latlon": [
+        50.43962,
+        -4.03901
       ]
     },
     "the-yellow-book-brighton": {
@@ -8496,6 +8518,12 @@
       "name": "Mike Payton",
       "url": "https://www.mikepayton.org/",
       "bio": "Mike Payton has been telling tall tales all his life, and decided to turn this into a career in 2008. He was Lancastrian born, but is now based in Nottingham, drawing his tales from Britain's rich heritage and also from the four corners of the earth. His delivery is  warm and engaging, and he has a penchant for the strange and unexplainable.\n\n\n\n For the past 10 years, Mike has co-run the ever popular Beeston Tales with ace storyteller Tim Ralphs, a monthly storytelling club that brings the best of contemporary storytelling to an adult audience. As well as his work in schools, he has performed at museums, galleries, festivals, castles, pubs, clubs and cafes throughout the land. Early in his career he was the winner of The Black Country Story Slam, and was invited by The Society for Storytelling to perform at their annual gathering. He performed at The Wellcome Trust's Day of the Dead celebrations on a day when the gallery had its busiest ever day: He has visited over 250 schools across the UK and Europe, performing and running workshops to all ages."
+    },
+    "mike-oconnor": {
+      "id": "mike-oconnor",
+      "name": "Mike O'Connor",
+      "url": "https://www.lyngham.co.uk/mike_oconnor.html",
+      "bio": "Accomplished on the fiddle and accordion, Mike has a wealth of songs and stories.\n\n\n\nMike tells spell-binding stories, many with musical accompaniment, for both adult & schools audiences. His tales vary from 5 minute fireside tales to epics such as Return to Lyonesse, Tristan & Iseult, Imravoe, the Tales of the Holy Rood, & Loki. He is one of the few in the land capable of delivering such epic tales and sagas. He is the author of the best selling 'Cornish Folk Tales' published by History Press. In 2013, with Barbara Griggs he won a British Award for Storytelling Excellence for 'Return to Lyonesse'."
     },
     "shane-ibbs": {
       "id": "shane-ibbs",

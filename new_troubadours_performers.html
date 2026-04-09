@@ -537,6 +537,21 @@
         .troupe-config-chips {
             margin-bottom: 12px;
         }
+
+        /* ── Performer search (landing page) ──────────────────── */
+        .perf-search-wrap {
+            margin-bottom: 14px;
+        }
+
+        .perf-search-wrap .dir-search-input {
+            border-color: #a5d6a7;
+        }
+
+        .perf-search-wrap .dir-search-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+        }
     </style>
 </head>
 
@@ -544,6 +559,7 @@
 
     <div class="page-header">
         <a href="new_troubadours_event_guide.html" class="back-link">← Events Calendar</a>
+        <div id="perfJumpWrap" style="display:none;flex:1;max-width:320px;position:relative;"></div>
         <a href="new_troubadours_tour_guide.html" class="back-link">Tour Guide →</a>
     </div>
 
@@ -636,32 +652,169 @@
 
         function renderAllPerformers() {
             const container = document.getElementById("performerContent");
-
-            const items = Object.entries(performersLookup)
-                .filter(([, p]) => !isTroupeConfig(p))
-                .sort((a, b) => a[1].name.localeCompare(b[1].name))
-                .map(([pid, p]) => ({
-                    label: p.name,
-                    href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
-                    meta: ""
-                }));
-
             container.innerHTML = "";
 
+            // ── Build search index ─────────────────────────────────────────────
+            // Each entry covers performer name + bio + tour/show/event names
+            // so you can find "Cinderella" and land on the performer who does it.
+            const perfIndex = Object.entries(performersLookup)
+                .filter(([, p]) => !isTroupeConfig(p))
+                .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                .map(([pid, p]) => {
+                    const aliasIds = new Set([pid, ...(p.aliases || [])]);
+                    const showNames = [];
+
+                    // Tours
+                    Object.values(toursLookup).forEach(t => {
+                        if (aliasIds.has(t.performer_id)) {
+                            const n = t.tour_name || t.name;
+                            if (n) showNames.push(n);
+                        }
+                    });
+                    // Touring shows
+                    Object.values(eventsData.touring_shows || {}).forEach(ts => {
+                        if (ts.performer_id === pid) {
+                            const n = ts.showname || ts.name;
+                            if (n) showNames.push(n);
+                        }
+                    });
+                    // Specific / music events
+                    [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || [])].forEach(e => {
+                        if (e.performer_id === pid) {
+                            const n = e.showname || e.name;
+                            if (n && !showNames.includes(n)) showNames.push(n);
+                        }
+                    });
+
+                    return {
+                        pid,
+                        name: p.name,
+                        nameLower: p.name.toLowerCase(),
+                        bioLower: (p.bio || "").toLowerCase(),
+                        showNamesLower: showNames.map(s => s.toLowerCase()),
+                        showNames,
+                        href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
+                        isTroupe: isTroupe(p),
+                    };
+                });
+
+            // ── Search box ────────────────────────────────────────────────────
+            const searchWrap = document.createElement("div");
+            searchWrap.className = "perf-search-wrap";
+
+            createSearchBox(searchWrap, {
+                placeholder: "Search performers, shows or tours…",
+                search: term => {
+                    const t = term.toLowerCase();
+                    return perfIndex
+                        .map(entry => {
+                            if (entry.nameLower.includes(t)) return { entry, matchType: "name" };
+                            if (entry.bioLower.includes(t)) return { entry, matchType: "bio" };
+                            const showMatch = entry.showNames.find((s, i) => entry.showNamesLower[i].includes(t));
+                            if (showMatch) return { entry, matchType: showMatch };
+                            return null;
+                        })
+                        .filter(Boolean)
+                        .slice(0, 10);
+                },
+                renderItem: ({ entry, matchType }) => {
+                    const div = document.createElement("div");
+                    const strong = document.createElement("strong");
+                    strong.textContent = entry.name;
+                    div.appendChild(strong);
+                    if (matchType !== "name" && matchType !== "bio") {
+                        // matchType is the show name that matched
+                        const meta = document.createElement("span");
+                        meta.className = "dir-search-item-meta";
+                        meta.textContent = matchType;
+                        div.appendChild(meta);
+                    } else if (matchType === "bio") {
+                        const meta = document.createElement("span");
+                        meta.className = "dir-search-item-meta";
+                        meta.textContent = "bio";
+                        div.appendChild(meta);
+                    }
+                    if (entry.isTroupe) {
+                        const tag = document.createElement("span");
+                        tag.className = "dir-search-item-meta";
+                        tag.textContent = "troupe";
+                        div.appendChild(tag);
+                    }
+                    return div;
+                },
+                onSelect: ({ entry }, searchInput, clearBtn, dropdown) => {
+                    // Navigate directly to the performer page
+                    location.href = entry.href;
+                },
+                onChange: term => {
+                    // Filter the list rows live; auto-open details when searching
+                    const t = term.toLowerCase();
+                    const matchedPids = new Set(
+                        t ? perfIndex
+                            .filter(e =>
+                                e.nameLower.includes(t) ||
+                                e.bioLower.includes(t) ||
+                                e.showNamesLower.some(s => s.includes(t))
+                            )
+                            .map(e => e.pid)
+                            : perfIndex.map(e => e.pid) // empty → show all
+                    );
+
+                    listBody.querySelectorAll(".simple-list-row").forEach(row => {
+                        const pid = row.dataset.pid;
+                        row.style.display = (!t || matchedPids.has(pid)) ? "" : "none";
+                    });
+
+                    // Update visible count in summary
+                    const visible = t ? matchedPids.size : perfIndex.length;
+                    summaryLabel.textContent =
+                        t ? `All performers — ${visible} match${visible !== 1 ? "es" : ""}`
+                            : `All performers (${perfIndex.length})`;
+
+                    // Auto-expand when searching, restore default when cleared
+                    if (t) details.open = true;
+                }
+            });
+
+            container.appendChild(searchWrap);
+
+            // ── Collapsible list ──────────────────────────────────────────────
             const details = document.createElement("details");
             details.className = "all-performers-details";
 
             const summary = document.createElement("summary");
             summary.className = "all-performers-summary";
-            summary.innerHTML =
-                `<span class="all-performers-label">All performers (${items.length})</span>` +
-                `<span class="all-performers-hint">click to expand</span>`;
+
+            const summaryLabel = document.createElement("span");
+            summaryLabel.className = "all-performers-label";
+            summaryLabel.textContent = `All performers (${perfIndex.length})`;
+            summary.appendChild(summaryLabel);
+
+            const summaryHint = document.createElement("span");
+            summaryHint.className = "all-performers-hint";
+            summaryHint.textContent = "click to expand";
+            summary.appendChild(summaryHint);
+
             details.appendChild(summary);
 
-            const body = document.createElement("div");
-            body.className = "all-performers-body";
-            simpleList(body, items);
-            details.appendChild(body);
+            const listBody = document.createElement("div");
+            listBody.className = "all-performers-body";
+
+            // Build list rows manually so we can tag each with data-pid for filtering
+            const list = document.createElement("div");
+            list.className = "simple-list";
+            perfIndex.forEach(entry => {
+                const row = document.createElement("div");
+                row.className = "simple-list-row";
+                row.dataset.pid = entry.pid;
+                const a = document.createElement("a");
+                a.href = entry.href;
+                a.textContent = entry.name;
+                row.appendChild(a);
+                list.appendChild(row);
+            });
+            listBody.appendChild(list);
+            details.appendChild(listBody);
 
             container.appendChild(details);
         }
@@ -673,6 +826,8 @@
             if (!performerId) {
                 await loadEventsData().then(loaded => {
                     if (!loaded) return showNotFound();
+                    eventsData = loaded.eventsData;
+                    toursLookup = loaded.toursLookup;
                     performersLookup = loaded.performersLookup;
                     renderAllPerformers();
                     document.getElementById("loadingState").style.display = "none";
@@ -695,6 +850,70 @@
             renderPerformer();
             document.getElementById("loadingState").style.display = "none";
             document.getElementById("performerContent").style.display = "";
+
+            // ── Jump-to-performer search in the page header ────────────────
+            const jumpWrap = document.getElementById("perfJumpWrap");
+            if (jumpWrap) {
+                jumpWrap.style.display = "";
+
+                // Build a lightweight index: name + show/tour names
+                const jumpIndex = Object.entries(performersLookup)
+                    .filter(([, p]) => !isTroupeConfig(p) && p)
+                    .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                    .map(([pid, p]) => {
+                        const aliasIds = new Set([pid, ...(p.aliases || [])]);
+                        const showNames = [];
+                        Object.values(toursLookup).forEach(t => {
+                            if (aliasIds.has(t.performer_id)) {
+                                const n = t.tour_name || t.name; if (n) showNames.push(n);
+                            }
+                        });
+                        Object.values(eventsData.touring_shows || {}).forEach(ts => {
+                            if (ts.performer_id === pid) {
+                                const n = ts.showname || ts.name; if (n) showNames.push(n);
+                            }
+                        });
+                        return {
+                            pid, name: p.name,
+                            nameLower: p.name.toLowerCase(),
+                            showNamesLower: showNames.map(s => s.toLowerCase()),
+                            showNames,
+                            href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
+                        };
+                    });
+
+                createSearchBox(jumpWrap, {
+                    placeholder: "Jump to performer…",
+                    search: term => {
+                        const t = term.toLowerCase();
+                        return jumpIndex
+                            .filter(e => e.pid !== performerId) // exclude current
+                            .map(e => {
+                                if (e.nameLower.includes(t)) return { e, hint: null };
+                                const sm = e.showNames.find((s, i) => e.showNamesLower[i].includes(t));
+                                if (sm) return { e, hint: sm };
+                                return null;
+                            })
+                            .filter(Boolean)
+                            .slice(0, 8);
+                    },
+                    renderItem: ({ e, hint }) => {
+                        const div = document.createElement("div");
+                        const strong = document.createElement("strong");
+                        strong.textContent = e.name;
+                        div.appendChild(strong);
+                        if (hint) {
+                            const meta = document.createElement("span");
+                            meta.className = "dir-search-item-meta";
+                            meta.textContent = hint;
+                            div.appendChild(meta);
+                        }
+                        return div;
+                    },
+                    onSelect: ({ e }) => { location.href = e.href; },
+                    onChange: () => { },
+                });
+            }
         });
 
         // ---------------------------------------------------------------------------

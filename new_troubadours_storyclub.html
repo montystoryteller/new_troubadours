@@ -410,6 +410,14 @@
         .status-message--error {
             color: #c00;
         }
+
+        /* Next meeting date shown in club header */
+        .club-next-meeting {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -830,6 +838,28 @@
                 p.style.cssText = 'margin-top:4px;font-size:14px;color:#555;';
                 p.textContent = clubRecord.price;
                 header.appendChild(p);
+            }
+
+            // Next meeting + featured guest — shown in header for quick visibility
+            if (clubRecord.schedule) {
+                const nextHeaderDate = nextScheduledDate(clubRecord.schedule, clubRecord.exceptions || []);
+                if (nextHeaderDate) {
+                    const msPerDay = 86400000;
+                    const dDiff = Math.round((nextHeaderDate - today) / msPerDay);
+                    // Only show here if not tonight/tomorrow (those get the alert banner)
+                    if (dDiff > 1) {
+                        const nextDiv = document.createElement('div');
+                        nextDiv.className = 'club-next-meeting';
+                        nextDiv.textContent = `Next meeting: ${formatDate(nextHeaderDate)}`;
+                        header.appendChild(nextDiv);
+                        const headerGuest = featuredGuestForDate(nextHeaderDate);
+                        if (headerGuest) header.appendChild(featuredGuestEl(headerGuest));
+                    } else if (dDiff >= 0) {
+                        // Tonight or tomorrow — just show the featured guest under the schedule
+                        const headerGuest = featuredGuestForDate(nextHeaderDate);
+                        if (headerGuest) header.appendChild(featuredGuestEl(headerGuest));
+                    }
+                }
             }
 
             // Icons row
