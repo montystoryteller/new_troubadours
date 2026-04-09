@@ -2223,7 +2223,8 @@
       "facebook": "https://www.facebook.com/astinginthetaleclub",
       "email": "astinginthetaleclub@gmail.com",
       "club": "stinginthetale",
-      "venue_id": "lock-91-bar-manchester"
+      "venue_id": "lock-91-bar-manchester",
+      "feature_slots": [["20/05/2026", "sarah-rundle"]]
     },
     {
       "name": "3rd Wednesday Storytellers, [online]",
@@ -4088,6 +4089,21 @@
       "performer_id": "niall-moorjani"
     },
     {
+      "name": "1647: The Poorest Hee [Sarah Rundle]",
+      "showname": "1647: The Poorest Hee",
+      "date": "20/05/2026",
+      "time": "7.15-10pm",
+      "club": "stinginthetale",
+      "price": "£8 / £6",
+      "description": "After five years of war, the troops of the Parliamentary Army held their leaders to account.  'What is the point of fighting the King's Tyranny, if we just end up with another set of Great Men over us?'  They wanted the vote and they wanted land. Did they get either? Come and see...\n\n\n\n'I think that the Poorest Hee that is in England hath a life to live, as the greatest Hee; and therefore truly, Sir, I think itt clear, that every Man that is to live under a Government ought first by his own Consent to put himself under that Government...' Thomas Rainsborough, at the Putney Debates, 1647.",
+      "event_flyer": "2026_05_20_rundle_poorest-hee-stinginthetale.png",
+      "ticket_url": "https://www.ticketsource.com/a-sting-in-the-tale/1647-the-poorest-hee-sarah-rundle/e-pdyzop",
+      "isSpecial": true,
+      "date_added": "09/04/2026",
+      "venue_id": "lock-91-bar-manchester",
+      "performer_id": "sarah-rundle"
+    },
+    {
       "name": "Fox Skin: A Dionysus Story [Amelia Ace Armande]",
       "showname": "Fox Skin:  A Dionysus Story",
       "date": "20/05/2026",
@@ -4670,8 +4686,8 @@
     },
     "the-britons-protection-great": {
       "id": "the-britons-protection-great",
-      "name": "The Britons Protection",
-      "city": "Great Bridgewater St.",
+      "name": "The Britons Protection, Manchester",
+      "city": "Manchester",
       "postcode": "M1 5LE",
       "full_address": "The Britons Protection, Great Bridgewater St., Manchester, M1 5LE",
       "url": "https://www.thebritonsprotection.co.uk/index",
@@ -4683,7 +4699,7 @@
     "brigsteer-village-hall-nr": {
       "id": "brigsteer-village-hall-nr",
       "name": "Brigsteer Village Hall",
-      "city": "Nr Kendal",
+      "city": "Kendal",
       "postcode": "LA8 8AL",
       "full_address": "Brigsteer Village Hall, Nr Kendal, LA8 8AL",
       "url": "https://www.brigsteervillagehall.co.uk/",
@@ -4814,10 +4830,10 @@
     },
     "pullens-centre": {
       "id": "pullens-centre",
-      "name": "The Pullens Centre",
-      "city": "184 Crampton Street",
+      "name": "The Pullens Centre, Southwark",
+      "city": "Southwark, London",
       "postcode": "SE17 3AE",
-      "full_address": "The Pullens Centre, 184 Crampton Street, London, SE17 3AE",
+      "full_address": "The Pullens Centre, 184 Crampton Street, Southwark, London, SE17 3AE",
       "url": "https://www.pullenstra.org/space-rental/",
       "latlon": [
         51.490419,
@@ -6186,9 +6202,9 @@
     "next-door-at-theatre-deli-ec3a": {
       "id": "next-door-at-theatre-deli-ec3a",
       "name": "NEXT DOOR at Theatre Deli",
-      "city": "EC3A 4AF",
+      "city": "Aldgate, London",
       "postcode": "",
-      "full_address": "NEXT DOOR at Theatre Deli, EC3A 4AF",
+      "full_address": "NEXT DOOR at Theatre Deli, Aldgate, London, EC3A 4AF",
       "url": "https://www.theatredeli.co.uk/",
       "latlon": [
         51.51382,
@@ -6270,9 +6286,9 @@
     "neuadd-bentref-llangoed-village-hall": {
       "id": "neuadd-bentref-llangoed-village-hall",
       "name": "Neuadd Bentref Llangoed Village Hall",
-      "city": "LLangoed",
+      "city": "Llangoed",
       "postcode": "LL58 8NY",
-      "full_address": "Neuadd Bentref Llangoed Village Hall, LLangoed, LL58 8NY",
+      "full_address": "Neuadd Bentref Llangoed Village Hall, Llangoed, LL58 8NY",
       "url": "https://www.llangoedvillagehall.com/events/stars-and-their-consolations",
       "latlon": [
         53.2984255,
@@ -6510,7 +6526,7 @@
     "micklethwait-social-york": {
       "id": "micklethwait-social-york",
       "name": "Micklethwait Social",
-      "city": "York (Jorvik Viking Festival Fringe)",
+      "city": "York",
       "postcode": "UK",
       "full_address": "Micklethwait Social, York (Jorvik Viking Festival Fringe), UK",
       "url": "",
@@ -6615,8 +6631,8 @@
     "bolton-socialist-club-bl1": {
       "id": "bolton-socialist-club-bl1",
       "name": "Bolton Socialist Club",
-      "city": "BL1 1DY",
-      "postcode": "",
+      "city": "Bolton",
+      "postcode": "BL1 1DY",
       "full_address": "Bolton Socialist Club, BL1 1DY",
       "url": "https://www.facebook.com/profile.php?id=100069735416333",
       "latlon": [
@@ -7878,9 +7894,9 @@
     "knott-memorial-hall": {
       "id": "knott-memorial-hall",
       "name": "Knott Memorial Hall",
-      "city": "Newcastle upon Tyne",
+      "city": "Newcastle-upon-Tyne",
       "postcode": "NE15 0BH",
-      "full_address": "Knott Memorial Hall, Towne Gate, Heddon on the Wall, Newcastle upon Tyne, NE15 0BH",
+      "full_address": "Knott Memorial Hall, Towne Gate, Heddon on the Wall, Newcastle-upon-Tyne, NE15 0BH",
       "url": "https://northumberlandvillagehalls.org.uk/heddon-village-knott-memorial-hall",
       "latlon": [54.99652,-1.79339
       ]
