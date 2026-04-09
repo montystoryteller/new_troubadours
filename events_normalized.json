@@ -3296,6 +3296,34 @@
       "isSpecial": true
     },
     {
+      "name": "Dark Tales of Cornish Smuggling [Keith Wallis]",
+      "showname": "Dark Tales of Cornish Smuggling",
+      "date": "27/02/2026",
+      "time": "6.30pm",
+      "club": "",
+      "price": "£5",
+      "description": "Join podcast host Keith Wallis as he delves into the murkier side of Cornwall's past. Explore tales of smugglers from stroies of secret tunnels leading to the sea, rumours of murder, revenge and haunted pubs, to daring exploits and battles on beaches.",
+      "event_flyer": "2026_02_25_wallis_smugglers_st_austell.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "st-austell-library",
+      "performer_id": "keith-wallis"
+    },
+    {
+      "name": "Tales from the Time Between Times [Owen Staton]",
+      "showname": "Tales from the Time Between Times",
+      "date": "27/02/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "Free",
+      "description": "Tales from the Time between Times starting at 7.30pm . You will hear about Ghosts the Tylweth Teg and of course Y Mari Lwyd as we explore the dark tales of the Swansea valley and beyond.",
+      "event_flyer": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "coelbren-welfare-hall",
+      "performer_id": "owen-staton"
+    },
+    {
       "name": "Queen of Between [Lucy Lill & Sarah-Liisa Wilkinson]",
       "showname": "Queen of Between",
       "date": "05/03/2026",
@@ -3311,35 +3339,6 @@
       "performer_id": "lucy-lill-sarah-liisa-wilkinson"
     },
     {
-      "name": "Lilith: The Other Side of the Story [Katy Cawkwell]",
-      "showname": "Lilith: The Other Side of the Story",
-      "date": "07/03/2026",
-      "time": "1.15pm",
-      "club": "",
-      "price": "",
-      "description": "An uplifting one-woman storytelling show.\n\n\n\n An exploration and celebration of female power through the mythological character of Lilith. Shocking, seductive and entertaining.\n\n\n\n Lilith, the first wife of Adam, was not prepared to lie down and accept what was given to her. Thrown out of Eden, she slithered back in to take her  revenge and wake Eve up to what her body could do. \n\n\n\n Viewed as a demon, worshipped as a goddess, adored as the Queen of   Sheba, Lilith slips out of the Bible, reclaims the narrative and is dancing with us still, forever free.\n\n\n\n Katy Cawkwell mixes myth from Arabia, Ethiopia, Mesopotamia and Jewish tradition, with a dash of feminist flavouring and a large dollop of her own wild dreaming.",
-      "event_flyer": "",
-      "ticket_url": "https://blandfordliteraryfestival.co.uk/",
-      "isSpecial": true,
-      "venue_id": "blandford-forum-corn-exchange",
-      "performer_id": "katy-cawkwell"
-    },
-    {
-      "name": "In the time of GIANTS [The Travelling Talesman]",
-      "showname": "In the time of GIANTS",
-      "date": "15/03/2026",
-      "time": "7.30pm",
-      "club": "",
-      "price": "£18 / £15 adv",
-      "description": "They are big and some of them are clever (not many though!). Europe used to be thick with them.\n\n\n\n From Greek Zeus to Scandinavian Thor and from Cornwall's Jack the Hammer to the northern Molly Whuppie, Gods and humans have waged a devastating series of single combats against large and grotesque beings with dubious manners. In many myths the giants come first, often preceding even the gods themselves, frequently waiting for the human explorers of new lands.\n\n\n\n Often a force of oppression, representing the tyranny of might, some have their beginnings in the power of nature, some in actual people who have been exaggerated over the years and some we can only guess at.",
-      "event_flyer": "",
-      "ticket_url": "https://theacornpenzance.ticketsolve.com/ticketbooth/shows/1173664705",
-      "isSpecial": true,
-      "isCancelled": true,
-      "venue_id": "the-acorn-penzance",
-      "performer_id": "the-travelling-talesman-cliff-eastabrook"
-    },
-    {
       "name": "Stories of Morgan le Fay [Cath Little]",
       "showname": "Cath Little",
       "date": "05/03/2026",
@@ -3352,6 +3351,20 @@
       "isSpecial": true,
       "venue_id": "the-folk-of-gloucester",
       "performer_id": "cath-little"
+    },
+    {
+      "name": "Lilith: The Other Side of the Story [Katy Cawkwell]",
+      "showname": "Lilith: The Other Side of the Story",
+      "date": "07/03/2026",
+      "time": "1.15pm",
+      "club": "",
+      "price": "",
+      "description": "An uplifting one-woman storytelling show.\n\n\n\n An exploration and celebration of female power through the mythological character of Lilith. Shocking, seductive and entertaining.\n\n\n\n Lilith, the first wife of Adam, was not prepared to lie down and accept what was given to her. Thrown out of Eden, she slithered back in to take her  revenge and wake Eve up to what her body could do. \n\n\n\n Viewed as a demon, worshipped as a goddess, adored as the Queen of   Sheba, Lilith slips out of the Bible, reclaims the narrative and is dancing with us still, forever free.\n\n\n\n Katy Cawkwell mixes myth from Arabia, Ethiopia, Mesopotamia and Jewish tradition, with a dash of feminist flavouring and a large dollop of her own wild dreaming.",
+      "event_flyer": "",
+      "ticket_url": "https://blandfordliteraryfestival.co.uk/",
+      "isSpecial": true,
+      "venue_id": "blandford-forum-corn-exchange",
+      "performer_id": "katy-cawkwell"
     },
     {
       "name": "Storytelling Night with Laura Sampson and Stacey Blythe",
@@ -3369,18 +3382,19 @@
       "performer_id": "laura-sampson-and-stacey-blythe"
     },
     {
-      "name": "Tales from the Time Between Times [Owen Staton]",
-      "showname": "Tales from the Time Between Times",
-      "date": "27/02/2026",
+      "name": "In the time of GIANTS [The Travelling Talesman]",
+      "showname": "In the time of GIANTS",
+      "date": "15/03/2026",
       "time": "7.30pm",
       "club": "",
-      "price": "Free",
-      "description": "Tales from the Time between Times starting at 7.30pm . You will hear about Ghosts the Tylweth Teg and of course Y Mari Lwyd as we explore the dark tales of the Swansea valley and beyond.",
+      "price": "£18 / £15 adv",
+      "description": "They are big and some of them are clever (not many though!). Europe used to be thick with them.\n\n\n\n From Greek Zeus to Scandinavian Thor and from Cornwall's Jack the Hammer to the northern Molly Whuppie, Gods and humans have waged a devastating series of single combats against large and grotesque beings with dubious manners. In many myths the giants come first, often preceding even the gods themselves, frequently waiting for the human explorers of new lands.\n\n\n\n Often a force of oppression, representing the tyranny of might, some have their beginnings in the power of nature, some in actual people who have been exaggerated over the years and some we can only guess at.",
       "event_flyer": "",
-      "ticket_url": "",
+      "ticket_url": "https://theacornpenzance.ticketsolve.com/ticketbooth/shows/1173664705",
       "isSpecial": true,
-      "venue_id": "coelbren-welfare-hall",
-      "performer_id": "owen-staton"
+      "isCancelled": true,
+      "venue_id": "the-acorn-penzance",
+      "performer_id": "the-travelling-talesman-cliff-eastabrook"
     },
     {
       "name": "The Girl Who Married a Dog [Nell Phoenix]",
@@ -3985,6 +3999,21 @@
       "performer_ids": ["henry-everett", "lisa-schneidau", "shane-ibbs"]
     },
     {
+      "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
+      "showname": "Legends of the Cornish Landscape",
+      "date": "07/05/2026",
+      "time": "6pm",
+      "club": "",
+      "price": "£7",
+      "description": "Forgotten tales from Cornwall's past.\n\n\n\nJoin Keith Wallis, host of The Piskie Trap podcast, and Elizabeth Dale, writer and creator of The Cornish Bird blog for their latest talk exploring legends in the Cornish landscape. From the windswept tors and headlands, to secluded woods and valleys and rambling highways and byways, each have their tales to tell.",
+      "event_flyer": "dale_wallis_legends_cornish_landscape.jpg",
+      "ticket_url": "https://thepoly.org/whats-on/event/4361/legends-of-the-cornish-landscape",
+      "isSpecial": true,
+      "date_added": "09/04/2026",
+      "venue_id": "the-poly-falmouth",
+      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
       "name": "Two Tales: Mumming, Puppetry & Storytelling [The Roving Jewel]",
       "showname": "Two Tales: Mumming, Puppetry & Storytelling",
       "date": "15/05/2026",
@@ -4089,6 +4118,21 @@
       "performer_ids": ["tuup", "xanthe-gresham-knight", "tim-ralphs", "nell-phoenix", "sarah-liisa-wilkinson"]
     },
     {
+      "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
+      "showname": "Legends of the Cornish Landscape",
+      "date": "27/05/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "Pay What You Can £8/£10/312/£14",
+      "description": "Forgotten tales from Cornwall's past.\n\n\n\nJoin Keith Wallis, host of The Piskie Trap podcast, and Elizabeth Dale, writer and creator of The Cornish Bird blog for their latest talk exploring legends in the Cornish landscape. From the windswept tors and headlands, to secluded woods and valleys and rambling highways and byways, each have their tales to tell.",
+      "event_flyer": "dale_wallis_legends_cornish_landscape.jpg",
+      "ticket_url": "https://www.theacornpenzance.com/events/legends-of-the-cornish-landscape/",
+      "isSpecial": true,
+      "date_added": "09/04/2026",
+      "venue_id": "the-acorn-penzance",
+      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
       "name": "Another Stranger: Cressida's Tale [Stephe Harrop]",
       "showname": "Another Stranger: Cressida's Tale",
       "date": "04/06/2026",
@@ -4132,6 +4176,21 @@
       "performer_id": "sarah-rundle"
     },
     {
+      "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
+      "showname": "Legends of the Cornish Landscape",
+      "date": "18/06/2026",
+      "time": "6.30pm",
+      "club": "",
+      "price": "£6",
+      "description": "Forgotten tales from Cornwall's past.\n\n\n\nJoin Keith Wallis, host of The Piskie Trap podcast, and Elizabeth Dale, writer and creator of The Cornish Bird blog for their latest talk exploring legends in the Cornish landscape. From the windswept tors and headlands, to secluded woods and valleys and rambling highways and byways, each have their tales to tell.",
+      "event_flyer": "dale_wallis_legends_cornish_landscape.jpg",
+      "ticket_url": "https://cornwallmuseum.digitickets.co.uk/event-tickets/75152?catID=71412",
+      "isSpecial": true,
+      "date_added": "09/04/2026",
+      "venue_id": "cornwall-museum-art-gallery",
+      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
       "name": "The Shahnameh [Xanthe Gresham]",
       "showname": "The Shahnameh",
       "date": "18/06/2026",
@@ -4146,7 +4205,22 @@
       "venue_id": "the-cube-kingsdown",
       "performer_id": "xanthe-gresham-knight"
     },
-        {
+    {
+      "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
+      "showname": "Legends of the Cornish Landscape",
+      "date": "20/06/2026",
+      "time": "",
+      "club": "",
+      "price": "",
+      "description": "Forgotten tales from Cornwall's past.\n\n\n\nJoin Keith Wallis, host of The Piskie Trap podcast, and Elizabeth Dale, writer and creator of The Cornish Bird blog for their latest talk exploring legends in the Cornish landscape. From the windswept tors and headlands, to secluded woods and valleys and rambling highways and byways, each have their tales to tell.",
+      "event_flyer": "dale_wallis_legends_cornish_landscape.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "09/04/2026",
+      "venue_id": "liskeard-library",
+      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
       "name": "Secret Tales From Wales [Daniel Morden]",
       "showname": "Secret Tales From Wales",
       "date": "26/06/2026",
@@ -4175,7 +4249,7 @@
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": ""
     },
-        {
+    {
       "name": "Downright Rude! [TUUP, Tim Ralphs, Nell Phoenix & Sarah Liisa Wilkinson]",
       "showname": "Downright Rude!",
       "date": "11/07/2026",
@@ -5176,6 +5250,54 @@
       "latlon": [
         50.09445,
         -5.26714
+      ]
+    },
+    "st-austell-library": {
+      "id": "st-austell-library",
+      "name": "St Austell Library",
+      "city": "St Austell",
+      "postcode": "PL25 4LD",
+      "full_address": "St Austell Library, 2 Carlyon Rd, Saint Austell, PL25 4LD",
+      "url": "https://www.facebook.com/staustelllibrary/",
+      "latlon": [
+        50.33916,
+        -4.78568
+      ]
+    },
+    "liskeard-library": {
+      "id": "liskeard-library",
+      "name": "Liskeard Library",
+      "city": "Liskeard",
+      "postcode": "PL14 6AB",
+      "full_address": "Liskeard Library, Barras Street, Liskeard, PL14 6AB",
+      "url": "https://www.facebook.com/TheLiskeardLibrary/",
+      "latlon": [
+        50.4545,
+        -4.46498
+      ]
+    },
+    "cornwall-museum-art-gallery": {
+      "id": "cornwall-museum-art-gallery",
+      "name": "Cornwall Museum & Art Gallery, ",
+      "city": "Falmouth",
+      "postcode": "TR1 2SJ",
+      "full_address": "Cornwall Museum & Art Gallery, River Street, Truro, TR1 2SJ",
+      "url": "https://cornwallmuseum.org/",
+      "latlon": [
+        50.26364,
+        -5.05436
+      ]
+    },
+    "the-poly-falmouth": {
+      "id": "the-poly-falmouth",
+      "name": "The Poly, Falmouth",
+      "city": "Falmouth",
+      "postcode": "TR11 3EG",
+      "full_address": "The Poly, 24 Church St, Falmouth, TR11 3EG",
+      "url": "https://thepoly.org",
+      "latlon": [
+        50.15364,
+        -5.06841
       ]
     },
     "the-yellow-book-brighton": {
@@ -8534,6 +8656,20 @@
       "name": "The Roving Jewel",
       "url": "https://www.patreon.com/posts/stories-told-and-154096518",
       "bio": "The Roving Jewel Mummers are storytellers, puppeteers and mummers from the East of Albion. Our goal is to return the wealth of British folk tales to the commons! We tell subversive, obscure and occasionally bawdy tales, using the heritage crafts of oral storytelling and puppetry. We travel around the region with our miniature theatre and marionettes - all built by us in Norwich - with a core band of mummers and journeying performers and musicians.\n\n\n\nWe are hedge bards at the beginning of our careers! We're learning our craft by doing: our collective background as artists, writers, medievalists and performers have brought us here. We want to learn from seasoned storytellers, master craftspeople and lifelong practitioners to keep the traditional crafts of puppetry and storytelling alive, accessible and folk to the bones. We are signatories of the Folk Union Charter, our practise champions those traditionally underrepresented in folk arts. We are a gender and neurodiverse group with a wide array of socio-economic backgrounds, and we want to see more people like us (and different) in the folk scene."
+    },
+    "keith-wallis": {
+      "id": "keith-wallis",
+      "name": "Keith Wallis",
+      "url": "https://www.facebook.com/keith.wallis.77/",
+      "podcast": "https://shows.acast.com/the-piskie-trap",
+      "bio": "Podcaster, host of The Piskie Trap."
+    },
+    "elizabeth-dale": {
+      "id": "elizabeth-dale",
+      "name": "Elizabeth Dale",
+      "url": "https://cornishbirdblog.com/",
+      "podcast": "https://cornishbirdblog.com/podcast/",
+      "bio": "Elizabeth Dale is a Cornish freelance writer, blogger and podcaster.\n\n\n\nAs she proudly proclaims, 'I AM NOT A HISTORIAN'. Rather, she is a writer who loves history and who aims to learn about and share the lesser-known stories from Cornish past."
     },
     "shonaleigh": {
       "id": "shonaleigh",
