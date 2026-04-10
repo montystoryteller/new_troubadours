@@ -4046,6 +4046,19 @@
       "performer_id": "roving-jewel"
     },
     {
+      "name": "Wild Gods & Mad Spirits [Henry Everett]",
+      "showname": "Wild Gods & Mad Spirits",
+      "description": "Join stroyteller and author Henry Everett in this intimate, enchanting performance exploring the tales of Pan, Robin Goodfellow & more...\n\n\n\nThis intimate spoken-word performance in the round will transport us between the mortal and faerie worlds — and explore our human connection with nature and disconnection from wildness.\n\n\n\nSpanning tales from Ancient Greece to the realm of Faerie, join us for an enchanting evening of story in the Talliston Watchtower. Under the gaze of our own wild god, Henry will transport us with tales of some of the world's most infamous tricksters: the Great God Pan and Robin Goodfellow.",
+      "date": "21/05/2026",
+      "time": "7pm",
+      "price": "£29.99",
+      "date_added": "10/04/2026",
+      "ticket_url": "https://www.talliston.com/henry-everett-storytelling",
+      "isSpecial": true,
+      "venue_id": "talliston-house",
+      "performer_id": "henry-everett"
+    },
+    {
       "name": "Under a Hill, a King Lays Sleeping [Bernadette Russell]",
       "showname": "Under a Hill, a King Lays Sleeping",
       "description": "Come join local author and storyteller Bernadette Russell for a wild and magical evening of Hampshire myth and folklore - featuring the tales of the King asleep beneath a hill which is perhaps a slumbering dragon, the giant Ascapart and his battles with Bevis of Hampton, an enchanted stone circle and a ghostly horse, our local witches and their spells, incantations and potions, the Otherworld and the Bentworth Thorn, and the grampus that lives in a Yew Tree. With stories, songs, poetry and even a spell from a Hampshire Grimoire - this will be a night to remember - guaranteed fun and packed full of ancient wisdom too!\n\n\n\n Come and let yourself be re-enchanted by this beautiful region full of chalk downlands, heathland, forest and coastline, bustling with rich legends and fairytales. With stories, songs, and poetry this will be a night to remember- guaranteed fun and packed full of ancient wisdom too!",
@@ -5263,7 +5276,7 @@
       "city": "Bangor, Northern Ireland",
       "postcode": "BT20 4LH",
       "full_address": "Bangor Carnegie Library, Hamilton Rd, Bangor, Nortern Ireland, BT20 4LH",
-      "url": "https://www.yellowbook.bar/",
+      "url": "https://www.librariesni.org.uk/libraries/county-down/bangor-carnegie-library/",
       "latlon": [
         54.661,
         -5.66129
@@ -5275,7 +5288,7 @@
       "city": "Snowden",
       "postcode": "LL55 4TU",
       "full_address": "Snowden Mountain Railway, LL55 4TU",
-      "url": "https://www.yellowbook.bar/",
+      "url": "https://snowdonrailway.co.uk/",
       "latlon": [
         53.1164,
         -4.11915
@@ -5344,10 +5357,10 @@
     "moorland-hotel-wotter": {
       "id": "moorland-hotel-wotter",
       "name": "Moorland Hotel, Wotter",
-      "city": "Brighton",
+      "city": "Plymouth",
       "postcode": "PL7 5HP",
       "full_address": "Moorland Hotel, Wotter, PL7 5HP",
-      "url": "https://www.yellowbook.bar/",
+      "url": "hhttps://moorlandhotel.com/",
       "latlon": [
         50.43962,
         -4.03901
@@ -5363,6 +5376,18 @@
       "latlon": [
         52.58728,
         -2.12718
+      ]
+    },
+    "talliston-house": {
+      "id": "talliston-house",
+      "name": "Talliston House, Great Dunnow",
+      "city": "Saffron Walden",
+      "postcode": "CM6 1DU",
+      "full_address": "Talliston House & Gardens, Newton Green, Great Dunmow, CM6 1DU",
+      "url": "https://www.talliston.com/",
+      "latlon": [
+        51.87329,
+        0.35289
       ]
     },
     "the-yellow-book-brighton": {
