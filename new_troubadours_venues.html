@@ -568,7 +568,7 @@
 
             // Touring show dates at this venue
             const showDatesHere = [];
-            Object.entries(eventsData.touring_shows || {}).forEach(([tsId, ts]) => {
+            Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
                 (ts.show_dates || []).forEach(sd => {
                     if (sd.venue_id === venueId) {
                         showDatesHere.push({ ts, tsId, showDate: sd });

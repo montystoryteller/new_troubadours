@@ -529,7 +529,7 @@
             }
 
             // --- 7. Touring shows ---
-            const touringShows = eventsData.touring_shows || {};
+            const touringShows = eventsData.repertoire_shows || {};
             for (const showKey in touringShows) {
                 const show = touringShows[showKey];
                 if (!isNewlyAdded(show, cutoff)) continue;

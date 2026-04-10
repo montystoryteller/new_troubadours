@@ -677,7 +677,7 @@
                         }
                     });
                     // Touring shows
-                    Object.values(eventsData.touring_shows || {}).forEach(ts => {
+                    Object.values(eventsData.repertoire_shows || {}).forEach(ts => {
                         if (ts.performer_id === pid) {
                             const n = ts.showname || ts.name;
                             if (n) showNames.push(n);
@@ -873,7 +873,7 @@
                                 const n = t.tour_name || t.name; if (n) showNames.push(n);
                             }
                         });
-                        Object.values(eventsData.touring_shows || {}).forEach(ts => {
+                        Object.values(eventsData.repertoire_shows || {}).forEach(ts => {
                             if (ts.performer_id === pid) {
                                 const n = ts.showname || ts.name; if (n) showNames.push(n);
                             }
@@ -1082,7 +1082,7 @@
 
             // Gather all data for this performer
             const myTours = Object.entries(toursLookup).filter(([, t]) => performerMatches(t));
-            const myTouringShows = Object.entries(eventsData.touring_shows || {}).filter(([, ts]) => performerMatches(ts));
+            const myTouringShows = Object.entries(eventsData.repertoire_shows || {}).filter(([, ts]) => performerMatches(ts));
             const mySpecific = (eventsData.specificEvents || []).filter(e => performerMatches(e));
             const myMusic = (eventsData.musicEvents || []).filter(e => performerMatches(e));
             const myFestivals = Object.entries(eventsData.festivals || {}).filter(([, f]) =>
@@ -1357,7 +1357,7 @@
                     t.performer_id === configId ||
                     (Array.isArray(t.performer_ids) && t.performer_ids.includes(configId))
                 );
-                const configShows = Object.entries(eventsData.touring_shows || {}).filter(([, ts]) =>
+                const configShows = Object.entries(eventsData.repertoire_shows || {}).filter(([, ts]) =>
                     ts.performer_id === configId
                 );
                 const configSpecific = (eventsData.specificEvents || []).filter(e => e.performer_id === configId);

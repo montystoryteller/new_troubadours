@@ -1386,8 +1386,8 @@
                 }
             }
 
-            // touring_shows — per show_date individual flyers (show-level touring_event_flyer not populated in data)
-            for (const [, show] of Object.entries(data.touring_shows || {})) {
+            // repertoire_shows — per show_date individual flyers (show-level touring_event_flyer not populated in data)
+            for (const [, show] of Object.entries(data.repertoire_shows || {})) {
                 for (const sd of show.show_dates || []) {
                     const flyer = sd.event_flyer?.trim();
                     if (!flyer) continue;

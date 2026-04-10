@@ -468,7 +468,7 @@ function createEventData(baseEvent, date, eventType) {
     isMusic: eventType === "music",
     isFolk: eventType === "folk",
     isSession: eventType === "session",
-    isTouringShow: !!baseEvent.isTouringShow,
+    isRepertoireShow: !!baseEvent.isRepertoireShow,
     isCancelled: !!baseEvent.isCancelled,
     isSoldOut: !!baseEvent.isSoldOut,
   };
@@ -576,9 +576,9 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
 
 /**
  * Build the merged event object for a single touring-show date.
- * Used by both processTouringShows() and searchAllUpcoming().
+ * Used by both processRepertoireShows() and searchAllUpcoming().
  *
- * @param {object} show     - The show record from touring_shows.
+ * @param {object} show     - The show record from repertoire_shows.
  * @param {string} showKey  - The show's key.
  * @param {object} showDate - One entry from show.show_dates[].
  * @returns {object}
@@ -599,7 +599,7 @@ function buildShowMergedEvent(show, showKey, showDate) {
     touring_event_flyer: show.touring_event_flyer || null,
     fb_event: showDate.fb_event || null,
     ticket_url: showDate.ticket_url || null,
-    isTouringShow: true,
+    isRepertoireShow: true,
     isCancelled: !!showDate.isCancelled,
     isSoldOut: !!showDate.isSoldOut,
   };
@@ -708,11 +708,11 @@ function buildFestivalData(festKey, fest, venue, festStart, festEnd) {
   };
 }
 
-async function processTouringShows(startDate, endDate) {
-  const touringShows = eventsData.touring_shows || {};
+async function processRepertoireShows(startDate, endDate) {
+  const repertoireShows = eventsData.repertoire_shows || {};
 
-  for (const showKey in touringShows) {
-    const show = touringShows[showKey];
+  for (const showKey in repertoireShows) {
+    const show = repertoireShows[showKey];
     const eventType = show.isSpecial ? "special" : "storyclub";
 
     await forEachDateInRange(
@@ -1015,7 +1015,7 @@ async function displayEvents(startDate, endDate) {
   await processTourEvents(startDate, endDate);
 
   // Add touring show dates
-  await processTouringShows(startDate, endDate);
+  await processRepertoireShows(startDate, endDate);
 
   // Add festival entries (show if date range overlaps at all)
   await processFestivals(startDate, endDate);
@@ -1352,9 +1352,9 @@ function createEventHeader(event) {
     header.appendChild(createBadge("By Invitation"));
   }
 
-  if (event.isTouringShow) {
+  if (event.isRepertoireShow) {
     header.appendChild(document.createTextNode(" "));
-    header.appendChild(createBadge("🎭 Touring Show"));
+    header.appendChild(createBadge("🎭 Repertoire Show"));
   }
 
   // Add icons
@@ -2196,9 +2196,9 @@ async function searchAllUpcoming() {
     }
   }
 
-  const touringShows = eventsData.touring_shows || {};
-  for (const showKey in touringShows) {
-    const show = touringShows[showKey];
+  const repertoireShows = eventsData.repertoire_shows || {};
+  for (const showKey in repertoireShows) {
+    const show = repertoireShows[showKey];
     const eventType = show.isSpecial ? "special" : "storyclub";
 
     for (const showDate of show.show_dates || []) {
@@ -2541,7 +2541,7 @@ window.addEventListener("load", async () => {
   console.log(`  - ${eventsData.folkNights?.length || 0} folk nights`);
   console.log(`  - ${eventsData.irishSessions?.length || 0} Irish sessions`);
   console.log(
-    `  - ${Object.keys(eventsData.touring_shows || {}).length} touring shows`,
+    `  - ${Object.keys(eventsData.repertoire_shows || {}).length} touring shows`,
   );
   console.log(
     `  - ${Object.keys(eventsData.festivals || {}).length} festivals`,
