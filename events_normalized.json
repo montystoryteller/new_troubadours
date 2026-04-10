@@ -2154,7 +2154,8 @@
       "link": "https://www.literaturewales.org/writer-group/cardiff-storytelling-circle/",
       "facebook": "https://www.facebook.com/groups/1491740927748170/",
       "club": "cardiffSC",
-      "venue_id": "chapter-arts-centre-canton"
+      "venue_id": "chapter-arts-centre-canton",
+      "exceptions": ["05/04/2026"]
     },
     {
       "name": "Mendip story circle",

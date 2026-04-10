@@ -783,10 +783,8 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
   for (const event of events || []) {
     const exceptions = event.exceptions || [];
 
-    // Parse exception dates
     const exceptionDates = exceptions.map(parseExceptionDate);
 
-    // Expand range to capture context
     let expandedStart = new Date(startDate);
     let expandedEnd = new Date(endDate);
 
@@ -798,28 +796,47 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
       expandedEnd.setMonth(expandedEnd.getMonth() + 1);
     }
 
-    // Get all scheduled dates in expanded range
     const allScheduledDates = parseSchedule(
       event.schedule,
       expandedStart,
       expandedEnd,
     );
 
-    // Build reschedule map: for each exception date, find the regularly scheduled date in that same month
-    const rescheduleMap = new Map(); // Key: cancelled date, Value: rescheduled date
+    // Classify each exception date:
+    // - If it falls ON a regularly scheduled date → cancellation
+    // - If it doesn't → it's a rescheduled replacement (the regular date
+    //   in the same month is cancelled away, this date is the new occurrence)
+    const cancelledDateKeys = new Set(); // keys of regular dates that are gone
+    const rescheduledDates = new Map(); // regular date key → exception (replacement) date
+    const cancellationDates = new Set(); // keys of dates that are straight cancellations
 
     exceptionDates.forEach((excDate) => {
-      // Find the regularly scheduled date in the SAME month as the exception
-      const regularDateInSameMonth = allScheduledDates.find(
-        (schedDate) =>
-          schedDate.getFullYear() === excDate.getFullYear() &&
-          schedDate.getMonth() === excDate.getMonth(),
+      const excKey = `${excDate.getFullYear()}-${excDate.getMonth()}-${excDate.getDate()}`;
+
+      // Is this exception date itself a regularly scheduled date?
+      const isRegularDate = allScheduledDates.some(
+        (sd) =>
+          sd.getFullYear() === excDate.getFullYear() &&
+          sd.getMonth() === excDate.getMonth() &&
+          sd.getDate() === excDate.getDate(),
       );
 
-      if (regularDateInSameMonth) {
-        // The regular date is cancelled, exception date is the reschedule
-        const cancelKey = `${regularDateInSameMonth.getFullYear()}-${regularDateInSameMonth.getMonth()}-${regularDateInSameMonth.getDate()}`;
-        rescheduleMap.set(cancelKey, excDate);
+      if (isRegularDate) {
+        // The club on this date is simply cancelled
+        cancellationDates.add(excKey);
+      } else {
+        // Find the regular date in the same month — that one is cancelled away
+        const regularDateInSameMonth = allScheduledDates.find(
+          (sd) =>
+            sd.getFullYear() === excDate.getFullYear() &&
+            sd.getMonth() === excDate.getMonth(),
+        );
+
+        if (regularDateInSameMonth) {
+          const regularKey = `${regularDateInSameMonth.getFullYear()}-${regularDateInSameMonth.getMonth()}-${regularDateInSameMonth.getDate()}`;
+          cancelledDateKeys.add(regularKey);
+          rescheduledDates.set(regularKey, excDate);
+        }
       }
     });
 
@@ -827,16 +844,17 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
     const dates = parseSchedule(event.schedule, startDate, endDate);
 
     for (const date of dates) {
+      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       const eventData = createEventData(event, date, eventType);
 
-      // Check if this date has a featured guest via feature_slots: [["DD/MM/YYYY", "performer-id"], ...]
-      if (eventData.feature_slots && eventData.feature_slots.length > 0) {
+      // Feature slots (unchanged)
+      if (eventData.feature_slots?.length > 0) {
         const dd = String(date.getDate()).padStart(2, "0");
         const mm = String(date.getMonth() + 1).padStart(2, "0");
         const yyyy = date.getFullYear();
         const dateStr = `${dd}/${mm}/${yyyy}`;
         const slot = eventData.feature_slots.find((s) => s[0] === dateStr);
-        if (slot && slot[1]) {
+        if (slot?.[1]) {
           const { id: guestId, record: guestRecord } = resolvePerformerDisplay(
             slot[1],
             performersLookup,
@@ -851,11 +869,12 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
         }
       }
 
-      // Check if THIS specific date was cancelled
-      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-      const rescheduledTo = rescheduleMap.get(dateKey);
-
-      if (rescheduledTo) {
+      if (cancellationDates.has(dateKey)) {
+        // Straight cancellation — show the card but mark it cancelled
+        eventData.isCancelled = true;
+      } else if (cancelledDateKeys.has(dateKey)) {
+        // Regular date cancelled because it was rescheduled to another date
+        const rescheduledTo = rescheduledDates.get(dateKey);
         eventData.isRescheduledAway = true;
         eventData.rescheduledTo = rescheduledTo;
         eventData.rescheduledToStr = rescheduledTo.toLocaleDateString("en-GB", {
@@ -870,12 +889,11 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
       await addMarkerForEvent(eventData);
     }
 
-    // Add rescheduled dates that fall within the current range
-    for (const excDate of exceptionDates) {
+    // Add rescheduled replacement dates that fall within the requested range
+    for (const [, excDate] of rescheduledDates) {
       if (excDate >= startDate && excDate <= endDate) {
         const eventData = createEventData(event, excDate, eventType);
         eventData.isRescheduled = true;
-
         allEventsData.push(eventData);
         await addMarkerForEvent(eventData);
       }
