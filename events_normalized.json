@@ -4054,6 +4054,7 @@
       "time": "7pm",
       "price": "£29.99",
       "date_added": "10/04/2026",
+      "event_flyer": "2026_05_21_everett_wild_gods_talliston.jpg",
       "ticket_url": "https://www.talliston.com/henry-everett-storytelling",
       "isSpecial": true,
       "venue_id": "talliston-house",
@@ -4081,13 +4082,14 @@
       "price": "£10",
       "description": "Join local storyteller Jessie Wild as she tells a beloved Romany tale from Eastern Europe - Tropsyn. Expect adventure, jeopardy and magical transformation in the most surprising way.\n\n\n\n We are also excited to be welcoming the wonderful storyteller Cath Little from Cardiff who will be enchanting us with tales of Morgan Le Fey - In this masterful weaving together of ancient myths from Wales, Cath Little breathes the stories of Morgan Le Fay back to life.\n\n\n\n This is the first time the Tell Tales will be in the barn at The Castle Inn so Jessie thinks it is wise you bring warm clothing if it's a chilly evening and maybe a cusion for extra comfort!",
       "promoter_link": "",
-      "event_flyer": "",
+      "event_flyer": "2026_05_28_jessie_wild_tropsyn_tell_tales.jpg",
+      "event_flyer2": "2026_05_28_wild_little_tell_tales.jpg",
       "ticket_url": "https://ticketlab.app/event/37887#/",
       "isSpecial": true,
       "venue_id": "castle-inn-aberteifi",
-      "performer_id": "jessie-wild-cath-little"
+      "performer_ids": ["jessie-wild", "cath-little"]
     },
-     {
+    {
       "name": "Stories From Between Worlds [Shane Ibbs]",
       "showname": "Stories From Between Worlds",
       "date": "09/05/2026",
@@ -4234,6 +4236,22 @@
       "date_added": "09/04/2026",
       "venue_id": "cornwall-museum-art-gallery",
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
+      "name": "Tell Tales Club: Sheherazade's Stories [Jessie Wild]",
+      "showname": "Tell Tale Club: Sheherazade's Stories",
+      "date": "30/06/2026",
+      "time": "7-9pm",
+      "club": "tell-tales-club",
+      "price": "",
+      "description": "",
+      "promoter_link": "",
+      "event_flyer": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "11/04/2026",
+      "venue_id": "castle-inn-aberteifi",
+      "performer_id": "jessie-wild"
     },
     {
       "name": "The Shahnameh [Xanthe Gresham]",
@@ -8502,12 +8520,6 @@
       "name": "Jessie Wild",
       "url": "https://www.instagram.com/jessie_wild_storyteller",
       "bio": "Jessie Wild is a performance Storyteller/ Creative Educator. Runs The Tell Tales Club, Cardigan / Aberteifi."
-    },
-    "jessie-wild-cath-little": {
-      "id": "jessie-wild-cath-little",
-      "performer_ids": ["jessie-wild", "cath-little"],
-      "name": "Jessie Wild / Cath Little",
-      "bio": "Jessie Wild is a performance Storyteller/ Creative Educator. Runs The Tell Tales Club, Cardigan / Aberteifi.\n\n\n\n Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here."
     },
     "ben-haggarty-steph-brittain": {
       "id": "ben-haggarty-steph-brittain",
