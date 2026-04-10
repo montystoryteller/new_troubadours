@@ -1385,46 +1385,57 @@ function createPerformerSection(event) {
   const performerDiv = document.createElement("div");
   performerDiv.className = "event-performer";
 
-  if (event.performer_url) {
-    const safePerformerUrl = sanitizeUrl(event.performer_url);
-    if (safePerformerUrl) {
-      const strong = document.createElement("strong");
-      strong.textContent = event.performer;
-      const performerLink = createExternalLink(event.performer_url, strong, {
-        className: "event-performer-link",
-      });
-      if (performerLink) {
-        performerDiv.appendChild(performerLink);
-      } else {
-        performerDiv.textContent = event.performer;
-      }
-    } else {
-      performerDiv.textContent = event.performer;
-    }
-  } else {
-    performerDiv.textContent = event.performer;
-  }
-
-  // Secondary link(s): performer profile page (small icon per performer)
   const profileIds = event.performer_ids?.length
     ? event.performer_ids
     : event.performer_id
       ? [event.performer_id]
       : [];
 
-  profileIds.forEach((id) => {
-    const { id: resolvedId, record: perf } = resolvePerformerDisplay(
-      id,
-      performersLookup,
-    );
-    const perfPageLink = document.createElement("a");
-    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(resolvedId)}`;
-    perfPageLink.className = "venue-page-link";
-    perfPageLink.title = `View ${perf?.name || "performer"} profile`;
-    perfPageLink.textContent = "i";
-    perfPageLink.onclick = (e) => e.stopPropagation();
-    performerDiv.appendChild(perfPageLink);
-  });
+  if (profileIds.length > 0) {
+    // Build name + info-icon pairs one by one
+    profileIds.forEach((id, index) => {
+      const { id: resolvedId, record: perf } = resolvePerformerDisplay(
+        id,
+        performersLookup,
+      );
+
+      if (index > 0) {
+        performerDiv.appendChild(document.createTextNode(", "));
+      }
+
+      // Name: linked to performer URL if available, otherwise plain text
+      const name = perf?.name || event.performer || "";
+      const perfUrl = perf?.url ? sanitizeUrl(perf.url) : null;
+
+      if (perfUrl && profileIds.length === 1) {
+        // Single performer with an external URL — wrap name in a link
+        const strong = document.createElement("strong");
+        strong.textContent = name;
+        const performerLink = createExternalLink(perfUrl, strong, {
+          className: "event-performer-link",
+        });
+        if (performerLink) {
+          performerDiv.appendChild(performerLink);
+        } else {
+          performerDiv.appendChild(document.createTextNode(name));
+        }
+      } else {
+        performerDiv.appendChild(document.createTextNode(name));
+      }
+
+      // Info icon immediately after this name
+      const perfPageLink = document.createElement("a");
+      perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(resolvedId)}`;
+      perfPageLink.className = "venue-page-link";
+      perfPageLink.title = `View ${perf?.name || "performer"} profile`;
+      perfPageLink.textContent = "i";
+      perfPageLink.onclick = (e) => e.stopPropagation();
+      performerDiv.appendChild(perfPageLink);
+    });
+  } else {
+    // No performer_ids at all — fall back to plain text
+    performerDiv.textContent = event.performer || "";
+  }
 
   return performerDiv;
 }
