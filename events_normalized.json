@@ -3929,6 +3929,21 @@
       "performer_id": "alys-torrance"
     },
     {
+      "name": "Yde and Olive: A Medieval Love Story [Daisy Black]",
+      "showname": "Yde and Olive: A Medieval Love Story",
+      "date": "15/04/2026",
+      "time": "7.30pm",
+      "club": "beestontales",
+      "price": "£15 (£12)",
+      "description": "The baby's first clothes were wide bands of wool.  Their small limbs were bound, tenderly and close, to help them grow strong.  To help them grow straight.\n\n\n\nFrom their cradle, they could hear the uttered prayers of a priest, the rush of poured water.\n\n\n\nThe baby blinked as drops of holy water flicked across their brow. \n\n\n\nThey were given a name. Yde.\n\n\n\nAnd with it came flocking other words. 'She'.  And 'Her'.\n\n\n\nBaby Yde scrunched up her nose, and yawned.\n\n\n\nYde grew up reading of knights, sieges and her own mother’s daring deeds.  So when faced with an unwanted marriage, she knew she’d rather fly across the frozen sea than sit around and wait for it to happen.  Disguising herself as a man, Yde cuts her own paths to freedom, fighting battles, outwitting thieves, winning over kings and finding comfort in her new clothing.  Until one day, she meets her match in Olive: a woman whose spirit is every bit as courageous as her own...\n\n\n\nStoryteller and academic Daisy Black presents a remarkable thirteenth-century tale of disguise, high adventure, public baths, gender fluidity, straight-talking angels, and the power of queer love.\n\n\n\nWeaving together medieval narrative with modern folk song, this performance will take you from birthing chambers to military barracks, through moonlit country lanes and woods stained with slaughter, and from quiet chapels to court chambers crackling with gossip.\n\n\n\nThis show is 90 minutes long, and suitable for ages 13 and up. Children under 16 should be accompanied by an adult.",
+      "event_flyer": "",
+      "ticket_url": "https://wlv.ticketsolve.com/ticketbooth/shows/873677948",
+      "isSpecial": true,
+      "date_added": "10/04/2026",
+      "venue_id": "arena-theatre-wolverhampton",
+      "performer_id": "daisy-black"
+    },
+    {
       "name": "Faery Tale Blues [Monty + The AnyWhens]",
       "showname": "Faery Tale Blues",
       "date": "18/04/2026",
@@ -5336,6 +5351,18 @@
       "latlon": [
         50.43962,
         -4.03901
+      ]
+    },
+    "arena-theatre-wolverhampton": {
+      "id": "arena-theatre-wolverhampton",
+      "name": "Arena Theatre, Wolverhampton",
+      "city": "Wolverhampton",
+      "postcode": "WV1 1SE",
+      "full_address": "Arena Theatre, Wulfruna Street, Wolverhampton, WV1 1SE",
+      "url": "https://www.wlv.ac.uk/arena-theatre/",
+      "latlon": [
+        52.58728,
+        -2.12718
       ]
     },
     "the-yellow-book-brighton": {
@@ -8714,6 +8741,12 @@
       "url": "https://cornishbirdblog.com/",
       "podcast": "https://cornishbirdblog.com/podcast/",
       "bio": "Elizabeth Dale is a Cornish freelance writer, blogger and podcaster.\n\n\n\nAs she proudly proclaims, 'I AM NOT A HISTORIAN'. Rather, she is a writer who loves history and who aims to learn about and share the lesser-known stories from Cornish past."
+    },
+    "daisy-black": {
+      "id": "daisy-black",
+      "name": "Daisy Black",
+      "url": "https://daisyblack.uk/storytelling/",
+      "bio": "Daisy Black's storytelling weaves medieval narratives together with English folk song.  Often moving, occasionally political, frequently feminist, just a little queer and regularly funny, my stories underline the relevance and vibrancy of medieval narratives for today's world."
     },
     "shonaleigh": {
       "id": "shonaleigh",
