@@ -111,6 +111,10 @@
                     <input type="checkbox" checked id="hideCancelled" onchange="filterEvents()">
                     Hide cancelled
                 </label>
+                <label>
+                    <input type="checkbox" id="hidePastEvents" onchange="filterEvents()">
+                    Hide past events
+                </label>
             </div>
         </div>
     </div>
@@ -300,61 +304,49 @@
          * @param {object} info  - { name, typeBadge, dateStr, location, dateAdded }
          * @returns {HTMLElement}
          */
+        /**
+         * Wrap a full event card (created by createEventElement / createFestivalElement
+         * from event_display.js) inside a slim shell that adds the "added" banner.
+         *
+         * @param {object} info  - { eventData, isFestival, dateAdded }
+         * @returns {HTMLElement}
+         */
         function buildNewEventCard(info) {
-            const card = document.createElement('div');
-            card.className = 'new-event-card';
+            const shell = document.createElement('div');
+            shell.className = 'new-event-card new-event-card-full';
 
-            // Name + badge row
-            const nameRow = document.createElement('div');
-            nameRow.className = 'new-event-name-row';
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'new-event-name';
-            nameSpan.textContent = info.name;
-            nameRow.appendChild(nameSpan);
-
-            if (info.typeBadge) {
-                const badge = document.createElement('span');
-                badge.className = 'new-event-type-badge';
-                badge.textContent = info.typeBadge;
-                nameRow.appendChild(badge);
-            }
-
-            card.appendChild(nameRow);
-
-            // "Added" date — label lowercase, value normalised to DD/MM/YYYY
+            // "Added" date banner
             if (info.dateAdded) {
-                const addedRow = document.createElement('div');
-                addedRow.className = 'new-event-added';
-                // info.dateAdded is already DD/MM/YYYY from the JSON field;
-                // parseDateAdded + manual format guards against any variation.
                 const addedDate = parseDateAdded(info.dateAdded);
                 const addedFormatted = addedDate
                     ? String(addedDate.getDate()).padStart(2, '0') + '/'
                     + String(addedDate.getMonth() + 1).padStart(2, '0') + '/'
                     + addedDate.getFullYear()
                     : info.dateAdded;
-                addedRow.textContent = `added: ${addedFormatted}`;
-                card.appendChild(addedRow);
+                const addedBanner = document.createElement('div');
+                addedBanner.className = 'new-event-added-banner';
+                addedBanner.textContent = '\uD83C\uDD95 added: ' + addedFormatted;
+                shell.appendChild(addedBanner);
             }
 
-            // Next / upcoming event date(s)
-            if (info.dateStr) {
-                const dateRow = document.createElement('div');
-                dateRow.className = 'new-event-date';
-                dateRow.textContent = info.dateStr;
-                card.appendChild(dateRow);
+            // Full event card — same as used in the main events list
+            try {
+                const cardEl = info.isFestival
+                    ? createFestivalElement(info.eventData)
+                    : createEventElement(info.eventData);
+                // Remove map-click handler — no map visible in this panel
+                cardEl.style.cursor = 'default';
+                cardEl.onclick = null;
+                shell.appendChild(cardEl);
+            } catch (e) {
+                const fallback = document.createElement('div');
+                fallback.className = 'new-event-name';
+                fallback.textContent = (info.eventData && info.eventData.name) || '(unnamed)';
+                shell.appendChild(fallback);
+                console.warn('buildNewEventCard: card creation failed', e);
             }
 
-            // Location
-            if (info.location) {
-                const locRow = document.createElement('div');
-                locRow.className = 'new-event-location';
-                locRow.textContent = info.location;
-                card.appendChild(locRow);
-            }
-
-            return card;
+            return shell;
         }
 
         /**
@@ -370,11 +362,12 @@
 
         /**
          * Collect all records newly added within `cutoff`, across every source in
-         * eventsData, and return an array of display-info objects sorted by name.
+         * eventsData, and return an array of { eventData, isFestival, dateAdded,
+         * _dateAddedMs, _eventDate } objects ready to be rendered as full cards.
          *
-         * Recurring events (storyclubs, folk nights, Irish sessions) are searched
-         * for their next upcoming occurrence; if none is found within 6 months they
-         * still appear but without a date.
+         * Recurring events use their next upcoming occurrence within 6 months.
+         * Events with no upcoming date still appear (eventData.date = today as
+         * a placeholder so createEventElement doesn't throw).
          *
          * @param {Date} cutoff
          * @returns {object[]}
@@ -388,191 +381,118 @@
 
             const results = [];
 
-            // --- Helper: resolve venue location string ---
-            function locationFor(venue_id) {
-                if (!venue_id || !venuesLookup[venue_id]) return '';
-                const v = venuesLookup[venue_id];
-                return v.full_address || v.name || '';
-            }
-
-            /**
-             * Convert a DD/MM/YYYY date_added string to a numeric sort key
-             * (milliseconds) for reverse-chronological ordering.
-             * Returns 0 if the string is absent or unparseable.
-             */
             function dateAddedSortKey(dateAddedStr) {
                 const d = parseDateAdded(dateAddedStr);
                 return d ? d.getTime() : 0;
             }
 
-            /**
-             * Return a numeric sort key for the event's own date (the date the
-             * event *happens*), for secondary chronological ordering within the
-             * same date_added group.  Returns Infinity when there is no date so
-             * undated entries sink to the bottom of each group.
-             */
-            function eventDateSortKey(dateStr) {
-                // dateStr is already a human-readable string built by
-                // formatNewEventDate(), so we can't re-parse it directly.
-                // Instead we store the raw Date on the result object (_eventDate).
-                // This helper is just a placeholder; see push() calls below.
-                return Infinity;
+            function push(eventData, isFestival, dateAdded, eventDate) {
+                results.push({
+                    eventData,
+                    isFestival: !!isFestival,
+                    dateAdded,
+                    _dateAddedMs: dateAddedSortKey(dateAdded),
+                    _eventDate: eventDate || null,
+                });
             }
 
             // --- 1. Recurring events (storyclubs) ---
             for (const ev of eventsData.events || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
                 const dates = parseSchedule(ev.schedule, today, sixMonths);
-                const venue = locationFor(ev.venue_id);
-                results.push({
-                    name: ev.name || ev.club || '(unnamed)',
-                    typeBadge: 'Story club',
-                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
-                    location: venue || ev.location || '',
-                    dateAdded: ev.date_added,
-                    _dateAddedMs: dateAddedSortKey(ev.date_added),
-                    _eventDate: dates.length > 0 ? dates[0] : null,
-                });
+                const useDate = dates.length > 0 ? dates[0] : today;
+                push(createEventData(ev, useDate, 'storyclub'), false, ev.date_added, useDate);
             }
 
             // --- 2. Folk nights ---
             for (const ev of eventsData.folkNights || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
                 const dates = parseSchedule(ev.schedule, today, sixMonths);
-                const venue = locationFor(ev.venue_id);
-                results.push({
-                    name: ev.name || ev.club || '(unnamed)',
-                    typeBadge: 'Folk club',
-                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
-                    location: venue || ev.location || '',
-                    dateAdded: ev.date_added,
-                    _dateAddedMs: dateAddedSortKey(ev.date_added),
-                    _eventDate: dates.length > 0 ? dates[0] : null,
-                });
+                const useDate = dates.length > 0 ? dates[0] : today;
+                push(createEventData(ev, useDate, 'folk'), false, ev.date_added, useDate);
             }
 
             // --- 3. Irish sessions ---
             for (const ev of eventsData.irishSessions || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
                 const dates = parseSchedule(ev.schedule, today, sixMonths);
-                const venue = locationFor(ev.venue_id);
-                results.push({
-                    name: ev.name || ev.club || '(unnamed)',
-                    typeBadge: 'Irish session',
-                    dateStr: dates.length > 0 ? 'Next: ' + formatNewEventDate(dates[0]) : '',
-                    location: venue || ev.location || '',
-                    dateAdded: ev.date_added,
-                    _dateAddedMs: dateAddedSortKey(ev.date_added),
-                    _eventDate: dates.length > 0 ? dates[0] : null,
-                });
+                const useDate = dates.length > 0 ? dates[0] : today;
+                push(createEventData(ev, useDate, 'session'), false, ev.date_added, useDate);
             }
 
             // --- 4. Specific / story-show events ---
             for (const ev of eventsData.specificEvents || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
-                const expanded = expandDatetimes(ev);  // event_display.js
+                // expandDatetimes() is defined in event_display.js
+                const expanded = expandDatetimes(ev);
+                if (expanded.length === 0) continue;
+                // Show all dates for the event (each as its own card entry), or
+                // just the first upcoming one to keep the panel concise.
                 const upcoming = expanded
                     .filter(({ date }) => date >= today)
                     .sort((a, b) => a.date - b.date);
-                const venue = locationFor(ev.venue_id);
-                const firstDate = upcoming.length > 0
-                    ? formatNewEventDate(upcoming[0].date)
-                    : (ev.date ? ev.date : '');
-                results.push({
-                    name: ev.name || '(unnamed)',
-                    typeBadge: 'Story show',
-                    dateStr: firstDate ? firstDate : '',
-                    location: venue || ev.location || '',
-                    dateAdded: ev.date_added,
-                    _dateAddedMs: dateAddedSortKey(ev.date_added),
-                    _eventDate: upcoming.length > 0 ? upcoming[0].date : null,
-                });
+                const toRender = upcoming.length > 0 ? [upcoming[0]] : [expanded[0]];
+                for (const { flatEvent, date } of toRender) {
+                    push(createEventData(flatEvent, date, 'special'), false, ev.date_added, date);
+                }
             }
 
             // --- 5. Music events ---
             for (const ev of eventsData.musicEvents || []) {
                 if (!isNewlyAdded(ev, cutoff)) continue;
                 const eventDate = parseDateString(ev.date);
-                const venue = locationFor(ev.venue_id);
-                results.push({
-                    name: ev.name || '(unnamed)',
-                    typeBadge: 'Music',
-                    dateStr: eventDate ? formatNewEventDate(eventDate) : '',
-                    location: venue || ev.location || '',
-                    dateAdded: ev.date_added,
-                    _dateAddedMs: dateAddedSortKey(ev.date_added),
-                    _eventDate: eventDate || null,
-                });
+                if (!eventDate) continue;
+                push(createEventData(ev, eventDate, 'music'), false, ev.date_added, eventDate);
             }
 
-            // --- 6. Tours ---
+            // --- 6. Tours (one entry per tour, showing the first upcoming date) ---
             const tours = eventsData.tours || {};
             for (const tourKey in tours) {
                 const tour = tours[tourKey];
                 if (!isNewlyAdded(tour, cutoff)) continue;
-                // Find first upcoming tour date
-                const upcomingDates = (tour.tour_dates || [])
-                    .map(td => parseDateString(td.date))
-                    .filter(d => d && d >= today)
-                    .sort((a, b) => a - b);
-                const firstVenueId = (tour.tour_dates || []).length > 0
-                    ? tour.tour_dates[0].venue_id : null;
-                results.push({
-                    name: tour.name || '(unnamed)',
-                    typeBadge: tour.isMusic ? 'Music tour' : 'Story tour',
-                    dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
-                    location: locationFor(firstVenueId),
-                    dateAdded: tour.date_added,
-                    _dateAddedMs: dateAddedSortKey(tour.date_added),
-                    _eventDate: upcomingDates.length > 0 ? upcomingDates[0] : null,
-                });
+                if (!tour.isMusic && !tour.isSpecial) continue;
+                const eventType = tour.isMusic ? 'music' : 'special';
+                const upcomingTourDates = (tour.tour_dates || [])
+                    .map(td => ({ td, date: parseDateString(td.date) }))
+                    .filter(({ date }) => date && date >= today)
+                    .sort((a, b) => a.date - b.date);
+                if (upcomingTourDates.length === 0) continue;
+                const { td: firstTd, date: firstDate } = upcomingTourDates[0];
+                const mergedEvent = buildTourMergedEvent(tour, tourKey, firstTd);
+                push(createEventData(mergedEvent, firstDate, eventType), false, tour.date_added, firstDate);
             }
 
-            // --- 7. Touring shows ---
+            // --- 7. Touring shows (one entry per show, showing the first upcoming date) ---
             const touringShows = eventsData.repertoire_shows || {};
             for (const showKey in touringShows) {
                 const show = touringShows[showKey];
                 if (!isNewlyAdded(show, cutoff)) continue;
-                const upcomingDates = (show.show_dates || [])
-                    .map(sd => parseDateString(sd.date))
-                    .filter(d => d && d >= today)
-                    .sort((a, b) => a - b);
-                const firstVenueId = (show.show_dates || []).length > 0
-                    ? show.show_dates[0].venue_id : null;
-                results.push({
-                    name: show.name || show.showname || '(unnamed)',
-                    typeBadge: 'Touring show',
-                    dateStr: upcomingDates.length > 0 ? 'From: ' + formatNewEventDate(upcomingDates[0]) : '',
-                    location: locationFor(firstVenueId),
-                    dateAdded: show.date_added,
-                    _dateAddedMs: dateAddedSortKey(show.date_added),
-                    _eventDate: upcomingDates.length > 0 ? upcomingDates[0] : null,
-                });
+                const eventType = show.isSpecial ? 'special' : 'storyclub';
+                const upcomingShowDates = (show.show_dates || [])
+                    .map(sd => ({ sd, date: parseDateString(sd.date) }))
+                    .filter(({ date }) => date && date >= today)
+                    .sort((a, b) => a.date - b.date);
+                if (upcomingShowDates.length === 0) continue;
+                const { sd: firstSd, date: firstDate } = upcomingShowDates[0];
+                const mergedEvent = buildShowMergedEvent(show, showKey, firstSd);
+                push(createEventData(mergedEvent, firstDate, eventType), false, show.date_added, firstDate);
             }
 
             // --- 8. Festivals ---
             const festivals = eventsData.festivals || {};
-            for (const [, fest] of Object.entries(festivals)) {
+            for (const [festKey, fest] of Object.entries(festivals)) {
                 if (!isNewlyAdded(fest, cutoff)) continue;
-                const startDate = parseDateString(fest.start_date);
-                const venue = locationFor(fest.venue_id);
-                results.push({
-                    name: fest.name || '(unnamed)',
-                    typeBadge: 'Festival',
-                    dateStr: startDate ? formatNewEventDate(startDate) : '',
-                    location: venue || '',
-                    dateAdded: fest.date_added,
-                    _dateAddedMs: dateAddedSortKey(fest.date_added),
-                    _eventDate: startDate || null,
-                });
+                const festStart = parseDateString(fest.start_date);
+                const festEnd = parseDateString(fest.end_date);
+                if (!festStart || !festEnd) continue;
+                const venue = venuesLookup[fest.venue_id] || {};
+                const festData = buildFestivalData(festKey, fest, venue, festStart, festEnd);
+                push(festData, true, fest.date_added, festStart);
             }
 
-            // Sort: primary = reverse-chronological by date_added (newest first);
-            //       secondary = chronological by the event's own date within each group.
+            // Sort: newest date_added first; within same date, chronological event date.
             results.sort((a, b) => {
-                // 1. Reverse-chronological date_added (higher ms = more recent = first)
                 if (b._dateAddedMs !== a._dateAddedMs) return b._dateAddedMs - a._dateAddedMs;
-                // 2. Chronological event date within same date_added group
                 const aMs = a._eventDate ? a._eventDate.getTime() : Infinity;
                 const bMs = b._eventDate ? b._eventDate.getTime() : Infinity;
                 return aMs - bMs;

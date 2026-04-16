@@ -1959,6 +1959,9 @@ function shouldShowEvent(eventData, filters) {
 function filterEvents() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const hideCancelled = document.getElementById("hideCancelled").checked;
+  const hidePastEl = document.getElementById("hidePastEvents");
+  const hidePast = hidePastEl ? hidePastEl.checked : false;
+  const today = getTodayMidnight();
   const filters = {
     storyclubsOn: document.getElementById("storyclubsOn").checked,
     specialOn: document.getElementById("specialOn").checked,
@@ -1991,6 +1994,17 @@ function filterEvents() {
       visible = false;
     }
 
+    // Hide-past filter: look up the matching allEventsData entry by data-event-id
+    if (visible && hidePast) {
+      const eventId = event.getAttribute("data-event-id");
+      const matched = allEventsData.find(
+        (e) => `${escapeHtml(e.name)}-${e.date.getTime()}` === eventId,
+      );
+      if (matched && matched.date < today) {
+        visible = false;
+      }
+    }
+
     if (visible && searchTerm) {
       visible = event.textContent.toLowerCase().includes(searchTerm);
     }
@@ -2003,6 +2017,10 @@ function filterEvents() {
     let visible = shouldShowEvent(marker.eventData, filters);
 
     if (visible && hideCancelled && marker.eventData.isCancelled) {
+      visible = false;
+    }
+
+    if (visible && hidePast && marker.eventData.date < today) {
       visible = false;
     }
 
@@ -2433,6 +2451,8 @@ function generateShareableURL(startDate, endDate) {
     "hidecancelled",
     document.getElementById("hideCancelled").checked ? "1" : "0",
   );
+  const hidePastEl = document.getElementById("hidePastEvents");
+  params.set("hidepast", hidePastEl && hidePastEl.checked ? "1" : "0");
 
   const center = map.getCenter();
   const lat = center.lat;
@@ -2503,6 +2523,8 @@ function getEventURLParams() {
     const hidecancelledParam = params.get("hidecancelled");
     const hidecancelled =
       hidecancelledParam === null ? true : hidecancelledParam === "1";
+    const hidepastParam = params.get("hidepast");
+    const hidepast = hidepastParam === "1";
     const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
     const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
     const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
@@ -2522,6 +2544,7 @@ function getEventURLParams() {
       music: music,
       pinmap: pinmap,
       hidecancelled: hidecancelled,
+      hidepast: hidepast,
       lat: lat,
       lng: lng,
       zoom: zoom,
@@ -2606,6 +2629,8 @@ window.addEventListener("load", async () => {
 
     document.getElementById("pinMapView").checked = urlParams.pinmap;
     document.getElementById("hideCancelled").checked = urlParams.hidecancelled;
+    const hidePastEl = document.getElementById("hidePastEvents");
+    if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
     console.log("pinmap", urlParams, urlParams.pinmap);
     mapViewPinned = urlParams.pinmap;
 

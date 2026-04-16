@@ -425,6 +425,31 @@
     max-width: 360px;
 }
 
+/* Full-card variant: wider to accommodate the full event card layout */
+.new-event-card.new-event-card-full {
+    max-width: 480px;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* "Added" banner at the top of each full card */
+.new-event-added-banner {
+    background: #1565c0;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 12px;
+}
+
+/* The inner .event div already has its own styling from shared-styles.css;
+   remove its outer box-shadow/border-radius since the shell provides that */
+.new-event-card.new-event-card-full > .event {
+    border-radius: 0;
+    box-shadow: none;
+    background: #5fa0d6;
+    margin: 0;
+}
+
 .new-event-name-row {
     display: flex;
     align-items: center;
