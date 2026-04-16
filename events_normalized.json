@@ -2860,7 +2860,7 @@
       "showname": "Gillian Brownson",
       "date": "17/01/2026",
       "time": "7-9pm",
-      "club": "",
+      "club": "welsh-whisperers",
       "price": "£8",
       "description": "Come and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Gillian Brownson.",
       "event_flyer": "2026_01_17_welshwhisperers_brownson.jpg",
@@ -3508,7 +3508,8 @@
       "isSpecial": true,
       "venue_id": "dragon-theatre-barmouth",
       "performer_id": "ffion-phillips-dragon-storytellers"
-    },{
+    },
+    {
       "name": "Uncanny [Nell Phoenix]",
       "showname": "Uncanny",
       "promoter_link": "http://nellphoenix.co.uk/",
@@ -3945,6 +3946,21 @@
       "performer_id": "daisy-black"
     },
     {
+      "name": "Welsh Whisperers: Stories of Barmouth",
+      "showname": "Welsh Whisperers: Stories of Barmouth",
+      "date": "18/04/2026",
+      "time": "8-9.30pm",
+      "club": "welsh-whisperers",
+      "price": "£8",
+      "description": "A storytelling event with a focus on the history of Barmouth: its places, its people, its events. Everyone is invited to share a story, memory or bit of information about Barmouth in the far or recent past. Joining in with the Barmouth History Fest!",
+      "event_flyer": "2026_04_18_welsh_whisperers_stories_barmouth.jpg",
+      "ticket_url": "https://dragontheatre.littleboxoffice.com/events/155483",
+      "isSpecial": true,
+      "date_added": "16/04/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "performer_id": "welsh-whisperers"
+    },
+    {
       "name": "Faery Tale Blues [Monty + The AnyWhens]",
       "showname": "Faery Tale Blues",
       "date": "18/04/2026",
@@ -4031,6 +4047,52 @@
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
     },
     {
+      "name": "Beyond Nine Forests: Tales of Hidden Bulgaria [A Spell in Time",
+      "showname": "Beyond Nine Forests: Tales of Hidden Bulgaria",
+      "date": "06/05/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "£15 / £12",
+      "description": "An evening of spine-tingling songs from the glorious London Bulgarian Choir led by Dessislava Stefanova, and heart-stirring stories from A Spell In Time, to celebrate the launch of Moni Georgieva Sheehan's ground-breaking book, Beyond Nine Forests: Tales of Hidden Bulgaria. This stunning collection of Bulgarian traditional tales explores the hidden world of Bulgarian myth and folklore, a world of seductive dragons, magical women, giant-hearted heroes, vampires and demons of the night.\n\n\n\nTranslated and retold from authentic sources, these tales are little known in the West and cross the boundaries of time and space to speak to the heart, mind and soul. With a foreword by Professor Ronald Hutton, the book features full-colour artwork from some of Bulgaria's finest artists.\n\n\n\nWe invite you on a journey through song, storytelling and evocative music, into Bulgaria's rich oral heritage and ancestral past. Come and be spirited away!\n\n\n\n'Beyond Nine Forests, Tales of Hidden Bulgaria' will be on sale. Books purchased at this event will be signed by the author.",
+      "event_flyer": "2026_05_06_spell_in_time_9_forests.jpg",
+      "ticket_url": "https://www.efdss.org/choose-seats?EventInstanceId=158801",
+      "date_added": "16/04/2026",
+      "isSpecial": true,
+      "fb_event": 973373088378981,
+      "venue_id": "cecil-sharp-house-london",
+      "performer_id": "a-spell-in-time"
+    },
+    {
+      "name": "Stories From Between Worlds [Shane Ibbs]",
+      "showname": "Stories From Between Worlds",
+      "date": "09/05/2026",
+      "time": "7-9pm",
+      "club": "",
+      "price": "£12 / £10",
+      "description": "An evening of beguiling folk tales by storyteller Shane Ibbs.\n\n\n\nSometinmes mysterious and dark, sometimes warm hearted and funny, these tales explore what happens when humans meet nature.",
+      "event_flyer": "2026_05_09_between_worlds_fps.jpg",
+      "ticket_url": "",
+      "date_added": "07/04/2026",
+      "isSpecial": true,
+      "venue_id": "the-folk-preservation-society-teignmouth",
+      "performer_id": "shane-ibbs"
+    },
+    {
+      "name": "The Green Knight (But it's Gay) [Ropetackle Storytellers]",
+      "showname": "The Green Knight (But it's Gay)",
+      "date": "11/05/2026",
+      "time": "7.30-9.30pm",
+      "club": "ropetackle-storytellers",
+      "price": "£10",
+      "description": "Ropetackle Storytellers hosts Niall Moorjani in an award-winning and fantastically funny retelling of the medieval classic The Green Knight, with the subtext made text! (Spoiler alert: it's gay).\n\n\n\n A classic Christmas game ends in Sir Gawain being peer-pressured into chopping off the Green Knight's head. Now he has to let the miraculously still-alive Green Knight return the favour. Disaster! King Arthur reckons Gawain needs to be more masculine and there's nothing manlier than a good head chopping off... so there's really no way out. Created by critically acclaimed and award-winning storyteller Niall Moorjani and co-directed with Cecily Nash. Fresh from a packed 5 star run at the Edinburgh Fringe Festival, this adaptation fabulously queers and modernizes an Arthurian classic.",
+      "promoter_link": "",
+      "event_flyer": "",
+      "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-the-green-knight-but-its-gay/",
+      "isSpecial": true,
+      "venue_id": "ropetackle-arts-centre-shoreham",
+      "performer_id": "niall-moorjani"
+    },
+    {
       "name": "Two Tales: Mumming, Puppetry & Storytelling [The Roving Jewel]",
       "showname": "Two Tales: Mumming, Puppetry & Storytelling",
       "date": "15/05/2026",
@@ -4088,36 +4150,6 @@
       "isSpecial": true,
       "venue_id": "castle-inn-aberteifi",
       "performer_ids": ["jessie-wild", "cath-little"]
-    },
-    {
-      "name": "Stories From Between Worlds [Shane Ibbs]",
-      "showname": "Stories From Between Worlds",
-      "date": "09/05/2026",
-      "time": "7-9pm",
-      "club": "",
-      "price": "£12 / £10",
-      "description": "An evening of beguiling folk tales by storyteller Shane Ibbs.\n\n\n\nSometinmes mysterious and dark, sometimes warm hearted and funny, these tales explore what happens when humans meet nature.",
-      "event_flyer": "2026_05_09_between_worlds_fps.jpg",
-      "ticket_url": "",
-      "date_added": "07/04/2026",
-      "isSpecial": true,
-      "venue_id": "the-folk-preservation-society-teignmouth",
-      "performer_id": "shane-ibbs"
-    },
-    {
-      "name": "The Green Knight (But it's Gay) [Ropetackle Storytellers]",
-      "showname": "The Green Knight (But it's Gay)",
-      "date": "11/05/2026",
-      "time": "7.30-9.30pm",
-      "club": "ropetackle-storytellers",
-      "price": "£10",
-      "description": "Ropetackle Storytellers hosts Niall Moorjani in an award-winning and fantastically funny retelling of the medieval classic The Green Knight, with the subtext made text! (Spoiler alert: it's gay).\n\n\n\n A classic Christmas game ends in Sir Gawain being peer-pressured into chopping off the Green Knight's head. Now he has to let the miraculously still-alive Green Knight return the favour. Disaster! King Arthur reckons Gawain needs to be more masculine and there's nothing manlier than a good head chopping off... so there's really no way out. Created by critically acclaimed and award-winning storyteller Niall Moorjani and co-directed with Cecily Nash. Fresh from a packed 5 star run at the Edinburgh Fringe Festival, this adaptation fabulously queers and modernizes an Arthurian classic.",
-      "promoter_link": "",
-      "event_flyer": "",
-      "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-the-green-knight-but-its-gay/",
-      "isSpecial": true,
-      "venue_id": "ropetackle-arts-centre-shoreham",
-      "performer_id": "niall-moorjani"
     },
     {
       "name": "1647: The Poorest Hee [Sarah Rundle]",
@@ -6196,6 +6228,18 @@
       "latlon": [
         51.1809479,
         -3.33105
+      ]
+    },
+    "cecil-sharp-house-london": {
+      "id": "cecil-sharp-house-london",
+      "name": "Cecil Sharp House",
+      "city": "London",
+      "postcode": "NW1 7AY",
+      "full_address": "Cecil Sharp House, 2 Regent's Park Road, London, NW1 7AY",
+      "url": "https://www.efdss.org/cecil-sharp-house",
+      "latlon": [
+        51.53814,
+        -0.14932
       ]
     },
     "erasmus-darwin-house-lichfield": {
@@ -8785,6 +8829,12 @@
       "name": "Daisy Black",
       "url": "https://daisyblack.uk/storytelling/",
       "bio": "Daisy Black's storytelling weaves medieval narratives together with English folk song.  Often moving, occasionally political, frequently feminist, just a little queer and regularly funny, my stories underline the relevance and vibrancy of medieval narratives for today's world."
+    },
+    "a-spell-in-time": {
+      "id": "a-spell-in-time",
+      "name": "A Spell In Time",
+      "url": "https://www.spellintime.co.uk/",
+      "bio": "A Spell In Time is a unique British-Bulgarian storytelling company that bring Bulgaria's extraordinary traditional tales to English-speaking audiences for the first time..."
     },
     "shonaleigh": {
       "id": "shonaleigh",
