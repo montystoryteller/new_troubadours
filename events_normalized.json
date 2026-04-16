@@ -1994,7 +1994,7 @@
       "venue_id": ""
     },
     {
-      "name": "Surrey: Three Heads In A Well storytelling circle",
+      "name": "Surrey Storytellers: Three Heads In A Well storytelling circle",
       "schedule": "4th friday",
       "time": "7.30pm",
       "location": "",
@@ -2980,7 +2980,7 @@
       "ticket_url": "https://surreystorytellers.co.uk/booking/",
       "online": "hybrid",
       "isSpecial": true,
-      "venue_id": "st-johns-church-hall-worcester",
+      "venue_id": "st-johns-church-hall-worcester-park",
       "performer_id": "marion-leeper"
     },
     {
@@ -3464,7 +3464,7 @@
       "ticket_url": "https://surreystorytellers.co.uk/booking/",
       "online": "hybrid",
       "isSpecial": true,
-      "venue_id": "st-johns-church-hall-worcester",
+      "venue_id": "st-johns-church-hall-worcester-park",
       "performer_id": "james-canvin"
     },
     {
@@ -3692,7 +3692,7 @@
       "isSpecial": true,
       "online": "hybrid",
       "ticket_url": "https://surreystorytellers.co.uk/booking/",
-      "venue_id": "st-johns-church-hall-worcester",
+      "venue_id": "st-johns-church-hall-worcester-park",
       "performer_id": "ronnie-conboy"
     },
     {
@@ -3988,6 +3988,22 @@
       "isSpecial": true,
       "venue_id": "folklore-hoxton",
       "performer_id": "nell-phoenix"
+    },
+    {
+      "name": "Tales of the British Isles [Ensemble]",
+      "showname": "Tales of the British Isles",
+      "date": "27/02/2026",
+      "time": "7.30-10pm",
+      "club": "threeheadsinawell",
+      "price": "£10 [£7; £6 online]",
+      "description": "On Friday 24 April, Surrey Story Tellers gathers at Three Heads in a Well Storytelling Club for an ensemble evening of stories from around the British Isles told by our own members.",
+      "event_flyer": "2026_04_24_surrey_britsh_isles.jpg",
+      "ticket_url": "https://surreystorytellers.co.uk/booking/",
+      "online": "hybrid",
+      "date_added": "16/04/2026",
+      "isSpecial": true,
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": ""
     },
     {
       "name": "How to Spin Enchantment [Tim Ralphs]",
@@ -6110,8 +6126,8 @@
         1.16414
       ]
     },
-    "st-johns-church-hall-worcester": {
-      "id": "st-johns-church-hall-worcester",
+    "st-johns-church-hall-worcester-park": {
+      "id": "st-johns-church-hall-worcester-park",
       "name": "St. John's Church Hall",
       "city": "Worcester Park",
       "postcode": "KT4 7NY",
