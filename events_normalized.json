@@ -3992,7 +3992,7 @@
     {
       "name": "Tales of the British Isles [Ensemble]",
       "showname": "Tales of the British Isles",
-      "date": "27/02/2026",
+      "date": "24/04/2026",
       "time": "7.30-10pm",
       "club": "threeheadsinawell",
       "price": "£10 [£7; £6 online]",
@@ -4004,6 +4004,19 @@
       "isSpecial": true,
       "venue_id": "st-johns-church-hall-worcester-park",
       "performer_id": ""
+    },
+    {
+      "name": "An Evening of Tradtitional Tales [Tony 'Monty' Hirst]",
+      "showname": "An Evening of Tradtitional Tales",
+      "date": "24/04/2026",
+      "time": "7.30pm",
+      "price": "£12",
+      "ticket_url": "https://soltalmondbury.wordpress.com/",
+      "description": "An evening of traditional storytelling with storyteller Tony 'Monty' Hirst\n\n\n\nTickets reservable in advance from Solt. \n\n\n\nAge: grown-ups. Because stories aren't just for children...",
+      "event_flyer": "2026_04_24_monty_traditional-solt.png",
+      "date_added": "16/04/2026",
+      "venue_id": "solt-almondbury-hudds",
+      "performer_id": "tony-monty-hirst"
     },
     {
       "name": "How to Spin Enchantment [Tim Ralphs]",
@@ -4166,6 +4179,19 @@
       "isSpecial": true,
       "venue_id": "castle-inn-aberteifi",
       "performer_ids": ["jessie-wild", "cath-little"]
+    },
+    {
+      "name": "Cunning Folk of the Forest & Other Tradtitional Tales [Tony 'Monty' Hirst]",
+      "showname": "Cunning Folk of the Forest & Other Tradtitional Tales ",
+      "date": "19/05/2026",
+      "time": "7.15pm",
+      "price": "£5",
+      "ticket_url": "https://www.tickettailor.com/events/montystoryteller/2145982",
+      "description": "Making a welcome return to the Crown & Sceptre following his previous sell out show, 'The Sin Eater of Ross', storyteller Tony 'Monty' Hirst brings a new set of old tales from the Forest, as well as more traditional tales as passed down through ages.\n\n\n\nAdvance booking is encouraged, but tickets will also be available on the door.\n\n\n\nThere will still be no mention of the bears...",
+      "date_added": "16/04/2026",
+      "event_flyer": "2026_05_19_cunning_folk_crown.png",
+      "venue_id": "crown-sceptre-ross",
+      "performer_id": "tony-monty-hirst"
     },
     {
       "name": "1647: The Poorest Hee [Sarah Rundle]",
@@ -5455,6 +5481,18 @@
       "latlon": [
         51.87329,
         0.35289
+      ]
+    },
+    "solt-almondbury-hudds": {
+      "id": "solt-almondbury-hudds",
+      "name": "Sôlt (Kitchen, Coffee, Bar)",
+      "city": "Huddersfield",
+      "postcode": "HD5 8RX",
+      "full_address": "Sôlt, 91a Northgate, Almondbury, Huddersfield. HD5 8RX",
+      "url": "https://soltalmondbury.wordpress.com/",
+      "latlon": [
+        53.63325,
+        -1.74774
       ]
     },
     "the-yellow-book-brighton": {
