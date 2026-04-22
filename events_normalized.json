@@ -2145,7 +2145,8 @@
       "time": "7.30-9",
       "facebook": "https://www.facebook.com/ABitCrack",
       "club": "abitcrack",
-      "venue_id": "the-chillingham-south"
+      "venue_id": "the-chillingham-south",
+      "feature_slots": [["03/07/2026", "pyn-stockman"],["03/07/2026", "pyn-stockman"], ["07/08/2026", "harp-and-carp"], ["04/09/2026", "chris-adriaanse"], ["02/10/2026", "katy-cawkwell"], ["04/12/2026", "hugh-lupton-sarah-moody"]]
     },
     {
       "name": "Cardiff Storytelling Circle",
@@ -8890,6 +8891,24 @@
       "url": "https://www.spellintime.co.uk/",
       "bio": "A Spell In Time is a unique British-Bulgarian storytelling company that bring Bulgaria's extraordinary traditional tales to English-speaking audiences for the first time..."
     },
+    "pyn-stockman": {
+      "id": "pyn-stockman",
+      "name": "Pyn Stockman",
+      "url": "https://pynstockman.com/",
+      "bio": "Pyn Stockman performs folk and fairy tales, myths and legends from all around the world, telling to people of all ages in lots of different spaces, including libraries, useums, bookshops, theatres, schools, festivals, parks & woodlands. Pyn works with adults, young people and children to become storytellers through playful training and creative workshops and lead storytelling sessions to inspire performance making, creative writing and  well being."
+    },
+    "chris-adriaanse": {
+      "id": "chris-adriaanse",
+      "name": "Chris Adriaanse",
+      "url": "https://www.chrisadriaanse.co.uk/",
+      "bio": "Chris Adriaanse is a storyteller and spoken word artist based in Berwick-Upon-Tweed, Northumberland.\n\n\n\nHe tells stories in the oral tradition, where each telling begins afresh each time."
+    }, 
+    "harp-and-carp": {
+      "id": "harp-and-carp",
+      "name": "Harp and Carp",
+      "url": "",
+      "bio": "Harp and Carp are the brainchild of Storyteller Daniel Serridge and Harper Neil Wood. Drawing on their interest in folk and ceilidh culture Harp and Carp share stories and music from the folk tradition, inspired by each others rhythms, pace and power, Daniel and Neil combine traditional folk tales and tunes with improvised arrangements of power and precision to create a uniquely moving and meditative experience. Miles to go before I sleep will celebrate the lore of the winter months from long journeys and cold wind burnt faces to crackling fires and rooms full of folk."
+    }, 
     "shonaleigh": {
       "id": "shonaleigh",
       "name": "Shonaleigh",
@@ -8968,8 +8987,22 @@
     "daniel-morden-hugh-lupton-sarah-lianne-lewis": {
       "id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",
       "name": "Daniel Morden | Hugh Lupton | Sarah Lianne Lewis",
+      "performer_ids": ["daniel-morden", "hugh-lupton", "sarah-lianne-lewis"],
       "url": "",
       "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis."
+    },
+    "hugh-lupton-sarah-moody": {
+      "id": "hugh-lupton-sarah-moody",
+      "name": "Hugh Lupton | Sarah Moody",
+      "url": "",
+      "performer_ids": ["hugh-lupton", "sarah-moody"],
+      "bio": "Master-storyteller Hugh Lupton accompanied by acclaimed cellist Sarah Moody (ex-Devil's Violin)."
+    },
+    "sarah-moody": {
+      "id": "sarah-moody",
+      "name": "Sarah Moody",
+      "url": "https://www.sarahmoody.co.uk/",
+      "bio": "Acclaimed cellist Sarah Moody, one time member of The Devil's Violin (wtih Daniel Morden and Oliver Wilson-Dickson (violin))."
     },
     "corinne-harragin": {
       "id": "corinne-harragin",

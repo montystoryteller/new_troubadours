@@ -405,6 +405,46 @@
             color: #2e7d32;
             font-weight: bold;
         }
+
+        /* ── Feature slots list ──────────────────────────────── */
+        .feature-slot {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 9px 14px;
+            background: white;
+            border-left: 4px solid #a5d6a7;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            font-size: 14px;
+        }
+
+        .feature-slot.is-past {
+            opacity: 0.55;
+            filter: grayscale(30%);
+            border-left-color: #ccc;
+        }
+
+        .feature-slot-date {
+            color: #555;
+            white-space: nowrap;
+            min-width: 160px;
+        }
+
+        .feature-slot-performer {
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .feature-slot-performer a {
+            color: #2e7d32;
+            text-decoration: none;
+        }
+
+        .feature-slot-performer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -1118,6 +1158,63 @@
                 }
 
                 root.appendChild(schedDiv);
+            }
+
+            // ── Feature slots ──────────────────────────────────────────────────
+            const slots = clubRecord.feature_slots;
+            if (slots && slots.length) {
+                // Parse and sort all slots by date
+                const parsedSlots = slots
+                    .map(s => {
+                        const date = parseDateString(s[0]);
+                        return date ? { date, performerId: s[1] } : null;
+                    })
+                    .filter(Boolean)
+                    .sort((a, b) => a.date - b.date);
+
+                // Deduplicate: same date + performer combination
+                const seen = new Set();
+                const uniqueSlots = parsedSlots.filter(s => {
+                    const key = s.date.getTime() + '|' + s.performerId;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                if (uniqueSlots.length) {
+                    root.appendChild(sectionHeading('Featured guests', 'upcoming'));
+
+                    uniqueSlots.forEach(({ date, performerId }) => {
+                        const isPast = date < today;
+                        const row = document.createElement('div');
+                        row.className = 'feature-slot' + (isPast ? ' is-past' : '');
+
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'feature-slot-date';
+                        dateEl.textContent = formatDate(date);
+                        row.appendChild(dateEl);
+
+                        const perfEl = document.createElement('div');
+                        perfEl.className = 'feature-slot-performer';
+
+                        const rec = performers[performerId];
+                        if (rec) {
+                            const safeUrl = rec.url ? sanitizeUrl(rec.url) : null;
+                            const perfUrl = safeUrl || `new_troubadours_performers.html?performer=${encodeURIComponent(performerId)}`;
+                            const a = document.createElement('a');
+                            a.href = perfUrl;
+                            if (safeUrl) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+                            a.textContent = rec.name;
+                            perfEl.appendChild(a);
+                        } else {
+                            // Performer id not in data — show the raw id as a fallback
+                            perfEl.textContent = performerId;
+                        }
+
+                        row.appendChild(perfEl);
+                        root.appendChild(row);
+                    });
+                }
             }
 
             // Past specific events (most recent first)
