@@ -4108,6 +4108,21 @@
       "performer_id": "shane-ibbs"
     },
     {
+      "name": "A Thousand Years of Story and Song [Dan Broadbent & Emily Fear]",
+      "showname": "A Thousand Years of Story and Song",
+      "date": "09/05/2026",
+      "time": "7.30-9.30pm",
+      "club": "",
+      "price": "£20",
+      "description": "Gather around the hearth to hear stories and sing songs with storyteller Dan Broadbent and violinist Emily Fear.\n\n\n\nFor thousands of years people have gathered around the hearth to share stories and sing songs. Join us in the Saxon Hall and take your place around the fire as we celebrate this ancient tradition in the company of Blabbermouth Storytelling.\n\n\n\nAccompanied by singer and violinist Emily Fear, award winning archaeologist and storyteller Dan Broadbent will lead us on a historical journey, weaving together folk tales, legends and familiar songs from across the ages — from Bede to the Beatles.\n\n\n\nWith audience participation very much encouraged, this special evening of storytelling and song is not be missed.\n\n\n\nBooking required.",
+      "event_flyer": "",
+      "ticket_url": "https://www.eventbrite.co.uk/e/a-thousand-years-of-story-and-song-tickets-1984463838762",
+      "date_added": "03/05/2026",
+      "isSpecial": true,
+      "venue_id": "avalon-archaeology",
+      "performer_id": "dan-broadbent"
+    },
+    {
       "name": "The Green Knight (But it's Gay) [Ropetackle Storytellers]",
       "showname": "The Green Knight (But it's Gay)",
       "date": "11/05/2026",
@@ -4972,6 +4987,18 @@
       "latlon": [
         51.8671663,
         -2.250251
+      ]
+    },
+    "avalon-archaeology": {
+      "id": "avalon-archaeology",
+      "name": "Avalon Archaeology",
+      "city": "Bridgwater",
+      "postcode": "BA6 9TT",
+      "full_address": "Avalon Archaeology, Shapwick Road, Westhay, BA6 9TT",
+      "url": "https://www.gloucestercivictrust.org/the-folk-home/",
+      "latlon": [
+        51.17393,
+        -2.81721
       ]
     },
     "the-joinery-settle": {
@@ -8908,7 +8935,13 @@
       "name": "Harp and Carp",
       "url": "",
       "bio": "Harp and Carp are the brainchild of Storyteller Daniel Serridge and Harper Neil Wood. Drawing on their interest in folk and ceilidh culture Harp and Carp share stories and music from the folk tradition, inspired by each others rhythms, pace and power, Daniel and Neil combine traditional folk tales and tunes with improvised arrangements of power and precision to create a uniquely moving and meditative experience. Miles to go before I sleep will celebrate the lore of the winter months from long journeys and cold wind burnt faces to crackling fires and rooms full of folk."
-    }, 
+    },
+    "dan-broadbent": {
+      "id": "dan-broadbent",
+      "name": "Dan Broadbent",
+      "url": "https://blabbermouthstorytelling.co.uk",
+      "bio": "Blabbermouth Storytelling is the home of Dan Broadbent, storyteller and community heritage practitioner. Dan has over a decade of professional experience telling traditional stories, folktales and local legends to audiences across South West England, in settings ranging from museums and schools, village halls and pubs, to site-specific storywalks immersed in nature. He has made numerous appearances on local radio and television, discussing the history, archaeology and folklore of Somerset, and is a regular contributor to the BBC's Secret Somerset podcast. Prior to launching Blabbermouth, Dan’s professional background was in archaeology and heritage management."
+    },
     "shonaleigh": {
       "id": "shonaleigh",
       "name": "Shonaleigh",
