@@ -2066,7 +2066,8 @@
       "facebook": "https://www.facebook.com/lichfieldstorytellers",
       "email": "lichfieldstorytellers@gmail.com",
       "club": "lichfieldST",
-      "venue_id": "kings-head-lichfield"
+      "venue_id": "kings-head-lichfield",
+      "feature_slots" : [ ["12/05/2026", "giles-abbott"]]
     },
     {
       "name": "Wirral Quirky Tales",
@@ -4154,9 +4155,24 @@
       "performer_id": "roving-jewel"
     },
     {
+      "name": "Bude Lit. Fest — Herd [Suited Storytellers]",
+      "showname": "Herd",
+      "date": "17/05/2026",
+      "time": "Doors 11.30am, show: 12 noon",
+      "club": "",
+      "price": "£10 / £5",
+      "description": "A Bude Litereary Festival event.",
+      "event_flyer": "2026_05_17_suited_storytellers_budelitfest.jpg",
+      "ticket_url": "https://www.mugwortandmistletoe.co.uk/home/product/jewel/",
+      "isSpecial": true,
+      "date_added": "11/05/2026",
+      "venue_id": "falcon-hotel-bude",
+      "performer_id": "suited-storytellers"
+    },
+    {
       "name": "Wild Gods & Mad Spirits [Henry Everett]",
       "showname": "Wild Gods & Mad Spirits",
-      "description": "Join stroyteller and author Henry Everett in this intimate, enchanting performance exploring the tales of Pan, Robin Goodfellow & more...\n\n\n\nThis intimate spoken-word performance in the round will transport us between the mortal and faerie worlds — and explore our human connection with nature and disconnection from wildness.\n\n\n\nSpanning tales from Ancient Greece to the realm of Faerie, join us for an enchanting evening of story in the Talliston Watchtower. Under the gaze of our own wild god, Henry will transport us with tales of some of the world's most infamous tricksters: the Great God Pan and Robin Goodfellow.",
+      "description": "Join storyteller and author Henry Everett in this intimate, enchanting performance exploring the tales of Pan, Robin Goodfellow & more...\n\n\n\nThis intimate spoken-word performance in the round will transport us between the mortal and faerie worlds — and explore our human connection with nature and disconnection from wildness.\n\n\n\nSpanning tales from Ancient Greece to the realm of Faerie, join us for an enchanting evening of story in the Talliston Watchtower. Under the gaze of our own wild god, Henry will transport us with tales of some of the world's most infamous tricksters: the Great God Pan and Robin Goodfellow.",
       "date": "21/05/2026",
       "time": "7pm",
       "price": "£29.99",
@@ -4831,6 +4847,18 @@
       "latlon": [
         53.474863,
         -2.2469884
+      ]
+    },
+    "falcon-hotel-bude": {
+      "id": "falcon-hotel-bude",
+      "name": "Falcon Hotel, Bude",
+      "city": "Bude",
+      "postcode": "EX23 8SD",
+      "full_address": "Falcon Hotel, Breakwater Road, Bude, EX23 8SD",
+      "url": "https://www.falconhotel.com/",
+      "latlon": [
+        50.82702,
+        -4.54795
       ]
     },
     "brigsteer-village-hall-nr": {
@@ -8579,6 +8607,12 @@
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
       "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry."
+    },
+    "suited-storytellers": {
+      "id": "suited-storytellers",
+      "name": "Suited Storytellers",
+      "url": "https://suitedstorytellers.co.uk/",
+      "bio": "Suited Storytellers tell gritty tales with strong female protagonists. They specialise in creating hybrid performances which fuse oral tradition storytelling with poetic interventions, dialogue and carefully crafted staging."
     },
     "henry-everett": {
       "id": "henry-everett",
