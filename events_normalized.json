@@ -4155,6 +4155,21 @@
       "performer_id": "roving-jewel"
     },
     {
+      "name": "Storytelling Night with Laura Sampson and Stacey Blythe",
+      "showname": "Storytelling Night with ...",
+      "date": "14/05/2026",
+      "time": "7pm",
+      "club": "cardiffSC",
+      "price": "£9.90 / £7.70",
+      "description": "The Ragged storytelling collective present our new show Cân y Dŵr - The Song of Water. Mixing folk-ritual with documentary, story with music, puppetry with poetry, Cân y Dŵr flows between mad science, mythology, folklore and history, with grief, anger, love and reverence for the waters that bring us life.",
+      "event_flyer": "2026_05_14_ragged_llanover.jpg",
+      "ticket_url": "https://wegottickets.com/af/671/event/19157",
+      "isSpecial": true,
+      "date_added": "12/05/2026",
+      "venue_id": "llanover-hall-arts-center-cardiff",
+      "performer_id": "ragged-storytelling-collective"
+    },
+    {
       "name": "The Shahnameh — Book of Kings [Xanthe Gresham]",
       "showname": "The Shahnameh — Book of Kings",
       "date": "16/05/2026",
@@ -6214,7 +6229,7 @@
       "name": "Llanover Hall Arts Center",
       "city": "Cardiff",
       "postcode": "CF5 1FH",
-      "full_address": "Llanover Hall Arts Center, Cardiff, CF5 1FH",
+      "full_address": "Llanover Hall Arts Center, Romily Rd, Cardiff, CF5 1FH",
       "url": "https://www.llanoverhall.com/",
       "latlon": [
         51.4851825,
@@ -9048,6 +9063,12 @@
       "name": "Martin Maudsley",
       "url": "https://www.lostwordsdorset.org.uk/organisations/35/Martin+Maudsley%2C+storyteller",
       "bio": "Martin Maudsley is a professional storyteller based in Bridport and working across the UK in schools, theatres, festivals and for a range of national for organisations. His wide-ranging repertoire of stories consists of fresh re-tellings of traditional tales from local legends to magical myths, often combining music and audience interaction to bring the stories to life.\n\n\n\n Martin has a particular passion for 'wild stories' — stories that connect and engage with the natural world — and often tells stories outdoors in woodlands, farmland and riverside settings. He has worked extensively with Dorset AONB, the National Trust and Dorset Wildlife Trust in gathering, creating and telling stories about the rich tapestry of local landscapes in Dorset. In 2018 he produced a schools pack called Myths and Legends of the South Dorset Ridgeway."
+    },
+    "ragged-storytelling-collective": {
+      "id": "ragged-storytelling-collective",
+      "name": "Ragged Storytelling Collective",
+      "url": "https://www.facebook.com/TheRaggedStorytellingCollective/",
+      "bio": "The Ragged Storytelling Collective create 'tales both ancient, contemporary, fantastical and grounded' woven with 'twisting tunes coiling like smoke, an invocation of something very ancient and yet completely current'.\n\n\n\nTraditional myth meets urban magic."
     },
     "shonaleigh": {
       "id": "shonaleigh",
