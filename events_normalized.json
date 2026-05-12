@@ -4197,6 +4197,22 @@
       "performer_id": "bernadette-russell"
     },
     {
+      "name": "The Hostages of Asgard [Catherine Chadwick]",
+      "showname": "The Hostages of Asgard",
+      "date": "22/05/2026",
+      "time": "7.30-10pm",
+      "club": "threeheadsinawell",
+      "price": "£10 [£7; £6 online]",
+      "description": "This month, Surrey Story Tellers welcomes one of its own, with Catherine Chadwick telling 'The Hostages of Asgard' - When the Aesir and Vanir gods declared peace between them after the hostilities, they exchanged hostages.  The Vanir sent Njordr and his children Freyr and Freyja to live with the Aesir in Asgard.  These three provide us with stories of an unexpected marriage, obsession with a beautiful giantess and the attainment of an incomparable golden necklace.",
+      "event_flyer": "2026_05_22_chadwick_three_heads.jpg",
+      "ticket_url": "https://surreystorytellers.co.uk/booking/",
+      "online": "hybrid",
+      "date_added": "12/05/2026",
+      "isSpecial": true,
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": "catherine-chadwick"
+    },
+    {
       "name": "Tell Tales Club: Tropsyn / Morgan le Fay [Jessie Wild / Cath Little]",
       "showname": "Tell Tale Club: Tropsyn / Morgan le Fay",
       "date": "28/05/2026",
@@ -8975,6 +8991,12 @@
       "name": "Dan Broadbent",
       "url": "https://blabbermouthstorytelling.co.uk",
       "bio": "Blabbermouth Storytelling is the home of Dan Broadbent, storyteller and community heritage practitioner. Dan has over a decade of professional experience telling traditional stories, folktales and local legends to audiences across South West England, in settings ranging from museums and schools, village halls and pubs, to site-specific storywalks immersed in nature. He has made numerous appearances on local radio and television, discussing the history, archaeology and folklore of Somerset, and is a regular contributor to the BBC's Secret Somerset podcast. Prior to launching Blabbermouth, Dan’s professional background was in archaeology and heritage management."
+    },
+    "catherine-chadwick": {
+      "id": "catherine-chadwick",
+      "name": "Catherine Chadwick",
+      "url": "https://www.facebook.com/catherine.chadwick.58/",
+      "bio": "
     },
     "shonaleigh": {
       "id": "shonaleigh",
