@@ -4360,6 +4360,23 @@
       "performer_id": "hugh-lupton"
     },
     {
+      "name": "Tales of Travellers and Fools [Ian Douglas]",
+      "showname": "Tales of Travellers and Fools",
+      "date": "05/06/2026",
+      "time": "7.30-10pm",
+      "club": "matlockSCafe",
+      "price": "£8 (£6.50 zoom)",
+      "description": "The Gods Are All Here by Phil Okwedy\n\n\n\n A compelling, one-person performance storytelling piece, exploring themes of family relationships, equality, racism and freedom, through finely interwoven myth, music, personal story and folktales.\n\n\n\n When clearing his mother’s house,storyteller Phil Okwedy made an astonishing discovery of a series of love letters from his father to his mother.Extracts from these letters form the backdrop to a powerful and compelling performance that mixes extraordinary and everyday stories of myths, folktales and song from the African diaspora with Phil's personal experiences of growing up as a child of dual heritage in 1960 & 70's Wales.\n\n\n\n Charting the time of life when children are said to view their parents as gods, Phil considers if his parents were, in fact, the gods he had believed them to be…The Gods Are All Here is a touching, funny and evocative performance of one man revisiting stories of his childhood alongside themes of equality, racism, freedom and justice.\n\n\n\n Phil Okwedy is a Welsh performance storyteller and myth-maker, born in Cardiff to a Welsh mother and Nigerian father. He draws deeply on his dual heritage and multiple cultures and performs regularly in storytelling clubs and festivals across Wales and England, as well as Internationally.",
+      "event_flyer": "",
+      "online": "hybrid",
+      "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2198740",
+      "isSpecial": true,
+      "venue_id": "imperial-rooms-matlock",
+      "fb_event": 1291951685654216,
+      "date_added": "02/06/2026",
+      "performer_id": "phil-okwedy"
+    },
+    {
       "name": "The Forest of Chance Encounters [Ropetackle Storytellers]",
       "showname": "The Forest of Chance Encounters",
       "date": "15/06/2026",
@@ -4434,6 +4451,37 @@
       "date_added": "09/04/2026",
       "venue_id": "liskeard-library",
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+    },
+    {
+      "name": "Under the Tree — A Storytelling Evening [Island Storytellers]",
+      "showname": "Under the Tree — A Storytelling Evening",
+      "date": "03/07/2026",
+      "time": "7-9pm",
+      "club": "islandstorytellers",
+      "price": "Free (donations)",
+      "description": "Join the Island Storytellers in Shanklin as they take you on storytelling journeys that begin under one of Rylstone Gardens' magnificent trees.\n\n\n\nSpend the evening enjoying a brilliant medley of folk tales about trees. The stories may branch out to many times and many countries, but all will have their roots deep in the ground, connecting nature and humanity.\n\n\n\nBring a chair, a picnic and dress for the weather. Meet near the bandstand.\n\n\n\nFree event - donations asked for St. Catherine's School.\n\n\n\nStories aimed at adults but children aged 10+ welcome.\n\n\n\nLimited parking nearby, accessible via no. 2 bus route.\n\n\n\nNo booking required.\n\n\n\nPart of the Isle of Wight Biosphere Festival.\n\n\n\nEmail theislandstorytellers@gmail.com for more info.",
+      "event_flyer": "",
+      "ticket_url": "",
+      "fb_event": 2888139458199217,
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "rylstone-gardens",
+      "performer_id": "island-storytellers"
+    },
+    {
+      "name": "I Will Survive [Elizabeth Dale & Keith Wallis]",
+      "showname": "I Will Survive",
+      "date": "28/06/2026",
+      "time": "7-8pm",
+      "club": "",
+      "price": "£11.55",
+      "description": "I Will Survive is a comedy storytelling show about grief; more specifically, the complicated experience of losing a parent you didn't really like.\n\n\n\nBlending storytelling, humour, and slightly unhinged academic energy (yes, there's a PowerPoint), Hari Berrow explores the messy, contradictory feelings that can come with loss — and questions the idea that there's a 'right' way to grieve.\n\n\n\nDoors open from 6.15pm. Coffee shop open before the show. Start time 7pm. Half of ticket sales are fundraising for the centre.",
+      "event_flyer": "2026_06_26_I_will_survive_caerphilly.jpg",
+      "ticket_url": "https://www.eventbrite.co.uk/e/comedy-night-i-will-survive-tickets-1990090430048",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "caerphilly-miners-centre",
+      "performer_id": "hari-berrow"
     },
     {
       "name": "Secret Tales From Wales [Daniel Morden]",
@@ -4522,6 +4570,165 @@
       "performer_id": "martin-maudsley"
     },
     {
+      "name": "Beowulf Storytelling Around the Fire [Lizzie Bryant]",
+      "showname": "Beowulf Storytelling Around the Fire",
+      "date": "23/07/2026",
+      "time": "6.30-9pm",
+      "club": "",
+      "price": "£20",
+      "description": "Experience storytelling Saxon-style around an open fire with a performance of Beowulf, the oldest story in the English language.\n\n\n\n Back by popular demand after three sell-out performances, storyteller Lizzie Bryant returns for another dynamic and engaging retelling of Beowulf.\n\n\n\n Experience storytelling Saxon-style with a performance of Beowulf, the oldest story in the English language. Gather around the fire, step back into a Saxon world and experience the enduring tale of the Beowulf, hero of men and the monsters that brought him fame. It's a tale of blood feuds and fury that's been told for a thousand years or more.\n\n\n\n Lizzie's gripping performance of this epic old English poem is presented in (mostly!) modern English prose in two equal parts with an interval (a glass of local apple juice included!) and a Q&A afterwards.",
+      "event_flyer": "",
+      "ticket_url": "https://www.eventbrite.co.uk/e/beowulf-storytelling-around-the-fire-tickets-1984895429662",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "avalon-archaeology",
+      "performer_id": "lizzie-bryant"
+    },
+    {
+      "name": "Tales from the Isle of Wight Ghost Experience [Mark Tuckey]",
+      "showname": "Tales from the Isle of Wight Ghost Experience",
+      "date": "19/07/2026",
+      "time": "1-2pm",
+      "club": "",
+      "price": "£15 (£10.50)",
+      "description": "Marc Tuckey brings his famous Ghost Experience to Ventnor Fringe!\n\n\n\n For over 30 years, Marc has been enthralling both visitors to and residents of the Isle of Wight with haunting historical tales of grisly ghosts, ghouls and ghastly goings-on. Many have enjoyed the walks he leads with his team every summer season. If you don’t feel like taking a walk though, now is your chance to settle back in your seat for some more spooky stories – this time with a family feel.\n\n\n\n Want to know what connects Shanklin to Jekyll and Hyde? And Jack the Ripper? Ever wondered why some places on the Island just have an atmosphere? What was seen in the well at Carisbrooke Castle? What happened when the French invaded? And just why was a tomb in Arreton Church defaced – and by whom? Why are there always three lighthouse keepers, never just two? Then there are the Arreton monks who can only be seen from the knees upwards…. And the Island’s very own ghost ship….\n\n\n\n Whether you’re interested in the Island’s past; love a silly spectral tale; like a laugh or just enjoy a well-told story, you can expect a mix of little known facts from the past and some hilarious and haunting tales you won’t forget.\n\n\n\n This show is produced with a family audience in mind, so you can be sure there will be fun and laughter and nothing too scary….. so come along and be entertained by the master story teller (and his companions).",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=49401",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "ingrams-yard-ventnor",
+      "performer_id": "marc-tuckey",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "Medieval Medley [Island Storytellers]",
+      "showname": "Medieval Medley",
+      "date": "22/07/2026",
+      "time": "7-8pm",
+      "club": "islandstorytellers",
+      "price": "£10 (£8)",
+      "description": "Step back in time for an evening of Medieval mischief, mystery and mayhem!\n\n\n\nThese timeless tales feature a cast of truly unforgettable characters. A gang of youths embark on a pursuit to hunt down death, a clueless carpenter braces for a biblical flood and a swindler swears he has the skill of turning sticks into silver.\n\n\n\nSo join the Island Storytellers for an evening of warmth, wisdom and wit in this fun and lively celebration of community storytelling.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=54601",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "ventnor-library",
+      "performer_id": "island-storytellers",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: Solent Tales, Macabre Stories [Monty Storyteller]",
+      "showname": "Solent Tales, Macabre Stories",
+      "date": "22/07/2026",
+      "time": "3.30-4.30pm",
+      "club": "",
+      "price": "£10 (£8.50)",
+      "description": "It's a time for spying, and a time for sabotage.\n\n\n\nThe last quarter of the 18th century and Britain is at war with France and America. Portsmouth, as the home of the Navy, is a target... \n\n\n\nSo come here tell, of John the Painter, incendiary and arsonist, hanged, on The Hard, from the highest gallows to be used in England. And of David Tyrie, whose particularly gruesome execution on Southsea Common pulled in a crowd to rival that of the Victorious Festival today. And of... well, that would be telling...\n\n\n\nTaking time out from tale telling alongside some of the island's finest musicians, traditional storyteller Tony 'Monty' Hirst brings a solo show of historical tales to Ventnor Fringe. Carefully researched from contemporary newspaper sources of the time, which will be surely made available as storynotes merch, Monty has read them all and will tell you what he remembers. Because it's the story that's left when the facts have been forgotten.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=48401",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "tony-monty-hirst",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: Tarot Tales [Merl Fluin]",
+      "showname": "Tarot Tales",
+      "date": "23/07/2026",
+      "time": "8.30-9.30pm",
+      "club": "",
+      "price": "£12 (£10)",
+      "description": "Delve deep into the wisdom and wonder of Tarot with this wildly imaginative live storytelling show.\n\n\n\nFor hundreds of years, Tarot cards have fascinated and beguiled. They've told fortunes, uncovered secrets, and held up a dark mirror to the mysteries of life.\n\n\n\nNow performance storyteller Merl Fluin reveals the Major Arcana in a whole new light. Combining the Tarot's symbolism with traditional tales from myth and folklore, she'll lead you on a dance where every card is a portal to a glittering storyworld. Prepare to be spellbound.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=59001",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "merl-fluin",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: Faery Tale Blues — Songs'n'Stories [Monty + The AnyWhens]",
+      "showname": "Faery Tale Blues — Songs'n'Stories",
+      "date": "23/07/2026",
+      "time": "3.30-4.30pm",
+      "club": "",
+      "price": "£10 (£8.50)",
+      "description": "Following a rapidly sold out event at Ventnor Fringe last year ('Protest Days, Rebellion Nights'), storyteller Tony 'Monty' Hirst and and folk/blues duo The AnyWhens (Glenn Koppany and Sue Cain) bring their new show 'Faery Tale Blues' to the Bijou Tent for 2026.\n\n\n\nFeaturing original and traditional songs, and traditional and historical tales, Monty + The AnyWhens invite you take a step outside the ordinary, to another world that is forever hidden in plain sight, to the lift the veil to the other world, the land of the Fae, and the time of Once.\n\n\n\n Bio: based on the Isle of Wight, Monty + The AnyWhens, aka Tony 'Monty' Hirst and folk duo The AnyWhens (Glenn Koppany and Sue Cain) combine songs, tunes and stories to transport audiences to other times and other places, recognisable, yet otherworldly.\n\n\n\nRegularly performing 'turn taking' sets around the Island, their first show, 'Protest Days, Rebellion Nights: Songs and the Stories of the Luddite' rapidly sold out at Ventnor Fringe in 2025, as well as other venues on both the Island and the mainland.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=45001",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "monty-the-anywhens",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: Faery Tale Blues — Songs'n'Stories [Monty + The AnyWhens]",
+      "showname": "Faery Tale Blues — Songs'n'Stories",
+      "date": "24/07/2026",
+      "time": "3.30-4.30pm",
+      "club": "",
+      "price": "£10 (£8.50)",
+      "description": "Following a rapidly sold out event at Ventnor Fringe last year ('Protest Days, Rebellion Nights'), storyteller Tony 'Monty' Hirst and and folk/blues duo The AnyWhens (Glenn Koppany and Sue Cain) bring their new show 'Faery Tale Blues' to the Bijou Tent for 2026.\n\n\n\nFeaturing original and traditional songs, and traditional and historical tales, Monty + The AnyWhens invite you take a step outside the ordinary, to another world that is forever hidden in plain sight, to the lift the veil to the other world, the land of the Fae, and the time of Once.\n\n\n\n Bio: based on the Isle of Wight, Monty + The AnyWhens, aka Tony 'Monty' Hirst and folk duo The AnyWhens (Glenn Koppany and Sue Cain) combine songs, tunes and stories to transport audiences to other times and other places, recognisable, yet otherworldly.\n\n\n\nRegularly performing 'turn taking' sets around the Island, their first show, 'Protest Days, Rebellion Nights: Songs and the Stories of the Luddite' rapidly sold out at Ventnor Fringe in 2025, as well as other venues on both the Island and the mainland.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=45001",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "monty-the-anywhens",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: Birds of a Feather [Sue Bailey]",
+      "showname": "Birds of a Feather",
+      "date": "25/07/2026",
+      "time": "12.30-1.30pm",
+      "club": "",
+      "price": "£10 (£8)",
+      "description": "As massive as an eagle, as tiny as a lark, as colourful as a kingfisher and as plain as a sparrow, feathery tales from the folklore of the land.\n\n\n\nStories as diverse and widespread as they are numerous.\n\n\n\nIn between tales there will be fun and mayhem : Can you tell your cuckoo from your curlew? Your blackbird from your buzzard? Whose bird call is that? What is a bird in the hand worth? And what does the early bird catch?\n\n\n\nIsle of Wight storyteller Sue Bailey tells stories which definitely wouldn’t share the same nest.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=51401",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "pier-st-ventnor-fringe",
+      "performer_id": "sue-bailey",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: The Fabled Isle [Holly Medland]",
+      "showname": "The Fabled Isle",
+      "date": "25/07/2026",
+      "time": "6.15-7.15pm",
+      "club": "",
+      "price": "£12 (£10)",
+      "description": "Discover the Isle of Wight's strange history through its stories, where fact and folklore weave seamlessly together.\n\n\n\nWith an array of characters featuring sly smugglers, heroic hermits and raging river spirits, each tale holds at least a touch of truth - though exactly how much is for you to decide.\n\n\n\nFollowing sell-out shows in 2024 and 2025, Holly Medland returns to Ventnor Fringe with an enchanting retelling of the traditional stories that have shaped the Island and its people.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=38601",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "holly-medland",
+      "wider_event": "ventnor-fringe"
+    },
+    {
+      "name": "VFringe: The Fabled Isle [Holly Medland]",
+      "showname": "The Fabled Isle",
+      "date": "26/07/2026",
+      "time": "6.15-7.15pm",
+      "club": "",
+      "price": "£12 (£10)",
+      "description": "Discover the Isle of Wight's strange history through its stories, where fact and folklore weave seamlessly together.\n\n\n\nWith an array of characters featuring sly smugglers, heroic hermits and raging river spirits, each tale holds at least a touch of truth - though exactly how much is for you to decide.\n\n\n\nFollowing sell-out shows in 2024 and 2025, Holly Medland returns to Ventnor Fringe with an enchanting retelling of the traditional stories that have shaped the Island and its people.",
+      "event_flyer": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=38601",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "bijou-ventnor-fringe",
+      "performer_id": "holly-medland",
+      "wider_event": "ventnor-fringe"
+    },
+    {
       "name": "TBA [Tim Ralphs]",
       "showname": "TBA",
       "date": "02/09/2026",
@@ -4541,7 +4748,7 @@
       "time": "7.30-9.30pm",
       "club": "dartmoorStorytellers",
       "price": "£16.25 / £13",
-      "description": "Beowulf by Hugh Lupton\n\n\n\n Beowulf is the oldest story in the English language – and it still has the power to raise the hairs on the back of the neck! It tells of a hero’s life, a life that is mapped by three tremendous blood-curdling encounters.\n\n\n\n As a young man Beowulf defeats the monster Grendel and his even more terrifying Mother, the original creatures from the Black Lagoon. Then, as an old man, he tries his strength against a gold guarding Fire-Drake (a dragon). Alongside these adrenalin-charged encounters the story explores the journey we all make from the seeming invincibility of youth to the heroic vulnerability of old age.\n\n\n\n The story has had a tremendous effect on the imagination of many writers and poets, most notably J.R.R. Tolkien. Without Beowulf there would have been no Lord of the Rings.\n\n\n\n Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers. He has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry. Hugh is based in Norfolk.\n\n\n\n This is the third of a series of Wild Stories events on Dartmoor in the summer of 2026: we aim to showcase amazing storytelling in extraordinary places. It is hosted jointly by Dartmoor Storytellers and Moor Barton Wilding.\n\n\n\n Age suitability 16+. No dogs please. If you need to bring an assistance dog please let us know beforehand.\n\n\n\n This event will be in the woods, held outdoors around the fire under the shelter of White Deer Lodge at Moor Barton. Come prepared for the outdoors with suitable clothing and footwear. Refreshments will be available, and there are compost toilets. You can park nearby; there is a short walk to the venue, with an earth path which can be uneven underfoot.\n\n\n\n Details of how to get to the site, and what to bring, will be sent through to all ticket holders near to the date of the event.\n\n\n\n Moor Barton Wilding CIC is a 120 acre project on the north east shoulder of Dartmoor dedicated to rewilding land and people. The land is made up of a mosaic of ecologically rich habitats - including wood pasture, hazel coppice, transitional edge and wildflower glades, closed canopy woodland, wetland, veteran trees and conifer woodland - and is a key site on Dartmoor for species reintroduction. Believing that humans are part of nature with a key role to play in restoring our ecological systems, Moor Barton engages communities near and far, offering many opportunities to learn about and get involved in different aspects of rewilding. https://www.moorbarton.org/",
+      "description": "Beowulf by Hugh Lupton\n\n\n\n Beowulf is the oldest story in the English language — and it still has the power to raise the hairs on the back of the neck! It tells of a hero's life, a life that is mapped by three tremendous blood-curdling encounters.\n\n\n\n As a young man Beowulf defeats the monster Grendel and his even more terrifying Mother, the original creatures from the Black Lagoon. Then, as an old man, he tries his strength against a gold guarding Fire-Drake (a dragon). Alongside these adrenalin-charged encounters the story explores the journey we all make from the seeming invincibility of youth to the heroic vulnerability of old age.\n\n\n\n The story has had a tremendous effect on the imagination of many writers and poets, most notably J.R.R. Tolkien. Without Beowulf there would have been no Lord of the Rings.\n\n\n\n Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers. He has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry. Hugh is based in Norfolk.\n\n\n\n This is the third of a series of Wild Stories events on Dartmoor in the summer of 2026: we aim to showcase amazing storytelling in extraordinary places. It is hosted jointly by Dartmoor Storytellers and Moor Barton Wilding.\n\n\n\n Age suitability 16+. No dogs please. If you need to bring an assistance dog please let us know beforehand.\n\n\n\n This event will be in the woods, held outdoors around the fire under the shelter of White Deer Lodge at Moor Barton. Come prepared for the outdoors with suitable clothing and footwear. Refreshments will be available, and there are compost toilets. You can park nearby; there is a short walk to the venue, with an earth path which can be uneven underfoot.\n\n\n\n Details of how to get to the site, and what to bring, will be sent through to all ticket holders near to the date of the event.\n\n\n\n Moor Barton Wilding CIC is a 120 acre project on the north east shoulder of Dartmoor dedicated to rewilding land and people. The land is made up of a mosaic of ecologically rich habitats - including wood pasture, hazel coppice, transitional edge and wildflower glades, closed canopy woodland, wetland, veteran trees and conifer woodland - and is a key site on Dartmoor for species reintroduction. Believing that humans are part of nature with a key role to play in restoring our ecological systems, Moor Barton engages communities near and far, offering many opportunities to learn about and get involved in different aspects of rewilding. https://www.moorbarton.org/",
       "event_flyer": "moor_barton_dartmoor_2026.jpg",
       "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2185164",
       "isSpecial": true,
@@ -7548,6 +7755,19 @@
         -0.12754
       ]
     },
+    "rylstone-gardens": {
+      "id": "rylstone-gardens",
+      "name": "Rylstone Gardens, Shanklin",
+      "city": "Shanklin",
+      "postcode": "PO37 6RG",
+      "full_address": "Rylstone Gardens, 11 Popham Road, Shanklin, PO37 6RG",
+      "url": "https://visitshanklin.co.uk/things-to-do/the-rylstone-gardens/",
+      "email": "i",
+      "latlon": [
+        50.62429,
+        -1.17595
+      ]
+    },
     "watermill-inn-ings": {
       "id": "watermill-inn-ings",
       "name": "Orepool Inn, Ings",
@@ -7900,6 +8120,33 @@
       "full_address": "Brading Roman Villa, Morton Old Road, Brading, Isle of Wight, PO36 0PH",
       "url": "https://bradingromanvilla.org.uk/",
       "latlon": [50.67148,-1.148]
+    },
+    "pier-st-ventnor-fringe":{
+      "id": "pier-st-ventnor-fringe",
+      "name": "Pier Street Playhouse, Ventnor Fringe",
+      "city": "Ventnor",
+      "postcode": "PO38 1SX",
+      "full_address": "Baptist Church, Pier St, Ventnor, Isle of Wight, PO38 1SX",
+      "url": "https://vfringe.co.uk/",
+      "latlon": [50.59404,-1.20474]
+    },
+    "ingrams-yard-ventnor": {
+      "id": "ingrams-yard-ventnor",
+      "name": "Ingrams Yard, Ventnor",
+      "city": "Ventnor",
+      "postcode": "PO38 1RZ",
+      "full_address": "Ingrams Yard, Dudley Road, Ventnor, Isle of Wight, PO38 1RZ",
+      "url": "https://vfringe.co.uk/",
+      "latlon": [50.59277,-1.21584]
+    },
+    "bijou-ventnor-fringe": {
+      "id": "bijou-ventnor-fringe",
+      "name": "Bijou Tent, Ventnor Fringe",
+      "city": "Ventnor",
+      "postcode": "PO38 1LE",
+      "full_address": "Bijou Tent, Ventnor Park, Park Ave, Ventnor, Isle of Wight, PO38 1LE",
+      "url": "https://vfringe.co.uk/",
+      "latlon": [50.59277,-1.21584]
     },
     "st-lawrence-village-hall": {
       "id": "st-lawrence-village-hall",
@@ -8415,6 +8662,15 @@
       "url": "https://www.ferringvillagehall.org.uk/",
       "latlon": [50.81561,-0.44674]
     },
+    "caerphilly-miners-centre": {
+      "id": "caerphilly-miners-centre",
+      "name": "Caerphilly Miners Centre for the Community, Caerphilly",
+      "city": "Caerphilly",
+      "postcode": "CF83 1BJ",
+      "full_address": "Caerphilly Miners Centre for the Community, Watford Road, Caerphilly, CF83 1BJ",
+      "url": "https://www.caerphillyminerscentre.co.uk/",
+      "latlon": [51.56918,-3.23109]
+    },
    "preston-village-hall-weymouth": {
       "id": "preston-village-hall-weymouth",
       "name": "Preston Village Hall, Weymouth",
@@ -8462,6 +8718,12 @@
       "url": "",
       "bio": ""
     },
+    "island-storytellers": {
+      "id": "island-storytellers",
+      "name": "Island Storytellers",
+      "url": "https://www.facebook.com/groups/Islandstorytellers",
+      "bio": "Informal story telling group on the Isle of Wight."
+    },
     "james-canvin": {
       "id": "james-canvin",
       "name": "James Canvin",
@@ -8473,6 +8735,12 @@
       "name": "Cath Little",
       "url": "https://cathlittle.co.uk/",
       "bio": "Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here.\n\n\n\n She tells traditional stories from her Irish English heritage and her Welsh homeland. Cath enjoys re-imagining and retelling stories from The Mabinogion.\n\n\n\n Cath helps run the Cardiff Storytelling Circle and curates their seasonal concerts, Tales for the Turning Year. She tells and listens to stories at Oasis, a Cardiff Charity which offers a warm Welsh welcome to refugees and asylum seekers."
+    },
+    "lizzie-bryant": {
+      "id": "lizzie-bryant",
+      "name": "Lizzie Bryant",
+      "url": "https://eye-view.org.uk/lizzie-bryant",
+      "bio": "Lizzie Bryant is Dorset based oral storyteller and writer, creating and delivering storytelling performances, story walks, bespoke workshops and training, working and playing with stories and the imagination to inspire connection, community, and creativity. After many years in the film industry, Lizzie retrained as a stonemason and with her hammer and chisel, shaped stone. Her work on crumbling churches led her into the wilder places to explore the old stories, myths and legends told by our ancestors and held in the land and she tumbled into the world of storytelling.\n\n\n\nLizzie now draws upon the treasure trove of world myths and legends and a word hoard of traditional tales, wonder tales and folk lore. She has created a number of site specific work including Pixies and Pillywiggins of Parley Wood, interactive adventure story walks in West Parley Wood for Sting in the Tale Storytelling Festival; Speaking Bones, Dancing Stones, an original bronze age family story walk around Avebury stone circle commissioned by National Trust; Dragon's Hope, an story for Hallr Wood commissioned by Summerlands Storytelling Festival. She has been commissioned and performed original stories for Salisbury Cathedral's Craftivate festival. With an MA in creative writing for children from Winchester University, Lizzie regularly writes children's stories for Serial Mash, an online literacy resource for schools."
     },
     "sef-townsend": {
       "id": "sef-townsend",
@@ -9069,6 +9337,18 @@
       "name": "Ragged Storytelling Collective",
       "url": "https://www.facebook.com/TheRaggedStorytellingCollective/",
       "bio": "The Ragged Storytelling Collective create 'tales both ancient, contemporary, fantastical and grounded' woven with 'twisting tunes coiling like smoke, an invocation of something very ancient and yet completely current'.\n\n\n\nTraditional myth meets urban magic."
+    },
+    "hari-berrow": {
+      "id": "hari-berrow",
+      "name": "Hari Berrow",
+      "url": "https://profiles.cardiff.ac.uk/staff/berrowa",
+      "bio": "Hari Berrow is an interdisciplinary researcher, scriptwriter, and critic working at the intersection of media theory, psychology, neuroscience and creative writing. Her research explores ways of challenging stigma towards mental ill-health, attitudes towards mental illness in the wider media, presentations of mental ill-health in scripted works, how horror, magical realism and speculative fiction can be used to make abnormal psychology accessible to audiences and ethical and practical questions around creating presentations of mental disorder."
+    },
+    "marc-tuckey": {
+      "id": "marc-tuckey",
+      "name": "Marc Tuckey",
+      "url": "https://www.facebook.com/iwghostexperience/",
+      "bio": "Leader of Isle of WIght Ghost Experience, guided walks around the ISlae of Wight."
     },
     "shonaleigh": {
       "id": "shonaleigh",
