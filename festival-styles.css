@@ -740,3 +740,11 @@
     color: rgba(255,255,255,0.9) !important;
     text-decoration: none;
 }
+
+/* Derived performer names on overview cards */
+.festival-card-performers {
+    font-size: 0.8em;
+    color: #444;
+    margin-top: 6px;
+    line-height: 1.4;
+}

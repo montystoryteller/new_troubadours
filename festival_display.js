@@ -747,16 +747,58 @@ function displayFestival(festivalId) {
 // Performers section
 // ---------------------------------------------------------------------------
 
+/**
+ * Build a merged, deduped performer list for a festival.
+ *
+ * Sources (in priority order):
+ *   1. fest.performers[] — explicit entries; may carry a role (e.g. "headliner")
+ *   2. wider_event-tagged specificEvents and tour_dates — derived automatically
+ *
+ * Returns an array of { id, name, role, explicit } objects, sorted
+ * explicit-first then alphabetically by name within each group.
+ */
+function collectFestivalPerformers(festId, fest) {
+  // 1. Explicit performers (with role)
+  const seen = new Map(); // performer_id → entry
+  for (const p of fest.performers || []) {
+    const rec = performersLookup[p.performer_id];
+    if (rec && !seen.has(p.performer_id)) {
+      seen.set(p.performer_id, { id: p.performer_id, name: rec.name, role: p.role || "", explicit: true });
+    }
+  }
+
+  // 2. Derived from linked events
+  const linked = collectLinkedEvents(festId);
+  for (const item of linked) {
+    const ids = [];
+    if (item.source === "specific") {
+      if (item.event.performer_id) ids.push(item.event.performer_id);
+      if (Array.isArray(item.event.performer_ids)) ids.push(...item.event.performer_ids);
+    } else {
+      if (item.tour.performer_id) ids.push(item.tour.performer_id);
+      if (Array.isArray(item.tour.performer_ids)) ids.push(...item.tour.performer_ids);
+    }
+    for (const id of ids) {
+      if (seen.has(id)) continue; // already listed (explicit takes priority)
+      const rec = performersLookup[id];
+      if (rec) seen.set(id, { id, name: rec.name, role: "", explicit: false });
+    }
+  }
+
+  const all = [...seen.values()];
+  // Explicit first, then alpha by name
+  all.sort((a, b) => {
+    if (a.explicit !== b.explicit) return a.explicit ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+  return all;
+}
+
 function renderFestivalPerformers(fest) {
   const perfEl = document.getElementById("festivalPerformers");
   perfEl.innerHTML = "";
 
-  const performers = (fest.performers || [])
-    .map(p => {
-      const rec = performersLookup[p.performer_id];
-      return rec ? { id: p.performer_id, name: rec.name, role: p.role } : null;
-    })
-    .filter(Boolean);
+  const performers = collectFestivalPerformers(currentFestival.key, fest);
 
   if (!performers.length && !fest.performers_tbc) {
     perfEl.style.display = "none";
@@ -1134,6 +1176,15 @@ function buildFestivalCard(festId, fest) {
     if (linked.length) parts.push(`${linked.length} listed event${linked.length !== 1 ? "s" : ""}`);
     badge.textContent = parts.join(" · ");
     card.appendChild(badge);
+  }
+
+  // Derived performer names (compact)
+  const performers = collectFestivalPerformers(festId, fest);
+  if (performers.length) {
+    const perfEl = document.createElement("div");
+    perfEl.className = "festival-card-performers";
+    perfEl.textContent = performers.map(p => p.name).join(", ");
+    card.appendChild(perfEl);
   }
 
   card.addEventListener("click", () => {
