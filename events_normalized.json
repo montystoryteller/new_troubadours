@@ -39,6 +39,24 @@
       "performers_tbc": true,
       "stages": [],
       "schedule": []
+    },
+    "ventnor-fringe-2026": {
+      "name": "Ventnor Fringe",
+      "short_name": "VFringe 2026",
+      "start_date": "17/07/2026",
+      "end_date": "26/07/2026",
+      "primary_type": "fringe",
+      "venue_id": "",
+      "ticket_url": "https://purchase.vfringe.co.uk/Events?attribute_WebsiteListing=VFringe",
+      "website": "hhttps://vfringe.co.uk/",
+      "facebook": "",
+      "description": "",
+      "event_flyer": "",
+      "performers": [
+      ],
+      "performers_tbc": true,
+      "stages": [],
+      "schedule": []
     }
   }, 
   "repertoire_shows": {
@@ -4627,7 +4645,7 @@
       "date_added": "02/06/2026",
       "venue_id": "ingrams-yard-ventnor",
       "performer_id": "marc-tuckey",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: Medieval Medley [Island Storytellers]",
@@ -4643,7 +4661,7 @@
       "date_added": "02/06/2026",
       "venue_id": "ventnor-library",
       "performer_id": "island-storytellers",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: Solent Tales, Macabre Stories [Monty Storyteller]",
@@ -4659,7 +4677,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "tony-monty-hirst",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: Tarot Tales [Merl Fluin]",
@@ -4675,7 +4693,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "merl-fluin",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: Faery Tale Blues — Songs'n'Stories [Monty + The AnyWhens]",
@@ -4691,7 +4709,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "monty-the-anywhens",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: Birds of a Feather [Sue Bailey]",
@@ -4707,7 +4725,7 @@
       "date_added": "02/06/2026",
       "venue_id": "pier-st-ventnor-fringe",
       "performer_id": "sue-bailey",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "VFringe: The Fabled Isle [Holly Medland]",
@@ -4723,7 +4741,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "holly-medland",
-      "wider_event": "ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "TBA [Tim Ralphs]",

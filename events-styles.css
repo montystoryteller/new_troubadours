@@ -150,6 +150,26 @@
     display: inline-block;
 }
 
+/* Wider event (festival/fringe) badge — links to festival page */
+.event-wider-event-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-weight: 600;
+    text-decoration: none;
+    background: #1b5e20;
+    color: white !important;
+    margin-left: 4px;
+    vertical-align: middle;
+    transition: background 0.15s;
+}
+
+.event-wider-event-badge:hover {
+    background: #2e7d32;
+    text-decoration: none;
+}
+
 
 /* =============================================================
    6. EVENT DISPLAY UTILITIES

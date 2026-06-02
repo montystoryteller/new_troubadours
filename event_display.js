@@ -560,6 +560,7 @@ function createEventData(baseEvent, date, eventType) {
     eventData.tour_flyer = baseEvent.tour_flyer || null;
     eventData.fb_event = baseEvent.fb_event || null;
     eventData.ticket_url = baseEvent.ticket_url || null;
+    eventData.wider_event = baseEvent.wider_event || null;
   }
 
   return eventData;
@@ -1399,6 +1400,19 @@ function createEventHeader(event) {
   if (event.isRepertoireShow) {
     header.appendChild(document.createTextNode(" "));
     header.appendChild(createBadge("🎭 Repertoire Show"));
+  }
+
+  if (event.wider_event) {
+    const fest = (eventsData.festivals || {})[event.wider_event];
+    const label = fest?.short_name || fest?.name || event.wider_event;
+    header.appendChild(document.createTextNode(" "));
+    const weBadge = document.createElement("a");
+    weBadge.href = `new_troubadours_festival.html?festival=${encodeURIComponent(event.wider_event)}`;
+    weBadge.className = "event-badge event-wider-event-badge";
+    weBadge.title = `Part of ${fest?.name || event.wider_event}`;
+    weBadge.textContent = `🎪 ${label}`;
+    weBadge.addEventListener("click", e => e.stopPropagation());
+    header.appendChild(weBadge);
   }
 
   // Add icons
