@@ -82,9 +82,12 @@ function parseDatetimeString(str) {
  * base event with `date` and `time` overridden so it can be handed straight
  * to createEventData() / buildEventSearchText().
  *
- * If the event has no `datetimes` array (or it is empty), returns a single
- * object using the event's existing `date` / `time` fields — so callers can
- * always iterate the result without special-casing.
+ * If the event has no `datetimes` array (or it is empty), falls back to the
+ * `date` field, which may be:
+ *   - a single DD/MM/YYYY string  → one entry
+ *   - an array of DD/MM/YYYY strings → one entry per date (same event, multiple dates)
+ *
+ * Callers can always iterate the result without special-casing.
  *
  * @param {object} event - Raw event record from the JSON.
  * @returns {{ flatEvent: object, date: Date }[]}
@@ -108,10 +111,32 @@ function expandDatetimes(event) {
     }
     return results;
   }
-  // Fallback: single entry using the existing date field
-  const date = parseDateString(event.date);
-  if (!date) return [];
-  return [{ flatEvent: event, date }];
+
+  // Fallback: date field may be a single string or an array of strings.
+  // Normalise to an array so we can handle both cases uniformly.
+  const dateField = event.date;
+  const dateStrings = Array.isArray(dateField) ? dateField : [dateField];
+
+  const results = [];
+  for (const dateStr of dateStrings) {
+    const date = parseDateString(dateStr);
+    if (!date) {
+      if (dateStr) {
+        console.warn(
+          `Could not parse date string: "${dateStr}" in event: ${event.name}`,
+        );
+      }
+      continue;
+    }
+    // When there are multiple dates, give each clone a plain string date
+    // so downstream code (createEventData etc.) sees the same shape as
+    // a normal single-date event.
+    results.push({
+      flatEvent: Array.isArray(dateField) ? { ...event, date: dateStr } : event,
+      date,
+    });
+  }
+  return results;
 }
 
 // escapeHtml() — defined in shared_utils.js
@@ -2204,14 +2229,15 @@ async function searchAllUpcoming() {
   // Search music events
   for (const event of eventsData.musicEvents || []) {
     if (!event.date) continue;
-    // parseDateString() defined in shared_utils.js
-    const eventDate = parseDateString(event.date);
-    if (!eventDate) continue;
-    if (eventDate >= today && eventDate <= futureDate) {
-      if (buildEventSearchText(event).includes(searchTerm)) {
-        const eventData = createEventData(event, eventDate, "music");
-        allEventsData.push(eventData);
-        await addMarkerForEvent(eventData);
+    if (buildEventSearchText(event).includes(searchTerm)) {
+      const expanded = expandDatetimes(event);
+      for (const { flatEvent, date: eventDate } of expanded) {
+        if (!eventDate) continue;
+        if (eventDate >= today && eventDate <= futureDate) {
+          const eventData = createEventData(flatEvent, eventDate, "music");
+          allEventsData.push(eventData);
+          await addMarkerForEvent(eventData);
+        }
       }
     }
   }
@@ -2229,12 +2255,11 @@ async function searchAllUpcoming() {
 
     for (const tourDate of tour.tour_dates || []) {
       if (!tourDate.date) continue;
-      // parseDateString() defined in shared_utils.js
-      const eventDate = parseDateString(tourDate.date);
-      if (!eventDate) continue;
-      if (eventDate >= today && eventDate <= futureDate) {
-        if (buildTourSearchText(tour, tourDate).includes(searchTerm)) {
-          const mergedEvent = buildTourMergedEvent(tour, tourKey, tourDate);
+      if (buildTourSearchText(tour, tourDate).includes(searchTerm)) {
+        const expanded = expandDatetimes(tourDate);
+        for (const { flatEvent: flatTourDate, date: eventDate } of expanded) {
+          if (!eventDate || eventDate < today || eventDate > futureDate) continue;
+          const mergedEvent = buildTourMergedEvent(tour, tourKey, flatTourDate);
           const eventData = createEventData(mergedEvent, eventDate, eventType);
           allEventsData.push(eventData);
           await addMarkerForEvent(eventData);
@@ -2250,12 +2275,11 @@ async function searchAllUpcoming() {
 
     for (const showDate of show.show_dates || []) {
       if (!showDate.date) continue;
-      // parseDateString() defined in shared_utils.js
-      const eventDate = parseDateString(showDate.date);
-      if (!eventDate) continue;
-      if (eventDate >= today && eventDate <= futureDate) {
-        if (buildShowSearchText(show, showDate).includes(searchTerm)) {
-          const mergedEvent = buildShowMergedEvent(show, showKey, showDate);
+      if (buildShowSearchText(show, showDate).includes(searchTerm)) {
+        const expanded = expandDatetimes(showDate);
+        for (const { flatEvent: flatShowDate, date: eventDate } of expanded) {
+          if (!eventDate || eventDate < today || eventDate > futureDate) continue;
+          const mergedEvent = buildShowMergedEvent(show, showKey, flatShowDate);
           const eventData = createEventData(mergedEvent, eventDate, eventType);
           allEventsData.push(eventData);
           await addMarkerForEvent(eventData);

@@ -57,6 +57,10 @@ function appendSeparator(container) {
  */
 function parseDateString(dateStr) {
   if (!dateStr) return null;
+  if (Array.isArray(dateStr)) {
+    console.warn("parseDateString received an array; use the first element or expandDatetimes instead:", dateStr);
+    return null;
+  }
   const parts = dateStr.split("/");
   if (parts.length !== 3) return null;
   const [day, month, year] = parts.map(Number);
@@ -534,10 +538,15 @@ function capitalise(str) {
 // ---------------------------------------------------------------------------
 
 /**
- * Iterate a collection of objects that each have a `.date` string (DD/MM/YYYY),
- * calling `callback(item, parsedDate)` for each item whose date falls within
- * [startDate, endDate] inclusive. Items with a missing or malformed date are
- * skipped with a console.warn.
+ * Iterate a collection of objects that each have a `.date` field (DD/MM/YYYY
+ * string, or an array of DD/MM/YYYY strings), calling
+ * `callback(item, parsedDate)` for each date that falls within
+ * [startDate, endDate] inclusive.  When `.date` is an array each element is
+ * treated as a separate occurrence; a shallow clone of the item is passed to
+ * the callback with `.date` set to that single string so downstream code sees
+ * the same shape as a normal single-date item.
+ *
+ * Items with a missing or malformed date are skipped with a console.warn.
  *
  * The callback may be async; iteration is sequential (each callback is awaited
  * before moving to the next item), preserving the same ordering behaviour as
@@ -578,7 +587,7 @@ function capitalise(str) {
  * venue name from venuesLookup inside the search text builder, which is a
  * broader refactor of searchRecurringEvents.
  *
- * @param {object[]|null|undefined} items     - Array of objects with a .date string.
+ * @param {object[]|null|undefined} items     - Array of objects with a .date string or string[].
  * @param {Date}                    startDate - Range start (inclusive).
  * @param {Date}                    endDate   - Range end (inclusive).
  * @param {string}                  label     - Used in warning messages, e.g. "tour event in My Tour".
@@ -591,13 +600,24 @@ async function forEachDateInRange(items, startDate, endDate, label, callback) {
       console.warn(`Missing date for ${label}:`, item);
       continue;
     }
-    const parsed = parseDateString(item.date);
-    if (!parsed) {
-      console.warn(`Invalid date format for ${label}:`, item);
-      continue;
-    }
-    if (parsed >= startDate && parsed <= endDate) {
-      await callback(item, parsed);
+
+    // Normalise: date may be a single string or an array of strings.
+    const dateField = item.date;
+    const dateStrings = Array.isArray(dateField) ? dateField : [dateField];
+
+    for (const dateStr of dateStrings) {
+      const parsed = parseDateString(dateStr);
+      if (!parsed) {
+        console.warn(`Invalid date format for ${label}:`, item);
+        continue;
+      }
+      if (parsed >= startDate && parsed <= endDate) {
+        // When expanding a multi-date item, give the callback a clone with the
+        // resolved single date string so it looks like a normal single-date item.
+        const resolvedItem =
+          Array.isArray(dateField) ? { ...item, date: dateStr } : item;
+        await callback(resolvedItem, parsed);
+      }
     }
   }
 }
