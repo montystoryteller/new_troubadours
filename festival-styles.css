@@ -690,3 +690,53 @@
     padding-left: 10px;
     white-space: nowrap;
 }
+
+
+/* =============================================================
+   7. LINK COLOURS ON COLOURED EVENT CARDS
+   Ensure performer, venue and other links read as white
+   (not browser-default blue) on the green/blue card gradients.
+   ============================================================= */
+
+.festival-linked-event .event-performer-link,
+.festival-linked-event .event-performer {
+    color: inherit;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.festival-linked-event .event-performer-link:hover {
+    text-decoration: underline;
+}
+
+.festival-linked-event .venue-link,
+.festival-linked-event .event-location a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.festival-linked-event .venue-link:hover {
+    text-decoration: underline;
+}
+
+/* venue-page-link "i" pill — white on coloured cards */
+.festival-linked-event .venue-page-link {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.2);
+}
+
+.festival-linked-event .venue-page-link:hover {
+    background: rgba(255,255,255,0.35);
+    color: #fff;
+}
+
+/* event-location italic text */
+.festival-linked-event .event-location {
+    color: rgba(255,255,255,0.85);
+}
+
+/* touring badge link on tour-date cards */
+.festival-linked-event .festival-tour-badge {
+    color: rgba(255,255,255,0.9) !important;
+    text-decoration: none;
+}
