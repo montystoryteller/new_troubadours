@@ -522,6 +522,7 @@ function createEventData(baseEvent, date, eventType) {
 
   if (eventType === "special" || eventType === "music") {
     eventData.tour_id = baseEvent.tour_id || null;
+    eventData.club = baseEvent.club || null;
 
     // Collect all performer IDs: singular + array, deduplicated, preserving order
     const allPerformerIds = [];
@@ -1474,6 +1475,18 @@ function createPerformerSection(event) {
       perfPageLink.textContent = "i";
       perfPageLink.onclick = (e) => e.stopPropagation();
       performerDiv.appendChild(perfPageLink);
+
+      if ((event.isSpecial || event.isMusic) && event.club) {
+        performerDiv.appendChild(
+          document.createTextNode(" [" + `${event.club}` + "] "),
+        );
+
+        //const presents = document.createElement("em");
+        //presents.textContent = "presents";
+        //performerDiv.appendChild(presents);
+
+        //performerDiv.appendChild(document.createTextNode(" "));
+      }
     });
   } else {
     // No performer_ids at all — fall back to plain text
