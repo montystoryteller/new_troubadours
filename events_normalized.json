@@ -4424,6 +4424,36 @@
       "performer_id": "sarah-rundle"
     },
     {
+      "name": "An Evening Of Old Songs [Soft Lap (Amy Jeffs et al.)]",
+      "showname": "An Evening Of Old Songs",
+      "date": "18/06/2026",
+      "time": "7pm",
+      "club": "",
+      "price": "£15",
+      "description": "An Evening Of Old Songs Sung By 'Soft Lap'\n\n\n\nJoin us for a very special musical event with Amy Jeffs, author of Storyland and Wild, artist Gwen Burns and musician Natalie Brice to celebrate their illustrated and music-infused book, Old Songs: Stories of Love and Death from Traditional Ballads.\n\n\n\nDoors open just before 7, kick-off is just after 7.\n\n\n\nBring your own refreshments.",
+      "event_flyer": "2026-06-18-jeffs-soft-lap-medina.jpg",
+      "ticket_url": "https://medinabookshop.com/event/an-evening-of-old-songs-sung-by-soft-lap",
+      "isSpecial": true,
+      "date_added": "17/06/2026",
+      "venue_id": "medina-books-cowes",
+      "performer_ids":[ "amy-jeffs", "soft-lap"]
+    },
+    {
+      "name": "An Evening Of Old Songs [Soft Lap (Amy Jeffs et al.)]",
+      "showname": "An Evening Of Old Songs",
+      "date": "19/06/2026",
+      "time": "7pm",
+      "club": "",
+      "price": "£5",
+      "description": "Come and join us for an evening with best-selling author, artist, and medievalist Amy Jeffs whose books have become a genuine publishing phenomenon. We are very excited to be welcoming Amy to Medina Bookshop, her wonderful titles have been incredibly popular with our customers, reshaping how myth, history, and visual storytelling can be presented to a modern readership.\n\n\n\nAmy will be in conversation with bookshop manager Paul Armfield.\n\n\n\nDoors open just before 7 and we kick off just after 7, please bring your own refreshments.",
+      "event_flyer": "2026-06-19-jeffs-medina.jpg",
+      "ticket_url": "https://medinabookshop.com/event/an-evening-in-the-company-of-amy-jeffs",
+      "isSpecial": true,
+      "date_added": "17/06/2026",
+      "venue_id": "medina-books-cowes",
+      "performer_id":"amy-jeffs"
+    },
+    {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
       "showname": "Legends of the Cornish Landscape",
       "date": "18/06/2026",
@@ -7832,6 +7862,18 @@
         -1.16252
       ]
     },
+    "medina-books-cowes": {
+      "id": "medina-books-cowes",
+      "name": "Medina Bookshop, Cowes",
+      "city": "Cowes",
+      "postcode": "PO31 7RR",
+      "full_address": "Medina Bookshop, 50 High Street, Cowes, Isle of Wight, PO31 7RR",
+      "url": "https://www.waverleyinn.co.uk/index",
+      "latlon": [
+        50.76368,
+        -1.29807
+      ]
+    },
     "the-waverley-carisbrooke": {
       "id": "the-waverley-carisbrooke",
       "name": "The Waverley, Carisbrooke",
@@ -9363,7 +9405,20 @@
       "id": "marc-tuckey",
       "name": "Marc Tuckey",
       "url": "https://www.facebook.com/iwghostexperience/",
-      "bio": "Leader of Isle of WIght Ghost Experience, guided walks around the ISlae of Wight."
+      "bio": "Leader of Isle of Wight Ghost Experience, guided walks around the Isle of Wight."
+    },
+    "amy-jeffs": {
+      "id": "amy-jeffs",
+      "name": "Amy Jeffs",
+      "url": "https://www.amyjeffshistoria.com/",
+      "bio": "Dr Amy Jeffs writes and illustrates her critically acclaimed books from her home in Somerset. Her work engages with Britain’s medieval and early modern storytelling cultures. She is a Senior Research Associate at Girton College, Cambridge, and a Fellow of the Society of Antiquaries."
+    },
+    "soft-lap": {
+      "id": "soft-lap",
+      "name": "Amy Jeffs | Gwen Burns | Natalie Brice",
+      "performer_ids": ["amy-jeffs"],
+      "url": "",
+      "bio": "Amy Jeffs, author of Storyland and Wild, artist Gwen Burns and musician Natalie Brice."
     },
     "shonaleigh": {
       "id": "shonaleigh",
