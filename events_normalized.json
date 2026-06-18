@@ -5100,6 +5100,21 @@
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
     },
     {
+      "name": "The Fern Flower [Jane & Guy Lambourne]",
+      "showname": "The Fern Flower",
+      "date": "25/06/2026",
+      "time": "",
+      "club": "liskeardSCa",
+      "price": "Donations",
+      "description": "",
+      "event_flyer": "2026_06_25_lambourn_liskeard.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "18/06/2026",
+      "venue_id": "liskeard-public-rooms-west",
+      "performer_id": "jane-and-guy-lambourne"
+    },
+    {
       "name": "Under the Tree — A Storytelling Evening [Island Storytellers]",
       "showname": "Under the Tree — A Storytelling Evening",
       "date": "03/07/2026",
@@ -10028,6 +10043,12 @@
       "name": "Peter Stevenson",
       "url": "https://www.peterstevensonarts.co.uk/",
       "bio": "Peter Stevenson is a storyteller, children's writer, book illustrator, folklorist, film maker, crankie maker, artist book maker, organiser of the annual 3 day Aberystwyth Storytelling Festival and Y Mabinogi Project in collaboration with Aberystwyth Arts Centre, and the Wales Appalachia Project, along with Stories@Medina, a storytelling club that encourages collaborations with visual artists, musicians, and puppeteers. He has illustrated, compiled and written many children's books, travelled the country with storytelling shows for adults that use hundreds of illustrations, crankies, and live music, has written four books of Welsh folk tales for the History Press."
+    },
+    "jane-and-guy-lambourne": {
+      "id": "jane-and-guy-lambourne",
+      "name": "Jane & Guy Lambourne",
+      "url": "",
+      "bio": ""
     },
     "shonaleigh": {
       "id": "shonaleigh",
