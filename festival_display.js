@@ -114,6 +114,21 @@ function parseTimeToMinutes(timeStr) {
   if (!timeStr) return null;
   const s = timeStr.trim().toLowerCase();
 
+  // Strict 24-hour range, e.g. "16:00-17:00", "09:30-10:15" (zero-padded
+  // HH:MM on both sides, no am/pm). This is the unambiguous format used by
+  // fest.schedule[].time, so parse it directly rather than running it
+  // through the informal "3-4pm"-style heuristics below, which assume
+  // 12-hour input and would otherwise mis-bump morning end times (e.g.
+  // turning "09:30-10:15" into 09:30-22:15).
+  const strict24Match = s.match(/^([01]\d|2[0-3]):([0-5]\d)\s*[-–]\s*([01]\d|2[0-3]):([0-5]\d)$/);
+  if (strict24Match) {
+    const [, sh, sm, eh, em] = strict24Match;
+    return {
+      start: parseInt(sh, 10) * 60 + parseInt(sm, 10),
+      end:   parseInt(eh, 10) * 60 + parseInt(em, 10),
+    };
+  }
+
   // Try range like "3-4pm", "7.30-9pm", "3.30-4.30pm"
   const rangeMatch = s.match(/^(\d+(?:[.:]\d+)?)\s*[-–]\s*(\d+(?:[.:]\d+)?)\s*(am|pm)?$/);
   if (rangeMatch) {
@@ -152,9 +167,28 @@ function parseOnePart(part, suffix, preferPM) {
   return h * 60 + m;
 }
 
+// Build a stage_id -> display name lookup from fest.stages[].
+// Falls back gracefully if fest.stages is absent (older festival records).
+function buildStagesLookup(fest) {
+  const lookup = {};
+  for (const s of fest.stages || []) {
+    if (s.stage_id) lookup[s.stage_id] = s.name || s.stage_id;
+  }
+  return lookup;
+}
+
+// Resolve a schedule item's stage to a display string.
+// Prefers the structured stage_id (looked up against fest.stages[]);
+// falls back to a legacy free-text `stage` field; defaults to "Main Stage".
+function resolveStageName(item, stagesLookup) {
+  if (item.stage_id) return stagesLookup[item.stage_id] || item.stage_id;
+  return item.stage || "Main Stage";
+}
+
 function buildProgramme(fest) {
   const programme = [];
   const linked = collectLinkedEvents(currentFestival.key);
+  const stagesLookup = buildStagesLookup(fest);
 
   // 1. Schedule items from the festival record
   for (const item of fest.schedule || []) {
@@ -169,7 +203,8 @@ function buildProgramme(fest) {
       dateStr: item.date,
       startMinutes: times?.start ?? null,
       endMinutes:   times?.end   ?? null,
-      stage: item.stage || "Main Stage",
+      stage: resolveStageName(item, stagesLookup),
+      stageId: item.stage_id || null,
       title: item.showname || item.name || "",
       performer,
       time: item.time || "",
@@ -235,6 +270,46 @@ const PX_PER_MINUTE = 1.4; // height scaling
 const SLOT_MINUTES  = 30;  // time-axis granularity
 const MIN_BLOCK_PX  = 28;  // minimum block height
 
+// Display labels for the controlled set of programme category types.
+// Keys match the `type` values used in fest.schedule[] / cf-event-${type}
+// CSS classes; values are the human-readable legend labels.
+const PROGRAMME_TYPE_LABELS = {
+  storywalk: "Storywalk",
+  music: "Music",
+  family: "Family",
+  group_telling: "Group Telling",
+  firepit_stories: "Firepit Stories",
+  storytelling_shows: "Storytelling Shows",
+  storyround: "Storyround",
+  workshop: "Workshop",
+  talk_film: "Talk / Film",
+  spoken_word: "Spoken Word",
+  special: "Special Event",
+  schedule: "Programme Item",
+};
+
+function buildTypeLegend(programme) {
+  const typesPresent = [...new Set(programme.map(p => p.type))];
+  // Keep a stable, sensible order: known types first (in PROGRAMME_TYPE_LABELS
+  // order), then anything unexpected appended alphabetically.
+  const known = Object.keys(PROGRAMME_TYPE_LABELS).filter(t => typesPresent.includes(t));
+  const unknown = typesPresent.filter(t => !PROGRAMME_TYPE_LABELS[t]).sort();
+  const ordered = [...known, ...unknown];
+
+  const legend = document.createElement("div");
+  legend.className = "cf-legend";
+  ordered.forEach(type => {
+    const item = document.createElement("span");
+    item.className = "cf-legend-item";
+    const swatch = document.createElement("span");
+    swatch.className = `cf-legend-swatch cf-event-${type}`;
+    item.appendChild(swatch);
+    item.appendChild(document.createTextNode(PROGRAMME_TYPE_LABELS[type] || type));
+    legend.appendChild(item);
+  });
+  return legend;
+}
+
 function renderClashfinder() {
   const fest = currentFestival?.record;
   if (!fest) return;
@@ -252,6 +327,8 @@ function renderClashfinder() {
 
   section.style.display = "";
   container.innerHTML = "";
+
+  container.appendChild(buildTypeLegend(programme));
 
   // Get unique days
   const dayKeys = [...new Set(programme.map(p => p.dateStr))];
@@ -281,15 +358,24 @@ function renderClashfinder() {
     const dayLabel = dayDate
       ? dayDate.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
       : dayKey;
-    container.appendChild(buildDayGrid(dayLabel, dayItems));
+    container.appendChild(buildDayGrid(dayLabel, dayItems, fest.stages || []));
   });
 }
 
-function buildDayGrid(dayLabel, items) {
+
+function buildDayGrid(dayLabel, items, stageDefs) {
   const today = getTodayMidnight();
 
-  // Determine stages (preserve insertion order)
-  const stages = [...new Set(items.map(i => i.stage))];
+  // Determine stages present today, ordered to match fest.stages[] where
+  // possible (so the programme's intended stage order is respected), with
+  // any stages not listed there (e.g. from linked events) appended after,
+  // in first-seen order.
+  const presentStages = [...new Set(items.map(i => i.stage))];
+  const definedOrder = (stageDefs || []).map(s => s.name || s.stage_id);
+  const stages = [
+    ...definedOrder.filter(name => presentStages.includes(name)),
+    ...presentStages.filter(name => !definedOrder.includes(name)),
+  ];
 
   // Items with time info → use clashfinder grid
   // Items without time → show as a simple list below the grid

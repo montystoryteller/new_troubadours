@@ -732,6 +732,7 @@ function buildFestivalData(festKey, fest, venue, festStart, festEnd) {
     event_flyer: fest.event_flyer || null,
     schedule_populated:
       Array.isArray(fest.schedule) && fest.schedule.length > 0,
+    stage_count: Array.isArray(fest.stages) ? fest.stages.length : 0,
   };
 }
 
@@ -1912,6 +1913,12 @@ function createFestivalElement(fest) {
   daySpan.className = "festival-day-count";
   daySpan.textContent = ` · ${dayCount} day${dayCount !== 1 ? "s" : ""}`;
   dateDiv.appendChild(daySpan);
+  if (fest.stage_count > 0) {
+    const stageSpan = document.createElement("span");
+    stageSpan.className = "festival-day-count";
+    stageSpan.textContent = ` · ${fest.stage_count} stage${fest.stage_count !== 1 ? "s" : ""}`;
+    dateDiv.appendChild(stageSpan);
+  }
   div.appendChild(dateDiv);
 
   // --- Tickets + programme link ---
@@ -2323,13 +2330,18 @@ async function searchAllUpcoming() {
     if (!festStart || !festEnd) continue;
     if (festStart > futureDate || festEnd < today) continue;
 
-    // Build searchable text from name, performers, venue
+    // Build searchable text from name, performers, venue, and schedule items
+    // (so searching for an act appearing only in the programme still surfaces
+    // the festival card, e.g. searching "Hugh Lupton" finds EASF 2026).
     const venue = venuesLookup[fest.venue_id] || {};
     const performerNames = (fest.performers || [])
       .map((p) => performersLookup[p.performer_id]?.name || "")
       .join(" ");
+    const scheduleText = (fest.schedule || [])
+      .map((item) => `${item.name || item.showname || ""} ${item.performer || ""}`)
+      .join(" ");
     const festSearchText =
-      `${fest.name} ${fest.short_name || ""} ${performerNames} ${venue.name || ""} ${venue.full_address || ""}`.toLowerCase();
+      `${fest.name} ${fest.short_name || ""} ${performerNames} ${venue.name || ""} ${venue.full_address || ""} ${scheduleText}`.toLowerCase();
 
     if (festSearchText.includes(searchTerm)) {
       const festData = buildFestivalData(

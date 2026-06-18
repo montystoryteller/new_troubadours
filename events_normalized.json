@@ -13,12 +13,582 @@
       "description": "",
       "event_flyer": "",
       "performers": [
-        { "performer_id": "nell-phoenix", "role": "headliner" },
-        { "performer_id": "michael-harvey", "role": "headliner" }
+        {
+          "performer_id": "nell-phoenix",
+          "role": "headliner"
+        },
+        {
+          "performer_id": "michael-harvey",
+          "role": "headliner"
+        }
       ],
       "performers_tbc": true,
-      "stages": [],
-      "schedule": []
+      "stages": [
+        {
+          "stage_id": "barn",
+          "name": "Barn"
+        },
+        {
+          "stage_id": "glade",
+          "name": "Glade"
+        },
+        {
+          "stage_id": "yurt",
+          "name": "Yurt"
+        },
+        {
+          "stage_id": "cafe",
+          "name": "Café"
+        },
+        {
+          "stage_id": "gazebo",
+          "name": "Gazebo"
+        },
+        {
+          "stage_id": "orangery",
+          "name": "The Orangery"
+        },
+        {
+          "stage_id": "lawn",
+          "name": "On the Lawn"
+        },
+        {
+          "stage_id": "art-tent",
+          "name": "Art & Activity Tent"
+        },
+        {
+          "stage_id": "manor-house",
+          "name": "Outside the Manor House"
+        },
+        {
+          "stage_id": "festival-wide",
+          "name": "Festival-wide"
+        }
+      ],
+      "schedule": [
+        {
+          "date": "19/06/2026",
+          "time": "16:00-17:00",
+          "stage_id": "festival-wide",
+          "name": "Parade",
+          "type": "storywalk"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "17:00-17:45",
+          "stage_id": "barn",
+          "name": "A Crankie Surprise",
+          "type": "family",
+          "performer": "Wendy Dacre, Sara Hurley, Peter Stevenson, Taletta Bierens de Haan"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "17:30-18:30",
+          "stage_id": "yurt",
+          "name": "Story Round",
+          "type": "storyround",
+          "performer": "Led by Gerry Donlon"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "17:30-19:30",
+          "stage_id": "cafe",
+          "name": "Storytellers Supper",
+          "type": "talk_film",
+          "performer": "with Tim Ralphs"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "17:45-18:00",
+          "stage_id": "glade",
+          "name": "Tumbrel",
+          "type": "music"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "18:00-19:00",
+          "stage_id": "barn",
+          "name": "John Row + Guests",
+          "type": "group_telling",
+          "performer": "John Row, Plus Guests"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "19:00-19:15",
+          "stage_id": "glade",
+          "name": "Tumbrel",
+          "type": "music"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "19:15-20:15",
+          "stage_id": "barn",
+          "name": "Yamanba",
+          "type": "storytelling_shows",
+          "performer": "Laura Sampson",
+          "performer_id": "laura-sampson"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "20:15-20:30",
+          "stage_id": "glade",
+          "name": "Kimberley Moore",
+          "type": "music"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "20:30-21:30",
+          "stage_id": "barn",
+          "name": "The Girl Who Married a Dog",
+          "type": "storytelling_shows",
+          "performer": "Nell Phoenix",
+          "performer_id": "nell-phoenix"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "20:30-22:00",
+          "stage_id": "festival-wide",
+          "name": "Twilight Storywalk",
+          "type": "storywalk",
+          "performer": "Shane Ibbs & Simon Hooton"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "21:30-21:45",
+          "stage_id": "glade",
+          "name": "Kimberley Moore",
+          "type": "music"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "21:30-22:30",
+          "stage_id": "festival-wide",
+          "name": "Firepit Stories",
+          "type": "firepit_stories",
+          "performer": "Despina Ariou & friends"
+        },
+        {
+          "date": "19/06/2026",
+          "time": "21:45-22:45",
+          "stage_id": "barn",
+          "name": "Women and Power",
+          "type": "storytelling_shows",
+          "performer": "Marion Leeper"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "09:30-10:15",
+          "stage_id": "orangery",
+          "name": "Meditation",
+          "type": "workshop",
+          "performer": "Roisin Murray"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:00-11:30",
+          "stage_id": "orangery",
+          "name": "Storyround",
+          "type": "storyround",
+          "performer": "Led by Gerry Donlon"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:00-13:00",
+          "stage_id": "gazebo",
+          "name": "Dungeons and Dragons: Fallen Stars — Open Session",
+          "type": "workshop"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:00-17:00",
+          "stage_id": "art-tent",
+          "name": "Prickwillow Arts: Family Crafts",
+          "type": "family"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:15-10:45",
+          "stage_id": "barn",
+          "name": "Film: Shuck",
+          "type": "talk_film",
+          "performer": "Emerson New"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:15-11:15",
+          "stage_id": "glade",
+          "name": "Tumbrel",
+          "type": "music"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "10:30-11:00",
+          "stage_id": "yurt",
+          "name": "Stories to Start the Day",
+          "type": "group_telling"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "11:00-12:00",
+          "stage_id": "barn",
+          "name": "Workshop",
+          "type": "workshop",
+          "performer": "Nell Phoenix",
+          "performer_id": "nell-phoenix"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "11:15-12:15",
+          "stage_id": "yurt",
+          "name": "Welsh Crankie Folktales",
+          "type": "storytelling_shows",
+          "performer": "Peter Stevenson",
+          "performer_id": "peter-stevenson"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "11:30-12:15",
+          "stage_id": "glade",
+          "name": "Midsummer Magic: Family Stories",
+          "type": "family",
+          "performer": "Hannah Brailsford"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "12:00-13:15",
+          "stage_id": "orangery",
+          "name": "Storyround",
+          "type": "storyround",
+          "performer": "Led by Gerry Donlon"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "12:00-14:00",
+          "stage_id": "gazebo",
+          "name": "World Storytelling (Online)",
+          "type": "group_telling",
+          "performer": "Despina Ariou & Vero Chambers"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "12:15-13:15",
+          "stage_id": "barn",
+          "name": "Romani Gypsy and Traveller Voices",
+          "type": "talk_film",
+          "performer": "Candy Sheridan & Hazel Marsh"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "12:30-13:30",
+          "stage_id": "yurt",
+          "name": "Spoken Word",
+          "type": "spoken_word",
+          "performer": "Led by Baden Prince"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "12:45-13:45",
+          "stage_id": "glade",
+          "name": "When the Gentlemen Go By",
+          "type": "storytelling_shows",
+          "performer": "Alastair K Daniel"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "13:20-14:35",
+          "stage_id": "barn",
+          "name": "She's Electric: My Strange but True Story",
+          "type": "storytelling_shows",
+          "performer": "Vanessa Woolf",
+          "performer_id": "vanessa-woolf"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "13:30-14:30",
+          "stage_id": "gazebo",
+          "name": "Musical Walk",
+          "type": "music",
+          "performer": "Jonathan Lambert & Claire Goodall"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "13:45-14:15",
+          "stage_id": "yurt",
+          "name": "Oakheart",
+          "type": "storytelling_shows",
+          "performer": "Bronia Evers",
+          "performer_id": "bronia-evers"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "13:45-14:45",
+          "stage_id": "lawn",
+          "name": "Maypole Dancing",
+          "type": "family",
+          "performer": "Liz Millward"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "14:00-15:00",
+          "stage_id": "glade",
+          "name": "GAWIE",
+          "type": "group_telling",
+          "performer": "Keith Rogers, Mike Rust, Steven Tarling"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "14:30-15:30",
+          "stage_id": "gazebo",
+          "name": "Box of Delights & Scrolls of Wonder: Explore the World of Crankies",
+          "type": "family",
+          "performer": "Sara Hurley, Wendy Dacre"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "14:45-15:30",
+          "stage_id": "barn",
+          "name": "The Death of St. Edmund",
+          "type": "storytelling_shows",
+          "performer": "Michael Dacre"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "15:00-16:00",
+          "stage_id": "yurt",
+          "name": "Maria Gillen + Friends",
+          "type": "group_telling",
+          "performer": "Maria Gillen + friends"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "15:15-16:15",
+          "stage_id": "glade",
+          "name": "Rick Sheppard",
+          "type": "music",
+          "performer": "Rick Sheppard"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "15:45-16:45",
+          "stage_id": "barn",
+          "name": "East Anglian Tellers",
+          "type": "group_telling",
+          "performer": "Carl Merry, Merl Fluin, Hannah Brailsford, Chris Richardson, Holly Green"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "15:45-16:45",
+          "stage_id": "lawn",
+          "name": "Maypole Dancing",
+          "type": "family",
+          "performer": "Liz Millward"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "16:30-17:30",
+          "stage_id": "glade",
+          "name": "Batten Down the Hatches",
+          "type": "group_telling",
+          "performer": "Minnie Wilkinson & CB Jackson"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "16:45-17:45",
+          "stage_id": "yurt",
+          "name": "The Flying Ship",
+          "type": "family",
+          "performer": "Taletta Bierens de Haan, Wendy Dacre & Eric Wonders"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "17:00-17:45",
+          "stage_id": "barn",
+          "name": "Kimberley Moore",
+          "type": "music",
+          "performer": "Kimberley Moore"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "17:45-18:00",
+          "stage_id": "glade",
+          "name": "Mini Storyround",
+          "type": "storyround"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "18:00-19:00",
+          "stage_id": "barn",
+          "name": "What a Woman",
+          "type": "storytelling_shows",
+          "performer": "Baden Prince"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "19:00-19:15",
+          "stage_id": "glade",
+          "name": "Mini Storyround",
+          "type": "storyround"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "19:15-20:15",
+          "stage_id": "barn",
+          "name": "Seven Years A Wolf",
+          "type": "storytelling_shows",
+          "performer": "Maria Credali"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "20:15-20:30",
+          "stage_id": "glade",
+          "name": "Mini Storyround",
+          "type": "storyround"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "20:30-21:30",
+          "stage_id": "barn",
+          "name": "The Secret Commonwealth: Believe in Fairies",
+          "type": "storytelling_shows",
+          "performer": "Tim Ralphs"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "21:30-21:45",
+          "stage_id": "glade",
+          "name": "Mini Storyround",
+          "type": "storyround"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "21:30-22:30",
+          "stage_id": "yurt",
+          "name": "Firepit Stories",
+          "type": "firepit_stories",
+          "performer": "Vero Chambers and Friends"
+        },
+        {
+          "date": "20/06/2026",
+          "time": "21:45-22:45",
+          "stage_id": "barn",
+          "name": "Sea Stories from an Island Country",
+          "type": "storytelling_shows",
+          "performer": "Maria Gillen"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "09:30-10:30",
+          "stage_id": "yurt",
+          "name": "Storyround",
+          "type": "storyround",
+          "performer": "Led by Gerry Donlon"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "10:00-12:00",
+          "stage_id": "manor-house",
+          "name": "Magical Crankie Walk",
+          "type": "storywalk",
+          "performer": "Taletta Bierens de Haan, Wendy & Michael Dacre, Bronia Evers, Sarah Hurley, Peter Stevenson"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "10:00-10:45",
+          "stage_id": "barn",
+          "name": "Sunday Saviours",
+          "type": "storytelling_shows",
+          "performer": "Justine de Mierre"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "10:00-15:30",
+          "stage_id": "art-tent",
+          "name": "Prickwillow Arts: Family Crafts",
+          "type": "family"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "10:15-11:15",
+          "stage_id": "glade",
+          "name": "The Happy Couple",
+          "type": "music"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "10:45-11:45",
+          "stage_id": "yurt",
+          "name": "From Where it Turned",
+          "type": "storytelling_shows",
+          "performer": "Dan Sedgwick",
+          "performer_id": "dan-sedgwick"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "11:00-12:00",
+          "stage_id": "barn",
+          "name": "A Road of My Own",
+          "type": "talk_film",
+          "performer": "Dan Allum"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "11:30-13:00",
+          "stage_id": "glade",
+          "name": "Spoken Word Open Mic",
+          "type": "spoken_word",
+          "performer": "Justine de Mierre"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "12:00-13:00",
+          "stage_id": "yurt",
+          "name": "John Row & Friends",
+          "type": "group_telling",
+          "performer": "John Row & Friends"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "12:15-13:15",
+          "stage_id": "barn",
+          "name": "Hugh Lupton",
+          "type": "storytelling_shows",
+          "performer": "Hugh Lupton",
+          "performer_id": "hugh-lupton"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "12:30-13:45",
+          "stage_id": "gazebo",
+          "name": "Chats from EASF: World Storytelling (Online)",
+          "type": "group_telling",
+          "performer": "Despina Ariou & Vero Chambers"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "13:15-13:45",
+          "stage_id": "glade",
+          "name": "The Happy Couple",
+          "type": "music"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "13:30-14:15",
+          "stage_id": "barn",
+          "name": "Molly Whuppie",
+          "type": "storytelling_shows",
+          "performer": "Nell Phoenix",
+          "performer_id": "nell-phoenix"
+        },
+        {
+          "date": "21/06/2026",
+          "time": "14:30-15:30",
+          "stage_id": "glade",
+          "name": "Stories of Joy to go Home",
+          "type": "group_telling",
+          "performer": "Maria Credali, Tim Ralphs, Maria Gillen",
+          "performer_ids": ["maria-credali", "tim-ralphs", "maria-gillen"]
+        }
+      ]
     },
     "FATE-2026": {
       "name": "Festival at the Edge",
@@ -2421,7 +2991,8 @@
       "event_flyer": "2025_11_22_cardiffSC_little_evans.jpg",
       "isSpecial": true,
       "venue_id": "chapter-arts-cardiff",
-      "performer_id": "cath-little-bronia-evers"
+      "performer_id": "cath-little-bronia-evers",
+      "performer_ids": ["cath-little", "bronia-evers"]
     },
     {
       "name": "Stories Under the Stars: Fireside Myth & Music for Grown Ups [Nick & Emily Hennessey]",
@@ -9419,6 +9990,30 @@
       "performer_ids": ["amy-jeffs"],
       "url": "",
       "bio": "Amy Jeffs, author of Storyland and Wild, artist Gwen Burns and musician Natalie Brice."
+    },
+    "michael-dacre": {
+      "id": "michael-dacre",
+      "name": "Michael Dacre",
+      "url": "https://www.facebook.com/michael.dacrepurr",
+      "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country."
+    },
+    "hannah-brailsford": {
+      "id": "hannah-brailsford",
+      "name": "Hannah Brailsford",
+      "url": "https://www.hannahbrailsfordstoryteller.com/",
+      "bio": "Hannah Brailsford is an experienced performance storyteller & creative practitioner. For over 25 years I have been providing entertainment & storytelling for schools, events & special occasions."
+    },
+    "dan-sedgwick": {
+      "id": "dan-sedgwick",
+      "name": "Dan Sedgwick",
+      "url": "https://www.soberstoryteller.co.uk/",
+      "bio": " Dan Sedgwick is a father of 5, a husband, a son, a professional storyteller, a hip hop enthusiast,and also in recovery from alcoholism, drug addiction and severe self-harm. Now in his 40s he is in by far the best shape he has ever been in, physically, emotionally and mentally.\\n\n\n\nHis mission is to use my passion for storytelling to share a message of recovery and hope."
+    },
+    "peter-stevenson": {
+      "id": "peter-stevenson",
+      "name": "Peter Stevenson",
+      "url": "https://www.peterstevensonarts.co.uk/",
+      "bio": "Peter Stevenson is a storyteller, children's writer, book illustrator, folklorist, film maker, crankie maker, artist book maker, organiser of the annual 3 day Aberystwyth Storytelling Festival and Y Mabinogi Project in collaboration with Aberystwyth Arts Centre, and the Wales Appalachia Project, along with Stories@Medina, a storytelling club that encourages collaborations with visual artists, musicians, and puppeteers. He has illustrated, compiled and written many children's books, travelled the country with storytelling shows for adults that use hundreds of illustrations, crankies, and live music, has written four books of Welsh folk tales for the History Press."
     },
     "shonaleigh": {
       "id": "shonaleigh",
