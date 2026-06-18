@@ -2373,16 +2373,22 @@ async function searchAllUpcoming() {
     eventsList.innerHTML = `<div class="no-events">No upcoming events found matching "${escapeHtml(searchTerm)}"</div>`;
   }
 }
+
 function getWeekStart(date) {
   const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  return new Date(d.setDate(diff));
+
+  d.setDate(diff);
+  return d;
 }
 
 function getWeekEnd(weekStart) {
   const end = new Date(weekStart);
   end.setDate(end.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
   return end;
 }
 
