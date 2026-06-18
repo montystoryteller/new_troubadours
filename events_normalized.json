@@ -15,11 +15,19 @@
       "performers": [
         {
           "performer_id": "nell-phoenix",
-          "role": "headliner"
+          "role": ""
         },
         {
           "performer_id": "michael-harvey",
-          "role": "headliner"
+          "role": ""
+        },
+        {
+          "performer_id": "hugh-lupton",
+          "role": ""
+        },
+        {
+          "performer_id": "tim-ralphs",
+          "role": ""
         }
       ],
       "performers_tbc": true,
@@ -251,7 +259,8 @@
           "stage_id": "glade",
           "name": "Midsummer Magic: Family Stories",
           "type": "family",
-          "performer": "Hannah Brailsford"
+          "performer": "Hannah Brailsford",
+          "performer_id": "hannah-brailsford"
         },
         {
           "date": "20/06/2026",
@@ -349,7 +358,8 @@
           "stage_id": "barn",
           "name": "The Death of St. Edmund",
           "type": "storytelling_shows",
-          "performer": "Michael Dacre"
+          "performer": "Michael Dacre",
+          "performer_id": "michael-dacre"
         },
         {
           "date": "20/06/2026",
@@ -420,7 +430,8 @@
           "stage_id": "barn",
           "name": "What a Woman",
           "type": "storytelling_shows",
-          "performer": "Baden Prince"
+          "performer": "Baden Prince",
+          "performer_id": "baden-prince"
         },
         {
           "date": "20/06/2026",
@@ -435,7 +446,8 @@
           "stage_id": "barn",
           "name": "Seven Years A Wolf",
           "type": "storytelling_shows",
-          "performer": "Maria Credali"
+          "performer": "Maria Credali",
+          "performer_id": "maria-credali"
         },
         {
           "date": "20/06/2026",
@@ -450,7 +462,8 @@
           "stage_id": "barn",
           "name": "The Secret Commonwealth: Believe in Fairies",
           "type": "storytelling_shows",
-          "performer": "Tim Ralphs"
+          "performer": "Tim Ralphs",
+          "performer_id": "tim-ralphs"
         },
         {
           "date": "20/06/2026",
@@ -473,7 +486,8 @@
           "stage_id": "barn",
           "name": "Sea Stories from an Island Country",
           "type": "storytelling_shows",
-          "performer": "Maria Gillen"
+          "performer": "Maria Gillen",
+          "performer_id": "maria-gillen"
         },
         {
           "date": "21/06/2026",
@@ -618,7 +632,7 @@
       "primary_type": "fringe",
       "venue_id": "",
       "ticket_url": "https://purchase.vfringe.co.uk/Events?attribute_WebsiteListing=VFringe",
-      "website": "hhttps://vfringe.co.uk/",
+      "website": "https://vfringe.co.uk/",
       "facebook": "",
       "description": "",
       "event_flyer": "",
