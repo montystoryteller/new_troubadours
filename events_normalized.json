@@ -641,6 +641,25 @@
       "performers_tbc": true,
       "stages": [],
       "schedule": []
+    },
+    "tree-folk-weekend-2026": {
+      "name": "Tree Folk Weekend 2026",
+      "short_name": "Treefolk 2026",
+      "start_date": "25/09/2026",
+      "end_date": "27/09/2026",
+      "primary_type": "storytelling",
+      "price": "£225 EARLY BIRD PRICE for the weekend including camping (£260 after 15th July), £195 EARLY BIRD PRICE for the weekend without camping (£220 after 15th July), £100 deposit",
+      "venue_id": "moor-barton-wilding",
+      "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2258602",
+      "website": "https://www.tickettailor.com/events/lisaschneidau/2258602",
+      "facebook": "",
+      "description": "Woodland myths and legends, nature, craft and community at the wild edge of Dartmoor\n\n\n\nwith Lisa Schneidau, Tony Whitehead, Shane Ibbs, Annie Watson and Robin Bowman\n\n\n\nIn our folk tales, things happen in the clearing in the woods.\n\n\n\nJoin us for a folk-fuelled weekend of wildwood story, ecology, skills, gentle ceremony and inspiration. \n\n\n\nOur theme for this immersive autumn weekend is 'hearth fire' — setting us up for the winter months ahead with fire, literal and mythical.\n\n\n\nWalking among the trees and gathering around the fire, we'll explore the myths and legends of the greenwood from the British Arthurian tradition. We’ll share stories and songs of woodland wisdom in fairy tales from across the world. You'll learn about the trees of the season, woodland bird song in autumn, how to create fire as the ancients did, how to care for new woodland, and more… all of this in the middle of the wild woods as the trees change to their autumn colours.\n\n\n\nThe weekend will be held at the wonderful Moor Barton Wilding on the edge of Dartmoor in Devon, led by professional storytellers, ecologists and bushcraft experts. It will begin at 12.30pm on Friday with lunch, and finish at 2.30pm after lunch on Sunday, with all meals provided.\n\n\n\nMoor Barton Wilding has a brand new camping kitchen, a large covered lodge around the campfire, a sauna and compost toilets. There’s woodland and wildlife of all kinds, including Dartmoor’s first colony of beavers down in the valley. You can choose between camping onsite with your own camping kit, or staying in a choice of accommodation nearby (under your own arrangements at additional cost).\n\n\n\nNo dogs. Suitable for 18+. Terrain is uneven and may be challenging in places for those with mobility problems.",
+      "event_flyer": "",
+      "performers": [ { "performer_id": "lisa-schneidau"}, { "performer_id": "shane-ibbs"}
+      ],
+      "performers_tbc": false,
+      "stages": [],
+      "schedule": []
     }
   }, 
   "repertoire_shows": {
