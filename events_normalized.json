@@ -4804,7 +4804,7 @@
       "time": "Doors 11.30am, show: 12 noon",
       "club": "",
       "price": "£10 / £5",
-      "description": "Three stories. Traditional, folk and myth.\n\n\n\n Stories that emerged in different places, merged and spread.\n\n\n\nA girl and her horse. An urge to know everything. A goddess.\n\n\n\n Suited Storytellers take these old tales and weave them into a new fabric, exploring how you find your voice and your people, and what it takes to stay true to your inner wildness. Featuring their distinctive style and sharp suits, 'HERD' is a rich, thought-provoking and, most importantly, entertaining piece born out of the oral storytelling tradition.\n\n\n\n Finding our herd. Being heard. In our fast-paced, youth-obsessed modern world, these ancient stories can remind us of what really is important and that, as the years pass, ‘happily ever after' may not look the way we expected.\n\n\n\n Duration: 55 minutes. Age Advisory: 12+ (infrequent swearing and adult themes) \n\n\n\nHigh quality food/bar/accommodation (+ Sunday Lunch!) available at The Falcon Hotel.\n\n\n\n Unreserved seating.\n\n\n\nA Bude Litereary Festival event.",
+      "description": "Three stories. Traditional, folk and myth.\n\n\n\n Stories that emerged in different places, merged and spread.\n\n\n\nA girl and her horse. An urge to know everything. A goddess.\n\n\n\n Suited Storytellers take these old tales and weave them into a new fabric, exploring how you find your voice and your people, and what it takes to stay true to your inner wildness. Featuring their distinctive style and sharp suits, 'HERD' is a rich, thought-provoking and, most importantly, entertaining piece born out of the oral storytelling tradition.\n\n\n\n Finding our herd. Being heard. In our fast-paced, youth-obsessed modern world, these ancient stories can remind us of what really is important and that, as the years pass, 'happily ever after' may not look the way we expected.\n\n\n\n Duration: 55 minutes. Age Advisory: 12+ (infrequent swearing and adult themes) \n\n\n\nHigh quality food/bar/accommodation (+ Sunday Lunch!) available at The Falcon Hotel.\n\n\n\n Unreserved seating.\n\n\n\nA Bude Literary Festival event.",
       "event_flyer": "2026_05_17_suited_storytellers_budelitfest.jpg",
       "ticket_url": "https://wegottickets.com/af/671/event/691732",
       "isSpecial": true,
@@ -5126,6 +5126,21 @@
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
     },
     {
+      "name": "Fringe Theatrefest — Herd [Suited Storytellers]",
+      "showname": "Herd",
+      "date": ["25/06/2026", "27/06/2026", "28/06/2026"],
+      "time": "Thurs: 5.45pm, Sat: 3pm, Sun: 1.15pm",
+      "club": "",
+      "price": "£8 / £5 / £4",
+      "description": "Three stories. Traditional, folk and myth.\n\n\n\n Stories that emerged in different places, merged and spread.\n\n\n\nA girl and her horse. An urge to know everything. A goddess.\n\n\n\n Suited Storytellers take these old tales and weave them into a new fabric, exploring how you find your voice and your people, and what it takes to stay true to your inner wildness. Featuring their distinctive style and sharp suits, 'HERD' is a rich, thought-provoking and, most importantly, entertaining piece born out of the oral storytelling tradition.\n\n\n\n Finding our herd. Being heard. In our fast-paced, youth-obsessed modern world, these ancient stories can remind us of what really is important and that, as the years pass, 'happily ever after' may not look the way we expected.\n\n\n\n Duration: 55 minutes. Age Advisory: 12+ (infrequent swearing and adult themes) \n\n\n\nA Barnstaple Fringe Theatrefest event.",
+      "event_flyer": "suited_herd_barnstaple_jun26.jpg",
+      "ticket_url": "https://www.theatrefest.co.uk/",
+      "isSpecial": true,
+      "date_added": "22/06/2026",
+      "venue_id": "barnstaple-guildhall",
+      "performer_id": "suited-storytellers"
+    },
+    {
       "name": "The Fern Flower [Jane & Guy Lambourne]",
       "showname": "The Fern Flower",
       "date": "25/06/2026",
@@ -5213,6 +5228,21 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": ""
+    },
+    {
+      "name": "The Cauldron of Plenty: A Feast of Midsummer Tales",
+      "showname": "The Cauldron of Plenty: A Feast of Midsummer Tales",
+      "date": "02/07/2026",
+      "time": "Doors 7pm for 7.30pm start",
+      "club": "gloucesterSCafe",
+      "price": "",
+      "description": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "event_flyer": "2026-07-02-gloucesterSC.jpg",
+      "venue_id": "the-folk-of-gloucester",
+      "performer_id": "",
+      "date_added": "22/06/2026"
     },
     {
       "name": "Under the Tree — A Storytelling Evening [Island Storytellers]",
@@ -7634,6 +7664,18 @@
       "latlon": [
         52.635,
         -1.1373
+      ]
+    },
+    "barnstaple-guildhall": {
+      "id":"barnstaple-guildhall",
+      "name": "Barnstaple Guildhall",
+      "city": "Barnstaple",
+      "postcode": "EX31 1BW",
+      "full_address": "Guildhall, Butchers Row, Barnstaple, EX31 1BW",
+      "url": "https://www.barnstaple.co.uk/things-to-do/barnstaple-guildhall",
+      "latlon": [
+        51.08039,
+        -4.05907
       ]
     },
     "bureau-centre-for-the-arts-blackburn": {
