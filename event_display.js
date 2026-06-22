@@ -197,6 +197,24 @@ function parseSchedule(schedule, startDate, endDate) {
   const normalizedStart = normalizeDate(startDate);
   const normalizedEnd = normalizeDate(endDate);
 
+  if (typeof schedule === "object" && schedule.type === "fortnightly") {
+    const start = parseDateString(schedule.start);
+
+    for (
+      let d = new Date(start);
+      d <= normalizedEnd;
+      d.setDate(d.getDate() + 14)
+    ) {
+      const eventDate = normalizeDate(d);
+
+      if (eventDate >= normalizedStart && eventDate <= normalizedEnd) {
+        results.push(new Date(eventDate));
+      }
+    }
+
+    return results;
+  }
+  
   // Handle specific dates (DD/MM/YYYY)
   if (schedule.includes("/")) {
     const [day, month, year] = schedule
@@ -1533,7 +1551,6 @@ function createLocationSection(event) {
 }
 
 function createDateSection(event) {
-  // DAYS_OF_WEEK, MONTHS_SHORT — module-level constants above
   const dateDiv = document.createElement("div");
   dateDiv.className = "event-date";
 
@@ -1541,7 +1558,13 @@ function createDateSection(event) {
   const day = event.date.getDate();
   const month = MONTHS_SHORT[event.date.getMonth()];
   const year = event.date.getFullYear();
-  const scheduleText = event.schedule ? ` (${event.schedule})` : "";
+
+  const displaySchedule =
+    event.schedule && typeof event.schedule === "object"
+      ? event.schedule.type
+      : event.schedule;
+
+  const scheduleText = displaySchedule ? ` (${displaySchedule})` : "";
 
   let dateText = `${dayName}, ${day} ${month} ${year}`;
   if (!event.isRescheduled) {
@@ -1564,7 +1587,7 @@ function createDateSection(event) {
     if (event.isRescheduled) {
       const usuallySpan = document.createElement("span");
       usuallySpan.className = "event-date-usually";
-      usuallySpan.textContent = ` (usually ${event.schedule})`;
+      usuallySpan.textContent = ` (usually ${scheduleText})`;
       dateDiv.appendChild(usuallySpan);
     }
   }

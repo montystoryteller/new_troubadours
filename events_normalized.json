@@ -2517,7 +2517,7 @@
       "name": "Ropetackle Storytellers",
       "schedule": "",
       "time": "",
-      "link": "https://tistales.org.uk/island-storytellers/",
+      "link": "https://www.instagram.com/ropetacklestorytellers/",
       "facebook": "https://www.facebook.com/RopetackleStorytellers",
       "club": "ropetackle-storytellers",
       "venue_id": "ropetackle-arts-centre-shoreham"
@@ -2786,6 +2786,16 @@
       "club": "brightontelltales",
       "club_flyer": "brighton_telltales_flyer.jpg",
       "venue_id": "the-yellow-book-brighton"
+    },
+    {
+      "name": "Bridport Three Apples",
+      "schedule": {"type": "fortnightly", "day": "monday","start": "25/05/2026"
+  },
+      "time": "7-9pm",
+      "facebook": "https://www.facebook.com/brightontelltales",
+      "club": "bridportthreeapples",
+      "club_flyer": "three_apples_bridport.jpg",
+      "venue_id": "bridport-community-orchard"
     },
     {
       "name": "Tales at the Tavern",
@@ -8351,6 +8361,18 @@
       "latlon": [
         53.36492,
         -1.4859
+      ]
+    },
+    "bridport-community-orchard":{
+      "id": "bridport-community-orchard",
+      "name": "Bridport Community Orchard",
+      "city": "Bridport",
+      "postcode": "DT6 3FL",
+      "full_address": "Bridport Community Orchard, Priory Lane, Bridport, DT6 3FL",
+      "url": "https://bridportcommunityorchard.org.uk/",
+      "latlon": [
+        50.73138,
+        -2.76091
       ]
     },
     "barnoldswick-music-arts-centre": {
