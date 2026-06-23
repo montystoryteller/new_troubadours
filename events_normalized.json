@@ -5216,7 +5216,7 @@
       "ticket_url": "https://scottishstorytellingcentre.online.red61.co.uk/event/913:6454/913:28189/",
       "isSpecial": true,
       "date_added": "18/06/2026",
-      "venue_id": "scottish-storytelling-centre",
+      "venue_id": "waverley-bar-edinburgh",
       "performer_id": "harriet-grindley"
     },
     {
@@ -5834,6 +5834,18 @@
     }
   ],
   "venues": {
+    "waverley-bar-edinburgh": {
+      "id": "waverley-bar-edinburgh",
+      "name": "Waverley Bar, Edinburgh",
+      "city": "Edinburgh",
+      "postcode": "EH1 1SR",
+      "full_address": "Waverley Bar, 3-5 St Mary's St, Edinburgh, EH1 1TA",
+      "url": "https://www.waverleybar.co.uk/",
+      "latlon": [
+        55.95058,
+        -3.18414
+      ]
+    },
     "scottish-storytelling-centre": {
       "id": "scottish-storytelling-centre",
       "name": "Scottish Storytelling Centre",
