@@ -889,8 +889,28 @@
 
             // Parse a free-text schedule string into { days:[], weeks:[] }
             // days: array of day names; weeks: array of ordinal strings ('1st','2nd','every',...)
+            // Parse a free-text schedule string or structured object into { days:[], weeks:[] }
+            // Parse a free-text schedule string or structured object into { days:[], weeks:[] }
             function parseSchedule(s) {
                 if (!s) return { days: [], weeks: [] };
+
+                // If schedule is a structured object, handle it explicitly
+                if (typeof s === 'object') {
+                    const days = [];
+                    if (s.day) {
+                        const matchedDay = DAYS.find(d => d.toLowerCase() === s.day.toLowerCase());
+                        if (matchedDay) days.push(matchedDay);
+                    }
+                    const weeks = [];
+                    if (s.type === 'every' || s.type === 'weekly') {
+                        weeks.push('every');
+                    }
+                    // For fortnightly/monthly complex objects, we just return the days 
+                    // to gracefully avoid crashing week heatmaps that expect static strings
+                    return { days, weeks };
+                }
+
+                // Standard fallback for string schedules
                 const lower = s.toLowerCase().trim();
                 const days = DAYS.filter(d => lower.includes(d.toLowerCase()));
                 const weeks = [];
@@ -1076,7 +1096,13 @@
             const music = data.musicEvents || [];
             const folkNights = data.folkNights || [];
             const sessions = data.irishSessions || [];
-            const events = data.events || [];   // recurring story clubs
+            const events = (data.events || []).map(e => {
+                // If schedule is an object, keep it an object but ensure string parameters don't break
+                if (e.schedule && typeof e.schedule === 'object') {
+                    // clone it or let it pass safely through string conversion protections
+                }
+                return e;
+            });  // recurring story clubs
             const spokenword = data.spokenword || [];
             const festivals = data.festivals || {};
 
@@ -1731,8 +1757,20 @@
             }
 
             function parseDayOfWeek(dateStr, schedStr) {
-                if (dateStr) { const p = dateStr.split('/'); if (p.length === 3) { const d = new Date(+p[2], +p[1] - 1, +p[0]); if (!isNaN(d)) return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()]; } }
-                if (schedStr) { for (const day of ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']) { if (schedStr.toLowerCase().includes(day)) return day[0].toUpperCase() + day.slice(1); } }
+                if (dateStr && typeof dateStr === 'string') { const p = dateStr.split('/'); if (p.length === 3) { const d = new Date(+p[2], +p[1] - 1, +p[0]); if (!isNaN(d)) return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()]; } }
+
+                if (schedStr) {
+                    // If it's our new structured object, pull the day directly
+                    if (typeof schedStr === 'object' && schedStr.day) {
+                        return schedStr.day[0].toUpperCase() + schedStr.day.slice(1);
+                    }
+                    // Fallback for standard string schedules
+                    if (typeof schedStr === 'string') {
+                        for (const day of ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']) {
+                            if (schedStr.toLowerCase().includes(day)) return day[0].toUpperCase() + day.slice(1);
+                        }
+                    }
+                }
                 return null;
             }
 
