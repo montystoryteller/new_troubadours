@@ -1114,11 +1114,64 @@
         // ── Helpers ───────────────────────────────────────────────────────────────
         function parseDate(s) {
             if (!s) return null;
+            // New recurring-schedule object format, e.g.
+            // {"type":"fortnightly","day":"monday","start":"25/05/2026"}
+            if (typeof s === "object") return parseScheduleObject(s);
+            if (typeof s !== "string") return null;
             const parts = s.split("/");
             if (parts.length !== 3) return null;
             const [d, m, y] = parts.map(Number);
             if (!d || !m || !y) return null;
             return new Date(y, m - 1, d);
+        }
+
+        // Resolve a recurring-schedule object down to a single concrete date —
+        // the next upcoming occurrence on/after today. Used wherever code needs
+        // one sortable date to represent a recurring club (cutoff checks, sorting,
+        // isTonight/isTomorrow, etc).
+        function parseScheduleObject(schedule) {
+            if (!schedule || !schedule.start) return null;
+            const start = parseDate(schedule.start);
+            if (!start) return null;
+            const targetDay = DAY_MAP[(schedule.day || "").toLowerCase()];
+            const ref = today();
+
+            const type = (schedule.type || "").toLowerCase();
+
+            if (type === "weekly") {
+                if (targetDay === undefined) return start;
+                const d = new Date(Math.max(start, ref));
+                const diff = (targetDay - d.getDay() + 7) % 7;
+                d.setDate(d.getDate() + diff);
+                return d;
+            }
+
+            if (type === "fortnightly") {
+                // Step forward in 14-day increments from the anchor "start" date
+                // until we reach today or later.
+                let d = new Date(start);
+                if (d < ref) {
+                    const daysSince = Math.floor((ref - d) / 86400000);
+                    const cycles = Math.ceil(daysSince / 14);
+                    d = new Date(start);
+                    d.setDate(d.getDate() + cycles * 14);
+                }
+                return d;
+            }
+
+            if (type === "monthly") {
+                const occ = OCC_MAP[(schedule.occurrence || "1st").toLowerCase()];
+                if (occ === undefined || targetDay === undefined) return start;
+                let d = findNthDay(ref.getFullYear(), ref.getMonth(), targetDay, occ);
+                if (!d || d < ref) {
+                    const nextMonth = ref.getMonth() + 1;
+                    d = findNthDay(ref.getFullYear() + Math.floor(nextMonth / 12), nextMonth % 12, targetDay, occ);
+                }
+                return d;
+            }
+
+            // Unknown type — fall back to the anchor date itself.
+            return start;
         }
 
         // ── Date override (for testing) ───────────────────────────────────────
@@ -1186,6 +1239,29 @@
 
         function scheduleMatchesDate(schedule, date) {
             if (!schedule || !date) return false;
+
+            // New recurring-schedule object format
+            if (typeof schedule === "object") {
+                const targetDay = DAY_MAP[(schedule.day || "").toLowerCase()];
+                if (targetDay === undefined || date.getDay() !== targetDay) return false;
+                const start = parseDate(schedule.start);
+                if (!start) return false;
+                const type = (schedule.type || "").toLowerCase();
+                if (date < start) return false;
+                if (type === "weekly") return true;
+                if (type === "fortnightly") {
+                    const daysSince = Math.round((date - start) / 86400000);
+                    return daysSince % 14 === 0;
+                }
+                if (type === "monthly") {
+                    const occ = OCC_MAP[(schedule.occurrence || "1st").toLowerCase()];
+                    const d = findNthDay(date.getFullYear(), date.getMonth(), targetDay, occ);
+                    return !!d && d.toDateString() === date.toDateString();
+                }
+                return false;
+            }
+
+            if (typeof schedule !== "string") return false;
             const s = schedule.toLowerCase().trim();
             const y = date.getFullYear(), m = date.getMonth();
             const ds = date.toDateString();

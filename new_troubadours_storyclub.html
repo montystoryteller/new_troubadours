@@ -481,9 +481,62 @@
         // ── Helpers ───────────────────────────────────────────────────────────────
         function parseDateString(s) {
             if (!s) return null;
+            // New recurring-schedule object format, e.g.
+            // {"type":"fortnightly","day":"monday","start":"25/05/2026"}
+            if (typeof s === "object") return parseScheduleObject(s);
+            if (typeof s !== "string") return null;
             const [d, m, y] = s.split("/").map(Number);
             if (!d || !m || !y) return null;
             return new Date(y, m - 1, d);
+        }
+
+        // Resolve a recurring-schedule object down to a single concrete date —
+        // the next upcoming occurrence on/after today. Used wherever code needs
+        // one sortable date to represent a recurring club (cutoff checks, sorting,
+        // isTonight/isTomorrow, etc).
+        function parseScheduleObject(schedule) {
+            if (!schedule || !schedule.start) return null;
+            const start = parseDate(schedule.start);
+            if (!start) return null;
+            const targetDay = DAY_MAP[(schedule.day || "").toLowerCase()];
+            const ref = today();
+
+            const type = (schedule.type || "").toLowerCase();
+
+            if (type === "weekly") {
+                if (targetDay === undefined) return start;
+                const d = new Date(Math.max(start, ref));
+                const diff = (targetDay - d.getDay() + 7) % 7;
+                d.setDate(d.getDate() + diff);
+                return d;
+            }
+
+            if (type === "fortnightly") {
+                // Step forward in 14-day increments from the anchor "start" date
+                // until we reach today or later.
+                let d = new Date(start);
+                if (d < ref) {
+                    const daysSince = Math.floor((ref - d) / 86400000);
+                    const cycles = Math.ceil(daysSince / 14);
+                    d = new Date(start);
+                    d.setDate(d.getDate() + cycles * 14);
+                }
+                return d;
+            }
+
+            if (type === "monthly") {
+                const occ = OCC_MAP[(schedule.occurrence || "1st").toLowerCase()];
+                if (occ === undefined || targetDay === undefined) return start;
+                let d = findNthDay(ref.getFullYear(), ref.getMonth(), targetDay, occ);
+                if (!d || d < ref) {
+                    const nextMonth = ref.getMonth() + 1;
+                    d = findNthDay(ref.getFullYear() + Math.floor(nextMonth / 12), nextMonth % 12, targetDay, occ);
+                }
+                return d;
+            }
+
+            // Unknown type — fall back to the anchor date itself.
+            return start;
         }
 
         function formatDate(date) {
@@ -492,7 +545,28 @@
 
         function scheduleLabel(schedule) {
             if (!schedule) return null;
-            return 'Meets ' + capitalise(schedule);
+
+            // Handle structured schedule object
+            if (typeof schedule === 'object') {
+                const type = (schedule.type || '').toLowerCase();
+                const day = (schedule.day || '');
+                const occ = (schedule.occurrence || '');
+
+                if (type === 'weekly' || type === 'every') {
+                    return `Meets every ${capitalise(day)}`;
+                }
+                if (type === 'fortnightly') {
+                    return `Meets fortnightly on ${capitalise(day)}s`;
+                }
+                if (type === 'monthly') {
+                    return `Meets the ${occ} ${capitalise(day)} of the month`;
+                }
+                return 'Meets scheduled dates';
+            }
+
+            // Legacy string fallback
+            const str = String(schedule);
+            return 'Meets ' + str.charAt(0).toUpperCase() + str.slice(1);
         }
 
         function icon(svg, href, cls, title) {
@@ -545,33 +619,93 @@
          */
         function scheduledDatesInRange(schedule, from, to, exceptions) {
             if (!schedule) return [];
+
+            // Normalise exceptions to timestamps
             const exSet = new Set((exceptions || []).map(s => {
+                if (!s) return null;
                 const parts = s.split('/').map(Number);
                 if (parts.length !== 3) return null;
-                const d = new Date(parts[2], parts[1] - 1, parts[0]); d.setHours(0, 0, 0, 0);
+                const d = new Date(parts[2], parts[1] - 1, parts[0]);
+                d.setHours(0, 0, 0, 0);
                 return d.getTime();
             }).filter(Boolean));
 
             const results = [];
             function addIfInRange(dt) {
                 if (!dt) return;
-                if (dt >= from && dt <= to && !exSet.has(dt.getTime())) results.push(dt);
+                dt.setHours(0, 0, 0, 0);
+                if (dt >= from && dt <= to && !exSet.has(dt.getTime())) {
+                    results.push(new Date(dt));
+                }
             }
 
-            // Pipe-separated alternating months: "1st wed (even months) | 1st thu (odd months)"
-            if (schedule.includes('|')) {
-                for (const part of schedule.split('|').map(s => s.trim())) {
+            // ── BRIDGE CODE: Handle Structured Schedule Objects ──
+            if (typeof schedule === 'object') {
+                const type = (schedule.type || '').toLowerCase();
+                const start = parseDateString(schedule.start);
+                if (!start) return [];
+
+                const targetDay = _SCHED_DAY_MAP[(schedule.day || '').toLowerCase()];
+
+                if (type === 'weekly' || type === 'every') {
+                    if (targetDay === undefined) return [];
+                    let cur = new Date(start);
+                    // Sync forward to matching day of week if anchor doesn't align
+                    const diff = (targetDay - cur.getDay() + 7) % 7;
+                    cur.setDate(cur.getDate() + diff);
+
+                    while (cur <= to) {
+                        if (cur >= from) addIfInRange(cur);
+                        cur.setDate(cur.getDate() + 7);
+                    }
+                }
+                else if (type === 'fortnightly') {
+                    let cur = new Date(start);
+                    while (cur <= to) {
+                        if (cur >= from) addIfInRange(cur);
+                        cur.setDate(cur.getDate() + 14);
+                    }
+                }
+                else if (type === 'monthly') {
+                    const occurrence = (schedule.occurrence || '1st').toLowerCase();
+                    const occNum = _SCHED_OCC_MAP[occurrence];
+                    if (occNum === undefined || targetDay === undefined) return [];
+
+                    let curMonth = new Date(from.getFullYear(), from.getMonth(), 1);
+                    const endMonth = new Date(to.getFullYear(), to.getMonth(), 1);
+
+                    while (curMonth <= endMonth) {
+                        const calculatedDate = _findNthDayInMonth(curMonth.getFullYear(), curMonth.getMonth(), targetDay, occNum);
+                        if (calculatedDate && calculatedDate >= start) {
+                            addIfInRange(calculatedDate);
+                        }
+                        curMonth.setMonth(curMonth.getMonth() + 1);
+                    }
+                }
+
+                return results.sort((a, b) => a - b);
+            }
+
+            // ── LEGACY STRING PARSING FALLBACKS ──
+            const safeStr = String(schedule);
+
+            // Pipe-separated alternating months
+            if (safeStr.includes('|')) {
+                for (const part of safeStr.split('|').map(s => s.trim())) {
                     const m = part.match(/^(.+?)\s*\((\w+)\s+months\)$/i);
                     if (!m) continue;
                     const [occ, day] = m[1].trim().toLowerCase().split(/\s+/);
                     const cond = m[2].toLowerCase();
-                    const tDay = _SCHED_DAY_MAP[day]; const occNum = _SCHED_OCC_MAP[occ];
+                    const tDay = _SCHED_DAY_MAP[day];
+                    const occNum = _SCHED_OCC_MAP[occ];
                     const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
                     const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
                     while (cur <= end) {
                         const mo = cur.getMonth() + 1;
                         const ok = (cond === 'even' && mo % 2 === 0) || (cond === 'odd' && mo % 2 !== 0);
-                        if (ok) addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
+                        if (ok) {
+                            addIfInRange(_findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
+                        }
                         cur.setMonth(cur.getMonth() + 1);
                     }
                 }
@@ -579,11 +713,12 @@
             }
 
             // "X and Y dayname"
-            if (schedule.toLowerCase().includes(' and ')) {
-                const [occ1str, rest] = schedule.toLowerCase().split(' and ');
+            if (safeStr.toLowerCase().includes(' and ')) {
+                const [occ1str, rest] = safeStr.toLowerCase().split(' and ');
                 const [occ2str, dayName] = rest.trim().split(/\s+/);
                 const tDay = _SCHED_DAY_MAP[dayName];
-                const occ1 = _SCHED_OCC_MAP[occ1str.trim()], occ2 = _SCHED_OCC_MAP[occ2str.trim()];
+                const occ1 = _SCHED_OCC_MAP[occ1str.trim()];
+                const occ2 = _SCHED_OCC_MAP[occ2str.trim()];
                 const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
                 const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
                 while (cur <= end) {
@@ -595,8 +730,8 @@
             }
 
             // "every dayname"
-            if (schedule.toLowerCase().startsWith('every ')) {
-                const tDay = _SCHED_DAY_MAP[schedule.toLowerCase().replace('every ', '').trim()];
+            if (safeStr.toLowerCase().startsWith('every ')) {
+                const tDay = _SCHED_DAY_MAP[safeStr.toLowerCase().replace('every ', '').trim()];
                 const cur = new Date(from);
                 while (cur.getDay() !== tDay) cur.setDate(cur.getDate() + 1);
                 while (cur <= to) { addIfInRange(new Date(cur)); cur.setDate(cur.getDate() + 7); }
@@ -604,8 +739,9 @@
             }
 
             // Standard "Nth dayname"
-            const [occ, dayName] = schedule.toLowerCase().split(/\s+/);
-            const tDay = _SCHED_DAY_MAP[dayName]; const occNum = _SCHED_OCC_MAP[occ];
+            const [occ, dayName] = safeStr.toLowerCase().split(/\s+/);
+            const tDay = _SCHED_DAY_MAP[dayName];
+            const occNum = _SCHED_OCC_MAP[occ];
             if (tDay === undefined || !occNum) return results;
             const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
             const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
@@ -1239,11 +1375,36 @@
 
             // ── Parse day and week from schedule string ──────────────────────────
             function clubDay(c) {
-                const lower = (c.schedule || '').toLowerCase();
+                if (!c || !c.schedule) return null;
+
+                // Handle structured schedule object
+                if (typeof c.schedule === 'object') {
+                    const dStr = (c.schedule.day || '').toLowerCase();
+                    return DAYS_ORDER.find(d => d.toLowerCase() === dStr) || null;
+                }
+
+                // Legacy fallback string check
+                const lower = String(c.schedule).toLowerCase();
                 return DAYS_ORDER.find(d => lower.includes(d.toLowerCase())) || null;
             }
+
             function clubWeeks(c) {
-                const lower = (c.schedule || '').toLowerCase();
+                if (!c || !c.schedule) return [];
+
+                // Handle structured schedule object
+                if (typeof c.schedule === 'object') {
+                    const type = (c.schedule.type || '').toLowerCase();
+                    if (type === 'every' || type === 'weekly' || type === 'fortnightly') {
+                        return ['every'];
+                    }
+                    if (type === 'monthly') {
+                        return [(c.schedule.occurrence || '1st').toLowerCase()];
+                    }
+                    return [];
+                }
+
+                // Legacy fallback string check
+                const lower = String(c.schedule).toLowerCase();
                 if (lower.startsWith('every')) return ['every'];
                 return ['1st', '2nd', '3rd', '4th', 'last'].filter(w => lower.includes(w));
             }
@@ -1668,11 +1829,12 @@
                     if (c.schedule) {
                         const s = document.createElement('div');
                         s.className = 'event-date';
-                        s.textContent = 'Meets ' + c.schedule.charAt(0).toUpperCase() + c.schedule.slice(1)
-                            + (c.time ? ' \u2022 ' + c.time : '');
+
+                        // Cleanly uses our unified labelling helper safely
+                        s.textContent = scheduleLabel(c.schedule) + (c.time ? ' \u2022 ' + c.time : '');
+
                         card.appendChild(s);
                     }
-
 
                     // Featured guest for the next meeting date
                     const dirGuest = dirFeaturedGuest(c, entry.nextMeeting);
