@@ -5236,6 +5236,20 @@
       "performer_id": "daniel-morden"
     },
     {
+      "name": "Full Moon Story Walk [Sue Bailey]",
+      "showname": "Full Moon Story Walk",
+      "date": "28/06/2026",
+      "time": "7.30-9.30pm",
+      "club": "",
+      "price": "",
+      "description": "Enjoy a sunset walk around the top of Culver Down, the battery and Bembridge fort with stops along the way for moon stories – some true, some not so true.  Hopefully we will see the full moon rise over the sea about 9pm.\n\n\n\nThere are some stiles, steep sections, and the terrain can be uneven and muddy after rain.  ",
+      "ticket_url": "https://iwbiosphere.org/events/xgtgfhzmo27j6jwahknhicgazte50o-n5e73-f8ee5-ekbhe-2wz89-zclka-zmx59-hk5hn-s2y7z",
+      "isSpecial": true,
+      "venue_id": "culver-down",
+      "performer_id": "sue-bailey",
+      "date_added": "25/06/2026"
+    },
+    {
       "name": "Open Tellers' Special Night [feat. Steve Dimmer]",
       "showname": "Open Tellers' Special Night [feat. Steve Dimmer]",
       "date": "01/07/2026",
@@ -7563,6 +7577,18 @@
       "latlon": [
         53.01307,
         -4.30891
+      ]
+    },
+    "culver-down": {
+      "id": "culver-down",
+      "name": "Culver Down, Isle of Wight",
+      "city": "Sandown",
+      "postcode": "PO36 8QT",
+      "full_address": "Culver Down Road, Coastguard Cottages, Sandown, Isle of Wight, PO36 8QT",
+      "url": "",
+      "latlon": [
+        50.66666,
+        -1.10519
       ]
     },
     "neuadd-bentref-llangoed-village-hall": {
