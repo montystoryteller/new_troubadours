@@ -610,19 +610,963 @@
       "start_date": "17/07/2026",
       "end_date": "19/07/2026",
       "primary_type": "storytelling",
-      "venue_id": "bromyard-folk-festival-site",
-      "ticket_url": "https://www.festivalattheedge.org/tickets-festival-at-the-edge-2026/",
-      "website": "https://www.festivalattheedge.org/",
+      "venue_id": "TBC",
+      "ticket_url": "",
+      "website": "",
       "facebook": "",
       "description": "",
       "event_flyer": "",
       "performers": [
-        { "performer_id": "xanthe-gresham-knight", "role": "" },
-        { "performer_id": "phil-okwedy", "role": "" }
+        {
+          "performer_id": "maria-gillen",
+          "role": ""
+        },
+        {
+          "performer_id": "martin-daws",
+          "role": ""
+        },
+        {
+          "performer_id": "baden-prince",
+          "role": ""
+        },
+        {
+          "performer_id": "xanthe-gresham-knight",
+          "role": ""
+        },
+        {
+          "performer_id": "dominic-kelly",
+          "role": ""
+        },
+        {
+          "performer_id": "john-tams",
+          "role": ""
+        },
+        {
+          "performer_id": "amy-douglas",
+          "role": ""
+        },
+        {
+          "performer_id": "phil-okwedy",
+          "role": ""
+        },
+        {
+          "performer_id": "dave-oliver",
+          "role": ""
+        },
+        {
+          "performer_id": "taffy-thomas",
+          "role": ""
+        },
+        {
+          "performer_id": "james-canvin",
+          "role": ""
+        },
+        {
+          "performer_id": "jon-buckeridge",
+          "role": ""
+        },
+        {
+          "performer_id": "gabriela-la-foley",
+          "role": ""
+        },
+        {
+          "performer_id": "lisa-schneidau",
+          "role": ""
+        },
+        {
+          "performer_id": "halo-quin",
+          "role": ""
+        },
+        {
+          "performer_id": "bunty-gotts",
+          "role": ""
+        },
+        {
+          "performer_id": "jenny-moon",
+          "role": ""
+        },
+        {
+          "performer_id": "lucy-wells",
+          "role": ""
+        },
+        {
+          "performer_id": "pip-waller",
+          "role": ""
+        },
+        {
+          "performer_id": "sue-bailey",
+          "role": ""
+        },
+        {
+          "performer_id": "ffion-phillips",
+          "role": ""
+        },
+        {
+          "performer_id": "daniel-morden",
+          "role": ""
+        },
+        {
+          "performer_id": "iris-skipworth",
+          "role": ""
+        },
+        {
+          "performer_id": "melrose-quartet",
+          "role": ""
+        },
+        {
+          "performer_id": "suzanne-and-jake-thomas",
+          "role": ""
+        },
+        {
+          "performer_id": "andy-harrop-smith",
+          "role": ""
+        }
       ],
       "performers_tbc": true,
-      "stages": [],
-      "schedule": []
+      "stages": [
+        {
+          "stage_id": "purple",
+          "name": "Purple (Amped)"
+        },
+        {
+          "stage_id": "red",
+          "name": "Red (Basic PA)"
+        },
+        {
+          "stage_id": "family",
+          "name": "Family (Acoustic)"
+        },
+        {
+          "stage_id": "blue",
+          "name": "Blue (Acoustic)"
+        },
+        {
+          "stage_id": "field",
+          "name": "Field (Acoustic)"
+        },
+        {
+          "stage_id": "bar",
+          "name": "Bar (Acoustic)"
+        },
+        {
+          "stage_id": "festival-wide",
+          "name": "Festival-wide"
+        }
+      ],
+      "schedule": [
+        {
+          "date": "17/07/2026",
+          "time": "18:30-19:00",
+          "stage_id": "festival-wide",
+          "name": "Opening Ceremony",
+          "type": "storywalk",
+          "performer": "Led by Andy Harrop Smith (starting in field)",
+          "performer_id": "andy-harrop-smith"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "18:00-19:00",
+          "stage_id": "family",
+          "name": "Drop in Crafts: Decorate the Dragon",
+          "type": "family"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "19:00-20:00",
+          "stage_id": "purple",
+          "name": "Stories & Songs of Welcome",
+          "type": "group_telling",
+          "performer": "Maria Gillen, Martin Daws, Baden Prince, Xanthe Gresham-Knight (Age A)",
+          "performer_ids": [
+            "maria-gillen",
+            "martin-daws",
+            "baden-prince",
+            "xanthe-gresham-knight"
+          ],
+          "age_band": "A"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "19:00-20:00",
+          "stage_id": "family",
+          "name": "Bunting making",
+          "type": "family",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "19:30-21:30",
+          "stage_id": "bar",
+          "name": "Come All Ye!! - music sessions",
+          "type": "music",
+          "performer": "Sessions led by Archie Best, Tony Locock, Adam Glynn-Jones, Allan Pearce"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "19:30-21:00",
+          "stage_id": "red",
+          "name": "John Tams: In Conversation",
+          "type": "talk_film",
+          "performer": "John Tams (Age F)",
+          "performer_id": "john-tams",
+          "age_band": "F"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "20:00-21:00",
+          "stage_id": "family",
+          "name": "Story Round: Heroic Tales",
+          "type": "storyround",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "20:00-21:30",
+          "stage_id": "purple",
+          "name": "Born to Fly",
+          "type": "storytelling_shows",
+          "performer": "Dominic Kelly (Age C)",
+          "performer_id": "dominic-kelly",
+          "age_band": "C"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "21:00-22:30",
+          "stage_id": "red",
+          "name": "Secrets of the Shelagh na Gig",
+          "type": "storytelling_shows",
+          "performer": "Xanthe Gresham-Knight (Adults only, 18+)",
+          "performer_id": "xanthe-gresham-knight",
+          "notes": "Adults only, 18+",
+          "age_band": "E",
+          "adult_content": true
+        },
+        {
+          "date": "17/07/2026",
+          "time": "22:00-23:00",
+          "stage_id": "purple",
+          "name": "John Tams Concert",
+          "type": "music",
+          "performer": "John Tams (Age F)",
+          "performer_id": "john-tams",
+          "age_band": "F"
+        },
+        {
+          "date": "17/07/2026",
+          "time": "23:00-00:00",
+          "stage_id": "field",
+          "name": "Stories around the fire",
+          "type": "firepit_stories",
+          "performer": "Amy Douglas & Martin Daws (Age 16+)",
+          "performer_ids": [
+            "amy-douglas",
+            "martin-daws"
+          ],
+          "notes": "Age 16+. If weather conditions are unsuitable, moved to Blue Marquee.",
+          "age_band": "E",
+          "adult_content": true
+        },
+        {
+          "date": "17/07/2026",
+          "time": "23:00-00:00",
+          "stage_id": "bar",
+          "name": "Midnight Sessions",
+          "type": "music"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "08:00-08:30",
+          "stage_id": "family",
+          "name": "Breakfast Club: Scales, Bubbles and Monsters",
+          "type": "family",
+          "performer": "Age D",
+          "age_band": "D"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "09:00-09:30",
+          "stage_id": "family",
+          "name": "Tai Chi / Qi Gong",
+          "type": "workshop",
+          "performer": "Nicola Day",
+          "notes": "Drop-in, no sign-up needed. Younger children must be accompanied."
+        },
+        {
+          "date": "18/07/2026",
+          "time": "09:30-10:30",
+          "stage_id": "blue",
+          "name": "Threading & Weaving Workshop",
+          "type": "workshop",
+          "performer": "Maria Gillen (Max 45)",
+          "performer_id": "maria-gillen"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "10:00-11:00",
+          "stage_id": "purple",
+          "name": "River Song",
+          "type": "storytelling_shows",
+          "performer": "Amy Douglas and Martin Daws (Age 12+)",
+          "performer_ids": [
+            "amy-douglas",
+            "martin-daws"
+          ]
+        },
+        {
+          "date": "18/07/2026",
+          "time": "10:00-11:00",
+          "stage_id": "red",
+          "name": "Ace of Clubs: Tellers from the Storytelling Clubs",
+          "type": "group_telling",
+          "performer": "Age F",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "10:00-11:00",
+          "stage_id": "family",
+          "name": "Storytime: Monster Hunting Basics",
+          "type": "family",
+          "performer": "Ffion Phillips (Max 45, Age A)",
+          "performer_id": "ffion-phillips",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "10:00-10:30",
+          "stage_id": "field",
+          "name": "An Encounter with our Green Friends - Storywalk",
+          "type": "storywalk",
+          "performer": "Lucy Wells & Pip Waller (Age G 5+)",
+          "performer_ids": [
+            "lucy-wells",
+            "pip-waller"
+          ],
+          "age_band": "G"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "11:00-12:00",
+          "stage_id": "field",
+          "name": "Morris Dancing",
+          "type": "music",
+          "performer": "Leominster Morris"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "11:30-12:30",
+          "stage_id": "purple",
+          "name": "Will and the Welsh Black Cattle",
+          "type": "storytelling_shows",
+          "performer": "Phil Okwedy (Age 12+)",
+          "performer_id": "phil-okwedy"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "11:30-12:30",
+          "stage_id": "red",
+          "name": "A Stir-about of Tales",
+          "type": "storytelling_shows",
+          "performer": "Dave Oliver, Rattlebox Theatre (Age B, 7+)",
+          "performer_id": "dave-oliver",
+          "age_band": "B"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "11:30-12:30",
+          "stage_id": "blue",
+          "name": "Storytelling for Beginners",
+          "type": "workshop",
+          "performer": "Xanthe Gresham-Knight (Age 16+, some experience required, max TBC)",
+          "performer_id": "xanthe-gresham-knight",
+          "age_band": "E",
+          "adult_content": true
+        },
+        {
+          "date": "18/07/2026",
+          "time": "12:00-13:00",
+          "stage_id": "family",
+          "name": "Sweet and Sour: Lunchtime tales to tickle the tastebuds",
+          "type": "family",
+          "performer": "Sue Bailey (Age A)",
+          "performer_id": "sue-bailey",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "12:30-13:00",
+          "stage_id": "red",
+          "name": "The Invisibility Hat",
+          "type": "storytelling_shows",
+          "performer": "Dominic Kelly (Age B)",
+          "performer_id": "dominic-kelly",
+          "age_band": "B"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "13:00-14:00",
+          "stage_id": "purple",
+          "name": "Trip to the Lakes",
+          "type": "storytelling_shows",
+          "performer": "Taffy Thomas, featuring Paul Davies and Richard & Liz York (Age F)",
+          "performer_id": "taffy-thomas",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "13:00-13:30",
+          "stage_id": "blue",
+          "name": "Working with Paper (1)",
+          "type": "workshop",
+          "performer": "Bunty Gotts (Max 20, for all ages)",
+          "performer_id": "bunty-gotts"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "13:00-13:30",
+          "stage_id": "field",
+          "name": "Morris Dancing",
+          "type": "music",
+          "performer": "Leominster Morris"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "purple",
+          "name": "Bean Feasa: Wise Women Stories",
+          "type": "storytelling_shows",
+          "performer": "Maria Gillen (Age F)",
+          "performer_id": "maria-gillen",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "red",
+          "name": "Ukelele Fun",
+          "type": "music",
+          "performer": "Gabriela la Foley (Age F)",
+          "performer_id": "gabriela-la-foley",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:00-15:00",
+          "stage_id": "family",
+          "name": "Sword Fighting for Beginners",
+          "type": "workshop",
+          "performer": "Jon Buckeridge (Max 30, Age 12+, under 16s accompanied)",
+          "performer_id": "jon-buckeridge",
+          "notes": "Sturdy shoes - strictly no bare feet or flip flops, under 16s to be accompanied by an adult"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "field",
+          "name": "Discover the New Festival Site! - Story Walk",
+          "type": "storywalk",
+          "performer": "Lisa Schneidau (Age B)",
+          "performer_id": "lisa-schneidau",
+          "age_band": "B"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:00-17:00",
+          "stage_id": "bar",
+          "name": "Come All Ye!! - music sessions",
+          "type": "music",
+          "performer": "Sessions led by Archie Best, Tony Locock, Adam Glynn-Jones, Allan Pearce"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "14:30-15:00",
+          "stage_id": "blue",
+          "name": "Harmony Workshop",
+          "type": "workshop",
+          "performer": "Melrose Quartet (Max TBC, Age F)",
+          "performer_id": "melrose-quartet",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "15:30-16:00",
+          "stage_id": "purple",
+          "name": "Threads of Fate",
+          "type": "storytelling_shows",
+          "performer": "James Canvin (Age F)",
+          "performer_id": "james-canvin",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "15:30-16:00",
+          "stage_id": "family",
+          "name": "A Cauldron of Dragons (and other beasts)",
+          "type": "family",
+          "performer": "Halo Quin (Age A)",
+          "performer_id": "halo-quin",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "16:00-16:30",
+          "stage_id": "blue",
+          "name": "Nature in Storytelling Workshop",
+          "type": "workshop",
+          "performer": "Lisa Schneidau (Max TBC, Age G 14+)",
+          "performer_id": "lisa-schneidau",
+          "age_band": "G"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "16:30-17:00",
+          "stage_id": "red",
+          "name": "The Man who went to Haven",
+          "type": "storytelling_shows",
+          "performer": "Phil Okwedy (Age 16+)",
+          "performer_id": "phil-okwedy",
+          "age_band": "E",
+          "adult_content": true
+        },
+        {
+          "date": "18/07/2026",
+          "time": "17:00-17:30",
+          "stage_id": "purple",
+          "name": "Sworded Stories",
+          "type": "storytelling_shows",
+          "performer": "Jon Buckeridge (Age G 8+)",
+          "performer_id": "jon-buckeridge",
+          "age_band": "G"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "17:00-17:30",
+          "stage_id": "family",
+          "name": "Craft Workshop: Cardboard swords",
+          "type": "family",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "17:30-18:00",
+          "stage_id": "blue",
+          "name": "Laughter Yoga",
+          "type": "workshop",
+          "performer": "Jenny Moon (Max venue capacity, Age A, F)",
+          "performer_id": "jenny-moon",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "18:00-18:30",
+          "stage_id": "family",
+          "name": "Full-Folk Fables",
+          "type": "storytelling_shows",
+          "performer": "Dave Oliver, Rattlebox Theatre (Age B, 7+)",
+          "performer_id": "dave-oliver",
+          "age_band": "B"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:00-20:00",
+          "stage_id": "purple",
+          "name": "Poetry and Lyricism",
+          "type": "spoken_word",
+          "performer": "Martin Daws (Age A)",
+          "performer_id": "martin-daws",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:00-19:30",
+          "stage_id": "red",
+          "name": "Stories from Iran and Ancient Persia",
+          "type": "storytelling_shows",
+          "performer": "Xanthe Gresham-Knight (Age 12+)",
+          "performer_id": "xanthe-gresham-knight"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:00-19:30",
+          "stage_id": "family",
+          "name": "Craft Workshop: Shields and Heraldry",
+          "type": "family",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:00-19:30",
+          "stage_id": "blue",
+          "name": "Ukelele Confidence! Workshop",
+          "type": "workshop",
+          "performer": "Gabriela la Foley (Max 20, Age F)",
+          "performer_id": "gabriela-la-foley",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:00-23:00",
+          "stage_id": "bar",
+          "name": "Come All Ye!! - music sessions",
+          "type": "music",
+          "performer": "Sessions led by Archie Best, Tony Locock, Adam Glynn-Jones, Allan Pearce"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "19:30-20:30",
+          "stage_id": "blue",
+          "name": "Icebreaker word games / Storytelling Workshop",
+          "type": "workshop",
+          "performer": "Baden Prince (Max TBC, Age TBC)",
+          "performer_id": "baden-prince",
+          "age_band": "TBC"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "20:00-21:00",
+          "stage_id": "red",
+          "name": "In conversation with...",
+          "type": "talk_film",
+          "performer": "Taffy Thomas, interviewed by Daniel Morden (Age F)",
+          "performer_ids": [
+            "taffy-thomas",
+            "daniel-morden"
+          ],
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "20:30-21:00",
+          "stage_id": "family",
+          "name": "Story round: Twilight Monsters",
+          "type": "storyround",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "21:30-22:30",
+          "stage_id": "purple",
+          "name": "Melrose Quartet Concert",
+          "type": "music",
+          "performer": "Melrose Quartet (Age F)",
+          "performer_id": "melrose-quartet",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "23:00-00:00",
+          "stage_id": "purple",
+          "name": "Strong Women Stories",
+          "type": "storytelling_shows",
+          "performer": "Maria Gillen (Age F)",
+          "performer_id": "maria-gillen",
+          "age_band": "F"
+        },
+        {
+          "date": "18/07/2026",
+          "time": "23:00-00:00",
+          "stage_id": "field",
+          "name": "Stories around the fire",
+          "type": "firepit_stories",
+          "performer": "Iris Skipworth, Halo Quin (Age 16+)",
+          "performer_ids": [
+            "iris-skipworth",
+            "halo-quin"
+          ],
+          "notes": "If weather conditions are unsuitable, moved to Blue Marquee.",
+          "age_band": "E",
+          "adult_content": true
+        },
+        {
+          "date": "18/07/2026",
+          "time": "23:00-00:00",
+          "stage_id": "bar",
+          "name": "Midnight Sessions",
+          "type": "music"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "08:00-08:30",
+          "stage_id": "family",
+          "name": "Breakfast Club: Scales, Bubbles and Monsters",
+          "type": "family",
+          "performer": "Age D",
+          "age_band": "D"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "09:00-09:30",
+          "stage_id": "blue",
+          "name": "Storyround: Early Bird Storytellers",
+          "type": "storyround",
+          "performer": "All welcome!"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "09:00-09:30",
+          "stage_id": "family",
+          "name": "Tai Chi / Qi Gong",
+          "type": "workshop",
+          "performer": "Nicola Day (Age A)",
+          "notes": "Drop-in, no sign-up needed. May be outside if weather suitable.",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "09:30-10:30",
+          "stage_id": "red",
+          "name": "What a woman!",
+          "type": "storytelling_shows",
+          "performer": "Baden Prince",
+          "performer_id": "baden-prince"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "10:00-11:00",
+          "stage_id": "purple",
+          "name": "Mara (with interval)",
+          "type": "storytelling_shows",
+          "performer": "Dominic Kelly (Age C, D, F)",
+          "performer_id": "dominic-kelly",
+          "age_band": "C"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "10:00-10:30",
+          "stage_id": "family",
+          "name": "Do you believe in Dragons?",
+          "type": "family",
+          "performer": "Suzanne and Jake Thomas (Age A)",
+          "performer_id": "suzanne-and-jake-thomas",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "10:00-11:00",
+          "stage_id": "blue",
+          "name": "Swords and Shields Workshop",
+          "type": "workshop",
+          "performer": "Jon Buckeridge (Max 30, Age 12+, under 16s accompanied)",
+          "performer_id": "jon-buckeridge",
+          "notes": "Sturdy shoes - strictly no bare feet or flip flops, under 16s to be accompanied"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "10:00-10:30",
+          "stage_id": "field",
+          "name": "Golden Tales Story Walk",
+          "type": "storywalk",
+          "performer": "Sue Bailey (Age A)",
+          "performer_id": "sue-bailey",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "11:00-12:00",
+          "stage_id": "purple",
+          "name": "Selkie: Songs of the Sea",
+          "type": "storytelling_shows",
+          "performer": "Amy Douglas and Martin Daws (Age 12+)",
+          "performer_ids": [
+            "amy-douglas",
+            "martin-daws"
+          ]
+        },
+        {
+          "date": "19/07/2026",
+          "time": "11:00-12:00",
+          "stage_id": "family",
+          "name": "Drop in Crafts: Kids Parade Prep",
+          "type": "family",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "11:00-11:30",
+          "stage_id": "field",
+          "name": "Story Walk",
+          "type": "storywalk",
+          "performer": "James Canvin (Age F)",
+          "performer_id": "james-canvin",
+          "age_band": "F"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "11:00-13:00",
+          "stage_id": "bar",
+          "name": "Come All Ye!! - music sessions",
+          "type": "music",
+          "performer": "Sessions led by Archie Best, Tony Locock, Adam Glynn-Jones, Allan Pearce"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "11:30-12:00",
+          "stage_id": "blue",
+          "name": "'Taken Aback' - Stories behind Common Sayings",
+          "type": "talk_film",
+          "performer": "Informal talk (Age F)",
+          "age_band": "F"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "12:00-12:30",
+          "stage_id": "purple",
+          "name": "A Night with the Trees",
+          "type": "storytelling_shows",
+          "performer": "Xanthe Gresham-Knight (Age 12+)",
+          "performer_id": "xanthe-gresham-knight"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "12:00-13:00",
+          "stage_id": "field",
+          "name": "Soft Option Appalachian Step Dancers",
+          "type": "music"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "12:15-13:00",
+          "stage_id": "family",
+          "name": "Storytime: Story Soup",
+          "type": "family",
+          "performer": "Holly Medland (max TBC, Age A)",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "12:30-13:00",
+          "stage_id": "blue",
+          "name": "Poetry or Lyricism Workshop",
+          "type": "workshop",
+          "performer": "Martin Daws (Age A)",
+          "performer_id": "martin-daws",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "13:00-13:30",
+          "stage_id": "purple",
+          "name": "Heroes with Unlikely Faces",
+          "type": "storytelling_shows",
+          "performer": "Jon Buckeridge (Age tbc)",
+          "performer_id": "jon-buckeridge",
+          "age_band": "TBC"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "13:00-13:30",
+          "stage_id": "red",
+          "name": "The Greenwood Bough",
+          "type": "storytelling_shows",
+          "performer": "Lisa Schneidau (Age C)",
+          "performer_id": "lisa-schneidau",
+          "age_band": "C"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "13:00-14:00",
+          "stage_id": "family",
+          "name": "Storytime",
+          "type": "family",
+          "performer": "Iris Skipworth (Age tbc)",
+          "performer_id": "iris-skipworth",
+          "age_band": "TBC"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "13:00-13:30",
+          "stage_id": "field",
+          "name": "Soft Option Appalachian Step Dancers",
+          "type": "music"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "purple",
+          "name": "Fur and Folds",
+          "type": "storytelling_shows",
+          "performer": "James Canvin (Age C)",
+          "performer_id": "james-canvin",
+          "age_band": "C"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "red",
+          "name": "Concert",
+          "type": "music",
+          "performer": "Bordeway Young & Gittens (Age F)",
+          "age_band": "F"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "blue",
+          "name": "Working with Paper (2)",
+          "type": "workshop",
+          "performer": "Bunty Gotts (Max 20, for all ages)",
+          "performer_id": "bunty-gotts"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "14:00-14:30",
+          "stage_id": "field",
+          "name": "Storywalk",
+          "type": "storywalk",
+          "performer": "Lucy Wells (Age B)",
+          "performer_id": "lucy-wells",
+          "age_band": "B"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "14:30-15:00",
+          "stage_id": "family",
+          "name": "Kids Parade Preparations",
+          "type": "family",
+          "performer": "Age A",
+          "age_band": "A"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "15:30-16:00",
+          "stage_id": "festival-wide",
+          "name": "Children's Parade",
+          "type": "storywalk",
+          "performer": "Led by Andy Harrop Smith (starting in field)",
+          "performer_id": "andy-harrop-smith"
+        },
+        {
+          "date": "19/07/2026",
+          "time": "16:00-17:00",
+          "stage_id": "purple",
+          "name": "Stories and Songs of Farewell",
+          "type": "group_telling",
+          "performer": "James Canvin, Amy Douglas, Martin Daws (Age A)",
+          "performer_ids": [
+            "james-canvin",
+            "amy-douglas",
+            "martin-daws"
+          ],
+          "notes": "End of FatE 2026!",
+          "age_band": "A"
+        }
+      ],
+      "age_bands": {
+        "A": "Aimed at children and families, nothing scary or gory.",
+        "B": "Aimed at older children, might be a little scary for under 7s",
+        "C": "10+ Bit scary/gory",
+        "D": "12+ Mild swearing/ gore/ some adult themes",
+        "E": "16+ Adult themes: sexually explicit language/ explicit swearing/ gore",
+        "F": "Aimed at adults, with no particularly sexual, swearing or scary content but may be complex.",
+        "G": "TBC - used in source programme (e.g. 'Age G 5+', 'Age G 14+') but not defined in the official legend provided",
+        "_note": "Yellow highlighting in the printed programme indicates shows with content only suitable for adults (16+ and 18+)."
+      }
     },
     "ventnor-fringe-2026": {
       "name": "Ventnor Fringe 2026",
@@ -10455,6 +11399,108 @@
       "facebook": "SorrelNation",
       "instagram": "sorrelnation",
       "bio": "Travelling troubadour Sorrel Nation brings a soulful mix of folk-rock to country and beyond and possesses one of those voices that makes you immediately stop what you're doing to give her your full attention. She engages audiences with emotive lyrics, 70s inspired style and a voice full of soul, which further increases the seductive power of her songs. Known for penning songs that can truly open the heart to grief and like all valued songwriters possess a giving presence...she heralds gorgeous ballads that could become Sorrel Nation's trademark sound."
+    },
+    "martin-daws": {
+      "id": "martin-daws",
+      "name": "Martin Daws",
+      "url": "https://www.martindaws.co.uk/",
+      "bio": ""
+    },
+    "dominic-kelly": {
+      "id": "dominic-kelly",
+      "name": "Dominic Kelly",
+      "url": "",
+      "bio": ""
+    },
+    "john-tams": {
+      "id": "john-tams",
+      "name": "John Tams",
+      "url": "https://www.johntams.co.uk/",
+      "bio": ""
+    },
+    "dave-oliver": {
+      "id": "dave-oliver",
+      "name": "Dave Oliver",
+      "url": "",
+      "bio": ""
+    },
+    "taffy-thomas": {
+      "id": "taffy-thomas",
+      "name": "Taffy Thomas",
+      "url": "http://taffythomas.co.uk/",
+      "bio": ""
+    },
+    "jon-buckeridge": {
+      "id": "jon-buckeridge",
+      "name": "Jon Buckeridge",
+      "url": "https://jonbuckeridge.com/",
+      "bio": ""
+    },
+    "gabriela-la-foley": {
+      "id": "gabriela-la-foley",
+      "name": "Gabriela la Foley",
+      "url": "",
+      "bio": ""
+    },
+    "halo-quin": {
+      "id": "halo-quin",
+      "name": "Halo Quin",
+      "url": "https://haloquin.net/",
+      "bio": ""
+    },
+    "bunty-gotts": {
+      "id": "bunty-gotts",
+      "name": "Bunty Gotts",
+      "url": "",
+      "bio": ""
+    },
+    "jenny-moon": {
+      "id": "jenny-moon",
+      "name": "Jenny Moon",
+      "url": "",
+      "bio": ""
+    },
+    "lucy-wells": {
+      "id": "lucy-wells",
+      "name": "Lucy Wells",
+      "url": "",
+      "bio": ""
+    },
+    "pip-waller": {
+      "id": "pip-waller",
+      "name": "Pip Waller",
+      "url": "https://pipwaller.co.uk/",
+      "bio": ""
+    },
+    "ffion-phillips": {
+      "id": "ffion-phillips",
+      "name": "Ffion Phillips",
+      "url": "",
+      "bio": ""
+    },
+    "melrose-quartet": {
+      "id": "melrose-quartet",
+      "name": "Melrose Quartet",
+      "url": "",
+      "bio": "https://www.melrosequartet.co.uk/"
+    },
+    "suzanne-and-jake-thomas": {
+      "id": "suzanne-and-jake-thomas",
+      "name": "Suzanne and Jake Thomas",
+      "url": "",
+      "bio": ""
+    },
+    "andy-harrop-smith": {
+      "id": "andy-harrop-smith",
+      "name": "Andy Harrop Smith",
+      "url": "",
+      "bio": ""
+    },
+    "ailsa-dixon": {
+      "id": "ailsa-dixon",
+      "name": "Ailsa Dixon",
+      "url": "https://www.ailsadixonstoryteller.com/",
+      "bio": ""
     }
   }
 }
