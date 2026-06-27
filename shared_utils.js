@@ -127,6 +127,52 @@ function sanitizeUrl(url) {
 }
 
 /**
+ * Validate a YouTube URL and convert it to a safe, privacy-enhanced
+ * embed URL (youtube-nocookie.com). Accepts standard watch URLs,
+ * youtu.be short links, /embed/ links, and /shorts/ links. Returns
+ * null for anything else (including other video hosts), so it can
+ * never be used to inject an arbitrary iframe source.
+ * @param {string} url
+ * @returns {string|null}
+ */
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+  url = url.trim();
+
+  let urlObj;
+  try {
+    urlObj = new URL(url);
+  } catch (e) {
+    return null;
+  }
+
+  if (urlObj.protocol !== "https:" && urlObj.protocol !== "http:") return null;
+
+  const host = urlObj.hostname.replace(/^www\./, "");
+  let videoId = null;
+
+  if (host === "youtu.be") {
+    videoId = urlObj.pathname.slice(1).split("/")[0];
+  } else if (host === "youtube.com" || host === "m.youtube.com") {
+    if (urlObj.pathname === "/watch") {
+      videoId = urlObj.searchParams.get("v");
+    } else if (urlObj.pathname.startsWith("/embed/")) {
+      videoId = urlObj.pathname.split("/embed/")[1];
+    } else if (urlObj.pathname.startsWith("/shorts/")) {
+      videoId = urlObj.pathname.split("/shorts/")[1];
+    }
+  }
+
+  if (!videoId) return null;
+  videoId = videoId.split("?")[0].split("&")[0];
+
+  // YouTube video IDs are 11 chars of [A-Za-z0-9_-]
+  if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return null;
+
+  return `https://www.youtube-nocookie.com/embed/${videoId}`;
+}
+
+/**
  * Sanitize HTML to prevent XSS: convert text to safe HTML entities.
  * @param {string} text
  * @returns {string}

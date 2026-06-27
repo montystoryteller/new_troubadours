@@ -284,6 +284,20 @@ function displayTour(tourId) {
     descContainer.style.display = "none";
   }
 
+  // Display optional video trailer (YouTube only, sanitized to a
+  // youtube-nocookie.com /embed/ URL — see getYouTubeEmbedUrl()).
+  const trailerContainer = document.getElementById("tourTrailerContainer");
+  const trailerFrame = document.getElementById("tourTrailerFrame");
+  const embedUrl = getYouTubeEmbedUrl(tour.video_trailer);
+  if (embedUrl) {
+    trailerFrame.src = embedUrl;
+    trailerContainer.style.display = "block";
+  } else {
+    // Clear src (not just hide) so playback stops when switching tours
+    trailerFrame.src = "";
+    trailerContainer.style.display = "none";
+  }
+
   // Determine and show tour status banner
   const status = getTourStatus(tour);
   let existingBanner = document.getElementById("tourStatusBanner");
