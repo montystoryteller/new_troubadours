@@ -1707,6 +1707,59 @@
     }
   },
   "tours": {
+    "debs-newbold-dauntless-2026": {
+      "tour_name": "Dauntless (2026)",
+      "name": "Dauntless",
+      "tour_description": "Award-winning storyteller, Debs Newbold, gleefully delivers the boisterous, remarkable and inspirational story of her hero, Grainne ni Mhaille, aka Grace O'Malley, the legendary Irish clan chief and queen of the sea\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
+      "touring_event_flyer": "",
+      "isSpecial": true,
+      "performer_id": "debs-newbold",
+      "video_trailer": "https://www.youtube.com/watch?v=aBjt93dDzOs",
+      "tour_dates": [
+        {
+          "date": ["24/09/2026", "25/09/2026", "26/09/2026"],
+          "time": "7.30-9pm",
+          "price": "£14",
+          "ticket_url": "https://thewardrobetheatre.com/shows/dauntless-grace-omalley-pirate-queen/",
+          "isSpecial": true,
+          "venue_id": "wardrobe-theatre-bristol"
+        },
+        {
+          "date": "03/10/2026",
+          "time": "",
+          "price": "",
+          "ticket_url": "https://www.debsnewboldplays.com/gigs",
+          "isSpecial": true,
+          "venue_id": "todmorden-unitarian-church"
+        },
+        {
+          "date": "07/10/2026",
+          "time": "",
+          "price": "",
+          "ticket_url": "https://www.debsnewboldplays.com/gigs",
+          "isSpecial": true,
+          "venue_id": "hoxton-hall"
+        },
+        {
+          "date": "21/10/2026",
+          "time": "7.30-10pm",
+          "price": "£8",
+          "club_event": "beestontales",
+          "ticket_url": "https://www.tickettailor.com/checkout/view-event/id/8570538/chk/db1b91f83ad3bbe369b1c97db11bc959/",
+          "isSpecial": true,
+          "venue_id": "our-lady-of-the-assumption-church-hall-beeston"
+        },
+        {
+          "date": ["10/11/2026","11/11/2026","12/11/2026","13/11/2026", "10/11/2026"],
+          "time": "",
+          "price": "",
+          "club_event": "",
+          "ticket_url": "",
+          "isSpecial": true,
+          "venue_id": "lion-and-unicorn-theatre"
+        }
+      ]
+    },
     "greg-chapman-discovery-witchcraft": {
       "tour_name": "Discovery of Witchcraft (2026)",
       "name": "Discovery of Witchcraft",
@@ -2107,6 +2160,7 @@
       "touring_event_flyer": "",
       "isSpecial": true,
       "performer_id": "corinne-harragin",
+      "video_trailer": "https://www.youtube.com/watch?v=qlZWmjm5VPI",
       "tour_dates": [
         {
           "date": "15/10/2025",
@@ -2150,10 +2204,118 @@
           "ticket_url": "https://www.ticketsource.co.uk/whats-on/blackburn/the-bureau-centre-for-the-arts/troubled-waters-contemporary-retellings-of-ancient-river-legend-folklore-myth-corrine-harrigan/e-qmldgb"
         }]
     },
+    "katy-cawkwell-lilith-autumn-winter-2026-2027": {
+      "tour_name": "Lilith (Autumn-Winter 2026-2027) [Katy Cawkwell]",
+      "name": "Lilith",
+      "tour_description": "An uplifting one-woman storytelling show.\n\n\n\n An exploration and celebration of female power through the mythological character of Lilith. Shocking, seductive and entertaining.\n\n\n\n Lilith, the first wife of Adam, was not prepared to lie down and accept what was given to her. Thrown out of Eden, she slithered back in to take her  revenge and wake Eve up to what her body could do. \n\n\n\n Viewed as a demon, worshipped as a goddess, adored as the Queen of   Sheba, Lilith slips out of the Bible, reclaims the narrative and is dancing with us still, forever free.\n\n\n\n Katy Cawkwell mixes myth from Arabia, Ethiopia, Mesopotamia and Jewish tradition, with a dash of feminist flavouring and a large dollop of her own wild dreaming.",
+      "video_trailer": "https://www.youtube.com/watch?v=rnCjVTiy0aE",
+      "touring_event_flyer": "tour_katy_cawkwell_lilith_2026_2027.jpeg",
+      "isSpecial": true,
+      "performer_id": "katy-cawkwell",
+      "tour_dates": [
+        {
+          "date": "15/09/2026",
+          "price": "£14 (£12)",
+          "venue_id": "burton-taylor-studio-oxford",
+          "ticket_url": "https://www.oxfordplayhouse.com/events/lilith"
+        },
+        {
+          "date": "16/09/2026",
+          "price": "£8",
+          "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
+          "club_event": "beestontales",
+          "ticket_url": "https://www.tickettailor.com/events/beestontales/2212507"
+        },
+        {
+          "date": "17/09/2026",
+          "price": "£12.50 / £10",
+          "venue_id": "gregson-community-arts-centre",
+          "ticket_url": "https://gregson.co.uk/event/lilith/"
+        },
+        {
+          "date": "18/09/2026",
+          "price": "£13.48",
+          "venue_id": "the-joinery-settle",
+          "event_url": "https://settlestories.org.uk/whats-on-event/lilith/",
+          "ticket_url": "https://www.ticketsource.com/settle-stories/t-vxxrqrz"
+        },
+        {
+          "date": "19/09/2026",
+          "price": "£16.13",
+          "venue_id": "bureau-centre-for-the-arts-blackburn",
+          "ticket_url": "https://www.ticketsource.com/booking/select/lawjppvgqjjl"
+        },
+        {
+          "date": "24/09/2026",
+          "venue_id": "strode-theatre",
+          "ticket_url": "http://www.strodetheatre.org.uk"
+        },
+        {
+          "date": "25/09/2026",
+          "price": "£16.50",
+          "venue_id": "cygnet-theatre-exeter",
+          "ticket_url": "https://wegottickets.com/af/671/event/19441"
+        },
+        {
+          "date": "01/10/2026",
+          "price": "£14.79",
+          "venue_id": "rise-bluebird-bakery-york",
+          "ticket_url": "https://www.eventbrite.com/e/lilith-the-other-side-of-the-story-rise-bluebird-bakery-tickets-1982963808130"
+        },
+        {
+          "date": "02/10/2026",
+          "venue_id": "the-chillingham-arms",
+          "club_event": "abitcrack",
+          "ticket_url": "https://www.abitcrack.com/event/katy-cawkwell-lilith-the-other-side-of-the-story/"
+        },
+        {
+          "date": "03/10/2026",
+          "venue_id": "carriageworks-theatre-leeds",
+          "ticket_url": "https://www.carriageworkstheatre.co.uk/whats-on/lilith-the-other-side-of-the-story-l4yg"
+        },
+        {
+          "date": "08/10/2026",
+          "price":"£ Pay what you want (min £5)",
+          "venue_id": "the-front-room-theatre-weston",
+          "ticket_url": "https://frontroomwsm.com/event/lilith-the-other-side-of-the-story-storytelling-with-katy-cawkwell"
+        },
+        {
+          "date": "03/12/2026",
+          "venue_id": "the-folk-of-gloucester",
+          "ticket_url": "https://www.gloucestercivictrust.org/the-folk-home/"
+        },
+        {
+          "date": "21/01/2027",
+          "venue_id": "portico-library-manchester",
+          "ticket_url": "https://www.theportico.org.uk/whats-on"
+        },
+        {
+          "date": "27/01/2027",
+          "venue_id": "alma-tavern-theatre",
+          "ticket_url": "https://www.tickettailor.com/events/almatheatrecompany"
+        },
+        {
+          "date": "28/01/2027",
+          "venue_id": "ustinov-theatre-royal",
+          "ticket_url": "https://www.theatreroyal.org.uk/whats-on/?ven=2740"
+        },
+        {
+          "date": "29/01/2027",
+          "venue_id": "ustinov-theatre-royal",
+          "ticket_url": "https://www.theatreroyal.org.uk/whats-on/?ven=2740"
+        },
+        {
+          "date": "04/02/2027",
+          "venue_id": "the-acorn-penzance",
+          "ticket_url": "https://www.theacornpenzance.com/whats-on-at-the-acorn-theatre/"
+        }
+      ]
+    },
     "corinne-harragin-troubled-waters-spring-2026": {
       "tour_name": "Troubled Waters (Spring 2026 Tour) [Corinne Harragin]",
       "name": "Troubled Waters",
       "tour_description": "With over 4,000 miles of polluted waterways, Britain and Ireland's rivers are in ruin.\n\n\n\nThis vibrant new tapestry of transporting tales winds through stories that have shaped our relationship with rivers, the lifeblood of our landscape. \n\n\n\nLeaping salmon, fishtail women, mythical raves & sacred springs… These enchanting and surprising tales present characters who question what is set in stone and find their own flow. \n\n\n\nWith each meandering stream and rushing river, we dip our toes into vital waters and ask what new connections are found when we look with fresh eyes beneath the surface?\n\n\n\nCreated & performed by Corinne Harragin\n\n\n\nArtwork by Rhona Oughton\n\n\n\n Photography by Henry Kenyon \n\n\n\n Trailer by Ruby Ingleheart\n\n\n\n Music for trailer by Emily Magpie",
+      "video_trailer": "https://www.youtube.com/watch?v=qlZWmjm5VPI",
       "touring_event_flyer": "",
       "isSpecial": true,
       "performer_id": "corinne-harragin",
@@ -2235,6 +2397,11 @@
           "price": "£10 (£8)",
           "ticket_url": "https://www.tickettailor.com/events/henbant/2070549",
           "fb_event": 1298398022433754
+        },{
+          "date": "04/07/2026",
+          "venue_id": "eastcott-community-centre-swindon",
+          "price": "£10.84 ",
+          "ticket_url": "https://www.ticketsource.com/forging-fantastical/troubled-waters-a-storytelling-show-by-corinne-harragin/e-jplyvk"
         }
       ]
     }, 
@@ -3406,6 +3573,7 @@
       "facebook": "https://www.facebook.com/SettleStories",
       "time": "",
       "club": "settle-stories",
+      "tickets_url": "https://www.ticketsource.com/settle-stories/",
       "geocode_missing": true
     },
     {
@@ -3712,7 +3880,7 @@
       "time": "7.30-9",
       "facebook": "https://www.facebook.com/ABitCrack",
       "club": "abitcrack",
-      "venue_id": "the-chillingham-south",
+      "venue_id": "the-chillingham-arms",
       "feature_slots": [["03/07/2026", "pyn-stockman"],["03/07/2026", "pyn-stockman"], ["07/08/2026", "harp-and-carp"], ["04/09/2026", "chris-adriaanse"], ["02/10/2026", "katy-cawkwell"], ["04/12/2026", "hugh-lupton-sarah-moody"]]
     },
     {
@@ -5015,7 +5183,7 @@
       "facebook": "https://www.facebook.com/ABitCrack",
       "isSpecial": true,
       "club": "abitcrack",
-      "venue_id": "the-chillingham-south",
+      "venue_id": "the-chillingham-arms",
       "performer_id": "shonaleigh"
     },
     {
@@ -6028,38 +6196,6 @@
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
     },
     {
-      "name": "A Celebration of Crankies [Taletta Bierens, Wendy  and Michael Dacre, Sara Hurley, Peter Stevenson]",
-      "showname": "A Celebration of Crankies",
-      "date": "22/06/2026",
-      "time": "7.30-9.30pm",
-      "club": "cambridgestorytellers",
-      "price": "£18.50 (£13)",
-      "description": "Come for an evening of storytelling with crankies — but it's not what you think! Not grouchy characters, but magical stories in a box. Crankie storytellers are the most even-tempered people in the world (with maybe a touch of eccentricity) — and they stories they tell will give you miniature glimpses into another world. In this show you will discover the art of the crankie: a story told through scrolling pictures in a box turned by 'cranks' - a delightful and unexpected folk artform which brings a whole new dimension to storytelling for all ages.\n\n\n\nIn this show you will discover a whole new world of unforgettably thrilling and atmospheric stories: and meet some of the most talented crankie performers from across the country and beyond. Encounter the Snake on the Western Wave told and sung by Wendy Dacre, shadow puppeteer and textile artist extraordinaire: and Sarah Hurley's encounters with the more than human, in spooky tales from her Devon roots. Meet illustrator-author Peter Stevenson, launching three books of Welsh folktales, in magnificent crankie form: and all the way from the extraordinary bee garden in Bloemendahl, Netherlands, storyteller Taletta Bierens with the story of the Flying Ship.",
-      "promoter_link": "",
-      "event_flyer": "2026-06-22-celebration-of-crankies.png",
-      "ticket_url": "https://www.cambridgestorytellers.com/events/a-celebration-of-crankies/",
-      "isSpecial": true,
-      "date_added": "18/06/2026",
-      "venue_id": "cambridge-junction",
-      "performer_ids": ["taletta-bierens", "wendy-dacre", "sarah-hurley","peter-stevenson"]
-    },
-    {
-      "name": "Tell Tales Club: Sheherazade's Stories [Jessie Wild]",
-      "showname": "Tell Tale Club: Sheherazade's Stories",
-      "date": "30/06/2026",
-      "time": "7-9pm",
-      "club": "tell-tales-club",
-      "price": "",
-      "description": "",
-      "promoter_link": "",
-      "event_flyer": "",
-      "ticket_url": "",
-      "isSpecial": true,
-      "date_added": "11/04/2026",
-      "venue_id": "castle-inn-aberteifi",
-      "performer_id": "jessie-wild"
-    },
-    {
       "name": "The Shahnameh [Xanthe Gresham]",
       "showname": "The Shahnameh",
       "date": "18/06/2026",
@@ -6090,6 +6226,22 @@
       "performer_ids":[ "elizabeth-dale", "keith-wallis"]
     },
     {
+      "name": "A Celebration of Crankies [Taletta Bierens, Wendy  and Michael Dacre, Sara Hurley, Peter Stevenson]",
+      "showname": "A Celebration of Crankies",
+      "date": "22/06/2026",
+      "time": "7.30-9.30pm",
+      "club": "cambridgestorytellers",
+      "price": "£18.50 (£13)",
+      "description": "Come for an evening of storytelling with crankies — but it's not what you think! Not grouchy characters, but magical stories in a box. Crankie storytellers are the most even-tempered people in the world (with maybe a touch of eccentricity) — and they stories they tell will give you miniature glimpses into another world. In this show you will discover the art of the crankie: a story told through scrolling pictures in a box turned by 'cranks' - a delightful and unexpected folk artform which brings a whole new dimension to storytelling for all ages.\n\n\n\nIn this show you will discover a whole new world of unforgettably thrilling and atmospheric stories: and meet some of the most talented crankie performers from across the country and beyond. Encounter the Snake on the Western Wave told and sung by Wendy Dacre, shadow puppeteer and textile artist extraordinaire: and Sarah Hurley's encounters with the more than human, in spooky tales from her Devon roots. Meet illustrator-author Peter Stevenson, launching three books of Welsh folktales, in magnificent crankie form: and all the way from the extraordinary bee garden in Bloemendahl, Netherlands, storyteller Taletta Bierens with the story of the Flying Ship.",
+      "promoter_link": "",
+      "event_flyer": "2026-06-22-celebration-of-crankies.png",
+      "ticket_url": "https://www.cambridgestorytellers.com/events/a-celebration-of-crankies/",
+      "isSpecial": true,
+      "date_added": "18/06/2026",
+      "venue_id": "cambridge-junction",
+      "performer_ids": ["taletta-bierens", "wendy-dacre", "sarah-hurley","peter-stevenson"]
+    },
+    {
       "name": "Fringe Theatrefest — Herd [Suited Storytellers]",
       "showname": "Herd",
       "date": ["25/06/2026", "27/06/2026", "28/06/2026"],
@@ -6118,21 +6270,6 @@
       "date_added": "18/06/2026",
       "venue_id": "liskeard-public-rooms-west",
       "performer_id": "jane-and-guy-lambourne"
-    },
-    {
-      "name": "I Will Survive [Elizabeth Dale & Keith Wallis]",
-      "showname": "I Will Survive",
-      "date": "28/06/2026",
-      "time": "7-8pm",
-      "club": "",
-      "price": "£11.55",
-      "description": "I Will Survive is a comedy storytelling show about grief; more specifically, the complicated experience of losing a parent you didn't really like.\n\n\n\nBlending storytelling, humour, and slightly unhinged academic energy (yes, there's a PowerPoint), Hari Berrow explores the messy, contradictory feelings that can come with loss — and questions the idea that there's a 'right' way to grieve.\n\n\n\nDoors open from 6.15pm. Coffee shop open before the show. Start time 7pm. Half of ticket sales are fundraising for the centre.",
-      "event_flyer": "2026_06_26_I_will_survive_caerphilly.jpg",
-      "ticket_url": "https://www.eventbrite.co.uk/e/comedy-night-i-will-survive-tickets-1990090430048",
-      "isSpecial": true,
-      "date_added": "02/06/2026",
-      "venue_id": "caerphilly-miners-centre",
-      "performer_id": "hari-berrow"
     },
     {
       "name": "Yde and Olive: A Medieval Love Story [Daisy Black]",
@@ -6181,6 +6318,21 @@
       "performer_id": "daniel-morden"
     },
     {
+      "name": "I Will Survive [Elizabeth Dale & Keith Wallis]",
+      "showname": "I Will Survive",
+      "date": "28/06/2026",
+      "time": "7-8pm",
+      "club": "",
+      "price": "£11.55",
+      "description": "I Will Survive is a comedy storytelling show about grief; more specifically, the complicated experience of losing a parent you didn't really like.\n\n\n\nBlending storytelling, humour, and slightly unhinged academic energy (yes, there's a PowerPoint), Hari Berrow explores the messy, contradictory feelings that can come with loss — and questions the idea that there's a 'right' way to grieve.\n\n\n\nDoors open from 6.15pm. Coffee shop open before the show. Start time 7pm. Half of ticket sales are fundraising for the centre.",
+      "event_flyer": "2026_06_26_I_will_survive_caerphilly.jpg",
+      "ticket_url": "https://www.eventbrite.co.uk/e/comedy-night-i-will-survive-tickets-1990090430048",
+      "isSpecial": true,
+      "date_added": "02/06/2026",
+      "venue_id": "caerphilly-miners-centre",
+      "performer_id": "hari-berrow"
+    },
+    {
       "name": "Full Moon Story Walk [Sue Bailey]",
       "showname": "Full Moon Story Walk",
       "date": "28/06/2026",
@@ -6193,6 +6345,22 @@
       "venue_id": "culver-down",
       "performer_id": "sue-bailey",
       "date_added": "25/06/2026"
+    },
+    {
+      "name": "Tell Tales Club: Sheherazade's Stories [Jessie Wild]",
+      "showname": "Tell Tale Club: Sheherazade's Stories",
+      "date": "30/06/2026",
+      "time": "7-9pm",
+      "club": "tell-tales-club",
+      "price": "",
+      "description": "",
+      "promoter_link": "",
+      "event_flyer": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "11/04/2026",
+      "venue_id": "castle-inn-aberteifi",
+      "performer_id": "jessie-wild"
     },
     {
       "name": "Open Tellers' Special Night [feat. Steve Dimmer]",
@@ -6294,6 +6462,21 @@
       "fb_event": 3167137180125156,
       "venue_id": "ropetackle-arts-centre-shoreham",
       "performer_id": ""
+    },
+    {
+      "name": "Women Who Bore Through Walls [Sarah Rundle]",
+      "showname": "Women Who Bore Through Walls",
+      "date": "15/07/2026",
+      "time": "7pm doors, 7.30-10pm",
+      "club": "beestontales",
+      "price": "£8 (£9 on the door) [£6.50]",
+      "description": "What happens when your husband locks you up and it's the 16 th century and there’s no Hooman Rights? You burrow, that's what.\n\n\n\nStories of women, from Italy, Morocco, and England, unjustly imprisoned by jealous spouses, all using their wit and grit to survive, escape, and thrive. With tips on tunnelling, staying sane, and where to hide your jewellery in an emergency.\n\n\n\nSarah Rundle got locked in a laboratory but tunnelled her way to freedom. She ran away to drama school, and for the last eighteen years has been a professional storyteller. She has devised works for the British Council, Wellcome Foundation, Geffrye Museum, Kew Gardens, and the National Trust, and performed at Stockholm's Fabula Story Café, the Nivesh Festival in Delhi, Kolkata Literature Festival, Nottingham’s Theatre Royal, and Festival at the Edge.\n\n\n\nAlso featuring tales from your hosts, music, fun and frolics.",
+      "event_flyer": "",
+      "ticket_url": "https://www.tickettailor.com/events/beestontales/2197882",
+      "isSpecial": true,
+      "date_added": "27/06/2026",
+      "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
+      "performer_id": "steph-brittain"
     },
     {
       "name": "Wild Man [Martin Maudsley]",
@@ -6438,6 +6621,21 @@
       "wider_event": "ventnor-fringe-2026"
     },
     {
+      "name": "Hot Crones [Debs Newbold]",
+      "showname": "Hot Crones",
+      "date": "01/08/2026",
+      "time": "7pm",
+      "club": "",
+      "price": "£14 / £7",
+      "description": "SUITABLE FOR: adults 18+, with Parental Guidance, 16+\n\n\n\nCONTENT: This performance contains allusions to sex, gynaecology, seduction, and some more sex.",
+      "event_flyer": "2026_08_01_debs_hot_crones.webp",
+      "ticket_url": "https://www.shakespearelink.org.uk/ticket-office/p/hot-crones",
+      "isSpecial": true,
+      "venue_id": "willow-globe",
+      "performer_id": "debs-newbold",
+      "date_added": "27/06/2026"
+    },
+    {
       "name": "TBA [Tim Ralphs]",
       "showname": "TBA",
       "date": "02/09/2026",
@@ -6466,19 +6664,34 @@
       "performer_id": "hugh-lupton"
     },
     {
-      "name": "Lilith: The Other Side of the Story [Katy Cawkwell]",
-      "showname": "Lilith: The Other Side of the Story",
-      "date": "18/09/2026",
-      "time": "7-8pm",
-      "club": "settle-stories",
-      "price": "£10.78 - £17.25",
-      "description": "An uplifting one-woman storytelling show.\n\n\n\n An exploration and celebration of female power through the mythological character of Lilith. Shocking, seductive and entertaining.\n\n\n\n Lilith, the first wife of Adam, was not prepared to lie down and accept what was given to her. Thrown out of Eden, she slithered back in to take her  revenge and wake Eve up to what her body could do. \n\n\n\n Viewed as a demon, worshipped as a goddess, adored as the Queen of   Sheba, Lilith slips out of the Bible, reclaims the narrative and is dancing with us still, forever free.\n\n\n\n Katy Cawkwell mixes myth from Arabia, Ethiopia, Mesopotamia and Jewish tradition, with a dash of feminist flavouring and a large dollop of her own wild dreaming.",
-      "event_flyer": "",
-      "ticket_url": "https://settlestories.org.uk/whats-on-event/lilith/",
+      "name": "We All Came By Boat [Clare Murphy]",
+      "showname": "We All Came By Boat",
+      "date": ["15/09/2026","16/09/2026","17/09/2026","18/09/2026","19/09/2026"],
+      "time": "7.30pm",
+      "club": "",
+      "price": "£14",
+      "description": "Myths. Mischief. Migration. The new show from storyteller and guest on The Blindboy Podcast, Clare Murphy (The Spanking Goddess & Other Discarded Tales, The Liar King)\n\n\n\nAt the edge of Europe sit a bunch of islands, forming a chaotic stone path out into the vast Atlantic ocean. These islands have always been inhabited by those who came by boat.\n\n\n\nWe arrived as seekers, invaders, siblings, refugees and even lovers. We fulfilled prophecies, dodged floods, escaped forced marriages, and pulled our fate from the stars.\n\n\n\nA wild night of storytelling fusing myth, geology and human migration.",
+      "event_flyer": "generic-clare-murphy-boat.jpg",
+      "ticket_url": "https://thewardrobetheatre.com/shows/clare-murphy-we-all-came-by-boat/",
       "isSpecial": true,
-      "venue_id": "the-joinery-settle",
-      "performer_id": "katy-cawkwell",
-      "date_added": "18/06/2026"
+      "date_added": "27/06/2026",
+      "venue_id": "wardrobe-theatre-bristol",
+      "performer_id": "clare-murphy"
+    },
+    {
+      "name": "The Saga of the Ring [Jon Mason]",
+      "showname": "The Saga of the Ring",
+      "date": "25/09/2026",
+      "time": "Doors 7pm, for 7.30 start",
+      "club": "forgingfantastical",
+      "price": "",
+      "description": "Sigurd the dragonslayer, Brunhild the valkyrie, Gudrun the princess, and a treasure that brings doom to mortals and gods alike...",
+      "event_flyer": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "the-old-stables-behind",
+      "performer_id": "jon-mason",
+      "date_added": "27/06/2026"
     },
     {
       "name": "Open Tellers' Special Night [feat. Lynette Hill]",
@@ -6830,6 +7043,18 @@
       "latlon": [
         55.95068,
         -3.18492
+      ]
+    },
+    "strode-theatre": {
+      "id": "strode-theatre",
+      "name": "Strode Theatre, Street",
+      "city": "Street, Somerset",
+      "postcode": "BA16 0AB",
+      "full_address": "Strode College, Church Road, Street, Somerset, BA16 0AB",
+      "url": "https://www.strodetheatre.org.uk/",
+      "latlon": [
+        51.13141,
+        -2.73241
       ]
     },
     "stromness-town-hall": {
@@ -7378,16 +7603,16 @@
         -3.8410961
       ]
     },
-    "the-chillingham-south": {
-      "id": "the-chillingham-south",
+    "the-chillingham-arms": {
+      "id": "the-chillingham-arms",
       "name": "The Chillingham, South Heaton",
       "city": "Newcastle",
-      "postcode": "NE6 5XN",
-      "full_address": "The Chillingham, South Heaton, Newcastle, NE6 5XN",
+      "postcode": "NE6 5XL",
+      "full_address": "The Chillingham Arms, 89-91 Chillingham Rd, South Heaton, Newcastle, NE6 5XL",
       "url": "https://sjf.co.uk/the-chillingham/",
       "latlon": [
-        54.9855258,
-        -1.576812
+        54.98257,
+        -1.57553
       ]
     },
     "chapter-arts-centre-canton": {
@@ -7400,6 +7625,30 @@
       "latlon": [
         51.4828089,
         -3.2037223
+      ]
+    },
+    "hoxton-hall": {
+      "id": "hoxton-hall",
+      "name": "Hoxton Hall, London",
+      "city": "London",
+      "postcode": "N1 6SH",
+      "full_address": "Hoxton Hall, 130 Hoxton Street, London, N1 6SH",
+      "url": "https://www.hoxtonhall.co.uk/",
+      "latlon": [
+        51.53172,
+        -0.07964
+      ]
+    },
+    "todmorden-unitarian-church": {
+      "id": "todmorden-unitarian-church",
+      "name": "Todmorden Unitarian Church",
+      "city": "Todmorden",
+      "postcode": "OL14 6LE",
+      "full_address": "Todmorden Unitarian Church, Honey Hole Road, Todmorden, OL14 6LE",
+      "url": "https://www.todunitarian.co.uk/",
+      "latlon": [
+        53.71119,
+        -2.09852
       ]
     },
     "ston-easton-village-hall-radstock": {
@@ -7829,6 +8078,18 @@
       "latlon": [
         51.9941699,
         -4.97719
+      ]
+    },
+    "carriageworks-theatre-leeds":  {
+      "id": "carriageworks-theatre-leeds",
+      "name": "Carriageworks Theatre, Leeds",
+      "city": "Leeds",
+      "postcode": "LS2 3AD",
+      "full_address": "Carriageworks Theatre, The Electric Press, 3 Millennium Square, Leeds, LS2 3AD",
+      "url": "https://www.carriageworkstheatre.co.uk/",
+      "latlon": [
+        53.80085,
+        -1.54835
       ]
     },
     "the-goddess-house-glastonbury": {
@@ -8261,6 +8522,18 @@
       "latlon": [
         51.38317,
         -0.24984
+      ]
+    },
+    "lion-and-unicorn-theatre": {
+      "id": "lion-and-unicorn-theatre",
+      "name": "Lion & Unicorn Theatre, Kentish Town",
+      "city": "London",
+      "postcode": "NW5 2ED",
+      "full_address": "The Lion & Unicorn Theatre, (Above the Lion & Unicorn Pub), 42-44 Gaisford St, Kentish Town, London, NW5 2ED",
+      "url": "https://www.thelionandunicorntheatre.com/",
+      "latlon": [
+        51.54801,
+        -0.13884
       ]
     },
     "the-story-museum-oxford": {
@@ -8701,6 +8974,7 @@
       "city": "Blackburn",
       "postcode": "BB1 7JN",
       "full_address": "Bureau Centre for the Arts, Blackburn, BB1 7JN",
+      "tickets_url": "https://www.ticketsource.com/the-bureau-centre-for-the-arts",
       "url": "https://www.ticketsource.co.uk/whats-on/blackburn/the-bureau-centre-for-the-arts/the-steed-of-bells-storytelling-performance-colin-rowan-and-iris-skipworth/2026-02-21/19:30/t-yzakplp?ref=montystoryteller.org",
       "latlon": [
         53.7501,
@@ -9563,6 +9837,18 @@
       "latlon": [
         54.37958,
         -2.90639
+      ]
+    },
+    "willow-globe":{
+      "id": "willow-globe",
+      "name": "Willow Globe, Llandrindod Wells",
+      "city": "Llandrindod Wells",
+      "postcode": "LD1 6NN",
+      "full_address": "Penlanole, Llanwrthwl, Llandrindod Wells, Powys, LD1 6NN",
+      "url": "https://www.shakespearelink.org.uk/about-willow-globe",
+      "latlon": [
+        52.26083,
+        -3.49744
       ]
     },
     "orepool-inn-sling": {
@@ -10922,12 +11208,14 @@
       "id": "merl-fluin",
       "name": "Merl Fluin",
       "url": "",
+      "tickets_url": "https://www.tickettailor.com/events/merlfluin",
       "bio": ""
     },
     "holly-medland": {
       "id": "holly-medland",
       "name": "Holly Medland",
       "url": "https://www.hollythestoryteller.com/",
+      "tickets_url": "https://www.ticketsource.com/storytelling",
       "bio": "Holly is a storyteller who lives on the beautiful Isle of Wight.\n\n\n\n She tells all sorts of stories - from favourite childhood fairytales to strange local legends - and has brought these stories to adults and children in all sorts of places including museums, pubs, bookshops, festivals, schools and forests."
     },
     "sue-bailey": {
@@ -10941,6 +11229,12 @@
       "name": "Lynette Hill, Stephen Hobbs, Rebecca LaChance, Peter Boyce, 2026 Bard of Stony Stratford, Gill and Patrick Larley",
       "url": "",
       "bio": ""
+    },
+    "debs-newbold": {
+      "id": "debs-newbold",
+      "name": "Debs Newbold",
+      "url": "https://www.debsnewboldplays.com/",
+      "bio": "Debs Newbold is an internationally acclaimed, multi-award winning storytelling artist who creates fresh, playful work that gets deep under the skin.\n\n\n\nShe is a performer, director, writer, trainer and collaborator. Playful and curious, her work takes her to theatres, festivals, old buildings and outdoor spaces. Her work is bold and honest, often very funny and known for its imaginative storytelling and ability to connect with a wide range of audiences.\n\n\n\nWith over 20 years of experience, Debs has created a body of work that explores the depth of the human condition through theatre and live performance. She is in demand all over the world. Half English, half Irish, working class in origin and Brummie to her core."
     },
     "giles-abbott": {
       "id": "giles-abbott",
