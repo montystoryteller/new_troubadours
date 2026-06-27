@@ -1457,9 +1457,13 @@
                     isSoldOut: !!rep.isSoldOut,
                 };
 
-                // tour-level flyer — one card representing the whole tour
-                if (tour.tour_flyer?.trim()) {
-                    push(tour.tour_flyer, "event", rep.date, "tour",
+                // tour-level flyer — one card representing the whole tour.
+                // Accept either field name: "tour_flyer" (legacy) or
+                // "touring_event_flyer" (used elsewhere for the headline
+                // flyer shared across all dates, e.g. repertoire shows).
+                const tourLevelFlyer = tour.tour_flyer?.trim() || tour.touring_event_flyer?.trim();
+                if (tourLevelFlyer) {
+                    push(tourLevelFlyer, "event", rep.date, "tour",
                         tour.tour_name || tour.name, tour.performer_id, rep.venue_id, rep.ticket_url, tourExtra);
                 }
 
@@ -1480,8 +1484,23 @@
                 }
             }
 
-            // repertoire_shows — per show_date individual flyers (show-level touring_event_flyer not populated in data)
+            // repertoire_shows — show-level flyer (one card for the whole show,
+            // keyed on the earliest upcoming date in window) plus per show_date
+            // individual flyers
             for (const [, show] of Object.entries(data.repertoire_shows || {})) {
+                const showDatesInWindow = (show.show_dates || [])
+                    .flatMap(sd => (Array.isArray(sd.date) ? sd.date : [sd.date])
+                        .map(dateStr => ({ ...sd, date: dateStr, _dt: parseDate(dateStr) })))
+                    .filter(sd => sd._dt && sd._dt >= cutoff)
+                    .sort((a, b) => a._dt - b._dt);
+
+                const showFlyer = show.touring_event_flyer?.trim();
+                if (showFlyer && showDatesInWindow.length) {
+                    const rep = showDatesInWindow.find(sd => sd._dt >= now) || showDatesInWindow[0];
+                    push(showFlyer, "event", rep.date, "story",
+                        show.showname || show.name, show.performer_id, rep.venue_id, rep.ticket_url, {});
+                }
+
                 for (const sd of show.show_dates || []) {
                     const flyer = sd.event_flyer?.trim();
                     if (!flyer) continue;
