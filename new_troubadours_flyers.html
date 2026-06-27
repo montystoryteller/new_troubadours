@@ -1116,6 +1116,15 @@
             if (!s) return null;
             // New recurring-schedule object format, e.g.
             // {"type":"fortnightly","day":"monday","start":"25/05/2026"}
+            // (Arrays are also typeof "object" in JS but represent multi-date
+            // lists, not schedule objects — callers should expand them into
+            // individual date strings before calling parseDate. Guard here so
+            // an unexpanded array fails loudly instead of being silently
+            // misread as a schedule object with no .start.)
+            if (Array.isArray(s)) {
+                console.warn("parseDate received an array; caller should expand it into individual date strings first:", s);
+                return null;
+            }
             if (typeof s === "object") return parseScheduleObject(s);
             if (typeof s !== "string") return null;
             const parts = s.split("/");
@@ -1386,29 +1395,38 @@
             }
 
             // specificEvents — story shows and any marked as music
+            // NOTE: .date may be a single "DD/MM/YYYY" string OR an array of
+            // such strings (multi-date run). Expand arrays so every date gets
+            // its own card instead of being silently dropped by parseDate().
             for (const e of data.specificEvents || []) {
                 if (!e.event_flyer?.trim()) continue;
                 const type = e.isMusic ? "music" : "story";
                 const clubRec = e.club ? (data.events || []).find(c => c.club === e.club) : null;
-                push(e.event_flyer, "event", e.date, type,
-                    e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
-                    clubId: e.club || "",
-                    fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
-                    clubLink: clubRec?.link || "",
-                    isCancelled: !!e.isCancelled,
-                    isSoldOut: !!e.isSoldOut,
-                });
+                const dates = Array.isArray(e.date) ? e.date : [e.date];
+                for (const dateStr of dates) {
+                    push(e.event_flyer, "event", dateStr, type,
+                        e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
+                        clubId: e.club || "",
+                        fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
+                        clubLink: clubRec?.link || "",
+                        isCancelled: !!e.isCancelled,
+                        isSoldOut: !!e.isSoldOut,
+                    });
+                }
             }
 
             // musicEvents
             for (const e of data.musicEvents || []) {
                 if (!e.event_flyer?.trim()) continue;
-                push(e.event_flyer, "event", e.date, "music",
-                    e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
-                    fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
-                    isCancelled: !!e.isCancelled,
-                    isSoldOut: !!e.isSoldOut,
-                });
+                const dates = Array.isArray(e.date) ? e.date : [e.date];
+                for (const dateStr of dates) {
+                    push(e.event_flyer, "event", dateStr, "music",
+                        e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
+                        fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
+                        isCancelled: !!e.isCancelled,
+                        isSoldOut: !!e.isSoldOut,
+                    });
+                }
             }
 
             // tours — one card per tour keyed on earliest date in window
@@ -1467,8 +1485,11 @@
                 for (const sd of show.show_dates || []) {
                     const flyer = sd.event_flyer?.trim();
                     if (!flyer) continue;
-                    push(flyer, "event", sd.date, "story",
-                        show.showname || show.name, show.performer_id, sd.venue_id, sd.ticket_url, {});
+                    const dates = Array.isArray(sd.date) ? sd.date : [sd.date];
+                    for (const dateStr of dates) {
+                        push(flyer, "event", dateStr, "story",
+                            show.showname || show.name, show.performer_id, sd.venue_id, sd.ticket_url, {});
+                    }
                 }
             }
 
