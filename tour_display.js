@@ -13,7 +13,7 @@ let currentTour = null; // Store current tour for map filtering
 function getTourStatus(tour) {
   if (!tour.tour_dates || tour.tour_dates.length === 0) return "unknown";
   const today = getTodayMidnight();
-  const dates = tour.tour_dates
+  const dates = expandTourDates(tour.tour_dates)
     .map((d) => parseDateString(d.date))
     .filter(Boolean); // exclude entries with missing/malformed dates
   if (dates.length === 0) return "unknown";
@@ -359,7 +359,7 @@ function displayTourDates(tour, status) {
     return;
   }
 
-  const sortedDates = [...tour.tour_dates].sort((a, b) => {
+  const sortedDates = [...expandTourDates(tour.tour_dates)].sort((a, b) => {
     const dateA = parseDateString(a.date);
     const dateB = parseDateString(b.date);
     if (!dateA && !dateB) return 0;
@@ -728,7 +728,7 @@ function updateMapView() {
   if (!currentTour.tour_dates || currentTour.tour_dates.length === 0) return;
 
   const bounds = map.getBounds();
-  const visibleTourDates = currentTour.tour_dates.filter((tourDate) => {
+  const visibleTourDates = expandTourDates(currentTour.tour_dates).filter((tourDate) => {
     if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
       const venue = venuesLookup[tourDate.venue_id];
       if (
@@ -742,8 +742,9 @@ function updateMapView() {
     return false;
   });
 
+  const totalTourDates = expandTourDates(currentTour.tour_dates).length;
   console.log(
-    `Tour dates in map view: ${visibleTourDates.length} of ${currentTour.tour_dates.length}`,
+    `Tour dates in map view: ${visibleTourDates.length} of ${totalTourDates}`,
   );
 
   // Re-render the tour dates list with filtered dates
@@ -786,7 +787,7 @@ function addTourMarkersToMap(tour) {
 
   const bounds = [];
 
-  tour.tour_dates.forEach((tourDate) => {
+  expandTourDates(tour.tour_dates).forEach((tourDate) => {
     if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
       const venue = venuesLookup[tourDate.venue_id];
 
@@ -864,7 +865,7 @@ function fmtShort(d) {
 }
 
 function tourAllDates(tour) {
-  return (tour.tour_dates || [])
+  return expandTourDates(tour.tour_dates)
     .map((d) => parseDateString(d.date))
     .filter(Boolean)
     .sort((a, b) => a - b);

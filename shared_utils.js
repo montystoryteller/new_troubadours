@@ -668,6 +668,38 @@ async function forEachDateInRange(items, startDate, endDate, label, callback) {
   }
 }
 
+/**
+ * Expand a tour_dates array so that any entry whose `.date` is an array of
+ * DD/MM/YYYY strings (e.g. several nights at the same venue) becomes
+ * multiple entries, each with `.date` set to a single string. Entries that
+ * already have a single string date are passed through unchanged.
+ *
+ * This lets tour pages accept the same `"date": ["21/01/2026", "22/01/2026"]`
+ * shorthand that the event/calendar listing already supports via
+ * forEachDateInRange(), without having to touch every call site that reads
+ * tour.tour_dates directly (sorting, status, map markers, etc.) — they can
+ * just call expandTourDates(tour.tour_dates) once up front instead.
+ *
+ * @param {object[]|null|undefined} tourDates - Raw tour_dates array.
+ * @returns {object[]} Flat array with one single-date entry per occurrence.
+ */
+function expandTourDates(tourDates) {
+  const expanded = [];
+  for (const item of tourDates ?? []) {
+    if (!item.date) {
+      expanded.push(item); // keep as-is; downstream code already warns on missing date
+      continue;
+    }
+    const dateField = item.date;
+    if (Array.isArray(dateField)) {
+      dateField.forEach((dateStr) => expanded.push({ ...item, date: dateStr }));
+    } else {
+      expanded.push(item);
+    }
+  }
+  return expanded;
+}
+
 // ---------------------------------------------------------------------------
 // Venue type classification
 // ---------------------------------------------------------------------------
