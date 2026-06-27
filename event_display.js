@@ -514,6 +514,7 @@ function createEventData(baseEvent, date, eventType) {
     isRepertoireShow: !!baseEvent.isRepertoireShow,
     isCancelled: !!baseEvent.isCancelled,
     isSoldOut: !!baseEvent.isSoldOut,
+    video_trailer: baseEvent.video_trailer || null,
   };
 
   // Add type-specific fields
@@ -612,6 +613,7 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
     description: tour.tour_description || null,
     event_flyer: tourDate.event_flyer || null,
     tour_flyer: tour.tour_flyer || null,
+    video_trailer: tourDate.video_trailer || tour.video_trailer || null,
     fb_event: tourDate.fb_event || null,
     ticket_url: tourDate.ticket_url || null,
     isCancelled: !!tourDate.isCancelled,
@@ -642,6 +644,7 @@ function buildShowMergedEvent(show, showKey, showDate) {
     description: show.description || null,
     event_flyer: showDate.event_flyer || null,
     touring_event_flyer: show.touring_event_flyer || null,
+    video_trailer: showDate.video_trailer || show.video_trailer || null,
     fb_event: showDate.fb_event || null,
     ticket_url: showDate.ticket_url || null,
     isRepertoireShow: true,
@@ -1722,16 +1725,29 @@ function getExpandableContent(event) {
     });
   }
 
+  // Video trailer - check event first (already resolved from tour/show at
+  // merge time), then fall back to a direct tour lookup for safety.
+  // getYouTubeEmbedUrl() — defined in shared_utils.js — validates the URL
+  // and converts it to a safe youtube-nocookie.com /embed/ URL, or returns
+  // null for anything that isn't a genuine YouTube link.
+  let videoTrailer = event.video_trailer;
+  if (!videoTrailer && event.tour_id && toursLookup[event.tour_id]) {
+    videoTrailer = toursLookup[event.tour_id].video_trailer;
+  }
+  const videoEmbedUrl = getYouTubeEmbedUrl(videoTrailer);
+
   return {
     hasDescription: Boolean(description?.trim()),
     hasFlyers: flyers.length > 0,
+    hasVideo: Boolean(videoEmbedUrl),
     description,
     flyers,
+    videoEmbedUrl,
   };
 }
 
 function createExpandableSection(event) {
-  const { hasDescription, hasFlyers, description, flyers } =
+  const { hasDescription, hasFlyers, hasVideo, description, flyers, videoEmbedUrl } =
     getExpandableContent(event);
 
   // Check if performer has a bio
@@ -1739,7 +1755,7 @@ function createExpandableSection(event) {
   const hasBio = performer_id && performersLookup[performer_id]?.bio;
 
   // Return null if no expandable content at all
-  if (!hasDescription && !hasFlyers && !hasBio) {
+  if (!hasDescription && !hasFlyers && !hasBio && !hasVideo) {
     return null;
   }
 
@@ -1749,28 +1765,56 @@ function createExpandableSection(event) {
   const bioExpandableId = `event-bio-${Math.random().toString(36).substr(2, 9)}`;
   const infoExpandableId = `event-info-${Math.random().toString(36).substr(2, 9)}`;
   const flyersExpandableId = `event-flyers-${Math.random().toString(36).substr(2, 9)}`;
+  const videoExpandableId = `event-video-${Math.random().toString(36).substr(2, 9)}`;
 
   // Helper function to toggle expandables (close others)
   const toggleExpandable = (targetId) => {
     const bioDiv = document.getElementById(bioExpandableId);
     const infoDiv = document.getElementById(infoExpandableId);
     const flyersDiv = document.getElementById(flyersExpandableId);
+    const videoDiv = document.getElementById(videoExpandableId);
 
     if (targetId === bioExpandableId) {
       const isCurrentlyOpen = bioDiv.style.display === "block";
       bioDiv.style.display = isCurrentlyOpen ? "none" : "block";
       if (infoDiv) infoDiv.style.display = "none";
       if (flyersDiv) flyersDiv.style.display = "none";
+      if (videoDiv) {
+        videoDiv.style.display = "none";
+        const frame = videoDiv.querySelector("iframe");
+        if (frame) frame.src = "";
+      }
     } else if (targetId === infoExpandableId) {
       const isCurrentlyOpen = infoDiv.style.display === "block";
       infoDiv.style.display = isCurrentlyOpen ? "none" : "block";
       if (bioDiv) bioDiv.style.display = "none";
       if (flyersDiv) flyersDiv.style.display = "none";
+      if (videoDiv) {
+        videoDiv.style.display = "none";
+        const frame = videoDiv.querySelector("iframe");
+        if (frame) frame.src = "";
+      }
     } else if (targetId === flyersExpandableId) {
       const isCurrentlyOpen = flyersDiv.style.display === "block";
       flyersDiv.style.display = isCurrentlyOpen ? "none" : "block";
       if (bioDiv) bioDiv.style.display = "none";
       if (infoDiv) infoDiv.style.display = "none";
+      if (videoDiv) {
+        videoDiv.style.display = "none";
+        const frame = videoDiv.querySelector("iframe");
+        if (frame) frame.src = "";
+      }
+    } else if (targetId === videoExpandableId) {
+      const isCurrentlyOpen = videoDiv.style.display === "block";
+      // Stop playback when the video tab is hidden — both when explicitly
+      // collapsed and when another tab steals focus, by clearing the
+      // iframe src whenever we transition to "closed".
+      videoDiv.style.display = isCurrentlyOpen ? "none" : "block";
+      const frame = videoDiv.querySelector("iframe");
+      if (frame) frame.src = isCurrentlyOpen ? "" : videoEmbedUrl;
+      if (bioDiv) bioDiv.style.display = "none";
+      if (infoDiv) infoDiv.style.display = "none";
+      if (flyersDiv) flyersDiv.style.display = "none";
     }
   };
 
@@ -1800,6 +1844,18 @@ function createExpandableSection(event) {
       toggleExpandable(flyersExpandableId);
     };
     buttonContainer.appendChild(flyersBtn);
+  }
+
+  // Video button (only if a valid trailer URL was resolved)
+  if (hasVideo) {
+    const videoBtn = document.createElement("div");
+    videoBtn.className = "event-expand-btn";
+    videoBtn.textContent = "Video";
+    videoBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleExpandable(videoExpandableId);
+    };
+    buttonContainer.appendChild(videoBtn);
   }
 
   // Bio button (if bio exists)
@@ -1871,6 +1927,33 @@ function createExpandableSection(event) {
     });
 
     container.appendChild(flyersExpandableDiv);
+  }
+
+  // Create video expandable content (lazy: iframe src is only set when
+  // opened, via toggleExpandable above, and cleared when closed so the
+  // video actually stops rather than continuing to play off-screen)
+  if (hasVideo) {
+    const videoExpandableDiv = document.createElement("div");
+    videoExpandableDiv.className = "event-expandable";
+    videoExpandableDiv.id = videoExpandableId;
+    videoExpandableDiv.style.display = "none";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "event-video-wrapper";
+
+    const iframe = document.createElement("iframe");
+    iframe.title = `${event.name} trailer`;
+    iframe.frameBorder = "0";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.allowFullscreen = true;
+    // src intentionally left unset here; toggleExpandable() sets it to
+    // videoEmbedUrl when this tab is opened.
+
+    wrapper.appendChild(iframe);
+    videoExpandableDiv.appendChild(wrapper);
+    container.appendChild(videoExpandableDiv);
   }
 
   return container;

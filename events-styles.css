@@ -221,6 +221,26 @@
     margin-top: 15px;
 }
 
+/* Video trailer embed (responsive 16:9), shown in the "Video" expandable */
+.event-video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    padding-bottom: 56.25%; /* 16:9 */
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.event-video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
 /* Facebook event inline icon — sized and blue on event cards */
 .page-events .event-facebook-inline {
     display: inline-block;
