@@ -3603,7 +3603,8 @@
       "schedule": "4th sunday",
       "facebook": "https://www.facebook.com/profile.php?id=61580047292990",
       "club": "plymouthSCi",
-      "venue_id": "snapdragons-victoria"
+      "venue_id": "snapdragons-victoria",
+      "flyers": ["2026_06_28_plymouth_storytelling_circle.jpg"]
     },
     {
       "name": "The Plough Storytelling Circle (North Devon)",
@@ -6220,6 +6221,21 @@
       "venue_id": "the-folk-of-gloucester",
       "performer_id": "",
       "date_added": "22/06/2026"
+    },
+    {
+      "name": "We Need to Talk About Cuchulain [Lara McClure]",
+      "showname": "We Need to Talk About Cuchulain",
+      "date": "02/07/2026",
+      "time": "7.30pm-10pm",
+      "club": "matlockSCafe",
+      "price": "£8 live, £6.50 zoom",
+      "description": "It's time to meet Cuchulain but from a completely new persective. We know him as an Irish warrior hero and demigod but he was also; husband, father, lover and guard dog. In Iron Age Ulster, stories came out of the mouths of bards and went into the ears of everyone else. Lara McClure's darkly amusing and assuredly gnarly yarn approaches archetypal hero Cuchulain through the testimony of a trio of Warrior Women - his sworn enemy Queen Medb, his ardent admirer the Goddess of War, and of course his doting Nana. \n\n\n\nrSuitable for age 14+.\n\n\n\nWe will be live and in the room and also streaming via Zoom. We're loving our international reach and enjoy the 'shout outs' to our global audience. So, if you're willing and able, schmooze on down to the Imperial Rooms in Matlock and join us live. If you're elsewhere in the world or can't join us live for whatever reason then kick back, feet up and click on the link.\n\n\n\nWe are delighted to tell you that soup, cakes, teas coffees etc are available from our kitchen.  We do still operate with good old fashioned cash, kerching! so bring your purse to cross our palms with silver. All monies from the kitchen help to fund our ongoing story nights. You are still most welcome to bring a bottle of something cheeky with you.\n\n\n\nWe urge you to book in advance, if you are able as tickets often sell out. \n\n\n\nTo help our more technically challenged friends we have a very small number of tickets available on the door. We suggest you arrive early if you wish to secure one of these pay in person tickets. \n\n\n\nWe at Matlock Storytelling Cafe are embracing our quest; to bring top quality performances to adult audiences.\n\n\n\nGrab a ticket, turn off your phone and join us on a journey. Online ticket sales will close at 7pm on the night.\n\n\n\nThe doors opens at 7.00pm, stories and music  7.30-10",
+      "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2258226",
+      "isSpecial": true,
+      "event_flyer": "",
+      "venue_id": "imperial-rooms-matlock",
+      "performer_id": "lara-mcclure",
+      "date_added": "27/06/2026"
     },
     {
       "name": "Under the Tree — A Storytelling Evening [Island Storytellers]",
@@ -11196,6 +11212,12 @@
       "name": "Harriet Grindley",
       "url": "https://tracscotland.org/storytellers/harriet-grindley/",
       "bio": "Harriet Grindley’s stories connect with place, history, myth and community with tales traditional and new.  She particularly enjoys using Gaelic, songs, clarsach or concertina, found objects and image to create an immersive and inclusive environment.\n\n\n\nCo-host of the popular series of storytelling ceilidh’s organised by the Burgh Blatherers at the Scottish Storytelling Centre, she tells in care homes, libraries, fairs and festivals."
+    },
+    "lara-mcclure": {
+      "id": "lara-mcclure",
+      "name": "Lara McClure",
+      "url": "https://www.instagram.com/drlaramcclure/",
+      "bio": "Performance stroyteller from York."
     },
     "shonaleigh": {
       "id": "shonaleigh",
