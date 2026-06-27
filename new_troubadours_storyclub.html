@@ -228,6 +228,7 @@
         .expand-btn {
             display: inline-block;
             margin-top: 10px;
+            margin-right: 8px;
             padding: 5px 12px;
             background: #4CAF50;
             color: white;
@@ -258,6 +259,26 @@
 
         .expandable.open {
             display: block;
+        }
+
+        /* Video trailer embed (responsive 16:9), shown in the "Video preview" expandable */
+        .event-video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            padding-bottom: 56.25%; /* 16:9 */
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* ── Map ─────────────────────────────────────────────── */
@@ -795,10 +816,46 @@
             // Find all specific events for this club
             const today = getTodayMidnight();
 
-            const allSpecific = data.specificEvents
+            const clubSpecificEvents = data.specificEvents
                 .filter(e => e.club === clubId)
-                .map(e => ({ ...e, _date: parseDateString(e.date) }))
-                .filter(e => e._date)
+                .map(e => ({ ...e, _date: parseDateString(e.date), video_trailer: e.video_trailer || null }))
+                .filter(e => e._date);
+
+            // Tour dates can opt into a club's event list via a "club_event"
+            // tag on the individual tour_dates entry (e.g. a one-off tour
+            // stop that's also that club's regular night). expandTourDates()
+            // (shared_utils.js) flattens any array-format dates first, so a
+            // multi-night stop is picked up correctly too.
+            const tours = data.tours || {};
+            const tourClubEvents = [];
+            for (const tourKey in tours) {
+                const tour = tours[tourKey];
+                expandTourDates(tour.tour_dates)
+                    .filter(tourDate => tourDate.club_event === clubId)
+                    .forEach(tourDate => {
+                        const _date = parseDateString(tourDate.date);
+                        if (!_date) return;
+                        tourClubEvents.push({
+                            name: tour.name,
+                            showname: tour.tour_name || tour.name,
+                            performer_id: tour.performer_id || null,
+                            venue_id: tourDate.venue_id,
+                            time: tourDate.time || tour.time || null,
+                            price: tourDate.price || tour.price || null,
+                            description: tour.tour_description || null,
+                            ticket_url: tourDate.ticket_url || null,
+                            fb_event: tourDate.fb_event || null,
+                            video_trailer: tourDate.video_trailer || tour.video_trailer || null,
+                            isSpecial: !!tourDate.isSpecial || !!tour.isSpecial,
+                            isCancelled: !!tourDate.isCancelled,
+                            isSoldOut: !!tourDate.isSoldOut,
+                            _date,
+                        });
+                    });
+            }
+
+            const allSpecific = clubSpecificEvents
+                .concat(tourClubEvents)
                 .sort((a, b) => a._date - b._date);
 
             const pastEvents = allSpecific.filter(e => e._date < today);
@@ -1231,6 +1288,44 @@
 
                     card.appendChild(btn);
                     card.appendChild(expandable);
+                }
+
+                // Video trailer preview, if a valid YouTube URL is available
+                // (getYouTubeEmbedUrl() — shared_utils.js — validates and
+                // converts to a safe youtube-nocookie.com /embed/ URL, or
+                // returns null for anything else).
+                const videoEmbedUrl = getYouTubeEmbedUrl(ev.video_trailer);
+                if (videoEmbedUrl) {
+                    const videoBtn = document.createElement('button');
+                    videoBtn.className = 'expand-btn';
+                    videoBtn.textContent = 'Video preview';
+
+                    const videoExpandable = document.createElement('div');
+                    videoExpandable.className = 'expandable';
+
+                    const videoWrapper = document.createElement('div');
+                    videoWrapper.className = 'event-video-wrapper';
+
+                    const iframe = document.createElement('iframe');
+                    iframe.title = `${ev.showname || ev.name} trailer`;
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+                    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+                    iframe.allowFullscreen = true;
+                    // src is only set when opened, and cleared when closed,
+                    // so the trailer doesn't keep playing off-screen.
+
+                    videoWrapper.appendChild(iframe);
+                    videoExpandable.appendChild(videoWrapper);
+
+                    videoBtn.addEventListener('click', () => {
+                        const open = videoExpandable.classList.toggle('open');
+                        videoBtn.textContent = open ? 'Hide video' : 'Video preview';
+                        iframe.src = open ? videoEmbedUrl : '';
+                    });
+
+                    card.appendChild(videoBtn);
+                    card.appendChild(videoExpandable);
                 }
 
                 return card;
