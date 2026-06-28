@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Builder - New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="shared-styles.css">
+    <script src="shared_utils.js"></script>
+    <style>
+        .builder-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .type-tabs {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .type-tab {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: 2px solid #4CAF50;
+            background: white;
+            color: #2e7d32;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .type-tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 10px;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .field-row label {
+            font-weight: 600;
+            padding-top: 8px;
+        }
+
+        .field-row input[type="text"],
+        .field-row input[type="url"],
+        .field-row input[type="number"],
+        .field-row textarea,
+        .field-row select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95em;
+            box-sizing: border-box;
+        }
+
+        .field-row textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .field-hint {
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 3px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .checkbox-row label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-top: 0;
+        }
+
+        /* ── Entity picker (performer / venue) ───────────────── */
+        .entity-field {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            background: #fafafa;
+        }
+
+        .entity-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .entity-input-row input {
+            flex: 1;
+        }
+
+        .entity-status {
+            font-size: 0.78em;
+            margin-top: 4px;
+        }
+
+        .entity-status.match {
+            color: #2e7d32;
+        }
+
+        .entity-status.new {
+            color: #757575;
+        }
+
+        .entity-details-toggle {
+            appearance: none;
+            -webkit-appearance: none;
+            background: white;
+            color: #333;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            padding: 4px 9px;
+            font-size: 0.82em;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .entity-details-toggle:hover {
+            background: #f0f0f0;
+        }
+
+        .entity-details-toggle:focus,
+        .entity-details-toggle:focus-visible {
+            outline: 2px solid #4CAF50;
+            outline-offset: 1px;
+        }
+
+        .entity-details-panel {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
+            display: grid;
+            gap: 6px;
+        }
+
+        .entity-details-panel input {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .entity-details-panel input::placeholder {
+            color: #999;
+        }
+
+        /* ── Multi-performer list ─────────────────────────────── */
+        .multi-performer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .multi-performer-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .mp-remove {
+            background: #e57373;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .add-performer-btn {
+            margin-top: 8px;
+            background: white;
+            color: #2e7d32;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.88em;
+            font-weight: 600;
+        }
+
+        .add-performer-btn:hover {
+            background: #e8f5e9;
+        }
+
+        .combined-performer-wrap {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .combined-performer-wrap input {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+
+        /* ── Repeatable date rows ─────────────────────────────── */
+        .date-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .date-row {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            background: #fcfcfc;
+            position: relative;
+        }
+
+        .date-row-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e57373;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .add-date-btn {
+            align-self: flex-start;
+            background: white;
+            color: #2e7d32;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .add-date-btn:hover {
+            background: #e8f5e9;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-row button {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-add-batch {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-clear-form {
+            background: #eee;
+            color: #333;
+        }
+
+        /* ── Batch summary ────────────────────────────────────── */
+        .batch-summary {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .batch-summary h3 {
+            margin: 0 0 8px;
+            font-size: 1em;
+            color: #2e7d32;
+        }
+
+        .batch-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .batch-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 0.9em;
+        }
+
+        .batch-list-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .batch-tag {
+            display: inline-block;
+            text-transform: uppercase;
+            font-size: 0.7em;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 2px 7px;
+            border-radius: 3px;
+            background: #4CAF50;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .batch-tag-performer,
+        .batch-tag-venue {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .batch-list button {
+            background: #e57373;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 9px;
+            cursor: pointer;
+        }
+
+        .batch-empty {
+            color: #888;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        #outputArea {
+            width: 100%;
+            min-height: 260px;
+            font-family: monospace;
+            font-size: 0.85em;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .output-actions button {
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary-action {
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-action:hover {
+            background: #43a047;
+        }
+
+        .btn-secondary-action {
+            background: white;
+            color: #2e7d32;
+            border: 2px solid #4CAF50;
+        }
+
+        .btn-secondary-action:hover {
+            background: #e8f5e9;
+        }
+
+        .merge-note {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 10px 14px;
+            font-size: 0.88em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body class="page-builder">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_stats.html">📊 Stats</a>
+        <a href="new_troubadours_event_builder.html" aria-current="page">🛠️ Event Builder</a>
+    </nav>
+
+    <div class="builder-wrap">
+        <h1>Event Builder</h1>
+        <p>Build JSON snippets for new specific events, tours, and repertoire shows.
+            Search existing performers and venues as you go — if one doesn't exist yet,
+            just type its name and use "+ details" to add it on the fly.</p>
+
+        <p id="loadStatus" class="field-hint">Loading existing performers and venues…</p>
+
+        <div class="type-tabs">
+            <button class="type-tab active" data-type="event">Specific / Music Event</button>
+            <button class="type-tab" data-type="tour">Tour</button>
+            <button class="type-tab" data-type="show">Repertoire Show</button>
+            <button class="type-tab" data-type="performer">New Performer</button>
+            <button class="type-tab" data-type="venue">New Venue</button>
+        </div>
+
+        <div class="batch-summary">
+            <h3>Batch (not yet exported)</h3>
+            <ul class="batch-list" id="batchList"></ul>
+            <p class="batch-empty" id="batchEmptyMsg">Nothing added yet — fill in a form below and click "Add to batch".</p>
+        </div>
+
+        <!-- ── Specific / Music event panel ───────────────────── -->
+        <div class="panel" id="panel-event">
+            <h2>Specific / Music Event</h2>
+
+            <div class="field-row">
+                <label>Event kind</label>
+                <select id="ev-kind">
+                    <option value="story">Story / special event (→ specificEvents)</option>
+                    <option value="music">Music event (→ musicEvents)</option>
+                </select>
+            </div>
+
+            <div class="field-row">
+                <label>Show name</label>
+                <div>
+                    <input type="text" id="ev-showname" placeholder="e.g. A Figure of Speech">
+                    <div class="field-hint">The "name" field is built automatically as "Showname [Performer]" unless you override it below.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Name override</label>
+                <input type="text" id="ev-name" placeholder="(optional — leave blank to auto-generate)">
+            </div>
+
+            <div class="field-row">
+                <label>Performer</label>
+                <div id="ev-performer-field"></div>
+            </div>
+
+            <div class="field-row">
+                <label>Venue</label>
+                <div id="ev-venue-field"></div>
+            </div>
+
+            <div class="field-row">
+                <label>Date(s)</label>
+                <div>
+                    <input type="text" id="ev-date" placeholder="DD/MM/YYYY, or several comma-separated for a multi-night run">
+                    <div class="field-hint">e.g. <code>15/10/2025</code> or <code>15/10/2025, 16/10/2025</code></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Date added</label>
+                <div>
+                    <input type="text" id="ev-date-added" placeholder="DD/MM/YYYY">
+                    <label style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
+                        <input type="checkbox" id="ev-date-added-today"> Set to today
+                    </label>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Time</label>
+                <input type="text" id="ev-time" placeholder="e.g. 7.30-9pm">
+            </div>
+
+            <div class="field-row">
+                <label>Club</label>
+                <div>
+                    <input type="text" id="ev-club" list="clubOptions" placeholder="Existing club id, if this is a guest spot at a club night">
+                    <div class="field-hint">Leave blank for a standalone show with no club night.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Price</label>
+                <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="ev-description" placeholder="Show description"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Event flyer</label>
+                <input type="text" id="ev-flyer" placeholder="filename.jpg">
+            </div>
+
+            <div class="field-row">
+                <label>Video trailer</label>
+                <input type="url" id="ev-video" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="field-row">
+                <label>Ticket URL</label>
+                <input type="url" id="ev-ticket-url">
+            </div>
+
+            <div class="field-row">
+                <label>Facebook event ID</label>
+                <input type="text" id="ev-fb-event" placeholder="numeric id, optional">
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="ev-special" checked> Special event</label>
+                    <label><input type="checkbox" id="ev-cancelled"> Cancelled</label>
+                    <label><input type="checkbox" id="ev-soldout"> Sold out</label>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addEventToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearEventForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Tour panel ──────────────────────────────────────── -->
+        <div class="panel" id="panel-tour" style="display:none;">
+            <h2>Tour</h2>
+
+            <div class="field-row">
+                <label>Tour key (id)</label>
+                <input type="text" id="tour-key" placeholder="auto-suggested, edit if needed">
+            </div>
+
+            <div class="field-row">
+                <label>Tour name</label>
+                <div>
+                    <input type="text" id="tour-tourname" placeholder="e.g. Dauntless (2026)">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Show name</label>
+                <input type="text" id="tour-name" placeholder="e.g. Dauntless">
+            </div>
+
+            <div class="field-row">
+                <label>Performer</label>
+                <div id="tour-performer-field"></div>
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="tour-description" placeholder="Tour description"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Headline flyer</label>
+                <div>
+                    <input type="text" id="tour-flyer" placeholder="filename.jpg">
+                    <div class="field-hint">touring_event_flyer — one flyer representing the whole tour, not repeated per date.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Video trailer</label>
+                <input type="url" id="tour-video" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="tour-special" checked> Special event</label>
+                </div>
+            </div>
+
+            <h3>Tour dates</h3>
+            <div class="date-rows" id="tour-date-rows"></div>
+            <button type="button" class="add-date-btn" onclick="addTourDateRow()" style="margin-top:10px;">Add date</button>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addTourToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearTourForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Repertoire show panel ───────────────────────────── -->
+        <div class="panel" id="panel-show" style="display:none;">
+            <h2>Repertoire Show</h2>
+
+            <div class="field-row">
+                <label>Show key (id)</label>
+                <input type="text" id="show-key" placeholder="auto-suggested, edit if needed">
+            </div>
+
+            <div class="field-row">
+                <label>Name</label>
+                <input type="text" id="show-fullname" placeholder="e.g. The Goddess of Spreadsheets [Tim Ralphs]">
+            </div>
+
+            <div class="field-row">
+                <label>Show name</label>
+                <input type="text" id="show-showname" placeholder="e.g. The Goddess of Spreadsheets">
+            </div>
+
+            <div class="field-row">
+                <label>Performer</label>
+                <div id="show-performer-field"></div>
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="show-description"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Headline flyer</label>
+                <input type="text" id="show-flyer" placeholder="filename.jpg (touring_event_flyer)">
+            </div>
+
+            <div class="field-row">
+                <label>Video trailer</label>
+                <input type="url" id="show-video" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="show-special" checked> Special event</label>
+                    <label><input type="checkbox" id="show-touring"> Touring show</label>
+                </div>
+            </div>
+
+            <h3>Show dates</h3>
+            <div class="date-rows" id="show-date-rows"></div>
+            <button type="button" class="add-date-btn" onclick="addShowDateRow()" style="margin-top:10px;">Add date</button>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addShowToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearShowForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── New performer panel ──────────────────────────────── -->
+        <div class="panel" id="panel-performer" style="display:none;">
+            <h2>New Performer</h2>
+            <p class="field-hint">Adds straight to the batch as a standalone performer record — no event/tour/show needed.</p>
+
+            <div class="field-row">
+                <label>Name</label>
+                <input type="text" id="perf-name" placeholder="e.g. Daniel Morden">
+            </div>
+
+            <div class="field-row">
+                <label>Website URL</label>
+                <input type="url" id="perf-url">
+            </div>
+
+            <div class="field-row">
+                <label>Bio</label>
+                <textarea id="perf-bio"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Type</label>
+                <input type="text" id="perf-type" placeholder="e.g. storyteller, musician">
+            </div>
+
+            <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="perf-facebook">
+            </div>
+
+            <div class="field-row">
+                <label>Instagram</label>
+                <input type="url" id="perf-instagram">
+            </div>
+
+            <div class="field-row">
+                <label>Tickets URL</label>
+                <input type="url" id="perf-tickets-url">
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="perf-musician"> Musician</label>
+                    <label><input type="checkbox" id="perf-troupe"> Troupe / group (overrides Type, above, with "troupe")</label>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label></label>
+                <div class="field-hint">Members aren't set here — they're added via the "Combined/troupe billing name" option on the Performer field when you build a tour/show/event featuring this group.</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addPerformerToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearPerformerForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── New venue panel ──────────────────────────────────── -->
+        <div class="panel" id="panel-venue" style="display:none;">
+            <h2>New Venue</h2>
+            <p class="field-hint">Adds straight to the batch as a standalone venue record — no event/tour/show needed.</p>
+
+            <div class="field-row">
+                <label>Name</label>
+                <input type="text" id="venue-name" placeholder="e.g. Wardrobe Theatre">
+            </div>
+
+            <div class="field-row">
+                <label>City</label>
+                <input type="text" id="venue-city">
+            </div>
+
+            <div class="field-row">
+                <label>Postcode</label>
+                <input type="text" id="venue-postcode">
+            </div>
+
+            <div class="field-row">
+                <label>Full address</label>
+                <input type="text" id="venue-full-address">
+            </div>
+
+            <div class="field-row">
+                <label>Website URL</label>
+                <input type="url" id="venue-url">
+            </div>
+
+            <div class="field-row">
+                <label>Tickets URL</label>
+                <input type="url" id="venue-tickets-url">
+            </div>
+
+            <div class="field-row">
+                <label>Email</label>
+                <input type="text" id="venue-email">
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="venue-description"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Latitude, longitude</label>
+                <input type="text" id="venue-latlon" placeholder="e.g. 51.5, -0.12 (optional)">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addVenueToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearVenueForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Output ──────────────────────────────────────────── -->
+        <div class="panel">
+            <h2>Generated JSON</h2>
+            <div class="merge-note">
+                Copy the relevant section(s) into <code>events_normalized.json</code>: merge
+                <code>newPerformers</code> into <code>performers</code>, <code>newVenues</code> into
+                <code>venues</code>, then merge each record into its matching top-level array/object
+                (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>, <code>repertoire_shows</code>).
+            </div>
+            <div class="output-actions">
+                <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
+                <button onclick="copyOutput()" class="btn-secondary-action">Copy to clipboard</button>
+                <button onclick="downloadOutput()" class="btn-secondary-action">Download .json</button>
+            </div>
+            <textarea id="outputArea" readonly placeholder="Click &quot;Generate from batch&quot; once you've added one or more records above…"></textarea>
+        </div>
+    </div>
+
+    <datalist id="performerOptions"></datalist>
+    <datalist id="venueOptions"></datalist>
+    <datalist id="clubOptions"></datalist>
+
+    <script>
+        // ── Loaded lookups + session-created entities ───────────────────────
+        let performersLookup = {};
+        let venuesLookup = {};
+        let clubIds = [];
+        let existingTourKeys = new Set();
+        let existingShowKeys = new Set();
+        const newPerformers = {};
+        const newVenues = {};
+
+        // Batch of records waiting to be exported
+        const batch = { events: [], musicEvents: [], tours: [], shows: [] };
+
+        // ── Slugify ──────────────────────────────────────────────────────────
+        function slugify(s) {
+            return (s || "")
+                .toLowerCase()
+                .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+        function uniqueId(slug, existsFn) {
+            let id = slug || "untitled";
+            let n = 2;
+            while (existsFn(id)) {
+                id = `${slug}-${n++}`;
+            }
+            return id;
+        }
+
+        function todayDDMMYYYY() {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, "0");
+            return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+        }
+
+        // Wires a "Set to today" checkbox to a date_added text input: checking
+        // it fills in today's date and locks the field read-only; unchecking
+        // clears it and unlocks it for manual entry.
+        function wireDateAddedCheckbox(checkbox, input) {
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    input.value = todayDDMMYYYY();
+                    input.readOnly = true;
+                } else {
+                    input.readOnly = false;
+                }
+            });
+        }
+
+        // ── Entity picker (performer / venue) ───────────────────────────────
+        // Builds a small widget: search input (with datalist suggestions) +
+        // a "+ details" toggle revealing optional extra fields for a new
+        // entity. Resolution to an id happens lazily, at generate-time, via
+        // resolveEntityField() — not here — so the same widget works whether
+        // the typed name turns out to match an existing record or not.
+        function buildEntityField(container, kind) {
+            container.innerHTML = "";
+            const wrap = document.createElement("div");
+            wrap.className = "entity-field";
+
+            const row = document.createElement("div");
+            row.className = "entity-input-row";
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "entity-input";
+            input.setAttribute("list", kind === "performer" ? "performerOptions" : "venueOptions");
+            input.placeholder = kind === "performer" ? "Search performers…" : "Search venues…";
+
+            const detailsBtn = document.createElement("button");
+            detailsBtn.type = "button";
+            detailsBtn.className = "entity-details-toggle";
+            detailsBtn.textContent = "+ details";
+
+            row.appendChild(input);
+            row.appendChild(detailsBtn);
+            wrap.appendChild(row);
+
+            const status = document.createElement("div");
+            status.className = "entity-status";
+            wrap.appendChild(status);
+
+            const detailsPanel = document.createElement("div");
+            detailsPanel.className = "entity-details-panel";
+            detailsPanel.style.display = "none";
+
+            if (kind === "performer") {
+                detailsPanel.innerHTML = `
+                    <input data-field="url" type="url" placeholder="Website URL">
+                    <input data-field="bio" type="text" placeholder="Short bio">`;
+            } else {
+                detailsPanel.innerHTML = `
+                    <input data-field="city" type="text" placeholder="City">
+                    <input data-field="postcode" type="text" placeholder="Postcode">
+                    <input data-field="full_address" type="text" placeholder="Full address">
+                    <input data-field="url" type="url" placeholder="Venue website URL">
+                    <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">`;
+            }
+            wrap.appendChild(detailsPanel);
+
+            detailsBtn.addEventListener("click", () => {
+                detailsPanel.style.display = detailsPanel.style.display === "none" ? "grid" : "none";
+            });
+
+            const lookup = kind === "performer" ? performersLookup : venuesLookup;
+            function updateStatus() {
+                const name = input.value.trim();
+                if (!name) { status.textContent = ""; return; }
+                const match = Object.values(lookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+                if (match) {
+                    status.textContent = `Matches existing ${kind} — id: ${match.id}`;
+                    status.className = "entity-status match";
+                } else {
+                    status.textContent = `Will be created as a new ${kind}`;
+                    status.className = "entity-status new";
+                }
+            }
+            input.addEventListener("input", updateStatus);
+
+            container.appendChild(wrap);
+            return { input, detailsPanel, kind };
+        }
+
+        // Resolves an entity field built by buildEntityField() to an id,
+        // creating a new performer/venue record (added to newPerformers /
+        // newVenues) if the typed name doesn't match an existing one.
+        function resolveEntityField(field) {
+            const name = field.input.value.trim();
+            if (!name) return null;
+            const lookup = field.kind === "performer" ? performersLookup : venuesLookup;
+            const newLookup = field.kind === "performer" ? newPerformers : newVenues;
+
+            const existing = Object.entries(lookup).find(([, r]) => (r.name || "").toLowerCase() === name.toLowerCase());
+            if (existing) return existing[0];
+
+            // Already created earlier in this session under the same name?
+            const already = Object.entries(newLookup).find(([, r]) => (r.name || "").toLowerCase() === name.toLowerCase());
+            if (already) return already[0];
+
+            const id = uniqueId(slugify(name), id => !!lookup[id] || !!newLookup[id]);
+            const record = { id, name };
+            field.detailsPanel.querySelectorAll("[data-field]").forEach(inp => {
+                const v = inp.value.trim();
+                if (!v) return;
+                if (inp.dataset.field === "latlon") {
+                    const parts = v.split(",").map(s => parseFloat(s.trim()));
+                    if (parts.length === 2 && parts.every(n => !isNaN(n))) record.latlon = parts;
+                } else {
+                    record[inp.dataset.field] = v;
+                }
+            });
+            newLookup[id] = record;
+            return id;
+        }
+
+        // ── Multi-performer field ────────────────────────────────────────────
+        // A repeatable list of performer entity fields, plus an optional
+        // "combined/troupe" name for billings like "Cath Little & Bronia
+        // Evers" that should also exist as their own performer record
+        // (type: "troupe", performer_ids: [...]). Mirrors the shape already
+        // used in the real data: performer_ids holds the individual people,
+        // performer_id (optional) points at the combined billing.
+        function buildMultiPerformerField(container) {
+            container.innerHTML = "";
+            const list = document.createElement("div");
+            list.className = "multi-performer-list";
+            container.appendChild(list);
+
+            function addRow() {
+                const row = document.createElement("div");
+                row.className = "multi-performer-row";
+                const fieldHolder = document.createElement("div");
+                fieldHolder.style.flex = "1";
+                row._field = buildEntityField(fieldHolder, "performer");
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "mp-remove";
+                removeBtn.textContent = "×";
+                removeBtn.title = "Remove performer";
+                removeBtn.addEventListener("click", () => {
+                    if (list.children.length > 1) row.remove();
+                });
+
+                row.appendChild(fieldHolder);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            }
+            addRow();
+
+            const addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className = "add-performer-btn";
+            addBtn.textContent = "Add another performer";
+            addBtn.addEventListener("click", addRow);
+            container.appendChild(addBtn);
+
+            const combinedWrap = document.createElement("div");
+            combinedWrap.className = "combined-performer-wrap";
+            combinedWrap.innerHTML = `
+                <label style="font-weight:normal; font-size:0.85em; color:#555;">
+                    Combined/troupe billing name (optional — only needed if "X &amp; Y" should
+                    also exist as its own performer record, e.g. for a double-bill)
+                </label>
+                <input type="text" class="combined-performer-input" placeholder="e.g. Cath Little &amp; Bronia Evers">`;
+            container.appendChild(combinedWrap);
+
+            return {
+                getRows: () => Array.from(list.children).map(row => row._field),
+                getCombinedInput: () => combinedWrap.querySelector(".combined-performer-input"),
+            };
+        }
+
+        // Resolves a multi-performer field to { performer_id?, performer_ids?, displayName }.
+        // - 0 performers: returns {} (displayName "")
+        // - 1 performer, no combined name: performer_id = that one id (same
+        //   behaviour as the old single-performer field)
+        // - 2+ performers: performer_ids = [...]; performer_id is also set
+        //   if a combined name was given (creating/reusing a troupe record)
+        function resolveMultiPerformerField(multi) {
+            const resolved = multi.getRows().map(field => {
+                const id = resolveEntityField(field);
+                const name = id ? (performersLookup[id]?.name || newPerformers[id]?.name) : null;
+                return { id, name };
+            }).filter(r => r.id);
+
+            const ids = resolved.map(r => r.id);
+            const names = resolved.map(r => r.name).filter(Boolean);
+            const combinedName = multi.getCombinedInput().value.trim();
+            const result = { displayName: combinedName || names.join(" & ") };
+
+            if (ids.length > 1) result.performer_ids = ids;
+
+            if (combinedName) {
+                const existing = Object.entries(performersLookup).find(([, r]) => (r.name || "").toLowerCase() === combinedName.toLowerCase());
+                let combinedId = existing?.[0];
+                if (!combinedId) {
+                    const already = Object.entries(newPerformers).find(([, r]) => (r.name || "").toLowerCase() === combinedName.toLowerCase());
+                    combinedId = already?.[0];
+                }
+                if (!combinedId) {
+                    combinedId = uniqueId(slugify(combinedName), id => !!performersLookup[id] || !!newPerformers[id]);
+                    newPerformers[combinedId] = { id: combinedId, name: combinedName, type: "troupe", performer_ids: ids };
+                }
+                result.performer_id = combinedId;
+            } else if (ids.length === 1) {
+                result.performer_id = ids[0];
+            }
+            return result;
+        }
+
+
+        document.querySelectorAll(".type-tab").forEach(tab => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".type-tab").forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                ["event", "tour", "show", "performer", "venue"].forEach(t => {
+                    document.getElementById(`panel-${t}`).style.display = t === tab.dataset.type ? "" : "none";
+                });
+            });
+        });
+
+        // ── Date row helpers (shared shape for tour_dates / show_dates) ────
+        function dateRowTemplate(kind) {
+            // kind: "tour" or "show" — controls which extra fields appear
+            const row = document.createElement("div");
+            row.className = "date-row";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "date-row-remove";
+            removeBtn.textContent = "×";
+            removeBtn.addEventListener("click", () => row.remove());
+            row.appendChild(removeBtn);
+
+            const grid = document.createElement("div");
+            grid.innerHTML = `
+                <div class="field-row">
+                    <label>Date(s)</label>
+                    <input type="text" class="dr-date" placeholder="DD/MM/YYYY, or comma-separated for a multi-night run">
+                </div>
+                <div class="field-row">
+                    <label>Venue</label>
+                    <div class="dr-venue-field"></div>
+                </div>
+                <div class="field-row">
+                    <label>Time</label>
+                    <input type="text" class="dr-time" placeholder="e.g. 7.30pm">
+                </div>
+                <div class="field-row">
+                    <label>Price</label>
+                    <input type="text" class="dr-price" placeholder="e.g. £10">
+                </div>
+                <div class="field-row">
+                    <label>Ticket URL</label>
+                    <input type="url" class="dr-ticket-url">
+                </div>
+                <div class="field-row">
+                    <label>Video trailer</label>
+                    <input type="url" class="dr-video" placeholder="(optional override)">
+                </div>
+                <div class="field-row">
+                    <label>Date added</label>
+                    <div>
+                        <input type="text" class="dr-date-added" placeholder="DD/MM/YYYY">
+                        <label style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
+                            <input type="checkbox" class="dr-date-added-today"> Set to today
+                        </label>
+                    </div>
+                </div>
+                ${kind === "tour" ? `
+                <div class="field-row">
+                    <label>Club event</label>
+                    <input type="text" class="dr-club-event" list="clubOptions" placeholder="(optional) link this date into a club's event list">
+                </div>` : `
+                <div class="field-row">
+                    <label>Club</label>
+                    <input type="text" class="dr-club" list="clubOptions" placeholder="club id, if applicable">
+                </div>
+                <div class="field-row">
+                    <label>Attendance</label>
+                    <select class="dr-online">
+                        <option value="">— not specified —</option>
+                        <option value="in-person">In-person</option>
+                        <option value="online">Online</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <div class="field-row">
+                    <label>Facebook event ID</label>
+                    <input type="text" class="dr-fb-event">
+                </div>
+                <div class="field-row">
+                    <label>Event flyer</label>
+                    <input type="text" class="dr-flyer" placeholder="filename.jpg (this date only)">
+                </div>`}
+                <div class="field-row">
+                    <label>Flags</label>
+                    <div class="checkbox-row">
+                        ${kind === "tour" ? `<label><input type="checkbox" class="dr-special" checked> Special</label>` : ""}
+                        <label><input type="checkbox" class="dr-cancelled"> Cancelled</label>
+                        <label><input type="checkbox" class="dr-soldout"> Sold out</label>
+                    </div>
+                </div>
+            `;
+            row.appendChild(grid);
+            const venueField = buildEntityField(grid.querySelector(".dr-venue-field"), "venue");
+            row._venueField = venueField;
+            wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
+            return row;
+        }
+
+        function addTourDateRow() {
+            document.getElementById("tour-date-rows").appendChild(dateRowTemplate("tour"));
+        }
+        function addShowDateRow() {
+            document.getElementById("show-date-rows").appendChild(dateRowTemplate("show"));
+        }
+
+        function readDateRows(container, kind) {
+            return Array.from(container.querySelectorAll(".date-row")).map(row => {
+                const dateRaw = row.querySelector(".dr-date").value.trim();
+                const dates = dateRaw.split(",").map(s => s.trim()).filter(Boolean);
+                const entry = {
+                    date: dates.length > 1 ? dates : (dates[0] || ""),
+                    venue_id: resolveEntityField(row._venueField),
+                };
+                const time = row.querySelector(".dr-time").value.trim();
+                const price = row.querySelector(".dr-price").value.trim();
+                const ticketUrl = row.querySelector(".dr-ticket-url").value.trim();
+                const video = row.querySelector(".dr-video").value.trim();
+                if (time) entry.time = time;
+                if (price) entry.price = price;
+                if (ticketUrl) entry.ticket_url = ticketUrl;
+                if (video) entry.video_trailer = video;
+                const dateAdded = row.querySelector(".dr-date-added").value.trim();
+                if (dateAdded) entry.date_added = dateAdded;
+
+                if (kind === "tour") {
+                    const clubEvent = row.querySelector(".dr-club-event").value.trim();
+                    if (clubEvent) entry.club_event = clubEvent;
+                    entry.isSpecial = row.querySelector(".dr-special").checked;
+                } else {
+                    const club = row.querySelector(".dr-club").value.trim();
+                    const online = row.querySelector(".dr-online").value;
+                    const fbEvent = row.querySelector(".dr-fb-event").value.trim();
+                    const flyer = row.querySelector(".dr-flyer").value.trim();
+                    if (club) entry.club = club;
+                    if (online) entry.online = online;
+                    if (fbEvent) entry.fb_event = fbEvent;
+                    if (flyer) entry.event_flyer = flyer;
+                }
+                if (row.querySelector(".dr-cancelled").checked) entry.isCancelled = true;
+                if (row.querySelector(".dr-soldout").checked) entry.isSoldOut = true;
+                return entry;
+            }).filter(e => e.date && e.venue_id);
+        }
+
+        // ── Specific / Music event form ─────────────────────────────────────
+        let evPerformerMulti;
+        let evVenueField;
+        function initEventForm() {
+            evPerformerMulti = buildMultiPerformerField(document.getElementById("ev-performer-field"));
+            evVenueField = buildEntityField(document.getElementById("ev-venue-field"), "venue");
+            wireDateAddedCheckbox(document.getElementById("ev-date-added-today"), document.getElementById("ev-date-added"));
+        }
+
+        function addEventToBatch() {
+            const showname = document.getElementById("ev-showname").value.trim();
+            const perf = resolveMultiPerformerField(evPerformerMulti);
+            const venueId = resolveEntityField(evVenueField);
+            if (!showname || !venueId) {
+                alert("Please fill in at least a show name and a venue.");
+                return;
+            }
+            const nameOverride = document.getElementById("ev-name").value.trim();
+            const name = nameOverride || (perf.displayName ? `${showname} [${perf.displayName}]` : showname);
+
+            const dateRaw = document.getElementById("ev-date").value.trim();
+            const dates = dateRaw.split(",").map(s => s.trim()).filter(Boolean);
+            const kind = document.getElementById("ev-kind").value;
+
+            const record = {
+                name,
+                showname,
+                date: dates.length > 1 ? dates : (dates[0] || ""),
+                venue_id: venueId,
+            };
+            if (perf.performer_id) record.performer_id = perf.performer_id;
+            if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            const time = document.getElementById("ev-time").value.trim();
+            const club = document.getElementById("ev-club").value.trim();
+            const price = document.getElementById("ev-price").value.trim();
+            const description = document.getElementById("ev-description").value.trim();
+            const flyer = document.getElementById("ev-flyer").value.trim();
+            const video = document.getElementById("ev-video").value.trim();
+            const ticketUrl = document.getElementById("ev-ticket-url").value.trim();
+            const fbEvent = document.getElementById("ev-fb-event").value.trim();
+            const dateAdded = document.getElementById("ev-date-added").value.trim();
+            if (dateAdded) record.date_added = dateAdded;
+            if (time) record.time = time;
+            if (club) record.club = club;
+            if (price) record.price = price;
+            if (description) record.description = description;
+            if (flyer) record.event_flyer = flyer;
+            if (video) record.video_trailer = video;
+            if (ticketUrl) record.ticket_url = ticketUrl;
+            if (fbEvent) record.fb_event = fbEvent;
+            if (document.getElementById("ev-cancelled").checked) record.isCancelled = true;
+            if (document.getElementById("ev-soldout").checked) record.isSoldOut = true;
+
+            if (kind === "music") {
+                record.isMusic = true;
+                batch.musicEvents.push(record);
+            } else {
+                if (document.getElementById("ev-special").checked) record.isSpecial = true;
+                batch.events.push(record);
+            }
+
+            refreshBatchSummary();
+            clearEventForm();
+        }
+
+        function clearEventForm() {
+            ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-price",
+                "ev-description", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("ev-date-added-today").checked = false;
+            document.getElementById("ev-date-added").readOnly = false;
+            document.getElementById("ev-special").checked = true;
+            document.getElementById("ev-cancelled").checked = false;
+            document.getElementById("ev-soldout").checked = false;
+            initEventForm();
+        }
+
+        // ── Tour form ────────────────────────────────────────────────────────
+        let tourPerformerMulti;
+        function initTourForm() {
+            tourPerformerMulti = buildMultiPerformerField(document.getElementById("tour-performer-field"));
+            document.getElementById("tour-date-rows").innerHTML = "";
+            addTourDateRow();
+        }
+
+        let tourKeyAutoValue = "";
+        function suggestTourKey() {
+            const keyField = document.getElementById("tour-key");
+            if (keyField.value && keyField.value !== tourKeyAutoValue) return; // user has edited it manually
+            const firstPerformerName = tourPerformerMulti.getRows()[0]?.input.value.trim() || "";
+            const name = document.getElementById("tour-name").value.trim();
+            tourKeyAutoValue = [slugify(firstPerformerName), slugify(name)].filter(Boolean).join("-");
+            keyField.value = tourKeyAutoValue;
+        }
+
+        function addTourToBatch() {
+            const tourName = document.getElementById("tour-tourname").value.trim();
+            const name = document.getElementById("tour-name").value.trim();
+            const perf = resolveMultiPerformerField(tourPerformerMulti);
+            const dateRows = readDateRows(document.getElementById("tour-date-rows"), "tour");
+            if (!tourName || !name || !perf.performer_id && !perf.performer_ids || !dateRows.length) {
+                alert("Please fill in tour name, show name, at least one performer, and at least one valid tour date (with venue).");
+                return;
+            }
+            let key = document.getElementById("tour-key").value.trim() || slugify(`${perf.performer_id || perf.displayName}-${name}`);
+            key = uniqueId(key, k => existingTourKeys.has(k) || batch.tours.some(t => t.key === k));
+
+            const record = {
+                tour_name: tourName,
+                name,
+                tour_dates: dateRows,
+            };
+            if (perf.performer_id) record.performer_id = perf.performer_id;
+            if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            const description = document.getElementById("tour-description").value.trim();
+            const flyer = document.getElementById("tour-flyer").value.trim();
+            const video = document.getElementById("tour-video").value.trim();
+            if (description) record.tour_description = description;
+            if (flyer) record.touring_event_flyer = flyer;
+            if (video) record.video_trailer = video;
+            if (document.getElementById("tour-special").checked) record.isSpecial = true;
+
+            batch.tours.push({ key, record });
+            refreshBatchSummary();
+            clearTourForm();
+        }
+
+        function clearTourForm() {
+            ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-flyer", "tour-video"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("tour-special").checked = true;
+            tourKeyAutoValue = "";
+            initTourForm();
+        }
+
+        // ── Repertoire show form ─────────────────────────────────────────────
+        let showPerformerMulti;
+        function initShowForm() {
+            showPerformerMulti = buildMultiPerformerField(document.getElementById("show-performer-field"));
+            document.getElementById("show-date-rows").innerHTML = "";
+            addShowDateRow();
+        }
+
+        let showKeyAutoValue = "";
+        function suggestShowKey() {
+            const keyField = document.getElementById("show-key");
+            if (keyField.value && keyField.value !== showKeyAutoValue) return;
+            const firstPerformerName = showPerformerMulti.getRows()[0]?.input.value.trim() || "";
+            const showname = document.getElementById("show-showname").value.trim();
+            showKeyAutoValue = [slugify(firstPerformerName), slugify(showname)].filter(Boolean).join("-");
+            keyField.value = showKeyAutoValue;
+        }
+
+        function addShowToBatch() {
+            const fullname = document.getElementById("show-fullname").value.trim();
+            const showname = document.getElementById("show-showname").value.trim();
+            const perf = resolveMultiPerformerField(showPerformerMulti);
+            const dateRows = readDateRows(document.getElementById("show-date-rows"), "show");
+            if (!fullname || !showname || !perf.performer_id && !perf.performer_ids || !dateRows.length) {
+                alert("Please fill in name, show name, at least one performer, and at least one valid show date (with venue).");
+                return;
+            }
+            let key = document.getElementById("show-key").value.trim() || slugify(`${perf.performer_id || perf.displayName}-${showname}`);
+            key = uniqueId(key, k => existingShowKeys.has(k) || batch.shows.some(s => s.key === k));
+
+            const record = {
+                name: fullname,
+                showname,
+                show_dates: dateRows,
+            };
+            if (perf.performer_id) record.performer_id = perf.performer_id;
+            if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            const description = document.getElementById("show-description").value.trim();
+            const flyer = document.getElementById("show-flyer").value.trim();
+            const video = document.getElementById("show-video").value.trim();
+            if (description) record.description = description;
+            if (flyer) record.touring_event_flyer = flyer;
+            if (video) record.video_trailer = video;
+            if (document.getElementById("show-special").checked) record.isSpecial = true;
+            if (document.getElementById("show-touring").checked) record.isTouringShow = true;
+
+            batch.shows.push({ key, record });
+            refreshBatchSummary();
+            clearShowForm();
+        }
+
+        function clearShowForm() {
+            ["show-key", "show-fullname", "show-showname", "show-description", "show-flyer", "show-video"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("show-special").checked = true;
+            document.getElementById("show-touring").checked = false;
+            showKeyAutoValue = "";
+            initShowForm();
+        }
+
+        // ── Standalone new performer ─────────────────────────────────────────
+        function addPerformerToBatch() {
+            const name = document.getElementById("perf-name").value.trim();
+            if (!name) {
+                alert("Please enter a name.");
+                return;
+            }
+            const existing = Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
+                || Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+            if (existing) {
+                alert(`A performer named "${name}" already exists (id: ${existing.id}). Nothing added.`);
+                return;
+            }
+            const id = uniqueId(slugify(name), id => !!performersLookup[id] || !!newPerformers[id]);
+            const record = { id, name };
+            const url = document.getElementById("perf-url").value.trim();
+            const bio = document.getElementById("perf-bio").value.trim();
+            const type = document.getElementById("perf-type").value.trim();
+            const facebook = document.getElementById("perf-facebook").value.trim();
+            const instagram = document.getElementById("perf-instagram").value.trim();
+            const ticketsUrl = document.getElementById("perf-tickets-url").value.trim();
+            if (url) record.url = url;
+            if (bio) record.bio = bio;
+            if (type) record.type = type;
+            if (facebook) record.facebook = facebook;
+            if (instagram) record.instagram = instagram;
+            if (ticketsUrl) record.tickets_url = ticketsUrl;
+            if (document.getElementById("perf-musician").checked) record.musician = true;
+            if (document.getElementById("perf-troupe").checked) record.type = "troupe";
+
+            newPerformers[id] = record;
+            refreshBatchSummary();
+            clearPerformerForm();
+        }
+
+        function clearPerformerForm() {
+            ["perf-name", "perf-url", "perf-bio", "perf-type", "perf-facebook", "perf-instagram", "perf-tickets-url"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("perf-musician").checked = false;
+            document.getElementById("perf-troupe").checked = false;
+        }
+
+        // ── Standalone new venue ──────────────────────────────────────────────
+        function addVenueToBatch() {
+            const name = document.getElementById("venue-name").value.trim();
+            if (!name) {
+                alert("Please enter a name.");
+                return;
+            }
+            const existing = Object.values(venuesLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
+                || Object.values(newVenues).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+            if (existing) {
+                alert(`A venue named "${name}" already exists (id: ${existing.id}). Nothing added.`);
+                return;
+            }
+            const id = uniqueId(slugify(name), id => !!venuesLookup[id] || !!newVenues[id]);
+            const record = { id, name };
+            const city = document.getElementById("venue-city").value.trim();
+            const postcode = document.getElementById("venue-postcode").value.trim();
+            const fullAddress = document.getElementById("venue-full-address").value.trim();
+            const url = document.getElementById("venue-url").value.trim();
+            const ticketsUrl = document.getElementById("venue-tickets-url").value.trim();
+            const email = document.getElementById("venue-email").value.trim();
+            const description = document.getElementById("venue-description").value.trim();
+            const latlonRaw = document.getElementById("venue-latlon").value.trim();
+            if (city) record.city = city;
+            if (postcode) record.postcode = postcode;
+            if (fullAddress) record.full_address = fullAddress;
+            if (url) record.url = url;
+            if (ticketsUrl) record.tickets_url = ticketsUrl;
+            if (email) record.email = email;
+            if (description) record.description = description;
+            if (latlonRaw) {
+                const parts = latlonRaw.split(",").map(s => parseFloat(s.trim()));
+                if (parts.length === 2 && parts.every(n => !isNaN(n))) record.latlon = parts;
+            }
+
+            newVenues[id] = record;
+            refreshBatchSummary();
+            clearVenueForm();
+        }
+
+        function clearVenueForm() {
+            ["venue-name", "venue-city", "venue-postcode", "venue-full-address", "venue-url",
+                "venue-tickets-url", "venue-email", "venue-description", "venue-latlon"]
+                .forEach(id => document.getElementById(id).value = "");
+        }
+
+        // ── Batch summary ───────────────────────────────────────────────────
+        function refreshBatchSummary() {
+            refreshDatalists();
+            const list = document.getElementById("batchList");
+            const emptyMsg = document.getElementById("batchEmptyMsg");
+            list.innerHTML = "";
+            const allItems = [
+                ...Object.keys(newPerformers).map(id => ({ tag: "performer", label: `${newPerformers[id].name} (new performer: ${id})`, remove: () => delete newPerformers[id] })),
+                ...Object.keys(newVenues).map(id => ({ tag: "venue", label: `${newVenues[id].name} (new venue: ${id})`, remove: () => delete newVenues[id] })),
+                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1) })),
+                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1) })),
+                ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1) })),
+                ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1) })),
+            ];
+            emptyMsg.style.display = allItems.length ? "none" : "";
+            allItems.forEach(item => {
+                const li = document.createElement("li");
+                const left = document.createElement("span");
+                left.className = "batch-list-left";
+                const tag = document.createElement("span");
+                tag.className = `batch-tag batch-tag-${item.tag}`;
+                tag.textContent = item.tag;
+                const span = document.createElement("span");
+                span.textContent = item.label;
+                left.appendChild(tag);
+                left.appendChild(span);
+                const btn = document.createElement("button");
+                btn.textContent = "Remove";
+                btn.addEventListener("click", () => { item.remove(); refreshBatchSummary(); });
+                li.appendChild(left);
+                li.appendChild(btn);
+                list.appendChild(li);
+            });
+        }
+
+        // ── Output generation ───────────────────────────────────────────────
+        function generateOutput() {
+            const out = {};
+            if (Object.keys(newPerformers).length) out.newPerformers = newPerformers;
+            if (Object.keys(newVenues).length) out.newVenues = newVenues;
+            if (batch.events.length) out.specificEvents = batch.events;
+            if (batch.musicEvents.length) out.musicEvents = batch.musicEvents;
+            if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
+            if (batch.shows.length) out.repertoire_shows = Object.fromEntries(batch.shows.map(s => [s.key, s.record]));
+            document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
+        }
+
+        function copyOutput() {
+            if (!document.getElementById("outputArea").value) generateOutput();
+            navigator.clipboard.writeText(document.getElementById("outputArea").value)
+                .then(() => alert("Copied to clipboard."))
+                .catch(() => alert("Could not copy automatically — please select and copy manually."));
+        }
+
+        function downloadOutput() {
+            if (!document.getElementById("outputArea").value) generateOutput();
+            const blob = new Blob([document.getElementById("outputArea").value], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "new_event_data.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ── Boot ─────────────────────────────────────────────────────────────
+        function refreshDatalists() {
+            document.getElementById("performerOptions").innerHTML =
+                [...Object.values(performersLookup), ...Object.values(newPerformers)]
+                    .map(p => `<option value="${(p.name || "").replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("venueOptions").innerHTML =
+                [...Object.values(venuesLookup), ...Object.values(newVenues)]
+                    .map(v => `<option value="${(v.name || "").replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("clubOptions").innerHTML =
+                clubIds.map(c => `<option value="${c.replace(/"/g, "&quot;")}">`).join("");
+        }
+
+        (async () => {
+            const result = await loadEventsData();
+            const statusEl = document.getElementById("loadStatus");
+            if (result) {
+                performersLookup = result.performersLookup;
+                venuesLookup = result.venuesLookup;
+                clubIds = [...new Set((result.eventsData.events || []).map(e => e.club).filter(Boolean))];
+                existingTourKeys = new Set(Object.keys(result.toursLookup || {}));
+                existingShowKeys = new Set(Object.keys(result.eventsData.repertoire_shows || {}));
+
+                refreshDatalists();
+
+                statusEl.textContent = `Loaded ${Object.keys(performersLookup).length} performers and ${Object.keys(venuesLookup).length} venues.`;
+            } else {
+                statusEl.textContent = "Could not load events_normalized.json — you can still build records, but performer/venue search won't have any existing suggestions.";
+            }
+
+            initEventForm();
+            initTourForm();
+            initShowForm();
+
+            document.getElementById("tour-name").addEventListener("input", suggestTourKey);
+            document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);
+            document.getElementById("show-showname").addEventListener("input", suggestShowKey);
+            document.getElementById("show-performer-field").addEventListener("input", suggestShowKey);
+
+            refreshBatchSummary();
+        })();
+    </script>
+</body>
+
+</html>

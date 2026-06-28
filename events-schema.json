@@ -1,0 +1,408 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://montystoryteller.org/schemas/events_normalized.schema.json",
+  "title": "New Troubadours — events_normalized.json",
+  "description": "Reference schema for the site's combined events data file. Field presence varies a lot in practice (most fields are optional / left as empty strings rather than omitted), so this schema is documentation-oriented: it is permissive (additionalProperties: true throughout) rather than strict, and exists to record the shapes actually in use rather than to validate/reject real data.",
+  "type": "object",
+  "properties": {
+    "festivals":        { "type": "object", "additionalProperties": { "$ref": "#/$defs/festival" } },
+    "repertoire_shows":  { "type": "object", "additionalProperties": { "$ref": "#/$defs/repertoireShow" } },
+    "tours":            { "type": "object", "additionalProperties": { "$ref": "#/$defs/tour" } },
+    "events":           { "type": "array", "items": { "$ref": "#/$defs/recurringClubEvent" } },
+    "podcasts":         { "type": "array", "items": { "$ref": "#/$defs/podcast" } },
+    "workshops":        { "type": "array", "items": { "$ref": "#/$defs/workshop" } },
+    "specificEvents":   { "type": "array", "items": { "$ref": "#/$defs/specificEvent" } },
+    "musicEvents":      { "type": "array", "items": { "$ref": "#/$defs/musicEvent" } },
+    "folkNights":       { "type": "array", "items": { "$ref": "#/$defs/folkNight" } },
+    "irishSessions":    { "type": "array", "items": { "$ref": "#/$defs/irishSession" } },
+    "spokenword":       { "type": "array", "items": { "$ref": "#/$defs/spokenWordNight" } },
+    "venues":           { "type": "object", "additionalProperties": { "$ref": "#/$defs/venue" } },
+    "performers":       { "type": "object", "additionalProperties": { "$ref": "#/$defs/performer" } }
+  },
+  "additionalProperties": true,
+
+  "$defs": {
+
+    "dateOrDates": {
+      "description": "A single DD/MM/YYYY date string, OR an array of such strings for a multi-night run at the same venue (e.g. several consecutive nights of one tour stop). Code that reads `.date` should always normalize via Array.isArray() before use — see expandTourDates()/forEachDateInRange() in shared_utils.js.",
+      "oneOf": [
+        { "type": "string", "pattern": "^\\d{2}/\\d{2}/\\d{4}$" },
+        { "type": "array", "items": { "type": "string", "pattern": "^\\d{2}/\\d{2}/\\d{4}$" }, "minItems": 1 }
+      ]
+    },
+
+    "youtubeUrl": {
+      "description": "Optional YouTube trailer URL (watch/youtu.be/shorts/embed form). Rendered via getYouTubeEmbedUrl() in shared_utils.js, which validates the host and converts it to a safe youtube-nocookie.com /embed/ URL; anything else is silently ignored by the front end.",
+      "type": "string"
+    },
+
+    "venue": {
+      "description": "A venue record, keyed by a slug id (e.g. \"wardrobe-theatre-bristol\") in the top-level `venues` object.",
+      "type": "object",
+      "properties": {
+        "id":           { "type": "string", "description": "Same as the object's own key; kept inline for convenience." },
+        "name":         { "type": "string" },
+        "city":         { "type": "string" },
+        "postcode":     { "type": "string" },
+        "full_address": { "type": "string" },
+        "url":          { "type": "string", "description": "Venue website." },
+        "tickets_url":  { "type": "string" },
+        "email":        { "type": "string" },
+        "description":  { "type": "string" },
+        "latlon": {
+          "type": "array",
+          "description": "[latitude, longitude], used for map markers.",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": true
+    },
+
+    "performer": {
+      "description": "A performer/artist record, keyed by a slug id (e.g. \"daniel-morden\") in the top-level `performers` object. Can also represent a troupe/duo via `troupe` + `performer_ids`.",
+      "type": "object",
+      "properties": {
+        "id":              { "type": "string", "description": "Same as the object's own key." },
+        "name":            { "type": "string" },
+        "url":             { "type": "string", "description": "Performer's own website." },
+        "bio":             { "type": "string" },
+        "type":            { "type": "string", "description": "Free-text role/category, e.g. \"storyteller\", \"musician\"." },
+        "musician":        { "type": "boolean" },
+        "troupe":          { "type": "boolean", "description": "True if this record represents a group/duo rather than an individual." },
+        "performer_ids":   { "type": "array", "items": { "type": "string" }, "description": "Member performer ids, when `troupe` is true." },
+        "members":         { "type": "array", "items": { "type": "string" }, "description": "Display names of troupe members (alternative/companion to performer_ids)." },
+        "aliases":         { "type": "array", "items": { "type": "string" } },
+        "tickets_url":     { "type": "string" },
+        "facebook":        { "type": "string" },
+        "facebook_group":  { "type": "string" },
+        "instagram":       { "type": "string" },
+        "podcast":         { "type": "string" }
+      },
+      "required": ["name"],
+      "additionalProperties": true
+    },
+
+    "tourDate": {
+      "description": "One stop on a tour, inside tour.tour_dates[].",
+      "type": "object",
+      "properties": {
+        "date":           { "$ref": "#/$defs/dateOrDates" },
+        "time":           { "type": "string", "examples": ["7.30-9pm", "7.30pm"] },
+        "price":          { "type": "string", "examples": ["£14", "£8 [£6.50]"] },
+        "venue_id":       { "type": "string", "description": "Key into the top-level `venues` object." },
+        "ticket_url":     { "type": "string" },
+        "fb_event":       { "type": ["string", "integer"], "description": "Facebook event id, used to build a facebook.com/events/{id} link." },
+        "event_flyer":    { "type": "string", "description": "Filename for a flyer specific to this individual date." },
+        "tour_flyer":     { "type": "string", "description": "Per-date override of the tour's headline flyer (rare — usually set at tour level instead)." },
+        "video_trailer":  { "$ref": "#/$defs/youtubeUrl", "description": "Per-date override of the tour's video_trailer; falls back to the tour-level value if omitted." },
+        "club_event":     { "type": "string", "description": "Opts this date into a club's own event listing — set to the matching club id from `events[].club`. Picked up by the story-club page alongside that club's regular nights." },
+        "isSpecial":      { "type": "boolean" },
+        "isMusic":        { "type": "boolean" },
+        "isCancelled":    { "type": "boolean", "default": false },
+        "isSoldOut":      { "type": "boolean", "default": false },
+        "isFestival":     { "type": "boolean", "description": "Marks this tour date as actually a festival appearance." },
+        "festival_url":   { "type": "string" },
+        "event_url":      { "type": "string" },
+        "description":    { "type": "string", "description": "Rare per-date description override." },
+        "city":           { "type": "string", "description": "Rare free-text city override (normally derived from venue_id instead)." },
+        "venue":          { "type": "string", "description": "Rare free-text venue-name override (normally derived from venue_id instead)." },
+        "performer_id":   { "type": "string", "description": "Rare per-date performer override, e.g. a guest replacing the usual performer for one stop." },
+        "club":           { "type": "string" }
+      },
+      "required": ["date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "tour": {
+      "description": "A tour record, keyed by a slug id (e.g. \"debs-newbold-dauntless-2026\") in the top-level `tours` object. Rendered on the tour-guide page and merged into the events calendar, one calendar entry per tour_dates entry.",
+      "type": "object",
+      "properties": {
+        "tour_name":            { "type": "string", "description": "Full display name, conventionally \"{Show} ({Run}) [{Performer}]\".", "examples": ["Dauntless (2026)"] },
+        "name":                 { "type": "string", "description": "Short show name without the run/performer suffix.", "examples": ["Dauntless"] },
+        "tour_description":     { "type": "string", "description": "Long-form description; paragraphs are conventionally separated by a blank double-line (\\n\\n\\n\\n) in the source text." },
+        "touring_event_flyer":  { "type": "string", "description": "Headline flyer image filename representing the WHOLE tour (shown once on the flyers page, rather than repeated per date). Also accepted under the legacy alias `tour_flyer`." },
+        "tour_flyer":           { "type": "string", "description": "Legacy alias for touring_event_flyer — either name is accepted." },
+        "isSpecial":            { "type": "boolean" },
+        "isMusic":              { "type": "boolean" },
+        "performer_id":         { "type": "string", "description": "Key into the top-level `performers` object." },
+        "performer_ids":        { "type": "array", "items": { "type": "string" }, "description": "For multi-performer tours." },
+        "video_trailer":        { "$ref": "#/$defs/youtubeUrl", "description": "Tour-level YouTube trailer, shown on the tour page and in the flyers page's Video Trailers section. Individual tour_dates entries may override this per-date." },
+        "price":                { "type": "string", "description": "Rare tour-level default price, used when a tour_date omits its own price." },
+        "time":                 { "type": "string" },
+        "club":                 { "type": "string" },
+        "tags":                 { "type": "array", "items": { "type": "string" } },
+        "tour_dates":           { "type": "array", "items": { "$ref": "#/$defs/tourDate" } }
+      },
+      "required": ["tour_name", "name", "performer_id", "tour_dates"],
+      "additionalProperties": true
+    },
+
+    "showDate": {
+      "description": "One date for a repertoire show, inside show.show_dates[].",
+      "type": "object",
+      "properties": {
+        "date":           { "$ref": "#/$defs/dateOrDates" },
+        "time":           { "type": "string" },
+        "club":           { "type": "string", "description": "Key into `events[].club` for the club night this date belongs to." },
+        "price":          { "type": "string" },
+        "ticket_url":     { "type": "string" },
+        "venue_id":       { "type": "string" },
+        "online":         { "type": "string", "description": "Attendance mode for this date.", "examples": ["hybrid", "online", "in-person"] },
+        "fb_event":       { "type": ["string", "integer"] },
+        "event_flyer":    { "type": "string", "description": "Flyer specific to this individual date." },
+        "video_trailer":  { "$ref": "#/$defs/youtubeUrl", "description": "Per-date override of the show's video_trailer." },
+        "date_added":     { "type": "string", "description": "DD/MM/YYYY — when this date was added, used to surface it in the \"new events\" panel." },
+        "isCancelled":    { "type": "boolean", "default": false },
+        "isSoldOut":      { "type": "boolean", "default": false }
+      },
+      "required": ["date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "repertoireShow": {
+      "description": "A repertoire/touring show record, keyed by a slug id in the top-level `repertoire_shows` object. Similar in spirit to a tour, but typically a single show performed at various clubs/venues over time rather than a single linear tour run.",
+      "type": "object",
+      "properties": {
+        "name":                 { "type": "string", "description": "Full display name, conventionally \"{Show} [{Performer}]\"." },
+        "showname":             { "type": "string", "description": "Short show name without the performer suffix." },
+        "description":          { "type": "string" },
+        "touring_event_flyer":  { "type": "string", "description": "Headline flyer image filename for the whole show (one card, not repeated per date)." },
+        "isSpecial":            { "type": "boolean" },
+        "isTouringShow":        { "type": "boolean" },
+        "performer_id":         { "type": "string" },
+        "video_trailer":        { "$ref": "#/$defs/youtubeUrl", "description": "Show-level YouTube trailer; individual show_dates entries may override this per-date." },
+        "show_dates":           { "type": "array", "items": { "$ref": "#/$defs/showDate" } }
+      },
+      "required": ["name", "showname", "performer_id", "show_dates"],
+      "additionalProperties": true
+    },
+
+    "specificEvent": {
+      "description": "A one-off story/spoken-word event (specificEvents[] array) — typically a guest appearance at an existing club night, OR a standalone show that isn't part of a tour/repertoire show.",
+      "type": "object",
+      "properties": {
+        "name":             { "type": "string", "description": "Conventionally \"{Show} [{Performer}]\"." },
+        "showname":         { "type": "string" },
+        "date":             { "$ref": "#/$defs/dateOrDates" },
+        "date_added":       { "type": "string" },
+        "time":             { "type": "string" },
+        "club":             { "type": "string", "description": "Key into `events[].club`, if this is happening at an existing club night." },
+        "price":            { "type": "string" },
+        "description":      { "type": "string" },
+        "event_flyer":      { "type": "string" },
+        "event_flyer2":     { "type": "string", "description": "A second flyer image, when supplied." },
+        "video_trailer":    { "$ref": "#/$defs/youtubeUrl" },
+        "ticket_url":       { "type": "string" },
+        "fb_event":         { "type": ["string", "integer"] },
+        "facebook":         { "type": "string" },
+        "link":             { "type": "string" },
+        "promoter_link":    { "type": "string" },
+        "email":            { "type": "string" },
+        "online":           { "type": "string" },
+        "isSpecial":        { "type": "boolean" },
+        "isCancelled":      { "type": "boolean", "default": false },
+        "openslots":        { "type": "boolean", "description": "Whether the event has open mic/floor slots." },
+        "wider_event":      { "type": "string", "description": "Key into `festivals` if this is part of a larger festival." },
+        "performer_id":     { "type": "string" },
+        "performer_ids":    { "type": "array", "items": { "type": "string" }, "description": "For multi-performer bills." },
+        "performer":        { "type": "string", "description": "Free-text performer name, used when there's no matching performer_id record." },
+        "troupe":           { "type": "boolean" },
+        "venue_id":         { "type": "string" },
+        "geocode_missing":  { "type": "boolean" },
+        "datetimes": {
+          "type": "array",
+          "description": "Optional explicit start/end datetime pairs, for events needing more than a date+time string (e.g. multi-day or precisely timed entries).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "string" },
+              "end":   { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["name", "date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "musicEvent": {
+      "description": "A one-off music event (musicEvents[] array) — same shape as specificEvent but always implicitly isMusic.",
+      "type": "object",
+      "properties": {
+        "name":           { "type": "string" },
+        "showname":       { "type": "string" },
+        "date":           { "$ref": "#/$defs/dateOrDates" },
+        "time":           { "type": "string" },
+        "club":           { "type": "string" },
+        "price":          { "type": "string" },
+        "description":    { "type": "string" },
+        "event_flyer":    { "type": "string" },
+        "tour_flyer":     { "type": "string", "description": "Rare — used when a music event is also linked to a tour-level flyer." },
+        "ticket_url":     { "type": "string" },
+        "fb_event":       { "type": ["string", "integer"] },
+        "isMusic":        { "type": "boolean", "default": true },
+        "isSpecial":      { "type": "boolean" },
+        "performer_id":   { "type": "string" },
+        "venue_id":       { "type": "string" }
+      },
+      "required": ["name", "date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "recurringClubEvent": {
+      "description": "A recurring story-club/open-mic night (events[] array) — the home record for a `club` id referenced elsewhere via specificEvents[].club, show_dates[].club, etc.",
+      "type": "object",
+      "properties": {
+        "name":                 { "type": "string" },
+        "club":                 { "type": "string", "description": "Short slug/id used to cross-reference this club from other record types." },
+        "schedule":             { "type": "string", "description": "Free-text recurrence rule.", "examples": ["3rd tuesday", "Every Thursday"] },
+        "exceptions":           { "type": "array", "items": { "type": "string" }, "description": "DD/MM/YYYY dates the schedule should skip." },
+        "time":                 { "type": "string" },
+        "price":                { "type": "string" },
+        "venue_id":             { "type": "string" },
+        "location":             { "type": "string", "description": "Rare free-text location override." },
+        "alternate_locations":  { "type": "array", "items": { "type": "string" } },
+        "description":          { "type": "string" },
+        "club_flyer":           { "type": "string", "description": "Generic flyer shown when there's no upcoming specific-event flyer for this club." },
+        "flyers":               { "type": "array", "items": { "type": "string" } },
+        "feature_slots":        { "type": "string" },
+        "facebook":             { "type": "string" },
+        "instagram":            { "type": "string" },
+        "link":                 { "type": "string" },
+        "tickets_url":          { "type": "string" },
+        "email":                { "type": "string" },
+        "geocode_missing":      { "type": "boolean" }
+      },
+      "required": ["name", "club", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "festival": {
+      "description": "A multi-day festival (festivals object).",
+      "type": "object",
+      "properties": {
+        "name":              { "type": "string" },
+        "short_name":        { "type": "string" },
+        "start_date":        { "type": "string", "pattern": "^\\d{2}/\\d{2}/\\d{4}$" },
+        "end_date":          { "type": "string", "pattern": "^\\d{2}/\\d{2}/\\d{4}$" },
+        "primary_type":      { "type": "string" },
+        "venue_id":          { "type": "string" },
+        "ticket_url":        { "type": "string" },
+        "website":           { "type": "string" },
+        "facebook":          { "type": "string" },
+        "description":       { "type": "string" },
+        "event_flyer":       { "type": "string" },
+        "price":             { "type": "string" },
+        "age_bands":         { "type": "array", "items": { "type": "string" } },
+        "performers_tbc":    { "type": "boolean" },
+        "performers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "performer_id": { "type": "string" },
+              "role":         { "type": "string" }
+            }
+          }
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stage_id": { "type": "string" },
+              "name":     { "type": "string" }
+            }
+          }
+        },
+        "schedule": {
+          "type": "array",
+          "description": "Per-day/per-stage running order. Shape varies by festival — treated as opaque/free-form here."
+        }
+      },
+      "required": ["name", "start_date", "end_date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "podcast": {
+      "type": "object",
+      "properties": {
+        "series_title": { "type": "string" },
+        "presenter":    { "type": "string" },
+        "schedule":     { "type": "string" },
+        "url":          { "type": "string" }
+      },
+      "required": ["series_title"],
+      "additionalProperties": true
+    },
+
+    "workshop": {
+      "type": "object",
+      "properties": {
+        "title":        { "type": "string" },
+        "leader":       { "type": "string" },
+        "date":         { "$ref": "#/$defs/dateOrDates" },
+        "cost":         { "type": "string" },
+        "link":         { "type": "string" },
+        "club":         { "type": "string" },
+        "course_flyer": { "type": "string" },
+        "venue_id":     { "type": "string" }
+      },
+      "required": ["title", "date"],
+      "additionalProperties": true
+    },
+
+    "folkNight": {
+      "type": "object",
+      "properties": {
+        "name":            { "type": "string" },
+        "schedule":        { "type": "string" },
+        "time":            { "type": "string" },
+        "price":           { "type": "string" },
+        "link":            { "type": "string" },
+        "storiesWelcome":  { "type": "boolean" },
+        "exceptions":      { "type": "array", "items": { "type": "string" } },
+        "venue_id":        { "type": "string" }
+      },
+      "required": ["name", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "irishSession": {
+      "type": "object",
+      "properties": {
+        "name":      { "type": "string" },
+        "schedule":  { "type": "string" },
+        "time":      { "type": "string" },
+        "venue_id":  { "type": "string" }
+      },
+      "required": ["name", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "spokenWordNight": {
+      "description": "Unlike most other recurring-event types, this one carries its own free-text location/coordinates rather than a venue_id — handy for venues not otherwise in the `venues` table.",
+      "type": "object",
+      "properties": {
+        "name":        { "type": "string" },
+        "schedule":    { "type": "string" },
+        "time":        { "type": "string" },
+        "price":       { "type": "string" },
+        "location":    { "type": "string" },
+        "venue_url":   { "type": "string" },
+        "exceptions":  { "type": "array", "items": { "type": "string" } },
+        "latlon": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": true
+    }
+  }
+}
