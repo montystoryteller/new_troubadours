@@ -137,6 +137,156 @@
             gap: 18px;
         }
 
+        /* ── Video trailers section ──────────────────────────── */
+        .video-trailers-section {
+            margin-bottom: 28px;
+        }
+
+        .video-trailers-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .video-group {
+            margin-bottom: 4px;
+        }
+
+        .video-group-heading {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 14px 0 4px;
+            color: #444;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+        }
+
+        .video-group-heading::-webkit-details-marker {
+            display: none;
+        }
+
+        .video-group-heading::before {
+            content: '▸';
+            font-size: 0.85em;
+            transition: transform 0.2s ease;
+        }
+
+        .video-group[open] > .video-group-heading::before {
+            transform: rotate(90deg);
+        }
+
+        .video-group:first-child .video-group-heading {
+            margin-top: 0;
+        }
+
+        .video-group-heading .count {
+            font-weight: 400;
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .video-group-current > .video-group-heading {
+            color: #2e7d32;
+        }
+
+        .video-group-current .count {
+            color: #4CAF50;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 18px;
+            margin-bottom: 10px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card-thumb {
+            position: relative;
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-size: cover;
+            background-position: center;
+            background-color: #222;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .video-card.open .video-card-thumb {
+            display: none;
+        }
+
+        .video-card-play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-card-frame-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: none;
+        }
+
+        .video-card.open .video-card-frame-wrap {
+            display: block;
+        }
+
+        .video-card-frame-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-card-caption {
+            padding: 10px 12px;
+        }
+
+        .video-card-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 2px;
+        }
+
+        .video-card-performer-link {
+            color: inherit;
+        }
+
+        .video-card-performer,
+        .video-card-meta {
+            font-size: 0.85em;
+            color: #666;
+        }
+
         /* ── Card ────────────────────────────────────────────── */
         .flyer-card {
             background: white;
@@ -854,6 +1004,11 @@
         </div>
     </div>
 
+    <div id="videoTrailersSection" class="video-trailers-section" style="display:none;">
+        <h2 class="section-heading">🎬 Video Trailers <span class="count" id="videoTrailersCount"></span></h2>
+        <div id="videoTrailersBody" class="video-trailers-body"></div>
+    </div>
+
     <div id="page-content">
         <p class="status-message status-message--loading">Loading…</p>
     </div>
@@ -1042,6 +1197,7 @@
 
         const activeTypes = new Set(["story", "club", "tour", "music", "festival"]);
         let allItems = [];
+        let videoTrailerItems = [];
         let lbItems = [];
         let lbIndex = 0;
         let activeTourKey = "";   // "" = no filter; set to a tourKey to limit to that tour
@@ -1563,7 +1719,191 @@
             }
 
             items.sort((a, b) => a.date - b.date);
+
+            // Video trailers — one card per tour/show that has a video_trailer.
+            // getYouTubeEmbedUrl() (shared_utils.js) validates the URL and
+            // returns a safe youtube-nocookie.com /embed/ URL or null;
+            // anything that isn't a genuine YouTube link is silently skipped.
+            videoTrailerItems = [];
+            const seenVideoIds = new Set();
+
+            function pushVideoItem(rawUrl, title, performerId, allDatesSorted) {
+                const embedUrl = getYouTubeEmbedUrl(rawUrl);
+                if (!embedUrl) return;
+                const videoId = embedUrl.split("/embed/")[1];
+                if (!videoId || seenVideoIds.has(videoId)) return;
+                seenVideoIds.add(videoId);
+
+                // Status from the FULL date range (not just the 3-month
+                // "in window" cutoff used for flyers): current if today
+                // falls between the first and last date inclusive, else
+                // upcoming or past.
+                let status = "upcoming";
+                let rep = null;
+                if (allDatesSorted.length) {
+                    const minD = allDatesSorted[0]._dt;
+                    const maxD = allDatesSorted[allDatesSorted.length - 1]._dt;
+                    if (now >= minD && now <= maxD) status = "current";
+                    else if (maxD < now) status = "past";
+                    else status = "upcoming";
+                    rep = allDatesSorted.find(d => d._dt >= now) || allDatesSorted[allDatesSorted.length - 1];
+                }
+
+                const v = ven(rep?.venue_id);
+                videoTrailerItems.push({
+                    videoId,
+                    embedUrl,
+                    title,
+                    performer: perf(performerId),
+                    performerUrl: perfUrl(performerId),
+                    venue: v.name || "",
+                    dateStr: rep ? formatDateShort(rep._dt) : "",
+                    status,
+                    sortDate: rep ? rep._dt : (status === "past" ? allDatesSorted[allDatesSorted.length - 1]?._dt : now),
+                });
+            }
+
+            function expandAllDates(dateEntries) {
+                return (dateEntries || [])
+                    .flatMap(d => (Array.isArray(d.date) ? d.date : [d.date])
+                        .map(dateStr => ({ ...d, date: dateStr, _dt: parseDate(dateStr) })))
+                    .filter(d => d._dt)
+                    .sort((a, b) => a._dt - b._dt);
+            }
+
+            for (const tour of Object.values(data.tours || {})) {
+                pushVideoItem(
+                    tour.video_trailer, tour.tour_name || tour.name, tour.performer_id,
+                    expandAllDates(tour.tour_dates),
+                );
+            }
+
+            for (const show of Object.values(data.repertoire_shows || {})) {
+                pushVideoItem(
+                    show.video_trailer, show.showname || show.name, show.performer_id,
+                    expandAllDates(show.show_dates),
+                );
+            }
+
             return items;
+        }
+
+        // ── Video trailers section ───────────────────────────────────────────────
+        function closeAllVideoCards(exceptCard) {
+            document.querySelectorAll(".video-card.open").forEach(card => {
+                if (card === exceptCard) return;
+                card.classList.remove("open");
+                const frame = card.querySelector("iframe");
+                if (frame) frame.src = "";
+            });
+        }
+
+        function renderVideoTrailers() {
+            const section = document.getElementById("videoTrailersSection");
+            const body = document.getElementById("videoTrailersBody");
+            const countEl = document.getElementById("videoTrailersCount");
+            if (!videoTrailerItems.length) {
+                section.style.display = "none";
+                return;
+            }
+            section.style.display = "";
+            countEl.textContent = `${videoTrailerItems.length} trailer${videoTrailerItems.length !== 1 ? "s" : ""}`;
+            body.innerHTML = "";
+
+            const groups = [
+                { status: "current", label: "🟢 Now touring / showing", className: "current" },
+                { status: "upcoming", label: "📅 Upcoming", className: "upcoming" },
+                { status: "past", label: "🕓 Past", className: "past" },
+            ];
+
+            groups.forEach(group => {
+                const groupItems = videoTrailerItems
+                    .filter(i => i.status === group.status)
+                    .sort((a, b) => group.status === "past" ? b.sortDate - a.sortDate : a.sortDate - b.sortDate);
+                if (!groupItems.length) return;
+
+                const details = document.createElement("details");
+                details.className = `video-group video-group-${group.className}`;
+                details.open = group.status !== "past";
+
+                const summary = document.createElement("summary");
+                summary.className = "video-group-heading";
+                summary.innerHTML = `${group.label} <span class="count">${groupItems.length}</span>`;
+                details.appendChild(summary);
+
+                const grid = document.createElement("div");
+                grid.className = "video-grid";
+                groupItems.forEach(item => grid.appendChild(makeVideoCard(item)));
+                details.appendChild(grid);
+
+                body.appendChild(details);
+            });
+        }
+
+        function makeVideoCard(item) {
+            const card = document.createElement("div");
+            card.className = "video-card";
+
+            const thumbBtn = document.createElement("button");
+            thumbBtn.className = "video-card-thumb";
+            thumbBtn.setAttribute("aria-label", `Play trailer: ${item.title}`);
+            thumbBtn.style.backgroundImage = `url(https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg)`;
+
+            const playIcon = document.createElement("span");
+            playIcon.className = "video-card-play";
+            playIcon.textContent = "▶";
+            thumbBtn.appendChild(playIcon);
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "video-card-frame-wrap";
+            const iframe = document.createElement("iframe");
+            iframe.title = `${item.title} trailer`;
+            iframe.frameBorder = "0";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            iframe.allowFullscreen = true;
+            wrapper.appendChild(iframe);
+
+            thumbBtn.addEventListener("click", () => {
+                const isOpen = card.classList.contains("open");
+                closeAllVideoCards(card);
+                card.classList.toggle("open", !isOpen);
+                iframe.src = isOpen ? "" : item.embedUrl;
+            });
+
+            const caption = document.createElement("div");
+            caption.className = "video-card-caption";
+            const titleEl = document.createElement("div");
+            titleEl.className = "video-card-title";
+            titleEl.textContent = item.title;
+            caption.appendChild(titleEl);
+            if (item.performer) {
+                const perfEl = document.createElement("div");
+                perfEl.className = "video-card-performer";
+                if (item.performerUrl) {
+                    const a = document.createElement("a");
+                    a.href = item.performerUrl;
+                    a.target = "_blank";
+                    a.rel = "noopener";
+                    a.className = "video-card-performer-link";
+                    a.textContent = item.performer;
+                    perfEl.appendChild(a);
+                } else {
+                    perfEl.textContent = item.performer;
+                }
+                caption.appendChild(perfEl);
+            }
+            if (item.dateStr || item.venue) {
+                const metaEl = document.createElement("div");
+                metaEl.className = "video-card-meta";
+                metaEl.textContent = [item.dateStr, item.venue].filter(Boolean).join(" · ");
+                caption.appendChild(metaEl);
+            }
+
+            card.appendChild(thumbBtn);
+            card.appendChild(wrapper);
+            card.appendChild(caption);
+            return card;
         }
 
         // ── Lightbox ──────────────────────────────────────────────────────────────
@@ -1914,6 +2254,7 @@
                 return;
             }
             populateTourDropdown();
+            renderVideoTrailers();
             renderAll();
         })();
     </script>
