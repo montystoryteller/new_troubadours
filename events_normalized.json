@@ -6641,6 +6641,19 @@
       "wider_event": "ventnor-fringe-2026"
     },
     {
+      "name": "Stories from Staffordshire [Janet Crouch]",
+      "showname": "Stories from Staffordshire",
+      "date": "24/07/2026",
+      "venue_id": "kteas-cakes-wolverhampton",
+      "performer_id": "janet-crouch",
+      "date_added": "29/06/2026",
+      "time": "4pm",
+      "price": "Pay-As-You-Feel",
+      "description": "The tales in this show all have a link with Staffordshire. Some will be based on actual historical events. Local legends and myths form a significant part. There will certainly be a ghost story. The stories may be amusing, comical perhaps ridiculous.\n\nRating: 12+",
+      "event_flyer": "2026_07_24_crouch_midlands_fringe.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "VFringe: Birds of a Feather [Sue Bailey]",
       "showname": "Birds of a Feather",
       "date": "25/07/2026",
@@ -10840,6 +10853,18 @@
       "full_address": "Haslemere Museum, 78 High Street, Haslemere, GU27 2LA",
       "url": "https://www.haslemeremuseum.co.uk/",
       "latlon": [51.08792,-0.70967
+      ]
+    },
+    "kteas-cakes-wolverhampton": {
+      "id": "kteas-cakes-wolverhampton",
+      "name": "KTeas Cakes, Wolverhampton",
+      "city": "Wolverhampton",
+      "postcode": "WV2 1BA.",
+      "full_address": "KTeas Cakes, Unit 4 St. Georges Parade, Wolverhampton, WV2 1BA",
+      "url": "https://www.kteascakes.com/",
+      "latlon": [
+        52.58234,
+        -2.12478
       ]
     },
     "taddington-village-hall-bramwell-memorial-institute": {
