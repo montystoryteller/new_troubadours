@@ -6370,6 +6370,21 @@
       "performer_id": "daniel-morden"
     },
     {
+      "name": "Welsh Whisperers: Stories of Barmouth",
+      "showname": "Welsh Whisperers: Stories of Barmouth",
+      "date": "27/06/2026",
+      "time": "7-9pm",
+      "club": "welsh-whisperers",
+      "price": "£8",
+      "description": "Stories from Barmouth and Wales for adults.\n\n\n\nJoin the Dragon Storytellers and listen to stories from Barmouth, Wales and beyond. You'll hear traditional folk tales, myths and local legends and get to know more about our beautiful country and the people and creatures that live there.\n\n\n\nThese stories are meant for an adult audience",
+      "event_flyer": "2026_06_27_stories_barmouth_dragon_storytellers.jpg",
+      "ticket_url": "https://dragontheatre.littleboxoffice.com/events/167171?",
+      "isSpecial": true,
+      "date_added": "03/07/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "performer_id": "dragon-storytellers"
+    },
+    {
       "name": "I Will Survive [Elizabeth Dale & Keith Wallis]",
       "showname": "I Will Survive",
       "date": "28/06/2026",
@@ -6684,6 +6699,21 @@
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "holly-medland",
       "wider_event": "ventnor-fringe-2026"
+    },
+    {
+      "name": "Folktales and Myths of North Wales [Dragon Storytellers]",
+      "showname": "Folktales and Myths of North Wales",
+      "date": "26/07/2026",
+      "time": "7-9pm",
+      "club": "welsh-whisperers",
+      "price": "£8",
+      "description": "Come and listen to the stories of these mountains, lakes, fields and rivers and all that used to live there - and some still do!\n\n\n\nThe Dragon Storytellers will tell traditional stories about kings and queens, mystical beasts, otherworldly creatures and magical goings-on.\n\n\n\nStories will be told in English with a smattering of Welsh. They are intended for an adult audience.",
+      "event_flyer": "2026_07_26_folktales_myths_nwales_dragon_ST.jpg",
+      "ticket_url": "https://dragontheatre.littleboxoffice.com/events/170761",
+      "isSpecial": true,
+      "date_added": "03/07/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "performer_id": "dragon-storytellers"
     },
     {
       "name": "Hot Crones [Debs Newbold]",
@@ -11354,7 +11384,7 @@
     "gillian-brownson-dragon-storytellers": {
       "id": "gillian-brownson-dragon-storytellers",
       "name": "Gillian Brownson + Dragon Storytellers",
-      "performer_ids": ["gillian-brownson"],
+      "performer_ids": ["gillian-brownson", "dragon-storytellers"],
       "url": "",
       "bio": "Gillian Brownson is as story artist, multi-disciplinary practitioner blending writing, storytelling, acting, singing & illustration."
     },
@@ -11742,7 +11772,13 @@
       "id": "lara-mcclure",
       "name": "Lara McClure",
       "url": "https://www.instagram.com/drlaramcclure/",
-      "bio": "Performance stroyteller from York."
+      "bio": "Performance storyteller from York."
+    },
+    "dragon-storytellers": {
+      "id": "dragon-storytellers",
+      "name": "Dragon Storytellers",
+      "url": "https://www.theatryddraig.cymru/events/storytelling-with-the-dragon-storytellers",
+      "bio": ""
     },
     "shonaleigh": {
       "id": "shonaleigh",
@@ -11886,6 +11922,7 @@
     },
     "ffion-phillips-dragon-storytellers": {
       "id": "ffion-phillips-dragon-storytellers",
+      "performer_ids": ["ffion-phillips", "dragon-storytellers"],
       "name": "Ffion Phillips + Dragon Storytellers",
       "url": "",
       "bio": "ome and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Ffion Phillips.\n\n\n\nFfion is a bilingual storyteller and folk musician with a passion for breathing new enchantment into old tales and reworking scraps of forgotten material into fresh stories. Her work often explores environmentalist themes and the natural world(s), with much of her repertoire rooted deeply in her native Eryri. As part of the 'Harebell Tellers' alongside Ailsa Dixon she has brought her collaborative shows 'Hear us and Hasten' and 5 star sell-out 'Aderyn/Bird' to the Edinburgh Fringe."
