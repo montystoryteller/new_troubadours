@@ -320,7 +320,7 @@
         },
         "schedule": {
           "type": "array",
-          "description": "Per-day/per-stage running order. Shape varies by festival — treated as opaque/free-form here."
+          "description": "Per-day/per-stage running order. Shape varies by festival — treated as opaque/free-form here, but items are conventionally objects with: date (DD/MM/YYYY), time (\"HH:MM-HH:MM\" preferred), venue_id, stage_id or free-text stage, name/showname (title), type (a PROGRAMME_TYPE_LABELS key in festival_display.js — e.g. \"storytelling_shows\", \"storyround\", \"workshop\", \"showcase\" — anything else falls back to \"schedule\"), performer_id or free-text performer, host_id (a performers_lookup key for whoever is leading/hosting the item, e.g. a workshop tutor — distinct from performer/performer_id), description, limited_places (integer — shown as a places-remaining style note), ticket_url and/or booking_url (booking_url is the workshop/showcase-style alternative to ticket_url — a place to reserve rather than a ticket to buy; front end prefers ticket_url and falls back to booking_url)."
         }
       },
       "required": ["name", "start_date", "end_date", "venue_id"],

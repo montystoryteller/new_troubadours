@@ -198,6 +198,14 @@ function buildProgramme(fest) {
     const performer = item.performer_id
       ? (performersLookup[item.performer_id]?.name || item.performer_id)
       : (item.performer || "");
+    // host_id: the person running/leading an item (e.g. a workshop tutor or
+    // storyround facilitator), distinct from `performer`/`performer_id` which
+    // usually names who's performing. Resolves against performersLookup so
+    // it can link through to that performer's page, same as performer_id.
+    const hostId = item.host_id || null;
+    const host = hostId
+      ? (performersLookup[hostId]?.name || hostId)
+      : "";
     programme.push({
       date,
       dateStr: item.date,
@@ -207,9 +215,16 @@ function buildProgramme(fest) {
       stageId: item.stage_id || null,
       title: item.showname || item.name || "",
       performer,
+      hostId,
+      host,
       time: item.time || "",
       type: item.type || "schedule",
       ticketUrl: item.ticket_url || "",
+      // booking_url is the workshop/showcase-style alternative to ticket_url
+      // — a place to reserve rather than a ticket to buy. Kept as a separate
+      // field so the two can carry different link labels.
+      bookingUrl: item.booking_url || "",
+      limitedPlaces: item.limited_places ?? null,
       description: item.description || "",
       linkedItem: null,
     });
@@ -241,9 +256,13 @@ function buildProgramme(fest) {
       stage,
       title,
       performer,
+      hostId: null,
+      host: "",
       time: rawTime,
       type: item.source === "tour" && tour?.isMusic ? "music" : "special",
       ticketUrl: ev.ticket_url || "",
+      bookingUrl: "",
+      limitedPlaces: null,
       description: ev.description || "",
       linkedItem: item,
     });
@@ -282,6 +301,7 @@ const PROGRAMME_TYPE_LABELS = {
   storytelling_shows: "Storytelling Shows",
   storyround: "Storyround",
   workshop: "Workshop",
+  showcase: "Showcase",
   talk_film: "Talk / Film",
   spoken_word: "Spoken Word",
   special: "Special Event",
@@ -631,6 +651,22 @@ function showCfTooltip(item, anchor) {
     tip.appendChild(p);
   }
 
+  if (item.host) {
+    const h = document.createElement("div");
+    h.className = "cf-tooltip-host";
+    if (item.hostId) {
+      const a = document.createElement("a");
+      a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(item.hostId)}`;
+      a.className = "cf-tooltip-host-link";
+      a.textContent = item.host;
+      h.appendChild(document.createTextNode("Hosted by "));
+      h.appendChild(a);
+    } else {
+      h.textContent = `Hosted by ${item.host}`;
+    }
+    tip.appendChild(h);
+  }
+
   if (item.time) {
     const t = document.createElement("div");
     t.className = "cf-tooltip-time";
@@ -643,6 +679,23 @@ function showCfTooltip(item, anchor) {
   stageEl.textContent = item.stage;
   tip.appendChild(stageEl);
 
+  if (item.description) {
+    const d = document.createElement("div");
+    d.className = "cf-tooltip-desc";
+    const MAX = 160;
+    d.textContent = item.description.length > MAX
+      ? item.description.slice(0, MAX).trim() + "…"
+      : item.description;
+    tip.appendChild(d);
+  }
+
+  if (item.limitedPlaces != null) {
+    const lp = document.createElement("div");
+    lp.className = "cf-tooltip-places";
+    lp.textContent = `👥 Limited to ${item.limitedPlaces} places`;
+    tip.appendChild(lp);
+  }
+
   if (item.ticketUrl) {
     const safeUrl = sanitizeUrl(item.ticketUrl);
     if (safeUrl) {
@@ -650,6 +703,15 @@ function showCfTooltip(item, anchor) {
       a.href = safeUrl; a.target = "_blank"; a.rel = "noopener noreferrer";
       a.className = "cf-tooltip-link";
       a.textContent = "🎟 Tickets";
+      tip.appendChild(a);
+    }
+  } else if (item.bookingUrl) {
+    const safeUrl = sanitizeUrl(item.bookingUrl);
+    if (safeUrl) {
+      const a = document.createElement("a");
+      a.href = safeUrl; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.className = "cf-tooltip-link cf-tooltip-booking";
+      a.textContent = "📝 Book a Place";
       tip.appendChild(a);
     }
   }
@@ -694,10 +756,33 @@ function buildUntimedCard(item, today) {
     div.appendChild(p);
   }
 
+  if (item.host) {
+    const h = document.createElement("span");
+    h.className = "cf-untimed-host";
+    h.textContent = ` (hosted by ${item.host})`;
+    div.appendChild(h);
+  }
+
+  if (item.limitedPlaces != null) {
+    const lp = document.createElement("span");
+    lp.className = "cf-untimed-places";
+    lp.textContent = ` · 👥 ${item.limitedPlaces} places`;
+    div.appendChild(lp);
+  }
+
   const stage = document.createElement("span");
   stage.className = "cf-untimed-stage";
   stage.textContent = item.stage;
   div.appendChild(stage);
+
+  // Untimed cards click through to the same tooltip as timed blocks, so
+  // description/booking-vs-ticket links aren't lost just because an item
+  // has no parseable time.
+  div.style.cursor = "pointer";
+  div.addEventListener("click", e => {
+    e.stopPropagation();
+    showCfTooltip(item, div);
+  });
 
   return div;
 }

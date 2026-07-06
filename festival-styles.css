@@ -633,6 +633,12 @@
     color: #2a3a1f;
 }
 
+.cf-event-showcase {
+    background: linear-gradient(135deg, #ce8a2e, #e6b366);
+    border: 1px solid #9c661a;
+    color: white;
+}
+
 .cf-event-past {
     opacity: 0.55;
 }
@@ -678,10 +684,16 @@
 
 .cf-tooltip-title    { font-weight: 700; margin-bottom: 3px; }
 .cf-tooltip-perf     { font-style: italic; color: #555; margin-bottom: 3px; }
+.cf-tooltip-host     { color: #555; font-size: 0.9em; margin-bottom: 3px; }
+.cf-tooltip-host-link { color: #1565c0; text-decoration: none; }
+.cf-tooltip-host-link:hover { text-decoration: underline; }
 .cf-tooltip-time     { color: #777; font-size: 0.9em; }
 .cf-tooltip-stage    { color: #999; font-size: 0.85em; margin-top: 2px; }
+.cf-tooltip-desc     { color: #444; font-size: 0.85em; margin-top: 6px; line-height: 1.35; }
+.cf-tooltip-places   { color: #7a4d00; font-size: 0.82em; margin-top: 6px; }
 .cf-tooltip-link     { display: block; margin-top: 6px; color: #1565c0; text-decoration: none; font-size: 0.85em; }
 .cf-tooltip-link:hover { text-decoration: underline; }
+.cf-tooltip-booking  { color: #6a3fa0; }
 
 /* No-schedule placeholder */
 .cf-empty {
@@ -771,9 +783,12 @@
 .cf-untimed-card.cf-event-storyround         { background: #c596ab; }
 .cf-untimed-card.cf-event-workshop           { background: #8d7cc4; }
 .cf-untimed-card.cf-event-spoken_word        { background: #7da361; }
+.cf-untimed-card.cf-event-showcase           { background: #ce8a2e; }
 
 .cf-untimed-title { font-weight: 600; }
 .cf-untimed-perf  { opacity: 0.85; font-style: italic; }
+.cf-untimed-host   { opacity: 0.85; font-size: 0.9em; }
+.cf-untimed-places { opacity: 0.8; font-size: 0.85em; }
 .cf-untimed-stage {
     font-size: 0.8em;
     opacity: 0.75;

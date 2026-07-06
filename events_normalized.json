@@ -1,5 +1,83 @@
 {
   "festivals": {
+    "exeter-story-fix-2026": {
+      "name": "Exeter Story Fix 2026",
+      "short_name": "Storyfix 2026",
+      "start_date": "27/11/2026",
+      "end_date": "28/11/2026",
+      "primary_type": "storytelling",
+      "venue_id": "",
+      "ticket_url": "https://artemis-storytelling.co.uk/tickets",
+      "website": "https://artemis-storytelling.co.uk/storyfix",
+      "facebook": "",
+      "description": "",
+      "event_flyer": "exeter_story_fix_2026_flyer.png",
+      "performers": [{
+          "performer_id": "nick-hennessey",
+          "role": ""
+        }],
+      "performers_tbc": true,
+      "stages": [],
+      "schedule": [
+        {
+          "date": "27/11/2026",
+          "time": "19:30-21:30",
+          "venue_id": "cygnet-theatre-exeter",
+          "name": "Opening Night at Cygnet Theatre",
+          "host_id": "sharon-jacksties",
+          "type": "storytelling_shows",
+          "performer_ids": ["amy-douglas", "henry-everett", "inez-aponte", "rebecca-bletcher"]
+        },
+        {
+          "date": "28/11/2026",
+          "time": "16:00-19:00",
+          "venue_id": "priory-room-mint-methodist",
+          "name": "Story Round",
+          "host_id": "sharon-jacksties",
+          "type": "storyround",
+          "performer": "Led by Sharon Jacksties"
+        },
+        {
+          "date": "28/11/2026",
+          "time": "10:00-12:00",
+          "venue_id": "st-nicholas-priory-exeter",
+          "name": "Two Boats, One River: where song and speech meet",
+          "description": "Music and storytelling are deeply connected. They share cadence and pace, and underscore each other perfectly. But what about the voice?  This workshop will focus on the inherent musicality and rhythm of language. Beginning from the premise that all natural speech is musical in its chime and chatter, we will explore the full vocal range of speech, playing with pitch, tone and rhythm, and finding ways to support and enhance the telling of a story.",
+          "limited_places": 20,
+          "booking_url": "https://artemis-storytelling.co.uk/tickets",
+          "host_id": "nick-hennessey",
+          "type": "workshop"
+        },
+        {
+          "date": "28/11/2026",
+          "time": "13:00-14:30",
+          "venue_id": "st-nicholas-priory-exeter",
+          "name": "Showcase of new work from up-and-coming storytellers",
+          "description": "Free tickets available for storytelling club organisers/storytelling venue promoters and we have limited budget to pay travel expenses, if this would make a big difference to your being able to attend - please contact Katy to reserve a spot. ",
+          "ticket_url": "https://artemis-storytelling.co.uk/tickets",
+          "type": "showcase"
+        },
+        {
+          "date": "28/11/2026",
+          "time": "15:00-17:00",
+          "venue_id": "st-nicholas-priory-exeter",
+          "name": "Dynamic Landscapes in Storytelling",
+          "description": "Through fun and challenging on-your-feet exercises, games, and discussions, this workshop acts as a tonic for the storytellers' creative toolkit! Everyone is encouraged to play and improvise as they re- examine their stories and re-vitalise them through a creative connection with dynamic landscapes.\n\n\n\nWorking solo, in partners and in groups, the exercises aim to identify the archetypal spaces in a story, peel back the layers to expose emotional connections, and create word pools to conjure up the invisible world of the story.\n\n\n\nAnd we will examine the question, 'Where in this landscape is the storyteller?'\n\n\n\nIt will be exciting! Bring your notebooks, bring your story and bring your enthusiasm!",
+          "limited_places": 20,
+          "booking_url": "https://artemis-storytelling.co.uk/tickets",
+          "host_id": "nell-phoenix",
+          "type": "workshop"
+        },
+        {
+          "date": "28/11/2026",
+          "time": "19:30-21:30",
+          "venue_id": "st-nicholas-priory-exeter",
+          "name": "A Harper's Trade",
+          "performer": "nick-hennessey",
+          "type": "storytelling_shows",
+          "ticket_url": ""
+        }]
+    },
     "east-anglian-storytelling-festival-2026": {
       "name": "East Anglian Storytelling Festival",
       "short_name": "EASF 2026",
@@ -3934,7 +4012,7 @@
       "facebook": "https://www.facebook.com/ABitCrack",
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
-      "feature_slots": [["03/07/2026", "pyn-stockman"],["03/07/2026", "pyn-stockman"], ["07/08/2026", "harp-and-carp"], ["04/09/2026", "chris-adriaanse"], ["02/10/2026", "katy-cawkwell"], ["04/12/2026", "hugh-lupton-sarah-moody"]]
+      "feature_slots": [["03/07/2026", "pyn-stockman"], ["07/08/2026", "harp-and-carp"], ["04/09/2026", "chris-adriaanse"], ["02/10/2026", "katy-cawkwell"], ["04/12/2026", "hugh-lupton-sarah-moody"]]
     },
     {
       "name": "Cardiff Storytelling Circle",
@@ -6490,6 +6568,21 @@
       "performer_id": "island-storytellers"
     },
     {
+      "name": "Stories for Midsummer [Maria Credali]",
+      "showname": "Stories for Midsummer",
+      "date": "07/07/2026",
+      "date_added": "06/07/2026",
+      "time": "7-9.30pm",
+      "club": "",
+      "price": "£10.97 (£7.83)",
+      "description": "Listen... as Midsummer traditions and folklore come to life: outwitting the devil, becoming a hare, and braving the standing stones...\n\n\n\nStories for Midsummer - Folklore and fairytale for adult audiences.\n\n\n\nListen…as Midsummer traditions, folklore and fairytale come to life.\n\n\n\nA clever maiden outwits the Devil himself.\n\n\n\nA girl transforms into a hare.\n\n\n\nAnd what really happened at the standing stones?\n\n\n\nThe show will also feature an original story which was commissioned and performed for The Royal Shakespeare Company by Maria.\n\n\n\nPerfect for lovers of oral storytelling, and those fascinated by folklore and old magic, this is the perfect way to celebrate the magic, mystery, and mischief of Midsummer.",
+      "event_flyer": "",
+      "ticket_url": "https://www.eventbrite.co.uk/e/storytelling-temperance-stories-for-midsummer-by-maria-credali-tickets-1990202875375",
+      "isSpecial": true,
+      "venue_id": "temperance-leamington-spa",
+      "performer_id": "maria-credali"
+    },
+    {
       "name": "Downright Rude! [TUUP, Tim Ralphs, Nell Phoenix & Sarah Liisa Wilkinson]",
       "showname": "Downright Rude!",
       "date": "11/07/2026",
@@ -6655,6 +6748,21 @@
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "monty-the-anywhens",
       "wider_event": "ventnor-fringe-2026"
+    },
+    {
+      "name": "Deliver Us From Evil' [Aaron Oliver]",
+      "showname": "Deliver Us From Evil'",
+      "date": "24/07/2026",
+      "time": "7.30pm",
+      "club": "threeheadsinawell",
+      "price": "£10 (£7)",
+      "description": "Surrey Story Tellers' last summer evening of storytelling at Three Heads in a Well this year is on Friday 24 July (at 7.30pm) and sees Aaron Oliver telling 'Deliver Us From Evil' with music from Diana Redgrave.\n\n\n\nThe forgotten story of the first recorded case of Tourette's Syndrome: a 15th Century priest who believed he was possessed by a demon.Aaron Oliver dives into the mind of a religious leader at war with his own body and asks: how do the stories we tell ourselves change us?\n\n\n\nAaron Oliver's work explores themes of queerness, disability, humanity and hope, taking inspiration from traditional folktales, myths and legends, as well as diving into forgotten true stories from the past.\n\n\n\nDiana Redgrave is a musician based in Kent and London. She plays the cello, shruti box, tongue drums and a variety of other sound-makers to evoke atmospheres in stories",
+      "event_flyer": "2026_07_24_three_heads_aaron_oliver.jpg",
+      "ticket_url": "https://surreystorytellers.co.uk/booking/",
+      "isSpecial": true,
+      "date_added": "06/07/2026",
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": "aaron-oliver"
     },
     {
       "name": "Stories from Staffordshire [Janet Crouch]",
@@ -11161,7 +11269,7 @@
       "url": "https://www.sharonjackstories.co.uk/",
       "bio": "Sharon Jacksties tells stories to audiences of adults, young people and families.\n\n\n\n Her dynamic and versatile performances draw on stories from all over the world.\n\n\n\n Interpreting the wisdom of traditional material for contemporary audiences, her repertoire includes tales that have rarely been heard in this country."
     },
-      "aaron-oliver": {
+    "aaron-oliver": {
       "id": "aaron-oliver",
       "name": "Aaron Oliver",
       "url": "https://aaronjamesoliver.wixsite.com/storiesandprops",
@@ -11780,6 +11888,18 @@
       "name": "Dragon Storytellers",
       "url": "https://www.theatryddraig.cymru/events/storytelling-with-the-dragon-storytellers",
       "bio": ""
+    },
+    "inez-aponte": {
+      "id": "inez-aponte",
+      "name": "Inez Aponte",
+      "url": "https://www.inezaponte.com/",
+      "bio": "Performing traditional tales from around the world, Inez has been a performance storyteller for over 25 years."
+    },
+    "rebecca-bletcher": {
+      "id": "rebecca-bletcher",
+      "name": "Rebecca Bletcher",
+      "facebook": "https://www.facebook.com/rebecca.bletcher.3",
+      "instagram": "https://www.instagram.com/rebecca_storyteller/"
     },
     "shonaleigh": {
       "id": "shonaleigh",
