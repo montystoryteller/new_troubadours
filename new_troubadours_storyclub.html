@@ -784,6 +784,19 @@
             return dates.find(d => d >= from) || null;
         }
 
+        /**
+         * Return the most recent scheduled date before today (within the last
+         * 3 months), or null. Companion to nextMeetingDate.
+         */
+        function prevMeetingDate(schedule, exceptions) {
+            if (!schedule) return null;
+            const today = getTodayMidnight();
+            const to = new Date(today); to.setDate(to.getDate() - 1);
+            const from = new Date(to); from.setMonth(from.getMonth() - 3);
+            const dates = scheduledDatesInRange(schedule, from, to, exceptions || []);
+            return dates.length ? dates[dates.length - 1] : null;
+        }
+
         // ── Main ──────────────────────────────────────────────────────────────────
         (async function () {
             const params = new URLSearchParams(location.search);
@@ -861,122 +874,15 @@
             const pastEvents = allSpecific.filter(e => e._date < today);
             const upcomingEvents = allSpecific.filter(e => e._date >= today);
 
-            // ── Schedule helpers (ported from event_display.js) ───────────────
-            const DAY_MAP = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
-            const OCC_MAP = { '1st': 1, '2nd': 2, '3rd': 3, '4th': 4, 'last': 'last' };
-
-            function findNthDayInMonth(year, month, targetDay, occurrence) {
-                const lastDay = new Date(year, month + 1, 0);
-                if (occurrence === 'last') {
-                    for (let d = lastDay.getDate(); d >= 1; d--) {
-                        const t = new Date(year, month, d); t.setHours(0, 0, 0, 0);
-                        if (t.getDay() === targetDay) return t;
-                    }
-                } else {
-                    let count = 0;
-                    for (let d = 1; d <= lastDay.getDate(); d++) {
-                        const t = new Date(year, month, d); t.setHours(0, 0, 0, 0);
-                        if (t.getDay() === targetDay && ++count === occurrence) return t;
-                    }
-                }
-                return null;
-            }
-
-            // Returns all scheduled dates in [from, to] respecting exceptions
-            function scheduledDatesInRange(schedule, from, to, exceptions) {
-                if (!schedule) return [];
-                const exSet = new Set((exceptions || []).map(s => {
-                    const d = parseDateString(s.split('/').length === 3 ? s : null) ||
-                        (() => { // handle D/M/YYYY too
-                            const [d, m, y] = s.split('/').map(Number);
-                            return new Date(y, m - 1, d);
-                        })();
-                    if (!d) return null;
-                    d.setHours(0, 0, 0, 0);
-                    return d.getTime();
-                }).filter(Boolean));
-
-                const results = [];
-
-                function addIfInRange(dt) {
-                    if (!dt) return;
-                    if (dt >= from && dt <= to && !exSet.has(dt.getTime())) results.push(dt);
-                }
-
-                // Pipe-separated alternating months: "1st wed (even months) | 1st thu (odd months)"
-                if (schedule.includes('|')) {
-                    for (const part of schedule.split('|').map(s => s.trim())) {
-                        const m = part.match(/^(.+?)\s*\((\w+)\s+months\)$/i);
-                        if (!m) continue;
-                        const [occ, day] = m[1].trim().toLowerCase().split(/\s+/);
-                        const cond = m[2].toLowerCase();
-                        const tDay = DAY_MAP[day]; const occNum = OCC_MAP[occ];
-                        const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
-                        const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
-                        while (cur <= end) {
-                            const mo = cur.getMonth() + 1;
-                            const ok = (cond === 'even' && mo % 2 === 0) || (cond === 'odd' && mo % 2 !== 0);
-                            if (ok) addIfInRange(findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
-                            cur.setMonth(cur.getMonth() + 1);
-                        }
-                    }
-                    return results.sort((a, b) => a - b);
-                }
-
-                // "X and Y dayname"
-                if (schedule.toLowerCase().includes(' and ')) {
-                    const [occ1str, rest] = schedule.toLowerCase().split(' and ');
-                    const [occ2str, dayName] = rest.trim().split(/\s+/);
-                    const tDay = DAY_MAP[dayName];
-                    const occ1 = OCC_MAP[occ1str.trim()], occ2 = OCC_MAP[occ2str.trim()];
-                    const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
-                    const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
-                    while (cur <= end) {
-                        addIfInRange(findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occ1));
-                        addIfInRange(findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occ2));
-                        cur.setMonth(cur.getMonth() + 1);
-                    }
-                    return results.sort((a, b) => a - b);
-                }
-
-                // "every dayname"
-                if (schedule.toLowerCase().startsWith('every ')) {
-                    const tDay = DAY_MAP[schedule.toLowerCase().replace('every ', '').trim()];
-                    const cur = new Date(from);
-                    while (cur.getDay() !== tDay) cur.setDate(cur.getDate() + 1);
-                    while (cur <= to) { addIfInRange(new Date(cur)); cur.setDate(cur.getDate() + 7); }
-                    return results;
-                }
-
-                // Standard "Nth dayname"
-                const [occ, dayName] = schedule.toLowerCase().split(/\s+/);
-                const tDay = DAY_MAP[dayName]; const occNum = OCC_MAP[occ];
-                if (tDay === undefined || !occNum) return results;
-                const cur = new Date(from.getFullYear(), from.getMonth() - 1, 1);
-                const end = new Date(to.getFullYear(), to.getMonth() + 1, 0);
-                while (cur <= end) {
-                    addIfInRange(findNthDayInMonth(cur.getFullYear(), cur.getMonth(), tDay, occNum));
-                    cur.setMonth(cur.getMonth() + 1);
-                }
-                return results.sort((a, b) => a - b);
-            }
-
-            // Compute next and previous scheduled dates
-            function nextScheduledDate(schedule, exceptions) {
-                if (!schedule) return null;
-                const from = new Date(today);
-                const to = new Date(today); to.setMonth(to.getMonth() + 6);
-                const dates = scheduledDatesInRange(schedule, from, to, exceptions);
-                return dates.find(d => d >= today) || null;
-            }
-
-            function prevScheduledDate(schedule, exceptions) {
-                if (!schedule) return null;
-                const to = new Date(today); to.setDate(to.getDate() - 1);
-                const from = new Date(to); from.setMonth(from.getMonth() - 3);
-                const dates = scheduledDatesInRange(schedule, from, to, exceptions);
-                return dates.length ? dates[dates.length - 1] : null;
-            }
+            // Schedule resolution (next/prev meeting dates, date-range expansion) is
+            // handled by the shared module-scope engine defined above:
+            // scheduledDatesInRange(), nextMeetingDate(), prevMeetingDate().
+            // (Previously this block had its own copy of that logic, which had gone
+            // out of sync with the shared version and silently dropped structured
+            // schedule objects like {"type":"fortnightly", ...}. Use the aliases
+            // below rather than re-introducing a second copy.)
+            const nextScheduledDate = nextMeetingDate;
+            const prevScheduledDate = prevMeetingDate;
 
             // Venue lookup
             const venue = data.venues[clubRecord.venue_id] || null;
