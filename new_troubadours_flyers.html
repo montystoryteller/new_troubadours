@@ -1613,15 +1613,15 @@
                     isSoldOut: !!rep.isSoldOut,
                 };
 
-                // tour-level flyer — one card representing the whole tour.
-                // Accept either field name: "tour_flyer" (legacy) or
-                // "touring_event_flyer" (used elsewhere for the headline
-                // flyer shared across all dates, e.g. repertoire shows).
-                const tourLevelFlyer = tour.tour_flyer?.trim() || tour.touring_event_flyer?.trim();
-                if (tourLevelFlyer) {
-                    push(tourLevelFlyer, "event", rep.date, "tour",
+                // tour-level flyer(s) — one card per flyer representing the whole
+                // tour. getTourLevelFlyers() (shared_utils.js) resolves "tour_flyer",
+                // "touring_event_flyer", and the current "touring_event_flyers" list
+                // into one ordered, de-duplicated set; each gets its own card here,
+                // all keyed to the same representative date/venue for the tour.
+                getTourLevelFlyers(tour).forEach((f) => {
+                    push(f.filename, "event", rep.date, "tour",
                         tour.tour_name || tour.name, tour.performer_id, rep.venue_id, rep.ticket_url, tourExtra);
-                }
+                });
 
                 // per-date event flyers — one card each for individual dates that have their own flyer
                 for (const d of datesInWindow) {

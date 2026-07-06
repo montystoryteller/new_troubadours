@@ -203,6 +203,73 @@ function sanitizeFlyerPath(filename) {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "");
 }
 
+/**
+ * Resolve all tour-level flyers for a tour into one normalized, ordered,
+ * de-duplicated list. Three data shapes are supported and may all be
+ * present on the same tour record:
+ *   - `tour_flyer` (legacy): a single filename string.
+ *   - `touring_event_flyer` (legacy, singular): another single-filename
+ *     alias for the same idea, previously handled ad hoc in the flyers
+ *     grid page only.
+ *   - `touring_event_flyers` (current, plural): an array, where each
+ *     entry is either a plain filename string, or an object such as
+ *     `{ flyer: "poster.jpg", label: "2026 redesign" }`
+ *     (also accepts `src`/`path`/`filename` and `caption`/`title` as
+ *     aliases for `flyer`/`label`, to tolerate hand-authored data).
+ *
+ * Entries are ordered `tour_flyer`, then `touring_event_flyer`, then the
+ * `touring_event_flyers` list, and de-duplicated by filename so listing
+ * the same flyer under more than one field (e.g. during a migration)
+ * doesn't produce a duplicate card/thumbnail.
+ *
+ * Used by both tour_display.js (tour guide page) and new_troubadours_flyers.html
+ * (flyers grid) — keep this the single implementation rather than copying it,
+ * so the two pages can't drift out of sync with each other.
+ *
+ * @param {object} tour
+ * @returns {{filename: string, label: string}[]}
+ */
+function getTourLevelFlyers(tour) {
+  const out = [];
+  const seen = new Set();
+
+  function add(filename, customLabel) {
+    const clean = (filename || "").trim();
+    if (!clean || seen.has(clean)) return;
+    seen.add(clean);
+    out.push({ filename: clean, label: customLabel || null });
+  }
+
+  if (tour.tour_flyer?.trim()) {
+    add(tour.tour_flyer);
+  }
+
+  if (tour.touring_event_flyer?.trim()) {
+    add(tour.touring_event_flyer);
+  }
+
+  if (Array.isArray(tour.touring_event_flyers)) {
+    tour.touring_event_flyers.forEach((entry) => {
+      if (typeof entry === "string") {
+        add(entry);
+      } else if (entry && typeof entry === "object") {
+        const filename = entry.flyer || entry.src || entry.path || entry.filename;
+        const label = entry.label || entry.caption || entry.title || null;
+        add(filename, label);
+      }
+    });
+  }
+
+  // Fill in default labels: plain "Tour flyer" when it's the only one,
+  // else numbered "Tour flyer 1", "Tour flyer 2", ... for any entry that
+  // didn't come with its own label.
+  out.forEach((f, i) => {
+    if (!f.label) f.label = out.length > 1 ? `Tour flyer ${i + 1}` : "Tour flyer";
+  });
+
+  return out;
+}
+
 
 // ---------------------------------------------------------------------------
 // DOM helpers

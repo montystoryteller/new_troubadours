@@ -509,6 +509,7 @@ select {
 
 /* Flyer thumbnail — floated right inside a touring panel card */
 .now-touring-flyer-thumb {
+    position: relative;
     float: right;
     margin: 0 0 8px 10px;
     width: 62px;
@@ -517,6 +518,22 @@ select {
     overflow: hidden;
     background: rgba(0, 0, 0, 0.07);
     cursor: zoom-in;
+}
+
+/* Small "+N" badge shown when a tour has more than one tour-level flyer
+   (touring_event_flyers). Sits over the bottom-right corner of the thumb. */
+.now-touring-flyer-count-badge {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+    pointer-events: none;
 }
 
 .now-touring-flyer-thumb img {

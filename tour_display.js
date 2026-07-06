@@ -263,8 +263,9 @@ function displayTour(tourId) {
   flyerContainer.appendChild(flyerImage); // always re-attach image in the middle
   bottomLinks.forEach((l) => flyerContainer.appendChild(l));
 
-  if (tour.tour_flyer) {
-    flyerImage.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`;
+  const tourLevelFlyers = getTourLevelFlyers(tour);
+  if (tourLevelFlyers.length > 0) {
+    flyerImage.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tourLevelFlyers[0].filename)}`;
     flyerImage.alt = `${tour.name} tour flyer`;
     flyerImage.style.display = "block";
     flyerContainer.style.display = "block";
@@ -514,6 +515,12 @@ function createTourDateElement(tourDate, tour, past = false) {
   return div;
 }
 
+// getTourLevelFlyers() — defined in shared_utils.js. Normalizes the
+// legacy singular `tour_flyer` and the current `touring_event_flyers`
+// list into one ordered, de-duplicated array of {filename, label}.
+// Shared with new_troubadours_flyers.html so both pages agree on how
+// tour-level flyers resolve.
+
 // ── Shared lazy-image observer for tour flyers ────────────────────────────────
 // Watches for data-src images entering the viewport and loads them on demand.
 // Used by both the gallery thumbnails and per-date expandable flyer images.
@@ -535,14 +542,14 @@ const flyerImgObserver = new IntersectionObserver(
 function renderTourFlyers(tour) {
   const BASE_EVENT = "./storyclub_assets/event_flyers/";
 
-  // Gather all flyers: tour-level + per-date
+  // Gather all flyers: tour-level (tour_flyer + touring_event_flyers) + per-date
   const flyers = [];
-  if (tour.tour_flyer?.trim()) {
+  getTourLevelFlyers(tour).forEach((f) => {
     flyers.push({
-      src: BASE_EVENT + sanitizeFlyerPath(tour.tour_flyer),
-      label: "Tour flyer",
+      src: BASE_EVENT + sanitizeFlyerPath(f.filename),
+      label: f.label,
     });
-  }
+  });
   (tour.tour_dates || []).forEach((d) => {
     if (!d.event_flyer?.trim()) return;
     const date = parseDateString(d.date);
@@ -886,22 +893,37 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
   if (tour.isMusic) card.classList.add("music");
 
   // Flyer thumbnail — floats right, clicks to open lightbox
-  if (tour.tour_flyer?.trim()) {
+  const cardTourFlyers = getTourLevelFlyers(tour);
+  if (cardTourFlyers.length > 0) {
     const thumb = document.createElement("div");
     thumb.className = "now-touring-flyer-thumb";
-    thumb.title = "View flyer";
+    thumb.title = cardTourFlyers.length > 1 ? "View flyers" : "View flyer";
     const img = document.createElement("img");
-    img.dataset.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`;
+    img.dataset.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(cardTourFlyers[0].filename)}`;
     img.alt = `${tour.showname || tour.name} flyer`;
     img.addEventListener("load", () => img.classList.add("loaded"));
     flyerImgObserver.observe(img);
     thumb.appendChild(img);
+
+    // If there's more than one flyer, show a small count badge and let the
+    // click open the lightbox strip (all of them, in order) rather than
+    // just the first.
+    if (cardTourFlyers.length > 1) {
+      const badge = document.createElement("span");
+      badge.className = "now-touring-flyer-count-badge";
+      badge.textContent = `+${cardTourFlyers.length - 1}`;
+      thumb.appendChild(badge);
+    }
+
     thumb.addEventListener("click", (e) => {
       e.stopPropagation();
-      openTourFlyerLightbox([{
-        src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tour.tour_flyer)}`,
-        label: tour.showname || tour.name,
-      }], 0);
+      openTourFlyerLightbox(
+        cardTourFlyers.map((f) => ({
+          src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`,
+          label: f.label,
+        })),
+        0,
+      );
     });
     card.appendChild(thumb);
   }
