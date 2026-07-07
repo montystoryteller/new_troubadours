@@ -832,6 +832,7 @@
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
                 <button onclick="copyOutput()" class="btn-secondary-action">Copy to clipboard</button>
                 <button onclick="downloadOutput()" class="btn-secondary-action">Download .json</button>
+                <button onclick="clearOutput()" class="btn-clear-form">Clear</button>
             </div>
             <textarea id="outputArea" readonly placeholder="Click &quot;Generate from batch&quot; once you've added one or more records above…"></textarea>
         </div>
@@ -1586,6 +1587,10 @@
             if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
             if (batch.shows.length) out.repertoire_shows = Object.fromEntries(batch.shows.map(s => [s.key, s.record]));
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
+        }
+
+        function clearOutput() {
+            document.getElementById("outputArea").value = "";
         }
 
         function copyOutput() {
