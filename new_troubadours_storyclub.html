@@ -1861,25 +1861,21 @@
                     meta.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;';
                     const linkSrc = c.link || c.website || c.tickets_url;
                     if (linkSrc) {
-                        const a = document.createElement('a');
-                        a.href = linkSrc; a.target = '_blank';
-                        a.style.cssText = 'font-size:12px;color:#2e7d32;text-decoration:none;';
-                        a.textContent = 'website'; a.onclick = e => e.stopPropagation();
+                        const a = icon(GLOBE_SVG, linkSrc, 'event-website', 'Website');
+                        // Match the grey color used in the single-club header
+                        a.querySelector('svg').style.fill = '#555';
+                        a.onclick = e => e.stopPropagation();
                         meta.appendChild(a);
                     }
                     if (c.facebook) {
-                        const a = document.createElement('a');
-                        a.href = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
-                        a.target = '_blank';
-                        a.style.cssText = 'font-size:12px;color:#1877f2;text-decoration:none;';
-                        a.textContent = 'facebook'; a.onclick = e => e.stopPropagation();
+                        const fbHref = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
+                        const a = icon(FACEBOOK_SVG, fbHref, 'event-facebook', 'Facebook');
+                        a.onclick = e => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
                         meta.appendChild(a);
                     }
                     if (c.email) {
-                        const a = document.createElement('a');
-                        a.href = `mailto:${c.email}`;
-                        a.style.cssText = 'font-size:12px;color:#555;text-decoration:none;';
-                        a.textContent = 'email'; a.onclick = e => e.stopPropagation();
+                        const a = icon(EMAIL_SVG, `mailto:${c.email}`, 'event-email', 'Email');
+                        a.onclick = e => e.stopPropagation();
                         meta.appendChild(a);
                     }
                     if (meta.childNodes.length) card.appendChild(meta);
