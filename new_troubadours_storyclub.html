@@ -590,17 +590,29 @@
         }
 
         function icon(svg, href, cls, title) {
-            const a = document.createElement('a');
-            a.href = href;
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-            a.className = cls;
-            a.title = title;
-            a.innerHTML = svg;
-            a.style.cssText = 'display:inline-block;margin-left:6px;vertical-align:middle;text-decoration:none;';
-            a.querySelector('svg').style.cssText = 'width:20px;height:20px;';
-            return a;
-        }
+                const a = document.createElement('a');
+                a.href = href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = cls;
+
+                // Tooltip for mouse users
+                a.title = title;
+
+                // Accessible name for screen readers
+                a.setAttribute('aria-label', title);
+
+                a.innerHTML = svg;
+                a.style.cssText = 'display:inline-block;margin-left:6px;vertical-align:middle;text-decoration:none;';
+
+                const svgEl = a.querySelector('svg');
+                svgEl.style.cssText = 'width:20px;height:20px;';
+
+                // Hide the raw SVG from screen readers so they only read the aria-label
+                svgEl.setAttribute('aria-hidden', 'true');
+
+                return a;
+            }
 
         function normaliseFacebook(fb) {
             if (!fb) return null;
