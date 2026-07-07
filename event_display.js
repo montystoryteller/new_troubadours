@@ -2601,49 +2601,66 @@ function handleEndDateChange() {
   showDateRange(true);
 }
 
+/**
+ * Default values mirror the fallbacks getEventURLParams() applies when a
+ * param is absent from the URL. Keeping them in one place lets
+ * generateShareableURL() know which values are safe to omit.
+ */
+const EVENT_FILTER_DEFAULTS = {
+  storyclubs: true,
+  special: true,
+  music: false,
+  folk: false,
+  sessions: false,
+  hidecancelled: true,
+  hidepast: false,
+};
+
 function generateShareableURL(startDate, endDate) {
-  // formatDateForInput() defined in shared_utils.js
   const params = new URLSearchParams();
-  params.set("start", formatDateForInput(startDate));
-  params.set("end", formatDateForInput(endDate));
-
-  // Add filter states
-  params.set(
-    "storyclubs",
-    document.getElementById("storyclubsOn").checked ? "1" : "0",
-  );
-  params.set(
-    "special",
-    document.getElementById("specialOn").checked ? "1" : "0",
-  );
-  params.set("music", document.getElementById("showMusic").checked ? "1" : "0");
-  params.set("folk", document.getElementById("showFolk").checked ? "1" : "0");
-  params.set(
-    "sessions",
-    document.getElementById("showSessions").checked ? "1" : "0",
-  );
-  params.set(
-    "hidecancelled",
-    document.getElementById("hideCancelled").checked ? "1" : "0",
-  );
-  const hidePastEl = document.getElementById("hidePastEvents");
-  params.set("hidepast", hidePastEl && hidePastEl.checked ? "1" : "0");
-
-  const center = map.getCenter();
-  const lat = center.lat;
-  const lng = center.lng;
-  const zoom = map.getZoom();
-  params.set("lat", lat);
-  params.set("lng", lng);
-  params.set("zoom", zoom);
-  params.set(
-    "pinmap",
-    document.getElementById("pinMapView").checked ? "1" : "0",
-  );
 
   const searchTerm = document.getElementById("searchInput").value.trim();
+
   if (searchTerm) {
+    // A search always re-runs against "today → +2 years" regardless of the
+    // current date-range inputs, so there's nothing to gain by encoding
+    // start/end here — they'd just be redundant, unused noise.
     params.set("q", searchTerm);
+  } else {
+    // formatDateForInput() defined in shared_utils.js
+    params.set("start", formatDateForInput(startDate));
+    params.set("end", formatDateForInput(endDate));
+  }
+
+  // Only encode filter checkboxes that differ from their defaults, so a
+  // link that just shows "the defaults with a wider date range" (say) stays
+  // short instead of spelling out every toggle.
+  const hidePastEl = document.getElementById("hidePastEvents");
+  const currentFilters = {
+    storyclubs: document.getElementById("storyclubsOn").checked,
+    special: document.getElementById("specialOn").checked,
+    music: document.getElementById("showMusic").checked,
+    folk: document.getElementById("showFolk").checked,
+    sessions: document.getElementById("showSessions").checked,
+    hidecancelled: document.getElementById("hideCancelled").checked,
+    hidepast: !!(hidePastEl && hidePastEl.checked),
+  };
+  Object.entries(currentFilters).forEach(([key, value]) => {
+    if (value !== EVENT_FILTER_DEFAULTS[key]) {
+      params.set(key, value ? "1" : "0");
+    }
+  });
+
+  // The map view is only worth sharing if the person has deliberately pinned
+  // it — otherwise the page auto-fits the map to whatever's displayed, so
+  // lat/lng/zoom would just be dead weight in the URL.
+  const pinned = document.getElementById("pinMapView").checked;
+  if (pinned) {
+    params.set("pinmap", "1");
+    const center = map.getCenter();
+    params.set("lat", center.lat.toFixed(5));
+    params.set("lng", center.lng.toFixed(5));
+    params.set("zoom", map.getZoom());
   }
 
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -2686,47 +2703,49 @@ function getEventURLParams() {
   const params = new URLSearchParams(window.location.search);
   const start = params.get("start");
   const end = params.get("end");
+  const q = params.get("q");
 
-  if (start) {
-    const storyclubs = params.get("storyclubs") === "1";
-    const special = params.get("special") === "1";
-    const music = params.get("music") === "1";
-    const folk = params.get("folk") === "1";
-    const sessions = params.get("sessions") === "1";
-    const pinmap = params.get("pinmap") === "1";
-    // hidecancelled defaults to true (checked) when absent from URL
-    const hidecancelledParam = params.get("hidecancelled");
-    const hidecancelled =
-      hidecancelledParam === null ? true : hidecancelledParam === "1";
-    const hidepastParam = params.get("hidepast");
-    const hidepast = hidepastParam === "1";
-    const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
-    const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
-    const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
-    // If none are selected, default storyclubs and special to true
-    const noneSelected =
-      !storyclubs && !special && !music && !folk && !sessions;
+  // Nothing usable in the URL — caller falls back to the default view.
+  if (!start && !q) return null;
 
-    const q = params.get("q");
+  const storyclubs = params.get("storyclubs") === "1";
+  const special = params.get("special") === "1";
+  const music = params.get("music") === "1";
+  const folk = params.get("folk") === "1";
+  const sessions = params.get("sessions") === "1";
+  const pinmap = params.get("pinmap") === "1";
+  // hidecancelled defaults to true (checked) when absent from URL
+  const hidecancelledParam = params.get("hidecancelled");
+  const hidecancelled =
+    hidecancelledParam === null ? true : hidecancelledParam === "1";
+  const hidepastParam = params.get("hidepast");
+  const hidepast = hidepastParam === "1";
+  const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
+  const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
+  const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
+  // If none are selected, default storyclubs and special to true
+  const noneSelected =
+    !storyclubs && !special && !music && !folk && !sessions;
 
-    return {
-      startDate: new Date(start),
-      endDate: end ? new Date(end) : null,
-      storyclubs: noneSelected ? true : storyclubs,
-      special: noneSelected ? true : special,
-      folk: noneSelected ? true : folk,
-      sessions: noneSelected ? true : sessions,
-      music: music,
-      pinmap: pinmap,
-      hidecancelled: hidecancelled,
-      hidepast: hidepast,
-      lat: lat,
-      lng: lng,
-      zoom: zoom,
-      searchTerm: q,
-    };
-  }
-  return null;
+  return {
+    // A bare "?q=..." link (no start param) has no date range of its own —
+    // the caller falls back to the current week for the date inputs, since
+    // the search itself always covers today through +2 years regardless.
+    startDate: start ? new Date(start) : null,
+    endDate: end ? new Date(end) : null,
+    storyclubs: noneSelected ? true : storyclubs,
+    special: noneSelected ? true : special,
+    folk: noneSelected ? true : folk,
+    sessions: noneSelected ? true : sessions,
+    music: music,
+    pinmap: pinmap,
+    hidecancelled: hidecancelled,
+    hidepast: hidepast,
+    lat: lat,
+    lng: lng,
+    zoom: zoom,
+    searchTerm: q,
+  };
 }
 
 function toggleTabContent(tabId, event) {
@@ -2827,7 +2846,7 @@ function refreshEventsData() {
   // Check for URL parameters first
   const urlParams = getEventURLParams();
   if (urlParams) {
-    const startDate = urlParams.startDate;
+    const startDate = urlParams.startDate || getWeekStart(getTodayMidnight());
     const endDate = urlParams.endDate || getWeekEnd(getWeekStart(startDate));
 
     document.getElementById("storyclubsOn").checked = urlParams.storyclubs;
