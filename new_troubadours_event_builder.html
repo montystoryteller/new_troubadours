@@ -854,6 +854,23 @@
         // Batch of records waiting to be exported
         const batch = { events: [], musicEvents: [], tours: [], shows: [] };
 
+        // ── Paragraph-break encoding ─────────────────────────────────────────
+        // House convention (see tour_description in events-schema.json): a
+        // blank line between two paragraphs in a textarea is stored in the
+        // JSON as four \n characters, not two. Typing Enter once extra or
+        // twice extra to make that blank line both collapse to the same
+        // four-\n paragraph break; a single Enter (a soft line break within
+        // one paragraph) is left alone.
+        function encodeParagraphBreaks(text) {
+            const normalized = (text || "").replace(/\r\n/g, "\n");
+            const trimmedLines = normalized.split("\n").map(l => l.replace(/[ \t]+$/, "")).join("\n");
+            return trimmedLines
+                .split(/\n{2,}/)
+                .map(p => p.trim())
+                .filter(p => p.length > 0)
+                .join("\n\n\n\n");
+        }
+
         // ── Slugify ──────────────────────────────────────────────────────────
         function slugify(s) {
             return (s || "")
@@ -1276,7 +1293,7 @@
             const time = document.getElementById("ev-time").value.trim();
             const club = document.getElementById("ev-club").value.trim();
             const price = document.getElementById("ev-price").value.trim();
-            const description = document.getElementById("ev-description").value.trim();
+            const description = encodeParagraphBreaks(document.getElementById("ev-description").value);
             const flyer = document.getElementById("ev-flyer").value.trim();
             const video = document.getElementById("ev-video").value.trim();
             const ticketUrl = document.getElementById("ev-ticket-url").value.trim();
@@ -1355,7 +1372,7 @@
             };
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
-            const description = document.getElementById("tour-description").value.trim();
+            const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
             const flyer = document.getElementById("tour-flyer").value.trim();
             const video = document.getElementById("tour-video").value.trim();
             if (description) record.tour_description = description;
@@ -1413,7 +1430,7 @@
             };
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
-            const description = document.getElementById("show-description").value.trim();
+            const description = encodeParagraphBreaks(document.getElementById("show-description").value);
             const flyer = document.getElementById("show-flyer").value.trim();
             const video = document.getElementById("show-video").value.trim();
             if (description) record.description = description;
@@ -1452,7 +1469,7 @@
             const id = uniqueId(slugify(name), id => !!performersLookup[id] || !!newPerformers[id]);
             const record = { id, name };
             const url = document.getElementById("perf-url").value.trim();
-            const bio = document.getElementById("perf-bio").value.trim();
+            const bio = encodeParagraphBreaks(document.getElementById("perf-bio").value);
             const type = document.getElementById("perf-type").value.trim();
             const facebook = document.getElementById("perf-facebook").value.trim();
             const instagram = document.getElementById("perf-instagram").value.trim();
@@ -1499,7 +1516,7 @@
             const url = document.getElementById("venue-url").value.trim();
             const ticketsUrl = document.getElementById("venue-tickets-url").value.trim();
             const email = document.getElementById("venue-email").value.trim();
-            const description = document.getElementById("venue-description").value.trim();
+            const description = encodeParagraphBreaks(document.getElementById("venue-description").value);
             const latlonRaw = document.getElementById("venue-latlon").value.trim();
             if (city) record.city = city;
             if (postcode) record.postcode = postcode;
