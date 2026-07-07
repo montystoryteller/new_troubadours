@@ -498,14 +498,37 @@ function initMap(elementId, onMoveEnd) {
 // ---------------------------------------------------------------------------
 
 /**
+ * How often the JSON's cache-busting query param rolls over on its own.
+ * Within one window, every page load requests the *same* URL, so the browser
+ * (and GitHub Pages' edge cache) can serve it from cache instead of
+ * re-downloading ~580KB every visit. After the window elapses, the URL
+ * changes and a fresh copy is fetched automatically — no deploy needed.
+ * Tune this to taste: 1 = hourly, 4 = every 4 hours, 24 = daily.
+ */
+const CACHE_BUCKET_HOURS = 4;
+
+/**
+ * Returns a version string that stays constant for CACHE_BUCKET_HOURS at a
+ * time, then changes. Used as the default cache-busting query param.
+ * @returns {string}
+ */
+function getAutoCacheVersion() {
+  const bucketMs = CACHE_BUCKET_HOURS * 60 * 60 * 1000;
+  return Math.floor(Date.now() / bucketMs).toString();
+}
+
+/**
  * Fetch events_normalized.json and populate the three shared lookup objects.
  * Pass the returned eventsData and populated lookups back via the returned object.
- * @param {string|null} [cacheBuster]  - Optional version string; defaults to timestamp.
+ * @param {string|null} [cacheBuster]  - Optional version string. Defaults to
+ *   an auto-rolling version (see CACHE_BUCKET_HOURS) so normal page loads can
+ *   be served from cache. Pass Date.now() (or similar) to force a genuinely
+ *   fresh fetch, e.g. from a manual "Refresh data" button.
  * @returns {Promise<{eventsData: object, venuesLookup: object, performersLookup: object, toursLookup: object}|null>}
  */
 async function loadEventsData(cacheBuster) {
   try {
-    const version = cacheBuster || new Date().getTime();
+    const version = cacheBuster || getAutoCacheVersion();
     const response = await fetch(`events_normalized.json?v=${version}`);
     if (!response.ok) {
       console.error("Failed to load events_normalized.json");

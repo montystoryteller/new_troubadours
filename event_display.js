@@ -2749,11 +2749,47 @@ function toggleTabContent(tabId, event) {
   }
 }
 
-// Initialize
-window.addEventListener("load", async () => {
-  const result = await loadEventsData();
+/**
+ * Forces a genuinely fresh copy of events_normalized.json (bypassing the
+ * normal auto-rolling cache window) and re-renders the page with it.
+ * Wired up to the "Refresh data" button.
+ */
+function refreshEventsData() {
+  const btn = document.getElementById("refreshDataBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Refreshing…";
+  }
+  // Simplest reliable way to re-run the full init sequence (map, filters,
+  // new-events panel, URL params, etc.) against fresh data: reload the page,
+  // flagging that this particular load should bypass the cache window.
+  sessionStorage.setItem("forceFreshEventsData", "1");
+  window.location.reload();
+}
+
+// Initialize.
+// Runs as soon as this script executes (the DOM above it is already parsed
+// by this point, since these <script> tags sit at the end of <body>) rather
+// than waiting for the "load" event, which would also wait on the Leaflet
+// CDN CSS/JS and anything else on the page. Starting the fetch here lets it
+// begin as early as possible instead of stacking behind everything else.
+(async () => {
+  const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
+  if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
+
+  const eventsListEl = document.getElementById("eventsList");
+  if (eventsListEl) {
+    eventsListEl.innerHTML =
+      '<div class="new-events-placeholder">⏳ Loading events…</div>';
+  }
+
+  const result = await loadEventsData(forcedRefresh ? Date.now() : null);
   if (!result) {
     console.error("Failed to load events data");
+    if (eventsListEl) {
+      eventsListEl.innerHTML =
+        '<div class="no-events">Couldn\'t load events data. Please try refreshing the page.</div>';
+    }
     return;
   }
   eventsData = result.eventsData;
@@ -2832,4 +2868,4 @@ window.addEventListener("load", async () => {
   } else {
     showThisWeek();
   }
-});
+})();

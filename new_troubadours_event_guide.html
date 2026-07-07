@@ -9,6 +9,7 @@
     <meta http-equiv="Expires" content="0">
     <title>New Troubadour Events with Map</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="events-styles.css">
@@ -130,6 +131,9 @@
                 📋 Copy Shareable Link
             </button>
             <span id="copyFeedback" style="color: #4CAF50; font-size: 14px; display: none;">✓ Link copied!</span>
+            <button id="refreshDataBtn" onclick="refreshEventsData()" class="btn-copy-link" title="Bypasses the cache to fetch the latest events data immediately">
+                🔄 Refresh Data
+            </button>
         </div>
     </div>
 

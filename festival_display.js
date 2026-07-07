@@ -1389,11 +1389,46 @@ function populateFestivalDropdown() {
 // Init
 // ---------------------------------------------------------------------------
 
-window.addEventListener("load", async () => {
+/**
+ * Forces a genuinely fresh copy of events_normalized.json (bypassing the
+ * normal auto-rolling cache window defined in shared_utils.js) and
+ * re-renders the page with it. Wired up to the "Refresh data" button.
+ */
+function refreshEventsData() {
+  const btn = document.getElementById("refreshDataBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Refreshing…";
+  }
+  sessionStorage.setItem("forceFreshEventsData", "1");
+  window.location.reload();
+}
+
+// Initialize.
+// Runs as soon as this script executes rather than waiting for the "load"
+// event (which would also wait on the Leaflet CDN CSS/JS and anything else
+// on the page), so the JSON fetch starts as early as possible.
+(async () => {
+  const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
+  if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
+
+  const loadingHTML = '<p class="festival-panel-placeholder">⏳ Loading festivals…</p>';
+  ["currentFestivalsBody", "upcomingFestivalsBody", "pastFestivalsBody"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = loadingHTML;
+  });
+
   const { festivalId, cacheBuster } = getFestivalURLParams();
 
-  const result = await loadEventsData(cacheBuster);
-  if (!result) { console.error("Failed to load events data"); return; }
+  const result = await loadEventsData(cacheBuster || (forcedRefresh ? Date.now() : null));
+  if (!result) {
+    console.error("Failed to load events data");
+    ["currentFestivalsBody", "upcomingFestivalsBody", "pastFestivalsBody"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
+    });
+    return;
+  }
 
   eventsData       = result.eventsData;
   venuesLookup     = result.venuesLookup;
@@ -1411,4 +1446,4 @@ window.addEventListener("load", async () => {
       document.getElementById("festivalContent").scrollIntoView({ behavior: "smooth", block: "start" });
     }, 300);
   }
-});
+})();

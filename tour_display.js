@@ -1092,17 +1092,53 @@ function renderPastToursPanel() {
   );
 }
 
-// Initialize on page load
-window.addEventListener("load", async () => {
+/**
+ * Forces a genuinely fresh copy of events_normalized.json (bypassing the
+ * normal auto-rolling cache window defined in shared_utils.js) and
+ * re-renders the page with it. Wired up to the "Refresh data" button.
+ */
+function refreshEventsData() {
+  const btn = document.getElementById("refreshDataBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Refreshing…";
+  }
+  sessionStorage.setItem("forceFreshEventsData", "1");
+  window.location.reload();
+}
+
+// Initialize.
+// Runs as soon as this script executes rather than waiting for the "load"
+// event (which would also wait on the Leaflet CDN CSS/JS and anything else
+// on the page), so the JSON fetch starts as early as possible.
+(async () => {
   console.log("Page loaded, initializing...");
+
+  const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
+  if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
+
+  const loadingHTML =
+    '<div class="upcoming-tours-placeholder">⏳ Loading tours…</div>';
+  ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = loadingHTML;
+  });
 
   const urlParams = getTourURLParams();
   console.log("URL params:", urlParams);
 
-  const result = await loadEventsData(urlParams.cacheBuster);
+  const result = await loadEventsData(
+    urlParams.cacheBuster || (forcedRefresh ? Date.now() : null),
+  );
 
   if (!result) {
     console.error("Failed to load events data");
+    ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el)
+        el.innerHTML =
+          '<div class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</div>';
+    });
     return;
   }
 
@@ -1161,4 +1197,4 @@ window.addEventListener("load", async () => {
     document.getElementById("performerSelect").value = urlParams.performerId;
     handlePerformerChange();
   }
-});
+})();

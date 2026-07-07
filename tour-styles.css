@@ -761,6 +761,24 @@ select {
     animation: slideDown 0.25s ease-out;
 }
 
+/* Shown briefly inside nowTouringBody/upcomingToursBody/pastToursBody
+   while events_normalized.json is loading. */
+.upcoming-tours-placeholder {
+    color: #777;
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    margin: 0;
+}
+
+/* Shown in the same spot if the data fetch fails. */
+.no-tours {
+    color: #b91c1c;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    margin: 0;
+}
+
 /* =============================================================
    10. TOUR FLYER GALLERY
    Horizontal scrolling strip of thumbnails shown on the tour
