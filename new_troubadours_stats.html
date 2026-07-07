@@ -761,10 +761,25 @@
             if (openSlugs.length) params.set('open', openSlugs.join(','));
             document.querySelectorAll('.section[data-slug]').forEach(sec => {
                 const slug = sec.dataset.slug;
+
+                // Only encode _cat/_view when the active tab differs from the
+                // section's own default (its first button) — restoring a
+                // section with no ?slug_cat= param already falls back to that
+                // same first button (see twoLevelSection's `ci === 0` check),
+                // so writing it out every time was pure redundancy.
+                const catBtns = sec.querySelectorAll('.stats-tab-btn');
                 const catBtn = sec.querySelector('.stats-tab-btn.active');
+                const defaultCat = catBtns[0]?.dataset.cat;
+                if (catBtn && catBtn.dataset.cat && catBtn.dataset.cat !== defaultCat) {
+                    params.set(slug + '_cat', catBtn.dataset.cat);
+                }
+
+                const viewBtns = sec.querySelectorAll('.stats-view-btn');
                 const viewBtn = sec.querySelector('.stats-view-btn.active');
-                if (catBtn) params.set(slug + '_cat', catBtn.dataset.cat);
-                if (viewBtn) params.set(slug + '_view', viewBtn.dataset.view);
+                const defaultView = viewBtns[0]?.dataset.view;
+                if (viewBtn && viewBtn.dataset.view && viewBtn.dataset.view !== defaultView) {
+                    params.set(slug + '_view', viewBtn.dataset.view);
+                }
             });
             return window.location.origin + window.location.pathname + '?' + params.toString();
         }
