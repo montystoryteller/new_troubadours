@@ -6655,6 +6655,24 @@
       "performer_id": "martin-maudsley"
     },
     {
+      "name": "Secrets, Stories and Songs from the North East of Scotland [Sheeha Blackhall & Pauline Cordiner]",
+      "showname": "Secrets, Stories and Songs from the North East of Scotland",
+      "date": "18/07/2026",
+      "venue_id": "st-marys-chapel-aberdeen",
+      "performer_ids": [
+        "sheeha-blackhall",
+        "pauline-cordiner"
+      ],
+      "date_added": "07/07/2026",
+      "time": "7-8.30pm",
+      "price": "£15 + booking fee",
+      "description": "Join renowned North-East writer, poet, singer and storyteller Sheena Blackhall with storyteller Pauline Cordiner for an evening of folklore, hidden history, ghostly tales and traditional songs.\\n\\n\\n\\nHeld in the beautiful surroundings of historic St Mary's Chapel, this adults-only event celebrates the stories, traditions and rich Doric and Scots heritage of the North East.",
+      "event_flyer": "2026_07_18_blackhall_stories_nescot.jpg",
+      "ticket_url": "https://www.tickettailor.com/events/paulinecordinerascottishstoryteller/2179003",
+      "fb_event": "1031088443209914",
+      "isSpecial": true
+    },
+    {
       "name": "Beowulf Storytelling Around the Fire [Lizzie Bryant]",
       "showname": "Beowulf Storytelling Around the Fire",
       "date": "23/07/2026",
@@ -10636,7 +10654,7 @@
       "url": "https://www.drjohnsonshouse.org/",
       "latlon": [51.51504,-0.10818]
     },
-        "blackwood-miners-institute": {
+    "blackwood-miners-institute": {
       "id": "blackwood-miners-institute",
       "name": "Blackwood Miner's Institute",
       "city": "Caerphilly",
@@ -10644,6 +10662,18 @@
       "full_address": "Blackwood Miner's Institute, High Street, Blackwood, NP12 1BB",
       "url": "https://www.blackwoodminersinstitute.com/en/",
       "latlon": [51.6695,-3.1957]
+    },
+    "st-marys-chapel-aberdeen": {
+      "id": "st-marys-chapel-aberdeen",
+      "name": "st-marys-chapel-aberdeen",
+      "city": "Aberdeen",
+      "postcode": "AB10 1LJ",
+      "full_address": "St Mary's chapel, The Kirk of St. Nicholas, Aberdeen, AB10 1LJ",
+      "url": "http://www.openspacetrust.org.uk/?page_id=1493",
+      "latlon": [
+        57.14751,
+        -2.09938
+      ]
     },
     "wardrobe-theatre-bristol": {
       "id": "wardrobe-theatre-bristol",
@@ -11900,6 +11930,18 @@
       "name": "Rebecca Bletcher",
       "facebook": "https://www.facebook.com/rebecca.bletcher.3",
       "instagram": "https://www.instagram.com/rebecca_storyteller/"
+    },
+    "sheeha-blackhall": {
+      "id": "sheeha-blackhall",
+      "name": "Sheeha Blackhall",
+      "url": "https://sheenablackhall.blogspot.com/",
+      "bio": "Sheena Blackhall is a writer, illustrator, traditional ballad singer and storyteller in North East Scotland."
+    },
+    "pauline-cordiner": {
+      "id": "pauline-cordiner",
+      "name": "Pauline Cordiner",
+      "url": "https://paulinecordiner.co.uk/",
+      "bio": "Pauline is a storyteller from the fishing and farming traditions of the North East of Scotland and enjoys telling a variety of traditional Scottish tales, fairy tales, folk tales creation myths and the occasional home-grown tale of her own. Pauline can also bring traditional Scots songs and bothy ballads into her performance and can use these as well as puppets and costumes to bring further audience participation into the storytelling performance. Pauline loves to tell stories for schools, care homes, special needs groups, festivals, castles, out in the open – just anywhere there is an audience for the stories she loves!"
     },
     "shonaleigh": {
       "id": "shonaleigh",
