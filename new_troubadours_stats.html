@@ -1685,11 +1685,48 @@
                     'Irish sessions': '#228b22',  // session dark green
                     'Festival entries': '#2e7d32',  // festival dark green
                 };
+
+                // A record's `date` field can be either a single date string or
+                // an array of dates (a multi-night run at the same venue —
+                // see the `date`/dateOrDates note in events-schema.json). Using
+                // array.length as "how many dates" undercounts multi-night
+                // runs; this expands them properly.
+                function countDates(items, dateKey = 'date') {
+                    return items.reduce((sum, item) => {
+                        const d = item[dateKey];
+                        return sum + (Array.isArray(d) ? d.length : (d ? 1 : 0));
+                    }, 0);
+                }
+
+                // One-off shows (specificEvents/musicEvents) can also appear as
+                // several separate records sharing the same title (e.g. a short
+                // run booked as individual listings rather than one multi-date
+                // record) — group by showname/name to get a "unique shows"
+                // count distinct from "how many dates".
+                function countUniqueTitles(items) {
+                    const titles = new Set();
+                    let untitled = 0;
+                    items.forEach(item => {
+                        const key = (item.showname || item.name || '').trim();
+                        if (key) titles.add(key); else untitled++;
+                    });
+                    return titles.size + untitled;
+                }
+
+                const tourDatesCount = countDates(allTourDates);
+                const tourUniqueCount = Object.keys(data.tours || {}).length;
+                const specificDatesCount = countDates(specific);
+                const specificUniqueCount = countUniqueTitles(specific);
+                const musicDatesCount = countDates(music);
+                const musicUniqueCount = countUniqueTitles(music);
+                const showDatesCount = countDates(allShowDates);
+                const showUniqueCount = Object.keys(tourShows).length;
+
                 const typeRows = [
-                    { label: 'Tour dates', n: allTourDates.length },
-                    { label: 'Story show dates', n: specific.length },
-                    { label: 'Music events', n: music.length },
-                    { label: 'Touring show dates', n: allShowDates.length },
+                    { label: 'Tour dates', n: tourDatesCount, sub: `${tourUniqueCount} unique tours` },
+                    { label: 'Story show dates', n: specificDatesCount, sub: `${specificUniqueCount} unique shows` },
+                    { label: 'Music events', n: musicDatesCount, sub: `${musicUniqueCount} unique acts/shows` },
+                    { label: 'Touring show dates', n: showDatesCount, sub: `${showUniqueCount} unique shows` },
                     { label: 'Recurring story clubs', n: events.length },
                     { label: 'Folk nights', n: folkNights.length },
                     { label: 'Irish sessions', n: sessions.length },
@@ -1705,7 +1742,8 @@
                     fill.style.width = `${Math.round((r.n / typeMax) * 100)}%`;
                     track.appendChild(fill);
                     row.appendChild(track);
-                    row.appendChild(el('div', 'bar-n', r.n));
+                    const nText = r.sub ? `${r.n} (${r.sub})` : `${r.n}`;
+                    row.appendChild(el('div', 'bar-n', nText));
                     body.appendChild(row);
                 });
             }));
