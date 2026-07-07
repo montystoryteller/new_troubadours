@@ -163,14 +163,24 @@
             gap: 6px;
         }
 
-        .entity-details-panel input {
+        .entity-details-panel input,
+        .entity-details-panel textarea {
             padding: 6px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 0.9em;
+            font-family: inherit;
+            box-sizing: border-box;
+            width: 100%;
         }
 
-        .entity-details-panel input::placeholder {
+        .entity-details-panel textarea {
+            min-height: 50px;
+            resize: vertical;
+        }
+
+        .entity-details-panel input::placeholder,
+        .entity-details-panel textarea::placeholder {
             color: #999;
         }
 
@@ -922,7 +932,7 @@
             if (kind === "performer") {
                 detailsPanel.innerHTML = `
                     <input data-field="url" type="url" placeholder="Website URL">
-                    <input data-field="bio" type="text" placeholder="Short bio">`;
+                    <textarea data-field="bio" placeholder="Short bio"></textarea>`;
             } else {
                 detailsPanel.innerHTML = `
                     <input data-field="city" type="text" placeholder="City">
