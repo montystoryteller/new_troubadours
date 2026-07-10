@@ -3547,7 +3547,7 @@
       "link": "https://stealingthunder.co.uk/storynights",
       "club": "stealingthunder",
       "facebook": "https://www.facebook.com/thunderstealing",
-      "venue_id": "brigsteer-village-hall-nr"
+      "venue_id": "brigsteer-village-hall-kendal"
     },
     {
       "name": "Storytelling Sunday",
@@ -3894,7 +3894,7 @@
       "email": "southdevonstorytellers@gmail.com",
       "club": "southdevonstorytellers",
       "club_flyer": "mic_weird_britain.jpg",
-      "venue_id": "moor-imagination-collective-mic-lounge-cafe-buckfastleigh"
+      "venue_id": "moor-imagination-collective-buckfastleigh"
     },
     {
       "name": "Plymouth Storytelling Circle",
@@ -4021,7 +4021,7 @@
       "link": "https://www.literaturewales.org/writer-group/cardiff-storytelling-circle/",
       "facebook": "https://www.facebook.com/groups/1491740927748170/",
       "club": "cardiffSC",
-      "venue_id": "chapter-arts-centre-canton",
+      "venue_id": "chapter-arts-cardiff",
       "exceptions": ["05/04/2026"]
     },
     {
@@ -5300,7 +5300,7 @@
       "price": "",
       "description": "The days are lengthening, and green shoots are nudging their way through the soil. As winter loosens its icy grip on the world, it is time to celebrate Imbolc, the Celtic festival of early spring, whose name means 'in the belly.'\n\n\n\n Join us for Stirring Stories, a series of uplifting tales to stoke the fire within and rouse us from our winter slumber. Forget the to-do list, gather together and and allow your imagination to unfurl into the realm of myth and magic.\n\n\n\n This special event with Dartmoor storytellers Henry Everett and Hannah Sneyd promises a vivid array of stories formed through deep communion with the landscape. Blending traditional tales from around the world with original stories, games and song, we curate our events to closely match the energy of the season.\n\n\n\n Things to note: This is a family-friendly event, with a 20-minute interval and food and drink available from The Lounge Cafe - please see the MIC website for further details.",
       "fb_event": 1522583958999477,
-      "venue_id": "moor-imagination-collective-mic-lounge-cafe-buckfastleigh",
+      "venue_id": "moor-imagination-collective-buckfastleigh",
       "performer_id": "henry-everett-and-hannah-sneyd"
     },
     {
@@ -7463,16 +7463,16 @@
         -4.54795
       ]
     },
-    "brigsteer-village-hall-nr": {
-      "id": "brigsteer-village-hall-nr",
+    "brigsteer-village-hall-kendal": {
+      "id": "brigsteer-village-hall-kendal",
       "name": "Brigsteer Village Hall",
       "city": "Kendal",
       "postcode": "LA8 8AL",
-      "full_address": "Brigsteer Village Hall, Nr Kendal, LA8 8AL",
+      "full_address": "Helsington and Brigsteer Village Hall, Underbarrow Road, Brigsteer,, Kendal, LA8 8AL",
       "url": "https://www.brigsteervillagehall.co.uk/",
       "latlon": [
-        54.3289795,
-        -2.747183
+        54.30029,
+        -2.80205
       ]
     },
     "love-shack-london": {
@@ -7829,18 +7829,6 @@
         -0.8924581
       ]
     },
-    "moor-imagination-collective-mic-lounge-cafe-buckfastleigh": {
-      "id": "moor-imagination-collective-mic-lounge-cafe-buckfastleigh",
-      "name": "Moor Imagination Collective (MIC) Lounge Cafe",
-      "city": "Buckfastleigh",
-      "postcode": "TQ11 0AB",
-      "full_address": "Moor Imagination Collective (MIC) Lounge Cafe, Buckfastleigh, TQ11 0AB",
-      "url": "https://www.moorimagination.org/",
-      "latlon": [
-        50.48129,
-        -3.77984
-      ]
-    },
     "snapdragons-victoria": {
       "id": "snapdragons-victoria",
       "name": "Snapdragons, Victoria Park",
@@ -7971,18 +7959,6 @@
       "latlon": [
         54.98257,
         -1.57553
-      ]
-    },
-    "chapter-arts-centre-canton": {
-      "id": "chapter-arts-centre-canton",
-      "name": "Chapter Arts Centre, Canton",
-      "city": "Cardiff",
-      "postcode": "CF5 1QE",
-      "full_address": "Chapter Arts Centre, Canton, Cardiff, CF5 1QE",
-      "url": "https://www.chapter.org/",
-      "latlon": [
-        51.4828089,
-        -3.2037223
       ]
     },
     "hoxton-hall": {
@@ -8386,7 +8362,7 @@
       "name": "Chapter Arts",
       "city": "Cardiff",
       "postcode": "CF5 1QE",
-      "full_address": "Chapter Arts, Cardiff, CF5 1QE",
+      "full_address": "Chapter Arts, Canton, Cardiff, CF5 1QE",
       "url": "https://www.chapter.org/",
       "latlon": [
         51.4828089,
@@ -8640,18 +8616,6 @@
       "latlon": [
         52.1907939,
         0.1365354
-      ]
-    },
-    "brigsteer-village-hall-kendal": {
-      "id": "brigsteer-village-hall-kendal",
-      "name": "Brigsteer Village Hall",
-      "city": "Kendal",
-      "postcode": "LA8 8AL",
-      "full_address": "Brigsteer Village Hall, Kendal, LA8 8AL",
-      "url": "https://www.brigsteervillagehall.co.uk/",
-      "latlon": [
-        54.30029,
-        -2.80205
       ]
     },
     "moor-imagination-collective-buckfastleigh": {
@@ -9102,7 +9066,7 @@
       "id": "next-door-at-theatre-deli-ec3a",
       "name": "NEXT DOOR at Theatre Deli",
       "city": "Aldgate, London",
-      "postcode": "",
+      "postcode": "EC3A 4AF",
       "full_address": "NEXT DOOR at Theatre Deli, Aldgate, London, EC3A 4AF",
       "url": "https://www.theatredeli.co.uk/",
       "latlon": [
