@@ -943,6 +943,16 @@
             const root = document.getElementById('page-content');
             root.innerHTML = '';
 
+            // Back-link to the full clubs directory
+            const pageHeader = document.createElement('div');
+            pageHeader.className = 'page-header';
+            const backLink = document.createElement('a');
+            backLink.href = 'new_troubadours_storyclub.html';
+            backLink.className = 'back-link';
+            backLink.textContent = '← All story clubs';
+            pageHeader.appendChild(backLink);
+            root.appendChild(pageHeader);
+
             // Header card
             const header = document.createElement('div');
             header.className = 'club-header';

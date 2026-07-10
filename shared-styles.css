@@ -1154,6 +1154,20 @@ a.festival-programme-link:hover {
     margin-bottom: 20px;
 }
 
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2e7d32;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 600px) {
     .event-row {
         flex-direction: column;
