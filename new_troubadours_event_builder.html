@@ -945,7 +945,10 @@
 
             <div class="field-row">
                 <label>Name</label>
-                <input type="text" id="perf-name" placeholder="e.g. Daniel Morden">
+                <div>
+                    <input type="text" id="perf-name" list="performerOptions" placeholder="e.g. Daniel Morden" autocomplete="off">
+                    <div id="perf-name-status" class="entity-status"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -1338,6 +1341,8 @@
                 if (inp.dataset.field === "latlon") {
                     const parts = v.split(",").map(s => parseFloat(s.trim()));
                     if (parts.length === 2 && parts.every(n => !isNaN(n))) record.latlon = parts;
+                } else if (inp.dataset.field === "bio") {
+                    record.bio = encodeParagraphBreaks(v);
                 } else {
                     record[inp.dataset.field] = v;
                 }
@@ -2004,6 +2009,24 @@
         }
 
         // ── Standalone new performer ─────────────────────────────────────────
+        // Live search-as-you-type against existing + session-created performers,
+        // so duplicates get spotted before "Add to batch" (which still blocks
+        // them outright).
+        function updatePerfNameStatus() {
+            const statusEl = document.getElementById("perf-name-status");
+            const name = document.getElementById("perf-name").value.trim();
+            if (!name) { statusEl.textContent = ""; statusEl.className = "entity-status"; return; }
+            const match = Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
+                || Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+            if (match) {
+                statusEl.textContent = `Matches existing performer — id: ${match.id}`;
+                statusEl.className = "entity-status match";
+            } else {
+                statusEl.textContent = "No match — will be added as a new performer";
+                statusEl.className = "entity-status new";
+            }
+        }
+
         function addPerformerToBatch() {
             const name = document.getElementById("perf-name").value.trim();
             if (!name) {
@@ -2043,6 +2066,9 @@
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("perf-musician").checked = false;
             document.getElementById("perf-troupe").checked = false;
+            const statusEl = document.getElementById("perf-name-status");
+            statusEl.textContent = "";
+            statusEl.className = "entity-status";
         }
 
         // ── Standalone new venue ──────────────────────────────────────────────
@@ -2697,6 +2723,8 @@ function parsePriceString(raw) {
             document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);
             document.getElementById("show-showname").addEventListener("input", suggestShowKey);
             document.getElementById("show-performer-field").addEventListener("input", suggestShowKey);
+
+            document.getElementById("perf-name").addEventListener("input", updatePerfNameStatus);
 
             refreshBatchSummary();
         })();
