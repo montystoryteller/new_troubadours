@@ -2359,6 +2359,14 @@
           "ticket_url": "https://frontroomwsm.com/event/lilith-the-other-side-of-the-story-storytelling-with-katy-cawkwell"
         },
         {
+          "date": "30/12/2026",
+          "venue_id": "town-hall-bishops-castle",
+          "ticket_url": "",
+          "club_event": "blast",
+          "price": "£10",
+          "time": "7.30pm for 8pm start"
+        },
+        {
           "date": "03/12/2026",
           "venue_id": "the-folk-of-gloucester",
           "ticket_url": "https://www.gloucestercivictrust.org/the-folk-home/"
@@ -6931,7 +6939,7 @@
     {
       "name": "Doom Scrolls — The Never Ending Prophecies of the Sibyls [Lucy Lill]",
       "showname": "Doom Scrolls — The Never Ending Prophecies of the Sibyls",
-      "date": "18/06/2026",
+      "date": "12/09/2026",
       "date_added": "27/06/2026",
       "time": "7.30-10.30pm",
       "club": "crickcrack",
@@ -6942,6 +6950,21 @@
       "isSpecial": true,
       "venue_id": "the-cube-kingsdown",
       "performer_id": "lucy-lill"
+    },
+    {
+      "name": "Love Don't Come Easy [Dawn Ellis & Tom Morley]",
+      "showname": "Love Don't Come Easy",
+      "date": "18/09/2026",
+      "time": "7.30pm, for 8pm start",
+      "price": "£10",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_ids": [
+        "dawn-ellis",
+        "tom-morley"
+      ],
+      "date_added": "15/07/2026",
+      "club": "blast",
+      "isSpecial": true
     },
     {
       "name": "The Saga of the Ring [Jon Mason]",
@@ -7002,6 +7025,21 @@
       "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
     },
     {
+      "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
+      "showname": "Water Holds Memory",
+      "date": "16/10/2026",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_ids": [
+        "amy-douglas",
+        "martin-daws"
+      ],
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm",
+      "club": "blast",
+      "price": "£10",
+      "isSpecial": true
+    },
+    {
       "name": "Mama, Me and ... [Baden Prince]",
       "showname": "Mama, Me and ...",
       "date": "04/11/2026",
@@ -7057,6 +7095,56 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": ""
+    },
+    {
+      "name": "Midwinter Mischief and Granny's Gifts [Jo Munton & Simone Gilliatt]",
+      "showname": "Midwinter Mischief and Granny's Gifts",
+      "date": "18/12/2026",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_ids": [
+        "jo-munton",
+        "simone-gilliatt"
+      ],
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm start",
+      "price": "£10",
+      "isSpecial": true
+    },
+    {
+      "name": "Sacred Herbs of Britain [Claire Mace]",
+      "showname": "Sacred Herbs of Britain",
+      "date": "15/01/2026",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_id": "claire-mace",
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm start",
+      "club": "blast",
+      "price": "£10",
+      "isSpecial": true
+    },
+    {
+      "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",
+      "showname": "Fire & Ice Stories from a life on two continents",
+      "date": "26/02/2026",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_id": "gauri-raje",
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm start",
+      "club": "blast",
+      "price": "£10",
+      "isSpecial": true
+    },
+    {
+      "name": "Beowulf [Joshua Crisp]",
+      "showname": "Beowulf",
+      "date": "20/03/2027",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_id": "joshua-crisp",
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm start",
+      "club": "blast",
+      "price": "£10",
+      "isSpecial": true
     }
   ],
   "musicEvents": [
@@ -11984,6 +12072,11 @@
       "name": "Gauri Raje",
       "url": "https://www.silentsounds.in/",
       "bio": "Gauri Raje is a storyteller working with adolescents and adults from multilingual, multicultural and disadvantaged backgrounds. She tells folk tales, fairy tales, epics and myths and autobiographical storytelling. She tells stories in different languages including Urdu, Hindi, English and Gujarati."
+    },
+    "joshua-crisp": {
+      "id": "joshua-crisp",
+      "name": "Joshua Crisp",
+      "bio": "Storyteller and host of Ropetackle Storytellers"
     },
     "shonaleigh": {
       "id": "shonaleigh",
