@@ -7,6 +7,8 @@
     <title>Event Builder - New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="shared_utils.js"></script>
     <style>
         .builder-wrap {
@@ -183,6 +185,230 @@
         .entity-details-panel textarea::placeholder {
             color: #999;
         }
+
+        /* ── Structured pricing (price_breakdown) ────────────────── */
+        .price-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .price-input-row input {
+            flex: 1;
+        }
+
+        .price-breakdown-panel {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px dashed #90caf9;
+            border-radius: 6px;
+            background: #f5f9ff;
+            display: grid;
+            gap: 10px;
+        }
+
+        .price-tier-row {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 28px 8px 8px;
+            border: 1px solid #bbdefb;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .price-tier-row input[type="text"],
+        .price-tier-row input[type="number"] {
+            padding: 5px 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.85em;
+        }
+
+        .price-tier-row .pt-label { width: 160px; }
+        .price-tier-row .pt-amount,
+        .price-tier-row .pt-min,
+        .price-tier-row .pt-max,
+        .price-tier-row .pt-fee-amount { width: 82px; }
+
+        .price-tier-row select {
+            padding: 5px 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.85em;
+        }
+
+        .pb-inline-check {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.82em;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .price-tier-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            appearance: none;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.1em;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+
+        .price-tier-remove:hover {
+            color: #c62828;
+        }
+
+        .btn-add-tier {
+            appearance: none;
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.85em;
+            font-family: inherit;
+            cursor: pointer;
+            align-self: start;
+        }
+
+        .btn-add-tier:hover {
+            background: #bbdefb;
+        }
+
+        .price-fee-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px dashed #90caf9;
+            font-size: 0.85em;
+        }
+
+        .price-fee-row input[type="number"] { width: 82px; }
+        .price-fee-row input[type="text"] { flex: 1; min-width: 160px; }
+        .price-fee-row input,
+        .price-fee-row .pb-fee-label {
+            padding: 5px 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        .price-fee-row .pb-fee-label {
+            border: none;
+            padding: 0;
+            color: #555;
+        }
+
+        /* ── Geocoding ────────────────────────────────────────── */
+        .latlon-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .latlon-row input { flex: 1; }
+
+        .btn-geocode {
+            appearance: none;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 0.85em;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-geocode:hover { background: #c8e6c9; }
+        .btn-geocode:disabled { opacity: 0.6; cursor: default; }
+
+        .geocode-status {
+            font-size: 0.8em;
+            margin-top: 4px;
+            min-height: 1.2em;
+        }
+
+        .geocode-status a { color: inherit; }
+        .geocode-status-ok { color: #2e7d32; }
+        .geocode-status-error { color: #c62828; }
+
+        .geocode-preview-map {
+            width: 100%;
+            height: 160px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            margin-top: 6px;
+        }
+
+        /* ── Enrich tab ───────────────────────────────────────── */
+        .enrich-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #ddd;
+        }
+
+        .enrich-section h3 {
+            margin-bottom: 4px;
+        }
+
+        .enrich-result-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 6px;
+            background: #fafafa;
+            font-size: 0.9em;
+        }
+
+        .enrich-result-row label {
+            font-weight: normal;
+        }
+
+        .enrich-result-main {
+            flex: 1;
+        }
+
+        .enrich-result-name {
+            font-weight: 600;
+        }
+
+        .enrich-result-detail {
+            color: #666;
+            font-size: 0.92em;
+            margin-top: 2px;
+        }
+
+        .enrich-result-reasons {
+            color: #b26a00;
+            font-size: 0.88em;
+            margin-top: 2px;
+        }
+
+        .enrich-empty {
+            color: #777;
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
 
         /* ── Multi-performer list ─────────────────────────────── */
         .multi-performer-list {
@@ -467,6 +693,7 @@
             <button class="type-tab" data-type="show">Repertoire Show</button>
             <button class="type-tab" data-type="performer">New Performer</button>
             <button class="type-tab" data-type="venue">New Venue</button>
+            <button class="type-tab" data-type="enrich">Enrich</button>
         </div>
 
         <div class="batch-summary">
@@ -543,7 +770,14 @@
 
             <div class="field-row">
                 <label>Price</label>
-                <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
+                <div>
+                    <div class="price-input-row">
+                        <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
+                        <button type="button" class="entity-details-toggle" id="ev-price-breakdown-toggle">+ structured pricing</button>
+                    </div>
+                    <div class="field-hint">Structured pricing is optional and additive — the plain text price above is still what gets saved as `price`; this just also fills in `price_breakdown` alongside it. See events-schema-costings.md for the rationale.</div>
+                    <div id="ev-price-breakdown-field" style="display:none;"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -810,12 +1044,86 @@
 
             <div class="field-row">
                 <label>Latitude, longitude</label>
-                <input type="text" id="venue-latlon" placeholder="e.g. 51.5, -0.12 (optional)">
+                <div>
+                    <div class="latlon-row">
+                        <input type="text" id="venue-latlon" placeholder="e.g. 51.5, -0.12 (optional)">
+                        <button type="button" class="btn-geocode" id="venue-geocode-btn">📍 Geocode from address</button>
+                    </div>
+                    <div class="geocode-status" id="venue-geocode-status"></div>
+                    <div class="geocode-preview-map" id="venue-geocode-map" style="display:none;"></div>
+                </div>
             </div>
 
             <div class="btn-row">
                 <button class="btn-add-batch" onclick="addVenueToBatch()">Add to batch</button>
                 <button class="btn-clear-form" onclick="clearVenueForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Enrich ──────────────────────────────────────────── -->
+        <div class="panel" id="panel-enrich" style="display:none;">
+            <h2>Enrich existing data</h2>
+            <p class="field-hint">
+                Load your current <code>events_normalized.json</code> to run some assistive checks over it.
+                Nothing here edits that file automatically — each tool below produces a patch or a report for
+                you to review and merge in by hand.
+            </p>
+
+            <div class="field-row">
+                <label>Load JSON file</label>
+                <div>
+                    <input type="file" id="enrich-file-input" accept="application/json,.json">
+                    <div class="field-hint" id="enrich-load-status">No file loaded yet.</div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary-action" id="enrich-download-all-btn" disabled>⬇️ Download full enriched JSON</button>
+            </div>
+            <div class="field-hint">
+                Enabled once you've applied at least one accepted suggestion below. Downloads the entire loaded
+                file with only those accepted additions folded in — everything else is untouched.
+            </div>
+
+            <div class="enrich-section">
+                <h3>💷 Price breakdown suggestions</h3>
+                <p class="field-hint">
+                    Parses each free-text price/cost string it can confidently make sense of into a candidate
+                    <code>price_breakdown</code> (see events-schema-costings.md), marked <code>draft: true</code>
+                    so you can review and correct it later. Complex, prose-like pricing (festival weekend deals,
+                    deposits, etc.) is deliberately left alone rather than force-fit.
+                </p>
+                <button class="btn-add-batch" id="enrich-price-scan-btn" disabled>Scan for parseable prices</button>
+                <div id="enrich-price-results"></div>
+                <div class="btn-row" id="enrich-price-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-price-apply-btn">Apply checked rows</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>📮 Missing postcodes</h3>
+                <p class="field-hint">Scans venues that have a full address but no postcode, and tries to extract one from the address text.</p>
+                <button class="btn-add-batch" id="enrich-postcode-scan-btn" disabled>Scan for missing postcodes</button>
+                <div id="enrich-postcode-results"></div>
+                <div class="btn-row" id="enrich-postcode-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-postcode-generate-btn">Generate patch from checked rows</button>
+                </div>
+                <textarea id="enrich-postcode-output" readonly style="display:none;"></textarea>
+                <div class="btn-row" id="enrich-postcode-output-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-postcode-copy-btn">Copy to clipboard</button>
+                    <button class="btn-secondary-action" id="enrich-postcode-download-btn">Download .json</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>🔁 Possible duplicate venues</h3>
+                <p class="field-hint">
+                    Flags venue pairs with similar names, a matching postcode, or coordinates within about
+                    150m of each other. This is a report only — merging two venue records (and repointing
+                    every event/tour date that references the one you drop) needs to be done by hand.
+                </p>
+                <button class="btn-add-batch" id="enrich-dupe-scan-btn" disabled>Scan for possible duplicates</button>
+                <div id="enrich-dupe-results"></div>
             </div>
         </div>
 
@@ -957,9 +1265,31 @@
                     <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="full_address" type="text" placeholder="Full address">
                     <input data-field="url" type="url" placeholder="Venue website URL">
-                    <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">`;
+                    <div class="latlon-row">
+                        <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">
+                        <button type="button" class="btn-geocode entity-geocode-btn">📍 Geocode</button>
+                    </div>
+                    <div class="geocode-status entity-geocode-status"></div>
+                    <div class="geocode-preview-map entity-geocode-map" style="display:none;"></div>`;
             }
             wrap.appendChild(detailsPanel);
+
+            if (kind === "venue") {
+                wireGeocodeButton({
+                    button: detailsPanel.querySelector(".entity-geocode-btn"),
+                    statusEl: detailsPanel.querySelector(".entity-geocode-status"),
+                    mapEl: detailsPanel.querySelector(".entity-geocode-map"),
+                    getQuery: () => [
+                        input.value.trim(),
+                        detailsPanel.querySelector('[data-field="full_address"]').value.trim(),
+                        detailsPanel.querySelector('[data-field="postcode"]').value.trim(),
+                        detailsPanel.querySelector('[data-field="city"]').value.trim(),
+                    ].filter(Boolean).join(", "),
+                    onResult: (r) => {
+                        detailsPanel.querySelector('[data-field="latlon"]').value = `${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}`;
+                    },
+                });
+            }
 
             detailsBtn.addEventListener("click", () => {
                 detailsPanel.style.display = detailsPanel.style.display === "none" ? "grid" : "none";
@@ -1014,6 +1344,198 @@
             });
             newLookup[id] = record;
             return id;
+        }
+
+        // ── Structured pricing (price_breakdown) ────────────────────────────
+        // Optional, additive alongside the plain-text price string — see
+        // events-schema-costings.json / events-schema-costings.md for the
+        // full design rationale. First pass, wired up to the Show/Event
+        // form's price field to try out how the shape feels in practice.
+        function priceTierRow() {
+            const row = document.createElement("div");
+            row.className = "price-tier-row";
+            row.innerHTML = `
+                <button type="button" class="price-tier-remove" title="Remove tier">×</button>
+                <input type="text" class="pt-label" placeholder="Label, e.g. concessions, U26, advance, zoom">
+                <input type="number" step="0.01" class="pt-amount" placeholder="Amount">
+                <input type="number" step="0.01" class="pt-min" placeholder="Min (range/PWYW)">
+                <input type="number" step="0.01" class="pt-max" placeholder="Max (range)">
+                <select class="pt-type">
+                    <option value="">Timing: —</option>
+                    <option value="advance">Advance</option>
+                    <option value="door">Door</option>
+                </select>
+                <select class="pt-attendance">
+                    <option value="">Attendance: —</option>
+                    <option value="in_person">In person</option>
+                    <option value="online">Online</option>
+                </select>
+                <label class="pb-inline-check"><input type="checkbox" class="pt-donation"> donation/suggested</label>
+                <label class="pb-inline-check"><input type="checkbox" class="pt-pwyw"> pay what you want</label>
+                <input type="number" step="0.01" class="pt-fee-amount" placeholder="Per-tier fee">
+                <label class="pb-inline-check"><input type="checkbox" class="pt-fee-included"> fee included</label>`;
+            row.querySelector(".price-tier-remove").addEventListener("click", () => row.remove());
+            return row;
+        }
+
+        function buildPriceBreakdownField(container) {
+            container.innerHTML = "";
+            container.className = "price-breakdown-panel";
+
+            const tiersList = document.createElement("div");
+            tiersList.className = "price-tier-list";
+            tiersList.style.display = "grid";
+            tiersList.style.gap = "6px";
+            container.appendChild(tiersList);
+
+            const addTierBtn = document.createElement("button");
+            addTierBtn.type = "button";
+            addTierBtn.className = "btn-add-tier";
+            addTierBtn.textContent = "+ Add price tier";
+            addTierBtn.addEventListener("click", () => tiersList.appendChild(priceTierRow()));
+            container.appendChild(addTierBtn);
+
+            const feeRow = document.createElement("div");
+            feeRow.className = "price-fee-row";
+            feeRow.innerHTML = `
+                <span class="pb-fee-label">Whole-event booking fee (only if it's not tied to one specific tier above):</span>
+                <input type="number" step="0.01" class="pb-fee-amount" placeholder="Amount">
+                <label class="pb-inline-check"><input type="checkbox" class="pb-fee-included"> included in tier amounts</label>
+                <input type="text" class="pb-fee-note" placeholder="or a note, e.g. mentioned but no figure given">`;
+            container.appendChild(feeRow);
+
+            return { container, tiersList, feeRow };
+        }
+
+        function resolvePriceBreakdownField(field) {
+            if (!field) return null;
+            const tiers = [];
+            field.tiersList.querySelectorAll(".price-tier-row").forEach(row => {
+                const label = row.querySelector(".pt-label").value.trim();
+                const amount = row.querySelector(".pt-amount").value.trim();
+                const min = row.querySelector(".pt-min").value.trim();
+                const max = row.querySelector(".pt-max").value.trim();
+                const type = row.querySelector(".pt-type").value;
+                const attendance = row.querySelector(".pt-attendance").value;
+                const isDonation = row.querySelector(".pt-donation").checked;
+                const isPwyw = row.querySelector(".pt-pwyw").checked;
+                const feeAmount = row.querySelector(".pt-fee-amount").value.trim();
+                const feeIncluded = row.querySelector(".pt-fee-included").checked;
+
+                // Skip a tier row that was added but never actually filled in.
+                if (!label && !amount && !min && !max && !isDonation && !isPwyw && !feeAmount) return;
+
+                const tier = {};
+                if (label) tier.label = label;
+                if (amount) tier.amount = parseFloat(amount);
+                if (min) tier.min_amount = parseFloat(min);
+                if (max) tier.max_amount = parseFloat(max);
+                if (type) tier.type = type;
+                if (attendance) tier.attendance = attendance;
+                if (isDonation) tier.is_donation = true;
+                if (isPwyw) tier.is_pay_what_you_want = true;
+                if (feeAmount) tier.booking_fee_amount = parseFloat(feeAmount);
+                if (feeIncluded) tier.booking_fee_included = true;
+                tiers.push(tier);
+            });
+
+            const feeAmount = field.feeRow.querySelector(".pb-fee-amount").value.trim();
+            const feeIncluded = field.feeRow.querySelector(".pb-fee-included").checked;
+            const feeNote = field.feeRow.querySelector(".pb-fee-note").value.trim();
+            let bookingFee = null;
+            if (feeAmount || feeIncluded || feeNote) {
+                bookingFee = {};
+                if (feeAmount) bookingFee.amount = parseFloat(feeAmount);
+                if (feeIncluded) bookingFee.included_in_amounts = true;
+                if (feeNote) bookingFee.note = feeNote;
+            }
+
+            if (!tiers.length && !bookingFee) return null;
+            const out = {};
+            if (tiers.length) out.tiers = tiers;
+            if (bookingFee) out.booking_fee = bookingFee;
+            return out;
+        }
+
+        // ── Geocoding (Nominatim / OpenStreetMap) ────────────────────────────
+        // Uses the free public Nominatim search API to turn a venue name/
+        // address into a lat/lon suggestion. This is meant for occasional,
+        // one-at-a-time manual lookups triggered by a person clicking a
+        // button — NOT for automated bulk geocoding. Nominatim's usage
+        // policy (https://operations.osmfoundation.org/policies/nominatim/)
+        // requires: max 1 request/second (enforced below), a Referer or
+        // User-Agent identifying the app (the browser's own Referer header
+        // covers this for a real site), and visible attribution to
+        // OpenStreetMap contributors under the ODbL licence wherever a
+        // result is shown (see the link rendered alongside each match).
+        let _lastGeocodeAt = 0;
+        async function geocodeQuery(query) {
+            const waitMs = Math.max(0, 1100 - (Date.now() - _lastGeocodeAt));
+            if (waitMs > 0) await new Promise(r => setTimeout(r, waitMs));
+            _lastGeocodeAt = Date.now();
+            const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`Nominatim request failed (HTTP ${res.status})`);
+            const results = await res.json();
+            if (!results.length) return null;
+            return {
+                lat: parseFloat(results[0].lat),
+                lon: parseFloat(results[0].lon),
+                display_name: results[0].display_name,
+            };
+        }
+
+        // Wires a "Geocode" button + adjacent status line (and, optionally, a
+        // small preview map) to a query-builder and a result-handler, so the
+        // same flow can be reused anywhere a venue's lat/lon needs filling in.
+        function wireGeocodeButton({ button, statusEl, mapEl, getQuery, onResult }) {
+            let previewMap = null;
+            let previewMarker = null;
+            button.addEventListener("click", async () => {
+                const query = (getQuery() || "").trim();
+                if (mapEl) mapEl.style.display = "none";
+                if (!query) {
+                    statusEl.textContent = "Enter a venue name or address first.";
+                    statusEl.className = "geocode-status geocode-status-error";
+                    return;
+                }
+                const originalText = button.textContent;
+                button.disabled = true;
+                button.textContent = "Geocoding…";
+                statusEl.textContent = "";
+                statusEl.className = "geocode-status";
+                try {
+                    const result = await geocodeQuery(query);
+                    if (!result) {
+                        statusEl.textContent = `No match found for "${query}".`;
+                        statusEl.className = "geocode-status geocode-status-error";
+                    } else {
+                        onResult(result);
+                        statusEl.innerHTML = `Matched: ${result.display_name} — <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank" rel="noopener">© OpenStreetMap contributors</a>`;
+                        statusEl.className = "geocode-status geocode-status-ok";
+                        if (mapEl) {
+                            mapEl.style.display = "block";
+                            if (!previewMap) {
+                                previewMap = L.map(mapEl, { attributionControl: false }).setView([result.lat, result.lon], 15);
+                                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                                    attribution: "© OpenStreetMap contributors",
+                                }).addTo(previewMap);
+                                previewMarker = L.marker([result.lat, result.lon]).addTo(previewMap);
+                            } else {
+                                previewMap.setView([result.lat, result.lon], 15);
+                                previewMarker.setLatLng([result.lat, result.lon]);
+                                previewMap.invalidateSize();
+                            }
+                        }
+                    }
+                } catch (e) {
+                    statusEl.textContent = `Geocoding failed: ${e.message}`;
+                    statusEl.className = "geocode-status geocode-status-error";
+                } finally {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            });
         }
 
         // ── Multi-performer field ────────────────────────────────────────────
@@ -1117,10 +1639,28 @@
             tab.addEventListener("click", () => {
                 document.querySelectorAll(".type-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
-                ["event", "tour", "show", "performer", "venue"].forEach(t => {
+                ["event", "tour", "show", "performer", "venue", "enrich"].forEach(t => {
                     document.getElementById(`panel-${t}`).style.display = t === tab.dataset.type ? "" : "none";
                 });
             });
+        });
+
+        // The Venue tab's fields are static (not dynamically rebuilt per
+        // record like the quick-add venue panels are), so this only needs
+        // wiring up once, here, rather than inside an initVenueForm().
+        wireGeocodeButton({
+            button: document.getElementById("venue-geocode-btn"),
+            statusEl: document.getElementById("venue-geocode-status"),
+            mapEl: document.getElementById("venue-geocode-map"),
+            getQuery: () => [
+                document.getElementById("venue-name").value.trim(),
+                document.getElementById("venue-full-address").value.trim(),
+                document.getElementById("venue-postcode").value.trim(),
+                document.getElementById("venue-city").value.trim(),
+            ].filter(Boolean).join(", "),
+            onResult: (r) => {
+                document.getElementById("venue-latlon").value = `${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}`;
+            },
         });
 
         // ── Date row helpers (shared shape for tour_dates / show_dates) ────
@@ -1262,10 +1802,17 @@
         // ── Specific / Music event form ─────────────────────────────────────
         let evPerformerMulti;
         let evVenueField;
+        let evPriceBreakdown;
         function initEventForm() {
             evPerformerMulti = buildMultiPerformerField(document.getElementById("ev-performer-field"));
             evVenueField = buildEntityField(document.getElementById("ev-venue-field"), "venue");
             wireDateAddedCheckbox(document.getElementById("ev-date-added-today"), document.getElementById("ev-date-added"));
+            const priceBreakdownContainer = document.getElementById("ev-price-breakdown-field");
+            evPriceBreakdown = buildPriceBreakdownField(priceBreakdownContainer);
+            priceBreakdownContainer.style.display = "none";
+            document.getElementById("ev-price-breakdown-toggle").onclick = () => {
+                priceBreakdownContainer.style.display = priceBreakdownContainer.style.display === "none" ? "grid" : "none";
+            };
         }
 
         function addEventToBatch() {
@@ -1304,6 +1851,8 @@
             if (time) record.time = time;
             if (club) record.club = club;
             if (price) record.price = price;
+            const priceBreakdown = resolvePriceBreakdownField(evPriceBreakdown);
+            if (priceBreakdown) record.price_breakdown = priceBreakdown;
             if (description) record.description = description;
             if (flyer) record.event_flyer = flyer;
             if (video) record.video_trailer = video;
@@ -1622,6 +2171,506 @@
             document.getElementById("clubOptions").innerHTML =
                 clubIds.map(c => `<option value="${c.replace(/"/g, "&quot;")}">`).join("");
         }
+
+        // ── Enrich tab ────────────────────────────────────────────────────────
+        // Loads a events_normalized.json the person picks from disk (client-side
+        // only — nothing is uploaded anywhere) and runs a couple of read-only
+        // scans over it. Each one produces either a small reviewable patch
+        // (postcodes) or a report (duplicates) — neither writes back to the
+        // loaded data automatically.
+        let enrichedData = null;
+
+        function extractUKPostcode(text) {
+            if (!text) return null;
+            const m = text.match(/\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i);
+            if (!m) return null;
+            return `${m[1].toUpperCase()} ${m[2].toUpperCase()}`;
+        }
+
+        function levenshtein(a, b) {
+            const m = a.length, n = b.length;
+            const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    dp[i][j] = a[i - 1] === b[j - 1]
+                        ? dp[i - 1][j - 1]
+                        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                }
+            }
+            return dp[m][n];
+        }
+
+        function normalizeVenueName(s) {
+            return (s || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, " ")
+                .trim();
+        }
+
+        // Multi-word generic venue-type phrases, stripped as whole phrases
+        // (not word-by-word) so e.g. "Barton Village Hall" loses "village
+        // hall" as a unit rather than losing "hall" and leaving a stray
+        // "village" that isn't actually part of the place name.
+        const GENERIC_VENUE_PHRASES = [
+            "village hall", "town hall", "church hall", "memorial hall",
+            "parish hall", "assembly rooms", "community centre",
+            "community center", "arts centre", "arts center",
+            "social club", "working mens club", "royal british legion",
+            "scout hut", "scout hall", "village institute",
+        ];
+        // Single generic words, stripped after the phrases above.
+        const GENERIC_VENUE_WORDS = [
+            "hall", "theatre", "theater", "centre", "center", "club",
+            "hut", "church", "institute", "the",
+        ];
+
+        // Strips generic venue-type wording, leaving (ideally) just the
+        // distinctive place-name part — e.g. "Cilgerran Village Hall" and
+        // "Clapham Village Hall" both reduce to a single distinct word
+        // ("cilgerran" / "clapham"), rather than scoring ~73% similar just
+        // because they share "village hall".
+        function coreVenueName(s) {
+            let n = normalizeVenueName(s);
+            GENERIC_VENUE_PHRASES.forEach(p => {
+                n = n.replace(new RegExp(`\\b${p.replace(/ /g, "\\s+")}\\b`, "g"), " ");
+            });
+            GENERIC_VENUE_WORDS.forEach(w => {
+                n = n.replace(new RegExp(`\\b${w}\\b`, "g"), " ");
+            });
+            return n.replace(/\s+/g, " ").trim();
+        }
+
+        // Similarity of the *core* (de-genericised) name only. Returns 0 if
+        // either name is entirely generic wording with nothing distinctive
+        // left (e.g. a venue literally just called "The Village Hall") —
+        // in that case name matching has no signal to offer at all, and a
+        // location-based reason (postcode/distance) is the only thing that
+        // should be able to flag such a pair.
+        function coreNameSimilarity(a, b) {
+            const ca = coreVenueName(a), cb = coreVenueName(b);
+            if (!ca || !cb) return 0;
+            const dist = levenshtein(ca, cb);
+            return 1 - dist / Math.max(ca.length, cb.length);
+        }
+
+        function haversineMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const toRad = d => d * Math.PI / 180;
+            const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+            return 2 * R * Math.asin(Math.sqrt(a));
+        }
+
+        document.getElementById("enrich-file-input").addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const statusEl = document.getElementById("enrich-load-status");
+            try {
+                const text = await file.text();
+                enrichedData = JSON.parse(text);
+                const venueCount = Object.keys(enrichedData.venues || {}).length;
+                statusEl.textContent = `Loaded ${venueCount} venues from "${file.name}".`;
+                document.getElementById("enrich-postcode-scan-btn").disabled = false;
+                document.getElementById("enrich-dupe-scan-btn").disabled = false;
+                document.getElementById("enrich-price-scan-btn").disabled = false;
+                document.getElementById("enrich-download-all-btn").disabled = true;
+            } catch (err) {
+                enrichedData = null;
+                statusEl.textContent = `Couldn't read that file as JSON: ${err.message}`;
+                document.getElementById("enrich-postcode-scan-btn").disabled = true;
+                document.getElementById("enrich-dupe-scan-btn").disabled = true;
+                document.getElementById("enrich-price-scan-btn").disabled = true;
+                document.getElementById("enrich-download-all-btn").disabled = true;
+            }
+        });
+
+        function markEnrichedDataDirty() {
+            document.getElementById("enrich-download-all-btn").disabled = false;
+        }
+
+        document.getElementById("enrich-download-all-btn").addEventListener("click", () => {
+            const blob = new Blob([JSON.stringify(enrichedData, null, 2)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "events_normalized-enriched.json";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        // -- Price breakdown suggestions ----------------------------------------
+        // Heuristic, regex-based — not an LLM call — so it runs instantly over
+        // hundreds of records and behaves the same way every time. It's meant
+        // to give a head start, not a final answer: every candidate is tagged
+        // draft: true, and anything it can't confidently make sense of (long,
+        // multi-clause pricing — festival weekend deals, deposits, etc.) is
+        // deliberately left alone rather than force-fit into structure.
+function parsePriceString(raw) {
+    if (!raw) return null;
+    const text = raw.trim();
+    if (!text) return null;
+
+    if (text.length > 100 || /\b(deposit|non-refundable|weekend|camping)\b/i.test(text) || /before \d|after \d/i.test(text)) {
+        return null;
+    }
+
+    const lower = text.toLowerCase();
+    let working = text;
+    let bookingFee = null;
+
+    const feeAmountMatch = working.match(/\(?\s*\+\s*£?\s*(\d+(?:\.\d{1,2})?)\s*(?:booking fee)?\)?/i);
+    if (feeAmountMatch) {
+        bookingFee = { amount: parseFloat(feeAmountMatch[1]) };
+        working = working.replace(feeAmountMatch[0], " ");
+    } else if (/booking fee/i.test(working)) {
+        bookingFee = { note: "Booking fee mentioned; amount not stated." };
+        working = working.replace(/booking fee/i, " ");
+    }
+
+    function splitOutsideBrackets(str, re) {
+        const parts = [];
+        let depth = 0, current = "";
+        for (let i = 0; i < str.length; i++) {
+            const ch = str[i];
+            if (ch === "(" || ch === "[") depth++;
+            if (ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
+            if (depth === 0 && re.test(ch)) {
+                parts.push(current);
+                current = "";
+            } else {
+                current += ch;
+            }
+        }
+        parts.push(current);
+        return parts;
+    }
+
+    function finalize(tiers) {
+        if (!tiers.length && !bookingFee) return null;
+        const out = { draft: true };
+        if (tiers.length) out.tiers = tiers;
+        if (bookingFee) out.booking_fee = bookingFee;
+        return out;
+    }
+
+    // Pay-what-you-want
+    if (/pay[\s-]?(?:as[\s-]?you|what you)[\s-]?(?:like|want|can|feel|decide)/i.test(lower)) {
+        const minMatch = working.match(/min(?:imum)?\.?\s*£?\s*(\d+(?:\.\d{1,2})?)/i);
+        const tier = { label: "pay what you like", is_pay_what_you_want: true };
+        if (minMatch) tier.min_amount = parseFloat(minMatch[1]);
+        return finalize([tier]);
+    }
+
+    // Free / bare donations (anchored to start so "...go free" mid-sentence doesn't false-trigger)
+    const looksFree = /^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text) || /^donations?$/i.test(text);
+    if (looksFree) {
+        const tiers = [];
+        if (/\bfree\b/i.test(text) && (/^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text))) tiers.push({ label: "free", amount: 0 });
+        const donationMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*suggested donation/i);
+        if (donationMatch) tiers.push({ label: "suggested donation", amount: parseFloat(donationMatch[1]), is_donation: true });
+        if (!tiers.length) tiers.push({ label: "donation", is_donation: true });
+        return finalize(tiers);
+    }
+
+    // Suggested donation (without "free")
+    const suggestedMatch = working.match(/suggested\s*(?:donation)?:?\s*£?\s*(\d+(?:\.\d{1,2})?)(?:\s*-\s*£?\s*(\d+(?:\.\d{1,2})?))?/i);
+    if (suggestedMatch) {
+        const tier = { label: "suggested donation", is_donation: true };
+        if (suggestedMatch[2]) {
+            tier.min_amount = parseFloat(suggestedMatch[1]);
+            tier.max_amount = parseFloat(suggestedMatch[2]);
+        } else {
+            tier.amount = parseFloat(suggestedMatch[1]);
+        }
+        return finalize([tier]);
+    }
+
+    // Plain range, no other qualifiers
+    const rangeMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*-\s*£?\s*(\d+(?:\.\d{1,2})?)\b/);
+    if (rangeMatch && !/advance|\badv\b|door|zoom|online|concession|\bconc\b/i.test(lower)) {
+        return finalize([{ label: "standard", min_amount: parseFloat(rangeMatch[1]), max_amount: parseFloat(rangeMatch[2]) }]);
+    }
+
+    // Bracketed pair: "£X (£Y label)" or "£X [£Y label]"
+    const bracketMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*[\(\[]\s*£?\s*(\d+(?:\.\d{1,2})?)\s*([a-z0-9][a-z0-9\s\/]*)?[\)\]]/i);
+    if (bracketMatch) {
+        const rawLabel = (bracketMatch[3] || "").trim();
+        const secondTier = { label: rawLabel || "concession", amount: parseFloat(bracketMatch[2]) };
+        if (/zoom|online|stream/i.test(rawLabel)) secondTier.attendance = "online";
+        if (/advance|\badv\b/i.test(rawLabel)) secondTier.type = "advance";
+        if (/door/i.test(rawLabel)) secondTier.type = "door";
+        return finalize([{ label: "standard", amount: parseFloat(bracketMatch[1]) }, secondTier]);
+    }
+
+    // Segment-based parsing for slash/comma-separated multi-tier lists
+    const segments = splitOutsideBrackets(working, /[,\/]/).map(s => s.trim()).filter(Boolean);
+    const tiers = [];
+    segments.forEach((seg, i) => {
+        const segLower = seg.toLowerCase();
+        const plusMinMatch = seg.match(/£?\s*(\d+(?:\.\d{1,2})?)\s*\+\s*$/);
+        const amountMatch = plusMinMatch || seg.match(/£?\s*(\d+(?:\.\d{1,2})?)/);
+        if (!amountMatch) return;
+        const amount = parseFloat(amountMatch[1]);
+        let type = null, attendance = null, label = null;
+        if (/advance|\badv\b/.test(segLower)) type = "advance";
+        else if (/\bdoor(s)?\b|on the door/.test(segLower)) type = "door";
+        if (/zoom|online|stream/.test(segLower)) attendance = "online";
+        if (/concession|\bconc\b/.test(segLower)) label = "concession";
+        else if (/\bu\d{2}\b|under\s?\d+/.test(segLower)) label = (seg.match(/\bu\d{2}\b|under\s?\d+/i) || [""])[0].trim();
+        else if (/child|kid/.test(segLower)) label = "children";
+        else if (/student/.test(segLower)) label = "student";
+        else if (/family/.test(segLower)) label = "family ticket";
+        if (!label && !type && !attendance) label = i === 0 ? "standard" : `tier ${i + 1}`;
+        const tier = plusMinMatch ? { min_amount: amount } : { amount };
+        if (label) tier.label = label;
+        if (type) tier.type = type;
+        if (attendance) tier.attendance = attendance;
+        tiers.push(tier);
+    });
+    return finalize(tiers);
+}
+
+
+        function summarizePriceBreakdown(pb) {
+            const parts = (pb.tiers || []).map(t => {
+                let s = t.label || "tier";
+                if (t.amount !== undefined) s += ` £${t.amount}`;
+                else if (t.min_amount !== undefined && t.max_amount !== undefined) s += ` £${t.min_amount}-£${t.max_amount}`;
+                else if (t.min_amount !== undefined) s += ` (min £${t.min_amount})`;
+                if (t.type) s += ` [${t.type}]`;
+                if (t.attendance) s += ` [${t.attendance}]`;
+                return s;
+            });
+            if (pb.booking_fee) {
+                parts.push(pb.booking_fee.amount !== undefined ? `+£${pb.booking_fee.amount} booking fee` : "booking fee (amount unstated)");
+            }
+            return parts.join(", ");
+        }
+
+        // Collects every record in the loaded data that has a price/cost
+        // string but no price_breakdown yet (or one already marked draft, so
+        // re-scanning after further edits is possible), across every record
+        // type that carries pricing.
+        function collectPriceCandidates(data) {
+            const found = [];
+            function consider(record, label) {
+                if (!record) return;
+                const priceField = "cost" in record ? "cost" : "price";
+                const raw = record[priceField];
+                if (!raw) return;
+                if (record.price_breakdown && !record.price_breakdown.draft) return;
+                found.push({ record, raw, label });
+            }
+            (data.specificEvents || []).forEach(r => consider(r, r.showname || r.name || "Story show"));
+            (data.musicEvents || []).forEach(r => consider(r, r.showname || r.name || "Music event"));
+            (data.folkNights || []).forEach(r => consider(r, r.name || "Folk night"));
+            (data.spokenword || []).forEach(r => consider(r, r.name || "Spoken word night"));
+            (data.events || []).forEach(r => consider(r, r.club || r.name || "Recurring club"));
+            (data.workshops || []).forEach(r => consider(r, r.title || "Workshop"));
+            Object.values(data.tours || {}).forEach(t => {
+                (t.tour_dates || []).forEach(td => consider(td, `${t.name || "Tour"} date`));
+            });
+            Object.values(data.repertoire_shows || {}).forEach(s => {
+                (s.show_dates || []).forEach(sd => consider(sd, `${s.name || "Show"} date`));
+            });
+            return found;
+        }
+
+        document.getElementById("enrich-price-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-price-results");
+            const actionsEl = document.getElementById("enrich-price-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data loaded.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const candidates = collectPriceCandidates(enrichedData);
+            const parsedRows = [];
+            candidates.forEach(c => {
+                const suggestion = parsePriceString(c.raw);
+                if (suggestion) parsedRows.push({ ...c, suggestion });
+            });
+            if (!parsedRows.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Nothing left to parse — either everything already has a price_breakdown, or none of the remaining price text could be confidently parsed.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            parsedRows.forEach((r, i) => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.rowIndex = i;
+                row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-price-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${r.label}</div>
+                        <div class="enrich-result-detail">Original: "${r.raw}"</div>
+                        <div class="enrich-result-detail">Suggested: ${summarizePriceBreakdown(r.suggestion)}</div>
+                    </div>`;
+                row._candidate = r;
+                resultsEl.appendChild(row);
+            });
+            actionsEl.style.display = "";
+            actionsEl._rows = parsedRows;
+        });
+
+        document.getElementById("enrich-price-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-price-results .enrich-result-row");
+            let applied = 0;
+            rows.forEach(row => {
+                if (!row.querySelector(".enrich-price-check").checked) return;
+                const { record, suggestion } = row._candidate;
+                record.price_breakdown = suggestion;
+                applied++;
+            });
+            if (!applied) {
+                alert("No rows checked.");
+                return;
+            }
+            alert(`Applied ${applied} price_breakdown suggestion(s) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            markEnrichedDataDirty();
+        });
+
+        // -- Missing postcodes -------------------------------------------------
+        document.getElementById("enrich-postcode-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-postcode-results");
+            const actionsEl = document.getElementById("enrich-postcode-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData || !enrichedData.venues) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No venues to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const candidates = [];
+            Object.entries(enrichedData.venues).forEach(([id, v]) => {
+                if (v.postcode) return;
+                const candidate = extractUKPostcode(v.full_address) || extractUKPostcode(v.name);
+                if (candidate) candidates.push({ id, name: v.name || id, address: v.full_address || "", candidate });
+            });
+            if (!candidates.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No missing postcodes found (or none could be extracted from the address text).</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            candidates.forEach(c => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.venueId = c.id;
+                row.dataset.postcode = c.candidate;
+                row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-postcode-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${c.name}</div>
+                        <div class="enrich-result-detail">${c.address || "(no full address on record)"}</div>
+                        <div class="enrich-result-detail">Suggested postcode: <strong>${c.candidate}</strong></div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-postcode-generate-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-postcode-results .enrich-result-row");
+            const patch = { venues: {} };
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-postcode-check");
+                if (!checkbox.checked) return;
+                patch.venues[row.dataset.venueId] = { postcode: row.dataset.postcode };
+                if (enrichedData && enrichedData.venues && enrichedData.venues[row.dataset.venueId]) {
+                    enrichedData.venues[row.dataset.venueId].postcode = row.dataset.postcode;
+                }
+            });
+            const output = document.getElementById("enrich-postcode-output");
+            const outputActions = document.getElementById("enrich-postcode-output-actions");
+            if (!Object.keys(patch.venues).length) {
+                output.style.display = "none";
+                outputActions.style.display = "none";
+                alert("No rows checked.");
+                return;
+            }
+            output.value = JSON.stringify(patch, null, 2);
+            output.style.display = "";
+            outputActions.style.display = "";
+            markEnrichedDataDirty();
+        });
+
+        document.getElementById("enrich-postcode-copy-btn").addEventListener("click", () => {
+            const output = document.getElementById("enrich-postcode-output");
+            navigator.clipboard.writeText(output.value);
+        });
+
+        document.getElementById("enrich-postcode-download-btn").addEventListener("click", () => {
+            const output = document.getElementById("enrich-postcode-output");
+            const blob = new Blob([output.value], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "postcode-patch.json";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        // -- Possible duplicate venues ------------------------------------------
+        document.getElementById("enrich-dupe-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-dupe-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData || !enrichedData.venues) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No venues to scan.</div>';
+                return;
+            }
+            const entries = Object.entries(enrichedData.venues);
+            const found = [];
+            for (let i = 0; i < entries.length; i++) {
+                for (let j = i + 1; j < entries.length; j++) {
+                    const [idA, a] = entries[i], [idB, b] = entries[j];
+                    const coreSim = coreNameSimilarity(a.name, b.name);
+                    const samePostcode = a.postcode && b.postcode &&
+                        a.postcode.replace(/\s+/g, "").toUpperCase() === b.postcode.replace(/\s+/g, "").toUpperCase();
+                    let distance = null;
+                    if (Array.isArray(a.latlon) && Array.isArray(b.latlon) && a.latlon.length === 2 && b.latlon.length === 2) {
+                        distance = haversineMeters(a.latlon[0], a.latlon[1], b.latlon[0], b.latlon[1]);
+                    }
+                    const closeDistance = distance !== null && distance < 150;
+                    const locationSignal = samePostcode || closeDistance;
+
+                    // A high core-name match (i.e. once generic wording like
+                    // "Village Hall" or "Theatre" is stripped out) is only
+                    // trusted on its own when it's a near-exact match — a
+                    // moderate core-name similarity with no location
+                    // agreement at all is exactly the "Cilgerran" vs
+                    // "Clapham" style false positive this is meant to avoid.
+                    const strongCoreName = coreSim >= 0.85;
+                    if (!locationSignal && !strongCoreName) continue;
+
+                    const reasons = [];
+                    if (samePostcode) reasons.push("same postcode");
+                    if (closeDistance) reasons.push(`${Math.round(distance)}m apart`);
+                    if (strongCoreName) {
+                        const label = `similar name (${Math.round(coreSim * 100)}%)`;
+                        reasons.push(locationSignal ? label : `${label} — name only, no matching postcode/coordinates; verify manually`);
+                    }
+
+                    const score = (samePostcode ? 0.4 : 0) + (closeDistance ? 0.4 * (1 - distance / 150) : 0) + (strongCoreName ? coreSim * 0.5 : 0);
+                    found.push({ idA, nameA: a.name || idA, idB, nameB: b.name || idB, reasons, score });
+                }
+            }
+            found.sort((x, y) => y.score - x.score);
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No likely duplicates found.</div>';
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.nameA} <span style="font-weight:normal;color:#999;">(${f.idA})</span> &nbsp;↔&nbsp; ${f.nameB} <span style="font-weight:normal;color:#999;">(${f.idB})</span></div>
+                        <div class="enrich-result-reasons">${f.reasons.join(", ")}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+        });
 
         (async () => {
             const result = await loadEventsData();
