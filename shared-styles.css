@@ -858,6 +858,10 @@ a.festival-programme-link:hover {
     color: #fff;
 }
 
+.event-club-link:hover {
+    border-bottom-style: solid !important;
+}
+
 /* =============================================================
    15. SIMPLE LIST
    Used by simpleList() in shared_utils.js — a compact linked

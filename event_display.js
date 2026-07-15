@@ -1513,9 +1513,18 @@ function createPerformerSection(event) {
       performerDiv.appendChild(perfPageLink);
 
       if ((event.isSpecial || event.isMusic) && event.club) {
-        performerDiv.appendChild(
-          document.createTextNode(" [" + `${event.club}` + "] "),
-        );
+        performerDiv.appendChild(document.createTextNode(" ["));
+
+        const clubLink = document.createElement("a");
+        clubLink.href = `new_troubadours_storyclub.html?club=${encodeURIComponent(event.club)}`;
+        clubLink.title = `View ${event.club} club page`;
+        clubLink.className = "event-club-link";
+        clubLink.style.cssText = "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,0.6);";
+        clubLink.textContent = event.club;
+        clubLink.addEventListener("click", (e) => e.stopPropagation());
+        performerDiv.appendChild(clubLink);
+
+        performerDiv.appendChild(document.createTextNode("] "));
 
         //const presents = document.createElement("em");
         //presents.textContent = "presents";
