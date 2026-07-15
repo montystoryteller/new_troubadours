@@ -3821,6 +3821,15 @@
       "venue_id": ""
     },
     {
+      "name": "B.L.A.S.T! (Beautiful Lies And Startling Truths), Shropshire",
+      "schedule": "3rd friday",
+      "time": "7.30pm for an 8pm start. £10 per person",
+      "link": "https://www.b-l-a-s-t.co.uk/",
+      "facebook": "https://www.facebook.com/BLASTstorytelling",
+      "club": "blast",
+      "venue_id": "town-hall-bishops-castle"
+    },
+    {
       "name": "Island Storytellers, Isle of Wight",
       "schedule": "2nd thursday",
       "time": "7-9pm",
@@ -4092,7 +4101,7 @@
       "schedule": "2nd monday",
       "facebook": "https://www.facebook.com/groups/wordsattheedge",
       "club": "wordsattheedge",
-      "venue_id": "town-hall-bishops"
+      "venue_id": "town-hall-bishops-castle"
     },
     {
       "name": "Manchester - Sting in the Tale",
@@ -8219,9 +8228,9 @@
         -2.325793
       ]
     },
-    "town-hall-bishops": {
-      "id": "town-hall-bishops",
-      "name": "Town Hall",
+    "town-hall-bishops-castle": {
+      "id": "town-hall-bishops-castle",
+      "name": "Town Hall, Bishops Castle",
       "city": "Bishops Castle",
       "postcode": "SY9 5B",
       "full_address": "Town Hall, Bishops Castle, SY9 5B",
@@ -11947,6 +11956,34 @@
       "name": "Gemma Garwood",
       "url": "https://www.alleyesthisway.com/home",
       "bio": "Gemma Garwood has always been obsessed with folklore and fairytale… the stories we were all told from our youngest days. She brings with her the rich, immersive and deeply descriptive ways of presenting and telling that a Neurodivergent, daydreaming, creative Magpie spins into pieces of work."
+    },
+    "dawn-ellis": {
+      "id": "dawn-ellis",
+      "name": "Dawn Ellis",
+      "url": "https://storytellinghq.com/",
+      "bio": "A fascination with storytelling in all its forms has taken Dawn into theatre, radio, TV and writing over the years. Her experience as a seasoned performer gives her first-hand experience of being in front of an audience. This, combined with 20+ years as consultant/ coach to all levels of leadership brings rare insight to her support of teams and individuals in organisations.\n\n\n\nDawn is as fascinated by the stories we tell ourselves — about ourselves - as by the captivating old stories that she hunts down and brings back to vibrant and relevant life.\n\n\n\nShe is a compelling performer and likes to get under the skin of stories, finding deeper meanings in the familiar archetypes — especially in these unpredictable times."
+    },
+    "tom-morley": {
+      "id": "tom-morley",
+      "name": "Tom Morley",
+      "url": "https://tommorley.com/",
+      "bio": "Tom Morley was the original drummer and a founder member of Scritti Politti, the 80s band who were pioneers of DIY music before appearing successfully on the dance scene. He’s also recorded with David Bowie and Madness. Unlike other bands Scritti Politti used to make half their songs up on stage so from an early age Tom got used to taking risks in public. What it takes to hold your nerve when you have no idea of what's coming next is second nature to him. One time, when there was a power-cut on stage in Berlin, Tom just kept playing a pounding beat and set up a vocal call-and-response chant with the audience. In that moment the seed for Instant Teamwork, the international arts-based team building company he set up in 1999 was sown. NYC, Moscow, Joburg, Istanbul, Paris and London are just a few of the places that Tom has drummed and harmonised with hundreds of energised teams in the last 20 years."
+    },
+    "jo-munton": {
+      "id": "jo-munton",
+      "name": "Jo Munton",
+      "url": "https://www.dasharts.org/artists/jo-munton.html",
+      "bio": "Jo Munton is a puppeteer and storyteller, sculptor and animator. She has performed internationally from Siberia to Spain, from Denmark to India, but mostly been based in Mid Wales."
+    },
+    "simone-gilliatt": {
+      "id": "simone-gilliatt",
+      "name": "Simone Gilliatt"
+    },
+    "gauri-raje": {
+      "id": "gauri-raje",
+      "name": "Gauri Raje",
+      "url": "https://www.silentsounds.in/",
+      "bio": "Gauri Raje is a storyteller working with adolescents and adults from multilingual, multicultural and disadvantaged backgrounds. She tells folk tales, fairy tales, epics and myths and autobiographical storytelling. She tells stories in different languages including Urdu, Hindi, English and Gujarati."
     },
     "shonaleigh": {
       "id": "shonaleigh",
