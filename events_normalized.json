@@ -6783,6 +6783,24 @@
       "performer_id": "aaron-oliver"
     },
     {
+      "name": "Out of the Blue, Storytelling Fundraiser [Gerry Donlon (Bards Aloud), Gemma Garwood, et al.]",
+      "showname": "Out of the Blue, Storytelling Fundraiser",
+      "date": "24/07/2026",
+      "venue_id": "the-nose",
+      "performer_ids": [
+        "gerry-donlon-bards-aloud",
+        "gemma-garwood"
+      ],
+      "date_added": "15/07/2026",
+      "time": "7-10pm",
+      "price": "£5 suggested donation",
+      "description": "Join us on Friday 24th July for a special storytelling evening at The Nose. We want to bring more stories to this year's Walton Arts Festival, and the money raised on this evening will go towards inviting more storytellers.\n\n\n\nOur theme for the night is ‘Out of the Blue’.  Hosted by Cydnei and with stories from Gerry Donlon, Gemma Garwood, Stephen Foster-Pilkington, Katy Bingham- Best, Nancy Stevenson, Lorna MacKinnon, Charlie Rose, Steve Gregory, Mer Richardson, Fay Dingaway & sounds by Catherine Shrubshall.\n\n\n\nA suggested donation is £5, but you can pay what you want (more or less), and there will be a prize raffle on the evening. It will be great to see you there!",
+      "event_flyer": "2026_07_24_out_of_blue.webp",
+      "ticket_url": "https://thenose.org/products/out-of-the-blue-storytelling-fundraiser",
+      "fb_event": "1074986398186596",
+      "isSpecial": true
+    }
+    {
       "name": "Stories from Staffordshire [Janet Crouch]",
       "showname": "Stories from Staffordshire",
       "date": "24/07/2026",
@@ -11119,6 +11137,18 @@
       "full_address": "Preston Village Hall, Preston Road, Weymouth, DT3 6BH",
       "url": "https://www.prestonvillagehallweymouth.co.uk/",
       "latlon": [50.64486,-2.42704]
+    },
+     "the-nose": {
+      "id": "the-nose",
+      "name": "The Nose",
+      "city": "Walton-on-the-Naze",
+      "postcode": "CO14 8AL",
+      "full_address": "28, Newgate Street, Walton-on-the-Naze, CO14 8AL",
+      "url": "https://thenose.org/",
+      "latlon": [
+        51.84886,
+        1.27135
+      ]
     }
   },
   "performers": {
@@ -11906,6 +11936,17 @@
       "name": "Pauline Cordiner",
       "url": "https://paulinecordiner.co.uk/",
       "bio": "Pauline is a storyteller from the fishing and farming traditions of the North East of Scotland and enjoys telling a variety of traditional Scottish tales, fairy tales, folk tales creation myths and the occasional home-grown tale of her own. Pauline can also bring traditional Scots songs and bothy ballads into her performance and can use these as well as puppets and costumes to bring further audience participation into the storytelling performance. Pauline loves to tell stories for schools, care homes, special needs groups, festivals, castles, out in the open – just anywhere there is an audience for the stories she loves!"
+    },
+    "gerry-donlon-bards-aloud": {
+      "id": "gerry-donlon-bards-aloud",
+      "name": "Gerry Donlon (Bards Aloud)",
+      "url": "https://www.facebook.com/bards.aloud"
+    },
+    "gemma-garwood": {
+      "id": "gemma-garwood",
+      "name": "Gemma Garwood",
+      "url": "https://www.alleyesthisway.com/home",
+      "bio": "Gemma Garwood has always been obsessed with folklore and fairytale… the stories we were all told from our youngest days. She brings with her the rich, immersive and deeply descriptive ways of presenting and telling that a Neurodivergent, daydreaming, creative Magpie spins into pieces of work."
     },
     "shonaleigh": {
       "id": "shonaleigh",
