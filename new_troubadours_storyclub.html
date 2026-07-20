@@ -1516,26 +1516,23 @@
 
             // ── Collapsible map ──────────────────────────────────────────────────
             // mapHandle.map is null until the user opens the panel for the first time.
+            // Once open, the map's viewport acts as a live filter on the list below —
+            // pan or zoom the map and the list updates to match, same as the main
+            // calendar page's map (see updateMapView() in event_display.js). No
+            // separate toggle is needed: the filter is simply "is the map open".
             let dirMap = null;
-            let mapBoundsFilter = false; // true = restrict list to current map viewport
             const activeMarkers = []; // L.circleMarker instances currently on the map
 
             // (Re)draw markers for every club that passes isVisible().
-            // Also, when mapBoundsFilter is on, only keep clubs whose venue
-            // falls inside the current map viewport.
             function renderMapMarkers() {
                 if (!dirMap) return;
                 activeMarkers.forEach(m => m.remove());
                 activeMarkers.length = 0;
                 // Use clubIndex so we can call isVisible (which handles day/week/search/bounds)
-                // Always show markers for all filter-passing clubs regardless of mapBoundsFilter
-                // (the list hides non-visible ones; the map shows them as context when filter is off)
                 clubIndex.forEach(entry => {
                     const { c } = entry;
                     const venue = data.venues[c.venue_id];
                     if (!venue || !venue.latlon || venue.latlon.length === 0) return;
-                    // Only suppress marker if day/week/search filters exclude it
-                    // (when mapBoundsFilter is on, isVisible also checks bounds — that's fine)
                     if (!isVisible(entry)) return;
                     const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ', ' + venue.city : ''}<br><em>${c.schedule || ''}</em>`;
                     const marker = L.circleMarker(venue.latlon, { radius: 7, fillColor: '#4CAF50', color: '#2e7d32', weight: 2, fillOpacity: 0.85 })
@@ -1548,26 +1545,37 @@
                 });
             }
 
-            const mapHandle = createCollapsibleMap(root, 'dir-map', 'Show map of all clubs', 360, map => {
+            // Fit the map to every club with usable coordinates, ignoring current
+            // filters — this is the baseline view shown the moment the panel opens,
+            // so opening the map doesn't itself narrow the list.
+            function fitDirMapToAllClubs() {
+                const pts = clubIndex
+                    .map(({ c }) => data.venues[c.venue_id])
+                    .filter(v => v && v.latlon && v.latlon.length)
+                    .map(v => v.latlon);
+                if (pts.length) dirMap.fitBounds(pts, { padding: [40, 40] });
+            }
+
+            const mapHandle = createCollapsibleMap(root, 'dir-map', 'Show map of all clubs (pan/zoom to filter the list)', 360, map => {
                 dirMap = map;
 
-                // Wire map movement → re-filter list when bounds filter is active
+                fitDirMapToAllClubs();
+
+                // Wire map movement → re-filter the list to whatever's in view.
                 map.on('moveend zoomend', () => {
-                    if (mapBoundsFilter) {
-                        renderList();        // list respects bounds via isVisible extension below
-                        renderMapMarkers();  // redraw markers for new viewport
-                    }
+                    renderList();
+                    renderMapMarkers();
                 });
 
                 renderMapMarkers(); // initial paint
             });
 
-            // Extend isVisible to optionally respect map bounds.
+            // Extend isVisible to respect the map's current viewport once it's open.
             // We wrap the existing isVisible function, capturing it first.
             const _isVisibleBase = isVisible;
             isVisible = function (entry) {
                 if (!_isVisibleBase(entry)) return false;
-                if (mapBoundsFilter && dirMap) {
+                if (dirMap) {
                     const venue = data.venues[entry.c.venue_id];
                     if (!venue || !venue.latlon || venue.latlon.length === 0) return false;
                     if (!dirMap.getBounds().contains(venue.latlon)) return false;
@@ -1694,32 +1702,6 @@
             filterGrid.appendChild(weekGroup);
 
             controls.appendChild(filterGrid);
-
-            // ── "Filter by map" toggle ───────────────────────────────────────────
-            const mapFilterRow = document.createElement('div');
-            mapFilterRow.style.cssText = 'margin-bottom:10px;display:flex;align-items:center;gap:8px;';
-            const mapFilterBtn = document.createElement('button');
-            mapFilterBtn.textContent = '🗺 Filter by map view';
-            mapFilterBtn.className = 'dir-filter-btn';
-            mapFilterBtn.title = 'When active, only clubs whose venue is visible on the map are shown. Pan or zoom the map to update the list.';
-            mapFilterBtn.style.cssText = 'font-size:13px;padding:5px 12px;';
-            mapFilterBtn.addEventListener('click', () => {
-                mapBoundsFilter = !mapBoundsFilter;
-                mapFilterBtn.classList.toggle('active-green', mapBoundsFilter);
-                mapFilterHint.style.display = mapBoundsFilter ? 'inline' : 'none';
-                // Open the map panel automatically when the filter is turned on
-                if (mapBoundsFilter && mapHandle.details && !mapHandle.details.open) {
-                    mapHandle.details.open = true;
-                }
-                renderList();
-                renderMapMarkers();
-            });
-            const mapFilterHint = document.createElement('span');
-            mapFilterHint.style.cssText = 'font-size:12px;color:#888;display:none;font-style:italic;';
-            mapFilterHint.textContent = 'Pan / zoom the map to filter clubs';
-            mapFilterRow.appendChild(mapFilterBtn);
-            mapFilterRow.appendChild(mapFilterHint);
-            controls.appendChild(mapFilterRow);
 
             // ── Search box with dropdown suggestions ────────────────────────────
             createSearchBox(controls, {
