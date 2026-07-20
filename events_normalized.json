@@ -3682,6 +3682,15 @@
       "venue_id": "rat-and-ratchet-pub-huddersfield"
     },
     {
+      "name": "Somerset story circle",
+      "schedule": "2nd sunday",
+      "facebook": "",
+      "time": "7pm",
+      "club_flyer": "somerset_story_circle.jpg",
+      "club": "somerset-story-circle",
+      "venue_id": "elis-rose-crown-episcopi"
+    },
+    {
       "name": "East Anglian Storytelling Experience (EASE)",
       "schedule": "2nd wednesday",
       "time": "8-10pm",
@@ -8611,6 +8620,19 @@
       "latlon": [
         53.13958,
         -1.55519
+      ]
+    },
+    "elis-rose-crown-episcopi": {
+      "id": "elis-rose-crown-episcopi",
+      "name": "Rose & Crown / Eli's Pub, Huish Episcopi",
+      "city": "Langport, nr. Taunton",
+      "postcode": "TA10 9QT",
+      "facebook": "RoseAndCrownEli",
+      "full_address": "The Rose & Crown (Eli's) Huish Episcopi, Langport, TA10 9QT",
+      "url": "https://www.theatryddraig.cymru/",
+      "latlon": [
+        51.03623,
+        -2.81401
       ]
     },
     "chelsea-physic-garden": {
