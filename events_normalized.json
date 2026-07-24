@@ -6931,6 +6931,21 @@
       "date_added": "27/06/2026"
     },
     {
+      "name": "Aberavon Festival of the Sea [Owen Staton]",
+      "showname": "Aberavon Festival of the Sea",
+      "date": "02/08/2026",
+      "time": "11.15-11.45am & 2.45-3.15pm",
+      "club": "",
+      "price": "",
+      "description": "Fantastic myths and legends from Wales at the festival of the sea at Aberafan beach",
+      "event_flyer": "2026_08_02_aberavon_festival_of_sea.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "aberavon-beach",
+      "performer_id": "owen-staton",
+      "date_added": "24/07/2026"
+    },
+    {
       "name": "TBA [Tim Ralphs]",
       "showname": "TBA",
       "date": "02/09/2026",
@@ -10312,6 +10327,15 @@
       "full_address": "Dart Music Festival, Dartmouth",
       "url": "https://www.dartmusicfestival.co.uk/",
       "latlon": []
+    },
+    "aberavon-beach": {
+      "id": "aberavon-beach",
+      "name": "Aberavon Beach",
+      "city": "Aberafan",
+      "postcode": "SA12 6QP",
+      "full_address": "Princess Margaret Way, Port Talbot, SA12 6QP",
+      "url": "",
+      "latlon": [51.58926, -3.80993]
     },
     "the-big-retreat-festival-lawrenny": {
       "id": "the-big-retreat-festival-lawrenny",
