@@ -3709,7 +3709,7 @@
       "link": "https://johnpeelcentre.com/",
       "facebook": "https://www.facebook.com/profile.php?id=61568382750023",
       "club": "ease",
-      "venue_id": "b-side-cafe-john"
+      "venue_id": "b-side-cafe-john-peel"
     },
     {
       "name": "Storytelling with Bards Aloud",
@@ -4089,13 +4089,31 @@
     },
     {
       "name": "Bridport Three Apples",
-      "schedule": {"type": "fortnightly", "day": "monday","start": "25/05/2026"
-  },
+      "schedule": {"type": "fortnightly", "day": "monday","start": "25/05/2026"},
       "time": "7-9pm",
       "facebook": "https://www.facebook.com/brightontelltales",
       "club": "bridportthreeapples",
       "club_flyer": "three_apples_bridport.jpg",
       "venue_id": "bridport-community-orchard"
+    },
+    {
+      "name": "Portland Story Slingers",
+      "schedule": "1st sunday",
+      "time": "4.30-6pm",
+      "facebook": "",
+      "club": "portlandstoryslingers",
+      "club_flyer": "Portland_Story_Slingers_flyer.png",
+      "venue_id": "b-side-portland"
+    },
+    {
+      "name": "Wildwood storytelling cafe",
+      "schedule": "2nd Wednesday",
+      "time": "9-9pm",
+      "price": "£5 / £8 (pwyc)",
+      "facebook": "",
+      "club": "portlandstoryslingers",
+      "club_flyer": "Wildwood_Storytelling_Cafe.png",
+      "venue_id": "galley-lyme-regis"
     },
     {
       "name": "Tales at the Tavern",
@@ -7826,8 +7844,32 @@
         -1.7852373
       ]
     },
-    "b-side-cafe-john": {
-      "id": "b-side-cafe-john",
+    "b-side-portland": {
+      "id": "b-side-portland",
+      "name": "B Side, 77 Fortuneswell",
+      "city": "Portland",
+      "postcode": "DT5 1LY",
+      "full_address": "b-side project space, Outpost, 77 Fortuneswell, Isle of Portland, DT5 1LY",
+      "url": "https://b-side.org.uk/",
+      "latlon": [
+        50.55992,
+        -2.44342
+      ]
+    },
+    "galley-lyme-regis": {
+      "id": "galley-lyme-regis",
+      "name": "Galley, Lyme Regis",
+      "city": "Lyme Regis",
+      "postcode": "DT7 3QE",
+      "full_address": "The Galley, 4 Broad Street, Lyme Regis, DT7 3QE",
+      "url": "http://galleycafe.co.uk/",
+      "latlon": [
+        50.72465,
+        -2.93436
+      ]
+    },
+    "b-side-cafe-john-peel": {
+      "id": "b-side-cafe-john-peel",
       "name": "B Side cafe, John Peel Centre",
       "city": "Stowmarket",
       "postcode": "IP14 1ET",
