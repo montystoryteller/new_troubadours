@@ -2250,6 +2250,13 @@
         (async () => {
             readUrlParams();
             syncFilterButtons();
+
+            // Show spinner only if no cache exists
+            if (!getSchedulesCache()) {
+                document.getElementById("page-content").innerHTML =
+                    '<p class="status-message status-message--loading">⏳ Loading flyers…</p>';
+            }
+
             try {
                 allItems = await loadFlyers();
             } catch (e) {
@@ -2258,9 +2265,13 @@
                     `<p class="status-message status-message--error">Could not load events data.<br><small>${e.message}</small></p>`;
                 return;
             }
-            populateTourDropdown();
-            renderVideoTrailers();
-            renderAll();
+
+            // Defer heavy rendering to allow browser to paint loading state first
+            setTimeout(() => {
+                populateTourDropdown();
+                renderVideoTrailers();
+                renderAll();
+            }, 0);
         })();
     </script>
 </body>

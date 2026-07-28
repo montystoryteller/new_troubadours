@@ -814,7 +814,7 @@
             const params = new URLSearchParams(location.search);
             const clubId = params.get('club');
 
-            // Load data
+            // Load data (should be cached, so this is fast)
             const result = await loadEventsData();
             if (!result) {
                 document.getElementById('page-content').innerHTML =
@@ -827,7 +827,21 @@
             displayDataLastUpdated(result.lastUpdateTime);
             initNavFeedback();
 
-            // Find the recurring club record (events[])
+            // Check if we have cached schedules; if not, show a spinner while computing
+            const cachedSchedules = getSchedulesCache();
+            if (!cachedSchedules) {
+                document.getElementById('page-content').innerHTML =
+                    '<p class="status-message status-message--loading">⏳ Loading clubs…</p>';
+            }
+
+            // Defer heavy computation (schedule calculations, filtering, sorting) to background
+            // This allows the browser to render the loading state or cached data first
+            setTimeout(() => {
+                renderPage(data, clubId);
+            }, 0);
+        })();
+
+        function renderPage(data, clubId) {
             const clubRecord = data.events.find(e => e.club === clubId) || null;
 
             if (!clubRecord && !clubId) {
@@ -1388,7 +1402,7 @@
                 [...pastEvents].reverse().forEach(e => root.appendChild(renderSpecificEvent(e, true)));
             }
 
-        })();
+        }) ();
 
         // ── Directory (no club= param) ────────────────────────────────────────────
         async function renderDirectory(data) {

@@ -1113,6 +1113,19 @@
             displayDataLastUpdated(result.lastUpdateTime);
             initNavFeedback();
 
+            // Check for cached schedule analysis; show spinner only if missing
+            if (!getSchedulesCache()) {
+                document.getElementById("statistic-sections").innerHTML =
+                    '<p class="status-message status-message--loading">⏳ Computing statistics…</p>';
+            }
+
+            // Defer heavy analysis to background (computing chart data, filters, DOM generation)
+            setTimeout(() => {
+                renderAllStats(data, venues, performers, tours);
+            }, 0);
+        }
+
+        function renderAllStats(data, venues, performers, tours) {
             const tourShows = data.repertoire_shows || {};
             const specific = data.specificEvents || [];
             const music = data.musicEvents || [];
@@ -2097,6 +2110,9 @@
             document.getElementById('statsContent').style.display = '';
             document.getElementById('statsShareBar').style.display = 'flex';
             document.getElementById('loadingState').style.display = 'none';
+
+            // Mark analysis as cached — no need to recompute unless boundary crosses
+            setSchedulesCache({ computed: true });
         }
 
         loadAndRender().catch(err => {

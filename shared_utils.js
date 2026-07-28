@@ -525,7 +525,15 @@ const CACHE_KEYS = {
   DATA: "troubadours_events_data",
   HEADERS: "troubadours_events_headers",
   LAST_CHECK: "troubadours_events_last_check",
+  SCHEDULES: "troubadours_schedules_cache",
 };
+
+/**
+ * Cache duration for computed schedules (24 hours in milliseconds).
+ * Schedules are deterministic based on the raw data, so they only need to
+ * be recalculated if the data changes or 24 hours have passed.
+ */
+const SCHEDULE_CACHE_TTL = 24 * 60 * 60 * 1000;
 
 /**
  * Flag to prevent concurrent background checks.
@@ -695,24 +703,35 @@ async function checkForNewerEventsDataBackground() {
         const toursLookup = eventsData.tours || {};
         const venuesLookup = eventsData.venues || {};
         const performersLookup = eventsData.performers || {};
+        const newTimestamp = Date.now();
 
         localStorage.setItem(
-          "troubadours_events_data",
+          CACHE_KEYS.DATA,
           JSON.stringify({
-            timestamp: Date.now(),
+            timestamp: newTimestamp,
             data: { eventsData, venuesLookup, performersLookup, toursLookup },
           }),
         );
 
         localStorage.setItem(
-          CACHE_HEADERS_KEY,
+          CACHE_KEYS.HEADERS,
           JSON.stringify({
             lastModified: response.headers.get("Last-Modified"),
             etag: response.headers.get("ETag"),
           }),
         );
 
+        // Clear schedule cache since the data has changed
+        clearSchedulesCache();
+
         console.log("✓ Background update: refreshed cached events data");
+
+        // Dispatch event so pages can show a notification
+        window.dispatchEvent(
+          new CustomEvent("eventsDataUpdated", {
+            detail: { timestamp: newTimestamp },
+          }),
+        );
       }
     }
   } catch (e) {
@@ -1367,15 +1386,100 @@ function displayDataLastUpdated(lastUpdateTime) {
 
 /**
  * Clear the events data cache and reload the page to fetch fresh data.
+ * Also clears the schedule cache since schedules are computed from the data.
  * Called by the refresh link in the colophon.
  */
 function clearCacheAndRefresh() {
   try {
     localStorage.removeItem(CACHE_KEYS.DATA);
     localStorage.removeItem(CACHE_KEYS.HEADERS);
+    localStorage.removeItem(CACHE_KEYS.SCHEDULES);
     sessionStorage.setItem("forceFreshEventsData", "1");
     window.location.reload();
   } catch (e) {
     console.error("Failed to clear cache:", e);
+  }
+}
+
+/**
+ * Check if a meaningful calendar boundary has been crossed since cache was created.
+ * Schedule calculations only change at boundaries: date changes, Mondays (week), month changes.
+ * @param {number} cacheTimestamp - milliseconds when cache was created
+ * @returns {boolean} true if cache should be cleared
+ */
+function hasScheduleCacheBoundaryCrossed(cacheTimestamp) {
+  const cacheDate = new Date(cacheTimestamp);
+  const today = new Date();
+
+  // Different calendar date (midnight crossed)?
+  if (cacheDate.toDateString() !== today.toDateString()) {
+    return true;
+  }
+
+  // Different month (1st of month)?
+  if (cacheDate.getMonth() !== today.getMonth()) {
+    return true;
+  }
+
+  // Is it Monday now but wasn't when cached? (new week context)
+  if (today.getDay() === 1 && cacheDate.getDay() !== 1) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Retrieve cached computed schedules.
+ * Returns null if cache crossed a calendar boundary or is missing.
+ * Cache stays valid until date changes, month changes, or Monday arrives.
+ * @returns {Object|null}
+ */
+function getSchedulesCache() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEYS.SCHEDULES);
+    if (!cached) return null;
+    const { timestamp, data } = JSON.parse(cached);
+
+    // Check if we've crossed a meaningful calendar boundary
+    if (hasScheduleCacheBoundaryCrossed(timestamp)) {
+      localStorage.removeItem(CACHE_KEYS.SCHEDULES);
+      return null;
+    }
+
+    return data;
+  } catch (e) {
+    console.warn("Failed to read schedules cache:", e);
+    return null;
+  }
+}
+
+/**
+ * Store computed schedules in cache.
+ * @param {Object} schedules - Map of schedule keys to computed date objects
+ */
+function setSchedulesCache(schedules) {
+  try {
+    localStorage.setItem(
+      CACHE_KEYS.SCHEDULES,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: schedules,
+      }),
+    );
+  } catch (e) {
+    console.warn("Failed to cache schedules:", e);
+  }
+}
+
+/**
+ * Clear the schedule cache without clearing data.
+ * Called when background refresh detects updated data.
+ */
+function clearSchedulesCache() {
+  try {
+    localStorage.removeItem(CACHE_KEYS.SCHEDULES);
+  } catch (e) {
+    console.warn("Failed to clear schedules cache:", e);
   }
 }
