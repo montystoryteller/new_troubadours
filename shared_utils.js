@@ -564,7 +564,13 @@ async function loadEventsData(cacheBuster) {
           // Check for newer data on the server in the background (doesn't block)
           checkForNewerEventsDataBackground();
 
-          return { eventsData, venuesLookup, performersLookup, toursLookup, lastUpdateTime: timestamp };
+          return {
+            eventsData,
+            venuesLookup,
+            performersLookup,
+            toursLookup,
+            lastUpdateTime: timestamp,
+          };
         } catch (e) {
           console.warn(
             "Failed to parse cached events data, fetching fresh copy",
@@ -613,7 +619,13 @@ async function loadEventsData(cacheBuster) {
     console.log(`  - ${Object.keys(performersLookup).length} performers`);
     console.log(`  - ${Object.keys(toursLookup).length} tours`);
 
-    return { eventsData, venuesLookup, performersLookup, toursLookup, lastUpdateTime: Date.now() };
+    return {
+      eventsData,
+      venuesLookup,
+      performersLookup,
+      toursLookup,
+      lastUpdateTime: Date.now(),
+    };
   } catch (error) {
     console.error("Error loading events:", error);
     return null;
@@ -1241,14 +1253,12 @@ function formatLastUpdateTime(timestamp) {
   const now = new Date();
 
   // Check if it's today
-  const isToday =
-    date.toDateString() === now.toDateString();
+  const isToday = date.toDateString() === now.toDateString();
 
   // Check if it's yesterday
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
-  const isYesterday =
-    date.toDateString() === yesterday.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
 
   // Format time part (e.g., "2:30 PM")
   const timeStr = date.toLocaleString("en-US", {

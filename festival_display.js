@@ -20,28 +20,48 @@ function getFestivalURLParams() {
 
 function updateURL(festivalId) {
   const p = new URLSearchParams({ festival: festivalId });
-  window.history.pushState({ festivalId }, "", `${window.location.pathname}?${p}`);
+  window.history.pushState(
+    { festivalId },
+    "",
+    `${window.location.pathname}?${p}`,
+  );
 }
 
 function shareFestivalLink() {
-  if (!currentFestival?.key) { alert("No festival selected"); return; }
+  if (!currentFestival?.key) {
+    alert("No festival selected");
+    return;
+  }
   const url = `${location.origin}${location.pathname}?festival=${encodeURIComponent(currentFestival.key)}`;
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.querySelector("button[onclick='shareFestivalLink()']");
-    const orig = btn.innerHTML;
-    btn.innerHTML = "✅ Link Copied!";
-    setTimeout(() => { btn.innerHTML = orig; }, 2000);
-  }).catch(console.error);
+  navigator.clipboard
+    .writeText(url)
+    .then(() => {
+      const btn = document.querySelector(
+        "button[onclick='shareFestivalLink()']",
+      );
+      const orig = btn.innerHTML;
+      btn.innerHTML = "✅ Link Copied!";
+      setTimeout(() => {
+        btn.innerHTML = orig;
+      }, 2000);
+    })
+    .catch(console.error);
 }
 
 function handleFestivalSelectChange() {
   const id = document.getElementById("festivalSelect").value;
-  if (id) { displayFestival(id); updateURL(id); }
+  if (id) {
+    displayFestival(id);
+    updateURL(id);
+  }
 }
 
 function loadSelectedFestival() {
   const id = document.getElementById("festivalSelect").value;
-  if (!id) { alert("Please select a festival"); return; }
+  if (!id) {
+    alert("Please select a festival");
+    return;
+  }
   displayFestival(id);
   updateURL(id);
 }
@@ -53,10 +73,10 @@ function loadSelectedFestival() {
 function getFestivalStatus(fest) {
   const today = getTodayMidnight();
   const start = parseDateString(fest.start_date);
-  const end   = parseDateString(fest.end_date);
+  const end = parseDateString(fest.end_date);
   if (!start || !end) return "unknown";
-  if (end   < today)  return "past";
-  if (start > today)  return "future";
+  if (end < today) return "past";
+  if (start > today) return "future";
   return "current";
 }
 
@@ -73,7 +93,13 @@ function collectLinkedEvents(festivalKey) {
     const dates = Array.isArray(ev.date) ? ev.date : [ev.date];
     for (const ds of dates) {
       const parsed = parseDateString(ds);
-      if (parsed) linked.push({ source: "specific", date: parsed, dateStr: ds, event: ev });
+      if (parsed)
+        linked.push({
+          source: "specific",
+          date: parsed,
+          dateStr: ds,
+          event: ev,
+        });
     }
   }
 
@@ -83,7 +109,15 @@ function collectLinkedEvents(festivalKey) {
       const dates = Array.isArray(td.date) ? td.date : [td.date];
       for (const ds of dates) {
         const parsed = parseDateString(ds);
-        if (parsed) linked.push({ source: "tour", date: parsed, dateStr: ds, tourDate: td, tour, tourKey });
+        if (parsed)
+          linked.push({
+            source: "tour",
+            date: parsed,
+            dateStr: ds,
+            tourDate: td,
+            tour,
+            tourKey,
+          });
       }
     }
   }
@@ -91,8 +125,10 @@ function collectLinkedEvents(festivalKey) {
   linked.sort((a, b) => {
     const diff = a.date - b.date;
     if (diff !== 0) return diff;
-    const at = a.source === "specific" ? (a.event.time || "") : (a.tourDate.time || "");
-    const bt = b.source === "specific" ? (b.event.time || "") : (b.tourDate.time || "");
+    const at =
+      a.source === "specific" ? a.event.time || "" : a.tourDate.time || "";
+    const bt =
+      b.source === "specific" ? b.event.time || "" : b.tourDate.time || "";
     return at.localeCompare(bt);
   });
 
@@ -120,21 +156,25 @@ function parseTimeToMinutes(timeStr) {
   // through the informal "3-4pm"-style heuristics below, which assume
   // 12-hour input and would otherwise mis-bump morning end times (e.g.
   // turning "09:30-10:15" into 09:30-22:15).
-  const strict24Match = s.match(/^([01]\d|2[0-3]):([0-5]\d)\s*[-–]\s*([01]\d|2[0-3]):([0-5]\d)$/);
+  const strict24Match = s.match(
+    /^([01]\d|2[0-3]):([0-5]\d)\s*[-–]\s*([01]\d|2[0-3]):([0-5]\d)$/,
+  );
   if (strict24Match) {
     const [, sh, sm, eh, em] = strict24Match;
     return {
       start: parseInt(sh, 10) * 60 + parseInt(sm, 10),
-      end:   parseInt(eh, 10) * 60 + parseInt(em, 10),
+      end: parseInt(eh, 10) * 60 + parseInt(em, 10),
     };
   }
 
   // Try range like "3-4pm", "7.30-9pm", "3.30-4.30pm"
-  const rangeMatch = s.match(/^(\d+(?:[.:]\d+)?)\s*[-–]\s*(\d+(?:[.:]\d+)?)\s*(am|pm)?$/);
+  const rangeMatch = s.match(
+    /^(\d+(?:[.:]\d+)?)\s*[-–]\s*(\d+(?:[.:]\d+)?)\s*(am|pm)?$/,
+  );
   if (rangeMatch) {
     const suffix = rangeMatch[3] || "";
     const startMin = parseOnePart(rangeMatch[1], suffix, false);
-    const endMin   = parseOnePart(rangeMatch[2], suffix, true);
+    const endMin = parseOnePart(rangeMatch[2], suffix, true);
     return { start: startMin, end: endMin };
   }
 
@@ -146,10 +186,12 @@ function parseTimeToMinutes(timeStr) {
   }
 
   // "7-8pm" already caught above; try "3pm-4pm"
-  const rangeMatch2 = s.match(/^(\d+(?:[.:]\d+)?)\s*(am|pm)\s*[-–]\s*(\d+(?:[.:]\d+)?)\s*(am|pm)$/);
+  const rangeMatch2 = s.match(
+    /^(\d+(?:[.:]\d+)?)\s*(am|pm)\s*[-–]\s*(\d+(?:[.:]\d+)?)\s*(am|pm)$/,
+  );
   if (rangeMatch2) {
     const startMin = parseOnePart(rangeMatch2[1], rangeMatch2[2], false);
-    const endMin   = parseOnePart(rangeMatch2[3], rangeMatch2[4], false);
+    const endMin = parseOnePart(rangeMatch2[3], rangeMatch2[4], false);
     return { start: startMin, end: endMin };
   }
 
@@ -196,21 +238,19 @@ function buildProgramme(fest) {
     if (!date) continue;
     const times = parseTimeToMinutes(item.time);
     const performer = item.performer_id
-      ? (performersLookup[item.performer_id]?.name || item.performer_id)
-      : (item.performer || "");
+      ? performersLookup[item.performer_id]?.name || item.performer_id
+      : item.performer || "";
     // host_id: the person running/leading an item (e.g. a workshop tutor or
     // storyround facilitator), distinct from `performer`/`performer_id` which
     // usually names who's performing. Resolves against performersLookup so
     // it can link through to that performer's page, same as performer_id.
     const hostId = item.host_id || null;
-    const host = hostId
-      ? (performersLookup[hostId]?.name || hostId)
-      : "";
+    const host = hostId ? performersLookup[hostId]?.name || hostId : "";
     programme.push({
       date,
       dateStr: item.date,
       startMinutes: times?.start ?? null,
-      endMinutes:   times?.end   ?? null,
+      endMinutes: times?.end ?? null,
       stage: resolveStageName(item, stagesLookup),
       stageId: item.stage_id || null,
       title: item.showname || item.name || "",
@@ -232,27 +272,25 @@ function buildProgramme(fest) {
 
   // 2. Linked events (wider_event)
   for (const item of linked) {
-    const ev     = item.source === "specific" ? item.event : item.tourDate;
-    const tour   = item.source === "tour" ? item.tour : null;
+    const ev = item.source === "specific" ? item.event : item.tourDate;
+    const tour = item.source === "tour" ? item.tour : null;
     const rawTime = ev.time || "";
-    const times  = parseTimeToMinutes(rawTime);
-    const perfId = item.source === "specific" ? ev.performer_id : tour?.performer_id;
-    const performer = perfId
-      ? (performersLookup[perfId]?.name || perfId)
-      : "";
-    const title = ev.showname
-      || (item.source === "specific" ? ev.name : tour?.name)
-      || "";
+    const times = parseTimeToMinutes(rawTime);
+    const perfId =
+      item.source === "specific" ? ev.performer_id : tour?.performer_id;
+    const performer = perfId ? performersLookup[perfId]?.name || perfId : "";
+    const title =
+      ev.showname || (item.source === "specific" ? ev.name : tour?.name) || "";
     // Stage: use ev.stage if present, else try venue short name, else "Festival"
     const venueId = item.source === "specific" ? ev.venue_id : ev.venue_id;
-    const venue   = venuesLookup[venueId] || {};
-    const stage   = ev.stage || venue.short_name || venue.name || "Festival";
+    const venue = venuesLookup[venueId] || {};
+    const stage = ev.stage || venue.short_name || venue.name || "Festival";
 
     programme.push({
       date: item.date,
       dateStr: item.dateStr,
       startMinutes: times?.start ?? null,
-      endMinutes:   times?.end   ?? null,
+      endMinutes: times?.end ?? null,
       stage,
       title,
       performer,
@@ -272,9 +310,10 @@ function buildProgramme(fest) {
   programme.sort((a, b) => {
     const dd = a.date - b.date;
     if (dd !== 0) return dd;
-    if (a.startMinutes !== null && b.startMinutes !== null) return a.startMinutes - b.startMinutes;
+    if (a.startMinutes !== null && b.startMinutes !== null)
+      return a.startMinutes - b.startMinutes;
     if (a.startMinutes !== null) return -1;
-    if (b.startMinutes !== null) return  1;
+    if (b.startMinutes !== null) return 1;
     return a.title.localeCompare(b.title);
   });
 
@@ -286,8 +325,8 @@ function buildProgramme(fest) {
 // ---------------------------------------------------------------------------
 
 const PX_PER_MINUTE = 1.4; // height scaling
-const SLOT_MINUTES  = 30;  // time-axis granularity
-const MIN_BLOCK_PX  = 28;  // minimum block height
+const SLOT_MINUTES = 30; // time-axis granularity
+const MIN_BLOCK_PX = 28; // minimum block height
 
 // Display labels for the controlled set of programme category types.
 // Keys match the `type` values used in fest.schedule[] / cf-event-${type}
@@ -309,22 +348,26 @@ const PROGRAMME_TYPE_LABELS = {
 };
 
 function buildTypeLegend(programme) {
-  const typesPresent = [...new Set(programme.map(p => p.type))];
+  const typesPresent = [...new Set(programme.map((p) => p.type))];
   // Keep a stable, sensible order: known types first (in PROGRAMME_TYPE_LABELS
   // order), then anything unexpected appended alphabetically.
-  const known = Object.keys(PROGRAMME_TYPE_LABELS).filter(t => typesPresent.includes(t));
-  const unknown = typesPresent.filter(t => !PROGRAMME_TYPE_LABELS[t]).sort();
+  const known = Object.keys(PROGRAMME_TYPE_LABELS).filter((t) =>
+    typesPresent.includes(t),
+  );
+  const unknown = typesPresent.filter((t) => !PROGRAMME_TYPE_LABELS[t]).sort();
   const ordered = [...known, ...unknown];
 
   const legend = document.createElement("div");
   legend.className = "cf-legend";
-  ordered.forEach(type => {
+  ordered.forEach((type) => {
     const item = document.createElement("span");
     item.className = "cf-legend-item";
     const swatch = document.createElement("span");
     swatch.className = `cf-legend-swatch cf-event-${type}`;
     item.appendChild(swatch);
-    item.appendChild(document.createTextNode(PROGRAMME_TYPE_LABELS[type] || type));
+    item.appendChild(
+      document.createTextNode(PROGRAMME_TYPE_LABELS[type] || type),
+    );
     legend.appendChild(item);
   });
   return legend;
@@ -334,7 +377,7 @@ function renderClashfinder() {
   const fest = currentFestival?.record;
   if (!fest) return;
 
-  const section   = document.getElementById("festivalScheduleSection");
+  const section = document.getElementById("festivalScheduleSection");
   const container = document.getElementById("clashfinderContainer");
   const daySelect = document.getElementById("cfDaySelect");
 
@@ -351,16 +394,22 @@ function renderClashfinder() {
   container.appendChild(buildTypeLegend(programme));
 
   // Get unique days
-  const dayKeys = [...new Set(programme.map(p => p.dateStr))];
+  const dayKeys = [...new Set(programme.map((p) => p.dateStr))];
 
   // Populate day selector (only on first call or after festival change)
-  const existingOptions = [...daySelect.options].map(o => o.value);
-  const needsRefresh = !dayKeys.every(k => existingOptions.includes(k));
+  const existingOptions = [...daySelect.options].map((o) => o.value);
+  const needsRefresh = !dayKeys.every((k) => existingOptions.includes(k));
   if (needsRefresh) {
     daySelect.innerHTML = '<option value="all">All days</option>';
-    dayKeys.forEach(ds => {
+    dayKeys.forEach((ds) => {
       const d = parseDateString(ds);
-      const label = d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : ds;
+      const label = d
+        ? d.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+          })
+        : ds;
       const opt = document.createElement("option");
       opt.value = ds;
       opt.textContent = label;
@@ -371,17 +420,21 @@ function renderClashfinder() {
   const selectedDay = daySelect.value;
   const daysToShow = selectedDay === "all" ? dayKeys : [selectedDay];
 
-  daysToShow.forEach(dayKey => {
-    const dayItems = programme.filter(p => p.dateStr === dayKey);
+  daysToShow.forEach((dayKey) => {
+    const dayItems = programme.filter((p) => p.dateStr === dayKey);
     if (dayItems.length === 0) return;
     const dayDate = parseDateString(dayKey);
     const dayLabel = dayDate
-      ? dayDate.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+      ? dayDate.toLocaleDateString("en-GB", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
       : dayKey;
     container.appendChild(buildDayGrid(dayLabel, dayItems, fest.stages || []));
   });
 }
-
 
 function buildDayGrid(dayLabel, items, stageDefs) {
   const today = getTodayMidnight();
@@ -390,24 +443,28 @@ function buildDayGrid(dayLabel, items, stageDefs) {
   // possible (so the programme's intended stage order is respected), with
   // any stages not listed there (e.g. from linked events) appended after,
   // in first-seen order.
-  const presentStages = [...new Set(items.map(i => i.stage))];
-  const definedOrder = (stageDefs || []).map(s => s.name || s.stage_id);
+  const presentStages = [...new Set(items.map((i) => i.stage))];
+  const definedOrder = (stageDefs || []).map((s) => s.name || s.stage_id);
   const stages = [
-    ...definedOrder.filter(name => presentStages.includes(name)),
-    ...presentStages.filter(name => !definedOrder.includes(name)),
+    ...definedOrder.filter((name) => presentStages.includes(name)),
+    ...presentStages.filter((name) => !definedOrder.includes(name)),
   ];
 
   // Items with time info → use clashfinder grid
   // Items without time → show as a simple list below the grid
-  const timed   = items.filter(i => i.startMinutes !== null);
-  const untimed = items.filter(i => i.startMinutes === null);
+  const timed = items.filter((i) => i.startMinutes !== null);
+  const untimed = items.filter((i) => i.startMinutes === null);
 
   // Time bounds
-  let minTime = timed.length ? Math.min(...timed.map(i => i.startMinutes)) : 0;
-  let maxTime = timed.length ? Math.max(...timed.map(i => i.endMinutes ?? i.startMinutes + 60)) : 0;
+  let minTime = timed.length
+    ? Math.min(...timed.map((i) => i.startMinutes))
+    : 0;
+  let maxTime = timed.length
+    ? Math.max(...timed.map((i) => i.endMinutes ?? i.startMinutes + 60))
+    : 0;
   // Round to slot boundaries
   minTime = Math.floor(minTime / SLOT_MINUTES) * SLOT_MINUTES;
-  maxTime = Math.ceil(maxTime  / SLOT_MINUTES) * SLOT_MINUTES;
+  maxTime = Math.ceil(maxTime / SLOT_MINUTES) * SLOT_MINUTES;
   if (maxTime <= minTime) maxTime = minTime + 60;
 
   const totalMinutes = maxTime - minTime;
@@ -441,7 +498,7 @@ function buildDayGrid(dayLabel, items, stageDefs) {
     corner.textContent = "Time";
     grid.appendChild(corner);
 
-    stages.forEach(stage => {
+    stages.forEach((stage) => {
       const cell = document.createElement("div");
       cell.className = "cf-stage-header";
       cell.textContent = stage;
@@ -449,7 +506,7 @@ function buildDayGrid(dayLabel, items, stageDefs) {
     });
 
     // Time rows
-    timeSlots.forEach(t => {
+    timeSlots.forEach((t) => {
       const timeCell = document.createElement("div");
       timeCell.className = "cf-time-cell";
       const h = Math.floor(t / 60);
@@ -481,7 +538,7 @@ function buildDayGrid(dayLabel, items, stageDefs) {
     grid.appendChild(cornerEl);
 
     // Stage headers
-    stages.forEach(stage => {
+    stages.forEach((stage) => {
       const h = document.createElement("div");
       h.className = "cf-stage-header";
       h.textContent = stage;
@@ -492,7 +549,7 @@ function buildDayGrid(dayLabel, items, stageDefs) {
     const gridHeight = totalMinutes * PX_PER_MINUTE;
 
     // Time column cells
-    timeSlots.forEach(t => {
+    timeSlots.forEach((t) => {
       const tc = document.createElement("div");
       tc.className = "cf-time-cell";
       const h = Math.floor(t / 60);
@@ -536,8 +593,8 @@ function buildDayGrid(dayLabel, items, stageDefs) {
       overlay.classList.add("cf-stage-overlay");
       gridWrap.appendChild(overlay);
 
-      const stageItems = timed.filter(i => i.stage === stage);
-      stageItems.forEach(item => {
+      const stageItems = timed.filter((i) => i.stage === stage);
+      stageItems.forEach((item) => {
         const block = buildEventBlock(item, minTime, today);
         overlay.appendChild(block);
         overlay.style.pointerEvents = "auto";
@@ -558,7 +615,7 @@ function buildDayGrid(dayLabel, items, stageDefs) {
     label.className = "cf-untimed-label";
     label.textContent = "Events (time TBC)";
     untimedSection.appendChild(label);
-    untimed.forEach(item => {
+    untimed.forEach((item) => {
       untimedSection.appendChild(buildUntimedCard(item, today));
     });
     wrapper.appendChild(untimedSection);
@@ -579,28 +636,29 @@ function positionOverlays(grid, gridWrap, headerH) {
 
   // Find the first stage header to get column positions
   const stageHeaders = grid.querySelectorAll(".cf-stage-header");
-  overlays.forEach(overlay => {
+  overlays.forEach((overlay) => {
     const idx = parseInt(overlay.dataset.stageIdx, 10);
     const header = stageHeaders[idx];
     if (!header) return;
     const hRect = header.getBoundingClientRect();
     const left = hRect.left - wrapRect.left;
     const width = hRect.width;
-    overlay.style.left  = `${left}px`;
+    overlay.style.left = `${left}px`;
     overlay.style.width = `${width}px`;
   });
 }
 
 function buildEventBlock(item, minTime, today) {
   const past = item.date < today;
-  const topPx    = (item.startMinutes - minTime) * PX_PER_MINUTE;
-  const durationMin = (item.endMinutes ?? item.startMinutes + 60) - item.startMinutes;
+  const topPx = (item.startMinutes - minTime) * PX_PER_MINUTE;
+  const durationMin =
+    (item.endMinutes ?? item.startMinutes + 60) - item.startMinutes;
   const heightPx = Math.max(durationMin * PX_PER_MINUTE, MIN_BLOCK_PX);
 
   const block = document.createElement("div");
   block.className = `cf-event cf-event-${item.type}`;
   if (past) block.classList.add("cf-event-past");
-  block.style.top    = `${topPx}px`;
+  block.style.top = `${topPx}px`;
   block.style.height = `${heightPx}px`;
 
   const titleEl = document.createElement("div");
@@ -623,7 +681,7 @@ function buildEventBlock(item, minTime, today) {
   }
 
   // Tooltip on click
-  block.addEventListener("click", e => {
+  block.addEventListener("click", (e) => {
     e.stopPropagation();
     showCfTooltip(item, block);
   });
@@ -634,7 +692,10 @@ function buildEventBlock(item, minTime, today) {
 let _activeCfTooltip = null;
 
 function showCfTooltip(item, anchor) {
-  if (_activeCfTooltip) { _activeCfTooltip.remove(); _activeCfTooltip = null; }
+  if (_activeCfTooltip) {
+    _activeCfTooltip.remove();
+    _activeCfTooltip = null;
+  }
 
   const tip = document.createElement("div");
   tip.className = "cf-tooltip";
@@ -683,9 +744,10 @@ function showCfTooltip(item, anchor) {
     const d = document.createElement("div");
     d.className = "cf-tooltip-desc";
     const MAX = 160;
-    d.textContent = item.description.length > MAX
-      ? item.description.slice(0, MAX).trim() + "…"
-      : item.description;
+    d.textContent =
+      item.description.length > MAX
+        ? item.description.slice(0, MAX).trim() + "…"
+        : item.description;
     tip.appendChild(d);
   }
 
@@ -700,7 +762,9 @@ function showCfTooltip(item, anchor) {
     const safeUrl = sanitizeUrl(item.ticketUrl);
     if (safeUrl) {
       const a = document.createElement("a");
-      a.href = safeUrl; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.href = safeUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
       a.className = "cf-tooltip-link";
       a.textContent = "🎟 Tickets";
       tip.appendChild(a);
@@ -709,7 +773,9 @@ function showCfTooltip(item, anchor) {
     const safeUrl = sanitizeUrl(item.bookingUrl);
     if (safeUrl) {
       const a = document.createElement("a");
-      a.href = safeUrl; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.href = safeUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
       a.className = "cf-tooltip-link cf-tooltip-booking";
       a.textContent = "📝 Book a Place";
       tip.appendChild(a);
@@ -724,7 +790,7 @@ function showCfTooltip(item, anchor) {
   const aRect = anchor.getBoundingClientRect();
   const cRect = container.getBoundingClientRect();
   tip.style.position = "absolute";
-  tip.style.top  = `${aRect.bottom - cRect.top + 6}px`;
+  tip.style.top = `${aRect.bottom - cRect.top + 6}px`;
   tip.style.left = `${Math.max(0, aRect.left - cRect.left)}px`;
   tip.style.pointerEvents = "auto";
 
@@ -732,9 +798,16 @@ function showCfTooltip(item, anchor) {
 
   // Dismiss on outside click
   setTimeout(() => {
-    document.addEventListener("click", () => {
-      if (_activeCfTooltip) { _activeCfTooltip.remove(); _activeCfTooltip = null; }
-    }, { once: true });
+    document.addEventListener(
+      "click",
+      () => {
+        if (_activeCfTooltip) {
+          _activeCfTooltip.remove();
+          _activeCfTooltip = null;
+        }
+      },
+      { once: true },
+    );
   }, 50);
 }
 
@@ -779,7 +852,7 @@ function buildUntimedCard(item, today) {
   // description/booking-vs-ticket links aren't lost just because an item
   // has no parseable time.
   div.style.cursor = "pointer";
-  div.addEventListener("click", e => {
+  div.addEventListener("click", (e) => {
     e.stopPropagation();
     showCfTooltip(item, div);
   });
@@ -812,26 +885,39 @@ function displayFestival(festivalId) {
 
   // Header
   document.getElementById("festivalTitle").textContent = fest.name;
-  document.getElementById("festivalSubtitle").textContent = fest.short_name || "";
+  document.getElementById("festivalSubtitle").textContent =
+    fest.short_name || "";
 
   // Date range
   const start = parseDateString(fest.start_date);
-  const end   = parseDateString(fest.end_date);
-  const longFmt = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
+  const end = parseDateString(fest.end_date);
+  const longFmt = {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
   const rangeEl = document.getElementById("festivalDateRange");
   if (start && end) {
-    rangeEl.textContent = start.toDateString() === end.toDateString()
-      ? start.toLocaleDateString("en-GB", longFmt)
-      : `${start.toLocaleDateString("en-GB", longFmt)} — ${end.toLocaleDateString("en-GB", longFmt)}`;
+    rangeEl.textContent =
+      start.toDateString() === end.toDateString()
+        ? start.toLocaleDateString("en-GB", longFmt)
+        : `${start.toLocaleDateString("en-GB", longFmt)} — ${end.toLocaleDateString("en-GB", longFmt)}`;
   }
 
   // Status banner
   const status = getFestivalStatus(fest);
   const statusEl = document.getElementById("festivalStatusBanner");
   const STATUS = {
-    past:    { cls: "festival-banner-past",    text: "📅 This festival has ended." },
-    future:  { cls: "festival-banner-future",  text: "🗓 Upcoming — dates still to come." },
-    current: { cls: "festival-banner-current", text: "🎪 Festival in progress!" },
+    past: { cls: "festival-banner-past", text: "📅 This festival has ended." },
+    future: {
+      cls: "festival-banner-future",
+      text: "🗓 Upcoming — dates still to come.",
+    },
+    current: {
+      cls: "festival-banner-current",
+      text: "🎪 Festival in progress!",
+    },
     unknown: { cls: "", text: "" },
   };
   statusEl.className = `festival-status-banner ${STATUS[status].cls}`;
@@ -863,15 +949,17 @@ function displayFestival(festivalId) {
   const linksEl = document.getElementById("festivalLinks");
   linksEl.innerHTML = "";
   [
-    { url: fest.website,    label: "🌐 Festival Website", cls: "" },
-    { url: fest.ticket_url, label: "🎟 Tickets",          cls: "festival-ticket-link" },
-    { url: fest.facebook,   label: "📘 Facebook",         cls: "" },
+    { url: fest.website, label: "🌐 Festival Website", cls: "" },
+    { url: fest.ticket_url, label: "🎟 Tickets", cls: "festival-ticket-link" },
+    { url: fest.facebook, label: "📘 Facebook", cls: "" },
   ].forEach(({ url, label, cls }) => {
     if (!url) return;
     const safe = sanitizeUrl(url);
     if (!safe) return;
     const a = document.createElement("a");
-    a.href = safe; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.href = safe;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
     a.className = `festival-ext-link ${cls}`.trim();
     a.textContent = label;
     linksEl.appendChild(a);
@@ -934,7 +1022,12 @@ function collectFestivalPerformers(festId, fest) {
   for (const p of fest.performers || []) {
     const rec = performersLookup[p.performer_id];
     if (rec && !seen.has(p.performer_id)) {
-      seen.set(p.performer_id, { id: p.performer_id, name: rec.name, role: p.role || "", explicit: true });
+      seen.set(p.performer_id, {
+        id: p.performer_id,
+        name: rec.name,
+        role: p.role || "",
+        explicit: true,
+      });
     }
   }
 
@@ -944,10 +1037,12 @@ function collectFestivalPerformers(festId, fest) {
     const ids = [];
     if (item.source === "specific") {
       if (item.event.performer_id) ids.push(item.event.performer_id);
-      if (Array.isArray(item.event.performer_ids)) ids.push(...item.event.performer_ids);
+      if (Array.isArray(item.event.performer_ids))
+        ids.push(...item.event.performer_ids);
     } else {
       if (item.tour.performer_id) ids.push(item.tour.performer_id);
-      if (Array.isArray(item.tour.performer_ids)) ids.push(...item.tour.performer_ids);
+      if (Array.isArray(item.tour.performer_ids))
+        ids.push(...item.tour.performer_ids);
     }
     for (const id of ids) {
       if (seen.has(id)) continue; // already listed (explicit takes priority)
@@ -984,7 +1079,7 @@ function renderFestivalPerformers(fest) {
   const list = document.createElement("div");
   list.className = "festival-performer-list";
 
-  performers.forEach(p => {
+  performers.forEach((p) => {
     const row = document.createElement("div");
     row.className = "festival-performer-row";
     const a = document.createElement("a");
@@ -1018,23 +1113,24 @@ function renderFestivalPerformers(fest) {
 
 function renderLinkedEvents(festivalId) {
   const container = document.getElementById("festivalEventsList");
-  const heading   = document.getElementById("festivalEventsHeading");
+  const heading = document.getElementById("festivalEventsHeading");
   container.innerHTML = "";
 
   const linked = collectLinkedEvents(festivalId);
 
   if (linked.length === 0) {
     heading.textContent = "Listed Events";
-    container.innerHTML = "<p class='festival-no-events'>No individual events listed yet.</p>";
+    container.innerHTML =
+      "<p class='festival-no-events'>No individual events listed yet.</p>";
     return;
   }
 
   heading.textContent = `Listed Events (${linked.length})`;
-  linked.forEach(item => {
+  linked.forEach((item) => {
     container.appendChild(
       item.source === "specific"
         ? buildSpecificEventCard(item)
-        : buildTourDateCard(item)
+        : buildTourDateCard(item),
     );
   });
 }
@@ -1050,7 +1146,11 @@ function buildSpecificEventCard(item) {
 
   const nameDiv = document.createElement("div");
   nameDiv.className = "event-name";
-  const dateText = date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  const dateText = date.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   nameDiv.textContent = event.time ? `${dateText} • ${event.time}` : dateText;
   div.appendChild(nameDiv);
 
@@ -1079,7 +1179,7 @@ function buildSpecificEventCard(item) {
       vl.href = `new_troubadours_venues.html?venue=${encodeURIComponent(event.venue_id)}`;
       vl.className = "venue-page-link";
       vl.textContent = "i";
-      vl.onclick = e => e.stopPropagation();
+      vl.onclick = (e) => e.stopPropagation();
       venueEl.appendChild(vl);
     }
     div.appendChild(venueEl);
@@ -1096,7 +1196,10 @@ function buildSpecificEventCard(item) {
   if (tickets) div.appendChild(tickets);
 
   if (event.description) {
-    const { toggle, content } = createFestivalExpandable("More Info", event.description);
+    const { toggle, content } = createFestivalExpandable(
+      "More Info",
+      event.description,
+    );
     div.appendChild(toggle);
     div.appendChild(content);
   }
@@ -1105,7 +1208,9 @@ function buildSpecificEventCard(item) {
     div.style.cursor = "pointer";
     div.addEventListener("click", () => {
       map.flyTo(venue.latlon, 14);
-      markers.forEach(m => { if (m.venue_id === event.venue_id) m.openPopup(); });
+      markers.forEach((m) => {
+        if (m.venue_id === event.venue_id) m.openPopup();
+      });
     });
   }
 
@@ -1123,8 +1228,14 @@ function buildTourDateCard(item) {
 
   const nameDiv = document.createElement("div");
   nameDiv.className = "event-name";
-  const dateText = date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-  nameDiv.textContent = tourDate.time ? `${dateText} • ${tourDate.time}` : dateText;
+  const dateText = date.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  nameDiv.textContent = tourDate.time
+    ? `${dateText} • ${tourDate.time}`
+    : dateText;
   div.appendChild(nameDiv);
 
   const showDiv = document.createElement("div");
@@ -1136,7 +1247,7 @@ function buildTourDateCard(item) {
   badge.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourKey)}`;
   badge.className = "touring-badge festival-tour-badge";
   badge.textContent = "🎭 Tour date";
-  badge.onclick = e => e.stopPropagation();
+  badge.onclick = (e) => e.stopPropagation();
   div.appendChild(badge);
 
   if (tour.performer_id && performersLookup[tour.performer_id]) {
@@ -1159,7 +1270,7 @@ function buildTourDateCard(item) {
       vl.href = `new_troubadours_venues.html?venue=${encodeURIComponent(tourDate.venue_id)}`;
       vl.className = "venue-page-link";
       vl.textContent = "i";
-      vl.onclick = e => e.stopPropagation();
+      vl.onclick = (e) => e.stopPropagation();
       venueEl.appendChild(vl);
     }
     div.appendChild(venueEl);
@@ -1169,7 +1280,10 @@ function buildTourDateCard(item) {
   if (tickets) div.appendChild(tickets);
 
   if (tourDate.description) {
-    const { toggle, content } = createFestivalExpandable("More Info", tourDate.description);
+    const { toggle, content } = createFestivalExpandable(
+      "More Info",
+      tourDate.description,
+    );
     div.appendChild(toggle);
     div.appendChild(content);
   }
@@ -1178,7 +1292,9 @@ function buildTourDateCard(item) {
     div.style.cursor = "pointer";
     div.addEventListener("click", () => {
       map.flyTo(venue.latlon, 14);
-      markers.forEach(m => { if (m.venue_id === tourDate.venue_id) m.openPopup(); });
+      markers.forEach((m) => {
+        if (m.venue_id === tourDate.venue_id) m.openPopup();
+      });
     });
   }
 
@@ -1195,7 +1311,7 @@ function createFestivalExpandable(label, content) {
   contentEl.style.display = "none";
   appendParagraphs(contentEl, content);
 
-  toggle.onclick = e => {
+  toggle.onclick = (e) => {
     e.stopPropagation();
     const hidden = contentEl.style.display === "none";
     contentEl.style.display = hidden ? "block" : "none";
@@ -1217,38 +1333,53 @@ function addFestivalMarkersToMap(festivalId, fest) {
   if (festVenue.latlon) {
     const [lat, lon] = festVenue.latlon;
     const m = L.circleMarker([lat, lon], {
-      radius: 12, fillColor: "#1b5e20", color: "#fff",
-      weight: 2, opacity: 1, fillOpacity: 0.9,
+      radius: 12,
+      fillColor: "#1b5e20",
+      color: "#fff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9,
     }).addTo(map);
     m.venue_id = fest.venue_id;
-    m.bindPopup(`<div class="popup-content"><h3>${escapeHtml(fest.name)}</h3><p>${escapeHtml(festVenue.name || "")}</p></div>`);
+    m.bindPopup(
+      `<div class="popup-content"><h3>${escapeHtml(fest.name)}</h3><p>${escapeHtml(festVenue.name || "")}</p></div>`,
+    );
     markers.push(m);
     bounds.push([lat, lon]);
   }
 
   const linked = collectLinkedEvents(festivalId);
-  const today  = getTodayMidnight();
+  const today = getTodayMidnight();
 
-  linked.forEach(item => {
-    const venueId = item.source === "specific" ? item.event.venue_id : item.tourDate.venue_id;
-    const venue   = venuesLookup[venueId] || {};
+  linked.forEach((item) => {
+    const venueId =
+      item.source === "specific" ? item.event.venue_id : item.tourDate.venue_id;
+    const venue = venuesLookup[venueId] || {};
     if (!venue.latlon) return;
     const [lat, lon] = venue.latlon;
-    const past    = item.date < today;
+    const past = item.date < today;
     const isMusic = item.source === "tour" && item.tour.isMusic;
     const m = L.circleMarker([lat, lon], {
       radius: past ? 6 : 8,
       fillColor: past ? "#aaa" : isMusic ? "#443cd7" : "#4CAF50",
       color: past ? "#999" : "#fff",
-      weight: 2, opacity: 1, fillOpacity: past ? 0.5 : 0.85,
+      weight: 2,
+      opacity: 1,
+      fillOpacity: past ? 0.5 : 0.85,
     }).addTo(map);
     m.venue_id = venueId;
 
-    const ds = item.date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-    const evName = item.source === "specific"
-      ? (item.event.showname || item.event.name)
-      : item.tour.name;
-    const time = item.source === "specific" ? item.event.time : item.tourDate.time;
+    const ds = item.date.toLocaleDateString("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+    const evName =
+      item.source === "specific"
+        ? item.event.showname || item.event.name
+        : item.tour.name;
+    const time =
+      item.source === "specific" ? item.event.time : item.tourDate.time;
 
     m.bindPopup(`<div class="popup-content">
       <h3>${escapeHtml(venue.name)}</h3>
@@ -1260,12 +1391,14 @@ function addFestivalMarkersToMap(festivalId, fest) {
     bounds.push([lat, lon]);
   });
 
-  if (bounds.length === 1)       map.setView(bounds[0], 13);
-  else if (bounds.length > 1)    map.fitBounds(L.latLngBounds(bounds), { padding: [50, 50] });
+  if (bounds.length === 1) map.setView(bounds[0], 13);
+  else if (bounds.length > 1)
+    map.fitBounds(L.latLngBounds(bounds), { padding: [50, 50] });
 }
 
 function resetFestivalMap() {
-  if (currentFestival) addFestivalMarkersToMap(currentFestival.key, currentFestival.record);
+  if (currentFestival)
+    addFestivalMarkersToMap(currentFestival.key, currentFestival.record);
 }
 
 // ---------------------------------------------------------------------------
@@ -1282,16 +1415,34 @@ function renderFestivalPanels() {
     (groups[s] || groups.future).push([id, f]);
   });
 
-  renderFestivalPanel("currentFestivalsBody",  "currentFestivalsPanel",  groups.current, "no-current");
-  renderFestivalPanel("upcomingFestivalsBody", "upcomingFestivalsPanel", groups.future,  "no-upcoming");
-  renderFestivalPanel("pastFestivalsBody",     "pastFestivalsPanel",     groups.past,    "no-past");
+  renderFestivalPanel(
+    "currentFestivalsBody",
+    "currentFestivalsPanel",
+    groups.current,
+    "no-current",
+  );
+  renderFestivalPanel(
+    "upcomingFestivalsBody",
+    "upcomingFestivalsPanel",
+    groups.future,
+    "no-upcoming",
+  );
+  renderFestivalPanel(
+    "pastFestivalsBody",
+    "pastFestivalsPanel",
+    groups.past,
+    "no-past",
+  );
 }
 
 function renderFestivalPanel(bodyId, wrapperId, entries, hideClass) {
-  const body    = document.getElementById(bodyId);
+  const body = document.getElementById(bodyId);
   const wrapper = document.getElementById(wrapperId);
   if (!body || !wrapper) return;
-  if (!entries.length) { wrapper.classList.add(hideClass); return; }
+  if (!entries.length) {
+    wrapper.classList.add(hideClass);
+    return;
+  }
 
   const grid = document.createElement("div");
   grid.className = "festival-cards-grid";
@@ -1305,7 +1456,7 @@ function buildFestivalCard(festId, fest) {
   card.style.cursor = "pointer";
 
   const start = parseDateString(fest.start_date);
-  const end   = parseDateString(fest.end_date);
+  const end = parseDateString(fest.end_date);
 
   const name = document.createElement("div");
   name.className = "festival-card-name";
@@ -1322,9 +1473,14 @@ function buildFestivalCard(festId, fest) {
   if (start && end) {
     const dates = document.createElement("div");
     dates.className = "festival-card-dates";
-    dates.textContent = start.toDateString() === end.toDateString()
-      ? start.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-      : `${start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${end.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
+    dates.textContent =
+      start.toDateString() === end.toDateString()
+        ? start.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : `${start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${end.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
     card.appendChild(dates);
   }
 
@@ -1343,8 +1499,14 @@ function buildFestivalCard(festId, fest) {
     const badge = document.createElement("div");
     badge.className = "festival-card-event-count";
     const parts = [];
-    if (scheduleCount) parts.push(`${scheduleCount} programme item${scheduleCount !== 1 ? "s" : ""}`);
-    if (linked.length) parts.push(`${linked.length} listed event${linked.length !== 1 ? "s" : ""}`);
+    if (scheduleCount)
+      parts.push(
+        `${scheduleCount} programme item${scheduleCount !== 1 ? "s" : ""}`,
+      );
+    if (linked.length)
+      parts.push(
+        `${linked.length} listed event${linked.length !== 1 ? "s" : ""}`,
+      );
     badge.textContent = parts.join(" · ");
     card.appendChild(badge);
   }
@@ -1354,7 +1516,7 @@ function buildFestivalCard(festId, fest) {
   if (performers.length) {
     const perfEl = document.createElement("div");
     perfEl.className = "festival-card-performers";
-    perfEl.textContent = performers.map(p => p.name).join(", ");
+    perfEl.textContent = performers.map((p) => p.name).join(", ");
     card.appendChild(perfEl);
   }
 
@@ -1362,7 +1524,9 @@ function buildFestivalCard(festId, fest) {
     document.getElementById("festivalSelect").value = festId;
     displayFestival(festId);
     updateURL(festId);
-    document.getElementById("festivalContent").scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById("festivalContent")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   return card;
@@ -1375,7 +1539,11 @@ function buildFestivalCard(festId, fest) {
 function populateFestivalDropdown() {
   const sel = document.getElementById("festivalSelect");
   Object.entries(eventsData.festivals || {})
-    .map(([id, f]) => ({ id, name: f.name, start: parseDateString(f.start_date) }))
+    .map(([id, f]) => ({
+      id,
+      name: f.name,
+      start: parseDateString(f.start_date),
+    }))
     .sort((a, b) => (a.start || 0) - (b.start || 0))
     .forEach(({ id, name }) => {
       const opt = document.createElement("option");
@@ -1412,28 +1580,41 @@ function refreshEventsData() {
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
 
-  const loadingHTML = '<p class="festival-panel-placeholder">⏳ Loading festivals…</p>';
-  ["currentFestivalsBody", "upcomingFestivalsBody", "pastFestivalsBody"].forEach((id) => {
+  const loadingHTML =
+    '<p class="festival-panel-placeholder">⏳ Loading festivals…</p>';
+  [
+    "currentFestivalsBody",
+    "upcomingFestivalsBody",
+    "pastFestivalsBody",
+  ].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = loadingHTML;
   });
 
   const { festivalId, cacheBuster } = getFestivalURLParams();
 
-  const result = await loadEventsData(cacheBuster || (forcedRefresh ? Date.now() : null));
+  const result = await loadEventsData(
+    cacheBuster || (forcedRefresh ? Date.now() : null),
+  );
   if (!result) {
     console.error("Failed to load events data");
-    ["currentFestivalsBody", "upcomingFestivalsBody", "pastFestivalsBody"].forEach((id) => {
+    [
+      "currentFestivalsBody",
+      "upcomingFestivalsBody",
+      "pastFestivalsBody",
+    ].forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.innerHTML = '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
+      if (el)
+        el.innerHTML =
+          '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
     });
     return;
   }
 
-  eventsData       = result.eventsData;
-  venuesLookup     = result.venuesLookup;
+  eventsData = result.eventsData;
+  venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
-  
+
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
@@ -1446,7 +1627,9 @@ function refreshEventsData() {
     document.getElementById("festivalSelect").value = festivalId;
     displayFestival(festivalId);
     setTimeout(() => {
-      document.getElementById("festivalContent").scrollIntoView({ behavior: "smooth", block: "start" });
+      document
+        .getElementById("festivalContent")
+        .scrollIntoView({ behavior: "smooth", block: "start" });
     }, 300);
   }
 })();

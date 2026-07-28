@@ -214,7 +214,7 @@ function parseSchedule(schedule, startDate, endDate) {
 
     return results;
   }
-  
+
   // Handle specific dates (DD/MM/YYYY)
   if (schedule.includes("/")) {
     const [day, month, year] = schedule
@@ -1433,7 +1433,7 @@ function createEventHeader(event) {
     weBadge.className = "event-badge event-wider-event-badge";
     weBadge.title = `Part of ${fest?.name || event.wider_event}`;
     weBadge.textContent = `🎪 ${label}`;
-    weBadge.addEventListener("click", e => e.stopPropagation());
+    weBadge.addEventListener("click", (e) => e.stopPropagation());
     header.appendChild(weBadge);
   }
 
@@ -1519,7 +1519,8 @@ function createPerformerSection(event) {
         clubLink.href = `new_troubadours_storyclub.html?club=${encodeURIComponent(event.club)}`;
         clubLink.title = `View ${event.club} club page`;
         clubLink.className = "event-club-link";
-        clubLink.style.cssText = "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,0.6);";
+        clubLink.style.cssText =
+          "color:inherit;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,0.6);";
         clubLink.textContent = event.club;
         clubLink.addEventListener("click", (e) => e.stopPropagation());
         performerDiv.appendChild(clubLink);
@@ -1756,8 +1757,14 @@ function getExpandableContent(event) {
 }
 
 function createExpandableSection(event) {
-  const { hasDescription, hasFlyers, hasVideo, description, flyers, videoEmbedUrl } =
-    getExpandableContent(event);
+  const {
+    hasDescription,
+    hasFlyers,
+    hasVideo,
+    description,
+    flyers,
+    videoEmbedUrl,
+  } = getExpandableContent(event);
 
   // Check if performer has a bio
   const performer_id = event.performer_id;
@@ -2407,7 +2414,8 @@ async function searchAllUpcoming() {
       if (buildTourSearchText(tour, tourDate).includes(searchTerm)) {
         const expanded = expandDatetimes(tourDate);
         for (const { flatEvent: flatTourDate, date: eventDate } of expanded) {
-          if (!eventDate || eventDate < today || eventDate > futureDate) continue;
+          if (!eventDate || eventDate < today || eventDate > futureDate)
+            continue;
           const mergedEvent = buildTourMergedEvent(tour, tourKey, flatTourDate);
           const eventData = createEventData(mergedEvent, eventDate, eventType);
           allEventsData.push(eventData);
@@ -2427,7 +2435,8 @@ async function searchAllUpcoming() {
       if (buildShowSearchText(show, showDate).includes(searchTerm)) {
         const expanded = expandDatetimes(showDate);
         for (const { flatEvent: flatShowDate, date: eventDate } of expanded) {
-          if (!eventDate || eventDate < today || eventDate > futureDate) continue;
+          if (!eventDate || eventDate < today || eventDate > futureDate)
+            continue;
           const mergedEvent = buildShowMergedEvent(show, showKey, flatShowDate);
           const eventData = createEventData(mergedEvent, eventDate, eventType);
           allEventsData.push(eventData);
@@ -2453,7 +2462,9 @@ async function searchAllUpcoming() {
       .map((p) => performersLookup[p.performer_id]?.name || "")
       .join(" ");
     const scheduleText = (fest.schedule || [])
-      .map((item) => `${item.name || item.showname || ""} ${item.performer || ""}`)
+      .map(
+        (item) => `${item.name || item.showname || ""} ${item.performer || ""}`,
+      )
       .join(" ");
     const festSearchText =
       `${fest.name} ${fest.short_name || ""} ${performerNames} ${venue.name || ""} ${venue.full_address || ""} ${scheduleText}`.toLowerCase();
@@ -2733,8 +2744,7 @@ function getEventURLParams() {
   const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
   const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
   // If none are selected, default storyclubs and special to true
-  const noneSelected =
-    !storyclubs && !special && !music && !folk && !sessions;
+  const noneSelected = !storyclubs && !special && !music && !folk && !sessions;
 
   return {
     // A bare "?q=..." link (no start param) has no date range of its own —
@@ -2824,7 +2834,7 @@ function refreshEventsData() {
   toursLookup = result.toursLookup;
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
-  
+
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 

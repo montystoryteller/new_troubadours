@@ -82,7 +82,10 @@ function populatePerformerDropdown() {
 
   Object.values(toursLookup).forEach((tour) => {
     if (tour.performer_id && performersLookup[tour.performer_id]) {
-      const { id, record } = resolvePerformerDisplay(tour.performer_id, performersLookup);
+      const { id, record } = resolvePerformerDisplay(
+        tour.performer_id,
+        performersLookup,
+      );
       if (record) performersWithTours.set(id, record.name);
     }
   });
@@ -735,19 +738,21 @@ function updateMapView() {
   if (!currentTour.tour_dates || currentTour.tour_dates.length === 0) return;
 
   const bounds = map.getBounds();
-  const visibleTourDates = expandTourDates(currentTour.tour_dates).filter((tourDate) => {
-    if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
-      const venue = venuesLookup[tourDate.venue_id];
-      if (
-        venue.latlon &&
-        Array.isArray(venue.latlon) &&
-        venue.latlon.length === 2
-      ) {
-        return bounds.contains([venue.latlon[0], venue.latlon[1]]);
+  const visibleTourDates = expandTourDates(currentTour.tour_dates).filter(
+    (tourDate) => {
+      if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
+        const venue = venuesLookup[tourDate.venue_id];
+        if (
+          venue.latlon &&
+          Array.isArray(venue.latlon) &&
+          venue.latlon.length === 2
+        ) {
+          return bounds.contains([venue.latlon[0], venue.latlon[1]]);
+        }
       }
-    }
-    return false;
-  });
+      return false;
+    },
+  );
 
   const totalTourDates = expandTourDates(currentTour.tour_dates).length;
   console.log(
@@ -886,7 +891,10 @@ function tourAllDates(tour) {
  * @param {string}   badgeText  e.g. "3 dates remaining" or "4 dates"
  */
 function buildTouringCard(tourId, tour, allDates, badgeText) {
-  const { record: performer } = resolvePerformerDisplay(tour.performer_id, performersLookup);
+  const { record: performer } = resolvePerformerDisplay(
+    tour.performer_id,
+    performersLookup,
+  );
 
   const card = document.createElement("div");
   card.className = "now-touring-card";
@@ -1146,7 +1154,7 @@ function refreshEventsData() {
   toursLookup = result.toursLookup;
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
-  
+
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
