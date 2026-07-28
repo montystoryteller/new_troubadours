@@ -553,7 +553,7 @@ async function loadEventsData(cacheBuster) {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         try {
-          const { data } = JSON.parse(cached);
+          const { timestamp, data } = JSON.parse(cached);
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
           console.log(`✓ Loaded events data from cache`);
@@ -564,7 +564,7 @@ async function loadEventsData(cacheBuster) {
           // Check for newer data on the server in the background (doesn't block)
           checkForNewerEventsDataBackground();
 
-          return { eventsData, venuesLookup, performersLookup, toursLookup };
+          return { eventsData, venuesLookup, performersLookup, toursLookup, lastUpdateTime: timestamp };
         } catch (e) {
           console.warn(
             "Failed to parse cached events data, fetching fresh copy",
@@ -613,7 +613,7 @@ async function loadEventsData(cacheBuster) {
     console.log(`  - ${Object.keys(performersLookup).length} performers`);
     console.log(`  - ${Object.keys(toursLookup).length} tours`);
 
-    return { eventsData, venuesLookup, performersLookup, toursLookup };
+    return { eventsData, venuesLookup, performersLookup, toursLookup, lastUpdateTime: Date.now() };
   } catch (error) {
     console.error("Error loading events:", error);
     return null;
@@ -1222,4 +1222,66 @@ function initNavFeedback() {
       document.body.classList.add("nav-loading");
     });
   });
+}
+
+// ---------------------------------------------------------------------------
+// Data update display
+// ---------------------------------------------------------------------------
+
+/**
+ * Format a timestamp into a human-readable "last updated" string.
+ * Examples: "Today at 2:30 PM", "Yesterday at 11:15 AM", "Jan 15 at 3:45 PM"
+ * @param {number} timestamp - Unix timestamp in milliseconds
+ * @returns {string}
+ */
+function formatLastUpdateTime(timestamp) {
+  if (!timestamp) return "Unknown";
+
+  const date = new Date(timestamp);
+  const now = new Date();
+
+  // Check if it's today
+  const isToday =
+    date.toDateString() === now.toDateString();
+
+  // Check if it's yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday =
+    date.toDateString() === yesterday.toDateString();
+
+  // Format time part (e.g., "2:30 PM")
+  const timeStr = date.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    meridiem: "short",
+  });
+
+  if (isToday) {
+    return `Today at ${timeStr}`;
+  } else if (isYesterday) {
+    return `Yesterday at ${timeStr}`;
+  } else {
+    // Format as "Jan 15 at 3:45 PM"
+    const dateStr = date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    return `${dateStr} at ${timeStr}`;
+  }
+}
+
+/**
+ * Update the colophon to show when data was last updated.
+ * Looks for an element with id "dataLastUpdated" and fills it with formatted time.
+ * @param {number} lastUpdateTime - Unix timestamp in milliseconds
+ */
+function displayDataLastUpdated(lastUpdateTime) {
+  if (!lastUpdateTime) return;
+
+  const el = document.getElementById("dataLastUpdated");
+  if (!el) return;
+
+  const formatted = formatLastUpdateTime(lastUpdateTime);
+  el.textContent = `Data last updated: ${formatted}`;
 }

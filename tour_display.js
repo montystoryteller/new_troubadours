@@ -1146,6 +1146,9 @@ function refreshEventsData() {
   toursLookup = result.toursLookup;
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
+  
+  // Display when data was last updated
+  displayDataLastUpdated(result.lastUpdateTime);
 
   console.log("Events data loaded successfully");
   console.log("Tours:", Object.keys(toursLookup).length);

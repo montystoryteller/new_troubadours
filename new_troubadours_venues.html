@@ -98,6 +98,7 @@
         <p><em>Hacked together by Tony Hirst in conversation with <code></code>Claude.ai</code>.</em></p>
         <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
         </p>
+        <p id="dataLastUpdated"><em></em></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -464,6 +465,7 @@
                 await loadEventsData().then(loaded => {
                     if (!loaded) return showNotFound();
                     venuesLookup = loaded.venuesLookup;
+                    displayDataLastUpdated(loaded.lastUpdateTime);
                     renderAllVenues();
                     document.getElementById("loadingState").style.display = "none";
                     document.getElementById("venueContent").style.display = "";
@@ -477,6 +479,7 @@
             eventsData = loaded.eventsData;
             venuesLookup = loaded.venuesLookup;
             performersLookup = loaded.performersLookup;
+            displayDataLastUpdated(loaded.lastUpdateTime);
             toursLookup = loaded.toursLookup;
 
             venue = venuesLookup[venueId];

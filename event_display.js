@@ -2824,6 +2824,9 @@ function refreshEventsData() {
   toursLookup = result.toursLookup;
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
+  
+  // Display when data was last updated
+  displayDataLastUpdated(result.lastUpdateTime);
 
   // Log event-guide-specific counts
   console.log(`  - ${eventsData.events?.length || 0} recurring events`);

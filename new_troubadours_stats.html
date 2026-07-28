@@ -658,6 +658,7 @@
         <p>Hacked together by Tony Hirst in conversation with <code>Claude.ai</code>. For corrections: <code>montystoryteller
                 AT gmail
                 DOT com</code></p>
+        <p id="dataLastUpdated"><em></em></p>
     </div>
 
     <script>
@@ -1107,6 +1108,9 @@
             const venues = result.venuesLookup;
             const performers = result.performersLookup;
             const tours = result.toursLookup;
+            
+            // Display when data was last updated
+            displayDataLastUpdated(result.lastUpdateTime);
             const tourShows = data.repertoire_shows || {};
             const specific = data.specificEvents || [];
             const music = data.musicEvents || [];

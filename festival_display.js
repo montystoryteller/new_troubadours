@@ -1433,6 +1433,9 @@ function refreshEventsData() {
   eventsData       = result.eventsData;
   venuesLookup     = result.venuesLookup;
   performersLookup = result.performersLookup;
+  
+  // Display when data was last updated
+  displayDataLastUpdated(result.lastUpdateTime);
 
   map = initMap("map", () => {});
 
