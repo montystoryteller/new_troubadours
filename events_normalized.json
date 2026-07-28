@@ -6425,7 +6425,7 @@
       "isSpecial": true,
       "date_added": "18/06/2026",
       "venue_id": "cambridge-junction",
-      "performer_ids": ["taletta-bierens", "wendy-dacre", "sarah-hurley","peter-stevenson"]
+      "performer_ids": ["taletta-bierens", "wendy-dacre", "sara-hurley","peter-stevenson"]
     },
     {
       "name": "Fringe Theatrefest — Herd [Suited Storytellers]",
@@ -6944,6 +6944,18 @@
       "venue_id": "aberavon-beach",
       "performer_id": "owen-staton",
       "date_added": "24/07/2026"
+    },
+    {
+      "name": "Chasing Crockern (Sidmouth Folk Festival) [Lisa Schneidau & Sara Hurley]",
+      "showname": "Chasing Crockern",
+      "date": "05/08/2026",
+      "venue_id": "manor-pavilion-theatre-sidmouth",
+      "performer_ids": ["lisa-schneidau", "sara-hurley"],
+      "date_added": "28/07/2026",
+      "time": "3-5pm",
+      "description": "Storytelling for adults is blended with the sounds and voices of Dartmoor to bring Devon's rich folklore vividly to life for modern audiences. Guided by storytellers Sara Hurley and Lisa Schneidau, you'll hear ancient creation myths and medieval legends, folktales, and everyday adventures in a show that blurs the boundaries between folklore and reality. Whether the moor feels like home or remains a landscape of mystery, Chasing Crockern invites you to discover its enduring magic.\n\n\n\nIncluded in All-in-One Week, All-in-One Weekend, Week Season and Wednesday Day Season tickets. Limited advance event tickets available.\n\n\n\n25 & Under tickets tickets are £10 (limited number). Children (0-11) are free.",
+      "ticket_url": "https://tickets.sidmouthfolkfestival.co.uk/events/sidmouthfolkweekproductionsltd/2263960",
+      "isSpecial": true
     },
     {
       "name": "TBA [Tim Ralphs]",
@@ -9073,6 +9085,18 @@
       "latlon": [
         51.54801,
         -0.13884
+      ]
+    },
+    "manor-pavilion-theatre-sidmouth": {
+      "id": "manor-pavilion-theatre-sidmouth",
+      "name": "Manor Pavilion Theatre, Sidmouth",
+      "city": "Sidmouth",
+      "postcode": "EX10 8RP",
+      "full_address": "Manor Pavilion Theatre, Manor Rd, Sidmouth,  EX10 8RP",
+      "url": "https://manorpavilion.com/",
+      "latlon": [
+        50.6797,
+        -3.24252
       ]
     },
     "the-story-museum-oxford": {
@@ -12097,10 +12121,10 @@
       "url": "",
       "bio": ""
     },
-    "sarah-hurley": {
-      "id": "sarah-hurley",
-      "name": "Sarah Hurley",
-      "url": "",
+    "sara-hurley": {
+      "id": "sara-hurley",
+      "name": "Sara Hurley",
+      "url": "https://www.facebook.com/sara.hurley1/",
       "bio": ""
     },
     "harriet-grindley": {
@@ -12188,6 +12212,12 @@
       "id": "joshua-crisp",
       "name": "Joshua Crisp",
       "bio": "Storyteller and host of Ropetackle Storytellers"
+    },
+    "kirsty-hartsiotis": {
+      "id": "kirsty-hartsiotis",
+      "name": "Kirsty Hartsiotis",
+      "url": "https://www.kirstyhartsiotis.com/",
+      "bio": "has a repertoire of stories from around the world and from the dawn of time to the present day. She specialises in telling English, Celtic and Greek stories, as well as stories drawn from history. She was the co-founder of Stroud Story Cabaret in 2011, which hosted storytellers and musicians such as Vergine Gulbenkian, Jane Flood and Matt Sage, ran the Stroud Story Circle and currently runs Fire Springs and Friends, a monthly email roundup of the best local storytelling and spoken word events. She's committed to using storytelling as a way to bring the past alive in museums and has told stories, and presented gallery talks and tours, in a diverse range of heritage venues."
     },
     "shonaleigh": {
       "id": "shonaleigh",
