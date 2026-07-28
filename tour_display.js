@@ -1169,17 +1169,20 @@ function refreshEventsData() {
   map = initMap("map", updateMapView);
   console.log("Map initialized");
 
-  populatePerformerDropdown();
-  console.log("Performer dropdown populated");
+  // Defer heavy rendering to background to allow loading state to display
+  setTimeout(() => {
+    populatePerformerDropdown();
+    console.log("Performer dropdown populated");
 
-  renderNowTouringPanel();
-  console.log("Now Touring panel rendered");
+    renderNowTouringPanel();
+    console.log("Now Touring panel rendered");
 
-  renderUpcomingToursPanel();
-  console.log("Upcoming Tours panel rendered");
+    renderUpcomingToursPanel();
+    console.log("Upcoming Tours panel rendered");
 
-  renderPastToursPanel();
-  console.log("Past Tours panel rendered");
+    renderPastToursPanel();
+    console.log("Past Tours panel rendered");
+  }, 0);
 
   // If URL has tour/performer params, load them.
   // When only ?tour= is supplied (no performer=), derive the performer from

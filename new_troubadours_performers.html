@@ -838,9 +838,12 @@
                     performersLookup = loaded.performersLookup;
                     displayDataLastUpdated(loaded.lastUpdateTime);
                     initNavFeedback();
-                    renderAllPerformers();
-                    document.getElementById("loadingState").style.display = "none";
-                    document.getElementById("performerContent").style.display = "";
+                    // Defer heavy rendering to background to allow loading state to display
+                    setTimeout(() => {
+                        renderAllPerformers();
+                        document.getElementById("loadingState").style.display = "none";
+                        document.getElementById("performerContent").style.display = "";
+                    }, 0);
                 });
                 return;
             }
@@ -858,9 +861,12 @@
             performer = performersLookup[performerId];
             if (!performer) { showNotFound(); return; }
 
-            renderPerformer();
-            document.getElementById("loadingState").style.display = "none";
-            document.getElementById("performerContent").style.display = "";
+            // Defer heavy rendering to background to allow loading state to display
+            setTimeout(() => {
+                renderPerformer();
+                document.getElementById("loadingState").style.display = "none";
+                document.getElementById("performerContent").style.display = "";
+            }, 0);
 
             // ── Jump-to-performer search in the page header ────────────────
             const jumpWrap = document.getElementById("perfJumpWrap");

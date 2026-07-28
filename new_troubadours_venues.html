@@ -467,9 +467,12 @@
                     venuesLookup = loaded.venuesLookup;
                     displayDataLastUpdated(loaded.lastUpdateTime);
                     initNavFeedback();
-                    renderAllVenues();
-                    document.getElementById("loadingState").style.display = "none";
-                    document.getElementById("venueContent").style.display = "";
+                    // Defer heavy rendering to background to allow loading state to display
+                    setTimeout(() => {
+                        renderAllVenues();
+                        document.getElementById("loadingState").style.display = "none";
+                        document.getElementById("venueContent").style.display = "";
+                    }, 0);
                 });
                 return;
             }
@@ -487,11 +490,14 @@
             venue = venuesLookup[venueId];
             if (!venue) { showNotFound(); return; }
 
-            renderVenue();
-            document.getElementById("loadingState").style.display = "none";
-            document.getElementById("venueContent").style.display = "";
-            // Leaflet needs the container to be visible before it can measure dimensions
-            if (map) setTimeout(() => map.invalidateSize(), 0);
+            // Defer heavy rendering to background to allow loading state to display
+            setTimeout(() => {
+                renderVenue();
+                document.getElementById("loadingState").style.display = "none";
+                document.getElementById("venueContent").style.display = "";
+                // Leaflet needs the container to be visible before it can measure dimensions
+                if (map) setTimeout(() => map.invalidateSize(), 0);
+            }, 0);
         });
 
         // ---------------------------------------------------------------------------

@@ -1623,16 +1623,19 @@ function refreshEventsData() {
 
   map = initMap("map", () => {});
 
-  populateFestivalDropdown();
-  renderFestivalPanels();
+  // Defer heavy rendering to background to allow loading state to display
+  setTimeout(() => {
+    populateFestivalDropdown();
+    renderFestivalPanels();
 
-  if (festivalId) {
-    document.getElementById("festivalSelect").value = festivalId;
-    displayFestival(festivalId);
-    setTimeout(() => {
-      document
-        .getElementById("festivalContent")
-        .scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 300);
-  }
+    if (festivalId) {
+      document.getElementById("festivalSelect").value = festivalId;
+      displayFestival(festivalId);
+      setTimeout(() => {
+        document
+          .getElementById("festivalContent")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, 0);
 })();
