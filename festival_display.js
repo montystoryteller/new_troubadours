@@ -1444,6 +1444,9 @@ function renderFestivalPanel(bodyId, wrapperId, entries, hideClass) {
     return;
   }
 
+  // Clear loading message before appending content
+  body.innerHTML = "";
+
   const grid = document.createElement("div");
   grid.className = "festival-cards-grid";
   entries.forEach(([id, f]) => grid.appendChild(buildFestivalCard(id, f)));

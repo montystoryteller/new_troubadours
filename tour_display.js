@@ -1043,6 +1043,9 @@ function renderTouringPanel(status, bodyId, wrapperId, hideClass, badgeFn) {
     return;
   }
 
+  // Clear loading message before appending content
+  container.innerHTML = "";
+
   buildTouringRow(
     tours.filter(([_, t]) => !t.isMusic),
     "📖 Stories & Spoken Word",
