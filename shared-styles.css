@@ -96,6 +96,16 @@ h2 {
   }
 }
 
+/* Navigation feedback for page transitions */
+.site-nav a.nav-link-pending {
+  opacity: 0.6;
+}
+
+body.nav-loading {
+  opacity: 0.85;
+  transition: opacity 0.1s ease-out;
+}
+
 /* =============================================================
    2. BUTTONS
    ============================================================= */

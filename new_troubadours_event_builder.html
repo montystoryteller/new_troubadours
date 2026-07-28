@@ -228,11 +228,16 @@
             font-size: 0.85em;
         }
 
-        .price-tier-row .pt-label { width: 160px; }
+        .price-tier-row .pt-label {
+            width: 160px;
+        }
+
         .price-tier-row .pt-amount,
         .price-tier-row .pt-min,
         .price-tier-row .pt-max,
-        .price-tier-row .pt-fee-amount { width: 82px; }
+        .price-tier-row .pt-fee-amount {
+            width: 82px;
+        }
 
         .price-tier-row select {
             padding: 5px 4px;
@@ -296,8 +301,15 @@
             font-size: 0.85em;
         }
 
-        .price-fee-row input[type="number"] { width: 82px; }
-        .price-fee-row input[type="text"] { flex: 1; min-width: 160px; }
+        .price-fee-row input[type="number"] {
+            width: 82px;
+        }
+
+        .price-fee-row input[type="text"] {
+            flex: 1;
+            min-width: 160px;
+        }
+
         .price-fee-row input,
         .price-fee-row .pb-fee-label {
             padding: 5px 7px;
@@ -306,6 +318,7 @@
             font-family: inherit;
             font-size: 1em;
         }
+
         .price-fee-row .pb-fee-label {
             border: none;
             padding: 0;
@@ -319,7 +332,9 @@
             align-items: center;
         }
 
-        .latlon-row input { flex: 1; }
+        .latlon-row input {
+            flex: 1;
+        }
 
         .btn-geocode {
             appearance: none;
@@ -334,8 +349,14 @@
             white-space: nowrap;
         }
 
-        .btn-geocode:hover { background: #c8e6c9; }
-        .btn-geocode:disabled { opacity: 0.6; cursor: default; }
+        .btn-geocode:hover {
+            background: #c8e6c9;
+        }
+
+        .btn-geocode:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
 
         .geocode-status {
             font-size: 0.8em;
@@ -343,9 +364,17 @@
             min-height: 1.2em;
         }
 
-        .geocode-status a { color: inherit; }
-        .geocode-status-ok { color: #2e7d32; }
-        .geocode-status-error { color: #c62828; }
+        .geocode-status a {
+            color: inherit;
+        }
+
+        .geocode-status-ok {
+            color: #2e7d32;
+        }
+
+        .geocode-status-error {
+            color: #c62828;
+        }
 
         .geocode-preview-map {
             width: 100%;
@@ -674,9 +703,9 @@
         <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
         <a href="new_troubadours_performers.html">🎤 Performers</a>
         <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_festival.html">🎪 Festivals</a>
         <a href="new_troubadours_flyers.html">📋 Flyers</a>
         <a href="new_troubadours_stats.html">📊 Stats</a>
-        <a href="new_troubadours_event_builder.html" aria-current="page">🛠️ Event Builder</a>
     </nav>
 
     <div class="builder-wrap">
@@ -699,7 +728,8 @@
         <div class="batch-summary">
             <h3>Batch (not yet exported)</h3>
             <ul class="batch-list" id="batchList"></ul>
-            <p class="batch-empty" id="batchEmptyMsg">Nothing added yet — fill in a form below and click "Add to batch".</p>
+            <p class="batch-empty" id="batchEmptyMsg">Nothing added yet — fill in a form below and click "Add to batch".
+            </p>
         </div>
 
         <!-- ── Specific / Music event panel ───────────────────── -->
@@ -718,7 +748,8 @@
                 <label>Show name</label>
                 <div>
                     <input type="text" id="ev-showname" placeholder="e.g. A Figure of Speech">
-                    <div class="field-hint">The "name" field is built automatically as "Showname [Performer]" unless you override it below.</div>
+                    <div class="field-hint">The "name" field is built automatically as "Showname [Performer]" unless you
+                        override it below.</div>
                 </div>
             </div>
 
@@ -740,7 +771,8 @@
             <div class="field-row">
                 <label>Date(s)</label>
                 <div>
-                    <input type="text" id="ev-date" placeholder="DD/MM/YYYY, or several comma-separated for a multi-night run">
+                    <input type="text" id="ev-date"
+                        placeholder="DD/MM/YYYY, or several comma-separated for a multi-night run">
                     <div class="field-hint">e.g. <code>15/10/2025</code> or <code>15/10/2025, 16/10/2025</code></div>
                 </div>
             </div>
@@ -749,7 +781,8 @@
                 <label>Date added</label>
                 <div>
                     <input type="text" id="ev-date-added" placeholder="DD/MM/YYYY">
-                    <label style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
+                    <label
+                        style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
                         <input type="checkbox" id="ev-date-added-today"> Set to today
                     </label>
                 </div>
@@ -763,7 +796,8 @@
             <div class="field-row">
                 <label>Club</label>
                 <div>
-                    <input type="text" id="ev-club" list="clubOptions" placeholder="Existing club id, if this is a guest spot at a club night">
+                    <input type="text" id="ev-club" list="clubOptions"
+                        placeholder="Existing club id, if this is a guest spot at a club night">
                     <div class="field-hint">Leave blank for a standalone show with no club night.</div>
                 </div>
             </div>
@@ -773,9 +807,12 @@
                 <div>
                     <div class="price-input-row">
                         <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
-                        <button type="button" class="entity-details-toggle" id="ev-price-breakdown-toggle">+ structured pricing</button>
+                        <button type="button" class="entity-details-toggle" id="ev-price-breakdown-toggle">+ structured
+                            pricing</button>
                     </div>
-                    <div class="field-hint">Structured pricing is optional and additive — the plain text price above is still what gets saved as `price`; this just also fills in `price_breakdown` alongside it. See events-schema-costings.md for the rationale.</div>
+                    <div class="field-hint">Structured pricing is optional and additive — the plain text price above is
+                        still what gets saved as `price`; this just also fills in `price_breakdown` alongside it. See
+                        events-schema-costings.md for the rationale.</div>
                     <div id="ev-price-breakdown-field" style="display:none;"></div>
                 </div>
             </div>
@@ -855,7 +892,8 @@
                 <label>Headline flyer</label>
                 <div>
                     <input type="text" id="tour-flyer" placeholder="filename.jpg">
-                    <div class="field-hint">touring_event_flyer — one flyer representing the whole tour, not repeated per date.</div>
+                    <div class="field-hint">touring_event_flyer — one flyer representing the whole tour, not repeated
+                        per date.</div>
                 </div>
             </div>
 
@@ -873,7 +911,8 @@
 
             <h3>Tour dates</h3>
             <div class="date-rows" id="tour-date-rows"></div>
-            <button type="button" class="add-date-btn" onclick="addTourDateRow()" style="margin-top:10px;">Add date</button>
+            <button type="button" class="add-date-btn" onclick="addTourDateRow()" style="margin-top:10px;">Add
+                date</button>
 
             <div class="btn-row">
                 <button class="btn-add-batch" onclick="addTourToBatch()">Add to batch</button>
@@ -930,7 +969,8 @@
 
             <h3>Show dates</h3>
             <div class="date-rows" id="show-date-rows"></div>
-            <button type="button" class="add-date-btn" onclick="addShowDateRow()" style="margin-top:10px;">Add date</button>
+            <button type="button" class="add-date-btn" onclick="addShowDateRow()" style="margin-top:10px;">Add
+                date</button>
 
             <div class="btn-row">
                 <button class="btn-add-batch" onclick="addShowToBatch()">Add to batch</button>
@@ -941,12 +981,14 @@
         <!-- ── New performer panel ──────────────────────────────── -->
         <div class="panel" id="panel-performer" style="display:none;">
             <h2>New Performer</h2>
-            <p class="field-hint">Adds straight to the batch as a standalone performer record — no event/tour/show needed.</p>
+            <p class="field-hint">Adds straight to the batch as a standalone performer record — no event/tour/show
+                needed.</p>
 
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="perf-name" list="performerOptions" placeholder="e.g. Daniel Morden" autocomplete="off">
+                    <input type="text" id="perf-name" list="performerOptions" placeholder="e.g. Daniel Morden"
+                        autocomplete="off">
                     <div id="perf-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -985,13 +1027,15 @@
                 <label>Flags</label>
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="perf-musician"> Musician</label>
-                    <label><input type="checkbox" id="perf-troupe"> Troupe / group (overrides Type, above, with "troupe")</label>
+                    <label><input type="checkbox" id="perf-troupe"> Troupe / group (overrides Type, above, with
+                        "troupe")</label>
                 </div>
             </div>
 
             <div class="field-row">
                 <label></label>
-                <div class="field-hint">Members aren't set here — they're added via the "Combined/troupe billing name" option on the Performer field when you build a tour/show/event featuring this group.</div>
+                <div class="field-hint">Members aren't set here — they're added via the "Combined/troupe billing name"
+                    option on the Performer field when you build a tour/show/event featuring this group.</div>
             </div>
 
             <div class="btn-row">
@@ -1003,7 +1047,8 @@
         <!-- ── New venue panel ──────────────────────────────────── -->
         <div class="panel" id="panel-venue" style="display:none;">
             <h2>New Venue</h2>
-            <p class="field-hint">Adds straight to the batch as a standalone venue record — no event/tour/show needed.</p>
+            <p class="field-hint">Adds straight to the batch as a standalone venue record — no event/tour/show needed.
+            </p>
 
             <div class="field-row">
                 <label>Name</label>
@@ -1050,7 +1095,8 @@
                 <div>
                     <div class="latlon-row">
                         <input type="text" id="venue-latlon" placeholder="e.g. 51.5, -0.12 (optional)">
-                        <button type="button" class="btn-geocode" id="venue-geocode-btn">📍 Geocode from address</button>
+                        <button type="button" class="btn-geocode" id="venue-geocode-btn">📍 Geocode from
+                            address</button>
                     </div>
                     <div class="geocode-status" id="venue-geocode-status"></div>
                     <div class="geocode-preview-map" id="venue-geocode-map" style="display:none;"></div>
@@ -1081,7 +1127,8 @@
             </div>
 
             <div class="btn-row">
-                <button class="btn-secondary-action" id="enrich-download-all-btn" disabled>⬇️ Download full enriched JSON</button>
+                <button class="btn-secondary-action" id="enrich-download-all-btn" disabled>⬇️ Download full enriched
+                    JSON</button>
             </div>
             <div class="field-hint">
                 Enabled once you've applied at least one accepted suggestion below. Downloads the entire loaded
@@ -1105,11 +1152,13 @@
 
             <div class="enrich-section">
                 <h3>📮 Missing postcodes</h3>
-                <p class="field-hint">Scans venues that have a full address but no postcode, and tries to extract one from the address text.</p>
+                <p class="field-hint">Scans venues that have a full address but no postcode, and tries to extract one
+                    from the address text.</p>
                 <button class="btn-add-batch" id="enrich-postcode-scan-btn" disabled>Scan for missing postcodes</button>
                 <div id="enrich-postcode-results"></div>
                 <div class="btn-row" id="enrich-postcode-actions" style="display:none;">
-                    <button class="btn-secondary-action" id="enrich-postcode-generate-btn">Generate patch from checked rows</button>
+                    <button class="btn-secondary-action" id="enrich-postcode-generate-btn">Generate patch from checked
+                        rows</button>
                 </div>
                 <textarea id="enrich-postcode-output" readonly style="display:none;"></textarea>
                 <div class="btn-row" id="enrich-postcode-output-actions" style="display:none;">
@@ -1137,7 +1186,8 @@
                 Copy the relevant section(s) into <code>events_normalized.json</code>: merge
                 <code>newPerformers</code> into <code>performers</code>, <code>newVenues</code> into
                 <code>venues</code>, then merge each record into its matching top-level array/object
-                (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>, <code>repertoire_shows</code>).
+                (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
+                <code>repertoire_shows</code>).
             </div>
             <div class="output-actions">
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
@@ -1145,7 +1195,8 @@
                 <button onclick="downloadOutput()" class="btn-secondary-action">Download .json</button>
                 <button onclick="clearOutput()" class="btn-clear-form">Clear</button>
             </div>
-            <textarea id="outputArea" readonly placeholder="Click &quot;Generate from batch&quot; once you've added one or more records above…"></textarea>
+            <textarea id="outputArea" readonly
+                placeholder="Click &quot;Generate from batch&quot; once you've added one or more records above…"></textarea>
         </div>
     </div>
 
@@ -2333,130 +2384,130 @@
         // draft: true, and anything it can't confidently make sense of (long,
         // multi-clause pricing — festival weekend deals, deposits, etc.) is
         // deliberately left alone rather than force-fit into structure.
-function parsePriceString(raw) {
-    if (!raw) return null;
-    const text = raw.trim();
-    if (!text) return null;
+        function parsePriceString(raw) {
+            if (!raw) return null;
+            const text = raw.trim();
+            if (!text) return null;
 
-    if (text.length > 100 || /\b(deposit|non-refundable|weekend|camping)\b/i.test(text) || /before \d|after \d/i.test(text)) {
-        return null;
-    }
-
-    const lower = text.toLowerCase();
-    let working = text;
-    let bookingFee = null;
-
-    const feeAmountMatch = working.match(/\(?\s*\+\s*£?\s*(\d+(?:\.\d{1,2})?)\s*(?:booking fee)?\)?/i);
-    if (feeAmountMatch) {
-        bookingFee = { amount: parseFloat(feeAmountMatch[1]) };
-        working = working.replace(feeAmountMatch[0], " ");
-    } else if (/booking fee/i.test(working)) {
-        bookingFee = { note: "Booking fee mentioned; amount not stated." };
-        working = working.replace(/booking fee/i, " ");
-    }
-
-    function splitOutsideBrackets(str, re) {
-        const parts = [];
-        let depth = 0, current = "";
-        for (let i = 0; i < str.length; i++) {
-            const ch = str[i];
-            if (ch === "(" || ch === "[") depth++;
-            if (ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
-            if (depth === 0 && re.test(ch)) {
-                parts.push(current);
-                current = "";
-            } else {
-                current += ch;
+            if (text.length > 100 || /\b(deposit|non-refundable|weekend|camping)\b/i.test(text) || /before \d|after \d/i.test(text)) {
+                return null;
             }
+
+            const lower = text.toLowerCase();
+            let working = text;
+            let bookingFee = null;
+
+            const feeAmountMatch = working.match(/\(?\s*\+\s*£?\s*(\d+(?:\.\d{1,2})?)\s*(?:booking fee)?\)?/i);
+            if (feeAmountMatch) {
+                bookingFee = { amount: parseFloat(feeAmountMatch[1]) };
+                working = working.replace(feeAmountMatch[0], " ");
+            } else if (/booking fee/i.test(working)) {
+                bookingFee = { note: "Booking fee mentioned; amount not stated." };
+                working = working.replace(/booking fee/i, " ");
+            }
+
+            function splitOutsideBrackets(str, re) {
+                const parts = [];
+                let depth = 0, current = "";
+                for (let i = 0; i < str.length; i++) {
+                    const ch = str[i];
+                    if (ch === "(" || ch === "[") depth++;
+                    if (ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
+                    if (depth === 0 && re.test(ch)) {
+                        parts.push(current);
+                        current = "";
+                    } else {
+                        current += ch;
+                    }
+                }
+                parts.push(current);
+                return parts;
+            }
+
+            function finalize(tiers) {
+                if (!tiers.length && !bookingFee) return null;
+                const out = { draft: true };
+                if (tiers.length) out.tiers = tiers;
+                if (bookingFee) out.booking_fee = bookingFee;
+                return out;
+            }
+
+            // Pay-what-you-want
+            if (/pay[\s-]?(?:as[\s-]?you|what you)[\s-]?(?:like|want|can|feel|decide)/i.test(lower)) {
+                const minMatch = working.match(/min(?:imum)?\.?\s*£?\s*(\d+(?:\.\d{1,2})?)/i);
+                const tier = { label: "pay what you like", is_pay_what_you_want: true };
+                if (minMatch) tier.min_amount = parseFloat(minMatch[1]);
+                return finalize([tier]);
+            }
+
+            // Free / bare donations (anchored to start so "...go free" mid-sentence doesn't false-trigger)
+            const looksFree = /^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text) || /^donations?$/i.test(text);
+            if (looksFree) {
+                const tiers = [];
+                if (/\bfree\b/i.test(text) && (/^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text))) tiers.push({ label: "free", amount: 0 });
+                const donationMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*suggested donation/i);
+                if (donationMatch) tiers.push({ label: "suggested donation", amount: parseFloat(donationMatch[1]), is_donation: true });
+                if (!tiers.length) tiers.push({ label: "donation", is_donation: true });
+                return finalize(tiers);
+            }
+
+            // Suggested donation (without "free")
+            const suggestedMatch = working.match(/suggested\s*(?:donation)?:?\s*£?\s*(\d+(?:\.\d{1,2})?)(?:\s*-\s*£?\s*(\d+(?:\.\d{1,2})?))?/i);
+            if (suggestedMatch) {
+                const tier = { label: "suggested donation", is_donation: true };
+                if (suggestedMatch[2]) {
+                    tier.min_amount = parseFloat(suggestedMatch[1]);
+                    tier.max_amount = parseFloat(suggestedMatch[2]);
+                } else {
+                    tier.amount = parseFloat(suggestedMatch[1]);
+                }
+                return finalize([tier]);
+            }
+
+            // Plain range, no other qualifiers
+            const rangeMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*-\s*£?\s*(\d+(?:\.\d{1,2})?)\b/);
+            if (rangeMatch && !/advance|\badv\b|door|zoom|online|concession|\bconc\b/i.test(lower)) {
+                return finalize([{ label: "standard", min_amount: parseFloat(rangeMatch[1]), max_amount: parseFloat(rangeMatch[2]) }]);
+            }
+
+            // Bracketed pair: "£X (£Y label)" or "£X [£Y label]"
+            const bracketMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*[\(\[]\s*£?\s*(\d+(?:\.\d{1,2})?)\s*([a-z0-9][a-z0-9\s\/]*)?[\)\]]/i);
+            if (bracketMatch) {
+                const rawLabel = (bracketMatch[3] || "").trim();
+                const secondTier = { label: rawLabel || "concession", amount: parseFloat(bracketMatch[2]) };
+                if (/zoom|online|stream/i.test(rawLabel)) secondTier.attendance = "online";
+                if (/advance|\badv\b/i.test(rawLabel)) secondTier.type = "advance";
+                if (/door/i.test(rawLabel)) secondTier.type = "door";
+                return finalize([{ label: "standard", amount: parseFloat(bracketMatch[1]) }, secondTier]);
+            }
+
+            // Segment-based parsing for slash/comma-separated multi-tier lists
+            const segments = splitOutsideBrackets(working, /[,\/]/).map(s => s.trim()).filter(Boolean);
+            const tiers = [];
+            segments.forEach((seg, i) => {
+                const segLower = seg.toLowerCase();
+                const plusMinMatch = seg.match(/£?\s*(\d+(?:\.\d{1,2})?)\s*\+\s*$/);
+                const amountMatch = plusMinMatch || seg.match(/£?\s*(\d+(?:\.\d{1,2})?)/);
+                if (!amountMatch) return;
+                const amount = parseFloat(amountMatch[1]);
+                let type = null, attendance = null, label = null;
+                if (/advance|\badv\b/.test(segLower)) type = "advance";
+                else if (/\bdoor(s)?\b|on the door/.test(segLower)) type = "door";
+                if (/zoom|online|stream/.test(segLower)) attendance = "online";
+                if (/concession|\bconc\b/.test(segLower)) label = "concession";
+                else if (/\bu\d{2}\b|under\s?\d+/.test(segLower)) label = (seg.match(/\bu\d{2}\b|under\s?\d+/i) || [""])[0].trim();
+                else if (/child|kid/.test(segLower)) label = "children";
+                else if (/student/.test(segLower)) label = "student";
+                else if (/family/.test(segLower)) label = "family ticket";
+                if (!label && !type && !attendance) label = i === 0 ? "standard" : `tier ${i + 1}`;
+                const tier = plusMinMatch ? { min_amount: amount } : { amount };
+                if (label) tier.label = label;
+                if (type) tier.type = type;
+                if (attendance) tier.attendance = attendance;
+                tiers.push(tier);
+            });
+            return finalize(tiers);
         }
-        parts.push(current);
-        return parts;
-    }
-
-    function finalize(tiers) {
-        if (!tiers.length && !bookingFee) return null;
-        const out = { draft: true };
-        if (tiers.length) out.tiers = tiers;
-        if (bookingFee) out.booking_fee = bookingFee;
-        return out;
-    }
-
-    // Pay-what-you-want
-    if (/pay[\s-]?(?:as[\s-]?you|what you)[\s-]?(?:like|want|can|feel|decide)/i.test(lower)) {
-        const minMatch = working.match(/min(?:imum)?\.?\s*£?\s*(\d+(?:\.\d{1,2})?)/i);
-        const tier = { label: "pay what you like", is_pay_what_you_want: true };
-        if (minMatch) tier.min_amount = parseFloat(minMatch[1]);
-        return finalize([tier]);
-    }
-
-    // Free / bare donations (anchored to start so "...go free" mid-sentence doesn't false-trigger)
-    const looksFree = /^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text) || /^donations?$/i.test(text);
-    if (looksFree) {
-        const tiers = [];
-        if (/\bfree\b/i.test(text) && (/^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text))) tiers.push({ label: "free", amount: 0 });
-        const donationMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*suggested donation/i);
-        if (donationMatch) tiers.push({ label: "suggested donation", amount: parseFloat(donationMatch[1]), is_donation: true });
-        if (!tiers.length) tiers.push({ label: "donation", is_donation: true });
-        return finalize(tiers);
-    }
-
-    // Suggested donation (without "free")
-    const suggestedMatch = working.match(/suggested\s*(?:donation)?:?\s*£?\s*(\d+(?:\.\d{1,2})?)(?:\s*-\s*£?\s*(\d+(?:\.\d{1,2})?))?/i);
-    if (suggestedMatch) {
-        const tier = { label: "suggested donation", is_donation: true };
-        if (suggestedMatch[2]) {
-            tier.min_amount = parseFloat(suggestedMatch[1]);
-            tier.max_amount = parseFloat(suggestedMatch[2]);
-        } else {
-            tier.amount = parseFloat(suggestedMatch[1]);
-        }
-        return finalize([tier]);
-    }
-
-    // Plain range, no other qualifiers
-    const rangeMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*-\s*£?\s*(\d+(?:\.\d{1,2})?)\b/);
-    if (rangeMatch && !/advance|\badv\b|door|zoom|online|concession|\bconc\b/i.test(lower)) {
-        return finalize([{ label: "standard", min_amount: parseFloat(rangeMatch[1]), max_amount: parseFloat(rangeMatch[2]) }]);
-    }
-
-    // Bracketed pair: "£X (£Y label)" or "£X [£Y label]"
-    const bracketMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*[\(\[]\s*£?\s*(\d+(?:\.\d{1,2})?)\s*([a-z0-9][a-z0-9\s\/]*)?[\)\]]/i);
-    if (bracketMatch) {
-        const rawLabel = (bracketMatch[3] || "").trim();
-        const secondTier = { label: rawLabel || "concession", amount: parseFloat(bracketMatch[2]) };
-        if (/zoom|online|stream/i.test(rawLabel)) secondTier.attendance = "online";
-        if (/advance|\badv\b/i.test(rawLabel)) secondTier.type = "advance";
-        if (/door/i.test(rawLabel)) secondTier.type = "door";
-        return finalize([{ label: "standard", amount: parseFloat(bracketMatch[1]) }, secondTier]);
-    }
-
-    // Segment-based parsing for slash/comma-separated multi-tier lists
-    const segments = splitOutsideBrackets(working, /[,\/]/).map(s => s.trim()).filter(Boolean);
-    const tiers = [];
-    segments.forEach((seg, i) => {
-        const segLower = seg.toLowerCase();
-        const plusMinMatch = seg.match(/£?\s*(\d+(?:\.\d{1,2})?)\s*\+\s*$/);
-        const amountMatch = plusMinMatch || seg.match(/£?\s*(\d+(?:\.\d{1,2})?)/);
-        if (!amountMatch) return;
-        const amount = parseFloat(amountMatch[1]);
-        let type = null, attendance = null, label = null;
-        if (/advance|\badv\b/.test(segLower)) type = "advance";
-        else if (/\bdoor(s)?\b|on the door/.test(segLower)) type = "door";
-        if (/zoom|online|stream/.test(segLower)) attendance = "online";
-        if (/concession|\bconc\b/.test(segLower)) label = "concession";
-        else if (/\bu\d{2}\b|under\s?\d+/.test(segLower)) label = (seg.match(/\bu\d{2}\b|under\s?\d+/i) || [""])[0].trim();
-        else if (/child|kid/.test(segLower)) label = "children";
-        else if (/student/.test(segLower)) label = "student";
-        else if (/family/.test(segLower)) label = "family ticket";
-        if (!label && !type && !attendance) label = i === 0 ? "standard" : `tier ${i + 1}`;
-        const tier = plusMinMatch ? { min_amount: amount } : { amount };
-        if (label) tier.label = label;
-        if (type) tier.type = type;
-        if (attendance) tier.attendance = attendance;
-        tiers.push(tier);
-    });
-    return finalize(tiers);
-}
 
 
         function summarizePriceBreakdown(pb) {
