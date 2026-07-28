@@ -58,7 +58,10 @@ function appendSeparator(container) {
 function parseDateString(dateStr) {
   if (!dateStr) return null;
   if (Array.isArray(dateStr)) {
-    console.warn("parseDateString received an array; use the first element or expandDatetimes instead:", dateStr);
+    console.warn(
+      "parseDateString received an array; use the first element or expandDatetimes instead:",
+      dateStr,
+    );
     return null;
   }
   const parts = dateStr.split("/");
@@ -253,7 +256,8 @@ function getTourLevelFlyers(tour) {
       if (typeof entry === "string") {
         add(entry);
       } else if (entry && typeof entry === "object") {
-        const filename = entry.flyer || entry.src || entry.path || entry.filename;
+        const filename =
+          entry.flyer || entry.src || entry.path || entry.filename;
         const label = entry.label || entry.caption || entry.title || null;
         add(filename, label);
       }
@@ -264,22 +268,22 @@ function getTourLevelFlyers(tour) {
   // else numbered "Tour flyer 1", "Tour flyer 2", ... for any entry that
   // didn't come with its own label.
   out.forEach((f, i) => {
-    if (!f.label) f.label = out.length > 1 ? `Tour flyer ${i + 1}` : "Tour flyer";
+    if (!f.label)
+      f.label = out.length > 1 ? `Tour flyer ${i + 1}` : "Tour flyer";
   });
 
   return out;
 }
-
 
 // ---------------------------------------------------------------------------
 // DOM helpers
 // ---------------------------------------------------------------------------
 
 function el(tag, cls, text) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text !== undefined) e.textContent = text;
-    return e;
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
 }
 
 // ---------------------------------------------------------------------------
@@ -367,7 +371,9 @@ function createVenueElement(venue) {
   if (venue.url) {
     const strong = document.createElement("strong");
     strong.textContent = venueName;
-    const venueLink = createExternalLink(venue.url, strong, { className: "venue-link" });
+    const venueLink = createExternalLink(venue.url, strong, {
+      className: "venue-link",
+    });
     if (venueLink) {
       venueDiv.appendChild(venueLink);
       if (remainder) venueDiv.appendChild(document.createTextNode(remainder));
@@ -498,14 +504,18 @@ function initMap(elementId, onMoveEnd) {
 // ---------------------------------------------------------------------------
 
 /**
- * How often the JSON's cache-busting query param rolls over on its own.
- * Within one window, every page load requests the *same* URL, so the browser
- * (and GitHub Pages' edge cache) can serve it from cache instead of
- * re-downloading ~580KB every visit. After the window elapses, the URL
- * changes and a fresh copy is fetched automatically — no deploy needed.
- * Tune this to taste: 1 = hourly, 4 = every 4 hours, 24 = daily.
+ * Auto-rolling cache-buster window for the fetch URL query param.
+ * Within one time window, every page load requests the *same* URL, so the browser
+ * (and GitHub Pages' edge cache) can serve it from cache instead of re-downloading
+ * ~580KB every visit. After the window elapses, the URL changes.
+ *
+ * Note: This does NOT control the localStorage TTL. The localStorage cache now
+ * persists indefinitely, with freshness determined by HTTP header checks
+ * (Last-Modified/ETag) which run in the background.
+ *
+ * Tune to taste: 1 = hourly, 4 = every 4 hours, 24 = daily.
  */
-const CACHE_BUCKET_HOURS = 4;
+const CACHE_BUCKET_HOURS = 24;
 
 /**
  * Returns a version string that stays constant for CACHE_BUCKET_HOURS at a
@@ -519,15 +529,52 @@ function getAutoCacheVersion() {
 
 /**
  * Fetch events_normalized.json and populate the three shared lookup objects.
+ * Uses localStorage to cache data within the same session (browser tab/window).
+ * This avoids re-downloading the ~580KB JSON when navigating between pages.
+ *
+ * Also checks HTTP headers (Last-Modified/ETag) in the background to detect
+ * newer data on the server, and refreshes the cache if a newer version is found.
+ * This happens silently without blocking the page load.
+ *
  * Pass the returned eventsData and populated lookups back via the returned object.
- * @param {string|null} [cacheBuster]  - Optional version string. Defaults to
- *   an auto-rolling version (see CACHE_BUCKET_HOURS) so normal page loads can
- *   be served from cache. Pass Date.now() (or similar) to force a genuinely
- *   fresh fetch, e.g. from a manual "Refresh data" button.
+ * @param {string|null} [cacheBuster]  - Optional version string or timestamp.
+ *   Defaults to an auto-rolling version (see CACHE_BUCKET_HOURS) so normal page
+ *   loads can be served from browser cache. Pass Date.now() (or similar) to force
+ *   a genuinely fresh fetch from the network, e.g. from a manual "Refresh data" button.
  * @returns {Promise<{eventsData: object, venuesLookup: object, performersLookup: object, toursLookup: object}|null>}
  */
 async function loadEventsData(cacheBuster) {
+  const CACHE_KEY = "troubadours_events_data";
+  const CACHE_HEADERS_KEY = "troubadours_events_headers";
+
   try {
+    // If a cacheBuster is provided, skip localStorage and force a fresh fetch
+    if (!cacheBuster) {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const { data } = JSON.parse(cached);
+          const { eventsData, venuesLookup, performersLookup, toursLookup } =
+            data;
+          console.log(`✓ Loaded events data from cache`);
+          console.log(`  - ${Object.keys(venuesLookup).length} venues`);
+          console.log(`  - ${Object.keys(performersLookup).length} performers`);
+          console.log(`  - ${Object.keys(toursLookup).length} tours`);
+
+          // Check for newer data on the server in the background (doesn't block)
+          checkForNewerEventsDataBackground();
+
+          return { eventsData, venuesLookup, performersLookup, toursLookup };
+        } catch (e) {
+          console.warn(
+            "Failed to parse cached events data, fetching fresh copy",
+          );
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
+    }
+
+    // Fetch fresh data from network
     const version = cacheBuster || getAutoCacheVersion();
     const response = await fetch(`events_normalized.json?v=${version}`);
     if (!response.ok) {
@@ -539,7 +586,29 @@ async function loadEventsData(cacheBuster) {
     const venuesLookup = eventsData.venues || {};
     const performersLookup = eventsData.performers || {};
 
-    console.log(`✓ Loaded events data`);
+    // Cache the data and headers in localStorage for other pages to use
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          timestamp: Date.now(),
+          data: { eventsData, venuesLookup, performersLookup, toursLookup },
+        }),
+      );
+
+      // Store Last-Modified and ETag for future comparison
+      localStorage.setItem(
+        CACHE_HEADERS_KEY,
+        JSON.stringify({
+          lastModified: response.headers.get("Last-Modified"),
+          etag: response.headers.get("ETag"),
+        }),
+      );
+    } catch (e) {
+      console.warn("Failed to cache events data to localStorage", e);
+    }
+
+    console.log(`✓ Loaded events data from network`);
     console.log(`  - ${Object.keys(venuesLookup).length} venues`);
     console.log(`  - ${Object.keys(performersLookup).length} performers`);
     console.log(`  - ${Object.keys(toursLookup).length} tours`);
@@ -551,6 +620,84 @@ async function loadEventsData(cacheBuster) {
   }
 }
 
+/**
+ * Background check for newer events data on the server using HTTP HEAD request.
+ * If a newer version is found (based on Last-Modified or ETag), silently
+ * updates the cache. This doesn't block the page or show any UI.
+ * Called automatically when loading from cache.
+ */
+async function checkForNewerEventsDataBackground() {
+  try {
+    const CACHE_HEADERS_KEY = "troubadours_events_headers";
+    const cachedHeaders = JSON.parse(
+      localStorage.getItem(CACHE_HEADERS_KEY) || "{}",
+    );
+
+    // Do a HEAD request to check the server headers without downloading the body
+    const headResponse = await fetch("events_normalized.json", {
+      method: "HEAD",
+    });
+    if (!headResponse.ok) return;
+
+    const serverLastModified = headResponse.headers.get("Last-Modified");
+    const serverEtag = headResponse.headers.get("ETag");
+
+    let needsRefresh = false;
+
+    // Check if server has a newer Last-Modified date
+    if (serverLastModified && cachedHeaders.lastModified) {
+      const serverDate = new Date(serverLastModified);
+      const cachedDate = new Date(cachedHeaders.lastModified);
+      if (serverDate > cachedDate) {
+        needsRefresh = true;
+        console.log(
+          "Newer events data detected on server (Last-Modified header)",
+        );
+      }
+    }
+
+    // Check if ETag changed (file content differs)
+    if (serverEtag && cachedHeaders.etag && serverEtag !== cachedHeaders.etag) {
+      needsRefresh = true;
+      console.log("Events data changed on server (ETag differs)");
+    }
+
+    // If there's a newer version, fetch and update cache silently
+    if (needsRefresh) {
+      const response = await fetch(`events_normalized.json?v=${Date.now()}`);
+      if (response.ok) {
+        const eventsData = await response.json();
+        const toursLookup = eventsData.tours || {};
+        const venuesLookup = eventsData.venues || {};
+        const performersLookup = eventsData.performers || {};
+
+        localStorage.setItem(
+          "troubadours_events_data",
+          JSON.stringify({
+            timestamp: Date.now(),
+            data: { eventsData, venuesLookup, performersLookup, toursLookup },
+          }),
+        );
+
+        localStorage.setItem(
+          CACHE_HEADERS_KEY,
+          JSON.stringify({
+            lastModified: response.headers.get("Last-Modified"),
+            etag: response.headers.get("ETag"),
+          }),
+        );
+
+        console.log("✓ Background update: refreshed cached events data");
+      }
+    }
+  } catch (e) {
+    // Silently fail — this is a background operation that shouldn't affect the user
+    console.debug(
+      "Background events data check failed (this is fine):",
+      e.message,
+    );
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Troupe helpers
@@ -563,16 +710,15 @@ async function loadEventsData(cacheBuster) {
  * Troupe configs carry a "troupe" field pointing to their parent.
  */
 function isTroupeConfig(performer) {
-    return !!(performer && performer.troupe);
+  return !!(performer && performer.troupe);
 }
 
 /**
  * Returns true if this performer record is a troupe (the parent).
  */
 function isTroupe(performer) {
-    return !!(performer && performer.type === "troupe");
+  return !!(performer && performer.type === "troupe");
 }
-
 
 /**
  * Resolve a performer ID to its display record.
@@ -586,14 +732,14 @@ function isTroupe(performer) {
  * @returns {{ id, record }} — resolved id and performer record
  */
 function resolvePerformerDisplay(id, performersLookup) {
-    if (!id || !performersLookup) return { id, record: null };
-    const record = performersLookup[id];
-    if (!record) return { id, record: null };
-    if (isTroupeConfig(record) && record.troupe) {
-        const parentRecord = performersLookup[record.troupe];
-        if (parentRecord) return { id: record.troupe, record: parentRecord };
-    }
-    return { id, record };
+  if (!id || !performersLookup) return { id, record: null };
+  const record = performersLookup[id];
+  if (!record) return { id, record: null };
+  if (isTroupeConfig(record) && record.troupe) {
+    const parentRecord = performersLookup[record.troupe];
+    if (parentRecord) return { id: record.troupe, record: parentRecord };
+  }
+  return { id, record };
 }
 
 // ---------------------------------------------------------------------------
@@ -750,8 +896,9 @@ async function forEachDateInRange(items, startDate, endDate, label, callback) {
       if (parsed >= startDate && parsed <= endDate) {
         // When expanding a multi-date item, give the callback a clone with the
         // resolved single date string so it looks like a normal single-date item.
-        const resolvedItem =
-          Array.isArray(dateField) ? { ...item, date: dateStr } : item;
+        const resolvedItem = Array.isArray(dateField)
+          ? { ...item, date: dateStr }
+          : item;
         await callback(resolvedItem, parsed);
       }
     }
@@ -1047,4 +1194,32 @@ function createSearchBox(container, options) {
   container.appendChild(searchWrap);
 
   return { wrap: searchWrap, input: searchInput, clearBtn, dropdown };
+}
+
+// ---------------------------------------------------------------------------
+// Navigation feedback
+// ---------------------------------------------------------------------------
+
+/**
+ * Initialize navigation feedback: adds visual indication when nav links are clicked.
+ * Shows body opacity change and adds a loading indicator to the clicked link.
+ * Call this once on page load, typically from your page's main script.
+ * Requires CSS classes: .nav-loading, .nav-link-pending (add to shared-styles.css).
+ */
+function initNavFeedback() {
+  const navLinks = document.querySelectorAll(".site-nav a[href]");
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      // Don't add feedback if this is the current page link or has aria-current
+      if (link.hasAttribute("aria-current")) {
+        e.preventDefault();
+        return;
+      }
+
+      // Add visual feedback to the clicked link and page
+      link.classList.add("nav-link-pending");
+      document.body.classList.add("nav-loading");
+    });
+  });
 }
