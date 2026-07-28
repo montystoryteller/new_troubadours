@@ -826,25 +826,25 @@
             container.appendChild(details);
         }
 
-        document.addEventListener("DOMContentLoaded", async () => {
+        // Initialize immediately (don't wait for DOMContentLoaded) so data starts loading early
+        (async () => {
             const params = new URLSearchParams(window.location.search);
             performerId = params.get("performer");
 
             if (!performerId) {
-                await loadEventsData().then(loaded => {
-                    if (!loaded) return showNotFound();
-                    eventsData = loaded.eventsData;
-                    toursLookup = loaded.toursLookup;
-                    performersLookup = loaded.performersLookup;
-                    displayDataLastUpdated(loaded.lastUpdateTime);
-                    initNavFeedback();
-                    // Defer heavy rendering to background to allow loading state to display
-                    setTimeout(() => {
-                        renderAllPerformers();
-                        document.getElementById("loadingState").style.display = "none";
-                        document.getElementById("performerContent").style.display = "";
-                    }, 0);
-                });
+                const loaded = await loadEventsData();
+                if (!loaded) return showNotFound();
+                eventsData = loaded.eventsData;
+                toursLookup = loaded.toursLookup;
+                performersLookup = loaded.performersLookup;
+                displayDataLastUpdated(loaded.lastUpdateTime);
+                initNavFeedback();
+                // Defer heavy rendering to background to allow loading state to display
+                setTimeout(() => {
+                    renderAllPerformers();
+                    document.getElementById("loadingState").style.display = "none";
+                    document.getElementById("performerContent").style.display = "";
+                }, 0);
                 return;
             }
 
@@ -931,7 +931,7 @@
                     onChange: () => { },
                 });
             }
-        });
+        })();
 
         // ---------------------------------------------------------------------------
         // Main render
