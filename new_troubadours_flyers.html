@@ -2271,6 +2271,8 @@
                 populateTourDropdown();
                 renderVideoTrailers();
                 renderAll();
+                // Mark as cached — valid until date/month boundary crosses
+                setSchedulesCache({ computed: true });
             }, 0);
         })();
     </script>

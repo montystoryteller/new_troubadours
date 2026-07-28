@@ -836,17 +836,19 @@
 
             // Defer heavy computation (schedule calculations, filtering, sorting) to background
             // This allows the browser to render the loading state or cached data first
-            setTimeout(() => {
-                renderPage(data, clubId);
+            setTimeout(async () => {
+                await renderPage(data, clubId);
+                // Mark schedules as cached — valid until date/month boundary crosses
+                setSchedulesCache({ computed: true });
             }, 0);
         })();
 
-        function renderPage(data, clubId) {
+        async function renderPage(data, clubId) {
             const clubRecord = data.events.find(e => e.club === clubId) || null;
 
             if (!clubRecord && !clubId) {
                 // No club param — show a directory of all clubs
-                renderDirectory(data);
+                await renderDirectory(data);
                 return;
             }
 
