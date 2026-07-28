@@ -1403,8 +1403,7 @@
                 root.appendChild(sectionHeading('Past events', 'past'));
                 [...pastEvents].reverse().forEach(e => root.appendChild(renderSpecificEvent(e, true)));
             }
-
-        }) ();
+        }
 
         // ── Directory (no club= param) ────────────────────────────────────────────
         async function renderDirectory(data) {
