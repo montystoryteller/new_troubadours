@@ -2868,6 +2868,10 @@ function refreshEventsData() {
 
   map = initMap("map", updateMapView);
 
+  // Data is now loaded; make it available to event counting
+  // (waitForDataThenCount in the HTML checks for this)
+  // eventsData is set above at line 2832
+
   // Check for cached computed events; if not cached, we'll compute in background
   const computedCache = getSchedulesCache();
   let showSpinnerTimer = null;
@@ -2900,7 +2904,8 @@ function refreshEventsData() {
       updateDateInputs(startDate, endDate);
 
       document.getElementById("pinMapView").checked = urlParams.pinmap;
-      document.getElementById("hideCancelled").checked = urlParams.hidecancelled;
+      document.getElementById("hideCancelled").checked =
+        urlParams.hidecancelled;
       const hidePastEl = document.getElementById("hidePastEvents");
       if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
       console.log("pinmap", urlParams, urlParams.pinmap);
@@ -2938,3 +2943,4 @@ function refreshEventsData() {
     // Mark events as computed and cached for the day
     setSchedulesCache({ computed: true });
   }, 0);
+})();
