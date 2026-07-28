@@ -39,11 +39,7 @@ function shareFestivalLink() {
       const btn = document.querySelector(
         "button[onclick='shareFestivalLink()']",
       );
-      const orig = btn.innerHTML;
-      btn.innerHTML = "✅ Link Copied!";
-      setTimeout(() => {
-        btn.innerHTML = orig;
-      }, 2000);
+      showCopyFeedback(btn);
     })
     .catch(console.error);
 }

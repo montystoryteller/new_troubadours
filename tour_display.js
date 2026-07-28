@@ -59,15 +59,10 @@ function shareTourLink() {
     .then(() => {
       // Feedback UI
       const btn = document.querySelector("button[onclick='shareTourLink()']");
-      const originalText = btn.innerHTML;
-      btn.innerHTML = "✅ Link Copied!";
+      showCopyFeedback(btn);
 
       // Also update the browser's address bar so it matches what was copied
       window.history.pushState({ tourId }, "", shareableUrl);
-
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-      }, 2000);
     })
     .catch((err) => {
       console.error("Failed to copy link:", err);

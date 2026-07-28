@@ -45,6 +45,26 @@ function appendSeparator(container) {
   container.appendChild(sep);
 }
 
+/**
+ * Show "✅ Link Copied!" feedback on a button, then restore original text after 2 seconds.
+ * Safe for all copy-to-clipboard operations (tours, festivals, events).
+ * @param {HTMLElement} btn - The button element to provide feedback on
+ * @param {string} feedbackText - Text to show (default: "✅ Link Copied!")
+ * @param {number} duration - Duration in ms before restoring (default: 2000)
+ */
+function showCopyFeedback(
+  btn,
+  feedbackText = "✅ Link Copied!",
+  duration = 2000,
+) {
+  if (!btn) return;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = feedbackText;
+  setTimeout(() => {
+    btn.innerHTML = originalText;
+  }, duration);
+}
+
 // ---------------------------------------------------------------------------
 // Date utilities
 // ---------------------------------------------------------------------------
