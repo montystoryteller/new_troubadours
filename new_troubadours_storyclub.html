@@ -1410,8 +1410,14 @@
         async function renderDirectory(data) {
             document.title = 'Story Clubs — New Troubadours';
             const root = document.getElementById('page-content');
-            root.innerHTML = '';
 
+            // Show loading state while we do heavy computation (sorting, filtering, indexing)
+            root.innerHTML = '<p class="status-message status-message--loading">⏳ Building directory…</p>';
+
+            // Yield to browser so loading message renders before heavy work begins
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            // Now do the heavy computation off the main thread
             const DAYS_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
             const clubs = data.events.filter(e => e.club);
@@ -1821,92 +1827,110 @@
                     });
                 }
 
+                // Render clubs in batches to allow browser repaints
+                const BATCH_SIZE = 20;
+                let batchIndex = 0;
                 let currentDay = null;
-                visible.forEach((entry) => {
-                    const { c } = entry;
-                    const venue = data.venues[c.venue_id];
-                    const day = clubDay(c);
 
-                    // Day headings: show only when no period or day filter is narrowing things down
-                    if (!activePeriod && !activeDay && day !== currentDay) {
-                        currentDay = day;
-                        const h2 = document.createElement('h2');
-                        h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
-                        h2.textContent = day ? day + 's' : 'Variable / irregular';
-                        listWrap.appendChild(h2);
+                const renderBatch = () => {
+                    const endIndex = Math.min(batchIndex + BATCH_SIZE, visible.length);
+
+                    for (let i = batchIndex; i < endIndex; i++) {
+                        const entry = visible[i];
+                        const { c } = entry;
+                        const venue = data.venues[c.venue_id];
+                        const day = clubDay(c);
+
+                        // Day headings: show only when no period or day filter is narrowing things down
+                        if (!activePeriod && !activeDay && day !== currentDay) {
+                            currentDay = day;
+                            const h2 = document.createElement('h2');
+                            h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
+                            h2.textContent = day ? day + 's' : 'Variable / irregular';
+                            listWrap.appendChild(h2);
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'event';
+                        card.id = 'club-card-' + c.club;
+                        card.style.cursor = 'pointer';
+                        card.onclick = () => location.href = `new_troubadours_storyclub.html?club=${c.club}`;
+
+                        const name = document.createElement('div');
+                        name.className = 'event-name';
+                        name.textContent = c.name;
+                        card.appendChild(name);
+
+                        // Next-meeting badge (shown when meeting is within ~2 weeks)
+                        const badge = nextMeetingBadge(entry.nextMeeting);
+                        if (badge) card.appendChild(badge);
+
+                        if (c.schedule) {
+                            const s = document.createElement('div');
+                            s.className = 'event-date';
+
+                            // Cleanly uses our unified labelling helper safely
+                            s.textContent = scheduleLabel(c.schedule) + (c.time ? ' \u2022 ' + c.time : '');
+
+                            card.appendChild(s);
+                        }
+
+                        // Featured guest for the next meeting date
+                        const dirGuest = dirFeaturedGuest(c, entry.nextMeeting);
+                        if (dirGuest) {
+                            const featDiv = document.createElement('div');
+                            featDiv.className = 'club-dir-featured-guest';
+                            featDiv.textContent = `feat. ${dirGuest}`;
+                            card.appendChild(featDiv);
+                        }
+
+                        if (venue) {
+                            const loc = document.createElement('div');
+                            loc.className = 'event-location';
+                            loc.textContent = venue.name + (venue.city ? `, ${venue.city}` : '');
+                            card.appendChild(loc);
+                        } else if (c.location) {
+                            const loc = document.createElement('div');
+                            loc.className = 'event-location';
+                            loc.textContent = c.location;
+                            card.appendChild(loc);
+                        }
+
+                        const meta = document.createElement('div');
+                        meta.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;';
+                        const linkSrc = c.link || c.website || c.tickets_url;
+                        if (linkSrc) {
+                            const a = icon(GLOBE_SVG, linkSrc, 'event-website', 'Website');
+                            // Match the grey color used in the single-club header
+                            a.querySelector('svg').style.fill = '#555';
+                            a.onclick = e => e.stopPropagation();
+                            meta.appendChild(a);
+                        }
+                        if (c.facebook) {
+                            const fbHref = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
+                            const a = icon(FACEBOOK_SVG, fbHref, 'event-facebook', 'Facebook');
+                            a.onclick = e => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
+                            meta.appendChild(a);
+                        }
+                        if (c.email) {
+                            const a = icon(EMAIL_SVG, `mailto:${c.email}`, 'event-email', 'Email');
+                            a.onclick = e => e.stopPropagation();
+                            meta.appendChild(a);
+                        }
+                        if (meta.childNodes.length) card.appendChild(meta);
+
+                        listWrap.appendChild(card);
                     }
 
-                    const card = document.createElement('div');
-                    card.className = 'event';
-                    card.id = 'club-card-' + c.club;
-                    card.style.cursor = 'pointer';
-                    card.onclick = () => location.href = `new_troubadours_storyclub.html?club=${c.club}`;
+                    batchIndex = endIndex;
 
-                    const name = document.createElement('div');
-                    name.className = 'event-name';
-                    name.textContent = c.name;
-                    card.appendChild(name);
-
-                    // Next-meeting badge (shown when meeting is within ~2 weeks)
-                    const badge = nextMeetingBadge(entry.nextMeeting);
-                    if (badge) card.appendChild(badge);
-
-                    if (c.schedule) {
-                        const s = document.createElement('div');
-                        s.className = 'event-date';
-
-                        // Cleanly uses our unified labelling helper safely
-                        s.textContent = scheduleLabel(c.schedule) + (c.time ? ' \u2022 ' + c.time : '');
-
-                        card.appendChild(s);
+                    // If there are more clubs to render, schedule the next batch
+                    if (batchIndex < visible.length) {
+                        setTimeout(renderBatch, 0);
                     }
+                };
 
-                    // Featured guest for the next meeting date
-                    const dirGuest = dirFeaturedGuest(c, entry.nextMeeting);
-                    if (dirGuest) {
-                        const featDiv = document.createElement('div');
-                        featDiv.className = 'club-dir-featured-guest';
-                        featDiv.textContent = `feat. ${dirGuest}`;
-                        card.appendChild(featDiv);
-                    }
-
-                    if (venue) {
-                        const loc = document.createElement('div');
-                        loc.className = 'event-location';
-                        loc.textContent = venue.name + (venue.city ? `, ${venue.city}` : '');
-                        card.appendChild(loc);
-                    } else if (c.location) {
-                        const loc = document.createElement('div');
-                        loc.className = 'event-location';
-                        loc.textContent = c.location;
-                        card.appendChild(loc);
-                    }
-
-                    const meta = document.createElement('div');
-                    meta.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;';
-                    const linkSrc = c.link || c.website || c.tickets_url;
-                    if (linkSrc) {
-                        const a = icon(GLOBE_SVG, linkSrc, 'event-website', 'Website');
-                        // Match the grey color used in the single-club header
-                        a.querySelector('svg').style.fill = '#555';
-                        a.onclick = e => e.stopPropagation();
-                        meta.appendChild(a);
-                    }
-                    if (c.facebook) {
-                        const fbHref = c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`;
-                        const a = icon(FACEBOOK_SVG, fbHref, 'event-facebook', 'Facebook');
-                        a.onclick = e => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
-                        meta.appendChild(a);
-                    }
-                    if (c.email) {
-                        const a = icon(EMAIL_SVG, `mailto:${c.email}`, 'event-email', 'Email');
-                        a.onclick = e => e.stopPropagation();
-                        meta.appendChild(a);
-                    }
-                    if (meta.childNodes.length) card.appendChild(meta);
-
-                    listWrap.appendChild(card);
-                });
+                renderBatch();
             }
 
             // Initial render
