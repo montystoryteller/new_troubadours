@@ -175,7 +175,7 @@
             transition: transform 0.2s ease;
         }
 
-        .video-group[open] > .video-group-heading::before {
+        .video-group[open]>.video-group-heading::before {
             transform: rotate(90deg);
         }
 
@@ -189,7 +189,7 @@
             color: #888;
         }
 
-        .video-group-current > .video-group-heading {
+        .video-group-current>.video-group-heading {
             color: #2e7d32;
         }
 
@@ -1491,6 +1491,10 @@
             const result = await loadEventsData();
             if (!result) return;
             const data = result.eventsData;
+
+            // Display when data was last updated
+            displayDataLastUpdated(result.lastUpdateTime);
+            initNavFeedback();
 
             const now = today();
             const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);

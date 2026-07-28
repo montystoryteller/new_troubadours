@@ -193,6 +193,33 @@ select {
     margin: 0 0 8px 0;
 }
 
+.data-updated-text {
+    display: block;
+    font-style: italic;
+    margin-top: 8px;
+}
+
+.data-refresh-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 12px;
+    margin-left: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.data-refresh-link:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.data-refresh-status {
+    display: inline;
+    color: #2e7d32;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
 
 /* =============================================================
    5. EVENT CARDS — BASE & VARIANTS

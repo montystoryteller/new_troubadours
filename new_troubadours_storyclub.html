@@ -266,7 +266,8 @@
             position: relative;
             width: 100%;
             max-width: 420px;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
+            /* 16:9 */
             border-radius: 6px;
             overflow: hidden;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -590,29 +591,29 @@
         }
 
         function icon(svg, href, cls, title) {
-                const a = document.createElement('a');
-                a.href = href;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.className = cls;
+            const a = document.createElement('a');
+            a.href = href;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = cls;
 
-                // Tooltip for mouse users
-                a.title = title;
+            // Tooltip for mouse users
+            a.title = title;
 
-                // Accessible name for screen readers
-                a.setAttribute('aria-label', title);
+            // Accessible name for screen readers
+            a.setAttribute('aria-label', title);
 
-                a.innerHTML = svg;
-                a.style.cssText = 'display:inline-block;margin-left:6px;vertical-align:middle;text-decoration:none;';
+            a.innerHTML = svg;
+            a.style.cssText = 'display:inline-block;margin-left:6px;vertical-align:middle;text-decoration:none;';
 
-                const svgEl = a.querySelector('svg');
-                svgEl.style.cssText = 'width:20px;height:20px;';
+            const svgEl = a.querySelector('svg');
+            svgEl.style.cssText = 'width:20px;height:20px;';
 
-                // Hide the raw SVG from screen readers so they only read the aria-label
-                svgEl.setAttribute('aria-hidden', 'true');
+            // Hide the raw SVG from screen readers so they only read the aria-label
+            svgEl.setAttribute('aria-hidden', 'true');
 
-                return a;
-            }
+            return a;
+        }
 
         function normaliseFacebook(fb) {
             if (!fb) return null;
@@ -821,6 +822,10 @@
                 return;
             }
             const data = result.eventsData;
+
+            // Display when data was last updated
+            displayDataLastUpdated(result.lastUpdateTime);
+            initNavFeedback();
 
             // Find the recurring club record (events[])
             const clubRecord = data.events.find(e => e.club === clubId) || null;
@@ -1895,6 +1900,10 @@
             renderList();
         }
     </script>
+
+    <div class="about" id="colophon">
+        <p id="dataLastUpdated"><em></em></p>
+    </div>
 </body>
 
 </html>

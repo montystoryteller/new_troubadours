@@ -518,6 +518,22 @@ function initMap(elementId, onMoveEnd) {
 const CACHE_BUCKET_HOURS = 24;
 
 /**
+ * Cache keys for localStorage. Centralized to avoid duplication.
+ * @type {Object}
+ */
+const CACHE_KEYS = {
+  DATA: "troubadours_events_data",
+  HEADERS: "troubadours_events_headers",
+  LAST_CHECK: "troubadours_events_last_check",
+};
+
+/**
+ * Flag to prevent concurrent background checks.
+ * @type {boolean}
+ */
+let backgroundCheckInProgress = false;
+
+/**
  * Returns a version string that stays constant for CACHE_BUCKET_HOURS at a
  * time, then changes. Used as the default cache-busting query param.
  * @returns {string}
@@ -544,13 +560,10 @@ function getAutoCacheVersion() {
  * @returns {Promise<{eventsData: object, venuesLookup: object, performersLookup: object, toursLookup: object}|null>}
  */
 async function loadEventsData(cacheBuster) {
-  const CACHE_KEY = "troubadours_events_data";
-  const CACHE_HEADERS_KEY = "troubadours_events_headers";
-
   try {
     // If a cacheBuster is provided, skip localStorage and force a fresh fetch
     if (!cacheBuster) {
-      const cached = localStorage.getItem(CACHE_KEY);
+      const cached = localStorage.getItem(CACHE_KEYS.DATA);
       if (cached) {
         try {
           const { timestamp, data } = JSON.parse(cached);
@@ -575,7 +588,7 @@ async function loadEventsData(cacheBuster) {
           console.warn(
             "Failed to parse cached events data, fetching fresh copy",
           );
-          localStorage.removeItem(CACHE_KEY);
+          localStorage.removeItem(CACHE_KEYS.DATA);
         }
       }
     }
@@ -595,7 +608,7 @@ async function loadEventsData(cacheBuster) {
     // Cache the data and headers in localStorage for other pages to use
     try {
       localStorage.setItem(
-        CACHE_KEY,
+        CACHE_KEYS.DATA,
         JSON.stringify({
           timestamp: Date.now(),
           data: { eventsData, venuesLookup, performersLookup, toursLookup },
@@ -604,7 +617,7 @@ async function loadEventsData(cacheBuster) {
 
       // Store Last-Modified and ETag for future comparison
       localStorage.setItem(
-        CACHE_HEADERS_KEY,
+        CACHE_KEYS.HEADERS,
         JSON.stringify({
           lastModified: response.headers.get("Last-Modified"),
           etag: response.headers.get("ETag"),
@@ -1215,11 +1228,16 @@ function createSearchBox(container, options) {
 /**
  * Initialize navigation feedback: adds visual indication when nav links are clicked.
  * Shows body opacity change and adds a loading indicator to the clicked link.
+ * Also automatically cleans up the dimming effect when the page fully loads.
  * Call this once on page load, typically from your page's main script.
  * Requires CSS classes: .nav-loading, .nav-link-pending (add to shared-styles.css).
  */
 function initNavFeedback() {
   const navLinks = document.querySelectorAll(".site-nav a[href]");
+
+  // Clean up any lingering nav-loading class from previous navigation
+  document.body.classList.remove("nav-loading");
+  navLinks.forEach((link) => link.classList.remove("nav-link-pending"));
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -1232,6 +1250,17 @@ function initNavFeedback() {
       // Add visual feedback to the clicked link and page
       link.classList.add("nav-link-pending");
       document.body.classList.add("nav-loading");
+
+      // Remove dimming when navigation completes
+      // The next page's initNavFeedback() call will clean up the classes
+      // But add a safety timeout in case something goes wrong
+      const cleanupTimeout = setTimeout(() => {
+        document.body.classList.remove("nav-loading");
+        navLinks.forEach((l) => l.classList.remove("nav-link-pending"));
+      }, 5000); // 5 second timeout as safety net
+
+      // Store timeout ID on the link for potential cleanup
+      link._navCleanupTimeout = cleanupTimeout;
     });
   });
 }
@@ -1283,7 +1312,8 @@ function formatLastUpdateTime(timestamp) {
 
 /**
  * Update the colophon to show when data was last updated.
- * Looks for an element with id "dataLastUpdated" and fills it with formatted time.
+ * Creates an interactive display with timestamp and manual refresh link.
+ * Looks for an element with id "dataLastUpdated" and populates it.
  * @param {number} lastUpdateTime - Unix timestamp in milliseconds
  */
 function displayDataLastUpdated(lastUpdateTime) {
@@ -1293,5 +1323,59 @@ function displayDataLastUpdated(lastUpdateTime) {
   if (!el) return;
 
   const formatted = formatLastUpdateTime(lastUpdateTime);
-  el.textContent = `Data last updated: ${formatted}`;
+
+  // Build the display with timestamp and refresh link
+  el.innerHTML = "";
+
+  const textSpan = document.createElement("span");
+  textSpan.className = "data-updated-text";
+  textSpan.textContent = `Data last updated: ${formatted}`;
+  el.appendChild(textSpan);
+
+  const refreshLink = document.createElement("a");
+  refreshLink.href = "#";
+  refreshLink.className = "data-refresh-link";
+  refreshLink.textContent = "[refresh]";
+  refreshLink.title = "Clear cache and fetch latest data";
+  refreshLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    clearCacheAndRefresh();
+  });
+  el.appendChild(document.createTextNode(" "));
+  el.appendChild(refreshLink);
+
+  // Listen for background data updates
+  if (!el._eventsDataUpdatedListenerAttached) {
+    el._eventsDataUpdatedListenerAttached = true;
+    window.addEventListener("eventsDataUpdated", (e) => {
+      const newFormatted = formatLastUpdateTime(e.detail.timestamp);
+      textSpan.textContent = `Data last updated: ${newFormatted}`;
+
+      // Show "just refreshed" status
+      const statusSpan = document.createElement("span");
+      statusSpan.className = "data-refresh-status";
+      statusSpan.textContent = " ✓ just refreshed";
+      el.appendChild(statusSpan);
+
+      // Remove status after 3 seconds
+      setTimeout(() => {
+        if (statusSpan.parentNode) statusSpan.remove();
+      }, 3000);
+    });
+  }
+}
+
+/**
+ * Clear the events data cache and reload the page to fetch fresh data.
+ * Called by the refresh link in the colophon.
+ */
+function clearCacheAndRefresh() {
+  try {
+    localStorage.removeItem(CACHE_KEYS.DATA);
+    localStorage.removeItem(CACHE_KEYS.HEADERS);
+    sessionStorage.setItem("forceFreshEventsData", "1");
+    window.location.reload();
+  } catch (e) {
+    console.error("Failed to clear cache:", e);
+  }
 }

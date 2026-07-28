@@ -1111,6 +1111,8 @@
 
             // Display when data was last updated
             displayDataLastUpdated(result.lastUpdateTime);
+            initNavFeedback();
+
             const tourShows = data.repertoire_shows || {};
             const specific = data.specificEvents || [];
             const music = data.musicEvents || [];

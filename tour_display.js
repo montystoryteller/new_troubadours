@@ -1158,6 +1158,9 @@ function refreshEventsData() {
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
+  // Initialize navigation feedback
+  initNavFeedback();
+
   console.log("Events data loaded successfully");
   console.log("Tours:", Object.keys(toursLookup).length);
   console.log("Performers:", Object.keys(performersLookup).length);

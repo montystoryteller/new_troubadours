@@ -2838,6 +2838,9 @@ function refreshEventsData() {
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
+  // Initialize navigation feedback
+  initNavFeedback();
+
   // Log event-guide-specific counts
   console.log(`  - ${eventsData.events?.length || 0} recurring events`);
   console.log(`  - ${eventsData.specificEvents?.length || 0} specific events`);

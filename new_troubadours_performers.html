@@ -837,6 +837,7 @@
                     toursLookup = loaded.toursLookup;
                     performersLookup = loaded.performersLookup;
                     displayDataLastUpdated(loaded.lastUpdateTime);
+                    initNavFeedback();
                     renderAllPerformers();
                     document.getElementById("loadingState").style.display = "none";
                     document.getElementById("performerContent").style.display = "";
@@ -852,6 +853,7 @@
             performersLookup = loaded.performersLookup;
             toursLookup = loaded.toursLookup;
             displayDataLastUpdated(loaded.lastUpdateTime);
+            initNavFeedback();
 
             performer = performersLookup[performerId];
             if (!performer) { showNotFound(); return; }

@@ -466,6 +466,7 @@
                     if (!loaded) return showNotFound();
                     venuesLookup = loaded.venuesLookup;
                     displayDataLastUpdated(loaded.lastUpdateTime);
+                    initNavFeedback();
                     renderAllVenues();
                     document.getElementById("loadingState").style.display = "none";
                     document.getElementById("venueContent").style.display = "";
@@ -480,6 +481,7 @@
             venuesLookup = loaded.venuesLookup;
             performersLookup = loaded.performersLookup;
             displayDataLastUpdated(loaded.lastUpdateTime);
+            initNavFeedback();
             toursLookup = loaded.toursLookup;
 
             venue = venuesLookup[venueId];

@@ -1618,6 +1618,9 @@ function refreshEventsData() {
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
+  // Initialize navigation feedback
+  initNavFeedback();
+
   map = initMap("map", () => {});
 
   populateFestivalDropdown();
