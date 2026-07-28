@@ -3658,6 +3658,15 @@
       "feature_slots": [["17/12/2025", "steph-brittain"], ["21/01/2026", "nick-hennessey"], ["15/04/2026", "alys-torrance"],["20/05/2026", "amelia-ace-armande"]]
     },
     {
+      "name": "Stories at the Stars",
+      "schedule": "2nd thursday",
+      "time": "7.30pm",
+      "facebook": "https://www.facebook.com/groups/1180975245625238",
+      "club": "storiesatthestars",
+      "tickets_url": "",
+      "venue_id": "seven-stars-falmouth"
+    },
+    {
       "name": "Matlock Storytelling Cafe",
       "schedule": "1st friday",
       "facebook": "https://www.facebook.com/MatlockStorytellingCafe",
@@ -10117,6 +10126,18 @@
         -1.628815
       ]
     },
+    "seven-stars-falmouth": {
+      "id": "seven-stars-falmouth",
+      "name": "Seven Stars, Falmouth",
+      "city": "Falmouth",
+      "postcode": "TR11 3QA",
+      "full_address": "Seven Stars, 1 The Moor, Falmouth, TR11 3QA",
+      "url": "https://www.thesevenstarsfalmouth.com/",
+      "latlon": [
+        50.15467,
+        -5.07336
+      ]
+    },
     "the-palladium-club-bideford": {
       "id": "the-palladium-club-bideford",
       "name": "The Palladium Club",
@@ -11442,7 +11463,7 @@
       "id": "lizzie-bryant",
       "name": "Lizzie Bryant",
       "url": "https://eye-view.org.uk/lizzie-bryant",
-      "bio": "Lizzie Bryant is Dorset based oral storyteller and writer, creating and delivering storytelling performances, story walks, bespoke workshops and training, working and playing with stories and the imagination to inspire connection, community, and creativity. After many years in the film industry, Lizzie retrained as a stonemason and with her hammer and chisel, shaped stone. Her work on crumbling churches led her into the wilder places to explore the old stories, myths and legends told by our ancestors and held in the land and she tumbled into the world of storytelling.\n\n\n\nLizzie now draws upon the treasure trove of world myths and legends and a word hoard of traditional tales, wonder tales and folk lore. She has created a number of site specific work including Pixies and Pillywiggins of Parley Wood, interactive adventure story walks in West Parley Wood for Sting in the Tale Storytelling Festival; Speaking Bones, Dancing Stones, an original bronze age family story walk around Avebury stone circle commissioned by National Trust; Dragon's Hope, an story for Hallr Wood commissioned by Summerlands Storytelling Festival. She has been commissioned and performed original stories for Salisbury Cathedral's Craftivate festival. With an MA in creative writing for children from Winchester University, Lizzie regularly writes children's stories for Serial Mash, an online literacy resource for schools."
+      "bio": "Lizzie Bryant is Dorset based oral storyteller and writer, creating and delivering storytelling performances, story walks, bespoke workshops and training, working and playing with stories and the imagination to inspire connection, community, and creativity. After many years in the film industry, Lizzie retrained as a stonemason and with her hammer and chisel, shaped stone. Her work on crumbling churches led her into the wilder places to explore the old stories, myths and legends told by our ancestors and held in the land and she tumbled into the world of storytelling.\n\n\n\nLizzie now draws upon the treasure trove of world myths and legends and a word hoard of traditional tales, wonder tales and folk lore. She has created a number of site specific work including Pixies and Pillywiggins of Parley Wood, interactive adventure story walks in West Parley Wood for Sting in the Tale Storytelling Festival; Speaking Bones, Dancing Stones, an original bronze age family story walk around Avebury stone circle commissioned by National Trust; Dragon's Hope, a story for Hallr Wood commissioned by Summerlands Storytelling Festival. She has been commissioned and performed original stories for Salisbury Cathedral's Craftivate festival. With an MA in creative writing for children from Winchester University, Lizzie regularly writes children's stories for Serial Mash, an online literacy resource for schools."
     },
     "sef-townsend": {
       "id": "sef-townsend",
