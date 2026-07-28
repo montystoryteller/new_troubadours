@@ -2868,48 +2868,73 @@ function refreshEventsData() {
 
   map = initMap("map", updateMapView);
 
-  // Check for URL parameters first
-  const urlParams = getEventURLParams();
-  if (urlParams) {
-    const startDate = urlParams.startDate || getWeekStart(getTodayMidnight());
-    const endDate = urlParams.endDate || getWeekEnd(getWeekStart(startDate));
+  // Check for cached computed events; if not cached, we'll compute in background
+  const computedCache = getSchedulesCache();
+  let showSpinnerTimer = null;
 
-    document.getElementById("storyclubsOn").checked = urlParams.storyclubs;
-    document.getElementById("specialOn").checked = urlParams.special;
-    document.getElementById("showMusic").checked = urlParams.music;
-    document.getElementById("showFolk").checked = urlParams.folk;
-    document.getElementById("showSessions").checked = urlParams.sessions;
+  // Defer heavy event computation to background to allow page structure to render first
+  setTimeout(async () => {
+    // Only show spinner overlay if computation is still running after 1 second
+    showSpinnerTimer = setTimeout(() => {
+      const spinner = document.createElement("div");
+      spinner.id = "event-computing-overlay";
+      spinner.style.cssText =
+        "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;";
+      spinner.innerHTML =
+        '<p style="font-size: 18px; color: #666;">⏳ Computing events…</p>';
+      document.body.appendChild(spinner);
+    }, 1000);
 
-    updateDateInputs(startDate, endDate);
+    // Check for URL parameters to determine which events to display
+    const urlParams = getEventURLParams();
+    if (urlParams) {
+      const startDate = urlParams.startDate || getWeekStart(getTodayMidnight());
+      const endDate = urlParams.endDate || getWeekEnd(getWeekStart(startDate));
 
-    document.getElementById("pinMapView").checked = urlParams.pinmap;
-    document.getElementById("hideCancelled").checked = urlParams.hidecancelled;
-    const hidePastEl = document.getElementById("hidePastEvents");
-    if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
-    console.log("pinmap", urlParams, urlParams.pinmap);
-    mapViewPinned = urlParams.pinmap;
+      document.getElementById("storyclubsOn").checked = urlParams.storyclubs;
+      document.getElementById("specialOn").checked = urlParams.special;
+      document.getElementById("showMusic").checked = urlParams.music;
+      document.getElementById("showFolk").checked = urlParams.folk;
+      document.getElementById("showSessions").checked = urlParams.sessions;
 
-    // Apply specific map view if provided
-    if (urlParams.lat && urlParams.lng && urlParams.zoom) {
-      map.setView([urlParams.lat, urlParams.lng], urlParams.zoom);
-      if (mapViewPinned) {
-        pinnedMapView = {
-          center: [urlParams.lat, urlParams.lng],
-          zoom: urlParams.zoom,
-        };
+      updateDateInputs(startDate, endDate);
+
+      document.getElementById("pinMapView").checked = urlParams.pinmap;
+      document.getElementById("hideCancelled").checked = urlParams.hidecancelled;
+      const hidePastEl = document.getElementById("hidePastEvents");
+      if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
+      console.log("pinmap", urlParams, urlParams.pinmap);
+      mapViewPinned = urlParams.pinmap;
+
+      // Apply specific map view if provided
+      if (urlParams.lat && urlParams.lng && urlParams.zoom) {
+        map.setView([urlParams.lat, urlParams.lng], urlParams.zoom);
+        if (mapViewPinned) {
+          pinnedMapView = {
+            center: [urlParams.lat, urlParams.lng],
+            zoom: urlParams.zoom,
+          };
+        }
       }
-    }
 
-    //  restore search term
-    if (urlParams.searchTerm) {
-      document.getElementById("searchInput").value = urlParams.searchTerm;
+      //  restore search term
+      if (urlParams.searchTerm) {
+        document.getElementById("searchInput").value = urlParams.searchTerm;
 
-      // Behave exactly like "Search All Upcoming"
-      await searchAllUpcoming();
+        // Behave exactly like "Search All Upcoming"
+        await searchAllUpcoming();
+      } else {
+        await displayEvents(startDate, endDate);
+      }
     } else {
-      await displayEvents(startDate, endDate);
+      showThisWeek();
     }
-  } else {
-    showThisWeek();
-  }
-})();
+
+    // Clear spinner if it was shown
+    clearTimeout(showSpinnerTimer);
+    const overlay = document.getElementById("event-computing-overlay");
+    if (overlay) overlay.remove();
+
+    // Mark events as computed and cached for the day
+    setSchedulesCache({ computed: true });
+  }, 0);
