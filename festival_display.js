@@ -1497,13 +1497,14 @@ function renderFestivalPanel(bodyId, wrapperId, entries, hideClass) {
   const body = document.getElementById(bodyId);
   const wrapper = document.getElementById(wrapperId);
   if (!body || !wrapper) return;
+
+  // Clear loading message regardless of whether there are entries
+  body.innerHTML = "";
+
   if (!entries.length) {
     wrapper.classList.add(hideClass);
     return;
   }
-
-  // Clear loading message before appending content
-  body.innerHTML = "";
 
   const grid = document.createElement("div");
   grid.className = "festival-cards-grid";
