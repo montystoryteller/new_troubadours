@@ -6990,12 +6990,44 @@
       "name": "Chasing Crockern (Sidmouth Folk Festival) [Lisa Schneidau & Sara Hurley]",
       "showname": "Chasing Crockern",
       "date": "05/08/2026",
+      "price": "£18 (£10)",
       "venue_id": "manor-pavilion-theatre-sidmouth",
       "performer_ids": ["lisa-schneidau", "sara-hurley"],
       "date_added": "28/07/2026",
       "time": "3-5pm",
       "description": "Storytelling for adults is blended with the sounds and voices of Dartmoor to bring Devon's rich folklore vividly to life for modern audiences. Guided by storytellers Sara Hurley and Lisa Schneidau, you'll hear ancient creation myths and medieval legends, folktales, and everyday adventures in a show that blurs the boundaries between folklore and reality. Whether the moor feels like home or remains a landscape of mystery, Chasing Crockern invites you to discover its enduring magic.\n\n\n\nIncluded in All-in-One Week, All-in-One Weekend, Week Season and Wednesday Day Season tickets. Limited advance event tickets available.\n\n\n\n25 & Under tickets tickets are £10 (limited number). Children (0-11) are free.",
       "ticket_url": "https://tickets.sidmouthfolkfestival.co.uk/events/sidmouthfolkweekproductionsltd/2263960",
+      "wider_event": "sidmouth-folk-festival-2026",
+      "isSpecial": true
+    },
+    {
+      "name": "Dartmoor Folk Tales [Lisa Schneidau & Sara Hurley]",
+      "showname": "Dartmoor Folk Tales",
+      "date": "01/08/2026",
+      "venue_id": "guide-hq-sidmouth",
+      "performer_ids": [
+        "lisa-schneidau",
+        "sara-hurley"
+      ],
+      "date_added": "29/07/2026",
+      "time": "4-5pm",
+      "price": "£12 (£6)",
+      "description": "Tales for families.",
+      "ticket_url": "https://sidmouthfolkfestival.co.uk/tickets/",
+      "wider_event": "sidmouth-folk-festival-2026",
+      "isSpecial": true
+    },
+    {
+      "name": "Dark Fairy Tales for Grown-ups [Lisa Schneidau]",
+      "showname": "Dark Fairy Tales for Grown-ups",
+      "date": "04/08/2026",
+      "venue_id": "old-dissenting-meeting-house-sidmouth",
+      "performer_id": "lisa-schneidau",
+      "date_added": "29/07/2026",
+      "time": "8.30-9.35pm",
+      "price": "£15 (£8)",
+      "description": "Dark tales for adult audiences",
+      "ticket_url": "https://sidmouthfolkfestival.co.uk/tickets/",
       "wider_event": "sidmouth-folk-festival-2026",
       "isSpecial": true
     },
@@ -9007,6 +9039,18 @@
       "latlon": [
         53.1432954,
         -1.5549986
+      ]
+    },
+    "guide-hq-sidmouth": {
+      "id": "guide-hq-sidmouth",
+      "name": "Guide HQ, Sidmouth",
+      "city": "Sidmouth",
+      "postcode": "EX10 9BY",
+      "full_address": "Guide HQ, Lawn Vista, Sidmouth, EX10 9BY",
+      "url": "https://sidmouth.gov.uk/directory/sidmouth-guide-hq/",
+      "latlon": [
+        50.68634,
+        -3.23647
       ]
     },
     "old-dissenting-meeting-house-sidmouth": {
