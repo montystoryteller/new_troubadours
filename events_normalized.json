@@ -1664,6 +1664,24 @@
       "stages": [],
       "schedule": []
     },
+    "sidmouth-folk-festival-2026": {
+      "name": "Sidmouth Folk Festival 2026",
+      "short_name": "Sidmouth Folk 2026",
+      "start_date": "31/07/2026",
+      "end_date": "07/08/2026",
+      "primary_type": "folk-festival",
+      "venue_id": "",
+      "ticket_url": "https://sidmouthfolkfestival.co.uk/tickets/",
+      "website": "https://sidmouthfolkfestival.co.uk/",
+      "facebook": "",
+      "description": "",
+      "event_flyer": "",
+      "performers": [
+      ],
+      "performers_tbc": true,
+      "stages": [],
+      "schedule": []
+    },
     "tree-folk-weekend-2026": {
       "name": "Tree Folk Weekend 2026",
       "short_name": "Treefolk 2026",
@@ -6955,6 +6973,20 @@
       "date_added": "24/07/2026"
     },
     {
+      "name": "Let it bring Hope, Let it be a Tale [David Heathfield]",
+      "showname": "Let it bring Hope, Let it be a Tale",
+      "date": "03/08/2026",
+      "venue_id": "old-dissenting-meeting-house-sidmouth",
+      "performer_id": "david-heathfield",
+      "date_added": "29/07/2026",
+      "time": "7-8pm",
+      "price": "Donation",
+      "description": "Let it bring Hope,\nLet it be a Tale\n\n\n\nDavid Heathfield - Storyteller is joined by Musicians Hannah Martin (of Edgelarks) and Smart Min Wild (of Stepcote Hill) to retell incredible stories shared by young Pa*estinians in and from Ga*a over the last 12 months since their unforgettable 2025 Sidmouth event.\n\n\n\nEntry by donation of any amount on the door, with all proceeds supporting the family fundraisers of Young Storytellers in Ga*a",
+      "event_flyer": "2026_08_03_heathfield_gazans_sidmouth.jpg",
+      "wider_event": "sidmouth-folk-festival-2026",
+      "isSpecial": true
+    },
+    {
       "name": "Chasing Crockern (Sidmouth Folk Festival) [Lisa Schneidau & Sara Hurley]",
       "showname": "Chasing Crockern",
       "date": "05/08/2026",
@@ -6964,6 +6996,7 @@
       "time": "3-5pm",
       "description": "Storytelling for adults is blended with the sounds and voices of Dartmoor to bring Devon's rich folklore vividly to life for modern audiences. Guided by storytellers Sara Hurley and Lisa Schneidau, you'll hear ancient creation myths and medieval legends, folktales, and everyday adventures in a show that blurs the boundaries between folklore and reality. Whether the moor feels like home or remains a landscape of mystery, Chasing Crockern invites you to discover its enduring magic.\n\n\n\nIncluded in All-in-One Week, All-in-One Weekend, Week Season and Wednesday Day Season tickets. Limited advance event tickets available.\n\n\n\n25 & Under tickets tickets are £10 (limited number). Children (0-11) are free.",
       "ticket_url": "https://tickets.sidmouthfolkfestival.co.uk/events/sidmouthfolkweekproductionsltd/2263960",
+      "wider_event": "sidmouth-folk-festival-2026",
       "isSpecial": true
     },
     {
@@ -8974,6 +9007,18 @@
       "latlon": [
         53.1432954,
         -1.5549986
+      ]
+    },
+    "old-dissenting-meeting-house-sidmouth": {
+      "id": "old-dissenting-meeting-house-sidmouth",
+      "name": "Old Dissenting Meeting House, Sidmouth",
+      "city": "Sidmouth",
+      "postcode": "EX10 8EE",
+      "full_address": "Old Dissenting Meeting House, Sidmouth, EX10 8EE",
+      "url": "https://unitariansidmouth.wordpress.com/",
+      "latlon": [
+        50.68197,
+        -3.23817
       ]
     },
     "shed1-distillery": {
@@ -12245,6 +12290,12 @@
       "name": "Shonaleigh",
       "url": "https://shonaleigh.uk/",
       "bio": "Word weaver, tradition bearer and educator\n\n\n\n Shonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working."
+    },
+    "david-heathfield": {
+      "id": "david-heathfield",
+      "name": "David Heathfield",
+      "url": "https://davidheathfieldblog.wordpress.com/",
+      "bio": "David is an international storyteller, teacher trainer and writer of educational resources. He appears at major conferences and festivals as well as more intimate events in Britain and around the world.\n\n\n\nHe tells stories from the world’s oral cultures with a belief in the power of storytelling to bring people together.\n\n\n\nAs a teacher trainer David runs storytelling courses and workshops for teachers and storytellers from diverse backgrounds and with different levels of experience. He also offers one-to-one storytelling coaching."
     },
     "colin-urwin": {
       "id": "colin-urwin",
