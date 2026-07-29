@@ -272,9 +272,20 @@ function buildProgramme(fest) {
     const tour = item.source === "tour" ? item.tour : null;
     const rawTime = ev.time || "";
     const times = parseTimeToMinutes(rawTime);
-    const perfId =
-      item.source === "specific" ? ev.performer_id : tour?.performer_id;
-    const performer = perfId ? performersLookup[perfId]?.name || perfId : "";
+    // Collect performer(s) - handle both single performer_id and plural performer_ids array
+    const perfIds = [];
+    if (item.source === "specific") {
+      if (ev.performer_id) perfIds.push(ev.performer_id);
+      if (Array.isArray(ev.performer_ids)) perfIds.push(...ev.performer_ids);
+    } else {
+      if (tour?.performer_id) perfIds.push(tour.performer_id);
+      if (Array.isArray(tour?.performer_ids))
+        perfIds.push(...tour.performer_ids);
+    }
+    const performer = perfIds
+      .map((id) => performersLookup[id]?.name || id)
+      .filter(Boolean)
+      .join(", ");
     const title =
       ev.showname || (item.source === "specific" ? ev.name : tour?.name) || "";
     // Stage: use ev.stage if present, else try venue short name, else "Festival"
@@ -1042,6 +1053,19 @@ function collectFestivalPerformers(festId, fest) {
     }
     for (const id of ids) {
       if (seen.has(id)) continue; // already listed (explicit takes priority)
+      const rec = performersLookup[id];
+      if (rec) seen.set(id, { id, name: rec.name, role: "", explicit: false });
+    }
+  }
+
+  // 3. Derived from festival schedule items (performer_ids in schedule events)
+  for (const scheduleItem of fest.schedule || []) {
+    const ids = [];
+    if (scheduleItem.performer_id) ids.push(scheduleItem.performer_id);
+    if (Array.isArray(scheduleItem.performer_ids))
+      ids.push(...scheduleItem.performer_ids);
+    for (const id of ids) {
+      if (seen.has(id)) continue; // already listed
       const rec = performersLookup[id];
       if (rec) seen.set(id, { id, name: rec.name, role: "", explicit: false });
     }
