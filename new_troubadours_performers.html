@@ -652,6 +652,7 @@
         let performerId = null;
         let performer = null;
         let compoundIdsForMe = new Set();
+        let pfImgObserver = null;
 
         // ---------------------------------------------------------------------------
         // Bootstrap
@@ -831,6 +832,21 @@
             const params = new URLSearchParams(window.location.search);
             performerId = params.get("performer");
 
+            // Lazy-image observer for performer-page flyer thumbnails
+            // Declare here so it's available to all functions
+            pfImgObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const img = entry.target;
+                    const src = img.dataset.pfSrc;
+                    if (!src) return;
+                    img.src = src;
+                    img.removeAttribute("data-pf-src");
+                    img.addEventListener("load", () => img.classList.add("pf-loaded"));
+                    pfImgObserver.unobserve(img);
+                });
+            }, { rootMargin: "300px 0px" });
+
             if (!performerId) {
                 const loaded = await loadEventsData();
                 if (!loaded) return showNotFound();
@@ -839,6 +855,7 @@
                 performersLookup = loaded.performersLookup;
                 displayDataLastUpdated(loaded.lastUpdateTime);
                 initNavFeedback();
+
                 // Defer heavy rendering to background to allow loading state to display
                 setTimeout(() => {
                     renderAllPerformers();
@@ -1975,19 +1992,8 @@
             if (e.target === document.getElementById("perfFlyerLightbox")) closePerfFlyer();
         });
 
-        // Lazy-image observer for performer-page flyer thumbnails
-        const pfImgObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                const img = entry.target;
-                const src = img.dataset.pfSrc;
-                if (!src) return;
-                img.src = src;
-                img.removeAttribute("data-pf-src");
-                img.addEventListener("load", () => img.classList.add("pf-loaded"));
-                pfImgObserver.unobserve(img);
-            });
-        }, { rootMargin: "300px 0px" });
+        // Lazy-image observer definition moved to top of async IIFE
+        // (before renderPerformer/renderAllPerformers are called)
 
         // Helper used by renderTourCard / renderTouringShowCard / renderEventRow
         function makePerfFlyerThumb(flyerName, label, extraClass) {

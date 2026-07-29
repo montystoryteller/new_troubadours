@@ -242,6 +242,10 @@ function buildProgramme(fest) {
     // it can link through to that performer's page, same as performer_id.
     const hostId = item.host_id || null;
     const host = hostId ? performersLookup[hostId]?.name || hostId : "";
+    const performerIds = [];
+    if (item.performer_id) performerIds.push(item.performer_id);
+    if (Array.isArray(item.performer_ids))
+      performerIds.push(...item.performer_ids);
     programme.push({
       date,
       dateStr: item.date,
@@ -251,6 +255,7 @@ function buildProgramme(fest) {
       stageId: item.stage_id || null,
       title: item.showname || item.name || "",
       performer,
+      performerIds,
       hostId,
       host,
       time: item.time || "",
@@ -262,6 +267,7 @@ function buildProgramme(fest) {
       bookingUrl: item.booking_url || "",
       limitedPlaces: item.limited_places ?? null,
       description: item.description || "",
+      venueId: item.venue_id || null,
       linkedItem: null,
     });
   }
@@ -301,6 +307,7 @@ function buildProgramme(fest) {
       stage,
       title,
       performer,
+      performerIds: perfIds,
       hostId: null,
       host: "",
       time: rawTime,
@@ -309,6 +316,7 @@ function buildProgramme(fest) {
       bookingUrl: "",
       limitedPlaces: null,
       description: ev.description || "",
+      venueId: venueId || null,
       linkedItem: item,
     });
   }
@@ -715,7 +723,24 @@ function showCfTooltip(item, anchor) {
   if (item.performer) {
     const p = document.createElement("div");
     p.className = "cf-tooltip-perf";
-    p.textContent = item.performer;
+    if (item.performerIds && item.performerIds.length > 0) {
+      // Build clickable performer links
+      item.performerIds.forEach((perfId, idx) => {
+        if (idx > 0) {
+          p.appendChild(document.createTextNode(", "));
+        }
+        const perfLink = document.createElement("a");
+        perfLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(perfId)}`;
+        perfLink.style.cssText =
+          "color:inherit;text-decoration:underline;cursor:pointer;";
+        perfLink.title = `View ${performersLookup[perfId]?.name || perfId} profile`;
+        perfLink.textContent = performersLookup[perfId]?.name || perfId;
+        perfLink.onclick = (e) => e.stopPropagation();
+        p.appendChild(perfLink);
+      });
+    } else {
+      p.textContent = item.performer;
+    }
     tip.appendChild(p);
   }
 
@@ -744,7 +769,20 @@ function showCfTooltip(item, anchor) {
 
   const stageEl = document.createElement("div");
   stageEl.className = "cf-tooltip-stage";
-  stageEl.textContent = item.stage;
+  if (item.venueId && venuesLookup[item.venueId]) {
+    const venueName = venuesLookup[item.venueId].name;
+    stageEl.appendChild(document.createTextNode("📍 "));
+    const venueLink = document.createElement("a");
+    venueLink.href = `new_troubadours_venues.html?venue=${encodeURIComponent(item.venueId)}`;
+    venueLink.style.cssText =
+      "color:inherit;text-decoration:underline;cursor:pointer;";
+    venueLink.title = `View ${venueName} page`;
+    venueLink.textContent = venueName;
+    venueLink.onclick = (e) => e.stopPropagation();
+    stageEl.appendChild(venueLink);
+  } else {
+    stageEl.textContent = item.stage;
+  }
   tip.appendChild(stageEl);
 
   if (item.description) {
@@ -1534,12 +1572,24 @@ function buildFestivalCard(festId, fest) {
     card.appendChild(badge);
   }
 
-  // Derived performer names (compact)
+  // Derived performer names (compact, with links)
   const performers = collectFestivalPerformers(festId, fest);
   if (performers.length) {
     const perfEl = document.createElement("div");
     perfEl.className = "festival-card-performers";
-    perfEl.textContent = performers.map((p) => p.name).join(", ");
+    performers.forEach((p, idx) => {
+      if (idx > 0) {
+        perfEl.appendChild(document.createTextNode(", "));
+      }
+      const link = document.createElement("a");
+      link.href = `new_troubadours_performers.html?performer=${encodeURIComponent(p.id)}`;
+      link.className = "venue-page-link";
+      link.title = `View ${p.name} profile`;
+      link.style.cssText = "color:inherit;text-decoration:none;";
+      link.textContent = p.name;
+      link.onclick = (e) => e.stopPropagation();
+      perfEl.appendChild(link);
+    });
     card.appendChild(perfEl);
   }
 
