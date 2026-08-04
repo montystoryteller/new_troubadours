@@ -3996,7 +3996,7 @@
       "link": "https://tistales.org.uk/island-storytellers/",
       "facebook": "https://www.facebook.com/groups/islandstorytellers",
       "club": "islandstorytellers",
-      "venue_id": "calverts-hotel-newport"
+      "venue_id": "chine-inn-shanklin"
     },
     {
       "name": "Legendaery, Norwich",
@@ -8174,6 +8174,18 @@
       "latlon": [
         50.92766,
         -1.79055
+      ]
+    },
+    "chine-inn-shanklin": {
+      "id": "chine-inn-shanklin",
+      "name": "Chine Inn, Shanklin",
+      "city": "Shanklin",
+      "postcode": "PO37 6BW",
+      "full_address": "Chine Inn, 1 Chine Avenue, Shanklin, Isle of Wight, PO37 6BW",
+      "url": "https://www.facebook.com/albionpalace.co.uk/",
+      "latlon": [
+        50.62592,
+        -1.17813
       ]
     },
     "calverts-hotel-newport": {
