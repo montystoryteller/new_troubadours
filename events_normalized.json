@@ -1803,6 +1803,111 @@
     }
   },
   "tours": {
+    "attila-fiery-words-autumn-2026": {
+      "tour_name": "Fiery Words for Hellish Times",
+      "name": "Attila the Stockbroker, Autumn 2026",
+      "tour_dates": [
+        {
+          "date": "04/09/2026",
+          "venue_id": "quay-arts-newport",
+          "isSpecial": true
+        },
+        {
+          "date": "12/09/2026",
+          "venue_id": "ltbshowrooms-coventry",
+          "isSpecial": true
+        },
+        {
+          "date": "17/09/2026",
+          "venue_id": "wharf-chambers-leeds",
+          "isSpecial": true
+        },
+        {
+          "date": "18/09/2026",
+          "venue_id": "forum-darlington",
+          "isSpecial": true
+        },
+        {
+          "date": "21/09/2026",
+          "venue_id": "artisan-tap-stoke",
+          "isSpecial": true
+        },
+        {
+          "date": "04/10/2026",
+          "venue_id": "dublin-castle-camden",
+          "isSpecial": true
+        },
+        {
+          "date": "24/10/2026",
+          "venue_id": "the-riverfront-newport",
+          "isSpecial": true
+        },
+        {
+          "date": "31/10/2026",
+          "venue_id": "station-hotel-ashton-under-lyne",
+          "isSpecial": true
+        },
+        {
+          "date": "04/11/2026",
+          "venue_id": "macarts-galashiels",
+          "isSpecial": true
+        },
+        {
+          "date": "05/11/2026",
+          "venue_id": "the-mill-cafe-gatehouse-of-fleet",
+          "isSpecial": true
+        },
+        {
+          "date": "06/11/2026",
+          "venue_id": "50rpm-coatbridge",
+          "isSpecial": true
+        },
+        {
+          "date": "07/11/2026",
+          "venue_id": "hillgigs-thornhill",
+          "isSpecial": true
+        },
+        {
+          "date": "08/11/2026",
+          "venue_id": "clarks-on-lindsay-street-dundee",
+          "isSpecial": true
+        },
+        {
+          "date": "10/11/2026",
+          "venue_id": "krakatoa-aberdeen",
+          "isSpecial": true
+        },
+        {
+          "date": "11/11/2026",
+          "venue_id": "upstairs-at-gellions-bar-inverness",
+          "isSpecial": true
+        },
+        {
+          "date": "12/11/2026",
+          "venue_id": "the-aurrie-mor-lower-largo",
+          "isSpecial": true
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "bowling-club-rothesay",
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "adelphi-hull",
+          "isSpecial": true
+        },
+        {
+          "date": "11/12/2026",
+          "venue_id": "jenny-lind-hastings",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "attila-the-stockbroker",
+      "tour_description": "Autumn 2026 tour to celebrate his 10th book of poems, \"Fiery Words for Hellish Times\".",
+      "touring_event_flyer": "tour_attilia_autumn_2026.jpeg",
+      "isSpecial": true
+    },
     "debs-newbold-dauntless-2026": {
       "tour_name": "Dauntless (2026)",
       "name": "Dauntless",
@@ -11491,6 +11596,194 @@
         51.84886,
         1.27135
       ]
+    },
+    "wharf-chambers-leeds": {
+      "id": "wharf-chambers-leeds",
+      "name": "Wharf Chambers, Leeds",
+      "city": "Leeds",
+      "postcode": "LS2 7EQ",
+      "full_address": "Wharf Chambers, 23-25 Wharf Street, Leeds, LS2 7EQ",
+      "url": "https://wharfchambers.org/",
+      "latlon": [
+        53.79559,
+        -1.53794
+      ]
+    },
+    "forum-darlington": {
+      "id": "forum-darlington",
+      "name": "Forum, Darlington",
+      "city": "Darlington",
+      "postcode": "DL1 1 SG",
+      "full_address": "The Forum Music Studios, Borough Road, Darlington, DL1 1 SG",
+      "url": "https://theforumonline.co.uk/",
+      "latlon": [
+        54.52533,
+        -1.54762
+      ]
+    },
+    "artisan-tap-stoke": {
+      "id": "artisan-tap-stoke",
+      "name": "Artisan Tap, Stoke",
+      "city": "Stoke",
+      "postcode": "ST4 6AF",
+      "full_address": "Artisan Tap, 552 Hartshill Rd, Stoke, ST4 6AF",
+      "url": "https://www.artisantap.com/",
+      "latlon": [
+        53.01102,
+        -2.21156
+      ]
+    },
+    "dublin-castle-camden": {
+      "id": "dublin-castle-camden",
+      "name": "Dublin Castle, Camden",
+      "city": "Cambden",
+      "postcode": "NW1 7AN",
+      "full_address": "Dublin Castle, 94 Parkway, Camden, London, NW1 7AN",
+      "url": "https://thedublincastle.com/",
+      "latlon": [
+        51.53751,
+        -0.14581
+      ]
+    },
+    "station-hotel-ashton-under-lyne": {
+      "id": "station-hotel-ashton-under-lyne",
+      "name": "Station Hotel, Ashton-under-Lyne",
+      "city": "Ashton-under-Lyne",
+      "postcode": "OL6 6XB",
+      "full_address": "Station Hotel, 2, Warrington Street, Ashton-under-Lyne, OL6 6XB",
+      "url": "https://www.facebook.com/TheStationHotelAUL/",
+      "latlon": [
+        53.4867,
+        -2.09233
+      ]
+    },
+    "macarts-galashiels": {
+      "id": "macarts-galashiels",
+      "name": "MacArts, Galashiels",
+      "city": "Galashiels",
+      "postcode": "TD1 1SP",
+      "full_address": "MacArts, Bridge Street, Galashiels, TD1 1SP",
+      "url": "https://www.macarts.scot/",
+      "latlon": [
+        55.61833,
+        -2.81037
+      ]
+    },
+    "the-mill-cafe-gatehouse-of-fleet": {
+      "id": "the-mill-cafe-gatehouse-of-fleet",
+      "name": "The Mill Cafe, Gatehouse of Fleet",
+      "city": "Gatehouse of Fleet",
+      "postcode": "DG7 2HS",
+      "full_address": "Mill on the Fleet, High Street, Gatehouse of Fleet, DG7 2HS",
+      "url": "https://millonthefleet.co.uk/",
+      "latlon": [
+        54.88149,
+        -4.18553
+      ]
+    },
+    "50rpm-coatbridge": {
+      "id": "50rpm-coatbridge",
+      "name": "50rpm, Coatbridge",
+      "city": "Coatbridge",
+      "postcode": "ML5 1LZ",
+      "full_address": "50rpm, 26 Lefroy Street, Coatbridge, ML5 1LZ",
+      "url": "https://www.50rpm.co.uk/",
+      "latlon": [
+        55.86284,
+        -4.03888
+      ]
+    },
+    "hillgigs-thornhill": {
+      "id": "hillgigs-thornhill",
+      "name": "HillGigs, Thornhill",
+      "city": "Thornhill",
+      "postcode": "FK8 3PT",
+      "full_address": "33, The Hill, Thornhill, FK8 3PT",
+      "url": "https://charliegracie.scot/category/events-and-projects",
+      "latlon": [
+        56.17313,
+        -4.15562
+      ]
+    },
+    "clarks-on-lindsay-street-dundee": {
+      "id": "clarks-on-lindsay-street-dundee",
+      "name": "Clarks on Lindsay Street, Dundee",
+      "city": "Dundee",
+      "postcode": "DD1 1PS",
+      "full_address": "Clarks on Lindsay Street, 80 North Lindsay Street. Dundee, DD1 1PS",
+      "url": "https://www.clarksonlindsaystreet.co.uk/",
+      "latlon": [
+        56.46107,
+        -2.97651
+      ]
+    },
+    "krakatoa-aberdeen": {
+      "id": "krakatoa-aberdeen",
+      "name": "Krakatoa, Aberdeen",
+      "city": "Aberdeen",
+      "postcode": "AB11 5AA",
+      "full_address": "Krakatoa, 2 Trinity Quay, Aberdeen, AB11 5AA",
+      "url": "https://krakatoa.bar/",
+      "latlon": [
+        57.1458,
+        -2.09507
+      ]
+    },
+    "upstairs-at-gellions-bar-inverness": {
+      "id": "upstairs-at-gellions-bar-inverness",
+      "name": "Upstairs at Gellions Bar, Inverness",
+      "city": "Inverness",
+      "postcode": "IV1 1HD",
+      "full_address": "Gellions Bar, 14 Bridge St, Inverness, IV1 1HD",
+      "url": "https://www.gellions.com/"
+    },
+    "the-aurrie-mor-lower-largo": {
+      "id": "the-aurrie-mor-lower-largo",
+      "name": "The Aurrie Mor, Lower Largo",
+      "city": "Leven",
+      "postcode": "KY8 6BT",
+      "full_address": "The Aurrie, 68 Main Street, Lower Largo, Fife, KY8 6BT",
+      "url": "https://www.theaurrie.com/mor.html",
+      "latlon": [
+        56.21261,
+        -2.93676
+      ]
+    },
+    "bowling-club-rothesay": {
+      "id": "bowling-club-rothesay",
+      "name": "Bowling Club, Rothesay",
+      "city": "Rothesay",
+      "postcode": "PA20 0JH",
+      "full_address": "Rothesay Bowling Club, Isle of Bute, PA20 0JH",
+      "url": "https://rothesaybowlingclub.weebly.com/",
+      "latlon": [
+        55.83623,
+        -5.06268
+      ]
+    },
+    "adelphi-hull": {
+      "id": "adelphi-hull",
+      "name": "Adelphi, Hull",
+      "city": "Hull",
+      "postcode": "HU5 2RU",
+      "full_address": "The New Adelphi Club, 89 De Grey Street, Beverley Road, Hull, HU5 2RU",
+      "url": "https://www.theadelphi.com/",
+      "latlon": [
+        53.76233,
+        -0.35512
+      ]
+    },
+    "jenny-lind-hastings": {
+      "id": "jenny-lind-hastings",
+      "name": "Jenny Lind, Hastings",
+      "city": "Hastings",
+      "postcode": "TN34 3EW",
+      "full_address": "The Jenny Lind Inn, 69 High St, Hastings, TN34 3EW",
+      "url": "https://jennylindhastings.co.uk/",
+      "latlon": [
+        50.85739,
+        0.5914
+      ]
     }
   },
   "performers": {
@@ -11712,6 +12005,12 @@
       "name": "Cath Edwards | Matt Vaughan",
       "url": "",
       "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs.\n\n\n\nMatthew is a storyteller of 10 years experience. He has worked since 2011 in a Public Library Service in the East-Midlands and has been lucky enough to be able to develop his storytelling practice in his professional environment, performing stories and providing interactive workshops to audiences of all ages. He has worked in early years settings, primary and secondary schools and performed in clubs. He loves to perform international folk tales and wonder tales of all kinds as well as having particular interest in the stories of working folk of Britain, drawing on stories from his own coal mining heritage and beyond, and stories about nature the wild places of this world."
+    },
+    "attila-the-stockbroker": {
+      "id": "attila-the-stockbroker",
+      "name": "Attila the Stockbroker",
+      "url": "https://attilathestockbroker.com/",
+      "bio": "Punk poet, dub ranter, singer-songwriter, early music punk pioneer, writer and social commentator."
     },
     "tony-monty-hirst": {
       "id": "tony-monty-hirst",
