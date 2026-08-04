@@ -285,12 +285,11 @@ select {
     border-left: 4px solid #4CAF50;
     border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .tour-date-item:hover {
-    transform: translateX(5px);
-    box-shadow: -4px 0 0 #2e7d32;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background-color: #f0f0f0;
     border-left-color: #2e7d32;
 }
@@ -303,7 +302,6 @@ select {
 
 .tour-date-item.music:hover {
     filter: brightness(1.1);
-    transform: translateX(5px);
 }
 
 /* Past date styling */
