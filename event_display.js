@@ -17,10 +17,102 @@ const EVENT_TYPES = {
   SESSION: "session",
   FOLK: "folk",
   MUSIC: "music",
+  POETRY: "poetry",
   SPECIAL: "special",
   STORYCLUB: "storyclub",
   FESTIVAL: "festival",
 };
+
+// ---------------------------------------------------------------------------
+// Event type registry — single source of truth for how type flags like
+// isMusic/isPoetry/isFolk map to tour processing, ticketed-event fields,
+// one-off event arrays, and filter checkboxes. To add a new type-flag
+// (e.g. isComedy), add one entry to the relevant table below; the
+// processing/filtering/search/shareable-URL/checkbox-sync logic all read
+// from these tables instead of hardcoding each flag individually.
+// ---------------------------------------------------------------------------
+
+// Types a *tour* can be flagged as via a top-level tour.isX boolean, in
+// priority order (first true flag wins if more than one is somehow set).
+// Used by processTourEvents() and searchAllUpcoming() so a new tour-level
+// type flag only needs to be added here.
+const TOUR_TYPE_FLAGS = [
+  { flag: "isMusic", type: EVENT_TYPES.MUSIC },
+  { flag: "isPoetry", type: EVENT_TYPES.POETRY },
+  { flag: "isSpecial", type: EVENT_TYPES.SPECIAL },
+];
+
+function getTourEventType(tour) {
+  const match = TOUR_TYPE_FLAGS.find(({ flag }) => tour && tour[flag]);
+  return match ? match.type : null;
+}
+
+// Event types that carry the "ticketed one-off" extra fields (tour_id,
+// performer, description, flyers, ticket_url, etc.) in createEventData(),
+// and get the club-badge + tickets section on the event card.
+const TICKETED_EVENT_TYPES = new Set([
+  EVENT_TYPES.SPECIAL,
+  EVENT_TYPES.MUSIC,
+  EVENT_TYPES.POETRY,
+]);
+
+function isTicketedEvent(eventData) {
+  return TICKETED_EVENT_TYPES.has(getEventType(eventData));
+}
+
+// One-off event arrays in eventsData that are processed identically to
+// specificEvents (flat list, .date/.datetimes, no schedule/exceptions).
+// Add a tuple here (plus the matching array in your data + schema) to
+// support a new one-off event category — processSpecialEvents() and the
+// searchAllUpcoming() flat-event search loop both read this table.
+const FLAT_EVENT_SOURCES = [
+  { dataKey: "specificEvents", type: EVENT_TYPES.SPECIAL },
+  { dataKey: "musicEvents", type: EVENT_TYPES.MUSIC },
+  { dataKey: "poetryEvents", type: EVENT_TYPES.POETRY },
+];
+
+// Simple type-toggle filter checkboxes (excludes storyclubsOn/specialOn,
+// which have bespoke show-logic in shouldShowEvent()). Each entry drives:
+// the checkbox element id, the eventData boolean flag it reads, the CSS
+// class used on .event elements (assumed to be the flag name minus its
+// "is" prefix, lowercased — e.g. isMusic -> "music"), the shareable-URL
+// param name, its default checked state, and whether a completely-empty
+// URL (noneSelected) should fall back to "on" for it (matches the prior
+// folk/sessions behaviour; music/poetry intentionally stay off).
+const EVENT_TYPE_FILTERS = [
+  {
+    id: "showMusic",
+    flag: "isMusic",
+    param: "music",
+    default: false,
+    noneSelectedFallback: false,
+  },
+  {
+    id: "showPoetry",
+    flag: "isPoetry",
+    param: "poetry",
+    default: false,
+    noneSelectedFallback: false,
+  },
+  {
+    id: "showFolk",
+    flag: "isFolk",
+    param: "folk",
+    default: false,
+    noneSelectedFallback: true,
+  },
+  {
+    id: "showSessions",
+    flag: "isSession",
+    param: "sessions",
+    default: false,
+    noneSelectedFallback: true,
+  },
+];
+
+function eventTypeFilterClass(flag) {
+  return flag.replace(/^is/, "").toLowerCase();
+}
 
 const DAYS_OF_WEEK = [
   "Sunday",
@@ -509,6 +601,7 @@ function createEventData(baseEvent, date, eventType) {
     isStoryclub: eventType === "storyclub",
     isSpecial: eventType === "special",
     isMusic: eventType === "music",
+    isPoetry: eventType === "poetry",
     isFolk: eventType === "folk",
     isSession: eventType === "session",
     isRepertoireShow: !!baseEvent.isRepertoireShow,
@@ -539,7 +632,7 @@ function createEventData(baseEvent, date, eventType) {
     }
   }
 
-  if (eventType === "special" || eventType === "music") {
+  if (TICKETED_EVENT_TYPES.has(eventType)) {
     eventData.tour_id = baseEvent.tour_id || null;
     eventData.club = baseEvent.club || null;
 
@@ -785,8 +878,8 @@ async function processTourEvents(startDate, endDate) {
   for (const tourKey in tours) {
     const tour = tours[tourKey];
 
-    if (!tour.isMusic && !tour.isSpecial) continue;
-    const eventType = tour.isMusic ? "music" : "special";
+    const eventType = getTourEventType(tour);
+    if (!eventType) continue;
 
     await forEachDateInRange(
       tour.tour_dates,
@@ -1065,18 +1158,9 @@ async function displayEvents(startDate, endDate) {
   );
 
   // Process one-off events (these don't have schedules/exceptions)
-  await processSpecialEvents(
-    eventsData.specificEvents,
-    "special",
-    startDate,
-    endDate,
-  );
-  await processSpecialEvents(
-    eventsData.musicEvents,
-    "music",
-    startDate,
-    endDate,
-  );
+  for (const { dataKey, type } of FLAT_EVENT_SOURCES) {
+    await processSpecialEvents(eventsData[dataKey], type, startDate, endDate);
+  }
 
   // Add tour dates
   await processTourEvents(startDate, endDate);
@@ -1142,11 +1226,15 @@ function fitMapToEvents() {
   map.fitBounds(bounds, { padding: [50, 50] });
 }
 
-// Color coding: grey for story clubs, green for special events, blue for music
+// Color coding: grey for story clubs, green for special events, blue for music,
+// magenta for poetry (chosen over pastel pink for contrast against the
+// existing green/grey/indigo/brown palette, and to read as "punk" rather
+// than soft/gentle)
 const EVENT_COLORS = {
   session: "#90ee90",
   folk: "#8b4513",
   music: "#443cd7",
+  poetry: "#d6006e",
   special: "#4CAF50",
   storyclub: "#808080",
   festival: "#1b5e20",
@@ -1157,6 +1245,7 @@ const EVENT_MARKER_CONFIG = {
   session: { radius: 8, fillOpacity: 0.8 },
   folk: { radius: 8, fillOpacity: 0.8 },
   music: { radius: 8, fillOpacity: 0.8 },
+  poetry: { radius: 8, fillOpacity: 0.8 },
   special: { radius: 8, fillOpacity: 0.8 },
   storyclub: { radius: 8, fillOpacity: 0.7 },
   festival: { radius: 11, fillOpacity: 0.9 },
@@ -1169,6 +1258,7 @@ function getEventType(eventData) {
   if (eventData.isSession) return EVENT_TYPES.SESSION;
   if (eventData.isFolk) return EVENT_TYPES.FOLK;
   if (eventData.isMusic) return EVENT_TYPES.MUSIC;
+  if (eventData.isPoetry) return EVENT_TYPES.POETRY;
   if (eventData.isSpecial) return EVENT_TYPES.SPECIAL;
   if (eventData.isStoryclub) return EVENT_TYPES.STORYCLUB;
   return "default";
@@ -1512,7 +1602,7 @@ function createPerformerSection(event) {
       perfPageLink.onclick = (e) => e.stopPropagation();
       performerDiv.appendChild(perfPageLink);
 
-      if ((event.isSpecial || event.isMusic) && event.club) {
+      if (isTicketedEvent(event) && event.club) {
         performerDiv.appendChild(document.createTextNode(" ["));
 
         const clubLink = document.createElement("a");
@@ -1635,7 +1725,7 @@ function createDateSection(event) {
 }
 
 function createTicketsSection(event) {
-  if (!event.isSpecial && !event.isMusic) return null;
+  if (!isTicketedEvent(event)) return null;
 
   // Multi-show case: show_times holds [{time, ticket_url, price}, ...]
   if (Array.isArray(event.show_times) && event.show_times.length > 0) {
@@ -2124,17 +2214,15 @@ function formatDate(date) {
 // formatDateForInput() — defined in shared_utils.js
 
 function shouldShowEvent(eventData, filters) {
-  const { storyclubsOn, specialOn, showMusic, showFolk, showSessions } =
-    filters;
+  const { storyclubsOn, specialOn } = filters;
 
   if (eventData.isFestival && specialOn) return true;
   if (storyclubsOn && eventData.isStoryclub) return true;
   if (specialOn && eventData.isSpecial) return true;
-  if (showMusic && eventData.isMusic) return true;
-  if (showFolk && eventData.isFolk) return true;
-  if (showSessions && eventData.isSession) return true;
 
-  return false;
+  return EVENT_TYPE_FILTERS.some(
+    ({ flag, param }) => filters[param] && eventData[flag],
+  );
 }
 
 function filterEvents() {
@@ -2146,29 +2234,22 @@ function filterEvents() {
   const filters = {
     storyclubsOn: document.getElementById("storyclubsOn").checked,
     specialOn: document.getElementById("specialOn").checked,
-    showMusic: document.getElementById("showMusic").checked,
-    showFolk: document.getElementById("showFolk").checked,
-    showSessions: document.getElementById("showSessions").checked,
   };
+  EVENT_TYPE_FILTERS.forEach(({ id, param }) => {
+    filters[param] = document.getElementById(id).checked;
+  });
 
   // Filter event list items
   document.querySelectorAll(".event").forEach((event) => {
     const isStoryclub = event.classList.contains("storyclub");
     const isSpecial = event.classList.contains("special");
     const isFestival = event.classList.contains("festival");
-    const isMusic = event.classList.contains("music");
-    const isFolk = event.classList.contains("folk");
-    const isSession = event.classList.contains("session");
     const isCancelled = event.classList.contains("event-cancelled");
 
-    const eventData = {
-      isStoryclub,
-      isSpecial,
-      isFestival,
-      isMusic,
-      isFolk,
-      isSession,
-    };
+    const eventData = { isStoryclub, isSpecial, isFestival };
+    EVENT_TYPE_FILTERS.forEach(({ flag }) => {
+      eventData[flag] = event.classList.contains(eventTypeFilterClass(flag));
+    });
     let visible = shouldShowEvent(eventData, filters);
 
     if (visible && hideCancelled && isCancelled) {
@@ -2363,51 +2444,34 @@ async function searchAllUpcoming() {
     futureDate,
   );
 
-  // Search specific events (story shows)
-  for (const event of eventsData.specificEvents || []) {
-    const hasDatetimes =
-      Array.isArray(event.datetimes) && event.datetimes.length > 0;
-    if (!hasDatetimes && !event.date) continue;
+  // Search flat one-off events (special/music/poetry — see FLAT_EVENT_SOURCES)
+  for (const { dataKey, type } of FLAT_EVENT_SOURCES) {
+    for (const event of eventsData[dataKey] || []) {
+      const hasDatetimes =
+        Array.isArray(event.datetimes) && event.datetimes.length > 0;
+      if (!hasDatetimes && !event.date) continue;
 
-    if (buildEventSearchText(event).includes(searchTerm)) {
-      const expanded = expandDatetimes(event);
-      for (const { flatEvent, date: eventDate } of expanded) {
-        if (!eventDate) continue;
-        if (eventDate >= today && eventDate <= futureDate) {
-          const eventData = createEventData(flatEvent, eventDate, "special");
-          allEventsData.push(eventData);
-          await addMarkerForEvent(eventData);
+      if (buildEventSearchText(event).includes(searchTerm)) {
+        const expanded = expandDatetimes(event);
+        for (const { flatEvent, date: eventDate } of expanded) {
+          if (!eventDate) continue;
+          if (eventDate >= today && eventDate <= futureDate) {
+            const eventData = createEventData(flatEvent, eventDate, type);
+            allEventsData.push(eventData);
+            await addMarkerForEvent(eventData);
+          }
         }
       }
     }
   }
 
-  // Search music events
-  for (const event of eventsData.musicEvents || []) {
-    if (!event.date) continue;
-    if (buildEventSearchText(event).includes(searchTerm)) {
-      const expanded = expandDatetimes(event);
-      for (const { flatEvent, date: eventDate } of expanded) {
-        if (!eventDate) continue;
-        if (eventDate >= today && eventDate <= futureDate) {
-          const eventData = createEventData(flatEvent, eventDate, "music");
-          allEventsData.push(eventData);
-          await addMarkerForEvent(eventData);
-        }
-      }
-    }
-  }
-
-  // Search tour events (special and music tours)
+  // Search tour events (any TOUR_TYPE_FLAGS type — music/poetry/special)
   const tours = eventsData.tours || {};
   for (const tourKey in tours) {
     const tour = tours[tourKey];
 
-    // Skip tours that are neither music nor special
-    if (!tour.isMusic && !tour.isSpecial) continue;
-
-    // Determine event type (same as processTourEvents)
-    const eventType = tour.isMusic ? "music" : "special";
+    const eventType = getTourEventType(tour);
+    if (!eventType) continue;
 
     for (const tourDate of tour.tour_dates || []) {
       if (!tourDate.date) continue;
@@ -2629,12 +2693,12 @@ function handleEndDateChange() {
 const EVENT_FILTER_DEFAULTS = {
   storyclubs: true,
   special: true,
-  music: false,
-  folk: false,
-  sessions: false,
   hidecancelled: true,
   hidepast: false,
 };
+EVENT_TYPE_FILTERS.forEach(({ param, default: def }) => {
+  EVENT_FILTER_DEFAULTS[param] = def;
+});
 
 function generateShareableURL(startDate, endDate) {
   const params = new URLSearchParams();
@@ -2659,12 +2723,12 @@ function generateShareableURL(startDate, endDate) {
   const currentFilters = {
     storyclubs: document.getElementById("storyclubsOn").checked,
     special: document.getElementById("specialOn").checked,
-    music: document.getElementById("showMusic").checked,
-    folk: document.getElementById("showFolk").checked,
-    sessions: document.getElementById("showSessions").checked,
     hidecancelled: document.getElementById("hideCancelled").checked,
     hidepast: !!(hidePastEl && hidePastEl.checked),
   };
+  EVENT_TYPE_FILTERS.forEach(({ id, param }) => {
+    currentFilters[param] = document.getElementById(id).checked;
+  });
   Object.entries(currentFilters).forEach(([key, value]) => {
     if (value !== EVENT_FILTER_DEFAULTS[key]) {
       params.set(key, value ? "1" : "0");
@@ -2730,9 +2794,10 @@ function getEventURLParams() {
 
   const storyclubs = params.get("storyclubs") === "1";
   const special = params.get("special") === "1";
-  const music = params.get("music") === "1";
-  const folk = params.get("folk") === "1";
-  const sessions = params.get("sessions") === "1";
+  const typeParams = {};
+  EVENT_TYPE_FILTERS.forEach(({ param }) => {
+    typeParams[param] = params.get(param) === "1";
+  });
   const pinmap = params.get("pinmap") === "1";
   // hidecancelled defaults to true (checked) when absent from URL
   const hidecancelledParam = params.get("hidecancelled");
@@ -2743,10 +2808,14 @@ function getEventURLParams() {
   const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
   const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
   const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
-  // If none are selected, default storyclubs and special to true
-  const noneSelected = !storyclubs && !special && !music && !folk && !sessions;
+  // If none are selected, default storyclubs/special (and any type filter
+  // with noneSelectedFallback: true, e.g. folk/sessions) to true.
+  const noneSelected =
+    !storyclubs &&
+    !special &&
+    EVENT_TYPE_FILTERS.every(({ param }) => !typeParams[param]);
 
-  return {
+  const result = {
     // A bare "?q=..." link (no start param) has no date range of its own —
     // the caller falls back to the current week for the date inputs, since
     // the search itself always covers today through +2 years regardless.
@@ -2754,9 +2823,6 @@ function getEventURLParams() {
     endDate: end ? new Date(end) : null,
     storyclubs: noneSelected ? true : storyclubs,
     special: noneSelected ? true : special,
-    folk: noneSelected ? true : folk,
-    sessions: noneSelected ? true : sessions,
-    music: music,
     pinmap: pinmap,
     hidecancelled: hidecancelled,
     hidepast: hidepast,
@@ -2765,6 +2831,11 @@ function getEventURLParams() {
     zoom: zoom,
     searchTerm: q,
   };
+  EVENT_TYPE_FILTERS.forEach(({ param, noneSelectedFallback }) => {
+    result[param] =
+      noneSelected && noneSelectedFallback ? true : typeParams[param];
+  });
+  return result;
 }
 
 function toggleTabContent(tabId, event) {
@@ -2845,6 +2916,7 @@ function refreshEventsData() {
   console.log(`  - ${eventsData.events?.length || 0} recurring events`);
   console.log(`  - ${eventsData.specificEvents?.length || 0} specific events`);
   console.log(`  - ${eventsData.musicEvents?.length || 0} music events`);
+  console.log(`  - ${eventsData.poetryEvents?.length || 0} poetry events`);
   console.log(`  - ${eventsData.folkNights?.length || 0} folk nights`);
   console.log(`  - ${eventsData.irishSessions?.length || 0} Irish sessions`);
   console.log(
@@ -2865,6 +2937,7 @@ function refreshEventsData() {
   checkMissing(eventsData.events, "recurring events");
   checkMissing(eventsData.specificEvents, "specific events");
   checkMissing(eventsData.musicEvents, "music events");
+  checkMissing(eventsData.poetryEvents, "poetry events");
 
   map = initMap("map", updateMapView);
 
@@ -2897,9 +2970,9 @@ function refreshEventsData() {
 
       document.getElementById("storyclubsOn").checked = urlParams.storyclubs;
       document.getElementById("specialOn").checked = urlParams.special;
-      document.getElementById("showMusic").checked = urlParams.music;
-      document.getElementById("showFolk").checked = urlParams.folk;
-      document.getElementById("showSessions").checked = urlParams.sessions;
+      EVENT_TYPE_FILTERS.forEach(({ id, param }) => {
+        document.getElementById(id).checked = urlParams[param];
+      });
 
       updateDateInputs(startDate, endDate);
 

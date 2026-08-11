@@ -13,6 +13,7 @@
     "workshops":        { "type": "array", "items": { "$ref": "#/$defs/workshop" } },
     "specificEvents":   { "type": "array", "items": { "$ref": "#/$defs/specificEvent" } },
     "musicEvents":      { "type": "array", "items": { "$ref": "#/$defs/musicEvent" } },
+    "poetryEvents":     { "type": "array", "items": { "$ref": "#/$defs/poetryEvent" } },
     "folkNights":       { "type": "array", "items": { "$ref": "#/$defs/folkNight" } },
     "irishSessions":    { "type": "array", "items": { "$ref": "#/$defs/irishSession" } },
     "spokenword":       { "type": "array", "items": { "$ref": "#/$defs/spokenWordNight" } },
@@ -127,6 +128,7 @@
         "tour_flyer":           { "type": "string", "description": "Legacy alias for touring_event_flyer — either name is accepted." },
         "isSpecial":            { "type": "boolean" },
         "isMusic":              { "type": "boolean" },
+        "isPoetry":             { "type": "boolean", "description": "Marks this as a punk-poetry/spoken-word tour, styled with its own colour band on the events calendar." },
         "performer_id":         { "type": "string", "description": "Key into the top-level `performers` object." },
         "performer_ids":        { "type": "array", "items": { "type": "string" }, "description": "For multi-performer tours." },
         "video_trailer":        { "$ref": "#/$defs/youtubeUrl", "description": "Tour-level YouTube trailer, shown on the tour page and in the flyers page's Video Trailers section. Individual tour_dates entries may override this per-date." },
@@ -244,6 +246,30 @@
         "ticket_url":     { "type": "string" },
         "fb_event":       { "type": ["string", "integer"] },
         "isMusic":        { "type": "boolean", "default": true },
+        "isSpecial":      { "type": "boolean" },
+        "performer_id":   { "type": "string" },
+        "venue_id":       { "type": "string" }
+      },
+      "required": ["name", "date", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "poetryEvent": {
+      "description": "A one-off spoken-word/punk-poetry event (poetryEvents[] array) — same shape as musicEvent/specificEvent but always implicitly isPoetry.",
+      "type": "object",
+      "properties": {
+        "name":           { "type": "string" },
+        "showname":       { "type": "string" },
+        "date":           { "$ref": "#/$defs/dateOrDates" },
+        "time":           { "type": "string" },
+        "club":           { "type": "string" },
+        "price":          { "type": "string" },
+        "description":    { "type": "string" },
+        "event_flyer":    { "type": "string" },
+        "tour_flyer":     { "type": "string", "description": "Rare — used when a poetry event is also linked to a tour-level flyer." },
+        "ticket_url":     { "type": "string" },
+        "fb_event":       { "type": ["string", "integer"] },
+        "isPoetry":       { "type": "boolean", "default": true },
         "isSpecial":      { "type": "boolean" },
         "performer_id":   { "type": "string" },
         "venue_id":       { "type": "string" }

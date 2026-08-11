@@ -59,6 +59,11 @@
             border-color: #443cd7;
         }
 
+        .filter-btn[data-type="poetry"].active {
+            background: #d6006e;
+            border-color: #d6006e;
+        }
+
         .filter-btn[data-type="tour"].active {
             background: #795548;
             border-color: #795548;
@@ -77,6 +82,12 @@
         .filter-btn[data-type="music"]:not(.active):hover {
             border-color: #443cd7;
             color: #443cd7;
+            background: white;
+        }
+
+        .filter-btn[data-type="poetry"]:not(.active):hover {
+            border-color: #d6006e;
+            color: #d6006e;
             background: white;
         }
 
@@ -393,6 +404,10 @@
             background: #443cd7;
         }
 
+        .flyer-card[data-type="poetry"]::before {
+            background: #d6006e;
+        }
+
         .flyer-card[data-type="tour"]::before {
             background: #795548;
         }
@@ -477,6 +492,10 @@
 
         [data-type="music"] .type-badge {
             background: rgba(68, 60, 215, 0.88);
+        }
+
+        [data-type="poetry"] .type-badge {
+            background: rgba(214, 0, 110, 0.88);
         }
 
         [data-type="tour"] .type-badge {
@@ -979,6 +998,7 @@
         <button class="filter-btn active" data-type="club" onclick="toggleFilter('club')">🏠 Club regulars</button>
         <button class="filter-btn active" data-type="tour" onclick="toggleFilter('tour')">🎭 Tours</button>
         <button class="filter-btn active" data-type="music" onclick="toggleFilter('music')">🎵 Music</button>
+        <button class="filter-btn active" data-type="poetry" onclick="toggleFilter('poetry')">✒️ Poetry</button>
         <button class="filter-btn active" data-type="festival" onclick="toggleFilter('festival')">🎪 Festivals</button>
         <div class="filter-divider"></div>
         <button class="filter-btn filter-btn-compact" onclick="selectAll()">All</button>
@@ -1067,7 +1087,8 @@
                 if (search) p.set("q", search);
                 p.set("storyclubs", "1");
                 p.set("special", "1");
-                if (item.type === "music") p.set("music", "1");
+                if (item.type === "music" || item.isMusic) p.set("music", "1");
+                if (item.type === "poetry" || item.isPoetry) p.set("poetry", "1");
                 if (item.type === "tour") { p.set("special", "1"); }
             }
 
@@ -1196,7 +1217,12 @@
         }
 
 
-        const activeTypes = new Set(["story", "club", "tour", "music", "festival"]);
+        // Single source of truth for all flyer filter types — add a type here
+        // (plus its filter button, CSS colors, and classification logic below)
+        // to introduce a new category without touching every call site.
+        const FLYER_TYPES = ["story", "club", "tour", "music", "poetry", "festival"];
+
+        const activeTypes = new Set(FLYER_TYPES);
         let allItems = [];
         let videoTrailerItems = [];
         let lbItems = [];
@@ -1216,6 +1242,7 @@
                 // Ensure the 'tour' type is active when filtering to a specific tour
                 activeTypes.add("tour");
                 activeTypes.add("music"); // music tours use type "tour" with isMusic flag
+                activeTypes.add("poetry"); // poetry tours use type "tour" with isPoetry flag
             }
             if (p.has("date")) {
                 const raw = p.get("date"); // expects YYYY-MM-DD
@@ -1253,7 +1280,7 @@
         }
 
         function selectAll() {
-            ["story", "club", "tour", "music", "festival"].forEach(t => activeTypes.add(t));
+            FLYER_TYPES.forEach(t => activeTypes.add(t));
             syncFilterButtons(); writeUrlParams(); renderAll();
         }
 
@@ -1555,38 +1582,34 @@
                 return { time: d.time || "", venue: v.name || "", city: v.city || "", postcode: v.postcode || "", ticketUrl: d.ticket_url || "" };
             }
 
-            // specificEvents — story shows and any marked as music
+            // Flat one-off event arrays. specificEvents mixes story shows in
+            // with any marked isMusic/isPoetry; musicEvents/poetryEvents are
+            // always their respective type. Add a tuple here (plus a matching
+            // array in the data) to support a new one-off event category.
+            const FLAT_EVENT_SOURCES = [
+                { dataKey: "specificEvents", defaultType: "story" },
+                { dataKey: "musicEvents", defaultType: "music" },
+                { dataKey: "poetryEvents", defaultType: "poetry" },
+            ];
             // NOTE: .date may be a single "DD/MM/YYYY" string OR an array of
             // such strings (multi-date run). Expand arrays so every date gets
             // its own card instead of being silently dropped by parseDate().
-            for (const e of data.specificEvents || []) {
-                if (!e.event_flyer?.trim()) continue;
-                const type = e.isMusic ? "music" : "story";
-                const clubRec = e.club ? (data.events || []).find(c => c.club === e.club) : null;
-                const dates = Array.isArray(e.date) ? e.date : [e.date];
-                for (const dateStr of dates) {
-                    push(e.event_flyer, "event", dateStr, type,
-                        e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
-                        clubId: e.club || "",
-                        fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
-                        clubLink: clubRec?.link || "",
-                        isCancelled: !!e.isCancelled,
-                        isSoldOut: !!e.isSoldOut,
-                    });
-                }
-            }
-
-            // musicEvents
-            for (const e of data.musicEvents || []) {
-                if (!e.event_flyer?.trim()) continue;
-                const dates = Array.isArray(e.date) ? e.date : [e.date];
-                for (const dateStr of dates) {
-                    push(e.event_flyer, "event", dateStr, "music",
-                        e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
-                        fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
-                        isCancelled: !!e.isCancelled,
-                        isSoldOut: !!e.isSoldOut,
-                    });
+            for (const { dataKey, defaultType } of FLAT_EVENT_SOURCES) {
+                for (const e of data[dataKey] || []) {
+                    if (!e.event_flyer?.trim()) continue;
+                    const type = e.isMusic ? "music" : e.isPoetry ? "poetry" : defaultType;
+                    const clubRec = e.club ? (data.events || []).find(c => c.club === e.club) : null;
+                    const dates = Array.isArray(e.date) ? e.date : [e.date];
+                    for (const dateStr of dates) {
+                        push(e.event_flyer, "event", dateStr, type,
+                            e.showname || e.name, e.performer_id, e.venue_id, e.ticket_url, {
+                            clubId: e.club || "",
+                            fbEvent: e.fb_event ? `https://www.facebook.com/events/${e.fb_event}` : "",
+                            clubLink: clubRec?.link || "",
+                            isCancelled: !!e.isCancelled,
+                            isSoldOut: !!e.isSoldOut,
+                        });
+                    }
                 }
             }
 
@@ -1606,6 +1629,7 @@
                 const allCancelled = datesInWindow.every(d => !!d.isCancelled);
                 const tourExtra = {
                     isMusic: tour.isMusic === true,
+                    isPoetry: tour.isPoetry === true,
                     tourKey: tourKey,
                     tourDateRange: datesInWindow.length > 1
                         ? `${formatDateShort(datesInWindow[0]._dt)} – ${formatDateShort(last._dt)}`
@@ -1971,7 +1995,7 @@
         document.getElementById("lb-next").onclick = () => { if (lbIndex < lbItems.length - 1) { lbIndex++; showLbSlide(); } };
 
         // ── Link resolution — priority order by type ─────────────────────────────
-        // story/music: ticket → performer site → club site → fb event
+        // story/music/poetry: ticket → performer site → club site → fb event
         // tour:        ticket → performer site → fb event
         // club:        club site → performer site → club facebook
         // festival:    ticket → festival website → festival facebook
@@ -1984,7 +2008,7 @@
             const fw = item.festWebsite?.trim();
             const ff = item.festFacebook?.trim();
 
-            if (item.type === "story" || item.type === "music") {
+            if (item.type === "story" || item.type === "music" || item.type === "poetry") {
                 return t || p || c || fb || "";
             }
             if (item.type === "tour") {
@@ -2006,7 +2030,7 @@
         }
 
 
-        const TYPE_LABELS = { story: "Story show", club: "Club", tour: "Tour", music: "Music", festival: "Festival" };
+        const TYPE_LABELS = { story: "Story show", club: "Club", tour: "Tour", music: "Music", poetry: "Poetry", festival: "Festival" };
 
         function makeCard(item, visibleItems, indexInVisible, highlightSoldOut = true) {
             const card = document.createElement("div");
@@ -2205,7 +2229,8 @@
 
             let visible = allItems.filter(i =>
                 activeTypes.has(i.type) ||
-                (i.type === "tour" && i.isMusic && activeTypes.has("music"))
+                (i.type === "tour" && i.isMusic && activeTypes.has("music")) ||
+                (i.type === "tour" && i.isPoetry && activeTypes.has("poetry"))
             );
 
             if (hideCancelled) visible = visible.filter(i => !i.isCancelled);

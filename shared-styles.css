@@ -259,6 +259,12 @@ select {
     color: white;
 }
 
+.event.poetry {
+    background: linear-gradient(135deg, #c2005c 0%, #ff4fa3 100%);
+    border: 2px solid #8a0040;
+    color: white;
+}
+
 .event.session {
     background: linear-gradient(135deg, #90ee90 0%, #98fb98 100%);
     border: 2px solid #228b22;
@@ -328,6 +334,10 @@ select {
     color: rgba(255, 255, 255, 0.85);
 }
 
+.poetry .event-location {
+    color: rgba(255, 255, 255, 0.85);
+}
+
 .folk .event-location {
     color: #f5deb3;
 }
@@ -352,7 +362,8 @@ select {
 }
 
 .special .event-location .event-date-cancelled,
-.music .event-location .event-date-cancelled {
+.music .event-location .event-date-cancelled,
+.poetry .event-location .event-date-cancelled {
     color: #649f66;
 }
 
@@ -447,6 +458,28 @@ select {
     fill: #ffffff;
 }
 
+/* Poetry variant icon overrides */
+/* Invert facebook on magenta background so it reads as white circle / blue f */
+.event.poetry .event-facebook svg {
+    filter: invert(1);
+}
+
+.event.poetry .event-email svg {
+    fill: #ffb3da;
+}
+
+.event.poetry .event-email:hover svg {
+    fill: #ffffff;
+}
+
+.event.poetry .event-website svg {
+    fill: rgba(255, 255, 255, 0.85);
+}
+
+.event.poetry .event-website:hover svg {
+    fill: #ffffff;
+}
+
 /* Folk variant icon overrides */
 .event.folk .event-email svg,
 .event.folk .event-website svg {
@@ -491,7 +524,8 @@ select {
 }
 
 .event.special .event-tickets a,
-.event.music .event-tickets a {
+.event.music .event-tickets a,
+.event.poetry .event-tickets a {
     color: #ffeb3b;
     border-bottom: 2px solid #fff59d;
 }
@@ -556,6 +590,7 @@ select {
 
 .event.special .event-expand-btn,
 .event.music .event-expand-btn,
+.event.poetry .event-expand-btn,
 .event.folk .event-expand-btn,
 .event.session .event-expand-btn {
     background: rgba(255, 255, 255, 0.3);
@@ -563,6 +598,7 @@ select {
 
 .event.special .event-expand-btn:hover,
 .event.music .event-expand-btn:hover,
+.event.poetry .event-expand-btn:hover,
 .event.folk .event-expand-btn:hover,
 .event.session .event-expand-btn:hover {
     background: rgba(255, 255, 255, 0.5);
@@ -845,13 +881,15 @@ a.festival-programme-link:hover {
 
 /* On coloured cards: white pill with dark text */
 .event.special .venue-page-link,
-.event.music .venue-page-link {
+.event.music .venue-page-link,
+.event.poetry .venue-page-link {
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.2);
 }
 
 .event.special .venue-page-link:hover,
-.event.music .venue-page-link:hover {
+.event.music .venue-page-link:hover,
+.event.poetry .venue-page-link:hover {
     background: rgba(255, 255, 255, 0.35);
     color: #fff;
 }
@@ -891,6 +929,16 @@ a.festival-programme-link:hover {
 }
 
 .tour-date-item.music .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.tour-date-item.poetry .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tour-date-item.poetry .venue-page-link:hover {
     background: rgba(255, 255, 255, 0.35);
     color: #fff;
 }
