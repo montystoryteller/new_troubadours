@@ -1803,6 +1803,101 @@
     }
   },
   "tours": {
+    "bassie_gracie-autumn-2026": {
+      "tour_name": "Bassie Gracie Autum 2026",
+      "name": "Bassie Gracie",
+      "tour_dates": [
+        {
+          "date": "20/09/2026",
+          "venue_id": "white-horse-shipston-on-stour",
+          "price": "From £5",
+          "ticket_url": "https://shipstonbookfest.org/events/date:2026-09-20",
+          "isSpecial": true
+        },
+        {
+          "date": "22/09/2026",
+          "venue_id": "the-standard-bedford",
+          "isSpecial": true
+        },
+        {
+          "date": "26/09/2026",
+          "venue_id": "the-birley-centre-eastboune",
+          "time": "7.30-8.30",
+          "price": "£7.72  -  £13.02",
+          "ticket_url": "https://eastbournelitfest.onlineticketseller.com/events/173956",
+          "isSpecial": true
+        },
+        {
+          "date": "07/10/2026",
+          "venue_id": "chater-s-saffron-walden",
+          "ticket_url": "https://www.tinyfruitpress.co.uk/",
+          "isSpecial": true
+        },
+        {
+          "date": "08/10/2026",
+          "venue_id": "free-range-canterbury",
+          "isSpecial": true
+        },
+        {
+          "date": "14/10/2026",
+          "venue_id": "the-butt-of-sherry-mere",
+          "time": "6.30pm",
+          "price": "£9",
+          "ticket_url": "https://mereliteraryfestival.com/product/bassie-gracie/",
+          "isSpecial": true
+        },
+        {
+          "date": "15/10/2026",
+          "venue_id": "clifton-community-bookshop-bristol",
+          "isSpecial": true
+        },
+        {
+          "date": "16/10/2026",
+          "venue_id": "hunter-gatherer-southsea",
+          "ticket_url": "https://www.pompeypoetryparty.com/",
+          "isSpecial": true
+        },
+        {
+          "date": "17/10/2026",
+          "venue_id": "the-pump-trowbridge",
+          "isSpecial": true
+        },
+        {
+          "date": "20/10/2026",
+          "venue_id": "chaplin-s-the-cellar-bar-bournemouth",
+          "ticket_url": "https://www.facebook.com/groups/461353062273641/",
+          "isSpecial": true
+        },
+        {
+          "date": "22/10/2026",
+          "venue_id": "sheffield-plate",
+          "ticket_url": "https://www.facebook.com/workshopwrite",
+          "isSpecial": true
+        },
+        {
+          "date": "25/10/2026",
+          "venue_id": "hyde-park-book-club-leeds",
+          "ticket_url": "https://www.hydeparkbookclub.co.uk/",
+          "isSpecial": true
+        },
+        {
+          "date": "20/10/2026",
+          "venue_id": "the-art-house-southampton",
+          "ticket_url": "https://thearthousesouthampton.org/moving-voices/",
+          "isSpecial": true
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "railway-inn-winchester",
+          "ticket_url": "https://ffsfest.com/",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "bassie-gracie",
+      "tour_description": "Spreading words of empowerment and appreciation in a town near you...",
+      "touring_event_flyer": "tour_bassie_gracie_autumn_2026.jpg",
+      "isSpecial": true
+    },
     "attila-fiery-words-autumn-2026": {
       "tour_name": "Fiery Words for Hellish Times",
       "name": "Attila the Stockbroker, Autumn 2026",
@@ -11985,6 +12080,162 @@
         50.59571,
         -1.20423
       ]
+    },
+        "white-horse-shipston-on-stour": {
+      "id": "white-horse-shipston-on-stour",
+      "name": "White Horse, Shipston-on-Stour",
+      "city": "Shipston-on-Stour",
+      "postcode": "CV36 4AS",
+      "full_address": "The White Horse, Church St, Shipston-on-Stour, CV36 4AS",
+      "url": "https://whitehorsepub.uk/"
+    },
+    "the-standard-bedford": {
+      "id": "the-standard-bedford",
+      "name": "The Standard, Bedford",
+      "city": "Bedford",
+      "postcode": "MK40 1SP",
+      "full_address": "The Standard, 26-28 High Street, Bedford, MK40 1SP",
+      "url": "https://www.facebook.com/standardbedford/",
+      "latlon": [
+        52.13612,
+        -0.4666
+      ]
+    },
+    "the-birley-centre-eastboune": {
+      "id": "the-birley-centre-eastboune",
+      "name": "THe Birley Centre, Eastboune",
+      "city": "Eastbourne",
+      "postcode": "BN21 4JR",
+      "full_address": "The Birley Centre, 49 Carlisle Road, Eastbourne, BN21 4JR",
+      "url": "https://www.mytheatreacademy.com/facilities-birley-centre-eastbourne",
+      "latlon": [
+        50.76203,
+        0.28082
+      ]
+    },
+    "chater-s-saffron-walden": {
+      "id": "chater-s-saffron-walden",
+      "name": "Chater's, Saffron Walden",
+      "city": "Saffron Walden",
+      "postcode": "CB10 1 JW",
+      "full_address": "17 Church Street, Saffron Walden, CB10 1 JW",
+      "url": "https://chaters.uk/"
+    },
+    "free-range-canterbury": {
+      "id": "free-range-canterbury",
+      "name": "Free Range, Canterbury",
+      "city": "Canterbury",
+      "postcode": "CT1 3JU",
+      "full_address": "Free Range, 21 Prospect Place Canterbury, CT1 3JU",
+      "url": "https://www.freerangecanterbury.org/",
+      "latlon": [
+        51.27169,
+        1.08283
+      ]
+    },
+    "the-butt-of-sherry-mere": {
+      "id": "the-butt-of-sherry-mere",
+      "name": "The Butt of Sherry, Mere",
+      "city": "Warminster",
+      "postcode": "BA12 6JE",
+      "full_address": "Butt of Sherry, Castle Street, Mere, Warminster, BA12 6JE",
+      "url": "https://www.facebook.com/officialbuttofsherry",
+      "latlon": [
+        51.09041,
+        -2.26999
+      ]
+    },
+    "clifton-community-bookshop-bristol": {
+      "id": "clifton-community-bookshop-bristol",
+      "name": "Clifton Community Bookshop, Bristol",
+      "city": "Bristol",
+      "postcode": "BS8 1AF",
+      "full_address": "Clifton Community Bookshop, 10, Clifton Road, Bristol, BS8 1AF",
+      "url": "https://cliftoncommunitybookshop.wordpress.com/",
+      "latlon": [
+        51.45439,
+        -2.61364
+      ]
+    },
+    "hunter-gatherer-southsea": {
+      "id": "hunter-gatherer-southsea",
+      "name": "Hunter Gatherer, Southsea",
+      "city": "Portsmouth",
+      "postcode": "PO4 0JR",
+      "full_address": "Hunter Gatherer, 249 Albert Road, Southsea, PO4 0JR",
+      "url": "https://huntergatherer.coffee/",
+      "latlon": [
+        50.78663,
+        -1.07096
+      ]
+    },
+    "the-pump-trowbridge": {
+      "id": "the-pump-trowbridge",
+      "name": "The Pump, Trowbridge",
+      "city": "Trowbridge",
+      "postcode": "BA14 0NH",
+      "full_address": "The Pump, The Lamb Inn,127 Mortimer St, Trowbridge, BA14 0NH",
+      "url": "https://thepumptrowbridge.co.uk/",
+      "latlon": [
+        51.31644,
+        -2.20834
+      ]
+    },
+    "chaplin-s-the-cellar-bar-bournemouth": {
+      "id": "chaplin-s-the-cellar-bar-bournemouth",
+      "name": "Chaplin's & The Cellar Bar, Bournemouth",
+      "city": "Bournemouth",
+      "postcode": "BH1 4AG",
+      "full_address": "Chaplin's, 529 Christchurch Rd, Boscombe, Bournemouth, BH1 4AG",
+      "url": "https://www.chaplins-bar.co.uk/",
+      "latlon": [
+        51.31644,
+        -2.20834
+      ]
+    },
+    "sheffield-plate": {
+      "id": "sheffield-plate",
+      "name": "Sheffield Plate",
+      "city": "Sheffield",
+      "postcode": "S1 2FB",
+      "full_address": "31-33 Orchard Square, Sheffield, S1 2FB",
+      "url": "https://www.sheffieldplate.co.uk/home"
+    },
+    "hyde-park-book-club-leeds": {
+      "id": "hyde-park-book-club-leeds",
+      "name": "Hyde Park Book Club, Leeds",
+      "city": "Leeds",
+      "postcode": "LS6 1BL",
+      "full_address": "Hyde Park Book Club, 27-29 Headingley Lane Leeds, LS6 1BL",
+      "url": "https://www.hydeparkbookclub.co.uk",
+      "latlon": [
+        53.81518,
+        -1.5636
+      ]
+    },
+    "the-art-house-southampton": {
+      "id": "the-art-house-southampton",
+      "name": "The Art House, Southampton",
+      "city": "Southampton",
+      "postcode": "SO18 1GG",
+      "full_address": "Bitterne Station Community Hub, 127 Macnaghten Rd, Southampton, SO18 1GG",
+      "url": "https://thearthousesouthampton.org",
+      "latlon": [
+        50.91841,
+        -1.3771
+      ]
+    },
+    "railway-inn-winchester": {
+      "id": "railway-inn-winchester",
+      "name": "Railway Inn, Winchester",
+      "city": "Winchester",
+      "postcode": "SO22 5AE",
+      "full_address": "Railway Inn, 3 St. Pauls Hill, Winchester, SO22 5AE",
+      "url": "https://railwayinn.pub/",
+      "latlon": [
+        51.06674,
+        -1.32225
+      ]
     }
   },
   "performers": {
@@ -13023,6 +13274,12 @@
       "instagram": "joesolomusic",
       "musician": true,
       "bio": "Joe Solo is a musician, writer, poet, and activist from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right."
+    },
+    "bassie-gracie": {
+      "id": "bassie-gracie",
+      "name": "Bassie Gracie",
+      "url": "https://www.facebook.com/bassiegracie",
+      "bio": "In her own words, \"'I'm Grace, I play the bass, people take photos of my face, I do poetry but I struggle with rhymes.\""
     },
     "nick-parker": {
       "id": "nick-parker",
