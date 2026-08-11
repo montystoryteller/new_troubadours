@@ -1803,9 +1803,88 @@
     }
   },
   "tours": {
+    "undercover-hippy-solo-undercover-hippy-solo-tour-2026": {
+      "tour_name": "Undercover Hippy Solo Tour 2026",
+      "name": "Undercover Hippy Solo Tour 2026",
+      "isMusic": true,
+      "tour_dates": [
+        {
+          "date": "13/08/2026",
+          "venue_id": "erwood-station-craft-centre",
+          "time": "7.30-9.30pm",
+          "price": "£18.59",
+          "ticket_url": "https://www.eventbrite.co.uk/e/the-undercover-hippy-solo-tour-2026-tickets-1990099876302",
+          "isSpecial": true
+        },
+        {
+          "date": "14/08/2026",
+          "venue_id": "chepstow-art-space",
+          "time": "8.30pm",
+          "price": "£16.50",
+          "ticket_url": "https://chepstow-artspace.com/product/theundercoverhipfriday-14-august/",
+          "event_flyer": "2026_08_14_undercover_hippy_solo_chepstow.png",
+          "isSpecial": true
+        },
+        {
+          "date": "15/08/2026",
+          "venue_id": "yes-manchester",
+          "time": "7.30-10.30pm",
+          "price": "£16.50 +£2 bf",
+          "ticket_url": "https://www.tickettailor.com/events/theundercoverhippy1/2198473",
+          "isSpecial": true
+        },
+        {
+          "date": "16/08/2026",
+          "venue_id": "boat-shack-bromsgrove",
+          "time": "7.30pm",
+          "price": "£17.89",
+          "ticket_url": "https://www.ticketsource.com/nextcrazeuk/undercover-hippy-support/e-yzzmyq",
+          "event_flyer": "2026_08_16_undercover_hippy_solo_bromsgrove.webp",
+          "isSpecial": true
+        },
+        {
+          "date": "19/08/2026",
+          "venue_id": "chapel-arts-centre-bath",
+          "time": "7.30pm",
+          "price": "£16.50 + £1.70bf",
+          "ticket_url": "https://wegottickets.com/f/20117",
+          "isSpecial": true
+        },
+        {
+          "date": "20/08/2026",
+          "venue_id": "bomba-exeter",
+          "time": "7pm",
+          "price": "£16.50",
+          "ticket_url": "https://fixr.co/event/bomba-live-the-undercover-hippy-solo-200826-exeter-tickets-813281346?lang=en-US",
+          "event_flyer": "2026_08_20_undercover_hippy_solo_exeter.jpeg",
+          "isSpecial": true
+        },
+        {
+          "date": "21/08/2026",
+          "venue_id": "whiskers-newquay",
+          "time": "7pm",
+          "price": "£18.04 - £20",
+          "ticket_url": "https://www.eventbrite.co.uk/e/the-undercover-hippy-solo-tour-tickets-1985021775566",
+          "isSpecial": true
+        },
+        {
+          "date": "22/08/2026",
+          "venue_id": "royal-cornwall-showground-wadebridge",
+          "ticket_url": "https://cornwalltattooconvention.co.uk/",
+          "related_event": "Cornwall Tattoo Convention",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "undercover-hippy-solo",
+      "tour_description": "Best known for his high energy full band shows, it is something of a rare treat to catch Billy Rowan, aka The Undercover Hippy, giving an intimate solo performance. It offers an opportunity to hear the songs in their rawest form, up close and personal, and to really connect with the lyrics and the performer.\n\n\n\nOne of Billy’s biggest strengths is the way he manages to pack his songs full of political and social commentary whilst at the same time remaining playful and uplifting, and this playfulness is even more apparent in an acoustic setting. The extended set time and intimate setting mean that you will hear songs you would never hear at a regular show, but don’t worry, your favourite tracks will likely be in there too!\n\n\n\nThe performance takes you on a rollercoaster of storytelling and thought provoking protest pieces - an experience not to be missed.",
+      "touring_event_flyer": "tour_undercover_hippy_solo_summer_2026.jpg",
+      "video_trailer": "https://undercoverhippy.com/home",
+      "isSpecial": true
+    },
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
+      "isPoetry": true,
       "tour_dates": [
         {
           "date": "20/09/2026",
@@ -1901,6 +1980,7 @@
     "attila-fiery-words-autumn-2026": {
       "tour_name": "Fiery Words for Hellish Times",
       "name": "Attila the Stockbroker, Autumn 2026",
+      "isPoetry": true,
       "tour_dates": [
         {
           "date": "04/09/2026",
@@ -12236,6 +12316,102 @@
         51.06674,
         -1.32225
       ]
+    },
+    "erwood-station-craft-centre": {
+      "id": "erwood-station-craft-centre",
+      "name": "Erwood Station Craft Centre",
+      "city": "Builth Wells",
+      "postcode": "LD2 3SJ",
+      "full_address": "Erwood Station Craft Centre, Llandeilo Graban, Erwood, LD2 3SJ",
+      "url": "https://erwoodstationcraftcentre.co.uk/",
+      "latlon": [
+        52.08621,
+        -3.33132
+      ]
+    },
+    "chepstow-art-space": {
+      "id": "chepstow-art-space",
+      "name": "Chepstow Art Space",
+      "city": "Chepstow",
+      "postcode": "NP16 5PG",
+      "full_address": "Chepstow Art Space, Chepstow Old Library, Upper Nelson Street, Chepstow, NP16 5PG",
+      "url": "https://chepstow-artspace.com/",
+      "latlon": [
+        51.64112,
+        -2.67487
+      ]
+    },
+    "boat-shack-bromsgrove": {
+      "id": "boat-shack-bromsgrove",
+      "name": "Boat Shack, Bromsgrove",
+      "city": "Bromsgrove",
+      "postcode": "B61 7ER",
+      "full_address": "Worcester Road, Upton Warren, Bromsgrove, B61 7ER",
+      "url": "https://www.boatshackcafe.co.uk/",
+      "latlon": [
+        52.30237,
+        -2.10228
+      ]
+    },
+    "chapel-arts-centre-bath": {
+      "id": "chapel-arts-centre-bath",
+      "name": "Chapel Arts Centre, Bath",
+      "city": "Bath",
+      "postcode": "BA1 1QR",
+      "full_address": "Chapel Arts Centre, St.James's Memorial Hall, Lower Borough Walls, Bath, BA1 1QR",
+      "url": "https://chapelarts.org/",
+      "latlon": [
+        51.3797,
+        -2.36041
+      ]
+    },
+    "bomba-exeter": {
+      "id": "bomba-exeter",
+      "name": "Bomba, Exeter",
+      "city": "Exeter",
+      "postcode": "EX2 4AP",
+      "full_address": "Bomba, 4 The Quay, Exeter, EX2 4AP",
+      "url": "https://bombaexeter.com/",
+      "latlon": [
+        50.71893,
+        -3.53118
+      ]
+    },
+    "whiskers-newquay": {
+      "id": "whiskers-newquay",
+      "name": "Whiskers, Newquay",
+      "city": "Newquay",
+      "postcode": "TR7 1ER",
+      "full_address": "Whiskers, 5-7 Gover Lane, Newqua, TR7 1ER",
+      "url": "https://www.whiskersnewquay.co.uk/",
+      "latlon": [
+        50.41371,
+        -5.08613
+      ]
+    },
+    "royal-cornwall-showground-wadebridge": {
+      "id": "royal-cornwall-showground-wadebridge",
+      "name": "Royal Cornwall Showground, Wadebridge",
+      "city": "Wadebridge",
+      "postcode": "PL27 7JE",
+      "full_address": "Royal Cornwall Events Centre, Whitecross, Wadebridge, PL27 7JE",
+      "url": "https://www.royalcornwalleventscentre.co.uk/",
+      "latlon": [
+        50.51612,
+        -4.86561
+      ]
+    },
+    "the-bar-barbican-theatre-plymouth": {
+      "id": "the-bar-barbican-theatre-plymouth",
+      "name": "The Bar, Barbican Theatre, Plymouth",
+      "city": "Plymouth",
+      "postcode": "PL1 2NJ",
+      "full_address": "Barbican Theatre, Castle Street, Plymouth, PL1 2NJ",
+      "url": "https://www.barbicantheatre.co.uk/bbar/",
+      "latlon": [
+        50.36633,
+        -4.13517
+      ]
     }
   },
   "performers": {
@@ -12461,6 +12637,7 @@
     "attila-the-stockbroker": {
       "id": "attila-the-stockbroker",
       "name": "Attila the Stockbroker",
+      "poet": true,
       "url": "https://attilathestockbroker.com/",
       "bio": "Punk poet, dub ranter, singer-songwriter, early music punk pioneer, writer and social commentator."
     },
@@ -13275,9 +13452,17 @@
       "musician": true,
       "bio": "Joe Solo is a musician, writer, poet, and activist from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right."
     },
+    "undercover-hippy-solo": {
+      "id": "undercover-hippy-solo",
+      "name": "Undercover Hippy (solo)",
+      "musician": true,
+      "url": "https://undercoverhippy.com/",
+      "bio": "If you’ve not been to an Undercover Hippy gig before, you are in for a treat. By the encore you will be exalted and exhausted; entertained and educated; energised and inspired. The music combines meaningful lyrics with upbeat, bass soaked, reggae and hip-hop infused rhythms, bringing like minded people together to both acknowledge the darkness and celebrate life."
+    },
     "bassie-gracie": {
       "id": "bassie-gracie",
       "name": "Bassie Gracie",
+      "poet": true,
       "url": "https://www.facebook.com/bassiegracie",
       "bio": "In her own words, \"'I'm Grace, I play the bass, people take photos of my face, I do poetry but I struggle with rhymes.\""
     },
