@@ -12826,6 +12826,15 @@
       "musician": true,
       "bio": "Jess Silk is a guitarist, singer and songwriter from the Black Country. Her passionate and  melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, powerful voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene."
     },
+    "joe-solo": {
+      "id": "joe-solo",
+      "name": "Joe Solo",
+      "url": "https://joesolomusic.com/",
+      "facebook": "joesolomusicpage",
+      "instagram": "joesolomusic",
+      "musician": true,
+      "bio": "Joe Solo is a musician, writer, poet, and activist from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right."
+    },
     "nick-parker": {
       "id": "nick-parker",
       "name": "Nick Parker",
@@ -12843,6 +12852,7 @@
     },
     "jess-silk-joe-solo": {
       "id": "jess-silk-joe-solo",
+      "performer_ids": ["jess-silk", "joe-solo"],
       "name": "Jess Silk & Joe Solo",
       "url": "",
       "bio": "Jess Silk\n\n\n\nhttps://jesssilk.co.uk\n\n\n\nJess Silk is a guitarist, singer and songwriter from the Black Country. Her shouty but melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, gravelly voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene.\n\n\n\nJess released her debut album, Break the Bottle, in May 2018 with a packed out show at her spiritual home of Katie Fitzgerald's in Stourbridge. Since then she's shared a number of other releases including two live EP's with tracks taken from shows at Katie's and HMV Merry Hill. 2020 saw the world shut down and Jess release two (almost completely) self produced EPs, the first of which, If We're Damned, was put together from songs that had been gathering metaphorical dust on her hard drive, and the second, There's A Bar At the End Of the World, a collection of songs written between March and August taking their inspiration from the events of the year. At the end of August 2021 Jess released her second full-length album Blitz Spirit, and in April 2025 released her new EP 'Old, Broken Isle' which was recorded at Metway Studios in Brighton.\n\n\n\nIn recent years Jess has appeared at a number of festivals including Bearded Theory, Rebellion, Beautiful Days and Glastonbury where she shared a stage with Billy Bragg as part of his Radical Roundup on the Left Field stage. In March 2023 Jess played six shows supporting the Levellers and she continues to tour around the UK playing festivals, supports and her own headline tours\n\n\n\nJoe Solo\n\n\n\nhttps://joesolomusic.com\n\n\n\nJoe Solo is an award-winning musician, writer, poet, activist, broadcaster and washing machine engineer from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right.\n\n\n\nOn top of releasing twenty one albums since 2004, Solo has written a series of children's books for Unison on social justice and equality; ran a research project on the Hull Pals Battalions in the First World War; hosts a weekly radio show; had one of his poems used in an international campaign to educate on dementia awareness; co-runs 'May Day Festival of Solidarity' an annual event bringing together voices from music, poetry and politics to celebrate International Worker's Day; and has opened for the likes of Paul Heaton & Jacqui Abbott, Billy Bragg, TV Smith, Grace Petrie, Pete Wylie, and The Blockheads; whilst his songs have been played by John Peel on Radio One, Mike Harding on Radio Two and Tom Robinson on BBC6Music.\n\n\n\nIn 2024, Joe's album 'Sledgehammer Songs' made both the Top 40 of the Official UK Folk Chart, and the Official Album Download Chart, and the resulting tour raised £12,435 for community causes.\n\n\n\nLive, Solo has a growing reputation as both a performer and raconteur, being both thought-provoking, comical and punch-the-air political often in the same breath. He is not an artist you forget in a hurry."

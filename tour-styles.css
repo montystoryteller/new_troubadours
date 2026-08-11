@@ -450,6 +450,67 @@ select {
     color: #333;
 }
 
+/* Grouped rows of performer website links (top: header-styled, bordered
+   below; bottom: footer-styled, bordered above), so multiple "Visit X's
+   Website" links sit next to each other instead of being stacked one
+   link per row. The border/spacing moves from the individual .performer-link
+   onto the row wrapper; links inside become inline instead of block. */
+.performer-website-links,
+.performer-website-links-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 24px;
+    width: 100%;
+}
+
+.performer-website-links {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.performer-website-links-footer {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.performer-website-links .performer-link,
+.performer-website-links-footer .performer-link {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* Performer profile-page links, shown as a row of small pill/tag buttons
+   rather than full-width text links. */
+.performer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.performer-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(0, 86, 179, 0.08);
+    border: 1px solid rgba(0, 86, 179, 0.3);
+    color: #0056b3 !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.85em;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.performer-tag:hover {
+    background: #0056b3;
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
 /* Extra top margin on the expand button inside tour date cards */
 .expand-btn-spaced {
     margin-top: 8px;

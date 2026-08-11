@@ -26,6 +26,46 @@ function getTourStatus(tour) {
 
 // isDatePast(dateStr) — defined in shared_utils.js
 
+// Some performer records are themselves just a "stepping stone" that
+// bundles several real performers together (e.g. a combined billing id
+// like "jess-silk-joe-solo" whose record carries its own performer_ids:
+// ["jess-silk", "joe-solo"]). Given a raw id, this expands it to the real
+// leaf performer id(s) it stands for, or returns the id unchanged if it's
+// already a standalone performer.
+function expandPerformerId(id, performersLookup) {
+  const record = performersLookup && performersLookup[id];
+  if (record && Array.isArray(record.performer_ids) && record.performer_ids.length > 0) {
+    return record.performer_ids.filter(Boolean);
+  }
+  return [id];
+}
+
+// Returns the set of performer ids to link to from the tour page: the
+// tour's own performer_id (which may be an individual, a troupe, or a
+// combined "stepping stone" billing id such as "jess-silk-joe-solo"),
+// any explicit tour.performer_ids, plus — for legacy tours that only set
+// performer_id and rely on the performer record itself to list the real
+// lineup — the ids expanded out of that stepping-stone record. The
+// combined id is deliberately kept in the set (not dropped) so its own
+// homepage/profile links still show up alongside the individuals'; any
+// duplicate website URL is filtered out later, at link-building time.
+function getTourLinkPerformerIds(tour) {
+  const ids = new Set();
+  if (!tour) return ids;
+  if (tour.performer_id) ids.add(tour.performer_id);
+  if (Array.isArray(tour.performer_ids)) {
+    tour.performer_ids.forEach((id) => {
+      if (id) ids.add(id);
+    });
+  }
+  if (tour.performer_id) {
+    expandPerformerId(tour.performer_id, performersLookup).forEach((id) =>
+      ids.add(id),
+    );
+  }
+  return ids;
+}
+
 // sanitizeUrl() — defined in shared_utils.js
 
 // initMap() — defined in shared_utils.js
@@ -205,13 +245,20 @@ function displayTour(tourId) {
   document.getElementById("tourTitle").textContent = tour.name;
   document.getElementById("tourSubtitle").textContent = tour.tour_name || "";
 
-  // Performer websites
+  // Performer websites & profile pages. For a tour with a combined/troupe
+  // performer_id (e.g. "jess-silk-joe-solo"), we want links to each real
+  // performer's own homepage + site profile page, plus the troupe/combined
+  // entry's own homepage too — but only if it has one and it's a different
+  // URL to the individuals' (avoids a duplicate link when it's the same).
+  //
+  // Layout: all "Visit X's Website" links are grouped together in a row
+  // above the flyer image (and again, footer-styled, below it), and the
+  // performer-profile-page links are rendered as a separate row of small
+  // pill/tag buttons, rather than being interleaved with the website links.
+  // Styling for .performer-website-links / .performer-website-links-footer /
+  // .performer-tags / .performer-tag lives in tour-styles.css.
   const performer = performersLookup[tour.performer_id];
-  const performerIds = new Set();
-  if (tour.performer_id) performerIds.add(tour.performer_id);
-  if (tour.performer_ids && Array.isArray(tour.performer_ids)) {
-    tour.performer_ids.forEach((id) => performerIds.add(id));
-  }
+  const performerIds = getTourLinkPerformerIds(tour);
 
   const flyerContainer = document.getElementById("tourFlyerContainer");
   const flyerImage = document.getElementById("tourFlyerImage");
@@ -220,24 +267,29 @@ function displayTour(tourId) {
   // This avoids positional insertBefore/appendChild drift across repeated displayTour calls.
   flyerContainer.innerHTML = "";
 
-  const topLinks = [];
-  const bottomLinks = [];
+  const topWebsiteLinks = [];
+  const bottomWebsiteLinks = [];
+  const profileTags = [];
+  const seenWebsiteUrls = new Set();
 
   performerIds.forEach((id) => {
     const perf = performersLookup[id];
     if (!perf) return;
 
-    // Primary links: performer's own website (unchanged behaviour)
+    // Website links — skip if we've already linked this exact URL
+    // (e.g. troupe site == one of the individuals').
     if (perf.url) {
       const safeUrl = sanitizeUrl(perf.url);
-      if (safeUrl) {
+      if (safeUrl && !seenWebsiteUrls.has(safeUrl)) {
+        seenWebsiteUrls.add(safeUrl);
+
         const topLink = document.createElement("a");
         topLink.href = safeUrl;
         topLink.target = "_blank";
         topLink.rel = "noopener noreferrer";
         topLink.className = "performer-link site-link-header";
         topLink.textContent = `Visit ${perf.name}'s Website`;
-        topLinks.push(topLink);
+        topWebsiteLinks.push(topLink);
 
         const bottomLink = document.createElement("a");
         bottomLink.href = safeUrl;
@@ -245,21 +297,43 @@ function displayTour(tourId) {
         bottomLink.rel = "noopener noreferrer";
         bottomLink.className = "performer-link site-link-footer";
         bottomLink.textContent = `Official Website: ${perf.name}`;
-        bottomLinks.push(bottomLink);
+        bottomWebsiteLinks.push(bottomLink);
       }
     }
 
-    // Secondary link: performer profile page (below the website link)
-    const perfPageLink = document.createElement("a");
-    perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
-    perfPageLink.className = "performer-link site-link-header";
-    perfPageLink.textContent = `${perf.name} — Performer Profile`;
-    topLinks.push(perfPageLink);
+    // Performer profile page — rendered as a small tag/pill button.
+    const tag = document.createElement("a");
+    tag.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+    tag.className = "performer-tag";
+    tag.textContent = perf.name;
+    profileTags.push(tag);
   });
 
-  topLinks.forEach((l) => flyerContainer.appendChild(l));
+  // Top website links, grouped in one row.
+  if (topWebsiteLinks.length > 0) {
+    const topGroup = document.createElement("div");
+    topGroup.className = "performer-website-links";
+    topWebsiteLinks.forEach((l) => topGroup.appendChild(l));
+    flyerContainer.appendChild(topGroup);
+  }
+
+  // Profile-page tag buttons, grouped in their own row.
+  if (profileTags.length > 0) {
+    const tagRow = document.createElement("div");
+    tagRow.className = "performer-tags";
+    profileTags.forEach((t) => tagRow.appendChild(t));
+    flyerContainer.appendChild(tagRow);
+  }
+
   flyerContainer.appendChild(flyerImage); // always re-attach image in the middle
-  bottomLinks.forEach((l) => flyerContainer.appendChild(l));
+
+  // Bottom (footer-styled) website links, grouped in one row.
+  if (bottomWebsiteLinks.length > 0) {
+    const bottomGroup = document.createElement("div");
+    bottomGroup.className = "performer-website-links-footer";
+    bottomWebsiteLinks.forEach((l) => bottomGroup.appendChild(l));
+    flyerContainer.appendChild(bottomGroup);
+  }
 
   const tourLevelFlyers = getTourLevelFlyers(tour);
   if (tourLevelFlyers.length > 0) {
