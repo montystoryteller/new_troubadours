@@ -2953,6 +2953,86 @@
         }
       ]
     },
+    "sorrel-nation-creeping-thyme-2026": {
+      "tour_name": "'Creeping Thyme' Album Release Tour",
+      "name": "'Creeping Thyme' Album Release Tour",
+      "tour_flyer": "tour_sorrel_nation_autumn_2026.avif",
+      "tags": [
+        "music",
+        "folk",
+        "tour",
+        "2026"
+      ],
+      "isMusic": true,
+      "tour_dates": [
+        {
+          "date": "27/10/2026",
+          "venue_id": "the-golden-hinde-london",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "01/11/2026",
+          "venue_id": "trinity-theatre-tunbridge-wells",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "08/11/2026",
+          "venue_id": "acapela-studio-cardiff",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "12/11/2026",
+          "venue_id": "acanteen-chelmsford",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "town-hall-live-kirton-in-lindsey",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "22/11/2026",
+          "venue_id": "black-dyke-mills-bradford",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "26/11/2026",
+          "venue_id": "the-attic-southampton",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "28/11/2026",
+          "venue_id": "the-stables-2-wavendon",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": "29/11/2026",
+          "venue_id": "temperance-leamington-spa",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        },
+        {
+          "date": [
+            "04/12/2026",
+            "05/12/2026"
+          ],
+          "venue_id": "ventnor-arts-club",
+          "date_added": "11/08/2026",
+          "isSpecial": false
+        }
+      ],
+      "performer_id": "sorrel-nation",
+      "tour_description": "'Creeping Thyme' Albumn Release Tour",
+      "touring_event_flyer": "tour_sorrel_nation_autumn_2026.avif"
+    },
     "sorrel-nation-spring-2026": {
       "name": "Sorrel Nation + band — Spring Tour 2026",
       "tour_name": "Spring Tour 2026",
@@ -3608,6 +3688,7 @@
       "performer_ids": ["jess-silk", "joe-solo"],
       "tour_description": "You know when you wake up every day and can't quite believe what you are seeing? Well, Jess Silk and Joe Solo feel the same and, after two sell out tours together, have decided to fill some rooms once again with real people, real voices and real heart. There are just four special Autumn shows lined up, with special guest Matt Johnson joining for the finale. The only time they will be together for some time, so if you want shout WTF at the world too, grab a ticket and get down the front.",
       "tour_flyer": "tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg",
+      "tour_flyers": ["tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg", "tour_wtf_jess_joe_autumn_2026.jpg"],
       "tags": [
         "music",
         "tour",
@@ -11795,6 +11876,114 @@
       "latlon": [
         50.85739,
         0.5914
+      ]
+    },
+        "the-golden-hinde-london": {
+      "id": "the-golden-hinde-london",
+      "name": "The Golden Hinde, London",
+      "city": "London",
+      "postcode": "SE1 9DE",
+      "full_address": "The Golden Hinde, St Mary Overie Dock, Cathedral Street, London, SE1 9DE",
+      "url": "https://www.goldenhinde.co.uk/",
+      "latlon": [
+        51.5062,
+        -0.09033
+      ]
+    },
+    "trinity-theatre-tunbridge-wells": {
+      "id": "trinity-theatre-tunbridge-wells",
+      "name": "Trinity Theatre, Tunbridge Wells",
+      "city": "Tunbridge Wells",
+      "postcode": "TN1 1JP",
+      "full_address": "Trinity Theatre, Church Road, Tunbridge Wells, TN1 1JP",
+      "url": "https://www.trinitytheatre.net/",
+      "latlon": [
+        51.13268,
+        0.26055
+      ]
+    },
+    "acapela-studio-cardiff": {
+      "id": "acapela-studio-cardiff",
+      "name": "Acapela Studio, Cardiff",
+      "city": "Cardiff",
+      "postcode": "CF15 9QD",
+      "full_address": "Acapela Studio, Heol Y Pentre, Pentyrch, Cardiff, CF15 9QD",
+      "url": "https://acapela.co.uk/",
+      "latlon": [
+        51.53096,
+        -3.29764
+      ]
+    },
+    "acanteen-chelmsford": {
+      "id": "acanteen-chelmsford",
+      "name": "Acanteen, Chelmsford",
+      "city": "Chelmsford",
+      "postcode": "CM2 0ND",
+      "full_address": "Acanteen, 35 New London Road, Chelmsford, CM2 0ND",
+      "url": "https://www.acanteen.co.uk/",
+      "latlon": [
+        51.73181,
+        0.47353
+      ]
+    },
+    "town-hall-live-kirton-in-lindsey": {
+      "id": "town-hall-live-kirton-in-lindsey",
+      "name": "Town Hall Live, Kirton-in-Lindsey",
+      "city": "Kirton-in-Lindsey",
+      "postcode": "DN21 4LZ",
+      "full_address": "Kirton Town Hall Live, Town Hall, Market Square, Kirton in Lindsey, DN21 4LZ",
+      "url": "https://kirtoninlindseytownhall.co.uk/town-hall-live/",
+      "latlon": [
+        53.32235,
+        -0.94336
+      ]
+    },
+    "black-dyke-mills-bradford": {
+      "id": "black-dyke-mills-bradford",
+      "name": "Black Dyke Mills, Bradford",
+      "city": "Bradford",
+      "postcode": "BD13 1QA",
+      "full_address": "e Black Dyke Mills Heritage Venue, Black Dyke Mills, Brighouse Road, Queensbury, Bradford, BD13 1QA",
+      "url": "https://blackdykemills.org/",
+      "latlon": [
+        53.76832,
+        -1.84326
+      ]
+    },
+    "the-attic-southampton": {
+      "id": "the-attic-southampton",
+      "name": "The Attic, Southampton",
+      "city": "Southampton",
+      "postcode": "SO40 9HQ",
+      "full_address": "The Attic, 32, Winsor Road, Totton, Southampton, SO40 9HQ",
+      "url": "https://theatticsouthampton.co.uk/",
+      "latlon": [
+        50.91507,
+        -1.48625
+      ]
+    },
+    "the-stables-2-wavendon": {
+      "id": "the-stables-2-wavendon",
+      "name": "The Stables 2, Wavendon",
+      "city": "Milton Keynes",
+      "postcode": "MK17 8LU",
+      "full_address": "The Stables, Stockwell Lane, Wavendon, Milton Keynes, MK17 8LU",
+      "url": "https://stables.org/",
+      "latlon": [
+        52.02584,
+        -0.67426
+      ]
+    },
+    "ventnor-arts-club": {
+      "id": "ventnor-arts-club",
+      "name": "Ventnor Arts Club",
+      "city": "Ventnor",
+      "postcode": "PO38 1RZ",
+      "full_address": "Ventnor Arts Club,13 High Street, Ventnor, Isle of Wight, PO38 1RZ",
+      "url": "https://www.ventnorartsclub.com/",
+      "latlon": [
+        50.59571,
+        -1.20423
       ]
     }
   },
