@@ -1939,7 +1939,8 @@
         {
           "date": "17/10/2026",
           "venue_id": "the-pump-trowbridge",
-          "isSpecial": true
+          "isSpecial": true,
+          "event_flyer": "2026_10_17_gaz_bassie_pump.jpg"
         },
         {
           "date": "20/10/2026",
@@ -13205,7 +13206,7 @@
       "id": "pauline-cordiner",
       "name": "Pauline Cordiner",
       "url": "https://paulinecordiner.co.uk/",
-      "bio": "Pauline is a storyteller from the fishing and farming traditions of the North East of Scotland and enjoys telling a variety of traditional Scottish tales, fairy tales, folk tales creation myths and the occasional home-grown tale of her own. Pauline can also bring traditional Scots songs and bothy ballads into her performance and can use these as well as puppets and costumes to bring further audience participation into the storytelling performance. Pauline loves to tell stories for schools, care homes, special needs groups, festivals, castles, out in the open – just anywhere there is an audience for the stories she loves!"
+      "bio": "Pauline is a storyteller from the fishing and farming traditions of the North East of Scotland and enjoys telling a variety of traditional Scottish tales, fairy tales, folk tales creation myths and the occasional home-grown tale of her own. Pauline can also bring traditional Scots songs and bothy ballads into her performance and can use these as well as puppets and costumes to bring further audience participation into the storytelling performance. Pauline loves to tell stories for schools, care homes, special needs groups, festivals, castles, out in the open — just anywhere there is an audience for the stories she loves!"
     },
     "gerry-donlon-bards-aloud": {
       "id": "gerry-donlon-bards-aloud",
@@ -13478,6 +13479,7 @@
     "jess-silk-matt-johnson": {
       "id": "jess-silk-matt-johnson",
       "name": "Jess Silk + Matt Johnson",
+      "musician": true,
       "url": "",
       "bio": "Jess Silk is a guitarist, singer and songwriter from the Black Country. Her passionate and  melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, powerful voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene.\n\n\n\nMatt Johnson is a Midlands based Singer / songwriter who really wears his heart on his sleeve at the same times as completely captivating his audience. His subjects range from his family and the love of his life through to his view of the world now and his opinion on the plight of the oceans and our wildlife. He has a fantastic ear for melodyand bulids a hook into every song that has his audience singing back at him by the second chorus."
     },
@@ -13485,6 +13487,7 @@
       "id": "jess-silk-joe-solo",
       "performer_ids": ["jess-silk", "joe-solo"],
       "name": "Jess Silk & Joe Solo",
+      "musician": true,
       "url": "",
       "bio": "Jess Silk\n\n\n\nhttps://jesssilk.co.uk\n\n\n\nJess Silk is a guitarist, singer and songwriter from the Black Country. Her shouty but melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, gravelly voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene.\n\n\n\nJess released her debut album, Break the Bottle, in May 2018 with a packed out show at her spiritual home of Katie Fitzgerald's in Stourbridge. Since then she's shared a number of other releases including two live EP's with tracks taken from shows at Katie's and HMV Merry Hill. 2020 saw the world shut down and Jess release two (almost completely) self produced EPs, the first of which, If We're Damned, was put together from songs that had been gathering metaphorical dust on her hard drive, and the second, There's A Bar At the End Of the World, a collection of songs written between March and August taking their inspiration from the events of the year. At the end of August 2021 Jess released her second full-length album Blitz Spirit, and in April 2025 released her new EP 'Old, Broken Isle' which was recorded at Metway Studios in Brighton.\n\n\n\nIn recent years Jess has appeared at a number of festivals including Bearded Theory, Rebellion, Beautiful Days and Glastonbury where she shared a stage with Billy Bragg as part of his Radical Roundup on the Left Field stage. In March 2023 Jess played six shows supporting the Levellers and she continues to tour around the UK playing festivals, supports and her own headline tours\n\n\n\nJoe Solo\n\n\n\nhttps://joesolomusic.com\n\n\n\nJoe Solo is an award-winning musician, writer, poet, activist, broadcaster and washing machine engineer from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right.\n\n\n\nOn top of releasing twenty one albums since 2004, Solo has written a series of children's books for Unison on social justice and equality; ran a research project on the Hull Pals Battalions in the First World War; hosts a weekly radio show; had one of his poems used in an international campaign to educate on dementia awareness; co-runs 'May Day Festival of Solidarity' an annual event bringing together voices from music, poetry and politics to celebrate International Worker's Day; and has opened for the likes of Paul Heaton & Jacqui Abbott, Billy Bragg, TV Smith, Grace Petrie, Pete Wylie, and The Blockheads; whilst his songs have been played by John Peel on Radio One, Mike Harding on Radio Two and Tom Robinson on BBC6Music.\n\n\n\nIn 2024, Joe's album 'Sledgehammer Songs' made both the Top 40 of the Official UK Folk Chart, and the Official Album Download Chart, and the resulting tour raised £12,435 for community causes.\n\n\n\nLive, Solo has a growing reputation as both a performer and raconteur, being both thought-provoking, comical and punch-the-air political often in the same breath. He is not an artist you forget in a hurry."
     },
