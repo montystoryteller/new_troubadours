@@ -1229,12 +1229,15 @@ function fitMapToEvents() {
 // Color coding: grey for story clubs, green for special events, blue for music,
 // magenta for poetry (chosen over pastel pink for contrast against the
 // existing green/grey/indigo/brown palette, and to read as "punk" rather
-// than soft/gentle)
+// than soft/gentle). music/poetry are pulled from PERFORMANCE_TYPE_COLOURS
+// (shared_utils.js) — the single source of truth also used by the tours,
+// performers, venues, and flyers pages — so a colour only needs updating
+// in one place.
 const EVENT_COLORS = {
   session: "#90ee90",
   folk: "#8b4513",
-  music: "#443cd7",
-  poetry: "#d6006e",
+  music: PERFORMANCE_TYPE_COLOURS.music,
+  poetry: PERFORMANCE_TYPE_COLOURS.poetry,
   special: "#4CAF50",
   storyclub: "#808080",
   festival: "#1b5e20",

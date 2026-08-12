@@ -151,13 +151,13 @@
             [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || []), ...(eventsData.poetryEvents || [])]
                 .forEach(e => {
                     if (e.venue_id !== venueId) return;
-                    types.add(e.isMusic ? 'music' : e.isPoetry ? 'poetry' : 'story');
+                    types.add(classifyPerformanceType(e));
                 });
 
             Object.values(toursLookup).forEach(tour => {
                 (tour.tour_dates || []).forEach(td => {
                     if (td.venue_id !== venueId) return;
-                    types.add(tour.isMusic ? 'music' : tour.isPoetry ? 'poetry' : 'story');
+                    types.add(classifyPerformanceType(tour));
                 });
             });
 

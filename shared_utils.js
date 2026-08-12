@@ -1002,6 +1002,44 @@ function expandTourDates(tourDates) {
 }
 
 // ---------------------------------------------------------------------------
+// Performance type classification (story / music / poetry / troupe)
+// Single source of truth for the colours and story/music/poetry precedence
+// used across the events calendar, tours, performers, venues, and flyers
+// pages, so a colour or classification rule only needs updating in one
+// place. Per-page filter button LABELS (e.g. "Storytellers" vs "Story" vs
+// "Stories & Spoken Word") are deliberately NOT centralised here, since
+// each page's phrasing is contextual — only the keys and colours are.
+// ---------------------------------------------------------------------------
+
+/**
+ * Fill colour per performance type. Matches the CSS custom properties of
+ * the same name (--color-story etc.) defined in shared-styles.css — keep
+ * both in sync if a colour changes.
+ * @type {Object.<string,string>}
+ */
+const PERFORMANCE_TYPE_COLOURS = {
+  story: "#2e7d32",
+  music: "#443cd7",
+  poetry: "#d6006e",
+  troupe: "#795548",
+};
+
+/**
+ * Classifies a tour or one-off event as "music", "poetry", or "story"
+ * based on its isMusic/isPoetry flags. Defaults to "story" — both because
+ * that's the fallback if neither flag is set, and because it's the
+ * sensible default for an entity with no classification data at all
+ * (e.g. a newly-added performer with no appearances listed yet).
+ * @param {{isMusic?: boolean, isPoetry?: boolean}} entity
+ * @returns {"music"|"poetry"|"story"}
+ */
+function classifyPerformanceType(entity) {
+  if (entity && entity.isMusic) return "music";
+  if (entity && entity.isPoetry) return "poetry";
+  return "story";
+}
+
+// ---------------------------------------------------------------------------
 // Venue type classification
 // ---------------------------------------------------------------------------
 

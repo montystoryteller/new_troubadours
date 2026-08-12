@@ -1,4 +1,22 @@
 /* =============================================================
+   0. SHARED COLOUR VARIABLES
+   Performance-type accent colours — single source of truth for
+   the full-saturation accent used by filter buttons, tags, and
+   badges across the events/tours/performers/venues/flyers pages.
+   Keep in sync with PERFORMANCE_TYPE_COLOURS in shared_utils.js.
+   (Softer tint/shade variants, e.g. badge backgrounds, and
+   gradient stops on the coloured event/tour cards, are a
+   deliberately different design choice and are not driven by
+   these variables.)
+   ============================================================= */
+:root {
+    --color-story: #2e7d32;
+    --color-music: #443cd7;
+    --color-poetry: #d6006e;
+    --color-troupe: #795548;
+}
+
+/* =============================================================
    1. BASE
    body, headings
    ============================================================= */
@@ -161,49 +179,52 @@ button.active {
 }
 
 .type-filter-btn[data-ptype="story"].active {
-    background: #2e7d32;
-    border-color: #2e7d32;
+    background: var(--color-story);
+    border-color: var(--color-story);
     color: white;
 }
 
 .type-filter-btn[data-ptype="music"].active {
-    background: #443cd7;
-    border-color: #443cd7;
+    background: var(--color-music);
+    border-color: var(--color-music);
     color: white;
 }
 
 .type-filter-btn[data-ptype="poetry"].active {
-    background: #d6006e;
-    border-color: #d6006e;
+    background: var(--color-poetry);
+    border-color: var(--color-poetry);
     color: white;
 }
 
 .type-filter-btn[data-ptype="troupe"].active {
-    background: #795548;
-    border-color: #795548;
+    background: var(--color-troupe);
+    border-color: var(--color-troupe);
     color: white;
 }
 
 .type-filter-btn[data-ptype="story"]:not(.active):hover {
-    border-color: #2e7d32;
-    color: #2e7d32;
+    border-color: var(--color-story);
+    color: var(--color-story);
 }
 
 .type-filter-btn[data-ptype="music"]:not(.active):hover {
-    border-color: #443cd7;
-    color: #443cd7;
+    border-color: var(--color-music);
+    color: var(--color-music);
 }
 
 .type-filter-btn[data-ptype="poetry"]:not(.active):hover {
-    border-color: #d6006e;
-    color: #d6006e;
+    border-color: var(--color-poetry);
+    color: var(--color-poetry);
 }
 
 .type-filter-btn[data-ptype="troupe"]:not(.active):hover {
-    border-color: #795548;
-    color: #795548;
+    border-color: var(--color-troupe);
+    color: var(--color-troupe);
 }
 
+/* Slightly darkened shades for the active+hover state — derived tints,
+   not driven by the CSS variables above (deliberately a different value,
+   not just var() + opacity). */
 .type-filter-btn[data-ptype="story"].active:hover {
     background: #276829;
 }

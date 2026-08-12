@@ -751,7 +751,7 @@
                         if (aliasIds.has(t.performer_id)) {
                             const n = t.tour_name || t.name;
                             if (n) showNames.push(n);
-                            types.add(t.isMusic ? "music" : t.isPoetry ? "poetry" : "story");
+                            types.add(classifyPerformanceType(t));
                         }
                     });
                     // Touring shows — always story
@@ -767,7 +767,7 @@
                         if (aliasIds.has(e.performer_id)) {
                             const n = e.showname || e.name;
                             if (n && !showNames.includes(n)) showNames.push(n);
-                            types.add(e.isMusic ? "music" : e.isPoetry ? "poetry" : "story");
+                            types.add(classifyPerformanceType(e));
                         }
                     });
 

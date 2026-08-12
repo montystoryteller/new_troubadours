@@ -592,15 +592,15 @@ select {
 }
 
 .now-touring-row-label.label-stories {
-    color: #2e7d32;
+    color: var(--color-story);
 }
 
 .now-touring-row-label.label-poetry {
-    color: #d6006e;
+    color: var(--color-poetry);
 }
 
 .now-touring-row-label.label-music {
-    color: #443cd7;
+    color: var(--color-music);
 }
 
 .now-touring-grid {
