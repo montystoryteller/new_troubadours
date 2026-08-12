@@ -558,7 +558,6 @@
             margin-bottom: 12px;
         }
 
-        /* ── Performer type filters (landing page) ────────────── */
         .perf-type-filters {
             display: flex;
             flex-wrap: wrap;
@@ -566,50 +565,8 @@
             margin-bottom: 12px;
         }
 
-        .perf-type-btn {
-            border: 2px solid #ccc;
-            background: white;
-            color: #555;
-            border-radius: 20px;
-            padding: 5px 14px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
-        }
-
-        .perf-type-btn[data-ptype="story"].active {
-            background: #2e7d32;
-            border-color: #2e7d32;
-            color: white;
-        }
-
-        .perf-type-btn[data-ptype="music"].active {
-            background: #443cd7;
-            border-color: #443cd7;
-            color: white;
-        }
-
-        .perf-type-btn[data-ptype="poetry"].active {
-            background: #d6006e;
-            border-color: #d6006e;
-            color: white;
-        }
-
-        .perf-type-btn[data-ptype="story"]:not(.active):hover {
-            border-color: #2e7d32;
-            color: #2e7d32;
-        }
-
-        .perf-type-btn[data-ptype="music"]:not(.active):hover {
-            border-color: #443cd7;
-            color: #443cd7;
-        }
-
-        .perf-type-btn[data-ptype="poetry"]:not(.active):hover {
-            border-color: #d6006e;
-            color: #d6006e;
-        }
+        /* Performance-type filter buttons — see .type-filter-btn in
+           shared-styles.css (shared with the venues listing page) */
 
         .simple-list-row-tags {
             display: inline-flex;
@@ -637,6 +594,11 @@
         .simple-list-row-type-tag.type-poetry {
             background: #fde8f2;
             color: #8a0040;
+        }
+
+        .simple-list-row-type-tag.type-troupe {
+            background: #efe6e2;
+            color: #4e342e;
         }
 
         /* ── Performer search (landing page) ──────────────────── */
@@ -794,7 +756,7 @@
                     });
                     // Touring shows — always story
                     Object.values(eventsData.repertoire_shows || {}).forEach(ts => {
-                        if (ts.performer_id === pid) {
+                        if (aliasIds.has(ts.performer_id)) {
                             const n = ts.showname || ts.name;
                             if (n) showNames.push(n);
                             types.add("story");
@@ -802,12 +764,29 @@
                     });
                     // Specific / music / poetry events
                     [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || []), ...(eventsData.poetryEvents || [])].forEach(e => {
-                        if (e.performer_id === pid) {
+                        if (aliasIds.has(e.performer_id)) {
                             const n = e.showname || e.name;
                             if (n && !showNames.includes(n)) showNames.push(n);
                             types.add(e.isMusic ? "music" : e.isPoetry ? "poetry" : "story");
                         }
                     });
+
+                    // "Story Troupe" — a combined-billing entry (its own
+                    // record links to several individual performer_ids,
+                    // e.g. two storytellers touring under one joint id)
+                    // whose appearances include story shows. Scoped to
+                    // story specifically, not music/poetry duos.
+                    const isMultiPerformer = Array.isArray(p.performer_ids) && p.performer_ids.length > 0;
+                    if (isMultiPerformer && types.has("story")) types.add("troupe");
+
+                    // Performers with no tours/shows/events listed yet
+                    // (e.g. a newly-added entry) default to "story" — the
+                    // most likely bucket on a storytelling-first site —
+                    // rather than being left type-less. A type-less entry
+                    // would otherwise never match any filter combination,
+                    // including the "everything selected" default, and
+                    // silently vanish from the directory.
+                    if (types.size === 0) types.add("story");
 
                     return {
                         pid,
@@ -827,6 +806,7 @@
                 { key: "story", label: "📖 Storytellers" },
                 { key: "music", label: "🎵 Musicians" },
                 { key: "poetry", label: "✒️ Poets" },
+                { key: "troupe", label: "🎭 Story Troupes" },
             ];
             const activeTypes = new Set(TYPE_DEFS.map(t => t.key));
             let currentSearchTerm = "";
@@ -835,7 +815,7 @@
             typeFilterWrap.className = "perf-type-filters";
             TYPE_DEFS.forEach(({ key, label }) => {
                 const btn = document.createElement("button");
-                btn.className = "perf-type-btn active";
+                btn.className = "type-filter-btn active";
                 btn.dataset.ptype = key;
                 btn.textContent = label;
                 btn.onclick = () => {
@@ -927,7 +907,7 @@
             listBody.className = "all-performers-body";
 
             // Build list rows manually so we can tag each with data-pid for filtering
-            const TYPE_TAG_LABELS = { music: "Music", poetry: "Poetry" };
+            const TYPE_TAG_LABELS = { music: "Music", poetry: "Poetry", troupe: "Troupe" };
             const list = document.createElement("div");
             list.className = "simple-list";
             perfIndex.forEach(entry => {
@@ -979,10 +959,7 @@
                 listBody.querySelectorAll(".simple-list-row").forEach(row => {
                     const pid = row.dataset.pid;
                     const rowTypes = row.dataset.types.split(" ").filter(Boolean);
-                    // Performers with no classified appearances yet stay
-                    // visible regardless of the type filter — there's no
-                    // data to gate them on.
-                    const typeVisible = rowTypes.length === 0 || rowTypes.some(ty => activeTypes.has(ty));
+                    const typeVisible = rowTypes.some(ty => activeTypes.has(ty));
                     const searchVisible = !t || matchedPids.has(pid);
                     const visible = typeVisible && searchVisible;
                     row.style.display = visible ? "" : "none";

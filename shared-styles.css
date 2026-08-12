@@ -130,6 +130,96 @@ button.active {
     box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.3);
 }
 
+/* =============================================================
+   PERFORMANCE-TYPE FILTER BUTTONS (story/music/poetry/troupe)
+   Shared by the performers listing and venues listing pages.
+   Each type gets its own accent colour for both the active and
+   hover states, and explicitly cancels the generic button /
+   button:hover / button.active rules above (background-color,
+   box-shadow) — those would otherwise force every one of these
+   buttons, including music/poetry, to the same green highlight.
+   ============================================================= */
+.type-filter-btn {
+    border: 2px solid #ccc;
+    background: white;
+    color: #555;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+}
+
+.type-filter-btn:hover {
+    background: white;
+}
+
+.type-filter-btn.active {
+    box-shadow: none;
+}
+
+.type-filter-btn[data-ptype="story"].active {
+    background: #2e7d32;
+    border-color: #2e7d32;
+    color: white;
+}
+
+.type-filter-btn[data-ptype="music"].active {
+    background: #443cd7;
+    border-color: #443cd7;
+    color: white;
+}
+
+.type-filter-btn[data-ptype="poetry"].active {
+    background: #d6006e;
+    border-color: #d6006e;
+    color: white;
+}
+
+.type-filter-btn[data-ptype="troupe"].active {
+    background: #795548;
+    border-color: #795548;
+    color: white;
+}
+
+.type-filter-btn[data-ptype="story"]:not(.active):hover {
+    border-color: #2e7d32;
+    color: #2e7d32;
+}
+
+.type-filter-btn[data-ptype="music"]:not(.active):hover {
+    border-color: #443cd7;
+    color: #443cd7;
+}
+
+.type-filter-btn[data-ptype="poetry"]:not(.active):hover {
+    border-color: #d6006e;
+    color: #d6006e;
+}
+
+.type-filter-btn[data-ptype="troupe"]:not(.active):hover {
+    border-color: #795548;
+    color: #795548;
+}
+
+.type-filter-btn[data-ptype="story"].active:hover {
+    background: #276829;
+}
+
+.type-filter-btn[data-ptype="music"].active:hover {
+    background: #3931b8;
+}
+
+.type-filter-btn[data-ptype="poetry"].active:hover {
+    background: #b8004f;
+}
+
+.type-filter-btn[data-ptype="troupe"].active:hover {
+    background: #63443a;
+}
+
 
 /* =============================================================
    3. FORM INPUTS
@@ -1127,6 +1217,12 @@ a.festival-programme-link:hover {
     color: #555;
     cursor: pointer;
     transition: all 0.15s;
+}
+
+.dir-filter-btn:hover {
+    background: #f0f0f0;
+    border-color: #999;
+    color: #333;
 }
  
 /* Type-filter buttons carry a coloured left border set inline per type */

@@ -214,10 +214,14 @@
 
             function performanceTypeVisible(entry) {
                 if (activePTypes.size === 0) return false; // nothing selected → show nothing
-                if (activePTypes.size === PTYPE_DEFS.length) return true; // nothing filtered out
                 if (ptypeMode === 'intersection') {
+                    // Always compute the real intersection — selecting all
+                    // three types should narrow to venues hosting all three,
+                    // not fall back to "show everything".
                     return [...activePTypes].every(t => entry.ptypes.has(t));
                 }
+                // Union: selecting every type is equivalent to no restriction
+                if (activePTypes.size === PTYPE_DEFS.length) return true;
                 return [...entry.ptypes].some(t => activePTypes.has(t));
             }
 
@@ -359,16 +363,15 @@
                 ptypeBtnsWrap.className = 'dir-filter-btns';
 
                 const ptypeBtnEls = [];
-                PTYPE_DEFS.forEach(({ key, label, colour }) => {
+                PTYPE_DEFS.forEach(({ key, label }) => {
                     const btn = document.createElement('button');
-                    btn.className = 'dir-filter-btn active-teal';
-                    btn.style.borderLeftColor = colour;
-                    btn.style.borderLeftWidth = '4px';
+                    btn.className = 'type-filter-btn active';
+                    btn.dataset.ptype = key;
                     btn.textContent = label;
                     btn.addEventListener('click', () => {
                         if (activePTypes.has(key)) activePTypes.delete(key);
                         else activePTypes.add(key);
-                        btn.classList.toggle('active-teal', activePTypes.has(key));
+                        btn.classList.toggle('active', activePTypes.has(key));
                         renderList();
                         syncMarkerVisibility();
                     });
