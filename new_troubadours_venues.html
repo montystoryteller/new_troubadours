@@ -34,6 +34,10 @@
 
     <div id="venueContent" style="display:none;">
 
+        <div class="page-header">
+            <a href="new_troubadours_venues.html" class="back-link">← All Venues</a>
+        </div>
+
         <div class="venue-hero">
             <div class="venue-hero-top">
                 <div class="venue-hero-text">
@@ -123,6 +127,47 @@
         // Bootstrap
         // ---------------------------------------------------------------------------
 
+        // Performance-type classification (what kinds of events happen at a
+        // venue — distinct from classifyVenueType()/VTYPE_* in shared_utils.js,
+        // which classify the *building* itself from its name). Story/Music/
+        // Poetry mirror the same three buckets used on the performers listing
+        // page; folk nights and Irish sessions are treated as "music" here
+        // since they're live-music events, even though they're their own
+        // event types internally.
+        const PTYPE_DEFS = [
+            { key: 'story', label: '📖 Story', colour: '#2e7d32' },
+            { key: 'music', label: '🎵 Music', colour: '#443cd7' },
+            { key: 'poetry', label: '✒️ Poetry', colour: '#d6006e' },
+        ];
+        const PTYPE_COLOUR = Object.fromEntries(PTYPE_DEFS.map(p => [p.key, p.colour]));
+
+        function classifyVenuePerformanceTypes(venueId) {
+            const types = new Set();
+
+            (eventsData.events || []).forEach(e => { if (e.venue_id === venueId) types.add('story'); });
+            (eventsData.folkNights || []).forEach(e => { if (e.venue_id === venueId) types.add('music'); });
+            (eventsData.irishSessions || []).forEach(e => { if (e.venue_id === venueId) types.add('music'); });
+
+            [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || []), ...(eventsData.poetryEvents || [])]
+                .forEach(e => {
+                    if (e.venue_id !== venueId) return;
+                    types.add(e.isMusic ? 'music' : e.isPoetry ? 'poetry' : 'story');
+                });
+
+            Object.values(toursLookup).forEach(tour => {
+                (tour.tour_dates || []).forEach(td => {
+                    if (td.venue_id !== venueId) return;
+                    types.add(tour.isMusic ? 'music' : tour.isPoetry ? 'poetry' : 'story');
+                });
+            });
+
+            Object.values(eventsData.repertoire_shows || {}).forEach(ts => {
+                (ts.show_dates || []).forEach(sd => { if (sd.venue_id === venueId) types.add('story'); });
+            });
+
+            return types;
+        }
+
         function renderAllVenues() {
 
             const root = document.getElementById("venueContent");
@@ -145,6 +190,7 @@
             const venueIndex = venueList.map(([vid, v]) => ({
                 vid, v,
                 vtype: classifyVenueType(v.name),
+                ptypes: classifyVenuePerformanceTypes(vid),
                 searchText: [v.name, v.city, v.full_address, v.postcode].filter(Boolean).join(' ').toLowerCase()
             }));
 
@@ -156,18 +202,54 @@
             let searchTerm = '';
             let activeVenueType = null; // null = show all types
             let mapBounds = null;       // null = no bounds filter (map closed / never panned)
+            // Performance-type filter: which of story/music/poetry are
+            // selected, and whether a venue must match ANY (union) or ALL
+            // (intersection) of them. All three selected + union == no
+            // restriction (the default).
+            const activePTypes = new Set(PTYPE_DEFS.map(p => p.key));
+            let ptypeMode = 'union'; // 'union' | 'intersection'
 
             // vid → marker, so city filter can show/hide individual markers
             const markerByVid = {};
 
+            function performanceTypeVisible(entry) {
+                if (activePTypes.size === 0) return false; // nothing selected → show nothing
+                if (activePTypes.size === PTYPE_DEFS.length) return true; // nothing filtered out
+                if (ptypeMode === 'intersection') {
+                    return [...activePTypes].every(t => entry.ptypes.has(t));
+                }
+                return [...entry.ptypes].some(t => activePTypes.has(t));
+            }
+
             function isVisible(entry) {
                 if (activeVenueType && entry.vtype !== activeVenueType) return false;
+                if (!performanceTypeVisible(entry)) return false;
                 if (activeCity && entry.v.city !== activeCity) return false;
                 if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase())) return false;
                 if (mapBounds && entry.v.latlon) {
                     if (!mapBounds.contains(entry.v.latlon)) return false;
                 }
                 return true;
+            }
+
+            // Marker visibility mirrors isVisible() but (matching prior
+            // behaviour) ignores free-text search and map-bounds panning —
+            // only the toggle-style filters (venue type / performance type /
+            // city) show or hide markers directly.
+            function markerVisible(entry) {
+                if (activeVenueType !== null && entry.vtype !== activeVenueType) return false;
+                if (!performanceTypeVisible(entry)) return false;
+                if (activeCity !== null && entry.v.city !== activeCity) return false;
+                return true;
+            }
+
+            function syncMarkerVisibility() {
+                if (!mapHandle.map) return;
+                venueIndex.forEach(entry => {
+                    const marker = markerByVid[entry.vid];
+                    if (!marker) return;
+                    if (markerVisible(entry)) { marker.addTo(mapHandle.map); } else { marker.remove(); }
+                });
             }
 
             // ── Marker registry (populated lazily when the map first opens) ──────
@@ -251,16 +333,8 @@
                     // Re-render listing
                     renderList();
 
-                    // If the map is already open, update marker visibility respecting both filters
-                    if (mapHandle.map) {
-                        venueIndex.forEach(({ vid, v, vtype }) => {
-                            const marker = markerByVid[vid];
-                            if (!marker) return;
-                            const typeOk = selected === null || vtype === selected;
-                            const cityOk = activeCity === null || v.city === activeCity;
-                            if (typeOk && cityOk) { marker.addTo(mapHandle.map); } else { marker.remove(); }
-                        });
-                    }
+                    // If the map is already open, update marker visibility respecting all filters
+                    syncMarkerVisibility();
                 }
 
                 allTypeBtn.addEventListener('click', () => applyTypeFilter(null));
@@ -271,6 +345,69 @@
                 });
 
                 controls.appendChild(typeBtnsWrap);
+            }
+
+            // ── Performance-type filter — story/music/poetry, with a
+            // union/intersection mode toggle ────────────────────────────────────
+            {
+                const ptypeLabel = document.createElement('div');
+                ptypeLabel.className = 'dir-filter-label';
+                ptypeLabel.textContent = 'Filter by performance type';
+                controls.appendChild(ptypeLabel);
+
+                const ptypeBtnsWrap = document.createElement('div');
+                ptypeBtnsWrap.className = 'dir-filter-btns';
+
+                const ptypeBtnEls = [];
+                PTYPE_DEFS.forEach(({ key, label, colour }) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'dir-filter-btn active-teal';
+                    btn.style.borderLeftColor = colour;
+                    btn.style.borderLeftWidth = '4px';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => {
+                        if (activePTypes.has(key)) activePTypes.delete(key);
+                        else activePTypes.add(key);
+                        btn.classList.toggle('active-teal', activePTypes.has(key));
+                        renderList();
+                        syncMarkerVisibility();
+                    });
+                    ptypeBtnEls.push(btn);
+                    ptypeBtnsWrap.appendChild(btn);
+                });
+
+                controls.appendChild(ptypeBtnsWrap);
+
+                // Mode toggle — only meaningful once 2+ types are selected,
+                // but always visible so its state is clear.
+                const modeWrap = document.createElement('div');
+                modeWrap.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:#777;';
+
+                const modeLabel = document.createElement('span');
+                modeLabel.textContent = 'Show venues matching:';
+                modeWrap.appendChild(modeLabel);
+
+                const unionBtn = document.createElement('button');
+                unionBtn.className = 'dir-filter-btn active-teal';
+                unionBtn.textContent = 'Any selected (union)';
+
+                const intersectionBtn = document.createElement('button');
+                intersectionBtn.className = 'dir-filter-btn';
+                intersectionBtn.textContent = 'All selected (intersection)';
+
+                function applyPtypeMode(mode) {
+                    ptypeMode = mode;
+                    unionBtn.classList.toggle('active-teal', mode === 'union');
+                    intersectionBtn.classList.toggle('active-teal', mode === 'intersection');
+                    renderList();
+                    syncMarkerVisibility();
+                }
+                unionBtn.addEventListener('click', () => applyPtypeMode('union'));
+                intersectionBtn.addEventListener('click', () => applyPtypeMode('intersection'));
+
+                modeWrap.appendChild(unionBtn);
+                modeWrap.appendChild(intersectionBtn);
+                controls.appendChild(modeWrap);
             }
 
             // ── City filter — collapsible <details> with buttons ──────────────────
@@ -306,16 +443,8 @@
                     refreshCityBtns();
                     renderList();
 
-                    // Sync map markers — hide any that don't match the active city
-                    if (mapHandle.map) {
-                        Object.entries(markerByVid).forEach(([vid, marker]) => {
-                            const entry = venueIndex.find(e => e.vid === vid);
-                            if (!entry) return;
-                            const typeOk = activeVenueType === null || entry.vtype === activeVenueType;
-                            const cityOk = activeCity === null || entry.v.city === activeCity;
-                            if (typeOk && cityOk) { marker.addTo(mapHandle.map); } else { marker.remove(); }
-                        });
-                    }
+                    // Sync map markers — hide any that don't match the active filters
+                    syncMarkerVisibility();
 
                     // Close the panel once a selection is made (except "All")
                     if (city !== null) cityDetails.open = false;
@@ -347,10 +476,13 @@
 
             // ── Collapsible map ───────────────────────────────────────────────────
             const mapHandle = createCollapsibleMap(root, 'venues-dir-map', 'Show map of all venues', 400, map => {
-                venueIndex.forEach(({ vid, v, vtype }) => {
+                venueIndex.forEach(({ vid, v, vtype, ptypes }) => {
                     if (!v.latlon || v.latlon.length === 0) return;
                     const colour = VTYPE_COLOURS[vtype] || '#999';
-                    const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? '<br>' + escapeHtml(v.city) : ''}<br><em style="color:${colour}">${vtype}</em>`;
+                    const ptypeLine = ptypes.size > 0
+                        ? `<br>${[...ptypes].map(t => PTYPE_DEFS.find(p => p.key === t)?.label || t).join(' · ')}`
+                        : '';
+                    const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? '<br>' + escapeHtml(v.city) : ''}<br><em style="color:${colour}">${vtype}</em>${ptypeLine}`;
                     const marker = L.circle(v.latlon, { radius: 3000, fillColor: colour, color: colour, weight: 2, fillOpacity: 0.8 })
                         .addTo(map)
                         .bindPopup(popup)
@@ -361,13 +493,12 @@
                 });
 
                 // Apply any filters already active before the map was opened
-                if (activeVenueType !== null || activeCity !== null) {
-                    venueIndex.forEach(({ vid, v, vtype }) => {
-                        const marker = markerByVid[vid];
+                const ptypeFilterActive = activePTypes.size !== PTYPE_DEFS.length || ptypeMode !== 'union';
+                if (activeVenueType !== null || activeCity !== null || ptypeFilterActive) {
+                    venueIndex.forEach(entry => {
+                        const marker = markerByVid[entry.vid];
                         if (!marker) return;
-                        const typeOk = activeVenueType === null || vtype === activeVenueType;
-                        const cityOk = activeCity === null || v.city === activeCity;
-                        if (typeOk && cityOk) { marker.addTo(map); } else { marker.remove(); }
+                        if (markerVisible(entry)) { marker.addTo(map); } else { marker.remove(); }
                     });
                 }
 
@@ -414,7 +545,7 @@
                     return;
                 }
 
-                visible.forEach(({ vid, v, vtype }) => {
+                visible.forEach(({ vid, v, vtype, ptypes }) => {
                     const colour = VTYPE_COLOURS[vtype] || '#999';
 
                     const row = document.createElement('div');
@@ -436,11 +567,22 @@
                         row.appendChild(locEl);
                     }
 
-                    // Venue-type badge
+                    // Venue-type badge (building type)
                     const typeBadge = document.createElement('span');
                     typeBadge.style.cssText = `display:inline-block;margin-top:5px;font-size:10px;padding:1px 6px;border-radius:3px;background:${colour}22;color:${colour};border:1px solid ${colour}55;font-weight:500;`;
                     typeBadge.textContent = vtype;
                     row.appendChild(typeBadge);
+
+                    // Performance-type badges (story/music/poetry) — the
+                    // "highlighting" for what kinds of events happen here
+                    [...ptypes].forEach(pt => {
+                        const def = PTYPE_DEFS.find(p => p.key === pt);
+                        if (!def) return;
+                        const pill = document.createElement('span');
+                        pill.style.cssText = `display:inline-block;margin-top:5px;margin-left:4px;font-size:10px;padding:1px 6px;border-radius:20px;background:${def.colour}22;color:${def.colour};border:1px solid ${def.colour}55;font-weight:bold;`;
+                        pill.textContent = def.label;
+                        row.appendChild(pill);
+                    });
 
                     if (v.url) {
                         const a = document.createElement('a');
@@ -467,7 +609,10 @@
             if (!venueId) {
                 const loaded = await loadEventsData();
                 if (!loaded) return showNotFound();
+                eventsData = loaded.eventsData;
                 venuesLookup = loaded.venuesLookup;
+                performersLookup = loaded.performersLookup;
+                toursLookup = loaded.toursLookup;
                 displayDataLastUpdated(loaded.lastUpdateTime);
                 initNavFeedback();
                 // Defer heavy rendering to background to allow loading state to display
@@ -569,6 +714,7 @@
             const irishSessions = (eventsData.irishSessions || []).filter(e => e.venue_id === venueId);
             const specificEvents = (eventsData.specificEvents || []).filter(e => e.venue_id === venueId);
             const musicEvents = (eventsData.musicEvents || []).filter(e => e.venue_id === venueId);
+            const poetryEvents = (eventsData.poetryEvents || []).filter(e => e.venue_id === venueId);
 
             // Tour dates at this venue
             const tourDatesHere = [];
@@ -615,6 +761,7 @@
             const allDated = [
                 ...specificEvents.map(e => ({ type: "specific", date: parseDateString(e.date), data: e })),
                 ...musicEvents.map(e => ({ type: "music", date: parseDateString(e.date), data: e })),
+                ...poetryEvents.map(e => ({ type: "poetry", date: parseDateString(e.date), data: e })),
                 ...tourDatesHere.map(t => ({ type: "tour", date: parseDateString(t.tourDate.date), data: t })),
                 ...showDatesHere.map(s => ({ type: "show", date: parseDateString(s.showDate.date), data: s })),
                 ...festivalsHere.map(([fid, f]) => ({ type: "festival", date: parseDateString(f.start_date), data: { fid, festival: f } })),
@@ -788,7 +935,7 @@
             const detail = document.createElement("div");
             detail.className = "event-row-detail";
 
-            if (entry.type === "specific" || entry.type === "music") {
+            if (entry.type === "specific" || entry.type === "music" || entry.type === "poetry") {
                 const e = entry.data;
                 const title = document.createElement("div");
                 title.className = "event-row-title";
@@ -817,6 +964,7 @@
                 const badges = document.createElement("div");
                 badges.className = "badge-row";
                 if (e.isMusic) { const b = document.createElement("span"); b.className = "badge badge-music"; b.textContent = "Music"; badges.appendChild(b); }
+                else if (e.isPoetry) { const b = document.createElement("span"); b.className = "badge badge-poetry"; b.textContent = "Poetry"; badges.appendChild(b); }
                 else { const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Story show"; badges.appendChild(b); }
                 if (e.price) { const b = document.createElement("span"); b.className = "badge badge-price"; b.textContent = e.price; badges.appendChild(b); }
                 if (e.ticket_url && !isPast) {

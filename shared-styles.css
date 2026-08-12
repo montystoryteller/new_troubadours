@@ -966,6 +966,7 @@ a.festival-programme-link:hover {
     border-bottom: 1px solid #f0ebe3; /* warm off-white, unique to this component */
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     gap: 8px;
 }
 
@@ -981,6 +982,16 @@ a.festival-programme-link:hover {
 .simple-list-meta {
     color: #888;
     white-space: nowrap;
+}
+
+/* Badges/tags placed after the link (e.g. type tags on the performers
+   listing) — flex-shrink:0 keeps them from being squeezed when the name
+   wraps to multiple lines, and align-self overrides the row's baseline
+   alignment so the pill stays vertically centred rather than sitting on
+   the text baseline. */
+.simple-list-row > :not(a) {
+    flex-shrink: 0;
+    align-self: center;
 }
 
 /* =============================================================
@@ -1226,6 +1237,12 @@ a.festival-programme-link:hover {
     background: #e8eaf6;
     color: #1a237e;
     border: 1px solid #9fa8da;
+}
+
+.badge-poetry {
+    background: #fde8f2;
+    color: #8a0040;
+    border: 1px solid #f5a8ce;
 }
 
 .badge-past {

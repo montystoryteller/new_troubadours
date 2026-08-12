@@ -507,6 +507,7 @@ function createTourDateElement(tourDate, tour, past = false) {
   // Use the standard event classes for gradients and borders
   div.className = "event tour-date-item";
   if (tour.isMusic) div.classList.add("music");
+  if (tour.isPoetry) div.classList.add("poetry");
   if (past) div.classList.add("date-past");
 
   // Map Interaction: Zoom to venue on click
@@ -968,6 +969,7 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
   const card = document.createElement("div");
   card.className = "now-touring-card";
   if (tour.isMusic) card.classList.add("music");
+  if (tour.isPoetry) card.classList.add("poetry");
 
   // Flyer thumbnail — floats right, clicks to open lightbox
   const cardTourFlyers = getTourLevelFlyers(tour);
@@ -1088,6 +1090,29 @@ function buildTouringRow(tours, label, labelClass, container, badgeFn) {
 // Touring Panels — renderers
 // ---------------------------------------------------------------------------
 
+// Groups shown within each touring panel (Now Touring / Upcoming / Past),
+// in display order. Add a tuple here to introduce another tour-type row
+// without touching renderTouringPanel itself. "test" should be mutually
+// exclusive across entries for a given tour (first match wins in practice
+// since a tour should only carry one of isMusic/isPoetry/neither).
+const TOUR_PANEL_GROUPS = [
+  {
+    test: (t) => !t.isMusic && !t.isPoetry,
+    label: "📖 Stories & Spoken Word",
+    labelClass: "label-stories",
+  },
+  {
+    test: (t) => !!t.isPoetry,
+    label: "✒️ Poetry",
+    labelClass: "label-poetry",
+  },
+  {
+    test: (t) => !!t.isMusic,
+    label: "🎵 Music",
+    labelClass: "label-music",
+  },
+];
+
 /**
  * Generic panel renderer. Filters toursLookup by status, builds rows into
  * the named body element, and hides the wrapper if there's nothing to show.
@@ -1115,20 +1140,15 @@ function renderTouringPanel(status, bodyId, wrapperId, hideClass, badgeFn) {
   // Clear loading message before appending content
   container.innerHTML = "";
 
-  buildTouringRow(
-    tours.filter(([_, t]) => !t.isMusic),
-    "📖 Stories & Spoken Word",
-    "label-stories",
-    container,
-    badgeFn,
-  );
-  buildTouringRow(
-    tours.filter(([_, t]) => t.isMusic),
-    "🎵 Music",
-    "label-music",
-    container,
-    badgeFn,
-  );
+  TOUR_PANEL_GROUPS.forEach(({ test, label, labelClass }) => {
+    buildTouringRow(
+      tours.filter(([_, t]) => test(t)),
+      label,
+      labelClass,
+      container,
+      badgeFn,
+    );
+  });
 }
 
 function renderNowTouringPanel() {

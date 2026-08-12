@@ -304,6 +304,16 @@ select {
     filter: brightness(1.1);
 }
 
+.tour-date-item.poetry {
+    background: linear-gradient(135deg, #c2005c 0%, #ff4fa3 100%);
+    border: 2px solid #8a0040;
+    color: white;
+}
+
+.tour-date-item.poetry:hover {
+    filter: brightness(1.1);
+}
+
 /* Past date styling */
 .tour-date-item.date-past {
     opacity: 0.55;
@@ -320,6 +330,13 @@ select {
     opacity: 0.6;
 }
 
+.tour-date-item.poetry.date-past {
+    background: linear-gradient(135deg, #777 0%, #aaa 100%) !important;
+    border-color: #999 !important;
+    color: #ddd !important;
+    opacity: 0.6;
+}
+
 .tour-date-item.date-past .event-name::after {
     content: " — past";
     font-size: 0.8em;
@@ -329,6 +346,16 @@ select {
 }
 
 .tour-date-item.event.music.event-cancelled {
+    border-left: 4px solid #c62828 !important;
+    background: repeating-linear-gradient(
+        -45deg,
+        #e8ede8, #e8ede8 8px,
+        #dfe6df 8px, #dfe6df 16px
+    ) !important;
+    color: #555 !important;
+}
+
+.tour-date-item.event.poetry.event-cancelled {
     border-left: 4px solid #c62828 !important;
     background: repeating-linear-gradient(
         -45deg,
@@ -369,22 +396,25 @@ select {
     margin: 0 8px;
 }
 
-/* Music / Folk card link overrides */
+/* Music / Folk / Poetry card link overrides */
 .tour-date-item.music .event-location a,
-.tour-date-item.folk .event-location a {
+.tour-date-item.folk .event-location a,
+.tour-date-item.poetry .event-location a {
     color: #ffffff !important;
     text-decoration: none !important;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .tour-date-item.music .event-tickets a,
-.tour-date-item.folk .event-tickets a {
+.tour-date-item.folk .event-tickets a,
+.tour-date-item.poetry .event-tickets a {
     color: #fefa16 !important;
     text-decoration: none !important;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.music .event-tickets .separator {
+.music .event-tickets .separator,
+.poetry .event-tickets .separator {
     color: #e9edee;
     margin: 0 8px;
 }
@@ -429,6 +459,17 @@ select {
     stroke-linejoin: round;
 }
 
+/* Poetry card variant */
+.poetry .event-facebook-inline svg {
+    fill: #ffffff;
+}
+
+.poetry .event-facebook-inline svg path {
+    stroke: #1877f2;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+}
+
 /* Website icon on music cards */
 .event.music .event-website svg {
     fill: #f6f3ed;
@@ -436,6 +477,16 @@ select {
 
 .event.music .event-email:hover svg,
 .event.music .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Website icon on poetry cards */
+.event.poetry .event-website svg {
+    fill: #f6f3ed;
+}
+
+.event.poetry .event-email:hover svg,
+.event.poetry .event-website:hover svg {
     fill: #ffffff;
 }
 
@@ -544,6 +595,10 @@ select {
     color: #2e7d32;
 }
 
+.now-touring-row-label.label-poetry {
+    color: #d6006e;
+}
+
 .now-touring-row-label.label-music {
     color: #443cd7;
 }
@@ -612,6 +667,10 @@ select {
     background: rgba(255, 255, 255, 0.15);
 }
 
+.now-touring-card.poetry .now-touring-flyer-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+
 .now-touring-card:hover .now-touring-flyer-thumb {
     box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
@@ -636,6 +695,20 @@ select {
     transform: translateY(-2px);
 }
 
+/* --- Poetry card (magenta gradient) --- */
+.now-touring-card.poetry {
+    background: linear-gradient(135deg, #c2005c 0%, #ff4fa3 100%);
+    border: 1px solid #8a0040;
+    border-left: 4px solid #fff176;
+    color: white;
+}
+
+.now-touring-card.poetry:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px rgba(214, 0, 110, 0.35);
+    transform: translateY(-2px);
+}
+
 /* Show name */
 .now-touring-show-name {
     font-weight: 700;
@@ -645,6 +718,10 @@ select {
 }
 
 .now-touring-card.music .now-touring-show-name {
+    color: #fff;
+}
+
+.now-touring-card.poetry .now-touring-show-name {
     color: #fff;
 }
 
@@ -660,6 +737,10 @@ select {
     color: #c8e6c9;
 }
 
+.now-touring-card.poetry .now-touring-performer {
+    color: #ffd6ea;
+}
+
 /* Date range */
 .now-touring-dates {
     font-size: 0.8em;
@@ -669,6 +750,10 @@ select {
 
 .now-touring-card.music .now-touring-dates {
     color: #b3c9ff;
+}
+
+.now-touring-card.poetry .now-touring-dates {
+    color: #ffd6ea;
 }
 
 /* Remaining-dates badge */
@@ -684,6 +769,12 @@ select {
 }
 
 .now-touring-card.music .now-touring-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.now-touring-card.poetry .now-touring-badge {
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
     border-color: rgba(255, 255, 255, 0.4);

@@ -99,6 +99,11 @@
             border-color: #9fa8da;
         }
 
+        .tour-card-poetry .perf-flyer-thumb {
+            background: #fde8f2;
+            border-color: #f5a8ce;
+        }
+
         .repertoire-card .perf-flyer-thumb {
             background: #efebe9;
             border-color: #bcaaa4;
@@ -328,6 +333,11 @@
             background: #f5f6ff;
         }
 
+        .perf-gallery-card.gc-poetry {
+            border-color: #f5a8ce;
+            background: #fff5fa;
+        }
+
         .perf-gallery-card.gc-past {
             opacity: 0.7;
         }
@@ -371,6 +381,10 @@
             background: rgba(68, 60, 215, 0.85);
         }
 
+        .gc-poetry .perf-gallery-type-badge {
+            background: rgba(214, 0, 110, 0.85);
+        }
+
         .perf-gallery-caption {
             padding: 7px 8px 9px;
         }
@@ -387,6 +401,10 @@
 
         .gc-music .perf-gallery-caption-title {
             color: #1006c6;
+        }
+
+        .gc-poetry .perf-gallery-caption-title {
+            color: #8a0040;
         }
 
         .perf-gallery-caption-date {
@@ -540,6 +558,87 @@
             margin-bottom: 12px;
         }
 
+        /* ── Performer type filters (landing page) ────────────── */
+        .perf-type-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .perf-type-btn {
+            border: 2px solid #ccc;
+            background: white;
+            color: #555;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+
+        .perf-type-btn[data-ptype="story"].active {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: white;
+        }
+
+        .perf-type-btn[data-ptype="music"].active {
+            background: #443cd7;
+            border-color: #443cd7;
+            color: white;
+        }
+
+        .perf-type-btn[data-ptype="poetry"].active {
+            background: #d6006e;
+            border-color: #d6006e;
+            color: white;
+        }
+
+        .perf-type-btn[data-ptype="story"]:not(.active):hover {
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+
+        .perf-type-btn[data-ptype="music"]:not(.active):hover {
+            border-color: #443cd7;
+            color: #443cd7;
+        }
+
+        .perf-type-btn[data-ptype="poetry"]:not(.active):hover {
+            border-color: #d6006e;
+            color: #d6006e;
+        }
+
+        .simple-list-row-tags {
+            display: inline-flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .simple-list-row-type-tag {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 1px 7px;
+            border-radius: 20px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .simple-list-row-type-tag.type-music {
+            background: #e8eaf6;
+            color: #1a237e;
+        }
+
+        .simple-list-row-type-tag.type-poetry {
+            background: #fde8f2;
+            color: #8a0040;
+        }
+
         /* ── Performer search (landing page) ──────────────────── */
         .perf-search-wrap {
             margin-bottom: 14px;
@@ -578,11 +677,16 @@
 
     <div id="performerContent" style="display:none;">
 
+        <div class="page-header">
+            <a href="new_troubadours_performers.html" class="back-link">← All Performers</a>
+        </div>
+
         <div class="performer-hero">
             <div class="performer-hero-main">
                 <div class="performer-avatar" id="performerAvatar"></div>
                 <div class="performer-hero-text">
                     <h1 id="performerName"></h1>
+                    <div id="performerBadges" class="performer-hero-badges"></div>
                     <div id="performerWebsite" class="performer-website"></div>
                 </div>
             </div>
@@ -673,26 +777,35 @@
                 .map(([pid, p]) => {
                     const aliasIds = new Set([pid, ...(p.aliases || [])]);
                     const showNames = [];
+                    // What kinds of appearances this performer has — a
+                    // performer can be more than one type (e.g. a musician
+                    // who also does spoken word), so this is a Set, not a
+                    // single category.
+                    const types = new Set();
+                    if (p.poet === true) types.add("poetry");
 
                     // Tours
                     Object.values(toursLookup).forEach(t => {
                         if (aliasIds.has(t.performer_id)) {
                             const n = t.tour_name || t.name;
                             if (n) showNames.push(n);
+                            types.add(t.isMusic ? "music" : t.isPoetry ? "poetry" : "story");
                         }
                     });
-                    // Touring shows
+                    // Touring shows — always story
                     Object.values(eventsData.repertoire_shows || {}).forEach(ts => {
                         if (ts.performer_id === pid) {
                             const n = ts.showname || ts.name;
                             if (n) showNames.push(n);
+                            types.add("story");
                         }
                     });
-                    // Specific / music events
-                    [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || [])].forEach(e => {
+                    // Specific / music / poetry events
+                    [...(eventsData.specificEvents || []), ...(eventsData.musicEvents || []), ...(eventsData.poetryEvents || [])].forEach(e => {
                         if (e.performer_id === pid) {
                             const n = e.showname || e.name;
                             if (n && !showNames.includes(n)) showNames.push(n);
+                            types.add(e.isMusic ? "music" : e.isPoetry ? "poetry" : "story");
                         }
                     });
 
@@ -705,8 +818,35 @@
                         showNames,
                         href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
                         isTroupe: isTroupe(p),
+                        types,
                     };
                 });
+
+            // ── Type filters ──────────────────────────────────────────────────
+            const TYPE_DEFS = [
+                { key: "story", label: "📖 Storytellers" },
+                { key: "music", label: "🎵 Musicians" },
+                { key: "poetry", label: "✒️ Poets" },
+            ];
+            const activeTypes = new Set(TYPE_DEFS.map(t => t.key));
+            let currentSearchTerm = "";
+
+            const typeFilterWrap = document.createElement("div");
+            typeFilterWrap.className = "perf-type-filters";
+            TYPE_DEFS.forEach(({ key, label }) => {
+                const btn = document.createElement("button");
+                btn.className = "perf-type-btn active";
+                btn.dataset.ptype = key;
+                btn.textContent = label;
+                btn.onclick = () => {
+                    if (activeTypes.has(key)) activeTypes.delete(key);
+                    else activeTypes.add(key);
+                    btn.classList.toggle("active", activeTypes.has(key));
+                    applyFilters();
+                };
+                typeFilterWrap.appendChild(btn);
+            });
+            container.appendChild(typeFilterWrap);
 
             // ── Search box ────────────────────────────────────────────────────
             const searchWrap = document.createElement("div");
@@ -757,32 +897,8 @@
                     location.href = entry.href;
                 },
                 onChange: term => {
-                    // Filter the list rows live; auto-open details when searching
-                    const t = term.toLowerCase();
-                    const matchedPids = new Set(
-                        t ? perfIndex
-                            .filter(e =>
-                                e.nameLower.includes(t) ||
-                                e.bioLower.includes(t) ||
-                                e.showNamesLower.some(s => s.includes(t))
-                            )
-                            .map(e => e.pid)
-                            : perfIndex.map(e => e.pid) // empty → show all
-                    );
-
-                    listBody.querySelectorAll(".simple-list-row").forEach(row => {
-                        const pid = row.dataset.pid;
-                        row.style.display = (!t || matchedPids.has(pid)) ? "" : "none";
-                    });
-
-                    // Update visible count in summary
-                    const visible = t ? matchedPids.size : perfIndex.length;
-                    summaryLabel.textContent =
-                        t ? `All performers — ${visible} match${visible !== 1 ? "es" : ""}`
-                            : `All performers (${perfIndex.length})`;
-
-                    // Auto-expand when searching, restore default when cleared
-                    if (t) details.open = true;
+                    currentSearchTerm = term.toLowerCase();
+                    applyFilters();
                 }
             });
 
@@ -811,22 +927,76 @@
             listBody.className = "all-performers-body";
 
             // Build list rows manually so we can tag each with data-pid for filtering
+            const TYPE_TAG_LABELS = { music: "Music", poetry: "Poetry" };
             const list = document.createElement("div");
             list.className = "simple-list";
             perfIndex.forEach(entry => {
                 const row = document.createElement("div");
                 row.className = "simple-list-row";
                 row.dataset.pid = entry.pid;
+                row.dataset.types = [...entry.types].join(" ");
                 const a = document.createElement("a");
                 a.href = entry.href;
                 a.textContent = entry.name;
                 row.appendChild(a);
+                // Small type tags (story is the baseline look, so only
+                // tag music/poetry to keep the common case uncluttered).
+                // Grouped in one wrapper so 2+ tags cluster together as a
+                // single flex item instead of being spread apart by the
+                // row's justify-content: space-between.
+                const tagGroup = document.createElement("span");
+                tagGroup.className = "simple-list-row-tags";
+                entry.types.forEach(ty => {
+                    if (!TYPE_TAG_LABELS[ty]) return;
+                    const tag = document.createElement("span");
+                    tag.className = `simple-list-row-type-tag type-${ty}`;
+                    tag.textContent = TYPE_TAG_LABELS[ty];
+                    tagGroup.appendChild(tag);
+                });
+                if (tagGroup.children.length > 0) row.appendChild(tagGroup);
                 list.appendChild(row);
             });
             listBody.appendChild(list);
             details.appendChild(listBody);
 
             container.appendChild(details);
+
+            // ── Combined search + type filtering ────────────────────────────────
+            function applyFilters() {
+                const t = currentSearchTerm;
+                const matchedPids = new Set(
+                    t ? perfIndex
+                        .filter(e =>
+                            e.nameLower.includes(t) ||
+                            e.bioLower.includes(t) ||
+                            e.showNamesLower.some(s => s.includes(t))
+                        )
+                        .map(e => e.pid)
+                        : perfIndex.map(e => e.pid) // empty → show all
+                );
+
+                let visibleCount = 0;
+                listBody.querySelectorAll(".simple-list-row").forEach(row => {
+                    const pid = row.dataset.pid;
+                    const rowTypes = row.dataset.types.split(" ").filter(Boolean);
+                    // Performers with no classified appearances yet stay
+                    // visible regardless of the type filter — there's no
+                    // data to gate them on.
+                    const typeVisible = rowTypes.length === 0 || rowTypes.some(ty => activeTypes.has(ty));
+                    const searchVisible = !t || matchedPids.has(pid);
+                    const visible = typeVisible && searchVisible;
+                    row.style.display = visible ? "" : "none";
+                    if (visible) visibleCount++;
+                });
+
+                const filterActive = !!t || activeTypes.size < TYPE_DEFS.length;
+                summaryLabel.textContent = filterActive
+                    ? `All performers — ${visibleCount} match${visibleCount !== 1 ? "es" : ""}`
+                    : `All performers (${perfIndex.length})`;
+
+                // Auto-expand when filtering, restore default when cleared
+                if (filterActive) details.open = true;
+            }
         }
 
         // Initialize immediately (don't wait for DOMContentLoaded) so data starts loading early
@@ -1053,6 +1223,19 @@
                 nameEl.parentNode.insertBefore(chipsDiv, nameEl.nextSibling);
             }
 
+            // Poet badge — shown if this performer record (or, for a combined
+            // billing like "Jess Silk & Joe Solo", any of its declared
+            // members) is tagged poet: true in the data.
+            const isPoetPerformer = performer.poet === true ||
+                members.some(id => performersLookup[id]?.poet === true);
+            if (isPoetPerformer) {
+                const badgesDiv = document.getElementById("performerBadges");
+                const badge = document.createElement("span");
+                badge.className = "performer-badge performer-badge-poet";
+                badge.textContent = "✒️ Poet";
+                badgesDiv.appendChild(badge);
+            }
+
             // Website link
             if (performer.url) {
                 const safeUrl = sanitizeUrl(performer.url);
@@ -1116,6 +1299,7 @@
             const myTouringShows = Object.entries(eventsData.repertoire_shows || {}).filter(([, ts]) => performerMatches(ts));
             const mySpecific = (eventsData.specificEvents || []).filter(e => performerMatches(e));
             const myMusic = (eventsData.musicEvents || []).filter(e => performerMatches(e));
+            const myPoetry = (eventsData.poetryEvents || []).filter(e => performerMatches(e));
             const myFestivals = Object.entries(eventsData.festivals || {}).filter(([, f]) =>
                 (f.performers || []).some(p => p.performer_id === performerId)
             );
@@ -1128,11 +1312,11 @@
             const venueIds = new Set();
             myTours.forEach(([, t]) => (t.tour_dates || []).forEach(td => td.venue_id && venueIds.add(td.venue_id)));
             myTouringShows.forEach(([, ts]) => (ts.show_dates || []).forEach(sd => sd.venue_id && venueIds.add(sd.venue_id)));
-            [...mySpecific, ...myMusic].forEach(e => e.venue_id && venueIds.add(e.venue_id));
+            [...mySpecific, ...myMusic, ...myPoetry].forEach(e => e.venue_id && venueIds.add(e.venue_id));
 
             // Stats row
             const hasToursOrShows = myTours.length > 0 || myTouringShows.length > 0;
-            const otherEventsCount = mySpecific.length + myMusic.length;
+            const otherEventsCount = mySpecific.length + myMusic.length + myPoetry.length;
             const otherEventsLabel = hasToursOrShows ? "Other events" : (otherEventsCount === 1 ? "Event" : "Events");
             const stats = [
                 { n: myTours.length, label: myTours.length === 1 ? "Tour" : "Tours" },
@@ -1163,8 +1347,8 @@
                 myTouringShows.forEach(([tsId, ts]) => renderTouringShowCard(list, tsId, ts));
             }
 
-            // Specific + music events
-            const allOther = [...mySpecific, ...myMusic].sort((a, b) => {
+            // Specific + music + poetry events
+            const allOther = [...mySpecific, ...myMusic, ...myPoetry].sort((a, b) => {
                 const da = parseDateString(a.date), db = parseDateString(b.date);
                 if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
                 return da - db;
@@ -1229,7 +1413,7 @@
             const items = [];
             const seen = new Set();
 
-            function add(flyerName, label, dateStr, isMusic, isPast) {
+            function add(flyerName, label, dateStr, isMusic, isPast, isPoetry) {
                 if (!flyerName?.trim()) return;
                 const key = flyerName.trim() + "|" + (dateStr || "");
                 if (seen.has(key)) return;
@@ -1239,6 +1423,7 @@
                     label: label || "",
                     dateStr: dateStr || "",
                     isMusic: !!isMusic,
+                    isPoetry: !!isPoetry,
                     isPast: !!isPast,
                 });
             }
@@ -1255,13 +1440,13 @@
                         ? `${formatShortDate(first)} – ${formatShortDate(last)}`
                         : (first ? formatShortDate(first) : "");
                     const allPast = last && last < today;
-                    add(tour.tour_flyer, tour.tour_name || tour.name, range, tour.isMusic, allPast);
+                    add(tour.tour_flyer, tour.tour_name || tour.name, range, tour.isMusic, allPast, tour.isPoetry);
                 }
                 (tour.tour_dates || []).forEach(td => {
                     if (!td.event_flyer?.trim()) return;
                     const d = parseDateString(td.date);
                     add(td.event_flyer, tour.tour_name || tour.name,
-                        d ? formatShortDate(d) : (td.date || ""), tour.isMusic, d && d < today);
+                        d ? formatShortDate(d) : (td.date || ""), tour.isMusic, d && d < today, tour.isPoetry);
                 });
             });
 
@@ -1269,22 +1454,22 @@
             myTouringShows.forEach(([, ts]) => {
                 const tsFlyer = ts.touring_event_flyer || ts.event_flyer;
                 if (tsFlyer?.trim()) {
-                    add(tsFlyer, ts.showname || ts.name, "", false, false);
+                    add(tsFlyer, ts.showname || ts.name, "", false, false, false);
                 }
                 (ts.show_dates || []).forEach(sd => {
                     if (!sd.event_flyer?.trim()) return;
                     const d = parseDateString(sd.date);
                     add(sd.event_flyer, ts.showname || ts.name,
-                        d ? formatShortDate(d) : (sd.date || ""), false, d && d < today);
+                        d ? formatShortDate(d) : (sd.date || ""), false, d && d < today, false);
                 });
             });
 
-            // Specific + music events
+            // Specific + music + poetry events
             allOther.forEach(e => {
                 if (!e.event_flyer?.trim()) return;
                 const d = parseDateString(e.date);
                 add(e.event_flyer, e.showname || e.name,
-                    d ? formatShortDate(d) : (e.date || ""), !!e.isMusic, d && d < today);
+                    d ? formatShortDate(d) : (e.date || ""), !!e.isMusic, d && d < today, !!e.isPoetry);
             });
 
             if (items.length === 0) return;
@@ -1306,6 +1491,7 @@
                 const card = document.createElement("div");
                 card.className = "perf-gallery-card" +
                     (item.isMusic ? " gc-music" : "") +
+                    (item.isPoetry ? " gc-poetry" : "") +
                     (item.isPast ? " gc-past" : "");
                 card.title = item.label + (item.dateStr ? " · " + item.dateStr : "");
                 card.addEventListener("click", () => openPerfFlyer(perfGalleryItems, idx));
@@ -1321,7 +1507,7 @@
 
                 const badge = document.createElement("span");
                 badge.className = "perf-gallery-type-badge";
-                badge.textContent = item.isMusic ? "Music" : "Show";
+                badge.textContent = item.isMusic ? "Music" : item.isPoetry ? "Poetry" : "Show";
                 wrap.appendChild(badge);
 
                 card.appendChild(wrap);
@@ -1393,10 +1579,11 @@
                 );
                 const configSpecific = (eventsData.specificEvents || []).filter(e => e.performer_id === configId);
                 const configMusic = (eventsData.musicEvents || []).filter(e => e.performer_id === configId);
+                const configPoetry = (eventsData.poetryEvents || []).filter(e => e.performer_id === configId);
 
                 const totalDates = configTours.reduce((s, [, t]) => s + (t.tour_dates || []).length, 0)
                     + configShows.reduce((s, [, ts]) => s + (ts.show_dates || []).length, 0)
-                    + configSpecific.length + configMusic.length;
+                    + configSpecific.length + configMusic.length + configPoetry.length;
 
                 // Collapsible card for this config
                 const details = document.createElement("details");
@@ -1455,7 +1642,7 @@
                     // Touring shows
                     configShows.forEach(([tsId, ts]) => renderTouringShowCard(body, tsId, ts));
                     // Other events
-                    const otherEvents = [...configSpecific, ...configMusic].sort((a, b) => {
+                    const otherEvents = [...configSpecific, ...configMusic, ...configPoetry].sort((a, b) => {
                         const da = parseDateString(a.date), db = parseDateString(b.date);
                         if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
                         return da - db;
@@ -1495,8 +1682,9 @@
             const lastDate = dates[dates.length - 1] ? parseDateString(dates[dates.length - 1].date) : null;
 
             const isMusic = tour.isMusic;
+            const isPoetry = tour.isPoetry;
             const card = document.createElement("div");
-            card.className = `tour-card${isMusic ? " tour-card-music" : ""}`;
+            card.className = `tour-card${isMusic ? " tour-card-music" : ""}${isPoetry ? " tour-card-poetry" : ""}`;
 
             // Flyer thumbnail (floated right)
             if (tour.tour_flyer?.trim()) {
@@ -1800,7 +1988,8 @@
             const badges = document.createElement("div");
             badges.className = "badge-row";
             if (event.isMusic) { const b = document.createElement("span"); b.className = "badge badge-music"; b.textContent = "Music"; badges.appendChild(b); }
-            if (event.isSpecial && !event.isMusic) { const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Story show"; badges.appendChild(b); }
+            if (event.isPoetry) { const b = document.createElement("span"); b.className = "badge badge-poetry"; b.textContent = "Poetry"; badges.appendChild(b); }
+            if (event.isSpecial && !event.isMusic && !event.isPoetry) { const b = document.createElement("span"); b.className = "badge badge-special"; b.textContent = "Story show"; badges.appendChild(b); }
             if (isPast) { const b = document.createElement("span"); b.className = "badge badge-past"; b.textContent = "Past"; badges.appendChild(b); }
             if (event.ticket_url && !isPast) {
                 const a = document.createElement("a");
