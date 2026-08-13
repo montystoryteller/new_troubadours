@@ -49,6 +49,8 @@
         "url":          { "type": "string", "description": "Venue website." },
         "tickets_url":  { "type": "string" },
         "email":        { "type": "string" },
+        "facebook":     { "type": "string" },
+        "instagram":    { "type": "string" },
         "description":  { "type": "string" },
         "latlon": {
           "type": "array",

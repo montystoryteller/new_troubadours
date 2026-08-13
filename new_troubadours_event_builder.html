@@ -1126,6 +1126,16 @@
             </div>
 
             <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="venue-facebook">
+            </div>
+
+            <div class="field-row">
+                <label>Instagram</label>
+                <input type="url" id="venue-instagram">
+            </div>
+
+            <div class="field-row">
                 <label>Description</label>
                 <textarea id="venue-description"></textarea>
             </div>
@@ -2254,6 +2264,8 @@
             const url = document.getElementById("venue-url").value.trim();
             const ticketsUrl = document.getElementById("venue-tickets-url").value.trim();
             const email = document.getElementById("venue-email").value.trim();
+            const facebook = document.getElementById("venue-facebook").value.trim();
+            const instagram = document.getElementById("venue-instagram").value.trim();
             const description = encodeParagraphBreaks(document.getElementById("venue-description").value);
             const latlonRaw = document.getElementById("venue-latlon").value.trim();
             if (city) record.city = city;
@@ -2262,6 +2274,8 @@
             if (url) record.url = url;
             if (ticketsUrl) record.tickets_url = ticketsUrl;
             if (email) record.email = email;
+            if (facebook) record.facebook = facebook;
+            if (instagram) record.instagram = instagram;
             if (description) record.description = description;
             if (latlonRaw) {
                 const parts = latlonRaw.split(",").map(s => parseFloat(s.trim()));
@@ -2275,7 +2289,8 @@
 
         function clearVenueForm() {
             ["venue-name", "venue-city", "venue-postcode", "venue-full-address", "venue-url",
-                "venue-tickets-url", "venue-email", "venue-description", "venue-latlon"]
+                "venue-tickets-url", "venue-email", "venue-facebook", "venue-instagram",
+                "venue-description", "venue-latlon"]
                 .forEach(id => document.getElementById(id).value = "");
         }
 

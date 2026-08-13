@@ -1232,19 +1232,39 @@
                 badgesDiv.appendChild(badge);
             }
 
-            // Website link
-            if (performer.url) {
-                const safeUrl = sanitizeUrl(performer.url);
-                if (safeUrl) {
-                    const websiteDiv = document.getElementById("performerWebsite");
-                    const a = document.createElement("a");
-                    a.href = safeUrl;
-                    a.target = "_blank";
-                    a.rel = "noopener noreferrer";
-                    a.textContent = performer.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-                    websiteDiv.appendChild(a);
+            // External links: website, Facebook, Facebook page/group, Instagram, Podcast
+            const websiteDiv = document.getElementById("performerWebsite");
+
+            function addPerformerLink(url, label, kind) {
+                if (!url) return;
+                let href;
+                if (kind === "facebook") {
+                    href = normaliseFacebookUrl(url);
+                } else if (kind === "instagram") {
+                    const igUrl = /^https?:\/\//i.test(url) ? url : `https://www.instagram.com/${url.replace(/^@/, "")}`;
+                    href = sanitizeUrl(igUrl) || "#";
+                } else {
+                    href = sanitizeUrl(url);
+                    if (!href) return;
                 }
+                if (websiteDiv.children.length > 0) websiteDiv.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                a.href = href;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = label;
+                websiteDiv.appendChild(a);
             }
+
+            addPerformerLink(
+                performer.url,
+                performer.url ? performer.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") : "",
+                "website",
+            );
+            addPerformerLink(performer.facebook, "Facebook", "facebook");
+            addPerformerLink(performer.facebook_group, "Facebook Page", "facebook");
+            addPerformerLink(performer.instagram, "Instagram", "instagram");
+            addPerformerLink(performer.podcast, "Podcast", "website");
 
             // Bio
             if (performer.bio) {

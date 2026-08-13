@@ -207,6 +207,68 @@
             color: #4CAF50;
         }
 
+        /* ── Older flyers (beyond the "Recent past" window) ─────── */
+        .older-flyers-details {
+            margin: 8px 0 28px;
+        }
+
+        .older-flyers-summary {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 0 0 4px;
+            color: #888;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+        }
+
+        .older-flyers-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .older-flyers-summary::before {
+            content: '▸';
+            font-size: 0.7em;
+            transition: transform 0.2s ease;
+        }
+
+        .older-flyers-details[open]>.older-flyers-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .older-flyers-summary .count {
+            font-weight: 400;
+            font-size: 0.7em;
+            color: #aaa;
+        }
+
+        .older-flyers-body {
+            margin-top: 12px;
+        }
+
+        .load-more-flyers-btn {
+            display: block;
+            margin: 16px auto 0;
+            padding: 8px 20px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #444;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            box-shadow: none;
+        }
+
+        .load-more-flyers-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1548,7 +1610,7 @@
             function push(flyer, flyerBase, dateStr, type, name, performerId, venueId, ticketUrl, extra) {
                 if (!flyer || !flyer.trim()) return;
                 const dt = parseDate(dateStr);
-                if (!dt || dt < cutoff) return;
+                if (!dt) return;
                 const key = `${flyer.trim()}|${dateStr}`;
                 if (seen.has(key)) return;
                 seen.add(key);
@@ -1567,6 +1629,7 @@
                     city: v.city || "",
                     ticketUrl: ticketUrl || "",
                     isPast: dt < now,
+                    isOld: dt < cutoff, // beyond the "Recent past" window — shown in the collapsed/paged Older Flyers section instead
                     isTonight: dt.toDateString() === now.toDateString(),
                     isTomorrow: dt.toDateString() === tomorrow.toDateString(),
                     isCancelled: extra.isCancelled || false,
@@ -2251,7 +2314,8 @@
             }
 
             const upcoming = visible.filter(i => !i.isPast || i.isClubGeneric);
-            const past = visible.filter(i => i.isPast && !i.isClubGeneric).reverse();
+            const recentPast = visible.filter(i => i.isPast && !i.isClubGeneric && !i.isOld).reverse();
+            const olderPast = visible.filter(i => i.isPast && !i.isClubGeneric && i.isOld).reverse();
 
             function section(heading, items, isPast) {
                 if (!items.length) return;
@@ -2268,7 +2332,62 @@
             }
 
             section("Upcoming", upcoming, false);
-            section("Recent past", past, true);
+            section("Recent past", recentPast, true);
+
+            // Older flyers (beyond the ~3 month "recent" window) — collapsed by
+            // default and revealed a page at a time on open/click, rather than
+            // silently discarded, so the archive is still reachable without
+            // dumping potentially hundreds of cards into the DOM up front.
+            if (olderPast.length > 0) {
+                const details = document.createElement("details");
+                details.className = "older-flyers-details";
+
+                const summary = document.createElement("summary");
+                summary.className = "older-flyers-summary";
+                summary.innerHTML = `📜 Older Flyers <span class="count">${olderPast.length} flyer${olderPast.length !== 1 ? "s" : ""}</span>`;
+                details.appendChild(summary);
+
+                const body = document.createElement("div");
+                body.className = "older-flyers-body";
+                details.appendChild(body);
+
+                const PAGE_SIZE = 24;
+                let shown = 0;
+                let grid = null;
+                let loadMoreBtn = null;
+
+                function renderNextPage() {
+                    if (!grid) {
+                        grid = document.createElement("div");
+                        grid.className = "flyer-grid";
+                        body.appendChild(grid);
+                    }
+                    const batch = olderPast.slice(shown, shown + PAGE_SIZE);
+                    batch.forEach(item => {
+                        grid.appendChild(makeCard(item, visible, visible.indexOf(item), highlightSoldOut));
+                    });
+                    shown += batch.length;
+
+                    if (loadMoreBtn) loadMoreBtn.remove();
+                    if (shown < olderPast.length) {
+                        loadMoreBtn = document.createElement("button");
+                        loadMoreBtn.type = "button";
+                        loadMoreBtn.className = "load-more-flyers-btn";
+                        const remaining = olderPast.length - shown;
+                        loadMoreBtn.textContent = `Load ${Math.min(PAGE_SIZE, remaining)} more (${remaining} remaining)`;
+                        loadMoreBtn.addEventListener("click", renderNextPage);
+                        body.appendChild(loadMoreBtn);
+                    }
+                }
+
+                // Render the first page lazily, only once the section is
+                // actually opened, so we don't build cards no one asked to see.
+                details.addEventListener("toggle", () => {
+                    if (details.open && shown === 0) renderNextPage();
+                });
+
+                root.appendChild(details);
+            }
         }
 
         // ── Boot ──────────────────────────────────────────────────────────────────

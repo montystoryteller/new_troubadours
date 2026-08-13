@@ -702,6 +702,27 @@
                 a.textContent = "Email";
                 linksDiv.appendChild(a);
             }
+            if (venue.facebook) {
+                if (linksDiv.children.length > 0) linksDiv.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                a.href = normaliseFacebookUrl(venue.facebook);
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = "Facebook";
+                linksDiv.appendChild(a);
+            }
+            if (venue.instagram) {
+                if (linksDiv.children.length > 0) linksDiv.appendChild(document.createTextNode(" · "));
+                const a = document.createElement("a");
+                const igUrl = /^https?:\/\//i.test(venue.instagram)
+                    ? venue.instagram
+                    : `https://www.instagram.com/${venue.instagram.replace(/^@/, "")}`;
+                a.href = sanitizeUrl(igUrl) || "#";
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = "Instagram";
+                linksDiv.appendChild(a);
+            }
             // Google Maps link
             if (venue.latlon) {
                 if (linksDiv.children.length > 0) linksDiv.appendChild(document.createTextNode(" · "));
