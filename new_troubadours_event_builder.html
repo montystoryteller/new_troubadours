@@ -623,6 +623,14 @@
             border: 1px solid #a5d6a7;
         }
 
+        .batch-tag-music {
+            background: var(--color-music);
+        }
+
+        .batch-tag-poetry {
+            background: var(--color-poetry);
+        }
+
         .batch-list button {
             background: #e57373;
             color: white;
@@ -740,6 +748,7 @@
                 <select id="ev-kind">
                     <option value="story">Story / special event (→ specificEvents)</option>
                     <option value="music">Music event (→ musicEvents)</option>
+                    <option value="poetry">Poetry event (→ poetryEvents)</option>
                 </select>
             </div>
 
@@ -888,11 +897,15 @@
             </div>
 
             <div class="field-row">
-                <label>Headline flyer</label>
+                <label>Tour flyer(s)</label>
                 <div>
-                    <input type="text" id="tour-flyer" placeholder="filename.jpg">
-                    <div class="field-hint">touring_event_flyer — one flyer representing the whole tour, not repeated
-                        per date.</div>
+                    <div class="date-rows" id="tour-flyer-rows"></div>
+                    <button type="button" class="add-date-btn" onclick="addTourFlyerRow()" style="margin-top:6px;">Add
+                        another flyer</button>
+                    <div class="field-hint">One flyer is the common case (saved as `touring_event_flyer`). Add more if
+                        this tour has had different artwork over time, e.g. a redesigned poster partway through the run
+                        — those get saved as `touring_event_flyers` (with each flyer's optional label shown as a
+                        caption on the flyers page and tour gallery).</div>
                 </div>
             </div>
 
@@ -902,9 +915,15 @@
             </div>
 
             <div class="field-row">
-                <label>Flags</label>
-                <div class="checkbox-row">
-                    <label><input type="checkbox" id="tour-special" checked> Special event</label>
+                <label>Tour type</label>
+                <div>
+                    <select id="tour-kind">
+                        <option value="story">Story / special (isSpecial)</option>
+                        <option value="music">Music (isMusic)</option>
+                        <option value="poetry">Poetry (isPoetry)</option>
+                    </select>
+                    <div class="field-hint">Controls which colour band this tour gets on the events calendar, tours
+                        page, and performer/venue listings.</div>
                 </div>
             </div>
 
@@ -1008,6 +1027,27 @@
             </div>
 
             <div class="field-row">
+                <label>Aliases</label>
+                <div>
+                    <input type="text" id="perf-aliases" placeholder="comma-separated performer ids, e.g. old-slug, combined-billing-id">
+                    <div class="field-hint">Other ids this performer is sometimes tagged under in tour/event records —
+                        e.g. a legacy slug, or a combined-billing id from before they went solo. Anything matched
+                        against an alias is treated as this performer everywhere on the site (search, filters,
+                        listings).</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Facebook page</label>
+                <input type="url" id="perf-facebook-group" placeholder="(optional) facebook group/page, if different from the personal profile above">
+            </div>
+
+            <div class="field-row">
+                <label>Podcast</label>
+                <input type="url" id="perf-podcast">
+            </div>
+
+            <div class="field-row">
                 <label>Facebook</label>
                 <input type="url" id="perf-facebook">
             </div>
@@ -1026,6 +1066,7 @@
                 <label>Flags</label>
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="perf-musician"> Musician</label>
+                    <label><input type="checkbox" id="perf-poet"> Poet</label>
                     <label><input type="checkbox" id="perf-troupe"> Troupe / group (overrides Type, above, with
                         "troupe")</label>
                 </div>
@@ -1216,7 +1257,7 @@
         const newVenues = {};
 
         // Batch of records waiting to be exported
-        const batch = { events: [], musicEvents: [], tours: [], shows: [] };
+        const batch = { events: [], musicEvents: [], poetryEvents: [], tours: [], shows: [] };
 
         // ── Paragraph-break encoding ─────────────────────────────────────────
         // House convention (see tour_description in events-schema.json): a
@@ -1721,6 +1762,57 @@
         });
 
         // ── Date row helpers (shared shape for tour_dates / show_dates) ────
+        function flyerRowTemplate() {
+            const row = document.createElement("div");
+            row.className = "date-row";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "date-row-remove";
+            removeBtn.textContent = "×";
+            removeBtn.addEventListener("click", () => row.remove());
+            row.appendChild(removeBtn);
+
+            const grid = document.createElement("div");
+            grid.innerHTML = `
+                <div class="field-row">
+                    <label>Filename</label>
+                    <input type="text" class="fr-filename" placeholder="filename.jpg">
+                </div>
+                <div class="field-row">
+                    <label>Caption</label>
+                    <input type="text" class="fr-label" placeholder="(optional) e.g. 2026 redesign">
+                </div>
+            `;
+            row.appendChild(grid);
+            return row;
+        }
+
+        function addTourFlyerRow() {
+            document.getElementById("tour-flyer-rows").appendChild(flyerRowTemplate());
+        }
+
+        // Returns { touring_event_flyer, touring_event_flyers } — the singular
+        // field is used for the common one-flyer-no-caption case (keeps output
+        // clean/backward-compatible); the plural array is used as soon as
+        // there's more than one flyer, or any flyer has a caption.
+        function readFlyerRows(container) {
+            const rows = Array.from(container.querySelectorAll(".date-row"))
+                .map(row => ({
+                    flyer: row.querySelector(".fr-filename").value.trim(),
+                    label: row.querySelector(".fr-label").value.trim(),
+                }))
+                .filter(r => r.flyer);
+
+            if (rows.length === 0) return {};
+            if (rows.length === 1 && !rows[0].label) {
+                return { touring_event_flyer: rows[0].flyer };
+            }
+            return {
+                touring_event_flyers: rows.map(r => r.label ? { flyer: r.flyer, label: r.label } : r.flyer),
+            };
+        }
+
         function dateRowTemplate(kind) {
             // kind: "tour" or "show" — controls which extra fields appear
             const row = document.createElement("div");
@@ -1921,6 +2013,9 @@
             if (kind === "music") {
                 record.isMusic = true;
                 batch.musicEvents.push(record);
+            } else if (kind === "poetry") {
+                record.isPoetry = true;
+                batch.poetryEvents.push(record);
             } else {
                 if (document.getElementById("ev-special").checked) record.isSpecial = true;
                 batch.events.push(record);
@@ -1948,6 +2043,8 @@
             tourPerformerMulti = buildMultiPerformerField(document.getElementById("tour-performer-field"));
             document.getElementById("tour-date-rows").innerHTML = "";
             addTourDateRow();
+            document.getElementById("tour-flyer-rows").innerHTML = "";
+            addTourFlyerRow();
         }
 
         let tourKeyAutoValue = "";
@@ -1980,12 +2077,16 @@
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
             const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
-            const flyer = document.getElementById("tour-flyer").value.trim();
+            const flyerFields = readFlyerRows(document.getElementById("tour-flyer-rows"));
             const video = document.getElementById("tour-video").value.trim();
             if (description) record.tour_description = description;
-            if (flyer) record.touring_event_flyer = flyer;
+            if (flyerFields.touring_event_flyer) record.touring_event_flyer = flyerFields.touring_event_flyer;
+            if (flyerFields.touring_event_flyers) record.touring_event_flyers = flyerFields.touring_event_flyers;
             if (video) record.video_trailer = video;
-            if (document.getElementById("tour-special").checked) record.isSpecial = true;
+            const tourKind = document.getElementById("tour-kind").value;
+            if (tourKind === "music") record.isMusic = true;
+            else if (tourKind === "poetry") record.isPoetry = true;
+            else record.isSpecial = true;
 
             batch.tours.push({ key, record });
             refreshBatchSummary();
@@ -1993,9 +2094,9 @@
         }
 
         function clearTourForm() {
-            ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-flyer", "tour-video"]
+            ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-video"]
                 .forEach(id => document.getElementById(id).value = "");
-            document.getElementById("tour-special").checked = true;
+            document.getElementById("tour-kind").value = "story";
             tourKeyAutoValue = "";
             initTourForm();
         }
@@ -2097,15 +2198,22 @@
             const bio = encodeParagraphBreaks(document.getElementById("perf-bio").value);
             const type = document.getElementById("perf-type").value.trim();
             const facebook = document.getElementById("perf-facebook").value.trim();
+            const facebookGroup = document.getElementById("perf-facebook-group").value.trim();
+            const podcast = document.getElementById("perf-podcast").value.trim();
             const instagram = document.getElementById("perf-instagram").value.trim();
             const ticketsUrl = document.getElementById("perf-tickets-url").value.trim();
+            const aliasesRaw = document.getElementById("perf-aliases").value.trim();
             if (url) record.url = url;
             if (bio) record.bio = bio;
             if (type) record.type = type;
             if (facebook) record.facebook = facebook;
+            if (facebookGroup) record.facebook_group = facebookGroup;
+            if (podcast) record.podcast = podcast;
             if (instagram) record.instagram = instagram;
             if (ticketsUrl) record.tickets_url = ticketsUrl;
+            if (aliasesRaw) record.aliases = aliasesRaw.split(",").map(s => s.trim()).filter(Boolean);
             if (document.getElementById("perf-musician").checked) record.musician = true;
+            if (document.getElementById("perf-poet").checked) record.poet = true;
             if (document.getElementById("perf-troupe").checked) record.type = "troupe";
 
             newPerformers[id] = record;
@@ -2114,9 +2222,11 @@
         }
 
         function clearPerformerForm() {
-            ["perf-name", "perf-url", "perf-bio", "perf-type", "perf-facebook", "perf-instagram", "perf-tickets-url"]
+            ["perf-name", "perf-url", "perf-bio", "perf-type", "perf-facebook", "perf-facebook-group",
+                "perf-podcast", "perf-instagram", "perf-tickets-url", "perf-aliases"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("perf-musician").checked = false;
+            document.getElementById("perf-poet").checked = false;
             document.getElementById("perf-troupe").checked = false;
             const statusEl = document.getElementById("perf-name-status");
             statusEl.textContent = "";
@@ -2180,6 +2290,7 @@
                 ...Object.keys(newVenues).map(id => ({ tag: "venue", label: `${newVenues[id].name} (new venue: ${id})`, remove: () => delete newVenues[id] })),
                 ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1) })),
                 ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1) })),
+                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1) })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1) })),
                 ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1) })),
             ];
@@ -2211,6 +2322,7 @@
             if (Object.keys(newVenues).length) out.newVenues = newVenues;
             if (batch.events.length) out.specificEvents = batch.events;
             if (batch.musicEvents.length) out.musicEvents = batch.musicEvents;
+            if (batch.poetryEvents.length) out.poetryEvents = batch.poetryEvents;
             if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
             if (batch.shows.length) out.repertoire_shows = Object.fromEntries(batch.shows.map(s => [s.key, s.record]));
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);

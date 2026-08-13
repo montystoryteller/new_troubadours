@@ -813,6 +813,18 @@
 
             const typeFilterWrap = document.createElement("div");
             typeFilterWrap.className = "perf-type-filters";
+
+            const allTypeBtn = document.createElement("button");
+            allTypeBtn.className = "dir-filter-btn active-teal";
+            allTypeBtn.textContent = "All";
+            allTypeBtn.onclick = () => {
+                TYPE_DEFS.forEach(({ key }) => activeTypes.add(key));
+                refreshTypeBtns();
+                applyFilters();
+            };
+            typeFilterWrap.appendChild(allTypeBtn);
+
+            const typeBtnEls = [];
             TYPE_DEFS.forEach(({ key, label }) => {
                 const btn = document.createElement("button");
                 btn.className = "type-filter-btn active";
@@ -821,11 +833,18 @@
                 btn.onclick = () => {
                     if (activeTypes.has(key)) activeTypes.delete(key);
                     else activeTypes.add(key);
-                    btn.classList.toggle("active", activeTypes.has(key));
+                    refreshTypeBtns();
                     applyFilters();
                 };
+                typeBtnEls.push(btn);
                 typeFilterWrap.appendChild(btn);
             });
+
+            function refreshTypeBtns() {
+                typeBtnEls.forEach(btn => btn.classList.toggle("active", activeTypes.has(btn.dataset.ptype)));
+                allTypeBtn.classList.toggle("active-teal", activeTypes.size === TYPE_DEFS.length);
+            }
+
             container.appendChild(typeFilterWrap);
 
             // ── Search box ────────────────────────────────────────────────────

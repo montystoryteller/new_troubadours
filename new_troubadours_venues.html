@@ -362,6 +362,18 @@
                 const ptypeBtnsWrap = document.createElement('div');
                 ptypeBtnsWrap.className = 'dir-filter-btns';
 
+                const allPtypeBtn = document.createElement('button');
+                allPtypeBtn.textContent = 'All';
+                allPtypeBtn.className = 'dir-filter-btn active-teal';
+                allPtypeBtn.addEventListener('click', () => {
+                    PTYPE_DEFS.forEach(({ key }) => activePTypes.add(key));
+                    ptypeMode = 'union';
+                    refreshPtypeBtns();
+                    renderList();
+                    syncMarkerVisibility();
+                });
+                ptypeBtnsWrap.appendChild(allPtypeBtn);
+
                 const ptypeBtnEls = [];
                 PTYPE_DEFS.forEach(({ key, label }) => {
                     const btn = document.createElement('button');
@@ -371,13 +383,20 @@
                     btn.addEventListener('click', () => {
                         if (activePTypes.has(key)) activePTypes.delete(key);
                         else activePTypes.add(key);
-                        btn.classList.toggle('active', activePTypes.has(key));
+                        refreshPtypeBtns();
                         renderList();
                         syncMarkerVisibility();
                     });
                     ptypeBtnEls.push(btn);
                     ptypeBtnsWrap.appendChild(btn);
                 });
+
+                function refreshPtypeBtns() {
+                    ptypeBtnEls.forEach(btn => btn.classList.toggle('active', activePTypes.has(btn.dataset.ptype)));
+                    // "All" reads as active only when every type is selected in union mode —
+                    // i.e. genuinely "no restriction", matching the venue-type All button's meaning.
+                    allPtypeBtn.classList.toggle('active-teal', activePTypes.size === PTYPE_DEFS.length && ptypeMode === 'union');
+                }
 
                 controls.appendChild(ptypeBtnsWrap);
 
@@ -402,6 +421,7 @@
                     ptypeMode = mode;
                     unionBtn.classList.toggle('active-teal', mode === 'union');
                     intersectionBtn.classList.toggle('active-teal', mode === 'intersection');
+                    refreshPtypeBtns();
                     renderList();
                     syncMarkerVisibility();
                 }

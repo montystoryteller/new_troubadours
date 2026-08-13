@@ -72,6 +72,7 @@
         "bio":             { "type": "string" },
         "type":            { "type": "string", "description": "Free-text role/category, e.g. \"storyteller\", \"musician\"." },
         "musician":        { "type": "boolean" },
+        "poet":            { "type": "boolean", "description": "Marks this performer as a punk-poet/spoken-word artist — shown as a badge on their profile page and used to classify their appearances for the performance-type filters (performers/venues listings)." },
         "troupe":          { "type": "boolean", "description": "True if this record represents a group/duo rather than an individual." },
         "performer_ids":   { "type": "array", "items": { "type": "string" }, "description": "Member performer ids, when `troupe` is true." },
         "members":         { "type": "array", "items": { "type": "string" }, "description": "Display names of troupe members (alternative/companion to performer_ids)." },
@@ -126,6 +127,24 @@
         "tour_description":     { "type": "string", "description": "Long-form description; paragraphs are conventionally separated by a blank double-line (\\n\\n\\n\\n) in the source text." },
         "touring_event_flyer":  { "type": "string", "description": "Headline flyer image filename representing the WHOLE tour (shown once on the flyers page, rather than repeated per date). Also accepted under the legacy alias `tour_flyer`." },
         "tour_flyer":           { "type": "string", "description": "Legacy alias for touring_event_flyer — either name is accepted." },
+        "touring_event_flyers": {
+          "type": "array",
+          "description": "Preferred way to give a tour MORE THAN ONE headline flyer (e.g. separate artwork for different legs, or a redesigned poster partway through the run). Supersedes touring_event_flyer/tour_flyer when present — all three may coexist and are merged, in order, by getTourLevelFlyers() in shared_utils.js, de-duplicated by filename. Each entry is either a plain filename string, or an object with an optional caption.",
+          "items": {
+            "oneOf": [
+              { "type": "string", "description": "Just a filename — gets an auto-generated label (\"Tour flyer\", or \"Tour flyer 1\", \"Tour flyer 2\"... if there's more than one across all three fields)." },
+              {
+                "type": "object",
+                "properties": {
+                  "flyer":   { "type": "string", "description": "Filename. Aliases: src, path, filename." },
+                  "label":   { "type": "string", "description": "Optional caption shown under the thumbnail. Aliases: caption, title." }
+                },
+                "required": ["flyer"]
+              }
+            ]
+          },
+          "examples": [["poster_v1.jpg", { "flyer": "poster_redesign.jpg", "label": "2026 redesign" }]]
+        },
         "isSpecial":            { "type": "boolean" },
         "isMusic":              { "type": "boolean" },
         "isPoetry":             { "type": "boolean", "description": "Marks this as a punk-poetry/spoken-word tour, styled with its own colour band on the events calendar." },
