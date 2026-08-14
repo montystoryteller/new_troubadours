@@ -481,7 +481,7 @@ function createTourExpandable(parent, label, content, type) {
     img.className = "event-flyer-image";
     expandable.appendChild(img);
     // Load the image lazily when the expandable comes into view (i.e. after btn click)
-    flyerImgObserver.observe(img);
+    flyerImgLoader.observe(img);
   } else {
     const p = document.createElement("p");
     p.className = "event-description";
@@ -595,22 +595,14 @@ function createTourDateElement(tourDate, tour, past = false) {
 // tour-level flyers resolve.
 
 // ── Shared lazy-image observer for tour flyers ────────────────────────────────
-// Watches for data-src images entering the viewport and loads them on demand.
-// Used by both the gallery thumbnails and per-date expandable flyer images.
-const flyerImgObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const img = entry.target;
-      const src = img.dataset.src;
-      if (!src) return;
-      img.src = src;
-      img.removeAttribute("data-src");
-      flyerImgObserver.unobserve(img);
-    });
-  },
-  { rootMargin: "200px 0px" },
-);
+// See createLazyImageLoader() in shared_utils.js for the shared implementation
+// (also used by the flyers page and performer flyer gallery). Used by both
+// the gallery thumbnails and per-date expandable flyer images.
+const flyerImgLoader = createLazyImageLoader({
+  rootMargin: "200px 0px",
+  wrapSelector: ".tour-flyer-thumb",
+  errorMessage: "Flyer image<br>not available",
+});
 
 function renderTourFlyers(tour) {
   const BASE_EVENT = "./storyclub_assets/event_flyers/";
@@ -687,7 +679,7 @@ function renderTourFlyers(tour) {
       observed = true;
       strip
         .querySelectorAll("img[data-src]")
-        .forEach((img) => flyerImgObserver.observe(img));
+        .forEach((img) => flyerImgLoader.observe(img));
     }
   });
 
@@ -981,7 +973,7 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
     img.dataset.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(cardTourFlyers[0].filename)}`;
     img.alt = `${tour.showname || tour.name} flyer`;
     img.addEventListener("load", () => img.classList.add("loaded"));
-    flyerImgObserver.observe(img);
+    flyerImgLoader.observe(img);
     thumb.appendChild(img);
 
     // If there's more than one flyer, show a small count badge and let the
@@ -1098,7 +1090,7 @@ function buildTouringRow(tours, label, labelClass, container, badgeFn) {
 const TOUR_PANEL_GROUPS = [
   {
     test: (t) => !t.isMusic && !t.isPoetry,
-    label: "📖 Storytelling",
+    label: "📖 Stories & Spoken Word",
     labelClass: "label-stories",
   },
   {

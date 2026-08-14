@@ -1040,6 +1040,152 @@ function classifyPerformanceType(entity) {
 }
 
 // ---------------------------------------------------------------------------
+// Lazy image loading (data-src / IntersectionObserver)
+// Single shared implementation for the flyers page, tour flyer galleries,
+// and performer flyer galleries — previously three separate hand-rolled
+// copies with inconsistent behaviour (only one had error handling).
+//
+// Resolved images are cached by URL for the lifetime of the page, so an
+// image that's already been loaded (or already failed) elsewhere on the
+// same page — e.g. the same flyer file reappearing after toggling a
+// filter off and back on, or across several tour dates that share one
+// flyer — resolves instantly instead of re-running the lazy-load/
+// IntersectionObserver dance from scratch.
+// ---------------------------------------------------------------------------
+
+const _lazyImageCache = new Map(); // resolved url -> "loaded" | "error"
+
+function _applyLazyImageResult(img, url, result, opts) {
+  const wrap = opts.wrapSelector ? img.closest(opts.wrapSelector) : null;
+  if (result === "error") {
+    if (wrap) {
+      wrap.innerHTML = `<div class="${opts.errorClass}">${opts.errorMessage}</div>`;
+    } else {
+      img.alt = opts.errorMessage.replace(/<br\s*\/?>/gi, " ");
+    }
+    return;
+  }
+  img.src = url;
+  img.removeAttribute(opts.srcAttr);
+  img.classList.add(opts.revealedClass);
+  wrap?.classList.add(opts.loadedClass);
+}
+
+function _resolveLazyImage(img, opts) {
+  const url = img.dataset[opts.srcDataKey];
+  if (!url) return;
+
+  const cached = _lazyImageCache.get(url);
+  if (cached) {
+    _applyLazyImageResult(img, url, cached, opts);
+    return;
+  }
+
+  img.addEventListener(
+    "load",
+    () => {
+      _lazyImageCache.set(url, "loaded");
+      _applyLazyImageResult(img, url, "loaded", opts);
+    },
+    { once: true },
+  );
+  img.addEventListener(
+    "error",
+    () => {
+      _lazyImageCache.set(url, "error");
+      _applyLazyImageResult(img, url, "error", opts);
+    },
+    { once: true },
+  );
+  img.src = url;
+  img.removeAttribute(opts.srcAttr);
+}
+
+/**
+ * Creates a shared IntersectionObserver for lazy-loading `data-src` (or a
+ * custom data attribute) images.
+ *
+ * @param {object} [options]
+ * @param {string} [options.rootMargin="250px 0px"] - how far ahead of the
+ *   viewport to start loading.
+ * @param {string} [options.srcAttribute="src"] - the data-* attribute
+ *   holding the real image URL, e.g. "src" reads `data-src`, "pfSrc" reads
+ *   `data-pf-src`.
+ * @param {string} [options.wrapSelector=null] - optional ancestor selector
+ *   (via closest()) that gets a "loaded" class added on success, and has
+ *   its content replaced with an error message on failure. If omitted, the
+ *   <img>'s alt text is used for the error message instead.
+ * @param {string} [options.revealedClass="revealed"] - class added to the
+ *   <img> itself once its src is set (for a CSS fade-in transition).
+ * @param {string} [options.loadedClass="loaded"] - class added to the
+ *   wrapSelector match once loaded.
+ * @param {string} [options.errorClass="img-error"] - class on the injected
+ *   error message element.
+ * @param {string} [options.errorMessage="Image not available"] - error
+ *   message shown when the image fails to load.
+ * @returns {{observe: (img: HTMLImageElement) => void}}
+ */
+function createLazyImageLoader(options = {}) {
+  const opts = {
+    rootMargin: "250px 0px",
+    srcAttribute: "src",
+    wrapSelector: null,
+    revealedClass: "revealed",
+    loadedClass: "loaded",
+    errorClass: "img-error",
+    errorMessage: "Image not available",
+    ...options,
+  };
+  opts.srcAttr = "data-" + opts.srcAttribute.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
+  opts.srcDataKey = opts.srcAttribute;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        _resolveLazyImage(entry.target, opts);
+      });
+    },
+    { rootMargin: opts.rootMargin },
+  );
+
+  // Parses the rootMargin's px value (e.g. "250px 0px" -> 250) for the
+  // requestAnimationFrame fallback check below.
+  const marginPx = parseInt(opts.rootMargin, 10) || 0;
+
+  function observe(img) {
+    if (!img.dataset[opts.srcDataKey]) return;
+    observer.observe(img);
+    // Safety net: IntersectionObserver's initial callback for an element
+    // that's already on-screen at the moment observe() is called should
+    // fire promptly, but when many images are created and appended in the
+    // same synchronous batch (e.g. right after a filter change rebuilds
+    // an entire grid), callback delivery has been observed to be missed
+    // or significantly delayed in practice. This double-checks geometry
+    // on the next frame and force-resolves if the observer hasn't
+    // already done so.
+    requestAnimationFrame(() => {
+      if (!img.dataset[opts.srcDataKey]) return; // already resolved
+      const rect = img.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const vw = window.innerWidth || document.documentElement.clientWidth;
+      const nearViewport =
+        rect.bottom > -marginPx &&
+        rect.top < vh + marginPx &&
+        rect.right > -marginPx &&
+        rect.left < vw + marginPx;
+      if (nearViewport) {
+        observer.unobserve(img);
+        _resolveLazyImage(img, opts);
+      }
+    });
+  }
+
+  return { observe };
+}
+
+// ---------------------------------------------------------------------------
 // Venue type classification
 // ---------------------------------------------------------------------------
 

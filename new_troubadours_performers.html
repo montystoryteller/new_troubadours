@@ -76,6 +76,7 @@
             border: 1px solid #c8e6c9;
             cursor: zoom-in;
             flex-shrink: 0;
+            position: relative;
         }
 
         .perf-flyer-thumb img {
@@ -89,6 +90,20 @@
 
         .perf-flyer-thumb img.pf-loaded {
             opacity: 1;
+        }
+
+        .perf-flyer-thumb .img-error,
+        .perf-gallery-img-wrap .img-error {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9aa;
+            font-size: 10px;
+            text-align: center;
+            padding: 4px;
+            line-height: 1.3;
         }
 
         .tour-card-music .perf-flyer-thumb {
@@ -716,7 +731,7 @@
         let performerId = null;
         let performer = null;
         let compoundIdsForMe = new Set();
-        let pfImgObserver = null;
+        let pfImgLoader = null;
 
         // ---------------------------------------------------------------------------
         // Bootstrap
@@ -996,20 +1011,18 @@
             const params = new URLSearchParams(window.location.search);
             performerId = params.get("performer");
 
-            // Lazy-image observer for performer-page flyer thumbnails
-            // Declare here so it's available to all functions
-            pfImgObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    const img = entry.target;
-                    const src = img.dataset.pfSrc;
-                    if (!src) return;
-                    img.src = src;
-                    img.removeAttribute("data-pf-src");
-                    img.addEventListener("load", () => img.classList.add("pf-loaded"));
-                    pfImgObserver.unobserve(img);
-                });
-            }, { rootMargin: "300px 0px" });
+            // Lazy-image loader for performer-page flyer thumbnails — see
+            // createLazyImageLoader() in shared_utils.js for the shared
+            // implementation (also used by the flyers page and tour flyer
+            // gallery). Declared here so it's available to all functions.
+            // Matches both flyer-strip and gallery-card wrap contexts.
+            pfImgLoader = createLazyImageLoader({
+                rootMargin: "300px 0px",
+                srcAttribute: "pfSrc",
+                revealedClass: "pf-loaded",
+                wrapSelector: ".perf-flyer-thumb, .perf-gallery-img-wrap",
+                errorMessage: "Flyer image<br>not available",
+            });
 
             if (!performerId) {
                 const loaded = await loadEventsData();
@@ -1522,7 +1535,7 @@
                 const img = document.createElement("img");
                 img.dataset.pfSrc = item.src;
                 img.alt = item.label;
-                pfImgObserver.observe(img);
+                pfImgLoader.observe(img);
                 wrap.appendChild(img);
 
                 const badge = document.createElement("span");
@@ -1554,7 +1567,7 @@
             section.addEventListener("toggle", () => {
                 if (section.open && !observed) {
                     observed = true;
-                    strip.querySelectorAll("img[data-pf-src]").forEach(img => pfImgObserver.observe(img));
+                    strip.querySelectorAll("img[data-pf-src]").forEach(img => pfImgLoader.observe(img));
                 }
             });
         }
@@ -2215,7 +2228,7 @@
             const img = document.createElement("img");
             img.dataset.pfSrc = src;
             img.alt = label || "Flyer";
-            pfImgObserver.observe(img);
+            pfImgLoader.observe(img);
             wrap.appendChild(img);
             wrap.addEventListener("click", e => {
                 e.stopPropagation();

@@ -1446,26 +1446,14 @@
             return `${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
         }
 
-        // ── Lazy image loading via IntersectionObserver ───────────────────────────
-        const imgObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                const img = entry.target;
-                const src = img.dataset.src;
-                if (!src) return;
-                img.src = src;
-                img.removeAttribute("data-src");
-                img.addEventListener("load", () => {
-                    img.classList.add("revealed");
-                    img.closest(".flyer-img-wrap")?.classList.add("loaded");
-                });
-                img.addEventListener("error", () => {
-                    const wrap = img.closest(".flyer-img-wrap");
-                    if (wrap) wrap.innerHTML = `<div class="img-error">Flyer image<br>not available</div>`;
-                });
-                imgObserver.unobserve(img);
-            });
-        }, { rootMargin: "250px 0px" }); // preload 250px before entering viewport
+        // ── Lazy image loading — see createLazyImageLoader() in shared_utils.js
+        // for the shared implementation (also used by the tour and performer
+        // flyer galleries), including URL-keyed caching and error handling.
+        const imgLoader = createLazyImageLoader({
+            rootMargin: "250px 0px",
+            wrapSelector: ".flyer-img-wrap",
+            errorMessage: "Flyer image<br>not available",
+        });
 
         // ── Data loading ──────────────────────────────────────────────────────────
         // ── Schedule matcher ──────────────────────────────────────────────────────
@@ -2114,7 +2102,7 @@
                 ? `${BASE_CLUB}${item.flyer}`
                 : `${BASE_EVENT}${item.flyer}`;
             img.alt = item.name;
-            imgObserver.observe(img);
+            imgLoader.observe(img);
             wrap.appendChild(img);
 
             if (item.isCancelled) {
