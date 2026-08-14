@@ -73,7 +73,11 @@
         }
 
         .summary-tile.blue {
-            border-top-color: #443cd7;
+            border-top-color: var(--color-music, #443cd7);
+        }
+
+        .summary-tile.pink {
+            border-top-color: var(--color-poetry, #d6006e);
         }
 
         .summary-tile.amber {
@@ -438,7 +442,11 @@
         }
 
         .seg-music {
-            background: #443cd7;
+            background: var(--color-music, #443cd7);
+        }
+
+        .seg-poetry {
+            background: var(--color-poetry, #d6006e);
         }
 
         .seg-show {
@@ -1129,6 +1137,7 @@
             const tourShows = data.repertoire_shows || {};
             const specific = data.specificEvents || [];
             const music = data.musicEvents || [];
+            const poetry = data.poetryEvents || [];
             const folkNights = data.folkNights || [];
             const sessions = data.irishSessions || [];
             const events = (data.events || []).map(e => {
@@ -1144,7 +1153,8 @@
             // ---- all tour dates flat ----
             const allTourDates = [];
             Object.entries(tours).forEach(([tid, t]) => {
-                (t.tour_dates || []).forEach(td => allTourDates.push({ ...td, tour_id: tid, performer_id: t.performer_id, performer_ids: t.performer_ids }));
+                const perfType = classifyPerformanceType(t); // 'music' | 'poetry' | 'story'
+                (t.tour_dates || []).forEach(td => allTourDates.push({ ...td, tour_id: tid, performer_id: t.performer_id, performer_ids: t.performer_ids, perfType }));
             });
             const allShowDates = [];
             Object.entries(tourShows).forEach(([tsid, ts]) => {
@@ -1156,6 +1166,7 @@
                 { key: 'Story show', label: 'Story show', cls: 'seg-story' },
                 { key: 'Tour date', label: 'Tour date', cls: 'seg-tour' },
                 { key: 'Music', label: 'Music', cls: 'seg-music' },
+                { key: 'Poetry', label: 'Poetry', cls: 'seg-poetry' },
                 { key: 'Touring show', label: 'Touring show', cls: 'seg-show' },
                 { key: 'Festival', label: 'Festival', cls: 'seg-festival' },
                 { key: 'Other', label: 'Other', cls: 'seg-other' },
@@ -1171,6 +1182,7 @@
             }
             specific.forEach(e => { if (e.ticket_url) countTicket(e.ticket_url, 'Story show'); });
             music.forEach(e => { if (e.ticket_url) countTicket(e.ticket_url, 'Music'); });
+            poetry.forEach(e => { if (e.ticket_url) countTicket(e.ticket_url, 'Poetry'); });
             allTourDates.forEach(td => { if (td.ticket_url) countTicket(td.ticket_url, 'Tour date'); });
             allShowDates.forEach(sd => { if (sd.ticket_url) countTicket(sd.ticket_url, 'Touring show'); });
             Object.values(festivals).forEach(f => { if (f.ticket_url) countTicket(f.ticket_url, 'Festival'); });
@@ -1193,6 +1205,7 @@
             }
             specific.forEach(e => { if (e.ticket_url) countDomain(e.ticket_url, 'Story show'); });
             music.forEach(e => { if (e.ticket_url) countDomain(e.ticket_url, 'Music'); });
+            poetry.forEach(e => { if (e.ticket_url) countDomain(e.ticket_url, 'Poetry'); });
             allTourDates.forEach(td => { if (td.ticket_url) countDomain(td.ticket_url, 'Tour date'); });
             allShowDates.forEach(sd => { if (sd.ticket_url) countDomain(sd.ticket_url, 'Touring show'); });
             Object.values(festivals).forEach(f => { if (f.ticket_url) countDomain(f.ticket_url, 'Festival'); });
@@ -1204,7 +1217,7 @@
 
             // ticketed vs not
             const totalTicketed = Object.values(serviceMap).reduce((s, v) => s + v.total, 0);
-            const totalSpecific = specific.length + music.length;
+            const totalSpecific = specific.length + music.length + poetry.length;
             const totalTourDatesCount = allTourDates.length;
 
             // ---- performer analysis ----
@@ -1231,6 +1244,7 @@
             }
             specific.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
             music.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
+            poetry.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
             allTourDates.forEach(td => {
                 const pids = td.performer_ids ? td.performer_ids : (td.performer_id ? [td.performer_id] : []);
                 pids.forEach(pid => addPerf(pid, !!td.ticket_url));
@@ -1262,6 +1276,7 @@
             }
             specific.forEach(e => addVenue(e.venue_id));
             music.forEach(e => addVenue(e.venue_id));
+            poetry.forEach(e => addVenue(e.venue_id));
             allTourDates.forEach(td => addVenue(td.venue_id));
             allShowDates.forEach(sd => addVenue(sd.venue_id));
             Object.values(festivals).forEach(f => addVenue(f.venue_id));
@@ -1417,6 +1432,25 @@
                 music.length, 'Music events', 'blue', 'All music events',
                 panel => {
                     const items = [...music]
+                        .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+                        .map(e => {
+                            const perf = performers[e.performer_id]?.name || '';
+                            const venue = venues[e.venue_id]?.name || '';
+                            return {
+                                label: `${e.date || '?'} — ${perf || e.name}`,
+                                href: e.performer_id ? `${URL_PERFORMER}?performer=${encodeURIComponent(e.performer_id)}` : null,
+                                meta: venue
+                            };
+                        });
+                    simpleList(panel, items);
+                }
+            ));
+
+            // Poetry events tile → list
+            grid.appendChild(clickableTile(
+                poetry.length, 'Poetry events', 'pink', 'All poetry events',
+                panel => {
+                    const items = [...poetry]
                         .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
                         .map(e => {
                             const perf = performers[e.performer_id]?.name || '';
@@ -1696,9 +1730,12 @@
             content.appendChild(section('Event type breakdown', 'eventtypes', body => {
                 // Colours match shared-styles.css event card colours
                 const TYPE_COLOURS = {
-                    'Tour dates': '#43a047',  // special green
+                    'Story tour dates': '#43a047',  // special green
+                    'Music tour dates': '#443cd7',  // music blue
+                    'Poetry tour dates': '#d6006e',  // poetry magenta
                     'Story show dates': '#43a047',  // special green
-                    'Music events': '#443cd7',  // music blue
+                    'Music events (one-off)': '#443cd7',  // music blue
+                    'Poetry events (one-off)': '#d6006e',  // poetry magenta
                     'Touring show dates': '#4CAF50',  // storyclub green
                     'Recurring story clubs': '#4CAF50',  // storyclub green (border)
                     'Folk nights': '#8b4513',  // folk brown
@@ -1733,19 +1770,28 @@
                     return titles.size + untitled;
                 }
 
-                const tourDatesCount = countDates(allTourDates);
-                const tourUniqueCount = Object.keys(data.tours || {}).length;
+                const storyTourDates = allTourDates.filter(td => td.perfType === 'story');
+                const musicTourDates = allTourDates.filter(td => td.perfType === 'music');
+                const poetryTourDates = allTourDates.filter(td => td.perfType === 'poetry');
+                const storyTourUniqueCount = Object.values(tours).filter(t => classifyPerformanceType(t) === 'story').length;
+                const musicTourUniqueCount = Object.values(tours).filter(t => classifyPerformanceType(t) === 'music').length;
+                const poetryTourUniqueCount = Object.values(tours).filter(t => classifyPerformanceType(t) === 'poetry').length;
                 const specificDatesCount = countDates(specific);
                 const specificUniqueCount = countUniqueTitles(specific);
                 const musicDatesCount = countDates(music);
                 const musicUniqueCount = countUniqueTitles(music);
+                const poetryDatesCount = countDates(poetry);
+                const poetryUniqueCount = countUniqueTitles(poetry);
                 const showDatesCount = countDates(allShowDates);
                 const showUniqueCount = Object.keys(tourShows).length;
 
                 const typeRows = [
-                    { label: 'Tour dates', n: tourDatesCount, sub: `${tourUniqueCount} unique tours` },
+                    { label: 'Story tour dates', n: countDates(storyTourDates), sub: `${storyTourUniqueCount} unique tours` },
+                    { label: 'Music tour dates', n: countDates(musicTourDates), sub: `${musicTourUniqueCount} unique tours` },
+                    { label: 'Poetry tour dates', n: countDates(poetryTourDates), sub: `${poetryTourUniqueCount} unique tours` },
                     { label: 'Story show dates', n: specificDatesCount, sub: `${specificUniqueCount} unique shows` },
-                    { label: 'Music events', n: musicDatesCount, sub: `${musicUniqueCount} unique acts/shows` },
+                    { label: 'Music events (one-off)', n: musicDatesCount, sub: `${musicUniqueCount} unique acts/shows` },
+                    { label: 'Poetry events (one-off)', n: poetryDatesCount, sub: `${poetryUniqueCount} unique acts/shows` },
                     { label: 'Touring show dates', n: showDatesCount, sub: `${showUniqueCount} unique shows` },
                     { label: 'Recurring story clubs', n: events.length },
                     { label: 'Folk nights', n: folkNights.length },
@@ -1850,7 +1896,7 @@
             function buildAnalysisRows() {
                 const rows = [];
                 // Flat one-off events — groupKey is showname (or name) for deduplication
-                [['specificEvents', 'storytelling'], ['spokenword', 'storytelling'], ['musicEvents', 'music'], ['folkNights', 'music'], ['events', 'clubs']].forEach(([key, cat]) => {
+                [['specificEvents', 'storytelling'], ['spokenword', 'storytelling'], ['musicEvents', 'music'], ['poetryEvents', 'poetry'], ['folkNights', 'music'], ['events', 'clubs']].forEach(([key, cat]) => {
                     (data[key] || []).forEach(e => {
                         const p = parseEventPrice(e.price);
                         rows.push({
@@ -1866,7 +1912,8 @@
                 Object.entries(data.tours || {}).forEach(([tid, t]) => {
                     (t.tour_dates || []).forEach(td => {
                         const p = parseEventPrice(td.price);
-                        const cat = t.isMusic ? 'music' : 'storytelling';
+                        const perfType = classifyPerformanceType(t); // 'music' | 'poetry' | 'story'
+                        const cat = perfType === 'story' ? 'storytelling' : perfType;
                         rows.push({
                             cat, vtype: classifyVenueType(venues[td.venue_id]?.name || ''),
                             face: p && !p.isFree && !p.isPwyw ? p.face : null,
@@ -1920,6 +1967,7 @@
                 { id: 'all', label: 'All', rows: analysisRows },
                 { id: 'story', label: 'Story shows', rows: analysisRows.filter(r => r.cat === 'storytelling') },
                 { id: 'music', label: 'Music', rows: analysisRows.filter(r => r.cat === 'music') },
+                { id: 'poetry', label: 'Poetry', rows: analysisRows.filter(r => r.cat === 'poetry') },
                 { id: 'clubs', label: 'Club nights', rows: analysisRows.filter(r => r.cat === 'clubs') },
             ];
 
