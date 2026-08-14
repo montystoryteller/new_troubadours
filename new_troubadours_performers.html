@@ -1215,13 +1215,21 @@
                 nameEl.parentNode.insertBefore(chipsDiv, nameEl.nextSibling);
             }
 
-            // Poet badge — shown if this performer record (or, for a combined
-            // billing like "Jess Silk & Joe Solo", any of its declared
-            // members) is tagged poet: true in the data.
+            // Musician / Poet badges — shown if this performer record (or,
+            // for a combined billing like "Jess Silk & Joe Solo", any of its
+            // declared members) is tagged musician: true / poet: true.
+            const isMusicianPerformer = performer.musician === true ||
+                members.some(id => performersLookup[id]?.musician === true);
             const isPoetPerformer = performer.poet === true ||
                 members.some(id => performersLookup[id]?.poet === true);
+            const badgesDiv = document.getElementById("performerBadges");
+            if (isMusicianPerformer) {
+                const badge = document.createElement("span");
+                badge.className = "performer-badge performer-badge-musician";
+                badge.textContent = "🎵 Musician";
+                badgesDiv.appendChild(badge);
+            }
             if (isPoetPerformer) {
-                const badgesDiv = document.getElementById("performerBadges");
                 const badge = document.createElement("span");
                 badge.className = "performer-badge performer-badge-poet";
                 badge.textContent = "✒️ Poet";
