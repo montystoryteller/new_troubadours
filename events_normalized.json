@@ -5033,7 +5033,7 @@
       "isSpecial": true,
       "fb_event": 781568461574252,
       "venue_id": "moor-imagination-collective-buckfastleigh",
-      "performer_id": "henry-everett-hannah-sneyd"
+      "performer_ids": ["henry-everett", "hannah-sneyd"]
     },
     {
       "name": "Haunting Tales and Festive Cheer [Royal Tales story club, Sutton Coldfield]",
@@ -5063,7 +5063,7 @@
       "isSpecial": true,
       "fb_event": 1504363894145970,
       "venue_id": "better-days-cafe-ventnor",
-      "performer_id": "merl-fluin-holly-medland"
+      "performer_ids": ["merl-fluin", "holly-medland"]
     },
     {
       "name": "Mad Sprits and Wild Gods [Henry Everett]",
@@ -5105,7 +5105,7 @@
       "isSpecial": true,
       "fb_event": 781568461574252,
       "venue_id": "the-circle-barn-beden",
-      "performer_id": "henry-everett-hannah-sneyd"
+      "performer_ids": ["henry-everett", "hannah-sneyd"]
     },
     {
       "name": "The Snow Queen [Vanessa Woolf]",
@@ -5517,7 +5517,7 @@
       "isSpecial": true,
       "fb_event": 1544986679915808,
       "venue_id": "bargemans-rest-newport",
-      "performer_id": "merl-fluin-holly-medland"
+      "performer_ids": ["merl-fluin", "holly-medland"]
     },
     {
       "name": "Queen of Between [Lucy Lill & Sarah-Liisa Wilkinson]",
@@ -5532,7 +5532,7 @@
       "ticket_url": "https://wegottickets.com/af/671/event/680745",
       "isSpecial": true,
       "venue_id": "cygnet-theatre-exeter",
-      "performer_ids": ["lucy-lill","sarah-liisa-wilkinson"]
+      "performer_ids": ["lucy-lill", "sarah-liisa-wilkinson"]
     },
     {
       "name": "Touching the Light [Sharon Jacksties]",
@@ -12951,23 +12951,9 @@
       "url": "https://www.instagram.com/hanu_oh/",
       "bio": "Hannah Sneyd is a storyteller and healer based in the Dartmoor wilds. Her original stories arrive on the wind and thread a canny path between the familiar and the fantastical."
     },
-    "henry-everett-hannah-sneyd": {
-      "id": "henry-everett-hannah-sneyd",
-      "name": "Henry Everett | Hannah Sneyd",
-      "performer_ids": ["henry-everett", "hannah-sneyd"],
-      "url": "",
-      "bio": "Henry Everett is a storyteller, telling tales in the oral storytelling tradition, passed down through the generations. He tells traditional tales inspired by our connection to the land, of spirits of place and our human relationship with the magical landscape.\n\n\n\n "
-    },
     "royal-tales-story-club-sutton-coldfield": {
       "id": "royal-tales-story-club-sutton-coldfield",
       "name": "Royal Tales story club, Sutton Coldfield",
-      "url": "",
-      "bio": ""
-    },
-    "merl-fluin-holly-medland": {
-      "id": "merl-fluin-holly-medland",
-      "performer_ids": ["merl-fluin", "holly-medland"],
-      "name": "Merl Fluin | Holly Medland",
       "url": "",
       "bio": ""
     },
@@ -13105,9 +13091,9 @@
     "merl-fluin": {
       "id": "merl-fluin",
       "name": "Merl Fluin",
-      "url": "",
+      "url": "https://www.instagram.com/merlfluin/",
       "tickets_url": "https://www.tickettailor.com/events/merlfluin",
-      "bio": ""
+      "bio": "Merl Fluin specialises in storytelling for grown-ups: folk tales, fairy tales, magical tales, dark and creepy tales... wonders and horrors to thrill you and chill you (and sometimes both at once). I also perform tales from the vast treasury of Buddhist tradition, from the Buddha's life story to the mysteries of Zen and beyond."
     },
     "holly-medland": {
       "id": "holly-medland",
@@ -13521,13 +13507,6 @@
       "url": "https://mariacredali.co.uk/",
       "bio": "Storyteller and artist based in Lichfield, in the Midlands of England. Maria Credell creates unique and memorable storytelling shows for adults and work as a performer, educator and workshop facilitator. She is a registered Artsmark practitioner and a trained creative mentor, specialising in trauma informed practice.\n\n\n\n Working orally and unscripted, she reworks ancient stories for modern audiences. Maria works with theatres, heritage organisations, festivals, schools, private and community groups. She can help bring myths and legends to life at your school, to celebrate special occasions with friends, and to provide unforgettable experiences for listeners. Previous clients include The Royal Shakespeare Company, Festival at the Edge and many national and international festivals."
     },
-    "lucy-lill-sarah-liisa-wilkinson": {
-      "id": "lucy-lill-sarah-liisa-wilkinson",
-      "performer_ids": ["lucy-lill", "sarah-liisa-wilkinson"],
-      "name": "Lucy Lill & Sarah-Liisa Wilkinson",
-      "url": "",
-      "bio": ""
-    },
     "lucy-lill": {
       "id": "lucy-lill",
       "name": "Lucy Lill",
@@ -13629,7 +13608,7 @@
       "name": "Claire Mace",
       "url": "https://www.facebook.com/claire.mace/",
       "facebook": "claire.mace",
-      "bio": ""
+      "bio": "Storyteller. Yoga teacher. Facilitator. Retreat leader."
     },
     "greg-chapman": {
       "id": "greg-chapman",
@@ -13770,7 +13749,7 @@
       "id": "taffy-thomas",
       "name": "Taffy Thomas",
       "url": "http://taffythomas.co.uk/",
-      "bio": ""
+      "bio": "Taffy Thomas trained as a Literature and Drama teacher at Dudley College of Education. After teaching for several years in Wolverhampton he founded and directed the legendary folk theatre company, Magic Lantern, illustrating traditional stories and songs with shadow puppets and circus skills.\n\n\n\nHe founded and directed the community arts company, Charivari, with their popular touring unit, the Fabulous Salami Brothers, which he fronted and performed in. After a major stroke at the age of 36 Taffy turned back to story telling as self-imposed speech therapy, which turned into a new career.\n\n\n\nTaffy has a repertoire of more than 300 stories, collected mainly from traditional oral sources, which he is happy to tell in almost any situation. This repertoire was built by meeting and working with virtually all the great traditional storytellers who were alive in Britain. See 'Ancestral Voices'.\n\n\n\nHe is now the most experienced English storyteller, having performed in many countries on four continents."
     },
     "jon-buckeridge": {
       "id": "jon-buckeridge",
@@ -13799,8 +13778,8 @@
     "jenny-moon": {
       "id": "jenny-moon",
       "name": "Jenny Moon",
-      "url": "",
-      "bio": ""
+      "url": "https://thehistorypress.co.uk/contributor/jenny-moon/",
+      "bio": "enny Moon is a professional storyteller and author whose fascination with the Moon reflects both her name and family lore. With six degrees, including a Master's in Creative Writing, she has worked in higher education and storytelling worldwide. For over fifteen years, she has performed in diverse settings and creates original stories and art from her home in Devon."
     },
     "lucy-wells": {
       "id": "lucy-wells",
