@@ -7409,6 +7409,21 @@
       "performer_id": "tim-ralphs"
     },
     {
+      "name": "Tales of the Tides",
+      "showname": "Tales of the Tides",
+      "date": "16/08/2026",
+      "time": "3-5pm",
+      "club": "",
+      "price": "",
+      "event_flyer": "2026_08_16_tales_of_tides.webp",
+      "description": "Come and join us for an informal gathering on the riverside at Saltash, share a tale, and enjoy a sociable afternoon in the company of others.\n\n\n\nWe will gather at Old Ferry Road Car Park and find a spot along the riverbank.\n\n\n\nPlease bring a picnic blanket, food and drink.",
+      "event_url": "https://kernowgoth.org/event/tales-of-the-tides-storytelling-session-picnic/",
+      "isSpecial": true,
+      "date_added": "15/08/2026",
+      "venue_id": "old-ferry-road-carpark-saltash",
+      "performer_id": ""
+    },
+    {
       "name": "Beowulf [Hugh Lupton]",
       "showname": "Beowulf",
       "date": "15/09/2026",
@@ -8054,6 +8069,18 @@
       "latlon": [
         51.35094,
         -1.99447
+      ]
+    },
+    "old-ferry-road-carpark-saltash": {
+      "id": "old-ferry-road-carpark-saltash",
+      "name": "Old Ferry Road Car Park, Saltash",
+      "city": "Saltash",
+      "postcode": "PL12 6BJ",
+      "full_address": "Old Ferry Road Car Park, 53 Old Ferry Rd, Saltash, PL12 6BJ",
+      "url": "https://www.wadworth.co.uk/find-a-pub/lamb-inn-devizes/",
+      "latlon": [
+        50.40981,
+        -4.20765
       ]
     },
     "the-fat-cat-sheffield": {
