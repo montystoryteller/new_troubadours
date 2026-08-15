@@ -1158,7 +1158,8 @@
             });
             const allShowDates = [];
             Object.entries(tourShows).forEach(([tsid, ts]) => {
-                (ts.show_dates || []).forEach(sd => allShowDates.push({ ...sd, show_id: tsid, performer_id: ts.performer_id }));
+                const perfType = classifyPerformanceType(ts); // 'music' | 'poetry' | 'story'
+                (ts.show_dates || []).forEach(sd => allShowDates.push({ ...sd, show_id: tsid, performer_id: ts.performer_id, perfType }));
             });
 
             // ---- ticketing analysis ----
@@ -1231,30 +1232,40 @@
 
             const perfTickets = {};
             const perfEvents = {};
-            function addPerf(pid, ticketed) {
+            // pid -> { story: n, music: n, poetry: n } — powers the "by performance type" chart
+            const perfEventsByType = {};
+            const perfTicketsByType = {};
+            function addPerf(pid, ticketed, perfType) {
                 if (!pid) return;
+                const credit = id => {
+                    perfEvents[id] = (perfEvents[id] || 0) + 1;
+                    if (!perfEventsByType[id]) perfEventsByType[id] = {};
+                    perfEventsByType[id][perfType] = (perfEventsByType[id][perfType] || 0) + 1;
+                    if (ticketed) {
+                        perfTickets[id] = (perfTickets[id] || 0) + 1;
+                        if (!perfTicketsByType[id]) perfTicketsByType[id] = {};
+                        perfTicketsByType[id][perfType] = (perfTicketsByType[id][perfType] || 0) + 1;
+                    }
+                };
                 // Credit the compound act itself
-                perfEvents[pid] = (perfEvents[pid] || 0) + 1;
-                if (ticketed) perfTickets[pid] = (perfTickets[pid] || 0) + 1;
+                credit(pid);
                 // Also credit each individual member of a compound act
-                (compoundMembers[pid] || []).forEach(memberId => {
-                    perfEvents[memberId] = (perfEvents[memberId] || 0) + 1;
-                    if (ticketed) perfTickets[memberId] = (perfTickets[memberId] || 0) + 1;
-                });
+                (compoundMembers[pid] || []).forEach(credit);
             }
-            specific.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
-            music.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
-            poetry.forEach(e => addPerf(e.performer_id, !!e.ticket_url));
+            specific.forEach(e => addPerf(e.performer_id, !!e.ticket_url, 'story'));
+            music.forEach(e => addPerf(e.performer_id, !!e.ticket_url, 'music'));
+            poetry.forEach(e => addPerf(e.performer_id, !!e.ticket_url, 'poetry'));
             allTourDates.forEach(td => {
                 const pids = td.performer_ids ? td.performer_ids : (td.performer_id ? [td.performer_id] : []);
-                pids.forEach(pid => addPerf(pid, !!td.ticket_url));
+                pids.forEach(pid => addPerf(pid, !!td.ticket_url, td.perfType));
             });
-            allShowDates.forEach(sd => addPerf(sd.performer_id, !!sd.ticket_url));
+            allShowDates.forEach(sd => addPerf(sd.performer_id, !!sd.ticket_url, sd.perfType));
 
             const topPerfByDates = Object.entries(perfEvents)
                 .filter(([pid]) => !isTroupeConfig(performers[pid]))
                 .sort((a, b) => b[1] - a[1]).slice(0, 12)
                 .map(([pid, n]) => ({
+                    pid,
                     label: performers[pid]?.name || pid,
                     labelHref: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}`,
                     n
@@ -1263,6 +1274,7 @@
                 .filter(([pid]) => !isTroupeConfig(performers[pid]))
                 .sort((a, b) => b[1] - a[1]).slice(0, 12)
                 .map(([pid, n]) => ({
+                    pid,
                     label: performers[pid]?.name || pid,
                     labelHref: `${URL_PERFORMER}?performer=${encodeURIComponent(pid)}`,
                     n
@@ -1600,19 +1612,215 @@
             }));
 
             // ---- Performers ----
+            // Standard performance-type palette from shared-styles.css (--color-story/
+            // --color-music/--color-poetry), matching PERFORMANCE_TYPE_COLOURS in shared_utils.js.
+            // Shared by the "top performers" charts and the "by performance type" chart below.
+            const TYPE_LABELS = { all: 'All types', story: 'Story', music: 'Music', poetry: 'Poetry' };
+            const TYPE_COLOURS_STD = { story: '#2e7d32', music: '#443cd7', poetry: '#d6006e' };
+            const availablePerfTypes = new Set();
+            Object.values(perfEventsByType).forEach(t => Object.keys(t).forEach(k => availablePerfTypes.add(k)));
+            const presentTypes = ['story', 'music', 'poetry'].filter(t => availablePerfTypes.has(t));
+
+            // Bar chart with per-row inline colour AND a clickable performer link
+            // (barChart supports labelHref but not custom colour; colouredBarChart is
+            // the reverse — this combines both).
+            function typeBarChart(rows, maxVal) {
+                const chart = el('div', 'bar-chart');
+                rows.forEach(r => {
+                    const row = el('div', 'bar-row');
+                    const labelEl = el('div', 'bar-label');
+                    if (r.labelHref) {
+                        const a = document.createElement('a');
+                        a.href = r.labelHref; a.textContent = r.label;
+                        labelEl.appendChild(a);
+                    } else {
+                        labelEl.textContent = r.label;
+                    }
+                    const track = el('div', 'bar-track');
+                    const fill = el('div', 'bar-fill');
+                    fill.style.background = r.colour || '#4CAF50';
+                    fill.style.width = `${Math.max(2, Math.round((r.n / maxVal) * 100))}%`;
+                    track.appendChild(fill);
+                    row.appendChild(labelEl); row.appendChild(track); row.appendChild(el('div', 'bar-n', r.n));
+                    chart.appendChild(row);
+                });
+                return chart;
+            }
+
+            // Stacked bar per performer, one segment per performance type, coloured
+            // with the standard story/music/poetry palette.
+            function stackedTypeChart(rows, maxVal) {
+                const chart = el('div', 'stacked-chart');
+                rows.forEach(r => {
+                    const row = el('div', 'stacked-row');
+                    const labelEl = el('div', 'bar-label');
+                    if (r.labelHref) {
+                        const a = document.createElement('a');
+                        a.href = r.labelHref; a.textContent = r.label;
+                        labelEl.appendChild(a);
+                    } else {
+                        labelEl.textContent = r.label;
+                    }
+                    const track = el('div', 'stacked-track');
+                    presentTypes.forEach(type => {
+                        const n = r.segs[type] || 0;
+                        if (!n) return;
+                        const seg = el('div', 'stacked-seg');
+                        seg.style.background = TYPE_COLOURS_STD[type];
+                        seg.style.width = `${Math.round((n / maxVal) * 100)}%`;
+                        seg.title = `${TYPE_LABELS[type]}: ${n}`;
+                        track.appendChild(seg);
+                    });
+                    row.appendChild(labelEl); row.appendChild(track); row.appendChild(el('div', 'bar-n', r.total));
+                    chart.appendChild(row);
+                });
+                return chart;
+            }
+
+            // Renders a "top performers" chart (plainRows already sorted/sliced, each with
+            // pid/label/labelHref/n) into container, with a Plain/Coloured toggle. byTypeMap
+            // is perfEventsByType or perfTicketsByType, used to build the coloured segments.
+            function buildColourableTopChart(container, plainRows, byTypeMap) {
+                const toggleRow = el('div', 'stats-view-row');
+                const btnPlain = el('button', 'stats-view-btn active', 'Plain');
+                const btnColoured = el('button', 'stats-view-btn', 'Coloured by type');
+                toggleRow.appendChild(btnPlain); toggleRow.appendChild(btnColoured);
+                if (presentTypes.length <= 1) toggleRow.style.display = 'none'; // nothing to colour by
+                container.appendChild(toggleRow);
+
+                const chartArea = el('div', '');
+                container.appendChild(chartArea);
+
+                function render(coloured) {
+                    chartArea.innerHTML = '';
+                    if (!plainRows.length) { chartArea.appendChild(el('p', 'stat-note', 'No data.')); return; }
+                    if (!coloured) {
+                        chartArea.appendChild(barChart(plainRows, plainRows[0]?.n || 1, ''));
+                        return;
+                    }
+                    if (presentTypes.length > 1) {
+                        chartArea.appendChild(legend(presentTypes.map(t => ({ label: TYPE_LABELS[t], cls: '', bg: TYPE_COLOURS_STD[t] }))));
+                    }
+                    const rows = plainRows.map(r => ({
+                        label: r.label, labelHref: r.labelHref,
+                        total: r.n, segs: byTypeMap[r.pid] || {}
+                    }));
+                    chartArea.appendChild(stackedTypeChart(rows, rows[0]?.total || 1));
+                }
+                render(false);
+
+                toggleRow.addEventListener('click', e => {
+                    const btn = e.target.closest('.stats-view-btn'); if (!btn) return;
+                    toggleRow.querySelectorAll('.stats-view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    render(btn === btnColoured);
+                });
+            }
+
+            // ---- performers by performance type — tabbed chart (All / Story / Music / Poetry) ----
+            function buildPerformerTypeChart(container) {
+                const typeIds = ['all', ...presentTypes];
+
+                const tabRow = el('div', 'stats-tab-row');
+                typeIds.forEach((id, i) => {
+                    const btn = el('button', 'stats-tab-btn' + (i === 0 ? ' active' : ''), TYPE_LABELS[id]);
+                    btn.dataset.type = id;
+                    tabRow.appendChild(btn);
+                });
+                container.appendChild(tabRow);
+
+                const metricRow = el('div', 'stats-view-row');
+                [['dates', 'Total dates'], ['ticketed', 'Ticketed dates']].forEach(([id, label], i) => {
+                    const btn = el('button', 'stats-view-btn' + (i === 0 ? ' active' : ''), label);
+                    btn.dataset.metric = id;
+                    metricRow.appendChild(btn);
+                });
+                container.appendChild(metricRow);
+
+                const chartArea = el('div', '');
+                container.appendChild(chartArea);
+
+                function render(typeId, metricId) {
+                    chartArea.innerHTML = '';
+                    const srcMap = metricId === 'ticketed' ? perfTicketsByType : perfEventsByType;
+
+                    if (typeId === 'all') {
+                        const rows = Object.entries(srcMap)
+                            .filter(([pid]) => !isTroupeConfig(performers[pid]))
+                            .map(([pid, byType]) => ({
+                                pid,
+                                total: Object.values(byType).reduce((s, v) => s + v, 0),
+                                segs: byType
+                            }))
+                            .filter(r => r.total > 0)
+                            .sort((a, b) => b.total - a.total)
+                            .slice(0, 12)
+                            .map(r => ({
+                                label: performers[r.pid]?.name || r.pid,
+                                labelHref: `${URL_PERFORMER}?performer=${encodeURIComponent(r.pid)}`,
+                                total: r.total,
+                                segs: r.segs
+                            }));
+                        if (!rows.length) { chartArea.appendChild(el('p', 'stat-note', 'No data for this combination.')); return; }
+                        if (presentTypes.length > 1) {
+                            chartArea.appendChild(legend(presentTypes.map(t => ({ label: TYPE_LABELS[t], cls: '', bg: TYPE_COLOURS_STD[t] }))));
+                        }
+                        chartArea.appendChild(stackedTypeChart(rows, rows[0].total));
+                        return;
+                    }
+
+                    const rows = Object.entries(srcMap)
+                        .filter(([pid]) => !isTroupeConfig(performers[pid]))
+                        .map(([pid, byType]) => ({ pid, n: byType[typeId] || 0 }))
+                        .filter(r => r.n > 0)
+                        .sort((a, b) => b.n - a.n)
+                        .slice(0, 12)
+                        .map(r => ({
+                            label: performers[r.pid]?.name || r.pid,
+                            labelHref: `${URL_PERFORMER}?performer=${encodeURIComponent(r.pid)}`,
+                            n: r.n,
+                            colour: TYPE_COLOURS_STD[typeId]
+                        }));
+                    if (!rows.length) { chartArea.appendChild(el('p', 'stat-note', 'No data for this combination.')); return; }
+                    chartArea.appendChild(typeBarChart(rows, rows[0].n));
+                }
+                render(typeIds[0], 'dates');
+
+                tabRow.addEventListener('click', e => {
+                    const btn = e.target.closest('.stats-tab-btn'); if (!btn) return;
+                    tabRow.querySelectorAll('.stats-tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const metricId = metricRow.querySelector('.stats-view-btn.active')?.dataset.metric || 'dates';
+                    render(btn.dataset.type, metricId);
+                });
+                metricRow.addEventListener('click', e => {
+                    const btn = e.target.closest('.stats-view-btn'); if (!btn) return;
+                    metricRow.querySelectorAll('.stats-view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const typeId = tabRow.querySelector('.stats-tab-btn.active')?.dataset.type || typeIds[0];
+                    render(typeId, btn.dataset.metric);
+                });
+            }
+
             content.appendChild(section('Performers', 'performers', body => {
                 const perfCols = el('div', 'two-col');
 
                 const perfDatesSec = el('div');
                 perfDatesSec.appendChild(el('h3', 'section-title', 'By total dates'));
-                perfDatesSec.appendChild(barChart(topPerfByDates, topPerfByDates[0]?.n || 1, ''));
+                buildColourableTopChart(perfDatesSec, topPerfByDates, perfEventsByType);
                 perfCols.appendChild(perfDatesSec);
 
                 const perfTickSec = el('div');
                 perfTickSec.appendChild(el('h3', 'section-title', 'By ticketed dates'));
-                perfTickSec.appendChild(barChart(topPerfByTickets, topPerfByTickets[0]?.n || 1, ''));
+                buildColourableTopChart(perfTickSec, topPerfByTickets, perfTicketsByType);
                 perfCols.appendChild(perfTickSec);
                 body.appendChild(perfCols);
+
+                const perfTypeSec = el('div');
+                perfTypeSec.style.marginTop = '24px';
+                perfTypeSec.appendChild(el('h3', 'section-title', 'By performance type'));
+                buildPerformerTypeChart(perfTypeSec);
+                body.appendChild(perfTypeSec);
 
                 const perfTable = document.createElement('table');
                 perfTable.className = 'stat-table';
