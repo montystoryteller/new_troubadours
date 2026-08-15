@@ -673,6 +673,11 @@ function createEventData(baseEvent, date, eventType) {
     eventData.fb_event = baseEvent.fb_event || null;
     eventData.ticket_url = baseEvent.ticket_url || null;
     eventData.wider_event = baseEvent.wider_event || null;
+    // "link" is the schema field name for storyclub/folk/session events;
+    // "event_url" is the equivalent field name used on tourDate records.
+    // Accept either here so a specificEvent/musicEvent/poetryEvent can use
+    // whichever reads more naturally — both render as the same website icon.
+    eventData.link = baseEvent.link || baseEvent.event_url || null;
   }
 
   return eventData;
