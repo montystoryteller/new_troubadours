@@ -1123,7 +1123,7 @@
 
             // Check for cached schedule analysis; show spinner only if missing
             if (!getSchedulesCache()) {
-                document.getElementById("statistic-sections").innerHTML =
+                document.getElementById("loadingState").innerHTML =
                     '<p class="status-message status-message--loading">⏳ Computing statistics…</p>';
             }
 
