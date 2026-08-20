@@ -3942,7 +3942,8 @@
       "schedule": "last sunday",
       "link": "https://londondreamtime.com/",
       "club": "storytellingsunday",
-      "venue_id": "love-shack-london"
+      "venue_id": "love-shack-london",
+      "flyers": ["2026_07_26_loveshack-birds.jpg"]
     },
     {
       "name": "Ship Inn Storytelling, Exeter",
