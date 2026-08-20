@@ -305,6 +305,33 @@
             margin-top: 10px;
         }
 
+        /* ── Additional flyers gallery ───────────────────────── */
+        .club-flyer-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .club-flyer-gallery-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .club-flyer-gallery-img {
+            max-width: 140px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .club-flyer-gallery-caption {
+            font-size: 0.78rem;
+            color: #666;
+            text-align: center;
+        }
+
         /* ── Responsive ──────────────────────────────────────── */
         @media (max-width: 600px) {
             .club-header {
@@ -1063,6 +1090,41 @@
                 img.className = 'club-flyer';
                 img.alt = clubRecord.name;
                 header.appendChild(img);
+            }
+
+            // Additional flyers (clubRecord.flyers) — extra artwork for the club,
+            // separate from the single club_flyer above. Sourced from
+            // storyclub_assets/event_flyers/ per the schema. A filename prefixed
+            // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is a flyer for
+            // that specific club date — shown with a date caption.
+            const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+            if (Array.isArray(clubRecord.flyers) && clubRecord.flyers.length) {
+                const gallery = document.createElement('div');
+                gallery.className = 'club-flyer-gallery';
+                clubRecord.flyers.forEach((filename) => {
+                    const clean = filename?.trim();
+                    if (!clean) return;
+                    const item = document.createElement('div');
+                    item.className = 'club-flyer-gallery-item';
+                    const img = document.createElement('img');
+                    img.src = `./storyclub_assets/event_flyers/${clean}`;
+                    img.className = 'club-flyer-gallery-img';
+                    img.alt = clubRecord.name;
+                    img.loading = 'lazy';
+                    item.appendChild(img);
+                    const m = clean.match(DATED_CLUB_FLYER_RE);
+                    if (m) {
+                        const flyerDate = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+                        if (!isNaN(flyerDate)) {
+                            const caption = document.createElement('div');
+                            caption.className = 'club-flyer-gallery-caption';
+                            caption.textContent = formatDate(flyerDate);
+                            item.appendChild(caption);
+                        }
+                    }
+                    gallery.appendChild(item);
+                });
+                if (gallery.children.length) header.appendChild(gallery);
             }
 
             root.appendChild(header);

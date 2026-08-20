@@ -352,6 +352,51 @@
 
 
 /* =============================================================
+   11. FLYER GALLERY
+   ============================================================= */
+
+.venue-flyer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.venue-flyer-thumb {
+    display: block;
+    line-height: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease;
+}
+
+.venue-flyer-thumb:hover {
+    transform: translateY(-2px);
+}
+
+.venue-flyer-thumb img {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Past flyers: greyed out, brightened back to full colour on hover so
+   they're still easy to inspect */
+.venue-flyer-thumb-past img {
+    filter: grayscale(100%);
+    opacity: 0.55;
+    transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.venue-flyer-thumb-past:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+
+/* =============================================================
    12. RESPONSIVE
    ============================================================= */
 

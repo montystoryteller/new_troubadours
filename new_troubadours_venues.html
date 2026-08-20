@@ -60,6 +60,11 @@
 
             <div class="left-col">
 
+                <div id="venueFlyersSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Flyers</h3>
+                    <div id="venueFlyersList" class="venue-flyer-grid"></div>
+                </div>
+
                 <div id="regularClubsSection" class="content-section" style="display:none;">
                     <h3 class="section-heading">Regular club nights</h3>
                     <div id="regularClubsList"></div>
@@ -831,6 +836,9 @@
                 [...past].reverse().forEach(e => renderEventRow(document.getElementById("pastList"), e, true));
             }
 
+            // Flyers gallery — current/upcoming in full colour, past greyed out
+            renderVenueFlyers(regularClubs, allDated, today);
+
             // Nearby venues
             renderNearbyVenues();
         }
@@ -1103,6 +1111,120 @@
 
             row.appendChild(detail);
             container.appendChild(row);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Flyers gallery
+        // ---------------------------------------------------------------------------
+
+        // A filename in a club's flyers[] list prefixed YYYY_MM_DD (e.g.
+        // "2026_07_26_loveshack-birds.jpg") is a flyer for that specific date;
+        // anything else is generic club artwork treated as always-current.
+        const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+
+        // Pull the flyer filename(s) relevant to one of the dated entries
+        // already assembled into allDated (specific/music/poetry/tour/show/festival).
+        function extractFlyersForEntry(entry) {
+            const EVENT_BASE = "./storyclub_assets/event_flyers/";
+            const out = [];
+            const add = (filename) => {
+                const clean = filename?.trim();
+                if (clean) out.push({ filename: clean, basePath: EVENT_BASE });
+            };
+
+            if (entry.type === "specific" || entry.type === "music" || entry.type === "poetry") {
+                const e = entry.data;
+                add(e.event_flyer);
+                add(e.event_flyer2);
+                add(e.tour_flyer);
+            } else if (entry.type === "tour") {
+                const { tour, tourDate } = entry.data;
+                if (tourDate.event_flyer?.trim()) {
+                    add(tourDate.event_flyer);
+                } else {
+                    getTourLevelFlyers(tour).forEach(f => add(f.filename));
+                }
+            } else if (entry.type === "show") {
+                const { ts, showDate } = entry.data;
+                if (showDate.event_flyer?.trim()) {
+                    add(showDate.event_flyer);
+                } else {
+                    add(ts.touring_event_flyer);
+                }
+            } else if (entry.type === "festival") {
+                add(entry.data.festival.event_flyer);
+            }
+            return out;
+        }
+
+        // Build the venue's flyer gallery from: regular club nights (club_flyer
+        // + flyers[], generic ones always "current", YYYY_MM_DD-prefixed ones
+        // dated) plus every dated event happening at this venue. Deduplicated
+        // by file so a flyer reused across several dates (e.g. a tour headline
+        // flyer) only appears once, coloured by its most relevant occurrence.
+        function renderVenueFlyers(regularClubs, allDated, today) {
+            const flyerMap = new Map();
+
+            function addFlyer(filename, basePath, date) {
+                const key = `${basePath}${filename}`;
+                const isPast = date ? date < today : false;
+                const existing = flyerMap.get(key);
+                if (!existing) {
+                    flyerMap.set(key, { filename, basePath, date, isPast });
+                    return;
+                }
+                // Prefer a current/upcoming occurrence over a past one, and the
+                // earliest upcoming date over a later one.
+                if (!isPast && (existing.isPast || (date && existing.date && date < existing.date))) {
+                    existing.date = date;
+                    existing.isPast = isPast;
+                }
+            }
+
+            regularClubs.forEach(club => {
+                if (club.club_flyer?.trim()) {
+                    addFlyer(club.club_flyer.trim(), "./storyclub_assets/club_flyers/", null);
+                }
+                (Array.isArray(club.flyers) ? club.flyers : []).forEach(raw => {
+                    const clean = raw?.trim();
+                    if (!clean) return;
+                    const m = clean.match(DATED_CLUB_FLYER_RE);
+                    const date = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+                    addFlyer(clean, "./storyclub_assets/event_flyers/", date && !isNaN(date) ? date : null);
+                });
+            });
+
+            allDated.forEach(entry => {
+                extractFlyersForEntry(entry).forEach(f => addFlyer(f.filename, f.basePath, entry.date));
+            });
+
+            if (flyerMap.size === 0) return;
+
+            const items = [...flyerMap.values()];
+            const current = items
+                .filter(i => !i.isPast)
+                .sort((a, b) => (a.date || today) - (b.date || today));
+            const past = items
+                .filter(i => i.isPast)
+                .sort((a, b) => b.date - a.date);
+
+            document.getElementById("venueFlyersSection").style.display = "";
+            const list = document.getElementById("venueFlyersList");
+
+            [...current, ...past].forEach(item => {
+                const src = `${item.basePath}${sanitizeFlyerPath(item.filename)}`;
+                const a = document.createElement("a");
+                a.href = src;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className = `venue-flyer-thumb${item.isPast ? " venue-flyer-thumb-past" : ""}`;
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = "";
+                img.loading = "lazy";
+                a.appendChild(img);
+                list.appendChild(a);
+            });
         }
 
         // ---------------------------------------------------------------------------

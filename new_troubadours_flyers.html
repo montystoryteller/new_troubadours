@@ -1616,6 +1616,16 @@
             }
             function ven(id) { return venues[id] || {}; }
 
+            // A filename in a club's flyers[] list that starts with YYYY_MM_DD
+            // (e.g. "2026_03_15_special_guest.jpg") is a flyer for that specific
+            // club date, not generic artwork — parse it back to a DD/MM/YYYY
+            // string so it can go through push() like any other dated flyer.
+            const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+            function datedClubFlyerDateStr(filename) {
+                const m = filename.match(DATED_CLUB_FLYER_RE);
+                return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
+            }
+
             function push(flyer, flyerBase, dateStr, type, name, performerId, venueId, ticketUrl, extra) {
                 if (!flyer || !flyer.trim()) return;
                 const dt = parseDate(dateStr);
@@ -1817,6 +1827,64 @@
                     schedule: e.schedule || "",
                     clubId: e.club,
                 });
+            }
+
+            // club "flyers" list — additional artwork for the club, distinct from
+            // club_flyer, sourced from storyclub_assets/event_flyers/ per the
+            // schema. A filename prefixed YYYY_MM_DD is a one-off/legacy flyer
+            // for that specific date (not a recurring club night), so it's
+            // pushed as a "story" card at that date rather than a "club" card —
+            // see datedClubFlyerDateStr() above. Anything else is generic club
+            // artwork, always shown, same as club_flyer's fallback.
+            for (const e of data.events || []) {
+                const extraFlyers = Array.isArray(e.flyers) ? e.flyers : [];
+                if (!extraFlyers.length || !e.club) continue;
+                const v = ven(e.venue_id);
+                const clubTonight = scheduleMatchesDate(e.schedule, now);
+                const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow);
+                for (const rawFlyer of extraFlyers) {
+                    const flyer = rawFlyer?.trim();
+                    if (!flyer) continue;
+
+                    const datedStr = datedClubFlyerDateStr(flyer);
+                    if (datedStr) {
+                        // One-off/legacy flyer for a specific date, not a regular
+                        // club-night flyer — file as "story" (same category as
+                        // other one-off events) rather than "club", so it's not
+                        // mistaken for a recurring club occurrence.
+                        push(flyer, "event", datedStr, "story",
+                            e.name, null, e.venue_id, e.tickets_url || "", {
+                            clubId: e.club,
+                        });
+                        continue;
+                    }
+
+                    const key = `${flyer}|club-extra|${e.club}`;
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    items.push({
+                        flyer,
+                        flyerBase: "event",
+                        date: now,
+                        dateStr: null,
+                        type: "club",
+                        name: e.name,
+                        performer: null,
+                        performerId: "",
+                        performerUrl: "",
+                        venue: v.name || "",
+                        city: v.city || "",
+                        ticketUrl: e.tickets_url || "",
+                        clubLink: e.link || "",
+                        clubFacebook: e.facebook || "",
+                        isPast: false,
+                        isClubGeneric: true,
+                        isTonight: clubTonight,
+                        isTomorrow: clubTomorrow,
+                        schedule: e.schedule || "",
+                        clubId: e.club,
+                    });
+                }
             }
 
             items.sort((a, b) => a.date - b.date);

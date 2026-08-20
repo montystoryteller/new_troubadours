@@ -583,6 +583,23 @@ function createSafePopup(eventData) {
   return container;
 }
 
+// A filename in a recurring club's `flyers[]` list that starts with
+// YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is treated as a flyer
+// for that specific date's occurrence, rather than generic club artwork.
+const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+
+function findDatedClubFlyers(flyers, date) {
+  if (!Array.isArray(flyers) || !date) return [];
+  const wantedPrefix = `${date.getFullYear()}_${String(date.getMonth() + 1).padStart(2, "0")}_${String(date.getDate()).padStart(2, "0")}`;
+  return flyers
+    .filter((f) => typeof f === "string" && f.trim())
+    .map((f) => f.trim())
+    .filter((f) => {
+      const m = f.match(DATED_CLUB_FLYER_RE);
+      return m && `${m[1]}_${m[2]}_${m[3]}` === wantedPrefix;
+    });
+}
+
 function createEventData(baseEvent, date, eventType) {
   const { location, latlon, venue_url, venue_id } = resolveEventVenue(
     baseEvent,
@@ -624,6 +641,7 @@ function createEventData(baseEvent, date, eventType) {
     eventData.alternate_locations = baseEvent.alternate_locations || null;
     eventData.exceptions = baseEvent.exceptions || null;
     eventData.club_flyer = baseEvent.club_flyer || null;
+    eventData.club_dated_flyers = findDatedClubFlyers(baseEvent.flyers, date);
     eventData.feature_slots = baseEvent.feature_slots || null;
 
     if (eventType === "folk") {
@@ -1806,6 +1824,19 @@ function getExpandableContent(event) {
       path: event.event_flyer,
       basePath: "./storyclub_assets/event_flyers/",
       altSuffix: "event flyer",
+    });
+  }
+
+  // club flyer(s) for this specific date — filenames in the club's flyers[]
+  // list prefixed YYYY_MM_DD that match this occurrence's date. Shown ahead
+  // of the generic club flyer since they're the more specific artwork.
+  if (Array.isArray(event.club_dated_flyers)) {
+    event.club_dated_flyers.forEach((filename) => {
+      flyers.push({
+        path: filename,
+        basePath: "./storyclub_assets/event_flyers/",
+        altSuffix: "flyer",
+      });
     });
   }
 
