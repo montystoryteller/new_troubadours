@@ -7424,6 +7424,20 @@
       "performer_id": ""
     },
     {
+      "name": "Folktales and mythos of Wales [Fiona Collins]",
+      "showname": "Folktales and mythos of Wales",
+      "date": "21/08/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "performer_id": "fiona-collins",
+      "date_added": "20/08/2026",
+      "time": "7-9pm",
+      "price": "£8",
+      "description": "Storytelling for adults\n\n\n\nLive stand-up storytelling by Fiona Collins, accompanied by the Dragon Storytellers. Telling the folktales, myths and stories of North Wales. How places got their names, how big rocks came to be where they are, magical creatures and more!\n\n\n\nStories will be told in English with a sprinkling of Welsh mixed in.",
+      "event_flyer": "2026_08_21_fiona_collins_dragon_storytellers.jpg",
+      "ticket_url": "https://dragontheatre.littleboxoffice.com/events/172788",
+      "isSpecial": true
+    },
+    {
       "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
       "showname": "Stories of the Vikings: creation, destruction, magic",
       "date": "07/09/2026",
@@ -12855,6 +12869,12 @@
       "name": "Cath Edwards",
       "url": "https://storytellingforall.co.uk/",
       "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs."
+    },
+    "fiona-collins": {
+      "id": "fiona-collins",
+      "name": "Fiona Collins",
+      "url": "https://artsconnection.org.uk/project/fiona-collins/",
+      "bio": "Fiona Collins is a storyteller telling traditional tales from around the world, with a special interest in stories of strong women and girls, and in the Tales of Wales. She hears the music of the spoken word, and respects the traditional cultures which speak to us through story."
     },
     "matt-vaughan": {
       "id": "matt-vaughan",
