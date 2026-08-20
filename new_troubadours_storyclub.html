@@ -326,6 +326,19 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
+        /* Past dated flyers: greyed out, brightened back to full colour on
+           hover — matches the treatment on the venues page */
+        .club-flyer-gallery-img-past {
+            filter: grayscale(100%);
+            opacity: 0.55;
+            transition: filter 0.15s ease, opacity 0.15s ease;
+        }
+
+        .club-flyer-gallery-img-past:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
         .club-flyer-gallery-caption {
             font-size: 0.78rem;
             color: #666;
@@ -1096,7 +1109,8 @@
             // separate from the single club_flyer above. Sourced from
             // storyclub_assets/event_flyers/ per the schema. A filename prefixed
             // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is a flyer for
-            // that specific club date — shown with a date caption.
+            // that specific club date — shown with a date caption, greyed out
+            // if that date is in the past (matches the venues page treatment).
             const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
             if (Array.isArray(clubRecord.flyers) && clubRecord.flyers.length) {
                 const gallery = document.createElement('div');
@@ -1116,6 +1130,7 @@
                     if (m) {
                         const flyerDate = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
                         if (!isNaN(flyerDate)) {
+                            if (flyerDate < today) img.classList.add('club-flyer-gallery-img-past');
                             const caption = document.createElement('div');
                             caption.className = 'club-flyer-gallery-caption';
                             caption.textContent = formatDate(flyerDate);
