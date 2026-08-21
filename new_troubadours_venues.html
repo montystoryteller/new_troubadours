@@ -1120,7 +1120,8 @@
         // A filename in a club's flyers[] list prefixed YYYY_MM_DD (e.g.
         // "2026_07_26_loveshack-birds.jpg") is a flyer for that specific date;
         // anything else is generic club artwork treated as always-current.
-        const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+        // parseDatedClubFlyer() (shared_utils.js) is the single implementation
+        // of that detection, shared with the event guide/flyers/storyclub pages.
 
         // Pull the flyer filename(s) relevant to one of the dated entries
         // already assembled into allDated (specific/music/poetry/tour/show/festival).
@@ -1188,9 +1189,8 @@
                 (Array.isArray(club.flyers) ? club.flyers : []).forEach(raw => {
                     const clean = raw?.trim();
                     if (!clean) return;
-                    const m = clean.match(DATED_CLUB_FLYER_RE);
-                    const date = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
-                    addFlyer(clean, "./storyclub_assets/event_flyers/", date && !isNaN(date) ? date : null);
+                    const date = parseDatedClubFlyer(clean);
+                    addFlyer(clean, "./storyclub_assets/event_flyers/", date);
                 });
             });
 

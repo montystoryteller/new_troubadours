@@ -398,12 +398,12 @@
 
         .flyer-card.past {
             opacity: 0.55;
-            filter: grayscale(40%);
+            filter: grayscale(100%);
         }
 
         .flyer-card.past:hover {
-            opacity: 0.85;
-            filter: grayscale(10%);
+            opacity: 1;
+            filter: grayscale(0%);
         }
 
         /* ── Tonight / tomorrow highlights ──────────────────── */
@@ -1618,12 +1618,17 @@
 
             // A filename in a club's flyers[] list that starts with YYYY_MM_DD
             // (e.g. "2026_03_15_special_guest.jpg") is a flyer for that specific
-            // club date, not generic artwork — parse it back to a DD/MM/YYYY
-            // string so it can go through push() like any other dated flyer.
-            const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+            // club date, not generic artwork — parseDatedClubFlyer()
+            // (shared_utils.js) is the single implementation of that detection,
+            // shared with the event guide/storyclub/venues pages. Converted here
+            // to a DD/MM/YYYY string so it can go through push() like any other
+            // dated flyer.
             function datedClubFlyerDateStr(filename) {
-                const m = filename.match(DATED_CLUB_FLYER_RE);
-                return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
+                const d = parseDatedClubFlyer(filename);
+                if (!d) return null;
+                const dd = String(d.getDate()).padStart(2, "0");
+                const mm = String(d.getMonth() + 1).padStart(2, "0");
+                return `${dd}/${mm}/${d.getFullYear()}`;
             }
 
             function push(flyer, flyerBase, dateStr, type, name, performerId, venueId, ticketUrl, extra) {
@@ -2106,7 +2111,7 @@
         function showLbSlide() {
             const item = lbItems[lbIndex];
             const img = document.getElementById("lightbox-img");
-            img.src = item.flyerBase === "club" ? `${BASE_CLUB}${item.flyer}` : `${BASE_EVENT}${item.flyer}`;
+            img.src = item.flyerBase === "club" ? `${BASE_CLUB}${sanitizeFlyerPath(item.flyer)}` : `${BASE_EVENT}${sanitizeFlyerPath(item.flyer)}`;
             img.alt = item.name;
 
             let dateLine = "";
@@ -2202,8 +2207,8 @@
 
             const img = document.createElement("img");
             img.dataset.src = item.flyerBase === "club"
-                ? `${BASE_CLUB}${item.flyer}`
-                : `${BASE_EVENT}${item.flyer}`;
+                ? `${BASE_CLUB}${sanitizeFlyerPath(item.flyer)}`
+                : `${BASE_EVENT}${sanitizeFlyerPath(item.flyer)}`;
             img.alt = item.name;
             imgLoader.observe(img);
             wrap.appendChild(img);

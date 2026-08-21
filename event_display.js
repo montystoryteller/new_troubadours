@@ -586,17 +586,16 @@ function createSafePopup(eventData) {
 // A filename in a recurring club's `flyers[]` list that starts with
 // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is treated as a flyer
 // for that specific date's occurrence, rather than generic club artwork.
-const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
-
+// parseDatedClubFlyer() (shared_utils.js) is the single implementation of
+// the YYYY_MM_DD detection, shared with the flyers/storyclub/venues pages.
 function findDatedClubFlyers(flyers, date) {
   if (!Array.isArray(flyers) || !date) return [];
-  const wantedPrefix = `${date.getFullYear()}_${String(date.getMonth() + 1).padStart(2, "0")}_${String(date.getDate()).padStart(2, "0")}`;
   return flyers
     .filter((f) => typeof f === "string" && f.trim())
     .map((f) => f.trim())
     .filter((f) => {
-      const m = f.match(DATED_CLUB_FLYER_RE);
-      return m && `${m[1]}_${m[2]}_${m[3]}` === wantedPrefix;
+      const flyerDate = parseDatedClubFlyer(f);
+      return flyerDate && flyerDate.toDateString() === date.toDateString();
     });
 }
 

@@ -227,6 +227,45 @@ function sanitizeFlyerPath(filename) {
 }
 
 /**
+ * Regex matching a club flyer filename prefixed with an explicit date —
+ * YYYY_MM_DD, e.g. "2026_07_26_loveshack-birds.jpg". Such a filename in a
+ * recurring club's `flyers[]` list is a one-off/legacy flyer for that
+ * specific date, rather than generic ongoing club artwork.
+ */
+const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+
+/**
+ * Parse a club flyer filename's YYYY_MM_DD date prefix, if it has one.
+ * Used by event_display.js (to attach the flyer to the matching recurring
+ * occurrence), new_troubadours_flyers.html (to file it as a dated "story"
+ * card instead of a generic always-on club card), new_troubadours_storyclub.html
+ * (to caption/grey it on the club's own page), and new_troubadours_venues.html
+ * (to grey it once past) — keep this the single implementation so the four
+ * pages can't drift out of sync on what counts as a "dated" flyer.
+ * @param {string} filename
+ * @returns {Date|null}
+ */
+function parseDatedClubFlyer(filename) {
+  const m = (filename || "").trim().match(DATED_CLUB_FLYER_RE);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  const date = new Date(year, month - 1, day);
+  // JS Date silently rolls over out-of-range values (e.g. month 13, day 40)
+  // instead of producing an invalid date, so confirm it round-trips back to
+  // the same y/m/d before trusting a hand-authored filename.
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+  return date;
+}
+
+/**
  * Resolve all tour-level flyers for a tour into one normalized, ordered,
  * de-duplicated list. Three data shapes are supported and may all be
  * present on the same tour record:

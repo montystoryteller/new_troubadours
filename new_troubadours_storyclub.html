@@ -1099,7 +1099,7 @@
 
             if (clubRecord.club_flyer) {
                 const img = document.createElement('img');
-                img.src = `./storyclub_assets/club_flyers/${clubRecord.club_flyer}`;
+                img.src = `./storyclub_assets/club_flyers/${sanitizeFlyerPath(clubRecord.club_flyer)}`;
                 img.className = 'club-flyer';
                 img.alt = clubRecord.name;
                 header.appendChild(img);
@@ -1111,7 +1111,9 @@
             // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is a flyer for
             // that specific club date — shown with a date caption, greyed out
             // if that date is in the past (matches the venues page treatment).
-            const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
+            // parseDatedClubFlyer() (shared_utils.js) is the single implementation
+            // of that YYYY_MM_DD detection, shared with the event guide/flyers/
+            // venues pages.
             if (Array.isArray(clubRecord.flyers) && clubRecord.flyers.length) {
                 const gallery = document.createElement('div');
                 gallery.className = 'club-flyer-gallery';
@@ -1121,21 +1123,18 @@
                     const item = document.createElement('div');
                     item.className = 'club-flyer-gallery-item';
                     const img = document.createElement('img');
-                    img.src = `./storyclub_assets/event_flyers/${clean}`;
+                    img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(clean)}`;
                     img.className = 'club-flyer-gallery-img';
                     img.alt = clubRecord.name;
                     img.loading = 'lazy';
                     item.appendChild(img);
-                    const m = clean.match(DATED_CLUB_FLYER_RE);
-                    if (m) {
-                        const flyerDate = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-                        if (!isNaN(flyerDate)) {
-                            if (flyerDate < today) img.classList.add('club-flyer-gallery-img-past');
-                            const caption = document.createElement('div');
-                            caption.className = 'club-flyer-gallery-caption';
-                            caption.textContent = formatDate(flyerDate);
-                            item.appendChild(caption);
-                        }
+                    const flyerDate = parseDatedClubFlyer(clean);
+                    if (flyerDate) {
+                        if (flyerDate < today) img.classList.add('club-flyer-gallery-img-past');
+                        const caption = document.createElement('div');
+                        caption.className = 'club-flyer-gallery-caption';
+                        caption.textContent = formatDate(flyerDate);
+                        item.appendChild(caption);
                     }
                     gallery.appendChild(item);
                 });
