@@ -8271,7 +8271,7 @@
       "date": "24/09/2026",
       "venue_id": "brit-bar-weston-super-mare",
       "date_added": "25/08/2026",
-      "isSpecial": true
+      "isMusic": true
     },
     {
       "name": "3 Daft Monkeys",
@@ -8282,7 +8282,7 @@
       "price": "£15",
       "event_flyer": "2026_09_26_3daftmonkeys_pewsey.webp",
       "date_added": "25/08/2026",
-      "isSpecial": true
+      "isMusic": true
     },
     {
       "name": "3 Daft Monkeys",
@@ -8293,7 +8293,7 @@
       "price": "£20.00 (+ £1.68)  / £15.00 (+ £1.26)",
       "ticket_url": "https://www.ticketsource.com/booking/select/jlpvynqvvxyn",
       "date_added": "25/08/2026",
-      "isSpecial": true
+      "isMusic": true
     }
   ],
   "folkNights": [
