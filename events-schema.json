@@ -83,7 +83,12 @@
         "facebook":        { "type": "string" },
         "facebook_group":  { "type": "string" },
         "instagram":       { "type": "string" },
-        "podcast":         { "$ref": "#/$defs/podcastUrls" }
+        "podcast":         { "$ref": "#/$defs/podcastUrls" },
+        "podcast_appearances": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/podcastAppearance" },
+          "description": "One-off guest spots on other people's podcasts (as opposed to performer.podcast, which is a podcast the performer runs themself). Rendered as a collapsible list on the performer profile page; each entry's audio is only fetched if/when the visitor opens that entry's player."
+        }
       },
       "required": ["name"],
       "additionalProperties": true
@@ -95,6 +100,20 @@
         { "type": "string" },
         { "type": "array", "items": { "type": "string" }, "minItems": 1 }
       ]
+    },
+
+    "podcastAppearance": {
+      "description": "One guest appearance by a performer on someone else's podcast episode. Identify the podcast EITHER by `podcast_id` (referencing an entry in the top-level `podcasts` registry, for a podcast that already has one) OR by giving `podcast` (and optionally `podcast_url`) directly inline for a one-off/unregistered show. If both are given, `podcast_id` takes precedence for display. `audio_url` should point directly at the episode's playable media file.",
+      "type": "object",
+      "properties": {
+        "podcast_id":   { "type": "string", "description": "References podcasts[].podcast_id. Preferred when the podcast already has a registry entry, so its name/link stay in one place." },
+        "podcast":      { "type": "string", "description": "Podcast/series name, given directly when there's no podcast_id (or as a fallback label if the id can't be resolved)." },
+        "podcast_url":  { "type": "string", "description": "The podcast's own homepage, used alongside an inline `podcast` name." },
+        "episode_name": { "type": "string", "description": "Episode title, or a short description of the appearance." },
+        "audio_url":    { "type": "string", "description": "Direct link to the playable episode audio (e.g. an .mp3), not a feed or webpage." }
+      },
+      "required": ["episode_name", "audio_url"],
+      "additionalProperties": true
     },
 
     "tourDate": {
@@ -384,13 +403,15 @@
 
     "podcast": {
       "type": "object",
+      "description": "An entry in the top-level `podcasts` registry — a podcast series in its own right (as opposed to a one-off guest spot; see performer.podcast_appearances for those). Referenced by id from performer.podcast_appearances[].podcast_id.",
       "properties": {
+        "podcast_id":   { "type": "string", "description": "Stable id for this series, referenced by performer.podcast_appearances[].podcast_id (e.g. \"taking-tradition-on-podcast\")." },
         "series_title": { "type": "string" },
         "presenter":    { "type": "string" },
         "schedule":     { "type": "string" },
         "url":          { "type": "string" }
       },
-      "required": ["series_title"],
+      "required": ["podcast_id", "series_title"],
       "additionalProperties": true
     },
 

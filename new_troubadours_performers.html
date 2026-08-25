@@ -569,6 +569,11 @@
             margin-top: 2px;
         }
 
+        .perf-podcast-feed-sub.is-error {
+            color: #a3005f;
+            white-space: normal;
+        }
+
         .perf-podcast-feed-open {
             font-size: 11px;
             font-weight: bold;
@@ -580,6 +585,55 @@
 
         .perf-podcast-feed-open:hover {
             text-decoration: underline;
+        }
+
+        /* Nested per-feed "Episodes" collapsible — episodes for a given feed
+           are only fetched the first time this is opened. */
+        .perf-podcast-episodes-details {
+            border-top: 1px solid #eee;
+        }
+
+        .perf-podcast-episodes-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .perf-podcast-episodes-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .perf-podcast-episodes-summary::before {
+            content: "▶";
+            font-size: 9px;
+            margin-right: 7px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .perf-podcast-episodes-summary:hover {
+            background: #f9fdf9;
+        }
+
+        .perf-podcast-episodes-hint {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: normal;
+        }
+
+        .perf-podcast-episodes-body {
+            padding: 0 0 4px;
         }
 
         .perf-podcast-feed-status {
@@ -935,6 +989,14 @@
             <div class="perf-podcast-list" id="perfPodcastList"></div>
         </details>
 
+        <details class="perf-podcast-section" id="perfPodcastAppearancesSection" style="display:none;">
+            <summary class="perf-podcast-summary">
+                🎧 Podcast Appearances
+                <span class="perf-podcast-hint" id="perfPodcastAppearancesHint">click to expand</span>
+            </summary>
+            <div class="perf-podcast-list" id="perfPodcastAppearancesList"></div>
+        </details>
+
         <div id="toursSection" class="content-section" style="display:none;">
             <h3 class="section-heading">Tours</h3>
             <div id="toursList"></div>
@@ -987,6 +1049,7 @@
         let venuesLookup = {};
         let performersLookup = {};
         let toursLookup = {};
+        let podcastsLookup = {};
         let performerId = null;
         let performer = null;
         let compoundIdsForMe = new Set();
@@ -1308,6 +1371,7 @@
             venuesLookup = loaded.venuesLookup;
             performersLookup = loaded.performersLookup;
             toursLookup = loaded.toursLookup;
+            podcastsLookup = loaded.podcastsLookup;
             displayDataLastUpdated(loaded.lastUpdateTime);
             initNavFeedback();
 
@@ -1552,6 +1616,7 @@
 
             // Podcasts
             renderPodcastSection(performer);
+            renderPodcastAppearancesSection(performer);
 
             // Build a set of all compound performer IDs that include this performer.
             // Checks both performer_ids and the legacy ids field on performer records.
@@ -1706,6 +1771,68 @@
         // Shared list that the lightbox navigates — populated by renderFlyerGallery
         let perfGalleryItems = [];
 
+        // ── Performer-page flyer lightbox (state + functions) ───────────────────
+        // Defined here (in the same script block as renderPerformer/
+        // renderTourCard) rather than in the later <script> tag near the
+        // lightbox markup, so makePerfFlyerThumb & co. are guaranteed to exist
+        // before renderPerformer ever calls them — the wiring of the lightbox's
+        // own buttons (which needs that markup to exist first) stays in the
+        // later <script> tag, further down the page.
+        let _pfItems = [];
+        let _pfIdx = 0;
+
+        function openPerfFlyer(items, idx) {
+            _pfItems = items;
+            _pfIdx = idx;
+            showPfSlide();
+            document.getElementById("perfFlyerLightbox").classList.add("pf-open");
+            document.addEventListener("keydown", pfLbKey);
+        }
+
+        function closePerfFlyer() {
+            document.getElementById("perfFlyerLightbox").classList.remove("pf-open");
+            document.removeEventListener("keydown", pfLbKey);
+        }
+
+        function showPfSlide() {
+            const item = _pfItems[_pfIdx];
+            document.getElementById("pfImg").src = item.src;
+            document.getElementById("pfImg").alt = item.label || "";
+            document.getElementById("pfCaption").textContent = item.label || "";
+            document.getElementById("pfPrev").disabled = _pfIdx <= 0;
+            document.getElementById("pfNext").disabled = _pfIdx >= _pfItems.length - 1;
+        }
+
+        function pfLbKey(e) {
+            if (e.key === "Escape") closePerfFlyer();
+            if (e.key === "ArrowLeft" && _pfIdx > 0) { _pfIdx--; showPfSlide(); }
+            if (e.key === "ArrowRight" && _pfIdx < _pfItems.length - 1) { _pfIdx++; showPfSlide(); }
+        }
+
+        // Helper used by renderTourCard / renderTouringShowCard / renderEventRow
+        function makePerfFlyerThumb(flyerName, label, extraClass) {
+            const src = BASE_FLYER + sanitizeFlyerName(flyerName.trim());
+            const wrap = document.createElement("div");
+            wrap.className = "perf-flyer-thumb" + (extraClass ? " " + extraClass : "");
+            wrap.title = "View flyer";
+            const img = document.createElement("img");
+            img.dataset.pfSrc = src;
+            img.alt = label || "Flyer";
+            pfImgLoader.observe(img);
+            wrap.appendChild(img);
+            wrap.addEventListener("click", e => {
+                e.stopPropagation();
+                // Open in the full gallery list if available, so prev/next works
+                const galleryIdx = perfGalleryItems.findIndex(i => i.src === src);
+                if (galleryIdx >= 0) {
+                    openPerfFlyer(perfGalleryItems, galleryIdx);
+                } else {
+                    openPerfFlyer([{ src, label: label || "" }], 0);
+                }
+            });
+            return wrap;
+        }
+
         function renderFlyerGallery(myTours, myTouringShows, allOther) {
             const items = [];
             const seen = new Set();
@@ -1847,9 +1974,13 @@
         // autodiscover a feed on) and actually fetched, so the section shows a
         // real episode list rather than just a link — using the same
         // fetch/autodiscover/parse machinery as the episode list in
-        // podcast-feed-curator.html (see podcast_utils.js). Feeds are only
-        // fetched once the section is opened, and long episode/feed lists are
-        // paged behind "+N more" rather than dumped in all at once.
+        // podcast-feed-curator.html (see podcast_utils.js). Each feed's
+        // episode list sits behind its own nested "Episodes" collapsible and
+        // is only fetched the first time that particular feed is expanded —
+        // opening the outer "Podcasts" section alone triggers no network
+        // calls, and a feed the user never expands is never fetched. Long
+        // episode/feed lists are paged behind "+N more" rather than dumped in
+        // all at once.
         // ---------------------------------------------------------------------------
 
         const PERF_PODCAST_FEEDS_VISIBLE = 4;
@@ -1903,20 +2034,21 @@
             }
         }
 
-        // Toggle an inline audio preview for one episode row. Mirrors the
-        // "▶ Preview" behaviour in podcast-feed-curator.html, including the
-        // CORS-proxy retry, and closes any other open preview first so only
-        // one plays at a time.
-        function togglePodcastEpisodePreview(row, episode, btn) {
+        // Toggle an inline audio preview for one episode/appearance row. Mirrors
+        // the "▶ Preview" behaviour in podcast-feed-curator.html, including the
+        // CORS-proxy retry, and closes any other open preview first so only one
+        // plays at a time. The audio's `src` is only ever set here — nothing
+        // fetches or preloads it until the user actually clicks play.
+        function togglePodcastAudioPreview(row, audioUrl, btn, labelPlaying = "▶ Preview") {
             const existing = row.querySelector(".perf-podcast-episode-audio");
             if (existing) {
                 existing.remove();
-                btn.textContent = "▶ Preview";
+                btn.textContent = labelPlaying;
                 return;
             }
             document.querySelectorAll(".perf-podcast-episode-audio").forEach(h => h.remove());
             document.querySelectorAll(".perf-podcast-episode-preview-btn").forEach(b => {
-                b.textContent = "▶ Preview";
+                b.textContent = b.dataset.playLabel || "▶ Preview";
             });
 
             const holder = document.createElement("div");
@@ -1924,21 +2056,26 @@
             const audio = document.createElement("audio");
             audio.controls = true;
             audio.autoplay = true;
-            audio.src = episode.enclosureUrl;
+            audio.src = audioUrl;
             audio.addEventListener("error", () => {
                 if (audio.dataset.retried) return;
                 audio.dataset.retried = "1";
-                audio.src = proxiedPodcastUrl(episode.enclosureUrl);
+                audio.src = proxiedPodcastUrl(audioUrl);
             });
             holder.appendChild(audio);
             row.appendChild(holder);
             btn.textContent = "■ Close";
         }
 
-        // Build one feed card: a header (icon/artwork + title + "Open ↗" link)
-        // plus a status line, and returns a load() function that fetches the
-        // feed and swaps the status line for a real episode list (or an error
-        // message, falling back gracefully to just the header link).
+        // Build one feed card: header (icon/artwork + title + "Open ↗" link)
+        // plus a nested, collapsed-by-default "Episodes" panel. Returns
+        // {el, load} — load() fetches the feed (populating the real title/
+        // artwork and pre-building the episode list) and is called by
+        // renderPodcastSection as soon as the outer "Podcasts" section is
+        // opened, so a visitor sees real feed info without an extra click.
+        // The nested Episodes panel itself is just a plain CSS-collapsed
+        // <details> at that point — opening it doesn't trigger any further
+        // fetch, since the data's already in hand.
         function createPodcastFeedCard(url) {
             const card = document.createElement("div");
             card.className = "perf-podcast-feed";
@@ -1961,7 +2098,7 @@
 
             const sub = document.createElement("div");
             sub.className = "perf-podcast-feed-sub";
-            sub.textContent = url.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+            sub.textContent = "Loading feed…";
             headerBody.appendChild(sub);
 
             header.appendChild(headerBody);
@@ -1971,10 +2108,31 @@
 
             card.appendChild(header);
 
-            const status = document.createElement("div");
-            status.className = "perf-podcast-feed-status";
-            status.textContent = "Loading episodes…";
-            card.appendChild(status);
+            // Nested "Episodes" panel — collapsed by default, populated
+            // eagerly by load() below, but only actually revealed when the
+            // visitor clicks it open.
+            const episodesDetails = document.createElement("details");
+            episodesDetails.className = "perf-podcast-episodes-details";
+
+            const episodesSummary = document.createElement("summary");
+            episodesSummary.className = "perf-podcast-episodes-summary";
+
+            const episodesLabel = document.createElement("span");
+            episodesLabel.textContent = "Episodes";
+            episodesSummary.appendChild(episodesLabel);
+
+            const episodesHint = document.createElement("span");
+            episodesHint.className = "perf-podcast-episodes-hint";
+            episodesHint.textContent = "loading…";
+            episodesSummary.appendChild(episodesHint);
+
+            episodesDetails.appendChild(episodesSummary);
+
+            const episodesBody = document.createElement("div");
+            episodesBody.className = "perf-podcast-episodes-body";
+            episodesDetails.appendChild(episodesBody);
+
+            card.appendChild(episodesDetails);
 
             function addEpisode(episodeList, episode) {
                 const row = document.createElement("div");
@@ -2009,7 +2167,7 @@
                     previewBtn.className = "perf-podcast-episode-preview-btn";
                     previewBtn.textContent = "▶ Preview";
                     previewBtn.addEventListener("click", () =>
-                        togglePodcastEpisodePreview(row, episode, previewBtn));
+                        togglePodcastAudioPreview(row, episode.enclosureUrl, previewBtn));
                     top.appendChild(previewBtn);
                 }
 
@@ -2022,8 +2180,9 @@
                 try {
                     result = await loadPodcastFeed(url);
                 } catch (e) {
-                    status.textContent = "Couldn't load the episode list for this feed — try the link above.";
-                    status.classList.add("is-error");
+                    sub.textContent = "Couldn't load this feed — try the link above.";
+                    sub.classList.add("is-error");
+                    episodesHint.textContent = "unavailable";
                     return;
                 }
                 const { feed, items } = result;
@@ -2037,19 +2196,21 @@
                     icon.replaceWith(img);
                 }
                 sub.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;
-                status.remove();
 
                 if (items.length === 0) {
+                    episodesHint.textContent = "no episodes";
                     const empty = document.createElement("div");
                     empty.className = "perf-podcast-feed-status";
                     empty.textContent = "No episodes listed in this feed.";
-                    card.appendChild(empty);
+                    episodesBody.appendChild(empty);
                     return;
                 }
 
+                episodesHint.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;
+
                 const episodeList = document.createElement("div");
                 episodeList.className = "perf-podcast-episode-list";
-                card.appendChild(episodeList);
+                episodesBody.appendChild(episodeList);
 
                 const visible = items.slice(0, PERF_PODCAST_EPISODES_VISIBLE);
                 const rest = items.slice(PERF_PODCAST_EPISODES_VISIBLE);
@@ -2064,7 +2225,7 @@
                         rest.forEach(ep => addEpisode(episodeList, ep));
                         moreBtn.remove();
                     });
-                    card.appendChild(moreBtn);
+                    episodesBody.appendChild(moreBtn);
                 }
             }
 
@@ -2086,9 +2247,11 @@
             const list = document.getElementById("perfPodcastList");
             list.innerHTML = "";
 
-            // Feeds are only actually fetched once the section is opened —
-            // addFeed() queues the load() call until then, same lazy pattern
-            // as the flyer gallery's image loading.
+            // Feed data (title, artwork, episode list) is fetched as soon as
+            // the outer "Podcasts" section is opened — not before, so nothing
+            // loads for a performer whose podcast section a visitor never
+            // opens — but without waiting for a further click per feed, so
+            // the card shows real info rather than just a bare URL.
             let opened = false;
             const pendingLoads = [];
 
@@ -2121,6 +2284,114 @@
                     pendingLoads.length = 0;
                 }
             });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Podcast Appearances section
+        // performer.podcast_appearances (see events-schema.json →
+        // $defs.podcastAppearance) lists one-off guest spots on OTHER
+        // people's podcasts — as opposed to performer.podcast, which is a
+        // podcast the performer runs themself. Each entry either references
+        // a series in the top-level `podcasts` registry via podcast_id, or
+        // gives the podcast name/url inline. Unlike the feed section above,
+        // no fetching or autodiscovery is needed for the list itself (the
+        // episode name + audio link are already in the data) — the only
+        // network request possible here is the episode audio itself, and
+        // that's only requested if/when the visitor presses ▶ Preview.
+        // ---------------------------------------------------------------------------
+
+        function resolvePodcastAppearanceMeta(appearance) {
+            if (appearance.podcast_id && podcastsLookup[appearance.podcast_id]) {
+                const p = podcastsLookup[appearance.podcast_id];
+                return { name: p.series_title || appearance.podcast_id, url: p.url || "" };
+            }
+            return { name: appearance.podcast || "Podcast", url: appearance.podcast_url || "" };
+        }
+
+        function renderPodcastAppearancesSection(performer) {
+            const appearances = Array.isArray(performer.podcast_appearances)
+                ? performer.podcast_appearances.filter(a => a && a.episode_name)
+                : [];
+            const section = document.getElementById("perfPodcastAppearancesSection");
+            if (appearances.length === 0) {
+                section.style.display = "none";
+                return;
+            }
+
+            section.style.display = "";
+            document.getElementById("perfPodcastAppearancesHint").textContent =
+                `${appearances.length} appearance${appearances.length !== 1 ? "s" : ""} — click to expand`;
+
+            const list = document.getElementById("perfPodcastAppearancesList");
+            list.innerHTML = "";
+
+            // Reuse the same card chrome as a podcast feed card, just without
+            // its header, so appearances visually match the feeds above.
+            const card = document.createElement("div");
+            card.className = "perf-podcast-feed";
+            const episodeList = document.createElement("div");
+            episodeList.className = "perf-podcast-episode-list";
+            card.appendChild(episodeList);
+            list.appendChild(card);
+
+            function addAppearance(appearance) {
+                const row = document.createElement("div");
+                row.className = "perf-podcast-episode";
+
+                const top = document.createElement("div");
+                top.className = "perf-podcast-episode-row";
+
+                const body = document.createElement("div");
+                body.className = "perf-podcast-episode-body";
+
+                const title = document.createElement("div");
+                title.className = "perf-podcast-episode-title";
+                title.textContent = appearance.episode_name;
+                body.appendChild(title);
+
+                const meta = resolvePodcastAppearanceMeta(appearance);
+                if (meta.name) {
+                    const metaLine = document.createElement("div");
+                    metaLine.className = "perf-podcast-episode-meta";
+                    const metaLink = meta.url
+                        ? createExternalLink(meta.url, meta.name, {})
+                        : null;
+                    metaLine.appendChild(metaLink || document.createTextNode(meta.name));
+                    body.appendChild(metaLine);
+                }
+
+                top.appendChild(body);
+
+                if (appearance.audio_url) {
+                    const previewBtn = document.createElement("button");
+                    previewBtn.type = "button";
+                    previewBtn.className = "perf-podcast-episode-preview-btn";
+                    previewBtn.textContent = "▶ Play";
+                    previewBtn.dataset.playLabel = "▶ Play";
+                    previewBtn.addEventListener("click", () =>
+                        togglePodcastAudioPreview(row, appearance.audio_url, previewBtn, "▶ Play"));
+                    top.appendChild(previewBtn);
+                }
+
+                row.appendChild(top);
+                episodeList.appendChild(row);
+            }
+
+            const visible = appearances.slice(0, PERF_PODCAST_EPISODES_VISIBLE);
+            const rest = appearances.slice(PERF_PODCAST_EPISODES_VISIBLE);
+            visible.forEach(addAppearance);
+
+            if (rest.length > 0) {
+                const moreBtn = document.createElement("button");
+                moreBtn.type = "button";
+                moreBtn.className = "perf-podcast-more";
+                moreBtn.textContent = `+${rest.length} more`;
+                moreBtn.addEventListener("click", () => {
+                    rest.forEach(addAppearance);
+                    moreBtn.remove();
+                });
+                card.appendChild(moreBtn);
+            }
         }
 
 
@@ -2726,39 +2997,12 @@
     </div>
 
     <script>
-        // ── Performer-page flyer lightbox ──────────────────────────────────────
-        // (BASE_FLYER and sanitizeFlyerName defined in the main script block above)
-
-        let _pfItems = [];
-        let _pfIdx = 0;
-
-        function openPerfFlyer(items, idx) {
-            _pfItems = items;
-            _pfIdx = idx;
-            showPfSlide();
-            document.getElementById("perfFlyerLightbox").classList.add("pf-open");
-            document.addEventListener("keydown", pfLbKey);
-        }
-
-        function closePerfFlyer() {
-            document.getElementById("perfFlyerLightbox").classList.remove("pf-open");
-            document.removeEventListener("keydown", pfLbKey);
-        }
-
-        function showPfSlide() {
-            const item = _pfItems[_pfIdx];
-            document.getElementById("pfImg").src = item.src;
-            document.getElementById("pfImg").alt = item.label || "";
-            document.getElementById("pfCaption").textContent = item.label || "";
-            document.getElementById("pfPrev").disabled = _pfIdx <= 0;
-            document.getElementById("pfNext").disabled = _pfIdx >= _pfItems.length - 1;
-        }
-
-        function pfLbKey(e) {
-            if (e.key === "Escape") closePerfFlyer();
-            if (e.key === "ArrowLeft" && _pfIdx > 0) { _pfIdx--; showPfSlide(); }
-            if (e.key === "ArrowRight" && _pfIdx < _pfItems.length - 1) { _pfIdx++; showPfSlide(); }
-        }
+        // ── Performer-page flyer lightbox wiring ────────────────────────────────
+        // State + functions (openPerfFlyer, closePerfFlyer, showPfSlide, pfLbKey,
+        // makePerfFlyerThumb) now live in the main script block above, alongside
+        // renderPerformer, so they're guaranteed to exist before it needs them.
+        // Only the bits that require the lightbox markup above to already exist
+        // in the DOM stay here.
 
         document.getElementById("pfClose").onclick = closePerfFlyer;
         document.getElementById("pfPrev").onclick = () => { if (_pfIdx > 0) { _pfIdx--; showPfSlide(); } };
@@ -2766,33 +3010,6 @@
         document.getElementById("perfFlyerLightbox").addEventListener("click", e => {
             if (e.target === document.getElementById("perfFlyerLightbox")) closePerfFlyer();
         });
-
-        // Lazy-image observer definition moved to top of async IIFE
-        // (before renderPerformer/renderAllPerformers are called)
-
-        // Helper used by renderTourCard / renderTouringShowCard / renderEventRow
-        function makePerfFlyerThumb(flyerName, label, extraClass) {
-            const src = BASE_FLYER + sanitizeFlyerName(flyerName.trim());
-            const wrap = document.createElement("div");
-            wrap.className = "perf-flyer-thumb" + (extraClass ? " " + extraClass : "");
-            wrap.title = "View flyer";
-            const img = document.createElement("img");
-            img.dataset.pfSrc = src;
-            img.alt = label || "Flyer";
-            pfImgLoader.observe(img);
-            wrap.appendChild(img);
-            wrap.addEventListener("click", e => {
-                e.stopPropagation();
-                // Open in the full gallery list if available, so prev/next works
-                const galleryIdx = perfGalleryItems.findIndex(i => i.src === src);
-                if (galleryIdx >= 0) {
-                    openPerfFlyer(perfGalleryItems, galleryIdx);
-                } else {
-                    openPerfFlyer([{ src, label: label || "" }], 0);
-                }
-            });
-            return wrap;
-        }
     </script>
 </body>
 

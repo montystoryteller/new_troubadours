@@ -65,6 +65,7 @@ label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
 <div class="toolbar">
   <label class="file-button"><button type="button">Open source RSS</button><input id="file" type="file" accept=".xml,.rss,text/xml,application/rss+xml"></label>
   <button id="sourceUrl">Load source URL</button>
+  <button id="libraryBtn">📚 Load from library</button>
   <button class="primary" id="addBtn">+ Add manually</button>
   <button id="exportBtn">Export my RSS</button>
 </div>
@@ -145,6 +146,21 @@ label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
 <div class="dialog-actions">
 <button class="primary" id="saveBtn">Save episode</button>
 <button id="cancelBtn">Cancel</button>
+</div>
+</div>
+</div>
+
+<!-- LIBRARY PICKER -->
+<div id="libraryModal" class="modal hidden">
+<div class="dialog">
+<h2>Load from library</h2>
+<div class="hint" style="margin-top:0">
+  Podcast links found in events_normalized.json — top-level podcast series, and performers' own podcast links.
+</div>
+<input id="libSearch" placeholder="Search podcasts or performers…">
+<div id="libList" class="feed-list" style="margin-top:10px;max-height:55vh"></div>
+<div class="dialog-actions">
+<button id="libCancelBtn">Close</button>
 </div>
 </div>
 </div>
@@ -416,6 +432,11 @@ async function loadLocal(file){
 async function loadUrl(){
  const url=prompt("Source podcast: paste the RSS feed URL, or just the podcast's website (autodiscovery will try to find the feed):");
  if(!url)return;
+ await loadSourceFromUrl(url);
+}
+// Shared by loadUrl() (typed-in URL) and the library picker (a URL chosen
+// from events_normalized.json) — does the actual fetch+parse+render.
+async function loadSourceFromUrl(url){
  $("sourceNotice").classList.add("hidden");
  try{
    const {feedUrl,feed,items,viaProxy}=await loadPodcastFeed(url);
@@ -433,6 +454,108 @@ async function loadUrl(){
    alert("Could not load a feed from that address, even via autodiscovery and the corsproxy.nl fallback.\n\nTry pasting the exact RSS/XML URL, or download the file and use “Open source RSS”.\n\nDetails: "+e.message);
  }
 }
+
+// ---------------------------------------------------------------------------
+// Library picker
+// If an events_normalized.json is reachable alongside this page (the same
+// data file the performer profile pages use — see events-schema.json), pull
+// out every podcast URL it contains — both top-level `podcasts[].url`
+// entries and each performer's `podcast` field(s) — and let the user load
+// one straight in in a couple of clicks, instead of hunting down and typing
+// a feed URL by hand. If the file isn't reachable (e.g. this tool is being
+// used standalone), the button just says so and nothing else changes.
+// ---------------------------------------------------------------------------
+
+let libraryEntries = null; // null = not yet fetched; [] = fetched, none found
+
+async function ensureLibraryEntries(){
+ if(libraryEntries!==null)return libraryEntries;
+ try{
+   const res=await fetch("events_normalized.json");
+   if(!res.ok)throw new Error("HTTP "+res.status);
+   libraryEntries=buildLibraryEntries(await res.json());
+ }catch(e){
+   libraryEntries=[];
+ }
+ return libraryEntries;
+}
+
+function buildLibraryEntries(data){
+ const entries=[];
+ const seen=new Set();
+ function addEntry(label,group,url){
+   if(typeof url!=="string"||!url.trim())return;
+   const key=group+"|"+label+"|"+url;
+   if(seen.has(key))return;
+   seen.add(key);
+   entries.push({label,group,url:url.trim()});
+ }
+
+ // Top-level `podcasts` registry (events-schema.json → $defs.podcast) — a
+ // podcast series in its own right, not tied to a single performer.
+ (Array.isArray(data?.podcasts)?data.podcasts:[]).forEach(p=>{
+   addEntry(p?.series_title||p?.podcast_id||"Untitled podcast","Podcast series",p?.url);
+ });
+
+ // Performers' own podcast(s) (events-schema.json → $defs.podcastUrls) — a
+ // single URL string, or an array of them.
+ const performers=data?.performers&&typeof data.performers==="object"?data.performers:{};
+ Object.values(performers).forEach(perf=>{
+   const raw=perf?.podcast;
+   const urls=Array.isArray(raw)?raw:(raw?[raw]:[]);
+   urls.forEach((u,i)=>{
+     const label=urls.length>1?`${perf?.name||"Performer"} (podcast ${i+1})`:(perf?.name||"Performer");
+     addEntry(label,"Performer",u);
+   });
+ });
+
+ entries.sort((a,b)=>a.group===b.group?a.label.localeCompare(b.label):a.group.localeCompare(b.group));
+ return entries;
+}
+
+async function openLibraryModal(){
+ const entries=await ensureLibraryEntries();
+ if(entries.length===0){
+   $("sourceNotice").textContent="No podcast library found — events_normalized.json isn't reachable here, or it has no podcast links in it.";
+   $("sourceNotice").classList.remove("hidden");
+   return;
+ }
+ $("libSearch").value="";
+ renderLibraryList(entries);
+ $("libraryModal").classList.remove("hidden");
+ $("libSearch").focus();
+}
+
+function renderLibraryList(entries){
+ const q=($("libSearch").value||"").trim().toLowerCase();
+ const filtered=q?entries.filter(e=>e.label.toLowerCase().includes(q)||e.url.toLowerCase().includes(q)):entries;
+ const list=$("libList");
+ list.innerHTML="";
+ if(filtered.length===0){
+   list.innerHTML='<div class="empty">No matches</div>';
+   return;
+ }
+ let lastGroup=null;
+ filtered.forEach(e=>{
+   if(e.group!==lastGroup){
+     lastGroup=e.group;
+     const heading=document.createElement("div");
+     heading.style.cssText="font-size:11px;font-weight:700;color:#667085;text-transform:uppercase;letter-spacing:.04em;margin:10px 2px 3px";
+     heading.textContent=e.group;
+     list.appendChild(heading);
+   }
+   const card=document.createElement("div");
+   card.className="card";
+   card.style.cursor="pointer";
+   card.innerHTML=`<div class="card-title">${esc(e.label)}</div><div class="meta">${esc(e.url)}</div>`;
+   card.onclick=()=>{
+     $("libraryModal").classList.add("hidden");
+     loadSourceFromUrl(e.url);
+   };
+   list.appendChild(card);
+ });
+}
+
 function exportRSS(){
  syncFeed();
  const items=state.items.map(x=>`<item>
@@ -476,6 +599,10 @@ ${items}
 
 $("file").onchange=e=>{const f=e.target.files[0];if(f)loadLocal(f);e.target.value=""};
 $("sourceUrl").onclick=loadUrl;
+$("libraryBtn").onclick=openLibraryModal;
+$("libSearch").oninput=()=>renderLibraryList(libraryEntries||[]);
+$("libCancelBtn").onclick=()=>$("libraryModal").classList.add("hidden");
+$("libraryModal").onclick=e=>{if(e.target===$("libraryModal"))$("libraryModal").classList.add("hidden")};
 $("sourceSearch").oninput=renderSource;
 $("clearSource").onclick=()=>{state.source={title:"",url:"",meta:null,items:[]};$("sourceSearch").value="";$("sourceNotice").classList.add("hidden");renderSource()};
 $("addBtn").onclick=addManual;

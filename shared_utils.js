@@ -636,6 +636,7 @@ async function loadEventsData(cacheBuster) {
           const { timestamp, data } = JSON.parse(cached);
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
+          const podcastsLookup = buildPodcastsLookup(eventsData);
           console.log(`✓ Loaded events data from cache`);
           console.log(`  - ${Object.keys(venuesLookup).length} venues`);
           console.log(`  - ${Object.keys(performersLookup).length} performers`);
@@ -649,6 +650,7 @@ async function loadEventsData(cacheBuster) {
             venuesLookup,
             performersLookup,
             toursLookup,
+            podcastsLookup,
             lastUpdateTime: timestamp,
           };
         } catch (e) {
@@ -671,6 +673,7 @@ async function loadEventsData(cacheBuster) {
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
     const performersLookup = eventsData.performers || {};
+    const podcastsLookup = buildPodcastsLookup(eventsData);
 
     // Cache the data and headers in localStorage for other pages to use
     try {
@@ -704,12 +707,29 @@ async function loadEventsData(cacheBuster) {
       venuesLookup,
       performersLookup,
       toursLookup,
+      podcastsLookup,
       lastUpdateTime: Date.now(),
     };
   } catch (error) {
     console.error("Error loading events:", error);
     return null;
   }
+}
+
+/**
+ * Build a lookup of the top-level `podcasts` registry (see events-schema.json
+ * → $defs.podcast), keyed by podcast_id, for resolving
+ * performer.podcast_appearances[].podcast_id references.
+ * @param {object} eventsData
+ * @returns {Object<string, object>}
+ */
+function buildPodcastsLookup(eventsData) {
+  const podcasts = Array.isArray(eventsData?.podcasts) ? eventsData.podcasts : [];
+  const lookup = {};
+  podcasts.forEach(p => {
+    if (p?.podcast_id) lookup[p.podcast_id] = p;
+  });
+  return lookup;
 }
 
 /**
