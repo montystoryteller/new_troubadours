@@ -439,6 +439,256 @@
             }
         }
 
+        /* ── Podcast section ─────────────────────────────────────
+           performer.podcast may be a single URL or an array of URLs
+           (see events-schema.json → $defs.podcastUrls). Rendered as
+           a collapsible list, mirroring the flyer gallery pattern. ── */
+        .perf-podcast-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .perf-podcast-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: #2e7d32;
+            letter-spacing: 0.03em;
+        }
+
+        .perf-podcast-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .perf-podcast-summary::before {
+            content: "▶";
+            font-size: 10px;
+            margin-right: 8px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        details.perf-podcast-section[open]>.perf-podcast-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .perf-podcast-summary:hover {
+            background: #f9fdf9;
+        }
+
+        .perf-podcast-hint {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: normal;
+            letter-spacing: 0;
+        }
+
+        .perf-podcast-list {
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* One card per podcast/feed URL on the performer */
+        .perf-podcast-feed {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+            overflow: hidden;
+        }
+
+        .perf-podcast-feed-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+        }
+
+        .perf-podcast-feed-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #eee;
+        }
+
+        .perf-podcast-feed-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            background: #e8f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .perf-podcast-feed-header-body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .perf-podcast-feed-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2e7d32;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .perf-podcast-feed-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .perf-podcast-feed-title a:hover {
+            text-decoration: underline;
+        }
+
+        .perf-podcast-feed-sub {
+            font-size: 11px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .perf-podcast-feed-open {
+            font-size: 11px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .perf-podcast-feed-open:hover {
+            text-decoration: underline;
+        }
+
+        .perf-podcast-feed-status {
+            padding: 12px;
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+        }
+
+        .perf-podcast-feed-status.is-error {
+            color: #a3005f;
+            font-style: normal;
+        }
+
+        .perf-podcast-episode-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .perf-podcast-episode {
+            padding: 9px 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .perf-podcast-episode:first-child {
+            border-top: none;
+        }
+
+        .perf-podcast-episode-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .perf-podcast-episode-body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .perf-podcast-episode-title {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .perf-podcast-episode-meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .perf-podcast-episode-preview-btn {
+            flex-shrink: 0;
+            font: inherit;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2e7d32;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            border-radius: 20px;
+            padding: 4px 10px;
+            cursor: pointer;
+        }
+
+        .perf-podcast-episode-preview-btn:hover {
+            background: #d4ecd6;
+        }
+
+        .perf-podcast-episode-audio {
+            margin-top: 8px;
+        }
+
+        .perf-podcast-episode-audio audio {
+            width: 100%;
+            display: block;
+            height: 32px;
+        }
+
+        .perf-podcast-more {
+            align-self: flex-start;
+            font: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2e7d32;
+            background: none;
+            border: 1px dashed #a5d6a7;
+            border-radius: 20px;
+            padding: 5px 14px;
+            margin: 10px 12px 12px;
+            cursor: pointer;
+        }
+
+        .perf-podcast-more:hover {
+            background: #f1f8e9;
+        }
+
+        .perf-podcast-fallback-link {
+            display: block;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #2e7d32;
+            text-decoration: none;
+        }
+
+        .perf-podcast-fallback-link:hover {
+            text-decoration: underline;
+        }
+
         /* ── All-performers collapsible (no-performer landing) ── */
         .all-performers-details {
             background: white;
@@ -677,6 +927,14 @@
             <div class="perf-flyer-strip" id="perfGalleryStrip"></div>
         </details>
 
+        <details class="perf-podcast-section" id="perfPodcastSection" style="display:none;">
+            <summary class="perf-podcast-summary">
+                🎙 Podcasts
+                <span class="perf-podcast-hint" id="perfPodcastHint">click to expand</span>
+            </summary>
+            <div class="perf-podcast-list" id="perfPodcastList"></div>
+        </details>
+
         <div id="toursSection" class="content-section" style="display:none;">
             <h3 class="section-heading">Tours</h3>
             <div id="toursList"></div>
@@ -707,6 +965,7 @@
     </div>
 
     <script src="shared_utils.js"></script>
+    <script src="podcast_utils.js"></script>
     <script>
 
         // ---------------------------------------------------------------------------
@@ -1281,13 +1540,18 @@
             addPerformerLink(performer.facebook, "Facebook", "facebook");
             addPerformerLink(performer.facebook_group, "Facebook Page", "facebook");
             addPerformerLink(performer.instagram, "Instagram", "instagram");
-            addPerformerLink(performer.podcast, "Podcast", "website");
+            // Podcast(s) get their own collapsible section further down the page
+            // (see renderPodcastSection) rather than a link here, since performer.podcast
+            // may be a single URL or a whole list of them.
 
             // Bio
             if (performer.bio) {
                 const bioDiv = document.getElementById("performerBio");
                 appendParagraphs(bioDiv, performer.bio);
             }
+
+            // Podcasts
+            renderPodcastSection(performer);
 
             // Build a set of all compound performer IDs that include this performer.
             // Checks both performer_ids and the legacy ids field on performer records.
@@ -1568,6 +1832,293 @@
                 if (section.open && !observed) {
                     observed = true;
                     strip.querySelectorAll("img[data-pf-src]").forEach(img => pfImgLoader.observe(img));
+                }
+            });
+        }
+
+
+        // ---------------------------------------------------------------------------
+        // Podcast section
+        // performer.podcast may be a single URL string or an array of URL strings
+        // (see events-schema.json → $defs.podcastUrls) — normalise to an array first,
+        // same as the .date / dateOrDates convention used elsewhere in this file.
+        //
+        // Each URL is treated as a podcast feed (or a podcast website to
+        // autodiscover a feed on) and actually fetched, so the section shows a
+        // real episode list rather than just a link — using the same
+        // fetch/autodiscover/parse machinery as the episode list in
+        // podcast-feed-curator.html (see podcast_utils.js). Feeds are only
+        // fetched once the section is opened, and long episode/feed lists are
+        // paged behind "+N more" rather than dumped in all at once.
+        // ---------------------------------------------------------------------------
+
+        const PERF_PODCAST_FEEDS_VISIBLE = 4;
+        const PERF_PODCAST_EPISODES_VISIBLE = 5;
+
+        // Recognise a handful of common podcast-hosting domains so a feed card
+        // can show a friendly platform name before (or if) the real feed title
+        // loads. Anything else falls back to the bare hostname.
+        const PODCAST_PLATFORM_LABELS = {
+            "open.spotify.com": "Spotify",
+            "spotify.com": "Spotify",
+            "podcasts.apple.com": "Apple Podcasts",
+            "music.amazon.co.uk": "Amazon Music",
+            "music.amazon.com": "Amazon Music",
+            "soundcloud.com": "SoundCloud",
+            "youtube.com": "YouTube",
+            "youtu.be": "YouTube",
+            "anchor.fm": "Anchor",
+            "buzzsprout.com": "Buzzsprout",
+            "podbean.com": "Podbean",
+            "libsyn.com": "Libsyn",
+            "audioboom.com": "Audioboom",
+            "acast.com": "Acast",
+            "podomatic.com": "Podomatic",
+            "captivate.fm": "Captivate",
+            "transistor.fm": "Transistor",
+        };
+
+        function normalisePodcastUrls(podcast) {
+            const raw = Array.isArray(podcast) ? podcast : (podcast ? [podcast] : []);
+            const seen = new Set();
+            const out = [];
+            raw.forEach(u => {
+                if (typeof u !== "string") return;
+                const trimmed = u.trim();
+                if (!trimmed || seen.has(trimmed)) return;
+                seen.add(trimmed);
+                out.push(trimmed);
+            });
+            return out;
+        }
+
+        function podcastLinkLabel(url) {
+            try {
+                const host = new URL(url).hostname.replace(/^www\./, "");
+                if (PODCAST_PLATFORM_LABELS[host]) return PODCAST_PLATFORM_LABELS[host];
+                const knownSuffix = Object.keys(PODCAST_PLATFORM_LABELS).find(h => host.endsWith("." + h));
+                return knownSuffix ? PODCAST_PLATFORM_LABELS[knownSuffix] : host;
+            } catch (e) {
+                return "Podcast";
+            }
+        }
+
+        // Toggle an inline audio preview for one episode row. Mirrors the
+        // "▶ Preview" behaviour in podcast-feed-curator.html, including the
+        // CORS-proxy retry, and closes any other open preview first so only
+        // one plays at a time.
+        function togglePodcastEpisodePreview(row, episode, btn) {
+            const existing = row.querySelector(".perf-podcast-episode-audio");
+            if (existing) {
+                existing.remove();
+                btn.textContent = "▶ Preview";
+                return;
+            }
+            document.querySelectorAll(".perf-podcast-episode-audio").forEach(h => h.remove());
+            document.querySelectorAll(".perf-podcast-episode-preview-btn").forEach(b => {
+                b.textContent = "▶ Preview";
+            });
+
+            const holder = document.createElement("div");
+            holder.className = "perf-podcast-episode-audio";
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.autoplay = true;
+            audio.src = episode.enclosureUrl;
+            audio.addEventListener("error", () => {
+                if (audio.dataset.retried) return;
+                audio.dataset.retried = "1";
+                audio.src = proxiedPodcastUrl(episode.enclosureUrl);
+            });
+            holder.appendChild(audio);
+            row.appendChild(holder);
+            btn.textContent = "■ Close";
+        }
+
+        // Build one feed card: a header (icon/artwork + title + "Open ↗" link)
+        // plus a status line, and returns a load() function that fetches the
+        // feed and swaps the status line for a real episode list (or an error
+        // message, falling back gracefully to just the header link).
+        function createPodcastFeedCard(url) {
+            const card = document.createElement("div");
+            card.className = "perf-podcast-feed";
+
+            const header = document.createElement("div");
+            header.className = "perf-podcast-feed-header";
+
+            const icon = document.createElement("div");
+            icon.className = "perf-podcast-feed-icon";
+            icon.textContent = "🎙";
+            header.appendChild(icon);
+
+            const headerBody = document.createElement("div");
+            headerBody.className = "perf-podcast-feed-header-body";
+
+            const title = document.createElement("div");
+            title.className = "perf-podcast-feed-title";
+            title.textContent = podcastLinkLabel(url);
+            headerBody.appendChild(title);
+
+            const sub = document.createElement("div");
+            sub.className = "perf-podcast-feed-sub";
+            sub.textContent = url.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+            headerBody.appendChild(sub);
+
+            header.appendChild(headerBody);
+
+            const openLink = createExternalLink(url, "Open ↗", { className: "perf-podcast-feed-open" });
+            if (openLink) header.appendChild(openLink);
+
+            card.appendChild(header);
+
+            const status = document.createElement("div");
+            status.className = "perf-podcast-feed-status";
+            status.textContent = "Loading episodes…";
+            card.appendChild(status);
+
+            function addEpisode(episodeList, episode) {
+                const row = document.createElement("div");
+                row.className = "perf-podcast-episode";
+
+                const top = document.createElement("div");
+                top.className = "perf-podcast-episode-row";
+
+                const epBody = document.createElement("div");
+                epBody.className = "perf-podcast-episode-body";
+
+                const epTitle = document.createElement("div");
+                epTitle.className = "perf-podcast-episode-title";
+                epTitle.textContent = episode.title;
+                epBody.appendChild(epTitle);
+
+                const metaParts = [];
+                if (episode.pubDate) metaParts.push(formatPodcastDate(episode.pubDate));
+                if (episode.duration) metaParts.push(formatPodcastDuration(episode.duration));
+                if (metaParts.length > 0) {
+                    const epMeta = document.createElement("div");
+                    epMeta.className = "perf-podcast-episode-meta";
+                    epMeta.textContent = metaParts.join(" · ");
+                    epBody.appendChild(epMeta);
+                }
+
+                top.appendChild(epBody);
+
+                if (episode.enclosureUrl) {
+                    const previewBtn = document.createElement("button");
+                    previewBtn.type = "button";
+                    previewBtn.className = "perf-podcast-episode-preview-btn";
+                    previewBtn.textContent = "▶ Preview";
+                    previewBtn.addEventListener("click", () =>
+                        togglePodcastEpisodePreview(row, episode, previewBtn));
+                    top.appendChild(previewBtn);
+                }
+
+                row.appendChild(top);
+                episodeList.appendChild(row);
+            }
+
+            async function load() {
+                let result;
+                try {
+                    result = await loadPodcastFeed(url);
+                } catch (e) {
+                    status.textContent = "Couldn't load the episode list for this feed — try the link above.";
+                    status.classList.add("is-error");
+                    return;
+                }
+                const { feed, items } = result;
+
+                if (feed.title) title.textContent = feed.title;
+                if (feed.image) {
+                    const img = document.createElement("img");
+                    img.className = "perf-podcast-feed-thumb";
+                    img.src = feed.image;
+                    img.alt = "";
+                    icon.replaceWith(img);
+                }
+                sub.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;
+                status.remove();
+
+                if (items.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "perf-podcast-feed-status";
+                    empty.textContent = "No episodes listed in this feed.";
+                    card.appendChild(empty);
+                    return;
+                }
+
+                const episodeList = document.createElement("div");
+                episodeList.className = "perf-podcast-episode-list";
+                card.appendChild(episodeList);
+
+                const visible = items.slice(0, PERF_PODCAST_EPISODES_VISIBLE);
+                const rest = items.slice(PERF_PODCAST_EPISODES_VISIBLE);
+                visible.forEach(ep => addEpisode(episodeList, ep));
+
+                if (rest.length > 0) {
+                    const moreBtn = document.createElement("button");
+                    moreBtn.type = "button";
+                    moreBtn.className = "perf-podcast-more";
+                    moreBtn.textContent = `+${rest.length} more episode${rest.length !== 1 ? "s" : ""}`;
+                    moreBtn.addEventListener("click", () => {
+                        rest.forEach(ep => addEpisode(episodeList, ep));
+                        moreBtn.remove();
+                    });
+                    card.appendChild(moreBtn);
+                }
+            }
+
+            return { el: card, load };
+        }
+
+        function renderPodcastSection(performer) {
+            const urls = normalisePodcastUrls(performer.podcast);
+            const section = document.getElementById("perfPodcastSection");
+            if (urls.length === 0) {
+                section.style.display = "none";
+                return;
+            }
+
+            section.style.display = "";
+            document.getElementById("perfPodcastHint").textContent =
+                `${urls.length} podcast${urls.length !== 1 ? "s" : ""} — click to expand`;
+
+            const list = document.getElementById("perfPodcastList");
+            list.innerHTML = "";
+
+            // Feeds are only actually fetched once the section is opened —
+            // addFeed() queues the load() call until then, same lazy pattern
+            // as the flyer gallery's image loading.
+            let opened = false;
+            const pendingLoads = [];
+
+            function addFeed(url) {
+                const { el, load } = createPodcastFeedCard(url);
+                list.appendChild(el);
+                if (opened) load(); else pendingLoads.push(load);
+            }
+
+            const visible = urls.slice(0, PERF_PODCAST_FEEDS_VISIBLE);
+            const rest = urls.slice(PERF_PODCAST_FEEDS_VISIBLE);
+            visible.forEach(addFeed);
+
+            if (rest.length > 0) {
+                const moreBtn = document.createElement("button");
+                moreBtn.type = "button";
+                moreBtn.className = "perf-podcast-more";
+                moreBtn.textContent = `+${rest.length} more podcast${rest.length !== 1 ? "s" : ""}`;
+                moreBtn.addEventListener("click", () => {
+                    rest.forEach(addFeed);
+                    moreBtn.remove();
+                });
+                list.appendChild(moreBtn);
+            }
+
+            section.addEventListener("toggle", () => {
+                if (section.open && !opened) {
+                    opened = true;
+                    pendingLoads.forEach(load => load());
+                    pendingLoads.length = 0;
                 }
             });
         }

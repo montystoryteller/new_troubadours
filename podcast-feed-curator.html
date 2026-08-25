@@ -149,6 +149,7 @@ label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
 </div>
 </div>
 
+<script src="podcast_utils.js"></script>
 <script>
 "use strict";
 
@@ -177,61 +178,10 @@ function rfc822(v){
  const d=new Date(v||Date.now());
  return Number.isNaN(d.getTime())?new Date().toUTCString():d.toUTCString();
 }
-function formatDate(v){
- const d=new Date(v);
- return Number.isNaN(d.getTime())?v:d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
-}
-function text(el,names){
- for(const name of names){
-   const n=el.querySelector(name);
-   if(n?.textContent)return n.textContent.trim();
- }
- return "";
-}
-function attr(el,names,a){
- for(const name of names){
-   const n=el.querySelector(name);
-   if(n?.getAttribute(a))return n.getAttribute(a);
- }
- return "";
-}
-function parseFeed(xml){
- const doc=new DOMParser().parseFromString(xml,"application/xml");
- if(doc.querySelector("parsererror"))throw new Error("Invalid XML");
- const channel=doc.querySelector("channel");
- if(!channel)throw new Error("No RSS channel found");
-
- const feed={
-   title:text(channel,["title"]),
-   description:text(channel,["description","itunes\\:summary"]),
-   link:text(channel,["link"]),
-   language:text(channel,["language"])||"en-gb",
-   author:text(channel,["itunes\\:author","author"]),
-   image:attr(channel,["itunes\\:image"],"href")||channel.querySelector("image>url")?.textContent?.trim()||""
- };
- const items=[...channel.children].filter(x=>x.localName==="item").map((el,i)=>{
-   const enc=el.querySelector("enclosure");
-   const image=el.querySelector("itunes\\:image");
-   const link=text(el,["link"]);
-   const guid=text(el,["guid"])||link||enc?.getAttribute("url")||"episode-"+i;
-   return {
-     id:crypto.randomUUID(),
-     title:text(el,["title"])||"Untitled episode",
-     link,
-     description:text(el,["description","content\\:encoded","itunes\\:summary"]),
-     pubDate:text(el,["pubDate","dc\\:date","published","updated"])||new Date().toISOString(),
-     author:text(el,["itunes\\:author","author","dc\\:creator"]),
-     duration:text(el,["itunes\\:duration"]),
-     explicit:text(el,["itunes\\:explicit"])||"no",
-     enclosureUrl:enc?.getAttribute("url")||"",
-     enclosureType:enc?.getAttribute("type")||"audio/mpeg",
-     enclosureLength:enc?.getAttribute("length")||"",
-     image:image?.getAttribute("href")||"",
-     guid
-   };
- });
- return {feed,items};
-}
+// formatDate, parseFeed (as parsePodcastFeed) and friends now live in
+// podcast_utils.js, shared with the performer profile page.
+function formatDate(v){ return formatPodcastDate(v); }
+function parseFeed(xml){ return parsePodcastFeed(xml); }
 function renderSource(){
  const q=$("sourceSearch").value.trim().toLowerCase();
  const items=state.source.items.filter(x=>
@@ -337,14 +287,7 @@ function syncFeed(){
  state.feed.description=$("feedDescription").value;
  state.feed.image=$("feedImage").value.trim();
 }
-function formatDuration(d){
- if(!d)return "";
- if(/^\d+$/.test(d)){
-   const s=parseInt(d,10),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-   return h?`${h}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`:`${m}:${String(sec).padStart(2,"0")}`;
- }
- return d; // already looks like HH:MM:SS
-}
+function formatDuration(d){ return formatPodcastDuration(d); }
 function togglePreview(id,isSource){
  const holder=document.querySelector(`[data-preview-holder="${id}"]`);
  if(!holder)return;
@@ -377,7 +320,7 @@ function togglePreview(id,isSource){
  audio.addEventListener("error",()=>hint.classList.remove("hidden"),{once:true});
  holder.querySelector("[data-retry-proxy]").addEventListener("click",()=>{
    hint.classList.add("hidden");
-   audio.src=proxiedUrl(item.enclosureUrl);
+   audio.src=proxiedPodcastUrl(item.enclosureUrl);
    audio.play().catch(()=>hint.classList.remove("hidden"));
  });
 }
@@ -467,90 +410,15 @@ async function loadLocal(file){
    render();
  }catch(e){alert("Could not read feed: "+e.message)}
 }
-const CORS_PROXY="https://corsproxy.nl/";
-function proxiedUrl(url){
- // corsproxy.nl expects the target host+path appended after the proxy origin,
- // with an explicit /http/ prefix for non-https targets.
- return url.startsWith("http://")
-   ? CORS_PROXY+"http/"+url.slice("http://".length)
-   : CORS_PROXY+url.replace(/^https:\/\//,"");
-}
-async function fetchFeedText(url){
- try{
-   const res=await fetch(url);
-   if(!res.ok)throw new Error("HTTP "+res.status);
-   return {text:await res.text(),viaProxy:false};
- }catch(directErr){
-   try{
-     const res=await fetch(proxiedUrl(url));
-     if(!res.ok)throw new Error("HTTP "+res.status+" via proxy");
-     return {text:await res.text(),viaProxy:true};
-   }catch(proxyErr){
-     throw new Error(`Direct request failed (${directErr.message}). CORS proxy fallback also failed (${proxyErr.message}).`);
-   }
- }
-}
-function looksLikeFeed(text){
- return /<rss[\s>]|<feed[\s>][^]*xmlns=["']http:\/\/www\.w3\.org\/2005\/Atom["']/i.test(text.slice(0,4000));
-}
-async function resolveFeedUrl(input){
- let url=input.trim();
- if(!/^https?:\/\//i.test(url))url="https://"+url;
-
- // Most people will paste the exact feed URL — try it as-is first.
- // Some hosts (e.g. Podomatic) 301-redirect their bare homepage to a different
- // host entirely, which a simple proxy can't always follow — so any failure
- // here just falls through to autodiscovery/guessing rather than aborting.
- let page=null;
- try{
-   page=await fetchFeedText(url);
-   if(looksLikeFeed(page.text))return {feedUrl:url,...page};
- }catch(e){/* homepage unreachable directly — keep going */}
-
- if(page){
-   // Not a feed: treat the response as a webpage and look for a
-   // standard <link rel="alternate" type="application/rss+xml"> autodiscovery tag.
-   const doc=new DOMParser().parseFromString(page.text,"text/html");
-   const link=doc.querySelector('link[type="application/rss+xml"],link[type="application/atom+xml"],link[rel="alternate"][type*="rss"]');
-   if(link?.getAttribute("href")){
-     try{
-       const href=new URL(link.getAttribute("href"),url).toString();
-       const res=await fetchFeedText(href);
-       if(looksLikeFeed(res.text))return {feedUrl:href,...res};
-     }catch(e){/* keep trying */}
-   }
-   // Some hosts (e.g. Podomatic) just link the feed as a plain "Subscribe" anchor
-   // rather than a <link> autodiscovery tag — check anchors that look feed-ish too.
-   const anchor=[...doc.querySelectorAll("a[href]")].find(a=>/\.(rss|xml)(\?|#|$)/i.test(a.getAttribute("href")||""));
-   if(anchor){
-     try{
-       const href=new URL(anchor.getAttribute("href"),url).toString();
-       const res=await fetchFeedText(href);
-       if(looksLikeFeed(res.text))return {feedUrl:href,...res};
-     }catch(e){/* keep trying */}
-   }
- }
-
- // Last resort: try a handful of conventional feed paths on the same host
- // (podcast hosts like Podomatic, Libsyn, Buzzsprout, etc. are fairly consistent here).
- const origin=new URL(url).origin+"/";
- const guesses=["rss2.xml","rss.xml","feed.xml","rss","feed","podcast.xml"];
- for(const g of guesses){
-   try{
-     const candidate=new URL(g,origin).toString();
-     const res=await fetchFeedText(candidate);
-     if(looksLikeFeed(res.text))return {feedUrl:candidate,...res};
-   }catch(e){/* try the next guess */}
- }
- throw new Error("Couldn't find an RSS/Atom feed at that address (checked the page itself, its autodiscovery link, and common feed paths).");
-}
+// CORS proxying, feed discovery/fetching, and parsing now live in
+// podcast_utils.js (proxiedPodcastUrl, loadPodcastFeed, etc.), shared with
+// the performer profile page.
 async function loadUrl(){
  const url=prompt("Source podcast: paste the RSS feed URL, or just the podcast's website (autodiscovery will try to find the feed):");
  if(!url)return;
  $("sourceNotice").classList.add("hidden");
  try{
-   const {feedUrl,text,viaProxy}=await resolveFeedUrl(url);
-   const {feed,items}=parseFeed(text);
+   const {feedUrl,feed,items,viaProxy}=await loadPodcastFeed(url);
    state.source={title:feed.title,url:feedUrl,meta:feed,items};
    renderSource();
    const notes=[];

@@ -83,10 +83,18 @@
         "facebook":        { "type": "string" },
         "facebook_group":  { "type": "string" },
         "instagram":       { "type": "string" },
-        "podcast":         { "type": "string" }
+        "podcast":         { "$ref": "#/$defs/podcastUrls" }
       },
       "required": ["name"],
       "additionalProperties": true
+    },
+
+    "podcastUrls": {
+      "description": "One or more podcast links for a performer (episode pages, show pages, or listen-on-X links — whatever the performer links to). A single URL string, OR an array of URL strings for a performer with several podcasts/series. Code that reads performer.podcast should always normalize via Array.isArray() before use — see normalisePodcastUrls() in new_troubadours_performers.html, which renders these in the collapsible podcast section on the performer profile page.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      ]
     },
 
     "tourDate": {

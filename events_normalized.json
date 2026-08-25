@@ -4614,10 +4614,39 @@
   ],
   "podcasts": [
     {
+      "podcast_id": "taking-tradition-on-podcast",
       "series_title": "Taking the Tradition On",
       "presenter": "Amy Douglas",
       "schedule": "",
       "url": "https://www.youtube.com/channel/UCpcvx1G7TUAbeZU80cJJX8ghttps://www.youtube.com/@TakingTheTraditionOn"
+    },
+    {
+      "podcast_id": "embers-collective-podcast",
+      "series_title": "The Embers Collective Storytelling and Music Podcast",
+      "presenter": "Embers Collective",
+      "schedule": "",
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:267180750/sounds.rss"
+    },
+    {
+      "podcast_id": "candlelit-tales-podcast",
+      "series_title": "Candlelit Tales Irish Mythology Podcast",
+      "presenter": "Candlelit Tales",
+      "schedule": "",
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:293487429/sounds.rss"
+    },
+    {
+      "podcast_id": "orkneyology-podcast",
+      "series_title": "Orkneyology Podcast",
+      "presenter": "Tom & Rhonda Muir",
+      "schedule": "",
+      "url": "https://feeds.acast.com/public/shows/orkneyology-podcast"
+    },
+    {
+      "podcast_id": "three-ravens-podcast",
+      "series_title": "Three Ravens Podcast",
+      "presenter": "Eleanor Conlon & Martin Vaux",
+      "schedule": "",
+      "url": "https://feeds.acast.com/public/shows/threeravenspodcast"
     }
   ],
   "workshops": [{
@@ -12829,7 +12858,9 @@
       "id": "daniel-morden",
       "name": "Daniel Morden",
       "url": "https://danielmorden.org/",
-      "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. "
+      "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. ",
+      "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"],
+      "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"]
     },
     "the-travelling-talesman-cliff-eastabrook": {
       "id": "the-travelling-talesman-cliff-eastabrook",
@@ -13118,7 +13149,8 @@
       "id": "hugh-lupton",
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
-      "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry."
+      "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
+      "podcast_appearances" : [{"podcast_id": "three-ravens-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3" , "episode_name": "Local Legends #42: Hugh Lupton"}, {"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}] 
     },
     "suited-storytellers": {
       "id": "suited-storytellers",
@@ -13245,6 +13277,13 @@
       "name": "Chris Richardson",
       "url": "https://legemaine.co.uk/",
       "bio": "Chris Richardson has been telling stories a long time — as long as he can remember. But it has only been the last 10 years or so that he have sought out audiences to share the wonder of how things are, should be or could be in our wildest dreams. He has been described as quirky, in part becuase ge can't resist fiddling with a story as it comes to him, or writing something new if it says what he wants to say. All the old stories were new once, and it's up to the storytellers of today to keep the old tales relevant and to add original ones that reflect and record the way we live today."
+    },
+    "eddie-lenihan": {
+      "id": "eddie-lenihan",
+      "name": "Eddie Lenihan",
+      "url": "https://eddielenihan.weebly.com/",
+      "bio": "Collector of Irish tales for over forty years.",
+      "podcast": "https://shows.acast.com/tell-me-a-story-with-eddie-lenihan"
     },
     "marion-leeper": {
       "id": "marion-leeper",
@@ -13787,7 +13826,9 @@
       "id": "owen-staton",
       "name": "Owen Staton",
       "url": "https://www.welshstoryteller.com/",
-      "bio": "Welsh Storyteller and Performer and host of The Time between Times Storytelling podcast. Ever since he was a small child, Owen has been fascinated by the amazing myths and legends that were born on his doorstep. Owen has performed all over the world as a Storyteller and Actor for over thirty years. He is available for storytelling bookings or podcast appearances and can design and write storytelling sessions for all ages. Owen also has experience as a stage, television, and Voice actor and is an experienced public speaker lecturer, and theatrical director."
+      "bio": "Welsh Storyteller and Performer and host of The Time between Times Storytelling podcast. Ever since he was a small child, Owen has been fascinated by the amazing myths and legends that were born on his doorstep. Owen has performed all over the world as a Storyteller and Actor for over thirty years. He is available for storytelling bookings or podcast appearances and can design and write storytelling sessions for all ages. Owen also has experience as a stage, television, and Voice actor and is an experienced public speaker lecturer, and theatrical director.",
+      "podcast": "https://open.spotify.com/show/3MQhars7cNBKcmzsykIUpT",
+      "podcastX": "https://www.podbean.com/podcast-detail/47m8v-2045f8/Time-Between-Times-Storytelling-with-Owen-Staton-Podcast"
     },
     "henry-everett-and-hannah-sneyd": {
       "id": "henry-everett-and-hannah-sneyd",
