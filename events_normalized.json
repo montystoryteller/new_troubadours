@@ -13475,7 +13475,8 @@
       "name": "Jason Buck",
       "url": "https://www.facebook.com/JasonBuckStoryteller/",
       "facebook": "JasonBuckStoryteller",
-      "bio": "Award-winning performance storyteller, author and illustrator."
+      "bio": "Award-winning performance storyteller, author and illustrator.",
+      "youtube_videos": [{"story_name": "The Old Woman and The Pig", "yt_url": "https://www.youtube.com/watch?v=a0sZkDQvoqg"}, {"story_name": "The Greek myth of Orpheus and Eurydice", "yt_url": "https://www.youtube.com/watch?v=83lLX7m_8-w"}, {"story_name": "Beautiful Vasilisa and Baba Yaga", "yt_url": "https://www.youtube.com/watch?v=IvVDUADCqUU"}, {"story_name": "The Boy who had an eating competition with a troll", "yt_url": "https://www.youtube.com/watch?v=NsqVPMUr_DQ"}]
     },
     "amy-douglas-jason-buck": {
       "id": "amy-douglas-jason-buck",
