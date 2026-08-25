@@ -2934,6 +2934,7 @@
       "performer_ids": ["daniel-morden", "hugh-lupton", "sarah-lianne-lewis"],
       "tour_description": "A majestic, intimate and hypnotic re-imagining of Greek myths and legends weaving ancient stories, cosmic projections and a spine-tingling electro-acoustic soundscape.",
       "tour_flyer": "morden_lupton_stars.jpg",
+      "video_trailer": "https://www.youtube.com/watch?v=VWdod7oNZaA",
       "tags": [
         "storytelling",
         "tour",
@@ -3146,6 +3147,77 @@
           "venue_id": "temperance-leamington-spa"
         }
       ]
+    },
+    "3-daft-monkeys-autumn-2026": {
+      "tour_name": "Ebb and Flow 2026",
+      "name": "3 Daft Monkeys — Ebb and Flow",
+      "tour_dates": [
+        {
+          "date": "06/11/2026",
+          "venue_id": "katie-fitzgeralds-stourbridge",
+          "time": "8.15pm",
+          "price": "£17.50 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/f/15795",
+          "date_added": "25/08/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "07/11/2026",
+          "venue_id": "the-brunswick-hove",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://good-show.co.uk/events/2882",
+          "isSpecial": true
+        },
+        {
+          "date": "13/11/2026",
+          "venue_id": "barrel-house-ballroom-totnes",
+          "time": "8pm",
+          "price": "£15 (+ fee)",
+          "ticket_url": "https://barrelhousetotnes.co.uk/3-daft-monkeys-4/",
+          "isSpecial": true
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "the-cornish-bank",
+          "time": "7.30pm",
+          "price": "£13.20 (£11)",
+          "isSpecial": true
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "greystones-sheffield",
+          "time": "7.30pm",
+          "price": "£16.00 (+ £1.60)",
+          "ticket_url": "https://wegottickets.com/f/15180",
+          "date_added": "53.36418,-1.50874",
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "trades-club-hebden-bridge",
+          "price": "£13 (£15) + 10% booking fee",
+          "ticket_url": "https://thetradesclub.com/events/3dm26",
+          "isSpecial": true
+        },
+        {
+          "date": "27/11/2026",
+          "venue_id": "plough-arts-centre-torrington",
+          "time": "8pm",
+          "price": "£16 (+ £0.80)",
+          "ticket_url": "https://www.theploughartscentre.org.uk/event/3-daft-monkeys",
+          "isSpecial": true
+        },
+        {
+          "date": "28/11/2026",
+          "venue_id": "tree-house-frome",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "3-daft-monkeys",
+      "tour_description": "25th anniversary and new double album release tour — Ebb and Flow",
+      "touring_event_flyer": "tour_3daftmonkeys_autumn_2026.jpg",
+      "isMusic": true
     },
     "sorrel-nation-creeping-thyme-2026": {
       "tour_name": "'Creeping Thyme' Album Release Tour",
@@ -3856,7 +3928,7 @@
           "time": "7.30pm",
           "price": "£10 + £1.00 booking fee",
           "ticket_url": "https://good-show.co.uk/events/3193",
-          "venue_id": "the-brunswick-cellar-bar-brighton"
+          "venue_id": "the-brunswick-cellar-bar-hove"
         },
         {
           "date": "28/03/2026",
@@ -8192,6 +8264,36 @@
       "isMusic": true,
       "venue_id": "peacock-sunderland",
       "performer_id": "jess-silk"
+    },
+    {
+      "name": "3 Daft Monkeys",
+      "performer_id": "3-daft-monkeys",
+      "date": "24/09/2026",
+      "venue_id": "brit-bar-weston-super-mare",
+      "date_added": "25/08/2026",
+      "isSpecial": true
+    },
+    {
+      "name": "3 Daft Monkeys",
+      "performer_id": "3-daft-monkeys",
+      "date": "26/09/2026",
+      "venue_id": "barge-inn-pewsey",
+      "time": "8pm",
+      "price": "£15",
+      "event_flyer": "2026_09_26_3daftmonkeys_pewsey.webp",
+      "date_added": "25/08/2026",
+      "isSpecial": true
+    },
+    {
+      "name": "3 Daft Monkeys",
+      "performer_id": "3-daft-monkeys",
+      "date": "17/10/2026",
+      "venue_id": "keay-theatre-st-austell",
+      "time": "7.30pm",
+      "price": "£20.00 (+ £1.68)  / £15.00 (+ £1.26)",
+      "ticket_url": "https://www.ticketsource.com/booking/select/jlpvynqvvxyn",
+      "date_added": "25/08/2026",
+      "isSpecial": true
     }
   ],
   "folkNights": [
@@ -10943,12 +11045,12 @@
         -1.71522
       ]
     },
-    "the-brunswick-cellar-bar-brighton": {
-      "id": "the-brunswick-cellar-bar-brighton",
-      "name": "The Brunswick (Cellar bar)",
+    "the-brunswick-cellar-bar-hove": {
+      "id": "the-brunswick-cellar-bar-hove",
+      "name": "The Brunswick (Cellar bar), Hove",
       "city": "Brighton",
       "postcode": "BN3 1JF",
-      "full_address": "The Brunswick (Cellar bar), Brighton, BN3 1JF",
+      "full_address": "The Brunswick (Cellar bar), 1-3 Holland Road, Brighton, BN3 1JF",
       "url": "https://www.brunswickpub.co.uk/",
       "latlon": [
         50.82416,
@@ -12851,6 +12953,122 @@
         51.81413,
         -2.71347
       ]
+    },
+    "brit-bar-weston-super-mare": {
+      "id": "brit-bar-weston-super-mare",
+      "name": "Brit Bar, Weston-super-Mare",
+      "city": "Weston-super-Mare",
+      "postcode": "BS23 1HP",
+      "full_address": "Brit Bar, 118 High Street, Weston-super-Mare, BS23 1HP",
+      "url": "https://www.facebook.com/TheBritBar",
+      "latlon": [
+        51.3505,
+        -2.97884
+      ]
+    },
+    "barge-inn-pewsey": {
+      "id": "barge-inn-pewsey",
+      "name": "Barge Inn, Pewsey",
+      "city": "Pewsey",
+      "postcode": "SN9 5PS",
+      "full_address": "Barge Inn, Honeystreet, Pewsey, Wiltshire, SN9 5PS",
+      "url": "https://thebargeinnhoneystreet.uk/",
+      "latlon": [
+        51.35263,
+        -1.8533
+      ]
+    },
+    "keay-theatre-st-austell": {
+      "id": "keay-theatre-st-austell",
+      "name": "Keay Theatre, St Austell",
+      "city": "St Austell",
+      "postcode": "PL25 4DJ",
+      "full_address": "Keay Theatre, 1 Tregonissey Road, St Austell, PL25 4DJ",
+      "url": "https://www.keaytheatre.co.uk/",
+      "latlon": [
+        50.34356,
+        -4.7846
+      ]
+    },
+    "the-brunswick-hove": {
+      "id": "the-brunswick-hove",
+      "name": "The Brunswick, Hove",
+      "city": "Brighton",
+      "postcode": "BN3 1JF",
+      "full_address": "The Brunswick, 1-3 Holland Road, Hove, BN3 1JF",
+      "url": "https://www.brunswickpub.co.uk/",
+      "latlon": [
+        50.82416,
+        -0.16246
+      ]
+    },
+    "barrel-house-ballroom-totnes": {
+      "id": "barrel-house-ballroom-totnes",
+      "name": "Barrel House Ballroom, Totnes",
+      "city": "Totnes",
+      "postcode": "TQ9 5PB",
+      "full_address": "Barrel House Ballroom, 59 High Street, Totnes, TQ9 5PB",
+      "url": "https://barrelhousetotnes.co.uk/",
+      "latlon": [
+        50.43167,
+        -3.69041
+      ]
+    },
+    "the-cornish-bank": {
+      "id": "the-cornish-bank",
+      "name": "The Cornish Bank",
+      "city": "Falmouth",
+      "postcode": "TR11 3EF",
+      "full_address": "The Cornish Bank, 34, Church Street, Falmouth, TR11 3EF",
+      "url": "https://thecornishbank.co.uk/",
+      "latlon": [
+        50.15349,
+        -5.06774
+      ]
+    },
+    "greystones-sheffield": {
+      "id": "greystones-sheffield",
+      "name": "Greystones, Sheffield",
+      "city": "Sheffield",
+      "postcode": "S11 7BS",
+      "full_address": "The Greystones, Greystones Road, Sheffield, S11 7BS",
+      "url": "https://www.mygreystones.co.uk"
+    },
+    "trades-club-hebden-bridge": {
+      "id": "trades-club-hebden-bridge",
+      "name": "Trades Club, Hebden Bridge",
+      "city": "Hebden Bridge",
+      "postcode": "HX7 8EE",
+      "full_address": "Trades Club, Holme Street, Hebden Bridge, HX7 8EE",
+      "url": "https://thetradesclub.com/",
+      "latlon": [
+        53.74069,
+        -2.01405
+      ]
+    },
+    "plough-arts-centre-torrington": {
+      "id": "plough-arts-centre-torrington",
+      "name": "Plough Arts Centre, Torrington",
+      "city": "Great Torrington",
+      "postcode": "EX38 8HQ",
+      "full_address": "Plough Arts Centre, 9–11 Fore Street, Great Torrington, EX38 8HQ",
+      "url": "https://www.theploughartscentre.org.uk/",
+      "latlon": [
+        50.95242,
+        -4.14288
+      ]
+    },
+    "tree-house-frome": {
+      "id": "tree-house-frome",
+      "name": "Tree House, Frome",
+      "city": "Frome",
+      "postcode": "BA11 2EH",
+      "full_address": "Tree House, 35 Berkley Road, Frome, BA11 2EH",
+      "url": "https://www.cheeseandgrain.com/venues/the-tree-house/",
+      "latlon": [
+        51.23514,
+        -2.31298
+      ]
     }
   },
   "performers": {
@@ -12860,7 +13078,8 @@
       "url": "https://danielmorden.org/",
       "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. ",
       "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"],
-      "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"]
+      "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"],
+      "youtube_videos": [{"story_name": "Daniel Morden (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"}]
     },
     "the-travelling-talesman-cliff-eastabrook": {
       "id": "the-travelling-talesman-cliff-eastabrook",
@@ -12989,7 +13208,8 @@
       "id": "dave-tonge",
       "name": "Dave Tonge",
       "url": "https://www.instagram.com/davetongestoryteller/",
-      "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich."
+      "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich.",
+      "youtube_videos": [{"story_name": "Dave Tonge (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"}]
     },
     "sharon-jacksties": {
       "id": "sharon-jacksties",
@@ -13150,7 +13370,8 @@
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
       "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
-      "podcast_appearances" : [{"podcast_id": "three-ravens-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3" , "episode_name": "Local Legends #42: Hugh Lupton"}, {"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}] 
+      "podcast_appearances" : [{"podcast_id": "three-ravens-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3" , "episode_name": "Local Legends #42: Hugh Lupton"}, {"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}],
+      "youtube_videos": [{"story_name": "Jack Ostler and the Hare", "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M"}, {"story_name": "Who takes the most Pleasure from the Act of Love?", "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"}, {"story_name": "The Cow Tail Switch", "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"}, {"story_name": "Stories with Hugh Lupton (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"}] 
     },
     "suited-storytellers": {
       "id": "suited-storytellers",
@@ -13244,7 +13465,9 @@
       "id": "amy-douglas",
       "name": "Amy Douglas",
       "url": "https://amydouglas.com/",
-      "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\n Over the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging."
+      "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\n Over the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging.",
+      "youtube_videos": [{"story_name": "Amy Douglas (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=n9MNII_4fOg"}]
+      
     },
     "jason-buck": {
       "id": "jason-buck",
@@ -13720,7 +13943,8 @@
       "id": "shonaleigh",
       "name": "Shonaleigh",
       "url": "https://shonaleigh.uk/",
-      "bio": "Word weaver, tradition bearer and educator\n\n\n\n Shonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working."
+      "bio": "Word weaver, tradition bearer and educator\n\n\n\n Shonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working.",
+      "youtube_videos": [{"story_name": "Shonaleigh (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=dFxyJTVVxjg"}]
     },
     "david-heathfield": {
       "id": "david-heathfield",
@@ -13756,7 +13980,8 @@
       "id": "sarah-liisa-wilkinson",
       "name":  "Sarah-Liisa Wilkinson",
       "url": "https://sarahliisawilkinson.com/",
-      "bio": "A renowned teller of folktales, myths and wonder tales, Sarah Liisa has been delighting audiences for years with her juicy and arresting innovations on stories both familiar and obscure, drawing material from all over the world but most especially from Finnish and Nordic folklore.\n\n\n\n Her tales bring you beasts and gods dreaming in the deep green of the Finnish forest, girls wrestling many-headed trolls in the mountains, pure-hearted fools chasing magic apples in a land of wonder, and dancing devils causing chaos and joy.\n\n\n\n She has told stories to people in the UK and internationally in theatres, festivals, clubs, pubs, churches, boats, front rooms and all-night sleepovers. She regularly works and performs with performance-storytelling pioneers, The Crick Crack Club, and is part of multi-disciplined storytelling and music group, The Embers Collective."
+      "bio": "A renowned teller of folktales, myths and wonder tales, Sarah Liisa has been delighting audiences for years with her juicy and arresting innovations on stories both familiar and obscure, drawing material from all over the world but most especially from Finnish and Nordic folklore.\n\n\n\n Her tales bring you beasts and gods dreaming in the deep green of the Finnish forest, girls wrestling many-headed trolls in the mountains, pure-hearted fools chasing magic apples in a land of wonder, and dancing devils causing chaos and joy.\n\n\n\n She has told stories to people in the UK and internationally in theatres, festivals, clubs, pubs, churches, boats, front rooms and all-night sleepovers. She regularly works and performs with performance-storytelling pioneers, The Crick Crack Club, and is part of multi-disciplined storytelling and music group, The Embers Collective.",
+      "youtube_videos": [{"story_name": "The Golden Balls", "yt_url": "https://www.youtube.com/watch?v=xVLjtO4EkFQ"}]
     },
     "ropetackle-storytellers": {
       "id": "ropetackle-storytellers",
@@ -13962,6 +14187,15 @@
       "instagram": "sorrelnation",
       "bio": "Travelling troubadour Sorrel Nation brings a soulful mix of folk-rock to country and beyond and possesses one of those voices that makes you immediately stop what you're doing to give her your full attention. She engages audiences with emotive lyrics, 70s inspired style and a voice full of soul, which further increases the seductive power of her songs. Known for penning songs that can truly open the heart to grief and like all valued songwriters possess a giving presence...she heralds gorgeous ballads that could become Sorrel Nation's trademark sound."
     },
+     "3-daft-monkeys": {
+      "id": "3-daft-monkeys",
+      "name": "3 Daft Monkeys",
+      "musician": true,
+      "facebook": "3daftmonkeys",
+      "instagram": "3daftmonkeys",
+      "url": "https://www.3daftmonkeys.co.uk/",
+      "bio": "With Celtic and Eastern influences, the 3 Daft Monkeys’ dynamic style of world folk music reflects the global village in which we now live. Their infectious dancing rhythms lead you through a musical journey of the senses and emotions and will leave you breathless, enthralled, and exhilarated."
+    },
     "martin-daws": {
       "id": "martin-daws",
       "name": "Martin Daws",
@@ -13990,7 +14224,8 @@
       "id": "taffy-thomas",
       "name": "Taffy Thomas",
       "url": "http://taffythomas.co.uk/",
-      "bio": "Taffy Thomas trained as a Literature and Drama teacher at Dudley College of Education. After teaching for several years in Wolverhampton he founded and directed the legendary folk theatre company, Magic Lantern, illustrating traditional stories and songs with shadow puppets and circus skills.\n\n\n\nHe founded and directed the community arts company, Charivari, with their popular touring unit, the Fabulous Salami Brothers, which he fronted and performed in. After a major stroke at the age of 36 Taffy turned back to story telling as self-imposed speech therapy, which turned into a new career.\n\n\n\nTaffy has a repertoire of more than 300 stories, collected mainly from traditional oral sources, which he is happy to tell in almost any situation. This repertoire was built by meeting and working with virtually all the great traditional storytellers who were alive in Britain. See 'Ancestral Voices'.\n\n\n\nHe is now the most experienced English storyteller, having performed in many countries on four continents."
+      "bio": "Taffy Thomas trained as a Literature and Drama teacher at Dudley College of Education. After teaching for several years in Wolverhampton he founded and directed the legendary folk theatre company, Magic Lantern, illustrating traditional stories and songs with shadow puppets and circus skills.\n\n\n\nHe founded and directed the community arts company, Charivari, with their popular touring unit, the Fabulous Salami Brothers, which he fronted and performed in. After a major stroke at the age of 36 Taffy turned back to story telling as self-imposed speech therapy, which turned into a new career.\n\n\n\nTaffy has a repertoire of more than 300 stories, collected mainly from traditional oral sources, which he is happy to tell in almost any situation. This repertoire was built by meeting and working with virtually all the great traditional storytellers who were alive in Britain. See 'Ancestral Voices'.\n\n\n\nHe is now the most experienced English storyteller, having performed in many countries on four continents.",
+      "youtube_videos": [{"story_name": "Truth and Story", "yt_url": "https://www.youtube.com/watch?v=v4opD0MwkJE"}, {"story_name": "The Clever Wish", "yt_url": "https://www.youtube.com/watch?v=cMXi7WEF6J0"}, {"story_name": "The Little Cobblestone Maker", "yt_url": "https://www.youtube.com/watch?v=gH_1f8lLqh8"}, {"story_name": "The Devil's Music", "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"}, {"story_name": "The Wassail Cup", "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"}]
     },
     "jon-buckeridge": {
       "id": "jon-buckeridge",
