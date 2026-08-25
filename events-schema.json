@@ -88,9 +88,25 @@
           "type": "array",
           "items": { "$ref": "#/$defs/podcastAppearance" },
           "description": "One-off guest spots on other people's podcasts (as opposed to performer.podcast, which is a podcast the performer runs themself). Rendered as a collapsible list on the performer profile page; each entry's audio is only fetched if/when the visitor opens that entry's player."
+        },
+        "youtube_videos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/youtubeVideo" },
+          "description": "YouTube videos of this performer (e.g. recorded storytelling/performances), shown as a collapsible list of nested collapsibles on the performer profile page. Each video's embed is only created if/when the visitor opens that specific video's collapsible, and is torn down again if they close it."
         }
       },
       "required": ["name"],
+      "additionalProperties": true
+    },
+
+    "youtubeVideo": {
+      "description": "One YouTube video associated with a performer.",
+      "type": "object",
+      "properties": {
+        "story_name": { "type": "string", "description": "Title/label shown for this video (often the story or piece performed, not necessarily the video's own YouTube title)." },
+        "yt_url":     { "type": "string", "description": "The video's YouTube URL, in any common form (watch?v=, youtu.be/, /embed/, /shorts/)." }
+      },
+      "required": ["story_name", "yt_url"],
       "additionalProperties": true
     },
 

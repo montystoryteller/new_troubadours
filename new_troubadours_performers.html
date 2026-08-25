@@ -636,6 +636,27 @@
             padding: 0 0 4px;
         }
 
+        /* 16:9 embed used by the Videos section — created only when its
+           collapsible is opened, removed again when it's closed. */
+        .perf-video-frame {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 0 12px 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .perf-video-frame iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
         .perf-podcast-feed-status {
             padding: 12px;
             font-size: 12px;
@@ -995,6 +1016,14 @@
                 <span class="perf-podcast-hint" id="perfPodcastAppearancesHint">click to expand</span>
             </summary>
             <div class="perf-podcast-list" id="perfPodcastAppearancesList"></div>
+        </details>
+
+        <details class="perf-podcast-section" id="perfVideosSection" style="display:none;">
+            <summary class="perf-podcast-summary">
+                🎥 Videos
+                <span class="perf-podcast-hint" id="perfVideosHint">click to expand</span>
+            </summary>
+            <div class="perf-podcast-list" id="perfVideosList"></div>
         </details>
 
         <div id="toursSection" class="content-section" style="display:none;">
@@ -1617,6 +1646,7 @@
             // Podcasts
             renderPodcastSection(performer);
             renderPodcastAppearancesSection(performer);
+            renderVideosSection(performer);
 
             // Build a set of all compound performer IDs that include this performer.
             // Checks both performer_ids and the legacy ids field on performer records.
@@ -2392,6 +2422,102 @@
                 });
                 card.appendChild(moreBtn);
             }
+        }
+
+        // ---------------------------------------------------------------------------
+        // Videos section
+        // performer.youtube_videos (see events-schema.json → $defs.youtubeVideo)
+        // lists YouTube videos of a performer, each labelled with a story/piece
+        // name rather than necessarily the video's own YouTube title. Each video
+        // gets its own nested collapsible (not just a play button, per the brief)
+        // — its embed is only created the first time THAT video's collapsible is
+        // opened, and is torn down again (stopping playback) if it's closed, so
+        // nothing ever loads for a video a visitor never expands.
+        // ---------------------------------------------------------------------------
+
+        function extractYoutubeId(url) {
+            try {
+                const u = new URL(url);
+                if (/(^|\.)youtu\.be$/.test(u.hostname)) return u.pathname.slice(1).split("/")[0] || null;
+                if (u.searchParams.get("v")) return u.searchParams.get("v");
+                const embedMatch = u.pathname.match(/\/embed\/([^/?]+)/);
+                if (embedMatch) return embedMatch[1];
+                const shortsMatch = u.pathname.match(/\/shorts\/([^/?]+)/);
+                if (shortsMatch) return shortsMatch[1];
+            } catch (e) {
+                /* not a valid URL */
+            }
+            return null;
+        }
+
+        function renderVideosSection(performer) {
+            const videos = Array.isArray(performer.youtube_videos)
+                ? performer.youtube_videos.filter(v => v && v.yt_url && extractYoutubeId(v.yt_url))
+                : [];
+            const section = document.getElementById("perfVideosSection");
+            if (videos.length === 0) {
+                section.style.display = "none";
+                return;
+            }
+
+            section.style.display = "";
+            document.getElementById("perfVideosHint").textContent =
+                `${videos.length} video${videos.length !== 1 ? "s" : ""} — click to expand`;
+
+            const list = document.getElementById("perfVideosList");
+            list.innerHTML = "";
+
+            // Reuse the same card chrome as a podcast feed card, just without
+            // its header, so this list visually matches the sections above.
+            const card = document.createElement("div");
+            card.className = "perf-podcast-feed";
+            list.appendChild(card);
+
+            videos.forEach(video => {
+                const videoId = extractYoutubeId(video.yt_url);
+
+                const details = document.createElement("details");
+                details.className = "perf-podcast-episodes-details";
+
+                const summary = document.createElement("summary");
+                summary.className = "perf-podcast-episodes-summary";
+
+                const label = document.createElement("span");
+                label.textContent = video.story_name || "Untitled video";
+                summary.appendChild(label);
+
+                const hint = document.createElement("span");
+                hint.className = "perf-podcast-episodes-hint";
+                hint.textContent = "▶ click to play";
+                summary.appendChild(hint);
+
+                details.appendChild(summary);
+
+                const body = document.createElement("div");
+                body.className = "perf-podcast-episodes-body";
+                details.appendChild(body);
+
+                details.addEventListener("toggle", () => {
+                    if (details.open) {
+                        hint.textContent = "playing";
+                        const frame = document.createElement("div");
+                        frame.className = "perf-video-frame";
+                        const iframe = document.createElement("iframe");
+                        iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1`;
+                        iframe.title = video.story_name || "YouTube video";
+                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                        iframe.allowFullscreen = true;
+                        iframe.loading = "lazy";
+                        frame.appendChild(iframe);
+                        body.appendChild(frame);
+                    } else {
+                        hint.textContent = "▶ click to play";
+                        body.innerHTML = ""; // tears down the iframe, stopping playback
+                    }
+                });
+
+                card.appendChild(details);
+            });
         }
 
 
