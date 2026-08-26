@@ -1351,6 +1351,8 @@ function classifyVenueType(name) {
  * @param {number}      [mapHeight=400] - Height of the map div in px.
  * @param {Function}    onInit          - Called once with the initialised L.Map instance.
  *                                        Add markers / layers here.
+ * @param {Function}    [loadMapLibrary] - Optional async function that loads
+ *                                        Leaflet before the map is created.
  * @returns {{ details: HTMLElement, map: L.Map|null }}
  *   `details` is the <details> element (appended to container).
  *   `map` starts null and is populated after the first open.
@@ -1361,6 +1363,7 @@ function createCollapsibleMap(
   labelText,
   mapHeight,
   onInit,
+  loadMapLibrary,
 ) {
   if (mapHeight == null) mapHeight = 400;
 
@@ -1382,19 +1385,31 @@ function createCollapsibleMap(
 
   const handle = { details: mapToggle, map: null };
   let mapInitialised = false;
+  let mapInitialising = false;
 
   const openLabel = "\uD83D\uDDFA Hide map";
   const closeLabel = "\uD83D\uDDFA " + labelText;
 
-  mapToggle.addEventListener("toggle", () => {
-    if (mapToggle.open && !mapInitialised) {
-      mapInitialised = true;
-      handle.map = initMap(mapDivId, null);
-      // invalidateSize must be called after the container becomes visible;
-      // without it Leaflet measures a 0×0 box and only renders a tiny tile region,
-      // causing most markers to be silently dropped.
-      handle.map.invalidateSize();
-      onInit(handle.map);
+  mapToggle.addEventListener("toggle", async () => {
+    if (mapToggle.open && !mapInitialised && !mapInitialising) {
+      mapInitialising = true;
+      mapSummary.textContent = "Loading map...";
+      try {
+        await loadMapLibrary?.();
+        if (!mapToggle.open) return;
+        handle.map = initMap(mapDivId, null);
+        mapInitialised = true;
+        // invalidateSize must be called after the container becomes visible;
+        // without it Leaflet measures a 0×0 box and only renders a tiny tile region,
+        // causing most markers to be silently dropped.
+        handle.map.invalidateSize();
+        onInit(handle.map);
+      } catch (error) {
+        console.error("Failed to load map library:", error);
+        mapDiv.textContent = "Map unavailable.";
+      } finally {
+        mapInitialising = false;
+      }
     }
     mapSummary.textContent = mapToggle.open ? openLabel : closeLabel;
   });

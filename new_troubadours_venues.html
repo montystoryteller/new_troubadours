@@ -6,15 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venue — New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
-    <!-- Non-blocking load: without this, a slow/unreachable cdnjs would stall
-         first paint of the ENTIRE page (nav bar included) until leaflet.css
-         finishes downloading. media="print" makes it a no-op for on-screen
-         rendering until the onload handler flips it to "all". -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" as="style" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" media="print" onload="this.media='all'; this.onload=null;">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></noscript>
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="venue-styles.css">
 </head>
@@ -118,7 +109,6 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="shared_utils.js"></script>
     <script>
 
@@ -133,6 +123,40 @@
         let venueId = null;
         let venue = null;
         let map = null;
+        let leafletPromise = null;
+
+        const LEAFLET_JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+        const LEAFLET_CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+        function loadLeaflet() {
+            if (window.L) return Promise.resolve(window.L);
+            if (leafletPromise) return leafletPromise;
+
+            leafletPromise = new Promise((resolve, reject) => {
+                const stylesheet = document.createElement("link");
+                stylesheet.rel = "stylesheet";
+                stylesheet.href = LEAFLET_CSS_URL;
+                document.head.appendChild(stylesheet);
+
+                const script = document.createElement("script");
+                script.src = LEAFLET_JS_URL;
+                script.async = true;
+                script.onload = () => resolve(window.L);
+                script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+                document.head.appendChild(script);
+            });
+
+            return leafletPromise;
+        }
+
+        function preloadLeafletWhenIdle() {
+            const preload = () => loadLeaflet().catch(error => console.warn("Leaflet preload failed:", error));
+            if ("requestIdleCallback" in window) {
+                window.requestIdleCallback(preload, { timeout: 2000 });
+            } else {
+                setTimeout(preload, 1500);
+            }
+        }
 
         // ---------------------------------------------------------------------------
         // Bootstrap
@@ -550,7 +574,7 @@
                         renderList();
                     }
                 });
-            });
+            }, loadLeaflet);
 
             // ── Count line ───────────────────────────────────────────────────────
             const countLine = document.createElement('p');
@@ -654,6 +678,7 @@
                     renderAllVenues();
                     document.getElementById("loadingState").style.display = "none";
                     document.getElementById("venueContent").style.display = "";
+                    preloadLeafletWhenIdle();
                 }, 0);
                 return;
             }
@@ -676,8 +701,17 @@
                 renderVenue();
                 document.getElementById("loadingState").style.display = "none";
                 document.getElementById("venueContent").style.display = "";
-                // Leaflet needs the container to be visible before it can measure dimensions
-                if (map) setTimeout(() => map.invalidateSize(), 0);
+                if (venue.latlon) {
+                    loadLeaflet()
+                        .then(() => {
+                            initVenueMap();
+                            setTimeout(() => map.invalidateSize(), 0);
+                        })
+                        .catch(error => {
+                            console.error("Failed to load venue map:", error);
+                            document.getElementById("map-container").style.display = "none";
+                        });
+                }
             }, 0);
         })();
 
@@ -757,9 +791,7 @@
             renderInfoTable();
 
             // Map
-            if (venue.latlon) {
-                initVenueMap();
-            } else {
+            if (!venue.latlon) {
                 document.getElementById("map-container").style.display = "none";
             }
 
