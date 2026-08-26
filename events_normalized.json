@@ -1743,8 +1743,8 @@
           "date_added": "26/08/2026"
         }
       ],
-      "performer_id": "ben-haggarty-steph-brittain",
-      "description": "A fatherless son\nA daughter's lament\nA pig stolen from its spit\nFires burning out at sea\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny – an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
+      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "description": "A fatherless son\n\nA daughter's lament\n\nA pig stolen from its spit\n\nFires burning out at sea\n\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny — an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
       "isSpecial": true
     },
     "tim-ralphs-goddess-spreadsheets": {
