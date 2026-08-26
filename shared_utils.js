@@ -724,9 +724,11 @@ async function loadEventsData(cacheBuster) {
  * @returns {Object<string, object>}
  */
 function buildPodcastsLookup(eventsData) {
-  const podcasts = Array.isArray(eventsData?.podcasts) ? eventsData.podcasts : [];
+  const podcasts = Array.isArray(eventsData?.podcasts)
+    ? eventsData.podcasts
+    : [];
   const lookup = {};
-  podcasts.forEach(p => {
+  podcasts.forEach((p) => {
     if (p?.podcast_id) lookup[p.podcast_id] = p;
   });
   return lookup;
@@ -1195,7 +1197,8 @@ function createLazyImageLoader(options = {}) {
     errorMessage: "Image not available",
     ...options,
   };
-  opts.srcAttr = "data-" + opts.srcAttribute.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
+  opts.srcAttr =
+    "data-" + opts.srcAttribute.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
   opts.srcDataKey = opts.srcAttribute;
 
   const observer = new IntersectionObserver(
