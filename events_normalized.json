@@ -1,4 +1,13 @@
 {
+  "promoters": {
+    "crickcrack": {
+      "promoter_id": "crickcrack",
+      "name": "Crick Crack Club",
+      "promoter_link": "https://crickcrackclub.com/",
+      "promoter_venues": ["the-cube-kingsdown", "hoxton-hall"],
+      "promoter_artists": ["debs-newbold"]
+    }
+  },
   "festivals": {
     "exeter-story-fix-2026": {
       "name": "Exeter Story Fix 2026",
@@ -1711,7 +1720,7 @@
       "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2258602",
       "website": "https://www.tickettailor.com/events/lisaschneidau/2258602",
       "facebook": "",
-      "description": "Woodland myths and legends, nature, craft and community at the wild edge of Dartmoor\n\n\n\nwith Lisa Schneidau, Tony Whitehead, Shane Ibbs, Annie Watson and Robin Bowman\n\n\n\nIn our folk tales, things happen in the clearing in the woods.\n\n\n\nJoin us for a folk-fuelled weekend of wildwood story, ecology, skills, gentle ceremony and inspiration. \n\n\n\nOur theme for this immersive autumn weekend is 'hearth fire' — setting us up for the winter months ahead with fire, literal and mythical.\n\n\n\nWalking among the trees and gathering around the fire, we'll explore the myths and legends of the greenwood from the British Arthurian tradition. We’ll share stories and songs of woodland wisdom in fairy tales from across the world. You'll learn about the trees of the season, woodland bird song in autumn, how to create fire as the ancients did, how to care for new woodland, and more… all of this in the middle of the wild woods as the trees change to their autumn colours.\n\n\n\nThe weekend will be held at the wonderful Moor Barton Wilding on the edge of Dartmoor in Devon, led by professional storytellers, ecologists and bushcraft experts. It will begin at 12.30pm on Friday with lunch, and finish at 2.30pm after lunch on Sunday, with all meals provided.\n\n\n\nMoor Barton Wilding has a brand new camping kitchen, a large covered lodge around the campfire, a sauna and compost toilets. There’s woodland and wildlife of all kinds, including Dartmoor’s first colony of beavers down in the valley. You can choose between camping onsite with your own camping kit, or staying in a choice of accommodation nearby (under your own arrangements at additional cost).\n\n\n\nNo dogs. Suitable for 18+. Terrain is uneven and may be challenging in places for those with mobility problems.",
+      "description": "Woodland myths and legends, nature, craft and community at the wild edge of Dartmoor\n\n\n\nwith Lisa Schneidau, Tony Whitehead, Shane Ibbs, Annie Watson and Robin Bowman\n\n\n\nIn our folk tales, things happen in the clearing in the woods.\n\n\n\nJoin us for a folk-fuelled weekend of wildwood story, ecology, skills, gentle ceremony and inspiration. \n\n\n\nOur theme for this immersive autumn weekend is 'hearth fire' — setting us up for the winter months ahead with fire, literal and mythical.\n\n\n\nWalking among the trees and gathering around the fire, we'll explore the myths and legends of the greenwood from the British Arthurian tradition. We'll share stories and songs of woodland wisdom in fairy tales from across the world. You'll learn about the trees of the season, woodland bird song in autumn, how to create fire as the ancients did, how to care for new woodland, and more… all of this in the middle of the wild woods as the trees change to their autumn colours.\n\n\n\nThe weekend will be held at the wonderful Moor Barton Wilding on the edge of Dartmoor in Devon, led by professional storytellers, ecologists and bushcraft experts. It will begin at 12.30pm on Friday with lunch, and finish at 2.30pm after lunch on Sunday, with all meals provided.\n\n\n\nMoor Barton Wilding has a brand new camping kitchen, a large covered lodge around the campfire, a sauna and compost toilets. There's woodland and wildlife of all kinds, including Dartmoor's first colony of beavers down in the valley. You can choose between camping onsite with your own camping kit, or staying in a choice of accommodation nearby (under your own arrangements at additional cost).\n\n\n\nNo dogs. Suitable for 18+. Terrain is uneven and may be challenging in places for those with mobility problems.",
       "event_flyer": "",
       "performers": [ { "performer_id": "lisa-schneidau"}, { "performer_id": "shane-ibbs"}
       ],
@@ -1721,6 +1730,23 @@
     }
   }, 
   "repertoire_shows": {
+    "ben-haggarty-steph-brittain-the-bodies-on-the-beach": {
+      "name": "The Bodies on the Beach: The epic Irish myth of Fionn MacCumhaill",
+      "showname": "The Bodies on the Beach",
+      "show_dates": [
+        {
+          "date": "12/03/2027",
+          "venue_id": "studio-theatre-royal-york",
+          "time": "7.45-9.45pm",
+          "price": "£21",
+          "ticket_url": "https://www.yorktheatreroyal.co.uk/show/the-bodies-on-the-beach/",
+          "date_added": "26/08/2026"
+        }
+      ],
+      "performer_id": "ben-haggarty-steph-brittain",
+      "description": "A fatherless son\nA daughter's lament\nA pig stolen from its spit\nFires burning out at sea\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny – an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
+      "isSpecial": true
+    },
     "tim-ralphs-goddess-spreadsheets": {
       "name": "The Goddess of Spreadsheets [Tim Ralphs]",
       "showname": "The Goddess of Spreadsheets",
@@ -1894,7 +1920,7 @@
         }
       ],
       "performer_id": "undercover-hippy-solo",
-      "tour_description": "Best known for his high energy full band shows, it is something of a rare treat to catch Billy Rowan, aka The Undercover Hippy, giving an intimate solo performance. It offers an opportunity to hear the songs in their rawest form, up close and personal, and to really connect with the lyrics and the performer.\n\n\n\nOne of Billy’s biggest strengths is the way he manages to pack his songs full of political and social commentary whilst at the same time remaining playful and uplifting, and this playfulness is even more apparent in an acoustic setting. The extended set time and intimate setting mean that you will hear songs you would never hear at a regular show, but don’t worry, your favourite tracks will likely be in there too!\n\n\n\nThe performance takes you on a rollercoaster of storytelling and thought provoking protest pieces - an experience not to be missed.",
+      "tour_description": "Best known for his high energy full band shows, it is something of a rare treat to catch Billy Rowan, aka The Undercover Hippy, giving an intimate solo performance. It offers an opportunity to hear the songs in their rawest form, up close and personal, and to really connect with the lyrics and the performer.\n\n\n\nOne of Billy's biggest strengths is the way he manages to pack his songs full of political and social commentary whilst at the same time remaining playful and uplifting, and this playfulness is even more apparent in an acoustic setting. The extended set time and intimate setting mean that you will hear songs you would never hear at a regular show, but don't worry, your favourite tracks will likely be in there too!\n\n\n\nThe performance takes you on a rollercoaster of storytelling and thought provoking protest pieces - an experience not to be missed.",
       "touring_event_flyer": "tour_undercover_hippy_solo_summer_2026.jpg",
       "video_trailer": "https://undercoverhippy.com/home",
       "isSpecial": true
@@ -7002,7 +7028,7 @@
       "time": "7.3-9.300pm",
       "club": "",
       "price": "Free",
-      "description": "Dreams pursued, wishes granted or nightmares uncovered, how far would you go to make your dreams come true? Angus Òg, Lord of Summer, bringer of dreams, is at the height of his powers in this Midsummer season. Stories, songs, riddles, spells in the realm of the 'what if' to enchant the long summer evening.\n\n\n\nAnother fun and friendly session of Edinburgh’s monthly storytelling club held upstairs in the Waverley Bar, with the usual open-floor section for anyone to share a story, song or poem around the theme or otherwise.",
+      "description": "Dreams pursued, wishes granted or nightmares uncovered, how far would you go to make your dreams come true? Angus Òg, Lord of Summer, bringer of dreams, is at the height of his powers in this Midsummer season. Stories, songs, riddles, spells in the realm of the 'what if' to enchant the long summer evening.\n\n\n\nAnother fun and friendly session of Edinburgh's monthly storytelling club held upstairs in the Waverley Bar, with the usual open-floor section for anyone to share a story, song or poem around the theme or otherwise.",
       "event_flyer": "",
       "ticket_url": "https://scottishstorytellingcentre.online.red61.co.uk/event/913:6454/913:28189/",
       "isSpecial": true,
@@ -7209,13 +7235,13 @@
       "time": "7pm doors, 7.30-10pm",
       "club": "beestontales",
       "price": "£8 (£9 on the door) [£6.50]",
-      "description": "What happens when your husband locks you up and it's the 16 th century and there’s no Hooman Rights? You burrow, that's what.\n\n\n\nStories of women, from Italy, Morocco, and England, unjustly imprisoned by jealous spouses, all using their wit and grit to survive, escape, and thrive. With tips on tunnelling, staying sane, and where to hide your jewellery in an emergency.\n\n\n\nSarah Rundle got locked in a laboratory but tunnelled her way to freedom. She ran away to drama school, and for the last eighteen years has been a professional storyteller. She has devised works for the British Council, Wellcome Foundation, Geffrye Museum, Kew Gardens, and the National Trust, and performed at Stockholm's Fabula Story Café, the Nivesh Festival in Delhi, Kolkata Literature Festival, Nottingham’s Theatre Royal, and Festival at the Edge.\n\n\n\nAlso featuring tales from your hosts, music, fun and frolics.",
+      "description": "What happens when your husband locks you up and it's the 16 th century and there's no Hooman Rights? You burrow, that's what.\n\n\n\nStories of women, from Italy, Morocco, and England, unjustly imprisoned by jealous spouses, all using their wit and grit to survive, escape, and thrive. With tips on tunnelling, staying sane, and where to hide your jewellery in an emergency.\n\n\n\nSarah Rundle got locked in a laboratory but tunnelled her way to freedom. She ran away to drama school, and for the last eighteen years has been a professional storyteller. She has devised works for the British Council, Wellcome Foundation, Geffrye Museum, Kew Gardens, and the National Trust, and performed at Stockholm's Fabula Story Café, the Nivesh Festival in Delhi, Kolkata Literature Festival, Nottingham's Theatre Royal, and Festival at the Edge.\n\n\n\nAlso featuring tales from your hosts, music, fun and frolics.",
       "event_flyer": "",
       "ticket_url": "https://www.tickettailor.com/events/beestontales/2197882",
       "isSpecial": true,
       "date_added": "27/06/2026",
       "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
-      "performer_id": "steph-brittain"
+      "performer_id": "sarah-rundle"
     },
     {
       "name": "Wild Man [Martin Maudsley]",
@@ -7372,7 +7398,7 @@
       "date_added": "15/07/2026",
       "time": "7-10pm",
       "price": "£5 suggested donation",
-      "description": "Join us on Friday 24th July for a special storytelling evening at The Nose. We want to bring more stories to this year's Walton Arts Festival, and the money raised on this evening will go towards inviting more storytellers.\n\n\n\nOur theme for the night is ‘Out of the Blue’.  Hosted by Cydnei and with stories from Gerry Donlon, Gemma Garwood, Stephen Foster-Pilkington, Katy Bingham- Best, Nancy Stevenson, Lorna MacKinnon, Charlie Rose, Steve Gregory, Mer Richardson, Fay Dingaway & sounds by Catherine Shrubshall.\n\n\n\nA suggested donation is £5, but you can pay what you want (more or less), and there will be a prize raffle on the evening. It will be great to see you there!",
+      "description": "Join us on Friday 24th July for a special storytelling evening at The Nose. We want to bring more stories to this year's Walton Arts Festival, and the money raised on this evening will go towards inviting more storytellers.\n\n\n\nOur theme for the night is ‘Out of the Blue'.  Hosted by Cydnei and with stories from Gerry Donlon, Gemma Garwood, Stephen Foster-Pilkington, Katy Bingham- Best, Nancy Stevenson, Lorna MacKinnon, Charlie Rose, Steve Gregory, Mer Richardson, Fay Dingaway & sounds by Catherine Shrubshall.\n\n\n\nA suggested donation is £5, but you can pay what you want (more or less), and there will be a prize raffle on the evening. It will be great to see you there!",
       "event_flyer": "2026_07_24_out_of_blue.webp",
       "ticket_url": "https://thenose.org/products/out-of-the-blue-storytelling-fundraiser",
       "fb_event": 1074986398186596,
@@ -7557,6 +7583,19 @@
       "isSpecial": true
     },
     {
+      "name": "Agni & Amor: Tales of Love and Fire [Ben Haggarty & Steph Brittain]",
+      "showname": "Agni & Amor: Tales of Love and Fire",
+      "date": "30/08/2026",
+      "venue_id": "the-master-shipwright-s-house-deptford",
+      "performer_id": "ben-haggarty-steph-brittain",
+      "date_added": "26/08/2026",
+      "club": "crickcrack",
+      "time": "6pm",
+      "description": "Join us for captivating tales of Fire & Love, accompanied by live music performances under the canopies of the Master Shipwright's House.\n\n\n\nLet the Crick Crack Club's master storytellers Ben Haggarty and Steph Brittain lure you into the deep waters of myth, epic and fairy tale for grown-ups. Discover the love we seek; a love that transcends; a love that burns; a love that heals; a love that dies; the love that entangles sex, death, loss and rebirth.\n\n\n\nThese unflinching, evocative & beautiful tales explore initiation, power, alchemy and the darkest magic of all.\n\n\n\nThe evening will be interspersed with enchanting music from composer Narotam Horn and musicians Anjana Suta, Laurence Harrison, Nicholas Hann & Special Guests.\n\n\n\nStep into the mythopoetic furnace. This is a place where rules aren't broken lightly.\n\n\n\nAs part of the Totally Thames Festival",
+      "ticket_url": "https://www.eventbrite.co.uk/e/agni-amor-storytelling-live-music-evening-tickets-1994518665018",
+      "isSpecial": true
+    },
+    {
       "name": "In Strange and Wondrous Company [Tim Ralphs]",
       "showname": "In Strange and Wondrous Company",
       "date": "02/09/2026",
@@ -7564,7 +7603,7 @@
       "club": "feastoffools",
       "price": "£9.05 + £1 booking fee",
       "event_flyer": "2026_09_02_feast_fools_ralphs.jpeg",
-      "description": "Storytelling at the Feast of Fools is extremely pleased to be welcoming Tim Ralphs back for a repeat visit. He’s a highly talented and engaging storyteller, with a style encompassing everything from serious epic to rapid fire surreal comedy, and was one of the very first guest performers who came to us. He was good then, and he’s only got better since.\n\n\n\nThis time he brings a new show, 'In Strange and Wondrous Company.'\n\n\n\nA Villain with a missing heart gallops on a horse he stole from the uplands of Hell. Where he rides milk turns sour, crops wither, spiders spin their webs backwards, and dreams turn to nightmares. What this land needs is a hero - a gallant noble with a dashing smile and flashing blade. Or a wise old crone with knowledge of every herb in the hedgerow. Or even some upstart, headstrong youth with pluck and good fortune. But heroes are in short supply...\n\n\n\nInstead, we've got three colourful, creaking caravans full of wandering players - minstrels of no renown and dubious talent. They're not so much here to save the day as they are trying to earn a crust fiddling while the world burns. One of them is only a mouse. We're probably doomed but sometimes life is about making the best with what you've got.\n\n\n\nJoin Tim Ralphs in an intricately interwoven tapestry of wonder tales, a dynamic jest of a storytelling show that journeys between life, death and all the realms of the imagination. It's a patchwork collection, a motley of familiar fairytale motifs, spun into an entirely new shape.\n\n\n\nAnd join the very friendly Feast of Fools community, where the company and the cakes are very far from sour, in the comfortable and beautiful Quaker Meeting House, for the first event in our Autumn 2026 season. The car park next door has re-opened, (just remember to pay!) and our doors will open at 7.00 for a 7.30 start.\n\n\n\nSee more at https://storyfeast.uk/",
+      "description": "Storytelling at the Feast of Fools is extremely pleased to be welcoming Tim Ralphs back for a repeat visit. He's a highly talented and engaging storyteller, with a style encompassing everything from serious epic to rapid fire surreal comedy, and was one of the very first guest performers who came to us. He was good then, and he's only got better since.\n\n\n\nThis time he brings a new show, 'In Strange and Wondrous Company.'\n\n\n\nA Villain with a missing heart gallops on a horse he stole from the uplands of Hell. Where he rides milk turns sour, crops wither, spiders spin their webs backwards, and dreams turn to nightmares. What this land needs is a hero - a gallant noble with a dashing smile and flashing blade. Or a wise old crone with knowledge of every herb in the hedgerow. Or even some upstart, headstrong youth with pluck and good fortune. But heroes are in short supply...\n\n\n\nInstead, we've got three colourful, creaking caravans full of wandering players - minstrels of no renown and dubious talent. They're not so much here to save the day as they are trying to earn a crust fiddling while the world burns. One of them is only a mouse. We're probably doomed but sometimes life is about making the best with what you've got.\n\n\n\nJoin Tim Ralphs in an intricately interwoven tapestry of wonder tales, a dynamic jest of a storytelling show that journeys between life, death and all the realms of the imagination. It's a patchwork collection, a motley of familiar fairytale motifs, spun into an entirely new shape.\n\n\n\nAnd join the very friendly Feast of Fools community, where the company and the cakes are very far from sour, in the comfortable and beautiful Quaker Meeting House, for the first event in our Autumn 2026 season. The car park next door has re-opened, (just remember to pay!) and our doors will open at 7.00 for a 7.30 start.\n\n\n\nSee more at https://storyfeast.uk/",
       "ticket_url": "https://wegottickets.com/f/24833",
       "isSpecial": true,
       "fb_event": 1303526428303002,
@@ -7670,7 +7709,7 @@
       "time": "7.30-10.30pm",
       "club": "crickcrack",
       "price": "£12.50",
-      "description": "Possessed by gods?\n\n\n\nOff their heads on laughing gas?\n\n\n\nThe mouthpieces of the state?\n\n\n\nOr the ancient world's most influential influencers?\n\n\n\nThe prophecies of the Sibyls thread through ancient myth. Feared, revered and frequently misunderstood, the Sibyls stood at the crossroads of religion, politics and performance. Their visions promised answers while leaving everyone wondering what they actually meant.\n\n\n\nFrom a mountain in the southeast of Italy to the depths of the underworld, Lucy Lill tells the stories of the women whose words founded cities, brought down armies and caused an epic amount of confusion.\n\n\n\nShe might know your future, but that doesn’t mean she’s going to tell you...",
+      "description": "Possessed by gods?\n\n\n\nOff their heads on laughing gas?\n\n\n\nThe mouthpieces of the state?\n\n\n\nOr the ancient world's most influential influencers?\n\n\n\nThe prophecies of the Sibyls thread through ancient myth. Feared, revered and frequently misunderstood, the Sibyls stood at the crossroads of religion, politics and performance. Their visions promised answers while leaving everyone wondering what they actually meant.\n\n\n\nFrom a mountain in the southeast of Italy to the depths of the underworld, Lucy Lill tells the stories of the women whose words founded cities, brought down armies and caused an epic amount of confusion.\n\n\n\nShe might know your future, but that doesn't mean she's going to tell you...",
       "event_flyer": "",
       "ticket_url": "https://crickcrackclub.com/crick-crack-events/doom-scrolls-the-never-ending-prophecies-of-the-sybils/",
       "isSpecial": true,
@@ -7783,6 +7822,20 @@
       "isSpecial": true
     },
     {
+      "name": "That's How the World Was Made [Nell Phoenix]",
+      "showname": "That's How the World Was Made",
+      "date": "03/10/2026",
+      "venue_id": "jacksons-lane-london",
+      "performer_id": "nell-phoenix",
+      "date_added": "26/08/2026",
+      "time": "2pm",
+      "club": "crickcrack",
+      "price": "£10.00 - £20.00",
+      "description": "The Crick Crack Club presents a Storytelling Show with Nell Phoenix\n\n\n\nMyths and Legends from the Arctic Circle.\n\n\n\nGod forgets his socks.\n\n\n\nSkunk seeks revenge.\n\n\n\nGirl creates affordable housing – at the bottom of the ocean.\n\n\n\nAnd what happens when you race a rock?\n\n\n\nSuperb storyteller Nell Phoenix revels in the earthy humour and hair-raising horror of myths from the Arctic Circle. Feisty, fierce and funny these creation stories are full of tricksters, trouble-makers and barbarous beasts that stalk these icy wastelands beyond the cold, north wind.\n\n\n\nThese are stories where what happens next is almost certainly NOT what you'd expect.",
+      "ticket_url": "https://www.jacksonslane.org.uk/events/thats-how-the-world-was-made-nell-phoenix/",
+      "isSpecial": true
+    },
+    {
       "name": "Gather Round: Monmouth Festival of Stories: Stories for Mortals [Marcus Pibworth]",
       "showname": "Stories for Mortals",
       "date": "03/10/2026",
@@ -7837,7 +7890,7 @@
       "time": "2pm",
       "price": "£16.00 (+ £0.50 fees)",
       "event_flyer": "2026_10_04_chartist.jpg",
-      "description": "Gather Round and step into history with The People's Fire: A Chartist Tale.\n\n\n\nThis powerful five-part theatre experience brings the Chartist Trial to life, following the events through the eyes of John Frost, Mary Frost, William Jones, Zephaniah Williams, and others whose voices helped shape a movement.\n\n\n\nBlending drama and original songs, the production explores courage, conviction, and the tension between justice and power, including the presence of a judge determined to uphold the law. The People’s Fire reignites a defining moment in history, inviting audiences to witness the human stories behind the struggle for reform.\n\n\n\nFollowing the interval, we will be joined by a panel of distinguished historians who will explore the Chartist Uprising in greater depth. Chaired by Gary Raymond, the discussion will feature Dr. Melinda Drowley, Chair of Our Chartist Heritage, and Brenda Despontin, author of Some Hidden Thunder. Together, they bring a wealth of knowledge and insight into this pivotal moment in Welsh history.\n\n\n\nA compelling theatrical journey where history’s flame burns bright once more.",
+      "description": "Gather Round and step into history with The People's Fire: A Chartist Tale.\n\n\n\nThis powerful five-part theatre experience brings the Chartist Trial to life, following the events through the eyes of John Frost, Mary Frost, William Jones, Zephaniah Williams, and others whose voices helped shape a movement.\n\n\n\nBlending drama and original songs, the production explores courage, conviction, and the tension between justice and power, including the presence of a judge determined to uphold the law. The People's Fire reignites a defining moment in history, inviting audiences to witness the human stories behind the struggle for reform.\n\n\n\nFollowing the interval, we will be joined by a panel of distinguished historians who will explore the Chartist Uprising in greater depth. Chaired by Gary Raymond, the discussion will feature Dr. Melinda Drowley, Chair of Our Chartist Heritage, and Brenda Despontin, author of Some Hidden Thunder. Together, they bring a wealth of knowledge and insight into this pivotal moment in Welsh history.\n\n\n\nA compelling theatrical journey where history's flame burns bright once more.",
       "ticket_url": "https://monmouth-savoy.ticketsolve.com/ticketbooth/shows/873689476",
       "wider_event": "monmouth-festival-stories-2026",
       "isSpecial": true
@@ -7856,6 +7909,20 @@
       "performer_id": "lynette-hill"
     },
     {
+      "name": "DAUNTLESS – Grace O'Malley, Pirate Queen [Debs Newbold]",
+      "showname": "DAUNTLESS – Grace O'Malley, Pirate Queen",
+      "date": "07/10/2026",
+      "venue_id": "hoxton-hall",
+      "performer_id": "debs-newbold",
+      "date_added": "26/08/2026",
+      "time": "7.30pm",
+      "club": "crickcrack",
+      "price": "£14.97",
+      "description": "The Crick Crack Club presents\nDAUNTLESS – Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold\n\n\n\nStorytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille – aka Grace O'Malley – legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
+      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-mjeajyx",
+      "isSpecial": true
+    },
+    {
       "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
       "showname": "The Girl Who Didn't Die",
       "date": "10/10/2026",
@@ -7863,7 +7930,7 @@
       "time": "7.30-10.30pm",
       "club": "crickcrack",
       "price": "£14.43",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi’s boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
+      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
       "event_flyer": "",
       "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-ejlxoya",
       "isSpecial": true,
@@ -7878,7 +7945,7 @@
       "time": "8pm",
       "club": "crickcrack",
       "price": "£12.50",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi’s boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
+      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
       "event_flyer": "",
       "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-ejlxoya",
       "isSpecial": true,
@@ -7901,6 +7968,20 @@
       "isSpecial": true
     },
     {
+      "name": "The Luck Child & Other Strange Tales [Daniel Morden]",
+      "showname": "The Luck Child & Other Strange Tales",
+      "date": "17/10/2026",
+      "venue_id": "jacksons-lane-london",
+      "performer_id": "daniel-morden",
+      "date_added": "26/08/2026",
+      "time": "2pm",
+      "club": "crickcrack",
+      "price": "£10.00 - £25.00",
+      "description": "The Crick Crack Club presents a Storytelling Show with Daniel Morden\n\n\n\nAs Halloween approaches and the shadows stretch, the terrific Daniel Morden tells a classic Grimms' fairytale and other tales of strange and weird happenings. \n\n\n\nEverything you could hope for is here… dark forests, shadows & surprises, mysterious strangers, talking animals, goodies, baddies, booing, cheering, and a guest appearance by Mr B.L.Z. Bub himself! \n\n\n\nDANIEL MORDEN has enchanted audiences of all ages at festivals, theatres and schools across the UK and around the world, from the South Bank and the Barbican to Australia and the Arctic. He tells long ago once-upon-a-time stories of magic, and danger. In 2017 he was awarded the Hay Festival medal for his storytelling. Daniel is also well known to Haringey schools as the resident storyteller at Pendarren. Here's a chance to see what the fuss is about!",
+      "ticket_url": "https://www.jacksonslane.org.uk/events/the-luck-child-and-other-strange-tales-daniel-morden/",
+      "isSpecial": true
+    },
+    {
       "name": "Icelandic Ghost Stories [Jason Buck]",
       "showname": "Icelandic Ghost Stories",
       "date": "19/10/2026",
@@ -7908,12 +7989,42 @@
       "club": "",
       "price": "From £9.50",
       "event_flyer": "",
-      "description": "Traditional ghost stories for modern audiences\n\n\n\nIceland — the country of ice and fire - has rich history of stories of ghosts and magic. Join professional storyteller Jason Buck for an evening of tales for the spooky season, in Leamington’s best-loved small venue and café bar. Enjoy a drink or a cake, in the haunted cellar space, and immerse yourself in these dark and often comic tales — storytelling for grownups!\n\n\n\nAges: Adult and teens (12+)",
+      "description": "Traditional ghost stories for modern audiences\n\n\n\nIceland — the country of ice and fire - has rich history of stories of ghosts and magic. Join professional storyteller Jason Buck for an evening of tales for the spooky season, in Leamington's best-loved small venue and café bar. Enjoy a drink or a cake, in the haunted cellar space, and immerse yourself in these dark and often comic tales — storytelling for grownups!\n\n\n\nAges: Adult and teens (12+)",
       "ticket_url": "https://www.eventbrite.co.uk/e/icelandic-ghost-stories-sussex-tickets-1991547794063",
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "the-hop-sun-tap-microbrewery-haywards",
       "performer_id": "jason-buck"
+    },
+    {
+      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
+      "showname": "The Girl Who Didn't Die",
+      "date": "21/10/2026",
+      "date_added": "26/08/2026",
+      "time": "7pm",
+      "club": "crickcrack",
+      "price": "£13.50",
+      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
+      "event_flyer": "",
+      "ticket_url": "https://dice.fm/event/53ppkw-fairytales-for-grown-ups-the-girl-who-didnt-die-21st-oct-folklore-hoxton-london-tickets",
+      "isSpecial": true,
+      "venue_id": "folklore-hoxton",
+      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
+    },
+    {
+      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
+      "showname": "The Girl Who Didn't Die",
+      "date": "22/10/2026",
+      "date_added": "26/08/2026",
+      "time": "7.30pm",
+      "club": "crickcrack",
+      "price": "£14",
+      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
+      "event_flyer": "",
+      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-the-girl-who-didnt-die",
+      "isSpecial": true,
+      "venue_id": "the-story-museum-oxford",
+      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
     },
     {
       "name": "The call of Cthulhu [Jason Buck]",
@@ -7989,16 +8100,64 @@
     {
       "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
       "showname": "HOW (NOT) TO DIE long ago in Finland",
-      "date": "07/11/2026",
+      "date": "12/11/2026",
       "date_added": "27/06/2026",
       "time": "7.30-10.30pm",
       "club": "crickcrack",
       "price": "£12.50",
-      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But – and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
+      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
       "event_flyer": "",
       "ticket_url": "https://crickcrackclub.com/crick-crack-events/how-not-to-die-long-ago-in-finland/",
       "isSpecial": true,
       "venue_id": "the-cube-kingsdown",
+      "performer_id": "sarah-liisa-wilkinson"
+    },
+    {
+      "name": "Fairytales for Grow-Ups: Baba Yaga [Ben Haggarty & Sarah-Liisa Wilkinson & Steph Brittain]",
+      "showname": "Fairytales for Grow-Ups: Baba Yaga",
+      "date": "19/11/2026",
+      "venue_id": "jacksons-lane-london",
+      "performer_ids": [
+        "ben-haggarty",
+        "sarah-liisa-wilkinson",
+        "steph-brittain"
+      ],
+      "date_added": "26/08/2026",
+      "time": "7-9pm",
+      "club": "crickcrack",
+      "price": "£10.00 - £25.00",
+      "description": "The Crick Crack Club presents a Storytelling Night with Ben Haggarty, Sarah Liisa Wilkinson & Steph Brittain\n\n\n\nBaba Yaga – super-witch, ultimate hag, half-goddess, unpredictable, and more than a little cannibalistic. She lives in a hut perched at the top of a chicken's foot, guarded by a fence of human skulls.\n\n\n\nAllow extraordinary fairytale-tellers, Ben Haggarty, Sarah Liisa Wilkinson and Steph Brittain, to lure you into the enchanted realm of fairytales for grown-ups to encounter this dangerous deity of the dark woods – down there…. deep beneath your feet.",
+      "ticket_url": "https://www.jacksonslane.org.uk/events/baba-yaga-fairytales-for-grown-ups/",
+      "isSpecial": true
+    },
+    {
+      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
+      "showname": "HOW (NOT) TO DIE long ago in Finland",
+      "date": "25/11/2026",
+      "date_added": "26/08/2026",
+      "time": "Doors 7pm, 7.30-10.30pm",
+      "club": "crickcrack",
+      "price": "£13.50",
+      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
+      "event_flyer": "",
+      "ticket_url": "https://dice.fm/event/7dww56-fairytales-for-grown-ups-how-not-to-die-long-ago-in-finland-25th-nov-folklore-hoxton-london-tickets",
+      "isSpecial": true,
+      "venue_id": "folklore-hoxton",
+      "performer_id": "sarah-liisa-wilkinson"
+    },
+    {
+      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
+      "showname": "HOW (NOT) TO DIE long ago in Finland",
+      "date": "26/11/2026",
+      "date_added": "26/08/2026",
+      "time": "7.30pm",
+      "club": "crickcrack",
+      "price": "£13",
+      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
+      "event_flyer": "",
+      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-how-not-to-die-long-ago-in-finland",
+      "isSpecial": true,
+      "venue_id": "the-story-museum-oxford",
       "performer_id": "sarah-liisa-wilkinson"
     },
     {
@@ -8096,7 +8255,7 @@
       "club": "",
       "price": "£15.00, Booking fee: £1.50",
       "event_flyer": "",
-      "description": "Yuletide — Christmas time - is a traditional time for all ages to get together and listen to stories - particularly ghost stories. Join award-winning performer Jason Buck for an immersive one-man show, fit for the time of year.\n\n\n\nWhen a young boy is sent to stay at his granny’s cottage, his exploration of the local woods uncovers things that are best left sleeping through the winter months.\n\n\n\nTraditional folklore and myth combine to bring alive the ancient spirits of Yule, for modern audiences.\n\n\n\nAges: Adults and older children (11+)",
+      "description": "Yuletide — Christmas time - is a traditional time for all ages to get together and listen to stories - particularly ghost stories. Join award-winning performer Jason Buck for an immersive one-man show, fit for the time of year.\n\n\n\nWhen a young boy is sent to stay at his granny's cottage, his exploration of the local woods uncovers things that are best left sleeping through the winter months.\n\n\n\nTraditional folklore and myth combine to bring alive the ancient spirits of Yule, for modern audiences.\n\n\n\nAges: Adults and older children (11+)",
       "ticket_url": "https://wegottickets.com/f/25363",
       "isSpecial": true,
       "date_added": "15/08/2026",
@@ -13078,6 +13237,30 @@
         -3.69041
       ]
     },
+        "the-master-shipwright-s-house-deptford": {
+      "id": "the-master-shipwright-s-house-deptford",
+      "name": "The Master Shipwright's House, Deptford",
+      "city": "London",
+      "postcode": "SE8 3JF",
+      "full_address": "The Shipwright, Watergate Street, Deptford, London, SE8 3JF",
+      "url": "https://www.theshipwright.co.uk/",
+      "latlon": [
+        51.48523,
+        -0.02512
+      ]
+    },
+    "jacksons-lane-london": {
+      "id": "jacksons-lane-london",
+      "name": "Jacksons Lane, London",
+      "city": "London",
+      "postcode": "N6 5AA",
+      "full_address": "Jacksons Lane, 269a Archway Road, London, N6 5AA",
+      "url": "https://www.jacksonslane.org.uk/",
+      "latlon": [
+        51.57656,
+        -0.14534
+      ]
+    },
     "the-cornish-bank": {
       "id": "the-cornish-bank",
       "name": "The Cornish Bank",
@@ -13108,6 +13291,18 @@
       "latlon": [
         53.74069,
         -2.01405
+      ]
+    },
+    "studio-theatre-royal-york": {
+      "id": "studio-theatre-royal-york",
+      "name": "Studio, Theatre Royal, York",
+      "city": "York",
+      "postcode": "YO1 7HD",
+      "full_address": "Theatre Royal, York",
+      "url": "Theatre Royal, St. Leonards Place, York, YO1 7HD",
+      "latlon": [
+        53.96126,
+        -1.08511
       ]
     },
     "plough-arts-centre-torrington": {
@@ -13621,7 +13816,7 @@
       "name": "Marcus Pibworth",
       "url": "https://www.marcuspibworth.com/",
       "bio": "Shane is a modern day Oral Storyteller who first heard traditional stories as a child from his father, then often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/65820347/marcus_pibworth_the_heart_of_storytelling.mp3", "episode_name": "arcus Pibworth and Building Men’s Spaces", "episode_url": "https://www.spreaker.com/episode/marcus-pibworth-and-building-men-s-spaces--65820347"}]
+      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/65820347/marcus_pibworth_the_heart_of_storytelling.mp3", "episode_name": "arcus Pibworth and Building Men's Spaces", "episode_url": "https://www.spreaker.com/episode/marcus-pibworth-and-building-men-s-spaces--65820347"}]
     },
     "merl-fluin": {
       "id": "merl-fluin",
@@ -13932,7 +14127,7 @@
       "id": "harriet-grindley",
       "name": "Harriet Grindley",
       "url": "https://tracscotland.org/storytellers/harriet-grindley/",
-      "bio": "Harriet Grindley’s stories connect with place, history, myth and community with tales traditional and new.  She particularly enjoys using Gaelic, songs, clarsach or concertina, found objects and image to create an immersive and inclusive environment.\n\n\n\nCo-host of the popular series of storytelling ceilidh’s organised by the Burgh Blatherers at the Scottish Storytelling Centre, she tells in care homes, libraries, fairs and festivals."
+      "bio": "Harriet Grindley's stories connect with place, history, myth and community with tales traditional and new.  She particularly enjoys using Gaelic, songs, clarsach or concertina, found objects and image to create an immersive and inclusive environment.\n\n\n\nCo-host of the popular series of storytelling ceilidh's organised by the Burgh Blatherers at the Scottish Storytelling Centre, she tells in care homes, libraries, fairs and festivals."
     },
     "lara-mcclure": {
       "id": "lara-mcclure",
@@ -13991,7 +14186,7 @@
       "id": "tom-morley",
       "name": "Tom Morley",
       "url": "https://tommorley.com/",
-      "bio": "Tom Morley was the original drummer and a founder member of Scritti Politti, the 80s band who were pioneers of DIY music before appearing successfully on the dance scene. He’s also recorded with David Bowie and Madness. Unlike other bands Scritti Politti used to make half their songs up on stage so from an early age Tom got used to taking risks in public. What it takes to hold your nerve when you have no idea of what's coming next is second nature to him. One time, when there was a power-cut on stage in Berlin, Tom just kept playing a pounding beat and set up a vocal call-and-response chant with the audience. In that moment the seed for Instant Teamwork, the international arts-based team building company he set up in 1999 was sown. NYC, Moscow, Joburg, Istanbul, Paris and London are just a few of the places that Tom has drummed and harmonised with hundreds of energised teams in the last 20 years."
+      "bio": "Tom Morley was the original drummer and a founder member of Scritti Politti, the 80s band who were pioneers of DIY music before appearing successfully on the dance scene. He's also recorded with David Bowie and Madness. Unlike other bands Scritti Politti used to make half their songs up on stage so from an early age Tom got used to taking risks in public. What it takes to hold your nerve when you have no idea of what's coming next is second nature to him. One time, when there was a power-cut on stage in Berlin, Tom just kept playing a pounding beat and set up a vocal call-and-response chant with the audience. In that moment the seed for Instant Teamwork, the international arts-based team building company he set up in 1999 was sown. NYC, Moscow, Joburg, Istanbul, Paris and London are just a few of the places that Tom has drummed and harmonised with hundreds of energised teams in the last 20 years."
     },
     "jo-munton": {
       "id": "jo-munton",
@@ -14036,7 +14231,7 @@
       "id": "simon-heywood",
       "name": "Simon Heywood",
       "url": "https://shonaleigh.uk/about/simon-heywood/",
-      "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University’s National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996.",
+      "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University's National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996.",
       "youtube_videos": [ {"story_name": "Simon Heywood — We are what we tell (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=GuyETxZb6RU"}, {"story_name": "Simon Heywood — Merlin (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=fZVFjrXM92g"}]
     },
     "shonaleigh": {
@@ -14050,7 +14245,7 @@
       "id": "david-heathfield",
       "name": "David Heathfield",
       "url": "https://davidheathfieldblog.wordpress.com/",
-      "bio": "David is an international storyteller, teacher trainer and writer of educational resources. He appears at major conferences and festivals as well as more intimate events in Britain and around the world.\n\n\n\nHe tells stories from the world’s oral cultures with a belief in the power of storytelling to bring people together.\n\n\n\nAs a teacher trainer David runs storytelling courses and workshops for teachers and storytellers from diverse backgrounds and with different levels of experience. He also offers one-to-one storytelling coaching."
+      "bio": "David is an international storyteller, teacher trainer and writer of educational resources. He appears at major conferences and festivals as well as more intimate events in Britain and around the world.\n\n\n\nHe tells stories from the world's oral cultures with a belief in the power of storytelling to bring people together.\n\n\n\nAs a teacher trainer David runs storytelling courses and workshops for teachers and storytellers from diverse backgrounds and with different levels of experience. He also offers one-to-one storytelling coaching."
     },
     "colin-urwin": {
       "id": "colin-urwin",
@@ -14249,7 +14444,7 @@
       "name": "Undercover Hippy (solo)",
       "musician": true,
       "url": "https://undercoverhippy.com/",
-      "bio": "If you’ve not been to an Undercover Hippy gig before, you are in for a treat. By the encore you will be exalted and exhausted; entertained and educated; energised and inspired. The music combines meaningful lyrics with upbeat, bass soaked, reggae and hip-hop infused rhythms, bringing like minded people together to both acknowledge the darkness and celebrate life."
+      "bio": "If you've not been to an Undercover Hippy gig before, you are in for a treat. By the encore you will be exalted and exhausted; entertained and educated; energised and inspired. The music combines meaningful lyrics with upbeat, bass soaked, reggae and hip-hop infused rhythms, bringing like minded people together to both acknowledge the darkness and celebrate life."
     },
     "bassie-gracie": {
       "id": "bassie-gracie",
@@ -14298,7 +14493,7 @@
       "facebook": "3daftmonkeys",
       "instagram": "3daftmonkeys",
       "url": "https://www.3daftmonkeys.co.uk/",
-      "bio": "With Celtic and Eastern influences, the 3 Daft Monkeys’ dynamic style of world folk music reflects the global village in which we now live. Their infectious dancing rhythms lead you through a musical journey of the senses and emotions and will leave you breathless, enthralled, and exhilarated."
+      "bio": "With Celtic and Eastern influences, the 3 Daft Monkeys' dynamic style of world folk music reflects the global village in which we now live. Their infectious dancing rhythms lead you through a musical journey of the senses and emotions and will leave you breathless, enthralled, and exhilarated."
     },
     "martin-daws": {
       "id": "martin-daws",
