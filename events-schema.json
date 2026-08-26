@@ -126,7 +126,8 @@
         "podcast":      { "type": "string", "description": "Podcast/series name, given directly when there's no podcast_id (or as a fallback label if the id can't be resolved)." },
         "podcast_url":  { "type": "string", "description": "The podcast's own homepage, used alongside an inline `podcast` name." },
         "episode_name": { "type": "string", "description": "Episode title, or a short description of the appearance." },
-        "audio_url":    { "type": "string", "description": "Direct link to the playable episode audio (e.g. an .mp3), not a feed or webpage." }
+        "audio_url":    { "type": "string", "description": "Direct link to the playable episode audio (e.g. an .mp3), not a feed or webpage." },
+        "episode_url":   { "type": "string", "description": "Direct link episode web page." }
       },
       "required": ["episode_name", "audio_url"],
       "additionalProperties": true
