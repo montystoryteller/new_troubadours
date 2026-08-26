@@ -7543,8 +7543,8 @@
       "performer_id": ""
     },
     {
-      "name": "Folktales and mythos of Wales [Fiona Collins]",
-      "showname": "Folktales and mythos of Wales",
+      "name": "Folktales and Myths of Wales [Fiona Collins]",
+      "showname": "Folktales and Myths of Wales",
       "date": "21/08/2026",
       "venue_id": "dragon-theatre-barmouth",
       "performer_id": "fiona-collins",
@@ -11893,7 +11893,16 @@
           "url": "https://capstone.hope.ac.uk/",
           "latlon": [53.41343,-2.96885]
         },
-    "gregson-community-arts-centre": {
+      "arborist-cafe-truro": {
+          "id": "arborist-cafe-truro",
+          "name": "Arborist Cafe, Truro",
+          "city": "Truro",
+          "postcode": "TR3 6AG",
+          "full_address": "Arborist Cafe, Killiow Estate, Playing Place, Truro, TR3 6AG",
+          "url": "https://thearboristcafe.co.uk/",
+          "latlon": [50.23655,-5.08412]
+        },
+      "gregson-community-arts-centre": {
           "id": "gregson-community-arts-centre",
           "name": "Gregson Community & Arts Centre",
           "city": "Lancaster",
