@@ -7723,6 +7723,20 @@
       "isSpecial": true
     },
     {
+      "name": "Kent Folk Tales [Dave Tonge]",
+      "showname": "Kent Folk Tales",
+      "date": "18/09/2026",
+      "time": "At dusk...",
+      "price": "Free",
+      "description": "Celebrate the harvest with a day of folk traditions, music and tales. Activities include a pop-up exhibition exploring seasonal folklore and customs, a hands-on heritage craft workshop, and an evening performance featuring acoustic folk music, with storytelling from the masterful yarnsmith Dave Tong.\n\n\n\nThis event is part of the Folk Lore Kent project, supported by Bringing Alive Sandwich Heritage (BASH) and Sandwich Medieval Trust, and funded by the Georgina Maddox Trust",
+      "fb_event": 1676911526708110,
+      "event_flyer": "2026_09_19_dave_tonge_folklore_kent.jpg",
+      "venue_id": "sandwich-mediaeval-centre",
+      "performer_id": "dave-tonge",
+      "date_added": "26/08/2026",
+      "isSpecial": true
+    },
+    {
       "name": "The Saga of the Ring [Jon Mason]",
       "showname": "The Saga of the Ring",
       "date": "25/09/2026",
@@ -10282,6 +10296,18 @@
       "latlon": [
         50.8326,
         -0.27906
+      ]
+    },
+    "sandwich-mediaeval-centre": {
+      "id": "sandwich-mediaeval-centre",
+      "name": "Sandwich Mediaeval Centre",
+      "city": "Sandwich",
+      "postcode": "CT13 9EN",
+      "full_address": "Sandwich Mediaeval Centre, The Quay, Sandwich, CT13 9EN",
+      "url": "https://sandwichmedieval.org/",
+      "latlon": [
+        51.27515,
+        1.34312
       ]
     },
     "1st-fordingbridge-scout-hut-roundhill": {
