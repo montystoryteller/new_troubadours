@@ -13094,7 +13094,7 @@
       "podcast_appearances" : [{"podcast_id": "house-of-legends-podcast", "audio_url": "https://www.buzzsprout.com/254126/episodes/1692664-episode-19-the-widow-of-ephesus-with-daniel-morden.mp3" , "episode_name": "Episode 19: The Widow of Ephesus with Daniel Morden"}, {"podcast": "The Secret Life of Writers Podcast", "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/", "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3" , "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"}],
       "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"],
       "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"],
-      "youtube_videos": [{"story_name": "Daniel Morden (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"}]
+      "youtube_videos": [ {"story_name": "Daniel Morden (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=0vn7eZGm1bc"}, {"story_name": "Daniel Morden (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"}]
     },
     "the-travelling-talesman-cliff-eastabrook": {
       "id": "the-travelling-talesman-cliff-eastabrook",
@@ -13121,7 +13121,7 @@
       "name": "Nick Hennessey",
       "url": "https://nickhennessey.co.uk/",
       "bio": "Nick Hennessey is an internationally acclaimed storyteller, playwright, folk singer, song writer and musician. He has told stories for more than 20 years, performing at venues such as the South Bank Centre and Royal Albert Hall. He is particularly drawn to North European cultural traditions and has been awarded high honours in Finland for his work on their National Epic, Kalevala.\n\n\n\n He is a sought after artistic collaborator, working with top of the field musicians and storytellers. He has broadcast documentaries for BBC Radio 4 and his musical work has featured on BBC Radio 3's Late Junction. With a deep appreciation for the key role that stories play in how we learn about and express ourselves and the world, whether in businesses or schools, he works extensively in helping draw out our natural storytelling skills.",
-      "youtube_videos": [{"story_name": "Storyteller Nick Hennessey at the urban storytelling oasis in Zurich", "yt_url": "https://www.youtube.com/watch?v=sedZvSu84Tw"}, {"story_name": "The story of Paddy McGee told by Nick Hennessey", "yt_url": "https://www.youtube.com/watch?v=s3oOyCbdcgo"},  {"story_name": "Nick Hennessey tells Robin Hood and the Old Woman", "yt_url": "https://www.youtube.com/watch?v=OBG_ImMXilc"}]
+      "youtube_videos": [ {"story_name": "Nick Hennessey (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=s2v7tGGWqPk"}, {"story_name": "Storyteller Nick Hennessey at the urban storytelling oasis in Zurich", "yt_url": "https://www.youtube.com/watch?v=sedZvSu84Tw"}, {"story_name": "The story of Paddy McGee told by Nick Hennessey", "yt_url": "https://www.youtube.com/watch?v=s3oOyCbdcgo"},  {"story_name": "Nick Hennessey tells Robin Hood and the Old Woman", "yt_url": "https://www.youtube.com/watch?v=OBG_ImMXilc"}]
     },
     "sarah-dovey": {
       "id": "sarah-dovey",
@@ -13146,7 +13146,7 @@
       "name": "Cath Little",
       "url": "https://cathlittle.co.uk/",
       "bio": "Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here.\n\n\n\n She tells traditional stories from her Irish English heritage and her Welsh homeland. Cath enjoys re-imagining and retelling stories from The Mabinogion.\n\n\n\n Cath helps run the Cardiff Storytelling Circle and curates their seasonal concerts, Tales for the Turning Year. She tells and listens to stories at Oasis, a Cardiff Charity which offers a warm Welsh welcome to refugees and asylum seekers.",
-      "youtube_videos": [{"story_name": "Stories with Cath Little (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=4mXBCofuQLw"}]
+      "youtube_videos": [{"story_name": "Stories with Cath Little (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=4mXBCofuQLw"}]
     },
     "lizzie-bryant": {
       "id": "lizzie-bryant",
@@ -13235,14 +13235,15 @@
       "name": "Dave Tonge",
       "url": "https://www.instagram.com/davetongestoryteller/",
       "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich.",
-      "youtube_videos": [{"story_name": "Dave Tonge (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"}],
+      "youtube_videos": [{"story_name": "Dave Tonge (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"}],
       "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/62730731/dave_tonge_the_heart_of_storytelling.mp3" , "episode_name": "Dave Tonge and interpreting history", "episode_url": "https://www.spreaker.com/episode/dave-tonge-and-interpreting-history--62730731"}]
     },
     "sharon-jacksties": {
       "id": "sharon-jacksties",
       "name": "Sharon Jacksties",
       "url": "https://www.sharonjackstories.co.uk/",
-      "bio": "Sharon Jacksties tells stories to audiences of adults, young people and families.\n\n\n\n Her dynamic and versatile performances draw on stories from all over the world.\n\n\n\n Interpreting the wisdom of traditional material for contemporary audiences, her repertoire includes tales that have rarely been heard in this country."
+      "bio": "Sharon Jacksties tells stories to audiences of adults, young people and families.\n\n\n\n Her dynamic and versatile performances draw on stories from all over the world.\n\n\n\n Interpreting the wisdom of traditional material for contemporary audiences, her repertoire includes tales that have rarely been heard in this country.",
+      "youtube_videos": [ {"story_name": "Sharon Jacksties (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=7g5Q30ViXl0"}]
     },
     "aaron-oliver": {
       "id": "aaron-oliver",
@@ -13272,7 +13273,8 @@
       "id": "tim-ralphs",
       "name": "Tim Ralphs",
       "url": "https://timralphs.com/",
-      "bio": "Tim Ralphs is a storyteller and active exponent of narrative in art. He also works as a public engagement consultant where he focuses on connecting academic researchers with non-specialists.\n\n\n\nHis storytelling is rooted in the oral tradition: The craft of a speaker weaving language and gesture to entrance an audience and bring a tale to life.\n\n\n\n His stories are drawn from a rich medley of myth and folk tale, but also include live adaptations of absurd texts and wondrous reimaginings of classic fairytale material in evocative urban settings. As an ambassador and advocate for storytelling, Tim's repertoire reflects the need for the craft to appeal to today's listeners and tomorrow's tellers."
+      "bio": "Tim Ralphs is a storyteller and active exponent of narrative in art. He also works as a public engagement consultant where he focuses on connecting academic researchers with non-specialists.\n\n\n\nHis storytelling is rooted in the oral tradition: The craft of a speaker weaving language and gesture to entrance an audience and bring a tale to life.\n\n\n\n His stories are drawn from a rich medley of myth and folk tale, but also include live adaptations of absurd texts and wondrous reimaginings of classic fairytale material in evocative urban settings. As an ambassador and advocate for storytelling, Tim's repertoire reflects the need for the craft to appeal to today's listeners and tomorrow's tellers.",
+      "youtube_videos": [ {"story_name": "Tim Ralphs — Ancient Wild Men (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=0Bq0YB-NK_4"}]
     },
     "welsh-whisperers": {
       "id": "welsh-whisperers",
@@ -13290,7 +13292,8 @@
       "id": "katy-cawkwell",
       "name": "Katy Cawkwell",
       "url": "https://katycawkwell.co.uk/",
-      "bio": "Katy Cawkwell has been working as a professional storyteller since 1996 in venues across the UK and beyond.\n\n\n\n She creates contemporary, dramatic performances for adult audiences, based on traditional narratives.  Her shows have appeared in a wide range of venues: major theatres (inc. Barbican Pit Theatre, Soho Theatre, Derby Guildhall), storytelling clubs and nine international storytelling festivals (inc. a 2 week tour of India in 2016).  Katy was one of four storytellers shortlisted for the Arts Foundation Storytelling Fellowship and has featured on Radio 3 (The Verb) and Radio 4 (The Storytellers)."
+      "bio": "Katy Cawkwell has been working as a professional storyteller since 1996 in venues across the UK and beyond.\n\n\n\n She creates contemporary, dramatic performances for adult audiences, based on traditional narratives.  Her shows have appeared in a wide range of venues: major theatres (inc. Barbican Pit Theatre, Soho Theatre, Derby Guildhall), storytelling clubs and nine international storytelling festivals (inc. a 2 week tour of India in 2016).  Katy was one of four storytellers shortlisted for the Arts Foundation Storytelling Fellowship and has featured on Radio 3 (The Verb) and Radio 4 (The Storytellers).",
+      "youtube_videos": [ {"story_name": "Katy Cawkwell — Soul Stories - The Hunter and the Blue Dove (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=wvG2fM-xUPQ"}]
     },
     "kersti-stabi": {
       "id": "kersti-stabi",
@@ -13398,7 +13401,7 @@
       "url": "https://hughlupton.co.uk/",
       "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
       "podcast_appearances" : [{"podcast_id": "three-ravens-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3" , "episode_name": "Local Legends #42: Hugh Lupton"}, {"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}],
-      "youtube_videos": [{"story_name": "Jack Ostler and the Hare", "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M"}, {"story_name": "Who takes the most Pleasure from the Act of Love?", "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"}, {"story_name": "The Cow Tail Switch", "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"}, {"story_name": "Stories with Hugh Lupton (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"}] 
+      "youtube_videos": [{"story_name": "Jack Ostler and the Hare", "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M"}, {"story_name": "Who takes the most Pleasure from the Act of Love?", "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"}, {"story_name": "The Cow Tail Switch", "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"}, {"story_name": "Stories with Hugh Lupton (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"}] 
     },
     "suited-storytellers": {
       "id": "suited-storytellers",
@@ -13493,7 +13496,7 @@
       "name": "Amy Douglas",
       "url": "https://amydouglas.com/",
       "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\n Over the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging.",
-      "youtube_videos": [{"story_name": "Amy Douglas (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=n9MNII_4fOg"}]
+      "youtube_videos": [{"story_name": "Amy Douglas (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=n9MNII_4fOg"}]
       
     },
     "jason-buck": {
@@ -13502,7 +13505,7 @@
       "url": "https://www.facebook.com/JasonBuckStoryteller/",
       "facebook": "JasonBuckStoryteller",
       "bio": "Award-winning performance storyteller, author and illustrator.",
-      "youtube_videos": [{"story_name": "The Old Woman and The Pig", "yt_url": "https://www.youtube.com/watch?v=a0sZkDQvoqg"}, {"story_name": "The Greek myth of Orpheus and Eurydice", "yt_url": "https://www.youtube.com/watch?v=83lLX7m_8-w"}, {"story_name": "Beautiful Vasilisa and Baba Yaga", "yt_url": "https://www.youtube.com/watch?v=IvVDUADCqUU"}, {"story_name": "The Boy who had an eating competition with a troll", "yt_url": "https://www.youtube.com/watch?v=NsqVPMUr_DQ"}]
+      "youtube_videos": [ {"story_name": "Jason Buck (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=VLQLYhG6API"}, {"story_name": "The Old Woman and The Pig", "yt_url": "https://www.youtube.com/watch?v=a0sZkDQvoqg"}, {"story_name": "The Greek myth of Orpheus and Eurydice", "yt_url": "https://www.youtube.com/watch?v=83lLX7m_8-w"}, {"story_name": "Beautiful Vasilisa and Baba Yaga", "yt_url": "https://www.youtube.com/watch?v=IvVDUADCqUU"}, {"story_name": "The Boy who had an eating competition with a troll", "yt_url": "https://www.youtube.com/watch?v=NsqVPMUr_DQ"}]
     },
     "amy-douglas-jason-buck": {
       "id": "amy-douglas-jason-buck",
@@ -13534,7 +13537,8 @@
       "name": "Eddie Lenihan",
       "url": "https://eddielenihan.weebly.com/",
       "bio": "Collector of Irish tales for over forty years.",
-      "podcast": "https://shows.acast.com/tell-me-a-story-with-eddie-lenihan"
+      "podcast": "https://shows.acast.com/tell-me-a-story-with-eddie-lenihan",
+      "youtube_videos": [ {"story_name": "Eddie Lenihan (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=LH4ylsnhXlU"}]
     },
     "marion-leeper": {
       "id": "marion-leeper",
@@ -13612,7 +13616,7 @@
       "name": "Jon Mason",
       "url": "https://jonthestoryteller.com/",
       "bio": "Storyteller based in Brighton.\n\n\n\n Jon tells stories about times gone by and the modern day, blending fact and fantasy, from all over the world, for kids and grownups. Jon has given performances and workshops at festivals, community events, schools, spoken word nights, and storytelling clubs around the country — he creates shows and sessions to suit all needs.\n\n\n\n Jon is also a folklorist and cultural historian, researching stories in the context of their time, place and social meaning. He has appeared as a guest on BBC Radio, and teach up to university level on storytelling skills, folklore and more.",
-      "youtube_videos": [{"story_name": "The Birth of Pryderi", "yt_url": "https://www.youtube.com/watch?v=MGOJZm0Mxck"},{"story_name": "The Birth of Llyn Tegid", "yt_url": "https://www.youtube.com/watch?v=UVlNLJEqI-c"},{"story_name": "The Birth of the Giants", "yt_url": "https://www.youtube.com/watch?v=4V9yCkhkRd4"}]
+      "youtube_videos": [ {"story_name": "John Mason — The Wild Hunt (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=D1he0_Tqdnw"},{"story_name": "The Birth of Pryderi", "yt_url": "https://www.youtube.com/watch?v=MGOJZm0Mxck"},{"story_name": "The Birth of Llyn Tegid", "yt_url": "https://www.youtube.com/watch?v=UVlNLJEqI-c"},{"story_name": "The Birth of the Giants", "yt_url": "https://www.youtube.com/watch?v=4V9yCkhkRd4"}]
     },
     "tuup": {
       "id": "tuup",
@@ -13624,7 +13628,8 @@
       "id": "xanthe-gresham-knight",
       "name": "Xanthe Gresham Knight",
       "url": "https://xanthegresham.co.uk/",
-      "bio": "Xanthe Gresham Knight is a writer and international performance storyteller with a wide repertoire. Author of 'Goddesses and Heroines' with Thames and Hudson, she has created a variety of shows celebrating the feminine divine including 'Cassandra' for Radio 4 (listen to the BBC podcast here) and The Online Goddess Lounge, funded by The Arts Council of England.\n\n\n\n Xanthe has been Storyteller in Residence for Harvard University, The Blanton Museum Texas, Psychologies Magazine, The Chelsea Physic Garden, Stoke and Staffordshire Libraries and 18 Hours Hastings. She worked as a Senior Lecturer in Drama and Storytelling for the University of East London for 17 years. As well as touring and working locally in Seaford, Sussex, Xanthe is Artistic Director of GuestHouse storytellers, Newhaven, East Sussex."
+      "bio": "Xanthe Gresham Knight is a writer and international performance storyteller with a wide repertoire. Author of 'Goddesses and Heroines' with Thames and Hudson, she has created a variety of shows celebrating the feminine divine including 'Cassandra' for Radio 4 (listen to the BBC podcast here) and The Online Goddess Lounge, funded by The Arts Council of England.\n\n\n\n Xanthe has been Storyteller in Residence for Harvard University, The Blanton Museum Texas, Psychologies Magazine, The Chelsea Physic Garden, Stoke and Staffordshire Libraries and 18 Hours Hastings. She worked as a Senior Lecturer in Drama and Storytelling for the University of East London for 17 years. As well as touring and working locally in Seaford, Sussex, Xanthe is Artistic Director of GuestHouse storytellers, Newhaven, East Sussex.",
+      "youtube_videos": [ {"story_name": "Xanthe Gresham Knight — Apple Goddesses (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=sVUSy_k7lEY"}]
     },
     "phil-okwedy": {
       "id": "phil-okwedy",
@@ -13642,7 +13647,9 @@
       "id": "michael-harvey",
       "name": "Michael Harvey",
       "url": "https://www.michaelharvey.org/",
-      "bio": "Michal harvey tells stories, in both Welsh and English, from the world's oral traditions to all ages. His repertoire is based in Wales and the other Celtic countries but he can't resist a good story, wherever it's from.\n\n\n\nMichael works in community settings, in schools, in theatres, festivals, libraries, village halls, pubs, museums and galleries. He sometimes works solo and sometimes in collaboration with other artists and production companies. He trains storytellers and those who want to become storytellers and trains teachers to use storytelling as a powerful tool for literacy and second language acquisition."
+      "bio": "Michal harvey tells stories, in both Welsh and English, from the world's oral traditions to all ages. His repertoire is based in Wales and the other Celtic countries but he can't resist a good story, wherever it's from.\n\n\n\nMichael works in community settings, in schools, in theatres, festivals, libraries, village halls, pubs, museums and galleries. He sometimes works solo and sometimes in collaboration with other artists and production companies. He trains storytellers and those who want to become storytellers and trains teachers to use storytelling as a powerful tool for literacy and second language acquisition.",
+      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/64988334/michael_harvey_the_heart_of_storytelling.mp3" , "episode_name": "Michael Harvey and Social Storytelling", "episode_url": "https://www.spreaker.com/episode/michael-harvey-and-social-storytelling--64988334"}],
+      "youtube_videos": [ {"story_name": "Michael Harvey — Branwen (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=AL3Tn5S-ZJc"}]
     },
     "colin-rowan": {
       "id": "colin-rowan",
@@ -13681,7 +13688,8 @@
       "id": "tamar-eluned-williams",
       "name": "Tamar Eluned Williams",
       "url": "https://www.tamarelunedwilliams.com/",
-      "bio": "Tamar Eluned Williams is a professional storyteller working in the Welsh oral tradition. Tamar tells stories in Welsh and English, working with a wide repertoire of Celtic mythology, legends, and folktales, alongside stories from all over the world. She works with story in lots of different ways: telling them from memory in schools, festivals, museums and theatres, creating new shows for adult and family audiences, running storytelling workshops, and writing and directing for theatre."
+      "bio": "Tamar Eluned Williams is a professional storyteller working in the Welsh oral tradition. Tamar tells stories in Welsh and English, working with a wide repertoire of Celtic mythology, legends, and folktales, alongside stories from all over the world. She works with story in lots of different ways: telling them from memory in schools, festivals, museums and theatres, creating new shows for adult and family audiences, running storytelling workshops, and writing and directing for theatre.",
+      "youtube_videos": [ {"story_name": "Tamar Eluned Williams (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=zYkPty22MMU"}]
     },
     "matt-johnson": {
       "id": "matt-johnson",
@@ -13712,14 +13720,15 @@
       "id": "liz-weir",
       "name": "Liz Weir",
       "url": "https://www.lizweirstoryteller.com/",
-      "bio": "Liz Weir MBE is an award-winning Irish storyteller who has shared stories on five continents — from pubs, prisons, and hospital rooms to the Royal Albert Hall and New York's Grand Central Station."
+      "bio": "Liz Weir MBE is an award-winning Irish storyteller who has shared stories on five continents — from pubs, prisons, and hospital rooms to the Royal Albert Hall and New York's Grand Central Station.",
+      "youtube_videos": [ {"story_name": "Liz Weir (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=c_Bz1pMcZ5Q"}]
     },
     "lisa-schneidau": {
       "id": "lisa-schneidau",
       "name": "Lisa Schneidau",
       "url": "https://www.lisaschneidau.co.uk/",
       "bio": "Lisa Schneidau finds and tells stories that inspire, provoke curiosity and build stronger connections between people and nature.\n\n\n\n She works with the oral storytelling tradition, where traditional and modern stories are remembered, shared and passed on to others. You'll find her telling stories at events and venues all over the South West and beyond. Lisa's repertoire includes storytelling evenings for adults, shows and collaborations, schools and museums work, story walks and workshops.\n\n\n\nLisa has written four books on traditional folk tales published by The History Press.",
-      "youtube_videos": [{"story_name": "Stories with Lisa Schneidau (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=Bzo0YUcF4_A"}, {"story_name": "Stories with Lisa Schneidau (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=XrHe3E7MATs"}, {"story_name": "Lisa Schneidau tells a tale for #FolkloreThursday", "yt_url": "https://www.youtube.com/watch?v=Fx83I-X_G9A"}]
+      "youtube_videos": [ {"story_name": "Lisa Scheidau — in the Environment (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=t2vB3bvOXpg"}, {"story_name": "Stories with Lisa Schneidau (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=Bzo0YUcF4_A"}, {"story_name": "Stories with Lisa Schneidau (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=XrHe3E7MATs"}, {"story_name": "Lisa Schneidau tells a tale for #FolkloreThursday", "yt_url": "https://www.youtube.com/watch?v=Fx83I-X_G9A"}]
     },
     "roving-jewel":{
       "id": "roving-jewel",
@@ -13824,7 +13833,8 @@
       "id": "michael-dacre",
       "name": "Michael Dacre",
       "url": "https://www.facebook.com/michael.dacrepurr",
-      "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country."
+      "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country.",
+      "youtube_videos": [ {"story_name": "Michael Dacre (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=-PJ2YqeFaIk"}]
     },
     "hannah-brailsford": {
       "id": "hannah-brailsford",
@@ -13972,12 +13982,19 @@
       "url": "https://www.alimkamara.com/",
       "bio": "Alim Kamara is a British-Sierra Leonean rapper and storyteller. As a child living in Sierra Leone, Alim would listen to Djelis (storytellers), admiring the way they weaved lessons through their tales. Stories quickly became central to his life, and when he moved to London and started his music career, he used this same technique to achieve number one singles in both Sierra Leone and Nigeria.\n\n\n\nHe established Storie Storie to share the traditional African stories of his childhood in the UK. Through the organisation, he performs and runs workshops through schools, businesses and festivals.\n\n\n\nAlim and his inspirational speakers share cultural and life issues through storytelling that demonstrates success, disappointments, persistence and hard work. They share the tools that empower listeners to feel happy, express themselves and succeed."
     },
+    "simon-heywood": {
+      "id": "simon-heywood",
+      "name": "Simon Heywood",
+      "url": "https://shonaleigh.uk/about/simon-heywood/",
+      "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University’s National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996.",
+      "youtube_videos": [ {"story_name": "Simon Heywood — We are what we tell (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=GuyETxZb6RU"}, {"story_name": "Simon Heywood — Merlin (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=fZVFjrXM92g"}]
+    },
     "shonaleigh": {
       "id": "shonaleigh",
       "name": "Shonaleigh",
       "url": "https://shonaleigh.uk/",
       "bio": "Word weaver, tradition bearer and educator\n\n\n\n Shonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working.",
-      "youtube_videos": [{"story_name": "Shonaleigh (World Storytelling Cafe", "yt_url": "https://www.youtube.com/watch?v=dFxyJTVVxjg"}]
+      "youtube_videos": [ {"story_name": "Shonaleigh (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=2HazeJ3nT00"}, {"story_name": "Shonaleigh (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=dFxyJTVVxjg"}]
     },
     "david-heathfield": {
       "id": "david-heathfield",
