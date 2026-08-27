@@ -7910,6 +7910,23 @@
       "performer_ids": ["taffy-thomas", "eliza-carthy"]
     },
     {
+      "name": "Of Beast and Hide [Beth Guiver & Lucy Huzzard]",
+      "showname": "Of Beast and Hide",
+      "date": "15/09/2026",
+      "venue_id": "alder-sheffield",
+      "performer_ids": [
+        "beth-guiver",
+        "lucy-huzzard"
+      ],
+      "date_added": "27/08/2026",
+      "time": "7.30pm",
+      "club": "sheffieldstoryforge",
+      "price": "Free (recommended donation is £8-£10 to pay the artists)",
+      "description": "An evening of storytelling and music with Beth Guiver and Lucy Huzzard…\n\n\n\nRecommended donation for this show is £8-£10 and all proceeds go to the artists.\n\n\n\nA perfect baby is born; a serpent scuttles through the snow bearing a queen's secret and a fearsome warrior is left enchanted by the song of a beautiful woman at the seashore...\n\n\n\nJoin storyteller Beth Guiver and musician Lucy Huzzard for a bold, funny and moving show inspired by the ancient folklore of shapeshifters and skin shedders. With tight narrative, voice, harmony, character, song and instrument they breathe life into these old stories promising a wild ride through the landscapes of medieval Ireland and fairy tale Scandinavia!\n\n\n\nThis is traditional storytelling freshly imagined and the gaze shifted for modern times.\n\n\n\nDoors open at 7.00 p.m. Get a drink from the bar the show starts at 7.30pm. Suggested donation £8-£10.\n\n\n\nThere will be tickets on the door,",
+      "ticket_url": "https://www.eventbrite.co.uk/e/of-beast-and-hide-tickets-1998641999021",
+      "isSpecial": true
+    },
+    {
       "name": "Beowulf [Hugh Lupton]",
       "showname": "Beowulf",
       "date": "15/09/2026",
@@ -14515,6 +14532,19 @@
       "name": "Bernadette Russell",
       "url": "https://www.bernadetterussell.com/",
       "bio": "Author, performance storyteller, theatre maker, workshop facilitator, cabaret MC , playwright and tree planter. Bernadette performs her own stories as well and traditional stories everywhere- including cabarets, sheltered housing, schools, parks, gardens, forests, vintage clothes shops, launderettes, beaches, in peoples beds, once even inside a Police Box! She loves being outside and can often be found in the woods. She write stories on walls, chalk poetry onto pavements and leave magical notes inside strangers pockets"
+    },
+    "beth-guiver": {
+      "id": "beth-guiver",
+      "name": "Beth Guiver",
+      "url": "https://bethguiverstoryteller.com/",
+      "bio": "Beth Guiver is a professional storyteller based in Sheffield. She has been spinning a spell of traditional stories across the UK for 15 years; in roundhouses, museums, festivals, residential homes, schools, theatres, residential homes, in bandstands and under fabulous trees.\n\n\n\nBeth firmly believes something special happens when we come together to listen to tales that have been told many times before and loves to be part of the magic when we re-dream those stories now with our collective land, myth and heritage"
+    },
+    "lucy-huzzard": {
+      "id": "lucy-huzzard",
+      "name": "Lucy Huzzard",
+      "musician": true,
+      "url": "https://lucyandhazel.co.uk/",
+      "bio": "From a lifetime steeped in European folk music and dance, Lucy Huzzard weaves traditional melodies, new compositions and evocative soundscapes into Beth’s story-scapes. On melodeon, percussion, voice and ukulele she accompanies Beth as they take the audience through the door into the story realm."
     },
     "gaz-brookfield-and-the-company-of-thieves": {
       "id": "gaz-brookfield-and-the-company-of-thieves",
