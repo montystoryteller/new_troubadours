@@ -1730,6 +1730,35 @@
     }
   }, 
   "repertoire_shows": {
+    "hugh-lupton-sarah-moody-morning-stars": {
+      "name": "When the Morning Stars Sang",
+      "showname": "When the Morning Stars Sang",
+      "video_trailer": "https://www.youtube.com/watch?v=aZjtzFRhxXc",
+      "show_dates": [
+        {
+          "date": "12/03/2026",
+          "venue_id": "st-marys-church-totnes",
+          "time": "Doors 7pm, 7.30-10pm",
+          "price": "£15 (£17 / £12)",
+          "club": "",
+          "ticket_url": "https://ttm.churchsuite.com/events/omlmdlgy",
+          "date_added": "27/08/2026"
+        },
+        {
+          "date": "22/09/2026",
+          "venue_id": "highfield-trinity-methodist-church-sheffield",
+          "time": "7.30-9.30pm",
+          "price": "Free (recommended donation £10)",
+          "club": "sheffieldstoryforge",
+          "fb_event": 1036717522109697,
+          "ticket_url": "https://www.eventbrite.co.uk/e/hugh-lupton-and-sarah-moody-when-the-morning-stars-sang-tickets-1993767264559",
+          "date_added": "27/08/2026"
+        }
+      ],
+      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "description": "An evening of mystery tales with master storyteller Hugh Lupton and Cellist Sarah Moody.\n\n\n\nDemons, archangels & djinns; hoopoes, swallows, fish, donkeys and maggots; kings, queens, merchants, fools and the voice from the heart of the whirlwind all contend in this rich interweaving of Apocryphal and Old Testament mystery tales drawing from Jewish, Islamic and Christian sources.\n\n\n\nAudiences will encounter Adam and Eve, Solomon and Sheba, Tobias and the Angel, Job and his Comforters… stories that underpin our culture… told in the picture language of the heart, with vigour and humour, with rich language and deep magic.\n\n\n\nThis is a chance to shake off old habitual pieties and hear these ancient tales with fresh ears.\n\n\n\nIn this performance master-storyteller Hugh Lupton is joined by acclaimed cellist Sarah Moody whose wonderful playing is inspired by the music of all three Abrahamic traditions, reminding us that at the core of these cultures (that have been at loggerheads for most of the last thousand years) lies a shared mythology.\n\n\n\nThis is a gripping, accessible and moving performance aimed at adult audiences (not suitable for under 14s). ",
+      "isSpecial": true
+    },
     "ben-haggarty-steph-brittain-the-bodies-on-the-beach": {
       "name": "The Bodies on the Beach: The epic Irish myth of Fionn MacCumhaill",
       "showname": "The Bodies on the Beach",
@@ -4166,14 +4195,6 @@
   },
   "events": [
     {
-      "name": "Sheffield Story Forge",
-      "schedule": "3rd tuesday",
-      "time": "7pm",
-      "facebook": "https://www.facebook.com/groups/94064587663",
-      "club": "sheffieldstoryforge",
-      "venue_id": "the-fat-cat-sheffield"
-    },
-    {
       "name": "Word of Mouth storytelling club [lapsed?]",
       "schedule": "1st wednesday",
       "link": "https://wordofmouthstorytelling.blogspot.com/",
@@ -4307,6 +4328,14 @@
       "club": "matlockSCafe",
       "tickets_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/",
       "venue_id": "imperial-rooms-matlock"
+    },
+    {
+      "name": "Sheffield Story Forge",
+      "schedule": "3rd tuesday",
+      "time": "7pm",
+      "facebook": "https://www.facebook.com/groups/94064587663",
+      "club": "sheffieldstoryforge",
+      "venue_id": "alder-sheffield"
     },
     {
       "name": "Hebden Bridge Shaggydog storytellers",
@@ -8750,6 +8779,18 @@
         -3.18414
       ]
     },
+    "highfield-trinity-methodist-church-sheffield": {
+      "id": "highfield-trinity-methodist-church-sheffield",
+      "name": "Highfield Trinity Methodist Church, Sheffield",
+      "city": "Sheffield",
+      "postcode": "S2 4US",
+      "full_address": "Highfield Trinity Methodist Church, 11 Holland Pl, Sheffield, S2 4US",
+      "url": "",
+      "latlon": [
+        53.36619,
+        -1.47411
+      ]
+    },
     "scottish-storytelling-centre": {
       "id": "scottish-storytelling-centre",
       "name": "Scottish Storytelling Centre",
@@ -10271,12 +10312,12 @@
       "id": "alder-sheffield",
       "name": "Alder",
       "city": "Sheffield",
-      "postcode": "S3 8BX",
-      "full_address": "Alder, Sheffield, S3 8BX",
+      "postcode": "S3 8BT",
+      "full_address": "Alder, Percy Street, Neepsend, Sheffield, S3 8BT",
       "url": "https://www.facebook.com/AlderBarSheff",
       "latlon": [
-        53.3919404,
-        -1.4761471
+        53.39193,
+        -1.47608
       ]
     },
     "department-ryde": {
@@ -12164,7 +12205,7 @@
     },
     "st-marys-chapel-aberdeen": {
       "id": "st-marys-chapel-aberdeen",
-      "name": "st-marys-chapel-aberdeen",
+      "name": "Stm Mary's Chapel, Aberdeen",
       "city": "Aberdeen",
       "postcode": "AB10 1LJ",
       "full_address": "St Mary's chapel, The Kirk of St. Nicholas, Aberdeen, AB10 1LJ",
@@ -12172,6 +12213,18 @@
       "latlon": [
         57.14751,
         -2.09938
+      ]
+    },
+    "st-marys-church-totnes": {
+      "id": "st-marys-church-totnes",
+      "name": "St Mary's Church, Totnes",
+      "city": "Totnes",
+      "postcode": "TQ9 5NN",
+      "full_address": "St Mary's Church, High Street, Totnes, TQ9 5NN",
+      "url": "https://www.stmarystotnes.org/",
+      "latlon": [
+        50.43154,
+        -3.68757
       ]
     },
     "wardrobe-theatre-bristol": {
