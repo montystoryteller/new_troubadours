@@ -18,7 +18,8 @@
     "irishSessions":    { "type": "array", "items": { "$ref": "#/$defs/irishSession" } },
     "spokenword":       { "type": "array", "items": { "$ref": "#/$defs/spokenWordNight" } },
     "venues":           { "type": "object", "additionalProperties": { "$ref": "#/$defs/venue" } },
-    "performers":       { "type": "object", "additionalProperties": { "$ref": "#/$defs/performer" } }
+    "performers":       { "type": "object", "additionalProperties": { "$ref": "#/$defs/performer" } },
+    "promoters":        { "type": "object", "additionalProperties": { "$ref": "#/$defs/promoter" } }
   },
   "additionalProperties": true,
 
@@ -348,7 +349,7 @@
       "type": "object",
       "properties": {
         "name":                 { "type": "string" },
-        "club":                 { "type": "string", "description": "Short slug/id used to cross-reference this club from other record types." },
+        "club":                 { "type": "string", "description": "Short slug/id used to cross-reference this club from other record types. Often (but not necessarily) the same id as a `promoters[]` entry's promoter_id, if the club is run by a promoter worth registering there." },
         "schedule":             { "type": "string", "description": "Free-text recurrence rule.", "examples": ["3rd tuesday", "Every Thursday"] },
         "exceptions":           { "type": "array", "items": { "type": "string" }, "description": "DD/MM/YYYY dates the schedule should skip." },
         "time":                 { "type": "string" },
@@ -368,6 +369,20 @@
         "geocode_missing":      { "type": "boolean" }
       },
       "required": ["name", "club", "venue_id"],
+      "additionalProperties": true
+    },
+
+    "promoter": {
+      "description": "An entry in the top-level `promoters` registry — a promoter/production company in its own right. A promoter_id is frequently (but not necessarily) the same id already used as a bare `club` slug elsewhere (events[].club, specificEvents[].club, etc.) — this registry exists to give that id a name, link, and associated venues/artists once it's worth doing so, without requiring anything already referencing the slug to change.",
+      "type": "object",
+      "properties": {
+        "promoter_id":      { "type": "string", "description": "Stable id for this promoter, often reused as a `club` value elsewhere." },
+        "name":             { "type": "string" },
+        "promoter_link":    { "type": "string" },
+        "promoter_venues":  { "type": "array", "items": { "type": "string" }, "description": "Keys into the top-level `venues` object — venues this promoter regularly puts events on at." },
+        "promoter_artists": { "type": "array", "items": { "type": "string" }, "description": "Keys into the top-level `performers` object — performers this promoter regularly books, as a general roster rather than tied to any specific event." }
+      },
+      "required": ["promoter_id", "name"],
       "additionalProperties": true
     },
 
