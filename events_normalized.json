@@ -4744,21 +4744,78 @@
       "series_title": "Three Ravens Podcast",
       "presenter": "Eleanor Conlon & Martin Vaux",
       "schedule": "",
-      "url": "https://feeds.acast.com/public/shows/threeravenspodcast"
+      "url": "https://feeds.acast.com/public/shows/threeravenspodcast",
+      "items": [
+        {
+          "title": "Local Legends #42: Hugh Lupton",
+          "enclosureUrl": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3",
+          "performer_id": "hugh-lupton"
+        }
+      ]
     },
     {
       "podcast_id": "house-of-legends-podcast",
       "series_title": "House of Legends: World Myths & Legends",
       "presenter": "Daniel Allison",
       "schedule": "",
-      "url": "https://rss.buzzsprout.com/254126.rss"
+      "url": "https://rss.buzzsprout.com/254126.rss",
+      "items": [
+        {
+          "title": "Episode 19: The Widow of Ephesus with Daniel Morden",
+          "enclosureUrl": "https://www.buzzsprout.com/254126/episodes/1692664-episode-19-the-widow-of-ephesus-with-daniel-morden.mp3",
+          "performer_id": "daniel-morden"
+        },
+        {
+          "title": "House of Legends, Episode 64: The Love Spot with Clare Murphy",
+          "enclosureUrl": "https://www.buzzsprout.com/254126/episodes/8346867-episode-64-the-love-spot-with-clare-murphy.mp3",
+          "performer_id": "clare-murphy"
+        }
+      ]
     },
     {
       "podcast_id": "heart-of-storytelling-podcast",
       "series_title": "The Heart of Storytelling",
       "presenter": "Alyssa Curtayne",
       "schedule": "",
-      "url": "https://www.spreaker.com/podcast/the-heart-of-storytelling--6053004"
+      "url": "https://www.spreaker.com/podcast/the-heart-of-storytelling--6053004",
+      "items": [
+        {
+          "title": "Dave Tonge and interpreting history",
+          "link": "https://www.spreaker.com/episode/dave-tonge-and-interpreting-history--62730731",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/62730731/dave_tonge_the_heart_of_storytelling.mp3",
+          "performer_id": "dave-tonge"
+        },
+        {
+          "title": "Shane Ibbs and engaging audiences",
+          "link": "https://www.spreaker.com/episode/shane-ibbs-and-engaging-audiences--59943490",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/59943490/shane_the_heart_of_storytelling.mp3",
+          "performer_id": "shane-ibbs"
+        },
+        {
+          "title": "Marcus Pibworth and Building Men's Spaces",
+          "link": "https://www.spreaker.com/episode/marcus-pibworth-and-building-men-s-spaces--65820347",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/65820347/marcus_pibworth_the_heart_of_storytelling.mp3",
+          "performer_id": "marcus-pibworth"
+        },
+        {
+          "title": "Michael Harvey and Social Storytelling",
+          "link": "https://www.spreaker.com/episode/michael-harvey-and-social-storytelling--64988334",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/64988334/michael_harvey_the_heart_of_storytelling.mp3",
+          "performer_id": "michael-harvey"
+        },
+        {
+          "title": "Corinne Harragin and adapting to change",
+          "link": "https://www.spreaker.com/episode/corinne-harragin-and-adapting-to-change--59650265",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/59650265/corinne_the_heart_of_storytelling.mp3",
+          "performer_id": "corinne-harragin"
+        },
+        {
+          "title": "Jan Blake and being wonderfully human",
+          "link": "https://www.spreaker.com/episode/jan-blake-and-being-wonderfully-human--60445692",
+          "enclosureUrl": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/60445692/jan_blake_the_heart_of_storytelling.mp3",
+          "performer_id": "jan-blake"
+        }
+      ]
     }
   ],
   "workshops": [{
@@ -13336,7 +13393,7 @@
       "name": "Daniel Morden",
       "url": "https://danielmorden.org/",
       "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. ",
-      "podcast_appearances" : [{"podcast_id": "house-of-legends-podcast", "audio_url": "https://www.buzzsprout.com/254126/episodes/1692664-episode-19-the-widow-of-ephesus-with-daniel-morden.mp3" , "episode_name": "Episode 19: The Widow of Ephesus with Daniel Morden"}, {"podcast": "The Secret Life of Writers Podcast", "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/", "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3" , "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"}],
+      "podcast_appearances" : [{"podcast": "The Secret Life of Writers Podcast", "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/", "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3" , "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"}],
       "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"],
       "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"],
       "youtube_videos": [ {"story_name": "Daniel Morden (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=0vn7eZGm1bc"}, {"story_name": "Daniel Morden (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"}]
@@ -13480,8 +13537,7 @@
       "name": "Dave Tonge",
       "url": "https://www.instagram.com/davetongestoryteller/",
       "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich.",
-      "youtube_videos": [{"story_name": "Dave Tonge (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"}],
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/62730731/dave_tonge_the_heart_of_storytelling.mp3" , "episode_name": "Dave Tonge and interpreting history", "episode_url": "https://www.spreaker.com/episode/dave-tonge-and-interpreting-history--62730731"}]
+      "youtube_videos": [{"story_name": "Dave Tonge (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"}]
     },
     "sharon-jacksties": {
       "id": "sharon-jacksties",
@@ -13645,7 +13701,7 @@
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
       "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
-      "podcast_appearances" : [{"podcast_id": "three-ravens-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6404e1f4c5ea8c0011811194/e/684c919eb903c43b04f2d47e/media.mp3" , "episode_name": "Local Legends #42: Hugh Lupton"}, {"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}],
+      "podcast_appearances" : [{"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}],
       "youtube_videos": [{"story_name": "Jack Ostler and the Hare", "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M"}, {"story_name": "Who takes the most Pleasure from the Act of Love?", "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"}, {"story_name": "The Cow Tail Switch", "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"}, {"story_name": "Stories with Hugh Lupton (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"}] 
     },
     "suited-storytellers": {
@@ -13808,15 +13864,13 @@
       "name": "Shane Ibbs",
       "url": "https://www.shaneibbsstoryteller.com/",
       "bio": "Shane is a modern day Oral Storyteller.\n\n\n\nShane first heard traditional stories as a child from his father and often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/59943490/shane_the_heart_of_storytelling.mp3" , "episode_name": "Shane Ibbs and engaging audiences", "episode_url": "https://www.spreaker.com/episode/shane-ibbs-and-engaging-audiences--59943490"}],
       "youtube_videos": [{"story_name": "Green Children told by Shane Ibbs - 17th September 2023", "yt_url": "https://www.youtube.com/watch?v=RkagTcb_c0s"}, {"story_name": "A new set of stories from Shane Ibbs (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=BgGYsnEMl64"}, {"story_name": "The King, The Captain and The Wise Old Man", "yt_url": "https://www.youtube.com/watch?v=iRBe-yFAXk0"}]
     },
     "marcus-pibworth": {
       "id": "marcus-pibworth",
       "name": "Marcus Pibworth",
       "url": "https://www.marcuspibworth.com/",
-      "bio": "Shane is a modern day Oral Storyteller who first heard traditional stories as a child from his father, then often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/65820347/marcus_pibworth_the_heart_of_storytelling.mp3", "episode_name": "arcus Pibworth and Building Men's Spaces", "episode_url": "https://www.spreaker.com/episode/marcus-pibworth-and-building-men-s-spaces--65820347"}]
+      "bio": "Shane is a modern day Oral Storyteller who first heard traditional stories as a child from his father, then often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight."
     },
     "merl-fluin": {
       "id": "merl-fluin",
@@ -13893,7 +13947,6 @@
       "name": "Michael Harvey",
       "url": "https://www.michaelharvey.org/",
       "bio": "Michal harvey tells stories, in both Welsh and English, from the world's oral traditions to all ages. His repertoire is based in Wales and the other Celtic countries but he can't resist a good story, wherever it's from.\n\n\n\nMichael works in community settings, in schools, in theatres, festivals, libraries, village halls, pubs, museums and galleries. He sometimes works solo and sometimes in collaboration with other artists and production companies. He trains storytellers and those who want to become storytellers and trains teachers to use storytelling as a powerful tool for literacy and second language acquisition.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/64988334/michael_harvey_the_heart_of_storytelling.mp3" , "episode_name": "Michael Harvey and Social Storytelling", "episode_url": "https://www.spreaker.com/episode/michael-harvey-and-social-storytelling--64988334"}],
       "youtube_videos": [ {"story_name": "Michael Harvey — Branwen (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=AL3Tn5S-ZJc"}]
     },
     "colin-rowan": {
@@ -14258,7 +14311,7 @@
       "name": "Clare Murphy",
       "url": "https://claremurphy.org/",
       "bio": "Storytelling since 2006, Clare brings the ancient art of story firmly into the contemporary world where it belongs. \n\n\n\nPerforming on stages around the world, Clare has told stories to audiences as varied as the All-Blacks coaches, Mission Critical Teams, scientists, schoolchildren and Irish President Mary Robinson.\n\n\n\nClare is sought after to teach storytelling skills to communities worldwide, including asylum seekers, social entrepreneurs, climate change scientists, firefighters and limbless veterans.",
-      "podcast_appearances" : [{"podcast": "Angel Comedy Podcast", "podcast_url": "https://shows.acast.com/the-angel-comedy-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6047a650c7ffc2041ad01e47/e/604baf097e0c8c4330e34073/media.mp3" , "episode_name": "The Angel Comedy Podcast with Clare Murphy!"}, {"podcast": "Blindboy Podcast", "podcast_url": "https://shows.acast.com/blindboy", "audio_url": "https://sphinx.acast.com/p/acast/s/blindboy/e/66971fdf75bcc6ba885e091e/media.mp3" , "episode_name": "The Art of Storytelling"}, {"podcast_id": "house-of-legends-podcast", "audio_url": "https://www.buzzsprout.com/254126/episodes/8346867-episode-64-the-love-spot-with-clare-murphy.mp3" , "episode_name": "House of Legends, Episode 64: The Love Spot with Clare Murphy"}],
+      "podcast_appearances" : [{"podcast": "Angel Comedy Podcast", "podcast_url": "https://shows.acast.com/the-angel-comedy-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6047a650c7ffc2041ad01e47/e/604baf097e0c8c4330e34073/media.mp3" , "episode_name": "The Angel Comedy Podcast with Clare Murphy!"}, {"podcast": "Blindboy Podcast", "podcast_url": "https://shows.acast.com/blindboy", "audio_url": "https://sphinx.acast.com/p/acast/s/blindboy/e/66971fdf75bcc6ba885e091e/media.mp3" , "episode_name": "The Art of Storytelling"}],
       "youtube_videos": [{"story_name": "Legacy Stories", "yt_url": "https://www.youtube.com/watch?v=qwuAo4iccqc"}, {"story_name": "Claire Murphy at the 2018 Ojai Storytelling Festival", "yt_url": "https://www.youtube.com/watch?v=PI0GG5Kv2ig"}, {"story_name": "Claire Murphy at the 2016 National Storytelling Festival, International Storytelling Center", "yt_url": "https://www.youtube.com/watch?v=yHw2L3YTIVM"} ]
     },
     "maria-credali": {
@@ -14337,8 +14390,7 @@
       "id": "corinne-harragin",
       "name": "Corinne Harragin",
       "url": "https://www.corinneharragin.co.uk/",
-      "bio": "Corinne Harragin is a Bristol-based Storyteller, Performance Maker and Trainer whose style draws out the physicality, humour and shared experience of storytelling, recentring marginalised voices in myth and folklore with her own brand of oral performance.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/59650265/corinne_the_heart_of_storytelling.mp3" , "episode_name": "Corinne Harragin and adapting to change", "episode_url": "https://www.spreaker.com/episode/corinne-harragin-and-adapting-to-change--59650265"}]
+      "bio": "Corinne Harragin is a Bristol-based Storyteller, Performance Maker and Trainer whose style draws out the physicality, humour and shared experience of storytelling, recentring marginalised voices in myth and folklore with her own brand of oral performance."
     },
     "stephe-harrop": {
       "id": "stephe-harrop",
@@ -14523,8 +14575,7 @@
       "id": "jan-blake",
       "name": "Jan Blake",
       "url": "https://www.janblakestories.co.uk/",
-      "bio": "Jan Blake is a storyteller, consultant, mentor & plenary speaker who has been performing world-wide since 1986. Born in Manchester, UK to Jamaican parents, Jan specialises in folktales and myths from the Caribbean, West Africa, North Africa, and the Arab regions.\n\n\n\nAlways innovating within the form she has a well-earned reputation for dynamic and generous storytelling - appearing at most major international storytelling festivals - leads storytelling workshops for schools and universities and has been a contributor to BBC Radio programmes.",
-      "podcast_appearances" : [{"podcast_id": "heart-of-storytelling-podcast", "audio_url": "https://dts.podtrac.com/redirect.mp3/api.spreaker.com/download/episode/60445692/jan_blake_the_heart_of_storytelling.mp3" , "episode_name": "Jan Blake and being wonderfully human", "episode_url": "https://www.spreaker.com/episode/jan-blake-and-being-wonderfully-human--60445692"}]
+      "bio": "Jan Blake is a storyteller, consultant, mentor & plenary speaker who has been performing world-wide since 1986. Born in Manchester, UK to Jamaican parents, Jan specialises in folktales and myths from the Caribbean, West Africa, North Africa, and the Arab regions.\n\n\n\nAlways innovating within the form she has a well-earned reputation for dynamic and generous storytelling - appearing at most major international storytelling festivals - leads storytelling workshops for schools and universities and has been a contributor to BBC Radio programmes."
     },
     "taffy-thomas": {
       "id": "taffy-thomas",

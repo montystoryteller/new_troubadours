@@ -119,10 +119,10 @@
     },
 
     "podcastAppearance": {
-      "description": "One guest appearance by a performer on someone else's podcast episode. Identify the podcast EITHER by `podcast_id` (referencing an entry in the top-level `podcasts` registry, for a podcast that already has one) OR by giving `podcast` (and optionally `podcast_url`) directly inline for a one-off/unregistered show. If both are given, `podcast_id` takes precedence for display. `audio_url` should point directly at the episode's playable media file.",
+      "description": "One guest appearance by a performer on someone else's podcast episode. Now primarily intended for a one-off guest spot on a podcast that isn't (and may not be worth) registering in the top-level `podcasts` list — identified inline via `podcast` (and optionally `podcast_url`). Once a podcast has a podcast_id, prefer adding the appearance as an entry in that podcast's items[] (with performer_id set) instead of duplicating it here; `podcast_id` is still accepted for backward compatibility but shouldn't be used for new entries. `audio_url` should point directly at the episode's playable media file.",
       "type": "object",
       "properties": {
-        "podcast_id":   { "type": "string", "description": "References podcasts[].podcast_id. Preferred when the podcast already has a registry entry, so its name/link stay in one place." },
+        "podcast_id":   { "type": "string", "description": "References podcasts[].podcast_id. Deprecated in favour of an entry in that podcast's items[] — kept only for backward compatibility with existing data." },
         "podcast":      { "type": "string", "description": "Podcast/series name, given directly when there's no podcast_id (or as a fallback label if the id can't be resolved)." },
         "podcast_url":  { "type": "string", "description": "The podcast's own homepage, used alongside an inline `podcast` name." },
         "episode_name": { "type": "string", "description": "Episode title, or a short description of the appearance." },
@@ -420,15 +420,41 @@
 
     "podcast": {
       "type": "object",
-      "description": "An entry in the top-level `podcasts` registry — a podcast series in its own right (as opposed to a one-off guest spot; see performer.podcast_appearances for those). Referenced by id from performer.podcast_appearances[].podcast_id.",
+      "description": "An entry in the top-level `podcasts` registry — a podcast series in its own right. Once a series is registered here, prefer adding its episodes to `items[]` (tagging featured/guest performers via performer_id/performer_ids) rather than duplicating episode details as a performer.podcast_appearances entry; that field remains only for one-off guest spots on podcasts that aren't registered here.",
       "properties": {
-        "podcast_id":   { "type": "string", "description": "Stable id for this series, referenced by performer.podcast_appearances[].podcast_id (e.g. \"taking-tradition-on-podcast\")." },
+        "podcast_id":   { "type": "string", "description": "Stable id for this series, referenced from items[].performer_id's owning record and from performer.podcast_appearances[].podcast_id (e.g. \"taking-tradition-on-podcast\")." },
         "series_title": { "type": "string" },
         "presenter":    { "type": "string" },
         "schedule":     { "type": "string" },
-        "url":          { "type": "string" }
+        "url":          { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/podcastEpisode" },
+          "description": "Episodes of this series — in particular ones featuring a performer as guest (tagged via performer_id/performer_ids), which is what makes it worth tracking here rather than leaving each guest spot as a one-off performer.podcast_appearances entry. Field names deliberately mirror what parsePodcastFeed() in podcast_utils.js produces from a real RSS/Atom feed, so a synced feed's items can be merged in with only performer_id/performer_ids added on top."
+        }
       },
       "required": ["podcast_id", "series_title"],
+      "additionalProperties": true
+    },
+
+    "podcastEpisode": {
+      "type": "object",
+      "description": "One episode belonging to a podcast series (podcasts[].items[]). Field names follow the shape parsePodcastFeed() in podcast_utils.js already produces from a real RSS/Atom feed (title, link, description, pubDate, duration, enclosureUrl, enclosureType, enclosureLength, guid, image), so a synced feed's items can be merged in directly. performer_id/performer_ids optionally tags who's featured/guesting on this episode; omit both for an ordinary episode with no particular performer attached.",
+      "properties": {
+        "title":           { "type": "string" },
+        "link":            { "type": "string", "description": "Episode webpage URL." },
+        "description":     { "type": "string" },
+        "pubDate":         { "type": "string" },
+        "duration":        { "type": "string" },
+        "enclosureUrl":    { "type": "string", "description": "Direct link to the playable episode audio (e.g. an .mp3), not a feed or webpage." },
+        "enclosureType":   { "type": "string" },
+        "enclosureLength": { "type": "string" },
+        "guid":            { "type": "string" },
+        "image":           { "type": "string" },
+        "performer_id":    { "type": "string", "description": "Key into the top-level `performers` object, for a single featured/guest performer." },
+        "performer_ids":   { "type": "array", "items": { "type": "string" }, "description": "For an episode featuring more than one performer." }
+      },
+      "required": ["title", "enclosureUrl"],
       "additionalProperties": true
     },
 

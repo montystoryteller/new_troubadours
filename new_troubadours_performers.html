@@ -2338,10 +2338,40 @@
             return { name: appearance.podcast || "Podcast", url: appearance.podcast_url || "" };
         }
 
-        function renderPodcastAppearancesSection(performer) {
-            const appearances = Array.isArray(performer.podcast_appearances)
+        // Merges two sources of a performer's podcast appearances into the
+        // shape addAppearance() below already expects:
+        //   1. Registry-sourced — episodes tagged with this performer's id
+        //      (via performer_id/performer_ids) on any podcast's items[].
+        //      This is the preferred home for anything on a registered series.
+        //   2. Inline — performer.podcast_appearances, now used only for
+        //      one-off guest spots on a podcast that isn't registered (though
+        //      older entries carrying a podcast_id are still honoured here
+        //      for backward compatibility with data not yet migrated).
+        function collectPerformerAppearances(performer) {
+            const inline = Array.isArray(performer.podcast_appearances)
                 ? performer.podcast_appearances.filter(a => a && a.episode_name)
                 : [];
+            const fromRegistry = [];
+            Object.values(podcastsLookup).forEach(podcast => {
+                (podcast.items || []).forEach(item => {
+                    const ids = Array.isArray(item.performer_ids)
+                        ? item.performer_ids
+                        : (item.performer_id ? [item.performer_id] : []);
+                    if (!ids.includes(performerId)) return;
+                    if (!item.title || !item.enclosureUrl) return;
+                    fromRegistry.push({
+                        episode_name: item.title,
+                        audio_url: item.enclosureUrl,
+                        episode_url: item.link || "",
+                        podcast_id: podcast.podcast_id,
+                    });
+                });
+            });
+            return [...fromRegistry, ...inline];
+        }
+
+        function renderPodcastAppearancesSection(performer) {
+            const appearances = collectPerformerAppearances(performer);
             const section = document.getElementById("perfPodcastAppearancesSection");
             if (appearances.length === 0) {
                 section.style.display = "none";
