@@ -7668,6 +7668,21 @@
       "performer_id": "tim-ralphs"
     },
     {
+      "name": "The Cauldron of Plenty: A Feast of Midsummer Tales",
+      "showname": "The Cauldron of Plenty: A Feast of Midsummer Tales",
+      "date": "03/09/2026",
+      "time": "Doors 7pm for 7.30pm start",
+      "club": "gloucesterSCafe",
+      "price": "Pay what you want",
+      "description": "We are back and ready to bring you a new season of wonderful story nights! Come along on 3rd September to The Folk of Gloucester to hear Andy Johnson bring us a set of legendary tales starting Weland the Smith. As always we will also have our open mic slots as well! Come along and join our friendly, supportive audience to listen or tell! 7.30pm start. Refreshments from The Folk's cafe too.",
+      "ticket_url": "",
+      "isSpecial": true,
+      "event_flyer": "2026_09_03_johnson_wayland_gloucester.jpg",
+      "venue_id": "the-folk-of-gloucester",
+      "performer_id": "andy-johnson",
+      "date_added": "27/08/2026"
+    },
+    {
       "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
       "showname": "Stories of the Vikings: creation, destruction, magic",
       "date": "07/09/2026",
@@ -14649,6 +14664,12 @@
       "name": "Andy Harrop Smith",
       "url": "",
       "bio": ""
+    },
+    "andy-johnson": {
+      "id": "andy-johnson",
+      "name": "Andy Johnson",
+      "url": "https://www.facebook.com/1955andy",
+      "bio": "Storyteller (and retired librarian), living in Liverpool."
     },
     "ailsa-dixon": {
       "id": "ailsa-dixon",
