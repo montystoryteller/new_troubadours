@@ -1747,6 +1747,95 @@
       "description": "A fatherless son\n\nA daughter's lament\n\nA pig stolen from its spit\n\nFires burning out at sea\n\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny — an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
       "isSpecial": true
     },
+    "ben-haggarty-steph-brittain-the-bodies-on-the-beach": {
+      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
+      "showname": "The Girl Who Didn't Die",
+      "show_dates": [
+        {
+          "date": "10/10/2026",
+          "promoter": "crickcrack",
+          "venue_id": "cranborne-earthouse",
+          "time": "7.30-10.30pm",
+          "price": "£14.43",
+          "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-ejlxoya",
+          "date_added": "26/08/2026"
+        },
+        {
+          "date": "15/10/2026",
+          "promoter": "crickcrack",
+          "venue_id": "the-cube-kingsdown",
+          "time": "8pm",
+          "price": "£12.50",
+          "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-15-oct-the-girl-who-didnt-die-156518#e156518",
+          "date_added": "26/08/2026"
+        },
+        {
+          "date": "21/10/2026",
+          "promoter": "crickcrack",
+          "venue_id": "folklore-hoxton",
+          "time": "7pm",
+          "price": "£13.50",
+          "ticket_url": "https://dice.fm/event/53ppkw-fairytales-for-grown-ups-the-girl-who-didnt-die-21st-oct-folklore-hoxton-london-tickets",
+          "date_added": "26/08/2026"
+        },
+        {
+          "date": "22/10/2026",
+          "promoter": "crickcrack",
+          "venue_id": "the-story-museum-oxford",
+          "time": "7.30pm",
+          "price": "£14",
+          "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-the-girl-who-didnt-die",
+          "date_added": "26/08/2026"
+        }
+      ],
+      "performer_ids": ["emily-hennessey", "sheema-mukherjee"],
+      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
+      "isSpecial": true
+    },
+    "lucy-lill-doom-scrolls": {
+      "name": "Doom Scrolls — The Never Ending Prophecies of the Sibyls [Lucy Lill]",
+      "showname": "Doom Scrolls — The Never Ending Prophecies of the Sibyls",
+      "show_dates": [
+        {
+        "date": "12/09/2026",
+      "date_added": "27/06/2026",
+      "time": "7.30pm",
+      "promoter": "crickcrack",
+      "price": "£14.43",
+      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-oemdjrk",
+      "venue_id": "cranborne-earthouse"
+        },
+      {
+        "date": "17/09/2026",
+      "date_added": "27/06/2026",
+      "time": "8pm",
+      "promoter": "crickcrack",
+      "price": "£12.50",
+      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-17-sep-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-156517#e156517",
+      "venue_id": "the-cube-kingsdown"
+        },
+      {
+        "date": "23/09/2026",
+      "date_added": "27/06/2026",
+      "time": "7pm",
+      "promoter": "crickcrack",
+      "price": "£13.50",
+      "ticket_url": "https://dice.fm/event/pynn3l-fairytales-for-grown-ups-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-23rd-sep-folklore-hoxton-london-tickets",
+      "venue_id": "folklore-hoxton"
+        },
+      {
+        "date": "24/09/2026",
+      "date_added": "27/06/2026",
+      "time": "7.30-10.30pm",
+      "promoter": "crickcrack",
+      "price": "£13",
+      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-doom-scrolls",
+      "venue_id": "the-story-museum-oxford"
+        }],
+      "description": "Possessed by gods?\n\n\n\nOff their heads on laughing gas?\n\n\n\nThe mouthpieces of the state?\n\n\n\nOr the ancient world's most influential influencers?\n\n\n\nThe prophecies of the Sibyls thread through ancient myth. Feared, revered and frequently misunderstood, the Sibyls stood at the crossroads of religion, politics and performance. Their visions promised answers while leaving everyone wondering what they actually meant.\n\n\n\nFrom a mountain in the southeast of Italy to the depths of the underworld, Lucy Lill tells the stories of the women whose words founded cities, brought down armies and caused an epic amount of confusion.\n\n\n\nShe might know your future, but that doesn't mean she's going to tell you...",
+      "isSpecial": true,
+      "performer_id": "lucy-lill"
+    },
     "tim-ralphs-goddess-spreadsheets": {
       "name": "The Goddess of Spreadsheets [Tim Ralphs]",
       "showname": "The Goddess of Spreadsheets",
@@ -1801,8 +1890,56 @@
           "ticket_url": "https://events.bl.uk/events/strange-girls-beautiful-monsters",
           "venue_id": "pavilion-british-library"
         }
-        ]},
-
+      ]},
+    "sarah-liisa-wilkinson-how-not-die-finland": {
+      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
+      "showname": "HOW (NOT) TO DIE long ago in Finland",
+      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But – and this is where it gets tricky — he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
+      "touring_event_flyer": "",
+      "isSpecial": true,
+      "isTouringShow": true,
+      "performer_id": "sarah-liisa-wilkinson",
+      "show_dates": [{
+          "date": "07/11/2026",
+          "date_added": "27/06/2026",
+          "time": "7.30-10.30pm",
+          "club": "crickcrack",
+          "price": "£14.43",
+          "event_flyer": "",
+          "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-njmyple",
+          "venue_id": "cranborne-earthouse"
+        },
+        {
+          "date": "12/11/2026",
+          "time": "7.30-10.30pm",
+          "date_added": "27/06/2026",
+          "club": "crickcrack",
+          "price": "£12.50",
+          "event_flyer": "",
+          "ticket_url": "https://crickcrackclub.com/crick-crack-events/how-not-to-die-long-ago-in-finland/",
+          "venue_id": "the-cube-kingsdown"
+        },
+        {
+          "date": "25/11/2026",
+          "time": "Doors 7pm, 7.30-10.30pm",
+          "date_added": "27/06/2026",
+          "club": "crickcrack",
+          "price": "£13.50",
+          "event_flyer": "",
+          "ticket_url": "https://dice.fm/event/7dww56-fairytales-for-grown-ups-how-not-to-die-long-ago-in-finland-25th-nov-folklore-hoxton-london-tickets",
+          "venue_id": "folklore-hoxton"
+        },
+        {
+          "date": "26/11/2026",
+          "time": "7.30pm",
+          "date_added": "27/06/2026",
+          "club": "crickcrack",
+          "price": "£13",
+          "event_flyer": "",
+          "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-how-not-to-die-long-ago-in-finland/",
+          "venue_id": "the-story-museum-oxford"
+        }
+    ]},
     "sally-pomme-clayton-mighty-goddess": {
       "name": "The Mighty Goddess [Sally Pomme Clayton]",
       "showname": "The Mighty Goddess",
@@ -7774,21 +7911,6 @@
       "performer_id": "clare-murphy"
     },
     {
-      "name": "Doom Scrolls — The Never Ending Prophecies of the Sibyls [Lucy Lill]",
-      "showname": "Doom Scrolls — The Never Ending Prophecies of the Sibyls",
-      "date": "12/09/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30-10.30pm",
-      "club": "crickcrack",
-      "price": "£12.50",
-      "description": "Possessed by gods?\n\n\n\nOff their heads on laughing gas?\n\n\n\nThe mouthpieces of the state?\n\n\n\nOr the ancient world's most influential influencers?\n\n\n\nThe prophecies of the Sibyls thread through ancient myth. Feared, revered and frequently misunderstood, the Sibyls stood at the crossroads of religion, politics and performance. Their visions promised answers while leaving everyone wondering what they actually meant.\n\n\n\nFrom a mountain in the southeast of Italy to the depths of the underworld, Lucy Lill tells the stories of the women whose words founded cities, brought down armies and caused an epic amount of confusion.\n\n\n\nShe might know your future, but that doesn't mean she's going to tell you...",
-      "event_flyer": "",
-      "ticket_url": "https://crickcrackclub.com/crick-crack-events/doom-scrolls-the-never-ending-prophecies-of-the-sybils/",
-      "isSpecial": true,
-      "venue_id": "the-cube-kingsdown",
-      "performer_id": "lucy-lill"
-    },
-    {
       "name": "Uncaged — A Story from the Wild [Michael Harvey]",
       "showname": "Uncaged — A Story from the Wild",
       "date": "16/09/2026",
@@ -7981,8 +8103,8 @@
       "performer_id": "lynette-hill"
     },
     {
-      "name": "DAUNTLESS – Grace O'Malley, Pirate Queen [Debs Newbold]",
-      "showname": "DAUNTLESS – Grace O'Malley, Pirate Queen",
+      "name": "DAUNTLESS — Grace O'Malley, Pirate Queen [Debs Newbold]",
+      "showname": "DAUNTLESS — Grace O'Malley, Pirate Queen",
       "date": "07/10/2026",
       "venue_id": "hoxton-hall",
       "performer_id": "debs-newbold",
@@ -7990,39 +8112,9 @@
       "time": "7.30pm",
       "club": "crickcrack",
       "price": "£14.97",
-      "description": "The Crick Crack Club presents\nDAUNTLESS – Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold\n\n\n\nStorytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille – aka Grace O'Malley – legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
+      "description": "The Crick Crack Club presents\nDAUNTLESS — Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold\n\n\n\nStorytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille — aka Grace O'Malley — legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
       "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-mjeajyx",
       "isSpecial": true
-    },
-    {
-      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
-      "showname": "The Girl Who Didn't Die",
-      "date": "10/10/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30-10.30pm",
-      "club": "crickcrack",
-      "price": "£14.43",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
-      "event_flyer": "",
-      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-ejlxoya",
-      "isSpecial": true,
-      "venue_id": "cranborne-earthouse",
-      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
-    },
-    {
-      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
-      "showname": "The Girl Who Didn't Die",
-      "date": "15/10/2026",
-      "date_added": "27/06/2026",
-      "time": "8pm",
-      "club": "crickcrack",
-      "price": "£12.50",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
-      "event_flyer": "",
-      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-ejlxoya",
-      "isSpecial": true,
-      "venue_id": "the-cube-kingsdown",
-      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
     },
     {
       "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
@@ -8067,36 +8159,6 @@
       "date_added": "15/08/2026",
       "venue_id": "the-hop-sun-tap-microbrewery-haywards",
       "performer_id": "jason-buck"
-    },
-    {
-      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
-      "showname": "The Girl Who Didn't Die",
-      "date": "21/10/2026",
-      "date_added": "26/08/2026",
-      "time": "7pm",
-      "club": "crickcrack",
-      "price": "£13.50",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
-      "event_flyer": "",
-      "ticket_url": "https://dice.fm/event/53ppkw-fairytales-for-grown-ups-the-girl-who-didnt-die-21st-oct-folklore-hoxton-london-tickets",
-      "isSpecial": true,
-      "venue_id": "folklore-hoxton",
-      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
-    },
-    {
-      "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
-      "showname": "The Girl Who Didn't Die",
-      "date": "22/10/2026",
-      "date_added": "26/08/2026",
-      "time": "7.30pm",
-      "club": "crickcrack",
-      "price": "£14",
-      "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
-      "event_flyer": "",
-      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-the-girl-who-didnt-die",
-      "isSpecial": true,
-      "venue_id": "the-story-museum-oxford",
-      "performer_ids": ["emily-hennessey", "sheema-mukherjee"]
     },
     {
       "name": "The call of Cthulhu [Jason Buck]",
@@ -8155,36 +8217,6 @@
       "performer_id": "baden-prince"
     },
     {
-      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
-      "showname": "HOW (NOT) TO DIE long ago in Finland",
-      "date": "07/11/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30-10.30pm",
-      "club": "crickcrack",
-      "price": "£14.43",
-      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But – and this is where it gets tricky — he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
-      "event_flyer": "",
-      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-njmyple",
-      "isSpecial": true,
-      "venue_id": "cranborne-earthouse",
-      "performer_id": "sarah-liisa-wilkinson"
-    },
-    {
-      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
-      "showname": "HOW (NOT) TO DIE long ago in Finland",
-      "date": "12/11/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30-10.30pm",
-      "club": "crickcrack",
-      "price": "£12.50",
-      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
-      "event_flyer": "",
-      "ticket_url": "https://crickcrackclub.com/crick-crack-events/how-not-to-die-long-ago-in-finland/",
-      "isSpecial": true,
-      "venue_id": "the-cube-kingsdown",
-      "performer_id": "sarah-liisa-wilkinson"
-    },
-    {
       "name": "Fairytales for Grow-Ups: Baba Yaga [Ben Haggarty & Sarah-Liisa Wilkinson & Steph Brittain]",
       "showname": "Fairytales for Grow-Ups: Baba Yaga",
       "date": "19/11/2026",
@@ -8198,39 +8230,9 @@
       "time": "7-9pm",
       "club": "crickcrack",
       "price": "£10.00 - £25.00",
-      "description": "The Crick Crack Club presents a Storytelling Night with Ben Haggarty, Sarah Liisa Wilkinson & Steph Brittain\n\n\n\nBaba Yaga – super-witch, ultimate hag, half-goddess, unpredictable, and more than a little cannibalistic. She lives in a hut perched at the top of a chicken's foot, guarded by a fence of human skulls.\n\n\n\nAllow extraordinary fairytale-tellers, Ben Haggarty, Sarah Liisa Wilkinson and Steph Brittain, to lure you into the enchanted realm of fairytales for grown-ups to encounter this dangerous deity of the dark woods – down there…. deep beneath your feet.",
+      "description": "The Crick Crack Club presents a Storytelling Night with Ben Haggarty, Sarah Liisa Wilkinson & Steph Brittain\n\n\n\nBaba Yaga — super-witch, ultimate hag, half-goddess, unpredictable, and more than a little cannibalistic. She lives in a hut perched at the top of a chicken's foot, guarded by a fence of human skulls.\n\n\n\nAllow extraordinary fairytale-tellers, Ben Haggarty, Sarah Liisa Wilkinson and Steph Brittain, to lure you into the enchanted realm of fairytales for grown-ups to encounter this dangerous deity of the dark woods — down there... deep beneath your feet.",
       "ticket_url": "https://www.jacksonslane.org.uk/events/baba-yaga-fairytales-for-grown-ups/",
       "isSpecial": true
-    },
-    {
-      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
-      "showname": "HOW (NOT) TO DIE long ago in Finland",
-      "date": "25/11/2026",
-      "date_added": "26/08/2026",
-      "time": "Doors 7pm, 7.30-10.30pm",
-      "club": "crickcrack",
-      "price": "£13.50",
-      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
-      "event_flyer": "",
-      "ticket_url": "https://dice.fm/event/7dww56-fairytales-for-grown-ups-how-not-to-die-long-ago-in-finland-25th-nov-folklore-hoxton-london-tickets",
-      "isSpecial": true,
-      "venue_id": "folklore-hoxton",
-      "performer_id": "sarah-liisa-wilkinson"
-    },
-    {
-      "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
-      "showname": "HOW (NOT) TO DIE long ago in Finland",
-      "date": "26/11/2026",
-      "date_added": "26/08/2026",
-      "time": "7.30pm",
-      "club": "crickcrack",
-      "price": "£13",
-      "description": "By the edge of a deep forest and the shore of a biting sea, an old man sets his mind on a journey to the underworld - to learn the secrets of the dead. But — and this is where it gets tricky – he wants to stay alive.\n\n\n\nSarah Liisa Wilkinson brings you tales from the twisting roots of Finnish myth and folklore: a woman spinning her own iron hair; a shapeshifting sage; a giant, fat with spells, sleeping deep in the earth; a coat of fire, gloves of pain — dangerous tools and hard lessons on how to live, how to let go... and how to come back.\n\n\n\nDuration: 75mins (TBC)\n\n\n\nContent: This performance contains references to death, threat, and violence contextualised within a paradigm of mythic narrative, archetype, and metaphor.\n\n\n\nSuitable for: Adults 14+",
-      "event_flyer": "",
-      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-how-not-to-die-long-ago-in-finland",
-      "isSpecial": true,
-      "venue_id": "the-story-museum-oxford",
-      "performer_id": "sarah-liisa-wilkinson"
     },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
@@ -10016,7 +10018,7 @@
     "cranborne-earthouse": {
       "id": "cranborne-earthouse",
       "name": "Cranborne Earthhouse",
-      "city": "Swindon",
+      "city": "Cranborne, nr. Swindon",
       "postcode": "BH21 5RP",
       "full_address": "Cranborne Earthhouse, Ancient Technology Centre, Damerham Road, Wimborne, Dorset, BH21 5RP",
       "url": "https://earthouse.org.uk/",
