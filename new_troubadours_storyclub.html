@@ -913,6 +913,12 @@
             // stop that's also that club's regular night). expandTourDates()
             // (shared_utils.js) flattens any array-format dates first, so a
             // multi-night stop is picked up correctly too.
+            //
+            // Some tour_dates entries in the data use a bare `club` field
+            // instead of `club_event` for the same purpose — that's not
+            // (yet) treated as equivalent here, so those dates currently
+            // don't appear on the club's page. Flagged separately; not
+            // silently changed by this fix.
             const tours = data.tours || {};
             const tourClubEvents = [];
             for (const tourKey in tours) {
@@ -922,10 +928,12 @@
                     .forEach(tourDate => {
                         const _date = parseDateString(tourDate.date);
                         if (!_date) return;
+                        const { performer_id, performer } = resolveClubEventPerformer(tour);
                         tourClubEvents.push({
                             name: tour.name,
                             showname: tour.tour_name || tour.name,
-                            performer_id: tour.performer_id || null,
+                            performer_id,
+                            performer,
                             venue_id: tourDate.venue_id,
                             time: tourDate.time || tour.time || null,
                             price: tourDate.price || tour.price || null,
@@ -941,8 +949,46 @@
                     });
             }
 
+            // Repertoire shows: same idea as tour dates above, but each
+            // show_dates[] entry opts in via a plain `club` field (per the
+            // schema's showDate.club, "the club night this date belongs
+            // to") rather than a separate `club_event` flag — repertoire
+            // shows don't otherwise have a general-purpose, non-club-opt-in
+            // use for `club`, so there's no ambiguity to resolve here the
+            // way there is for tour_dates.
+            const repertoireShows = data.repertoire_shows || {};
+            const repertoireClubEvents = [];
+            for (const showKey in repertoireShows) {
+                const show = repertoireShows[showKey];
+                expandTourDates(show.show_dates)
+                    .filter(showDate => showDate.club === clubId)
+                    .forEach(showDate => {
+                        const _date = parseDateString(showDate.date);
+                        if (!_date) return;
+                        const { performer_id, performer } = resolveClubEventPerformer(show);
+                        repertoireClubEvents.push({
+                            name: show.name,
+                            showname: show.showname || show.name,
+                            performer_id,
+                            performer,
+                            venue_id: showDate.venue_id,
+                            time: showDate.time || null,
+                            price: showDate.price || null,
+                            description: show.description || null,
+                            ticket_url: showDate.ticket_url || null,
+                            fb_event: showDate.fb_event || null,
+                            video_trailer: showDate.video_trailer || show.video_trailer || null,
+                            isSpecial: !!showDate.isSpecial || !!show.isSpecial,
+                            isCancelled: !!showDate.isCancelled,
+                            isSoldOut: !!showDate.isSoldOut,
+                            _date,
+                        });
+                    });
+            }
+
             const allSpecific = clubSpecificEvents
                 .concat(tourClubEvents)
+                .concat(repertoireClubEvents)
                 .sort((a, b) => a._date - b._date);
 
             const pastEvents = allSpecific.filter(e => e._date < today);
@@ -968,6 +1014,27 @@
             }
             function performerUrl(id) {
                 return id && performers[id] ? performers[id].url || null : null;
+            }
+
+            // Resolves a tour/repertoire-show record's performer(s) into the
+            // shape renderSpecificEvent() already expects: a linkable
+            // performer_id when there's exactly one performer, or a
+            // plain-text joined `performer` string when there's more than
+            // one (renderSpecificEvent() falls back to plain text via
+            // `ev.performer` whenever performer_id doesn't resolve to a
+            // name, so this doesn't require any change there). Some records
+            // give a single performer_id, others an array performer_ids —
+            // both are handled the same way performers.html's own
+            // performerMatches() already does.
+            function resolveClubEventPerformer(obj) {
+                const ids = Array.isArray(obj.performer_ids) && obj.performer_ids.length
+                    ? obj.performer_ids
+                    : (obj.performer_id ? [obj.performer_id] : []);
+                if (ids.length === 1) return { performer_id: ids[0], performer: null };
+                if (ids.length > 1) {
+                    return { performer_id: null, performer: ids.map(id => performerName(id) || id).join(' & ') };
+                }
+                return { performer_id: null, performer: null };
             }
 
             // Resolve feature_slots for a given Date → { name, url, id } or null
