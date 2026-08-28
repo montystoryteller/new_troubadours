@@ -1728,8 +1728,51 @@
       "stages": [],
       "schedule": []
     }
-  }, 
+  },
   "repertoire_shows": {
+    "nell-phoenix-uncanny": {
+      "name": "Uncanny [Nell Phoenix]",
+      "showname": "Uncanny",
+      "show_dates": [
+        {
+          "date": "11/11/2025",
+          "time": "7.30pm",
+          "club": "guesthouseST",
+          "price": "£12/£10/£8",
+          "event_flyer": "2025_11_11_guesthouseST_phoenix_uncanny.jpg",
+          "ticket_url": "",
+          "venue_id": "hillcrest-community-centre-newhaven"
+        },
+        {
+          "date": "19/03/2026",
+          "time": "7.30pm",
+          "club": "crickcrack",
+          "price": "£12.50",
+          "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-19-mar-uncanny-146375",
+          "venue_id": "the-cube-kingsdown"
+        },
+        {
+          "date": "22/04/2026",
+          "date_added": "02/04/2026",
+          "time": "7pm",
+          "club": "crickcrack",
+          "price": "£13.50",
+          "ticket_url": "https://dice.fm/event/v39r5v-fairytales-for-grown-ups-uncanny-22nd-apr-folklore-hoxton-london-tickets",
+          "venue_id": "folklore-hoxton"
+        },
+        {
+          "date": "25/02/2026",
+          "time": "7-9pm",
+          "club": "pembrokeshirestorytelling",
+          "price": "£7.50/6.00",
+          "event_flyer": "2026_02_25-pembrokeshire-nell-phoenix-uncanny.jpg",
+          "venue_id": "peppers-hub-fishguard"
+        }
+      ],
+      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
+      "isSpecial": true,
+      "performer_id": "nell-phoenix"
+    },
     "hugh-lupton-sarah-moody-morning-stars": {
       "name": "When the Morning Stars Sang",
       "showname": "When the Morning Stars Sang",
@@ -5066,21 +5109,6 @@
       "performer_id": "the-travelling-talesman-cliff-eastabrook"
     },
     {
-      "name": "Uncanny [Nell Phoenix]",
-      "showname": "Uncanny",
-      "promoter_link": "http://nellphoenix.co.uk/",
-      "date": "11/11/2025",
-      "time": "7.30pm",
-      "club": "guesthouseST",
-      "price": "£12/£10/£8",
-      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
-      "event_flyer": "2025_11_11_guesthouseST_phoenix_uncanny.jpg",
-      "ticket_url": "",
-      "isSpecial": true,
-      "venue_id": "hillcrest-community-centre-newhaven",
-      "performer_id": "nell-phoenix"
-    },
-    {
       "name": "Madness, Merry Making and Liberation [Sarah Dovey]",
       "showname": "Madness, Merry Making and Liberation",
       "date": "19/11/2025",
@@ -6215,21 +6243,6 @@
       "performer_id": "ffion-phillips-dragon-storytellers"
     },
     {
-      "name": "Uncanny [Nell Phoenix]",
-      "showname": "Uncanny",
-      "promoter_link": "http://nellphoenix.co.uk/",
-      "date": "25/02/2026",
-      "time": "7-9pm",
-      "club": "pembrokeshirestorytelling",
-      "price": "£7.50/6.00",
-      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.\n\n\n\nReserve tickets: debwinterstories@gmail.com",
-      "event_flyer": "2026_02_25-pembrokeshire-nell-phoenix-uncanny.jpg",
-      "ticket_url": "",
-      "isSpecial": true,
-      "venue_id": "peppers-hub-fishguard",
-      "performer_id": "nell-phoenix"
-    },
-    {
       "name": "A Dance with the Minotaur's Sister [Steph Brittain]",
       "showname": "A Dance with the Minotaur's Sister",
       "date": "26/02/2026",
@@ -6355,20 +6368,6 @@
       "isSpecial": true,
       "venue_id": "newport-memorial-hall",
       "performer_id": "caravan-of-storytellers"
-    },
-    {
-      "name": "Uncanny [Nell Phoenix]",
-      "showname": "Uncanny",
-      "date": "19/03/2026",
-      "time": "7.30pm",
-      "club": "crickcrack",
-      "price": "£12.50",
-      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
-      "event_flyer": "",
-      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-19-mar-uncanny-146375",
-      "isSpecial": true,
-      "venue_id": "the-cube-kingsdown",
-      "performer_id": "nell-phoenix"
     },
     {
       "name": "Myths and Mysteries of the Maltese Islands [Janet Crouch]",
@@ -6678,21 +6677,6 @@
       "isSpecial": true,
       "venue_id": "st-lawrence-village-hall",
       "performer_id": "monty-the-anywhens"
-    },
-    {
-      "name": "Uncanny [Nell Phoenix]",
-      "showname": "Uncanny",
-      "date": "22/04/2026",
-      "date_added": "02/04/2026",
-      "time": "7pm",
-      "club": "crickcrack",
-      "price": "£13.50",
-      "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
-      "event_flyer": "",
-      "ticket_url": "https://dice.fm/event/v39r5v-fairytales-for-grown-ups-uncanny-22nd-apr-folklore-hoxton-london-tickets",
-      "isSpecial": true,
-      "venue_id": "folklore-hoxton",
-      "performer_id": "nell-phoenix"
     },
     {
       "name": "Tales of the British Isles [Ensemble]",
@@ -8147,20 +8131,6 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "lynette-hill"
-    },
-    {
-      "name": "DAUNTLESS — Grace O'Malley, Pirate Queen [Debs Newbold]",
-      "showname": "DAUNTLESS — Grace O'Malley, Pirate Queen",
-      "date": "07/10/2026",
-      "venue_id": "hoxton-hall",
-      "performer_id": "debs-newbold",
-      "date_added": "26/08/2026",
-      "time": "7.30pm",
-      "club": "crickcrack",
-      "price": "£14.97",
-      "description": "The Crick Crack Club presents\nDAUNTLESS — Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold\n\n\n\nStorytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille — aka Grace O'Malley — legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
-      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-mjeajyx",
-      "isSpecial": true
     },
     {
       "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
