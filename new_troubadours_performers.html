@@ -1692,9 +1692,11 @@
             // Gather all data for this performer
             const myTours = Object.entries(toursLookup).filter(([, t]) => performerMatches(t));
             const myTouringShows = Object.entries(eventsData.repertoire_shows || {}).filter(([, ts]) => performerMatches(ts));
-            const mySpecific = (eventsData.specificEvents || []).filter(e => performerMatches(e));
-            const myMusic = (eventsData.musicEvents || []).filter(e => performerMatches(e));
-            const myPoetry = (eventsData.poetryEvents || []).filter(e => performerMatches(e));
+            // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
+            // same convention as tour_dates — see expandTourDates() in shared_utils.js.
+            const mySpecific = expandTourDates((eventsData.specificEvents || []).filter(e => performerMatches(e)));
+            const myMusic = expandTourDates((eventsData.musicEvents || []).filter(e => performerMatches(e)));
+            const myPoetry = expandTourDates((eventsData.poetryEvents || []).filter(e => performerMatches(e)));
             const myFestivals = Object.entries(eventsData.festivals || {}).filter(([, f]) =>
                 (f.performers || []).some(p => p.performer_id === performerId)
             );
