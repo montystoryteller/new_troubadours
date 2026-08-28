@@ -3,6 +3,13 @@
    Styles for new_troubadours_festival.html
    ============================================================= */
 
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-bg: #e8f5e9;
+}
+
 
 /* =============================================================
    1. OVERVIEW PANELS  (past / current / upcoming)
@@ -63,7 +70,7 @@
 .festival-overview-card {
     background: #f1f8e9;
     border: 1px solid #a5d6a7;
-    border-left: 4px solid #2e7d32;
+    border-left: 4px solid var(--theme-green-dark);
     border-radius: 6px;
     padding: 14px 18px;
     min-width: 220px;
@@ -73,7 +80,7 @@
 }
 
 .festival-overview-card:hover {
-    background: #e8f5e9;
+    background: var(--theme-green-bg);
     box-shadow: 0 2px 8px rgba(46,125,50,0.2);
 }
 
@@ -148,7 +155,7 @@
 }
 
 .btn-primary {
-    background-color: #2e7d32;
+    background-color: var(--theme-green-dark);
 }
 .btn-primary:hover { background-color: #1b5e20; }
 
@@ -169,7 +176,7 @@
 .back-link {
     display: inline-block;
     margin: 16px 0;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-size: 0.9em;
 }
@@ -213,7 +220,7 @@
 }
 
 .festival-banner-past    { background: #f5f5f5; color: #666; }
-.festival-banner-future  { background: #e8f5e9; color: #1b5e20; }
+.festival-banner-future  { background: var(--theme-green-bg); color: #1b5e20; }
 .festival-banner-current { background: #fff9c4; color: #f57f17; }
 
 .festival-meta-row {
@@ -246,7 +253,7 @@
 .festival-ext-link {
     display: inline-block;
     padding: 6px 14px;
-    background: #e8f5e9;
+    background: var(--theme-green-bg);
     color: #1b5e20;
     border: 1px solid #a5d6a7;
     border-radius: 4px;
@@ -300,7 +307,7 @@
 }
 
 .festival-performer-link {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-size: 0.9em;
     font-weight: 600;
@@ -560,7 +567,7 @@
 /* Types */
 .cf-event-special {
     background: linear-gradient(135deg, #43a047, #66bb6a);
-    border: 1px solid #2e7d32;
+    border: 1px solid var(--theme-green-dark);
     color: white;
 }
 
