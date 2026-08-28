@@ -1,3 +1,10 @@
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-bg: #e8f5e9;
+}
+
 /* ── Filter bar ──────────────────────────────────────── */
 .filter-bar {
     background: white;
@@ -31,14 +38,14 @@
 }
 
 .filter-btn:hover {
-    border-color: #4CAF50;
-    color: #2e7d32;
+    border-color: var(--theme-green);
+    color: var(--theme-green-dark);
     background: #f1f8f1;
 }
 
 .filter-btn.active {
-    background: #4CAF50;
-    border-color: #4CAF50;
+    background: var(--theme-green);
+    border-color: var(--theme-green);
     color: white;
     box-shadow: none;
 }
@@ -112,7 +119,7 @@
     color: #1b5e20;
     margin: 28px 0 14px;
     padding-bottom: 7px;
-    border-bottom: 3px solid #4CAF50;
+    border-bottom: 3px solid var(--theme-green);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -142,7 +149,7 @@
 .video-trailers-summary::before {
     content: '▸';
     font-size: 0.7em;
-    color: #4CAF50;
+    color: var(--theme-green);
     transition: transform 0.2s ease;
 }
 
@@ -210,11 +217,11 @@
 }
 
 .video-group-current>.video-group-heading {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .video-group-current .count {
-    color: #4CAF50;
+    color: var(--theme-green);
 }
 
 /* ── Older flyers (beyond the "Recent past" window) ─────── */
@@ -468,7 +475,7 @@
     content: "";
     display: block;
     height: 4px;
-    background: #4CAF50;
+    background: var(--theme-green);
     flex-shrink: 0;
 }
 
@@ -507,7 +514,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #e8f5e9 0%, #f0f0f0 100%);
+    background: linear-gradient(135deg, var(--theme-green-bg) 0%, #f0f0f0 100%);
     z-index: 0;
     transition: opacity 0.4s;
 }
@@ -594,7 +601,7 @@
 .flyer-date {
     font-size: 11px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
@@ -629,9 +636,9 @@
 .flyer-actions a {
     font-size: 12px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
-    border-bottom: 1px solid #4CAF50;
+    border-bottom: 1px solid var(--theme-green);
 }
 
 .flyer-actions a:hover {

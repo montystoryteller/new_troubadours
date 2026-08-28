@@ -4,6 +4,16 @@
    Depends on shared-styles.css being loaded first.
    ============================================================= */
 
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-border: #a5d6a7;
+    --theme-green-bg-alt: rgb(8, 10, 8);
+    --theme-green-border-alt: #c8e6c9;
+    --theme-green-bg-hover: #dcedc8;
+    --theme-green-bg-light: #f9fdf9;
+}
+
 /* =============================================================
    1. PERFORMER HERO
    ============================================================= */
@@ -27,14 +37,14 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: #e8f5e9;
-    border: 2px solid #a5d6a7;
+    background: var(--theme-green-bg);
+    border: 2px solid var(--theme-green-border);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     flex-shrink: 0;
 }
 
@@ -123,7 +133,7 @@
 .stat-n {
     font-size: 28px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .stat-l {
@@ -167,7 +177,7 @@
 
 .tour-card {
     border: 1px solid #e0e0e0;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--theme-green);
     border-radius: 4px;
     padding: 16px;
     margin-bottom: 12px;
@@ -213,9 +223,9 @@
 }
 
 .tour-remaining-badge {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
     border-radius: 20px;
     padding: 2px 10px;
     font-size: 12px;
@@ -268,11 +278,11 @@
 
 .date-pip {
     font-size: 12px;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
     padding: 3px 9px;
     border-radius: 20px;
-    border: 1px solid #c8e6c9;
+    border: 1px solid var(--theme-green-border-alt);
 }
 
 .tour-card-music .date-pip {
@@ -301,7 +311,7 @@
 }
 
 .tour-view-link {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-size: 13px;
     font-weight: bold;
     text-decoration: none;
@@ -324,8 +334,6 @@
    5. EVENT ROWS (other appearances, festival rows)
    ============================================================= */
 
-/* Performer-specific event row sub-classes */
-
 .event-row-date.muted {
     color: #aaa;
 }
@@ -337,7 +345,7 @@
 }
 
 .event-row-venue a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -374,7 +382,6 @@
 
 /* =============================================================
    7. REPERTOIRE CARD
-   Variant of .tour-card where the show description is the focus.
    ============================================================= */
 
 .repertoire-card {
@@ -405,7 +412,6 @@
    8. COMPOUND PERFORMER (member links, chips)
    ============================================================= */
 
-/* Linked individual names in the h1 */
 #performerName a.performer-member-link {
     color: inherit;
     text-decoration: none;
@@ -414,11 +420,10 @@
 }
 
 #performerName a.performer-member-link:hover {
-    color: #2e7d32;
-    border-bottom-color: #2e7d32;
+    color: var(--theme-green-dark);
+    border-bottom-color: var(--theme-green-dark);
 }
 
-/* ── Member chips row ── */
 .performer-member-chips {
     display: flex;
     flex-wrap: wrap;
@@ -431,19 +436,19 @@
     align-items: center;
     gap: 7px;
     padding: 5px 12px 5px 6px;
-    background: #f1f8e9;
-    border: 1px solid #c8e6c9;
+    background: var(--theme-green-bg-alt);
+    border: 1px solid var(--theme-green-border-alt);
     border-radius: 999px;
     text-decoration: none;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-size: 0.85rem;
     font-weight: 500;
     transition: background 0.15s, border-color 0.15s;
 }
 
 .performer-member-chip:hover {
-    background: #dcedc8;
-    border-color: #a5d6a7;
+    background: var(--theme-green-bg-hover);
+    border-color: var(--theme-green-border);
 }
 
 .chip-avatar {
@@ -453,7 +458,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #a5d6a7;
+    background: var(--theme-green-border);
     color: #1b5e20;
     font-size: 0.65rem;
     font-weight: 700;
@@ -471,8 +476,8 @@
     height: 86px;
     border-radius: 4px;
     overflow: hidden;
-    background: #e8f5e9;
-    border: 1px solid #c8e6c9;
+    background: var(--theme-green-bg);
+    border: 1px solid var(--theme-green-border-alt);
     cursor: zoom-in;
     flex-shrink: 0;
     position: relative;
@@ -520,13 +525,12 @@
     border-color: #bcaaa4;
 }
 
-/* Expand-button for event-row flyers */
 .event-row-flyer-btn {
     display: inline-block;
     margin-top: 5px;
     font-size: 11px;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
     border-radius: 10px;
     padding: 1px 8px;
     cursor: pointer;
@@ -535,7 +539,7 @@
 }
 
 .event-row-flyer-btn:hover {
-    background: #e8f5e9;
+    background: var(--theme-green-bg);
 }
 
 .event-row-flyer-expandable {
@@ -551,7 +555,6 @@
     border: 1px solid #e0e0e0;
 }
 
-/* Performer-page flyer lightbox */
 #perfFlyerLightbox {
     display: none;
     position: fixed;
@@ -672,7 +675,7 @@
     user-select: none;
     font-size: 14px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     letter-spacing: 0.03em;
 }
 
@@ -693,7 +696,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
 }
 
 .perf-flyer-gallery-summary:hover {
-    background: #f9fdf9;
+    background: var(--theme-green-bg-light);
 }
 
 .perf-flyer-gallery-hint {
@@ -722,7 +725,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
 }
 
 .perf-flyer-strip::-webkit-scrollbar-thumb {
-    background: #c8e6c9;
+    background: var(--theme-green-border-alt);
     border-radius: 3px;
 }
 
@@ -843,9 +846,6 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
 
 /* =============================================================
    11. PODCAST SECTION
-   performer.podcast may be a single URL or an array of URLs
-   (see events-schema.json → $defs.podcastUrls). Rendered as
-   a collapsible list, mirroring the flyer gallery pattern.
    ============================================================= */
 
 .perf-podcast-section {
@@ -866,7 +866,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
     user-select: none;
     font-size: 14px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     letter-spacing: 0.03em;
 }
 
@@ -887,7 +887,7 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
 }
 
 .perf-podcast-summary:hover {
-    background: #f9fdf9;
+    background: var(--theme-green-bg-light);
 }
 
 .perf-podcast-hint {
@@ -904,7 +904,6 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     gap: 14px;
 }
 
-/* One card per podcast/feed URL on the performer */
 .perf-podcast-feed {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -935,7 +934,7 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     height: 40px;
     border-radius: 6px;
     flex-shrink: 0;
-    background: #e8f5e9;
+    background: var(--theme-green-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -950,7 +949,7 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
 .perf-podcast-feed-title {
     font-size: 13px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -982,7 +981,7 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
 .perf-podcast-feed-open {
     font-size: 11px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     white-space: nowrap;
     flex-shrink: 0;
@@ -992,8 +991,6 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     text-decoration: underline;
 }
 
-/* Nested per-feed "Episodes" collapsible — episodes for a given feed
-    are only fetched the first time this is opened. */
 .perf-podcast-episodes-details {
     border-top: 1px solid #eee;
 }
@@ -1008,7 +1005,7 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     user-select: none;
     font-size: 12px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .perf-podcast-episodes-summary::-webkit-details-marker {
@@ -1028,7 +1025,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 .perf-podcast-episodes-summary:hover {
-    background: #f9fdf9;
+    background: var(--theme-green-bg-light);
 }
 
 .perf-podcast-episodes-hint {
@@ -1041,8 +1038,6 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     padding: 0 0 4px;
 }
 
-/* 16:9 embed used by the Videos section — created only when its
-    collapsible is opened, removed again when it's closed. */
 .perf-video-frame {
     position: relative;
     width: 100%;
@@ -1117,16 +1112,16 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     font: inherit;
     font-size: 11px;
     font-weight: bold;
-    color: #2e7d32;
-    background: #e8f5e9;
-    border: 1px solid #a5d6a7;
+    color: var(--theme-green-dark);
+    background: var(--theme-green-bg);
+    border: 1px solid var(--theme-green-border);
     border-radius: 20px;
     padding: 4px 10px;
     cursor: pointer;
 }
 
 .perf-podcast-episode-preview-btn:hover {
-    background: #d4ecd6;
+    background: var(--theme-green-bg-hover);
 }
 
 .perf-podcast-episode-audio {
@@ -1144,9 +1139,9 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     font: inherit;
     font-size: 12px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     background: none;
-    border: 1px dashed #a5d6a7;
+    border: 1px dashed var(--theme-green-border);
     border-radius: 20px;
     padding: 5px 14px;
     margin: 10px 12px 12px;
@@ -1154,14 +1149,14 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 .perf-podcast-more:hover {
-    background: #f1f8e9;
+    background: var(--theme-green-bg-alt);
 }
 
 .perf-podcast-fallback-link {
     display: block;
     padding: 10px 12px;
     font-size: 12px;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -1200,7 +1195,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     margin-right: 10px;
     transition: transform 0.2s;
     display: inline-block;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .all-performers-details[open]>.all-performers-summary::before {
@@ -1210,7 +1205,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 .all-performers-label {
     font-size: 15px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .all-performers-hint {
@@ -1223,7 +1218,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 .all-performers-summary:hover {
-    background: #f9fdf9;
+    background: var(--theme-green-bg-light);
     border-radius: 8px;
 }
 
@@ -1318,9 +1313,6 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     margin-bottom: 12px;
 }
 
-/* Performance-type filter buttons — see .type-filter-btn in
-    shared-styles.css (shared with the venues listing page) */
-
 .simple-list-row-tags {
     display: inline-flex;
     gap: 4px;
@@ -1363,11 +1355,11 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 .perf-search-wrap .dir-search-input {
-    border-color: #a5d6a7;
+    border-color: var(--theme-green-border);
 }
 
 .perf-search-wrap .dir-search-input:focus {
     outline: none;
-    border-color: #4CAF50;
+    border-color: var(--theme-green);
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
 }

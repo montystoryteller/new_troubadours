@@ -14,6 +14,12 @@
     --color-music: #443cd7;
     --color-poetry: #d6006e;
     --color-troupe: #795548;
+
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-border: #a5d6a7;
+    --theme-green-border-alt: #c8e6c9;
 }
 
 /* =============================================================
@@ -130,7 +136,7 @@ body.nav-loading {
 
 button {
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: var(--theme-green);
     color: white;
     border: none;
     border-radius: 4px;
@@ -144,7 +150,7 @@ button:hover {
 }
 
 button.active {
-    background-color: #2e7d32;
+    background-color: var(--theme-green-dark);
     box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.3);
 }
 
@@ -280,7 +286,7 @@ select {
 
 .popup-content h3 {
     margin: 0 0 10px 0;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .popup-content p {
@@ -326,7 +332,7 @@ select {
 
 .data-refresh-status {
     display: inline;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
     margin-left: 4px;
 }
@@ -342,7 +348,7 @@ select {
     padding: 15px;
     margin-bottom: 10px;
     background-color: #f9f9f9;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--theme-green);
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -354,7 +360,7 @@ select {
 
 .event.special {
     background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
-    border: 2px solid #2e7d32;
+    border: 2px solid var(--theme-green-dark);
     color: white;
 }
 
@@ -428,7 +434,7 @@ select {
 }
 
 .event-featured-guest a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-style: italic;
 }
@@ -438,7 +444,7 @@ select {
 }
 
 .special .event-location {
-    color: #c8e6c9;
+    color: var(--theme-green-border-alt);
 }
 
 .music .event-location {
@@ -484,7 +490,7 @@ select {
 }
 
 .event-date-usually {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-style: italic;
 }
 
@@ -628,10 +634,10 @@ select {
 }
 
 .event-tickets a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-weight: bold;
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid var(--theme-green);
 }
 
 .event.special .event-tickets a,
@@ -690,7 +696,7 @@ select {
     display: block;
     margin-top: 12px;
     padding: 6px 12px;
-    background: #4CAF50;
+    background: var(--theme-green);
     color: white;
     border-radius: 4px;
     font-size: 14px;
@@ -716,7 +722,7 @@ select {
 }
 
 .event.event-cancelled .event-expand-btn {
-    background: #2e7d32;
+    background: var(--theme-green-dark);
     color: white;
 }
 
@@ -728,7 +734,7 @@ select {
     margin-top: 10px;
     padding: 15px;
     background-color: #ffffff;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--theme-green);
     border-radius: 4px;
     margin-bottom: 10px;
     animation: slideDown 0.3s ease-out;
@@ -813,10 +819,10 @@ select {
 
 .event.festival {
     background: #daf3d8;
-    border-left: 6px solid #2e7d32;
-    border-top: 1px solid #c8e6c9;
-    border-right: 1px solid #c8e6c9;
-    border-bottom: 1px solid #c8e6c9;
+    border-left: 6px solid var(--theme-green-dark);
+    border-top: 1px solid var(--theme-green-border-alt);
+    border-right: 1px solid var(--theme-green-border-alt);
+    border-bottom: 1px solid var(--theme-green-border-alt);
     border-radius: 4px;
 }
 
@@ -864,7 +870,7 @@ select {
 
 /* Date range */
 .event.festival .festival-date-range {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
     font-size: 13px;
     margin-top: 5px;
@@ -882,8 +888,8 @@ select {
 /* Festival badge — sits inline after the event name */
 .event-badge.festival-badge {
     background: #e8f5e9;
-    color: #2e7d32 !important;
-    border: 1px solid #a5d6a7;
+    color: var(--theme-green-dark) !important;
+    border: 1px solid var(--theme-green-border);
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 11px;
@@ -900,10 +906,10 @@ select {
 
 /* Ticket / programme link row */
 .event.festival .event-tickets a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
     text-decoration: none;
-    border-bottom: 2px solid #4caf50;
+    border-bottom: 2px solid var(--theme-green);
 }
 
 .event.festival.festival-music .event-tickets a {
@@ -920,10 +926,10 @@ select {
 
 .ticket-link {
     font-size: 12px;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
     text-decoration: none;
-    border-bottom: 1px solid #4CAF50;
+    border-bottom: 1px solid var(--theme-green);
     padding-bottom: 1px;
 }
 
@@ -938,8 +944,8 @@ a.festival-programme-link {
     margin-top: 6px;
     padding: 4px 10px;
     background: #e8f5e9;
-    color: #2e7d32 !important;
-    border: 1px solid #a5d6a7;
+    color: var(--theme-green-dark) !important;
+    border: 1px solid var(--theme-green-border);
     border-radius: 4px;
     font-size: 12px;
     font-weight: bold;
@@ -948,7 +954,7 @@ a.festival-programme-link {
 }
 
 a.festival-programme-link:hover {
-    background: #c8e6c9;
+    background: var(--theme-green-border-alt);
     color: #1b5e20 !important;
 }
 
@@ -1082,7 +1088,7 @@ a.festival-programme-link:hover {
 }
 
 .simple-list-row a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -1127,7 +1133,7 @@ a.festival-programme-link:hover {
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     list-style: none;
     user-select: none;
 }
@@ -1251,9 +1257,9 @@ a.festival-programme-link:hover {
     padding-left: 8px;
 }
 .dir-filter-btn.active-green {
-    background: #2e7d32;
+    background: var(--theme-green-dark);
     color: white;
-    border-color: #2e7d32;
+    border-color: var(--theme-green-dark);
 }
  
 /* Active state — teal (week filter / secondary filters) */
@@ -1278,7 +1284,7 @@ a.festival-programme-link:hover {
 }
 
 .not-found-state a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 
@@ -1346,8 +1352,8 @@ a.festival-programme-link:hover {
 
 .badge-special {
     background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
 }
 
 .badge-music {
@@ -1383,7 +1389,7 @@ a.festival-programme-link:hover {
     gap: 4px;
     font-size: 14px;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 

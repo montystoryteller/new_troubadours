@@ -4,6 +4,14 @@
    Depends on shared-styles.css being loaded first.
    ============================================================= */
 
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-border: #a5d6a7;
+    --theme-green-border-alt: #c8e6c9;
+}
+
 /* ── Page layout ─────────────────────────────────────── */
 
 .directory-intro {
@@ -37,7 +45,7 @@
     padding: 24px 28px 20px;
     margin-bottom: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    border-left: 6px solid #4CAF50;
+    border-left: 6px solid var(--theme-green);
 }
 
 .club-header h1 {
@@ -58,7 +66,7 @@
 }
 
 .club-meta a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -68,7 +76,7 @@
 
 .club-schedule {
     font-style: italic;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-size: 15px;
     margin-top: 4px;
 }
@@ -82,7 +90,7 @@
 }
 
 .club-featured-guest a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-style: italic;
 }
@@ -147,7 +155,7 @@
     color: #333;
     margin: 28px 0 10px;
     padding-bottom: 6px;
-    border-bottom: 2px solid #c8e6c9;
+    border-bottom: 2px solid var(--theme-green-border-alt);
 }
 
 .section-heading.past {
@@ -156,7 +164,7 @@
 }
 
 .section-heading.upcoming {
-    border-bottom-color: #4CAF50;
+    border-bottom-color: var(--theme-green);
     color: #1b5e20;
 }
 
@@ -166,7 +174,7 @@
 /* ── Specific event cards ────────────────────────────── */
 .specific-event {
     background: white;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--theme-green);
     border-radius: 4px;
     padding: 14px 16px;
     margin-bottom: 10px;
@@ -175,7 +183,7 @@
 
 .specific-event.is-special {
     background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
-    border: 2px solid #2e7d32;
+    border: 2px solid var(--theme-green-dark);
     color: white;
 }
 
@@ -221,7 +229,7 @@
 }
 
 .specific-event.is-special .event-location {
-    color: #c8e6c9;
+    color: var(--theme-green-border-alt);
 }
 
 .specific-event .event-description {
@@ -250,7 +258,7 @@
     margin-top: 10px;
     margin-right: 8px;
     padding: 5px 12px;
-    background: #4CAF50;
+    background: var(--theme-green);
     color: white;
     border-radius: 4px;
     font-size: 13px;
@@ -396,10 +404,10 @@
 
 .period-btn {
     padding: 5px 13px;
-    border: 1.5px solid #c8e6c9;
+    border: 1.5px solid var(--theme-green-border-alt);
     border-radius: 20px;
     background: white;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-size: 13px;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -408,12 +416,12 @@
 
 .period-btn:hover {
     background: #f1f8f1;
-    border-color: #4CAF50;
+    border-color: var(--theme-green);
 }
 
 .period-btn.active {
-    background: #4CAF50;
-    border-color: #2e7d32;
+    background: var(--theme-green);
+    border-color: var(--theme-green-dark);
     color: white;
     font-weight: bold;
 }
@@ -441,7 +449,7 @@
 
 .next-meeting-badge.thisweek {
     background: #f5f5f5;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     border: 1px solid #ddd;
 }
 
@@ -484,7 +492,7 @@
 .club-next-meeting {
     margin-top: 6px;
     font-size: 14px;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
 }
 
@@ -495,7 +503,7 @@
     gap: 10px;
     padding: 9px 14px;
     background: white;
-    border-left: 4px solid #a5d6a7;
+    border-left: 4px solid var(--theme-green-border);
     border-radius: 4px;
     margin-bottom: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -520,7 +528,7 @@
 }
 
 .feature-slot-performer a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 

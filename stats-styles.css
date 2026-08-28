@@ -1,3 +1,9 @@
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+}
+
 /* =============================================================
    stats-styles.css
    Styles for new_troubadours_stats.html
@@ -65,7 +71,7 @@ h1 {
     background: white;
     border-radius: 6px;
     padding: 18px 16px;
-    border-top: 3px solid #4CAF50;
+    border-top: 3px solid var(--theme-green);
 }
 
 .summary-tile.blue {
@@ -200,7 +206,7 @@ h1 {
 
 .stats-share-bar button {
     padding: 6px 14px;
-    background: #4CAF50;
+    background: var(--theme-green);
     color: white;
     border: none;
     border-radius: 4px;
@@ -213,7 +219,7 @@ h1 {
 }
 
 #statsCopyFeedback {
-    color: #4CAF50;
+    color: var(--theme-green);
     display: none;
 }
 
@@ -240,14 +246,14 @@ h1 {
 }
 
 .stats-tab-btn:hover {
-    border-color: #4CAF50;
-    color: #2e7d32;
+    border-color: var(--theme-green);
+    color: var(--theme-green-dark);
     background: #f1f8f1;
 }
 
 .stats-tab-btn.active {
-    background: #2e7d32;
-    border-color: #2e7d32;
+    background: var(--theme-green-dark);
+    border-color: var(--theme-green-dark);
     color: white;
     box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
 }
@@ -346,7 +352,7 @@ h1 {
 }
 
 .bar-label a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -364,7 +370,7 @@ h1 {
 .bar-fill {
     height: 100%;
     border-radius: 2px;
-    background: #4CAF50;
+    background: var(--theme-green);
     transition: width 0.4s ease;
 }
 
@@ -393,7 +399,7 @@ h1 {
 }
 
 .bar-fill.multi {
-    background: linear-gradient(90deg, #4CAF50 0%, #443cd7 100%);
+    background: linear-gradient(90deg, var(--theme-green) 0%, #443cd7 100%);
 }
 
 .bar-n {
@@ -430,11 +436,11 @@ h1 {
 }
 
 .seg-story {
-    background: #4CAF50;
+    background: var(--theme-green);
 }
 
 .seg-tour {
-    background: #2e7d32;
+    background: var(--theme-green-dark);
 }
 
 .seg-music {
@@ -536,7 +542,7 @@ h1 {
 }
 
 .stat-table td a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -567,11 +573,11 @@ h1 {
 }
 
 .summary-tile.clickable.active {
-    outline: 2px solid #4CAF50;
+    outline: 2px solid var(--theme-green);
 }
 
 .summary-tile.clickable.active .tile-n {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .tile-hint {
@@ -586,7 +592,7 @@ h1 {
 .drilldown-panel {
     background: white;
     border-radius: 6px;
-    border-left: 3px solid #4CAF50;
+    border-left: 3px solid var(--theme-green);
     padding: 16px 20px;
     margin-bottom: 32px;
     animation: slideIn 0.2s ease-out;

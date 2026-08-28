@@ -4,9 +4,16 @@
    Depends on shared-styles.css being loaded first.
    ============================================================= */
 
+:root {
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-bg: #e8f5e9;
+}
+
 
 /* =============================================================
-   3. VENUE HERO
+   1. VENUE HERO
    ============================================================= */
 
 .venue-hero {
@@ -48,7 +55,7 @@
 }
 
 .venue-links a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-weight: bold;
 }
@@ -72,7 +79,7 @@
 
 
 /* =============================================================
-   4. TWO-COLUMN LAYOUT
+   2. TWO-COLUMN LAYOUT
    ============================================================= */
 
 .two-col-layout {
@@ -97,7 +104,7 @@
 
 
 /* =============================================================
-   5. CONTENT SECTIONS
+   3. CONTENT SECTIONS
    ============================================================= */
 
 .content-section {
@@ -122,7 +129,7 @@
 
 
 /* =============================================================
-   6. MAP
+   4. MAP
    Overrides shared-styles.css #map-container for the venue page.
    ============================================================= */
 
@@ -142,7 +149,7 @@
 
 
 /* =============================================================
-   7. VENUE INFO TABLE
+   5. VENUE INFO TABLE
    ============================================================= */
 
 .venue-info-table {
@@ -173,12 +180,12 @@
 
 
 /* =============================================================
-   8. REGULAR CLUB CARDS
+   6. REGULAR CLUB CARDS
    ============================================================= */
 
 .regular-club-card {
     border: 1px solid #e0e0e0;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--theme-green);
     border-radius: 4px;
     padding: 14px 16px;
     margin-bottom: 10px;
@@ -208,7 +215,7 @@
 
 .regular-club-schedule {
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
 }
 
 .club-folk .regular-club-schedule {
@@ -238,7 +245,7 @@
 }
 
 .regular-club-links a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     font-weight: bold;
 }
@@ -256,7 +263,7 @@
 
 
 /* =============================================================
-   9. EVENT ROWS
+   7. EVENT ROWS
    ============================================================= */
 
 /* Venue-specific event row sub-classes */
@@ -269,7 +276,7 @@
 }
 
 .event-row-performer a {
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
 }
 
@@ -286,8 +293,8 @@
 }
 
 .badge-stories-welcome {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
     border: 1px solid #a5d6a7;
     font-size: 11px;
     padding: 2px 8px;
@@ -311,7 +318,7 @@
 }
 
 /* =============================================================
-   10. NEARBY VENUES
+   8. NEARBY VENUES
    ============================================================= */
 
 .nearby-row {
@@ -328,7 +335,7 @@
 
 .nearby-name {
     font-size: 14px;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     font-weight: bold;
     text-decoration: none;
     flex: 1;
@@ -352,7 +359,7 @@
 
 
 /* =============================================================
-   11. FLYER GALLERY
+   9. FLYER GALLERY
    ============================================================= */
 
 .venue-flyer-grid {
@@ -397,7 +404,7 @@
 
 
 /* =============================================================
-   11b. ALL-VENUES DIRECTORY LISTING
+   10. ALL-VENUES DIRECTORY LISTING
    ============================================================= */
 
 .venue-list-grid {
@@ -468,7 +475,7 @@
 
 .venue-list-website-link {
     font-size: 11px;
-    color: #2e7d32;
+    color: var(--theme-green-dark);
     text-decoration: none;
     margin-top: 4px;
     margin-left: 6px;
@@ -477,7 +484,7 @@
 
 
 /* =============================================================
-   12. RESPONSIVE
+   11. RESPONSIVE
    ============================================================= */
 
 @media (max-width: 600px) {
