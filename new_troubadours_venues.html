@@ -581,12 +581,12 @@
 
             // ── Count line ───────────────────────────────────────────────────────
             const countLine = document.createElement('p');
-            countLine.style.cssText = 'font-size:13px;color:#888;margin:0 0 8px 4px;';
+            countLine.className = 'venue-list-count';
             root.appendChild(countLine);
 
             // ── List container ───────────────────────────────────────────────────
             const listWrap = document.createElement('div');
-            listWrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;';
+            listWrap.className = 'venue-list-grid';
             root.appendChild(listWrap);
 
             // ── Render function ──────────────────────────────────────────────────
@@ -600,7 +600,7 @@
 
                 if (visible.length === 0) {
                     const p = document.createElement('p');
-                    p.style.cssText = 'text-align:center;color:#aaa;padding:30px;font-style:italic;grid-column:1/-1;';
+                    p.className = 'venue-list-empty';
                     p.textContent = 'No venues match the current filters.';
                     listWrap.appendChild(p);
                     return;
@@ -611,26 +611,26 @@
 
                     const row = document.createElement('div');
                     row.id = 'venue-row-' + vid;
-                    row.style.cssText = `background:white;border-radius:6px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;border-left:4px solid ${colour};transition:box-shadow 0.15s;`;
-                    row.addEventListener('mouseover', () => row.style.boxShadow = '0 2px 8px rgba(0,0,0,0.14)');
-                    row.addEventListener('mouseout', () => row.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)');
+                    row.className = 'venue-list-card';
+                    row.style.borderLeftColor = colour;
                     row.onclick = () => { location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`; };
 
                     const nameEl = document.createElement('div');
-                    nameEl.style.cssText = 'font-weight:bold;font-size:14px;color:#1a1a1a;margin-bottom:2px;';
+                    nameEl.className = 'venue-list-name';
                     nameEl.textContent = v.name;
                     row.appendChild(nameEl);
 
                     if (v.city || v.postcode) {
                         const locEl = document.createElement('div');
-                        locEl.style.cssText = 'font-size:12px;color:#777;font-style:italic;';
+                        locEl.className = 'venue-list-loc';
                         locEl.textContent = [v.city, v.postcode].filter(Boolean).join(' · ');
                         row.appendChild(locEl);
                     }
 
                     // Venue-type badge (building type)
                     const typeBadge = document.createElement('span');
-                    typeBadge.style.cssText = `display:inline-block;margin-top:5px;font-size:10px;padding:1px 6px;border-radius:3px;background:${colour}22;color:${colour};border:1px solid ${colour}55;font-weight:500;`;
+                    typeBadge.className = 'venue-type-badge';
+                    typeBadge.style.cssText = `background:${colour}22;color:${colour};border:1px solid ${colour}55;`;
                     typeBadge.textContent = vtype;
                     row.appendChild(typeBadge);
 
@@ -640,7 +640,8 @@
                         const def = PTYPE_DEFS.find(p => p.key === pt);
                         if (!def) return;
                         const pill = document.createElement('span');
-                        pill.style.cssText = `display:inline-block;margin-top:5px;margin-left:4px;font-size:10px;padding:1px 6px;border-radius:20px;background:${def.colour}22;color:${def.colour};border:1px solid ${def.colour}55;font-weight:bold;`;
+                        pill.className = 'venue-ptype-badge';
+                        pill.style.cssText = `background:${def.colour}22;color:${def.colour};border:1px solid ${def.colour}55;`;
                         pill.textContent = def.label;
                         row.appendChild(pill);
                     });
@@ -649,7 +650,7 @@
                         const a = document.createElement('a');
                         a.href = sanitizeUrl(v.url) || '#';
                         a.target = '_blank';
-                        a.style.cssText = 'font-size:11px;color:#2e7d32;text-decoration:none;margin-top:4px;margin-left:6px;display:inline-block;';
+                        a.className = 'venue-list-website-link';
                         a.textContent = 'website';
                         a.onclick = e => e.stopPropagation();
                         row.appendChild(a);

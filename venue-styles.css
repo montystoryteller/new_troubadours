@@ -397,6 +397,86 @@
 
 
 /* =============================================================
+   11b. ALL-VENUES DIRECTORY LISTING
+   ============================================================= */
+
+.venue-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+}
+
+.venue-list-count {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 8px 4px;
+}
+
+.venue-list-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 30px;
+    font-style: italic;
+    grid-column: 1 / -1;
+}
+
+.venue-list-card {
+    background: white;
+    border-radius: 6px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    border-left: 4px solid #999;
+    transition: box-shadow 0.15s ease;
+}
+
+.venue-list-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.venue-list-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.venue-list-loc {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+}
+
+.venue-type-badge {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.venue-ptype-badge {
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: 4px;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.venue-list-website-link {
+    font-size: 11px;
+    color: #2e7d32;
+    text-decoration: none;
+    margin-top: 4px;
+    margin-left: 6px;
+    display: inline-block;
+}
+
+
+/* =============================================================
    12. RESPONSIVE
    ============================================================= */
 
