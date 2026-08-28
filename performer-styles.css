@@ -400,3 +400,974 @@
     color: #888;
     margin: 10px 0 6px 0;
 }
+
+/* =============================================================
+   10. COMPOUND PERFORMER (member links, chips)
+   ============================================================= */
+
+/* Linked individual names in the h1 */
+#performerName a.performer-member-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+#performerName a.performer-member-link:hover {
+    color: #2e7d32;
+    border-bottom-color: #2e7d32;
+}
+
+/* ── Member chips row ── */
+.performer-member-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.performer-member-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 6px;
+    background: #f1f8e9;
+    border: 1px solid #c8e6c9;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #2e7d32;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.performer-member-chip:hover {
+    background: #dcedc8;
+    border-color: #a5d6a7;
+}
+
+.chip-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #a5d6a7;
+    color: #1b5e20;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* =============================================================
+   11. FLYER THUMBNAILS & LIGHTBOX
+   ============================================================= */
+
+.perf-flyer-thumb {
+    float: right;
+    margin: 0 0 8px 12px;
+    width: 68px;
+    height: 86px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
+    cursor: zoom-in;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.perf-flyer-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.perf-flyer-thumb img.pf-loaded {
+    opacity: 1;
+}
+
+.perf-flyer-thumb .img-error,
+.perf-gallery-img-wrap .img-error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9aa;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px;
+    line-height: 1.3;
+}
+
+.tour-card-music .perf-flyer-thumb {
+    background: #e8eaf6;
+    border-color: #9fa8da;
+}
+
+.tour-card-poetry .perf-flyer-thumb {
+    background: #fde8f2;
+    border-color: #f5a8ce;
+}
+
+.repertoire-card .perf-flyer-thumb {
+    background: #efebe9;
+    border-color: #bcaaa4;
+}
+
+/* Expand-button for event-row flyers */
+.event-row-flyer-btn {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 11px;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    border-radius: 10px;
+    padding: 1px 8px;
+    cursor: pointer;
+    background: #f1f8f1;
+    user-select: none;
+}
+
+.event-row-flyer-btn:hover {
+    background: #e8f5e9;
+}
+
+.event-row-flyer-expandable {
+    display: none;
+    margin-top: 6px;
+}
+
+.event-row-flyer-expandable img {
+    max-width: 180px;
+    border-radius: 4px;
+    display: block;
+    cursor: zoom-in;
+    border: 1px solid #e0e0e0;
+}
+
+/* Performer-page flyer lightbox */
+#perfFlyerLightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#perfFlyerLightbox.pf-open {
+    display: flex;
+}
+
+#perfFlyerLightbox .pf-inner {
+    position: relative;
+    max-width: 520px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#perfFlyerLightbox img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    object-fit: contain;
+    display: block;
+}
+
+#perfFlyerLightbox .pf-caption {
+    color: white;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+#perfFlyerLightbox .pf-close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 18px;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 0;
+}
+
+#perfFlyerLightbox .pf-close:hover {
+    background: #eee;
+}
+
+.pf-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: white;
+    font-size: 30px;
+    width: 52px;
+    height: 72px;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 10000;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pf-nav:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.pf-nav:disabled {
+    opacity: 0.15;
+    cursor: default;
+}
+
+#pfPrev {
+    left: 10px;
+}
+
+#pfNext {
+    right: 10px;
+}
+
+/* =============================================================
+   12. FLYER GALLERY SECTION
+   ============================================================= */
+
+.perf-flyer-gallery {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.perf-flyer-gallery-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2e7d32;
+    letter-spacing: 0.03em;
+}
+
+.perf-flyer-gallery-summary::-webkit-details-marker {
+    display: none;
+}
+
+.perf-flyer-gallery-summary::before {
+    content: "▶";
+    font-size: 10px;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
+    transform: rotate(90deg);
+}
+
+.perf-flyer-gallery-summary:hover {
+    background: #f9fdf9;
+}
+
+.perf-flyer-gallery-hint {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: normal;
+    letter-spacing: 0;
+}
+
+.perf-flyer-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 16px 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.perf-flyer-strip::-webkit-scrollbar {
+    height: 5px;
+}
+
+.perf-flyer-strip::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.perf-flyer-strip::-webkit-scrollbar-thumb {
+    background: #c8e6c9;
+    border-radius: 3px;
+}
+
+.perf-gallery-card {
+    flex: 0 0 120px;
+    scroll-snap-align: start;
+    cursor: zoom-in;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.perf-gallery-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.13);
+}
+
+.perf-gallery-card.gc-music {
+    border-color: #9fa8da;
+    background: #f5f6ff;
+}
+
+.perf-gallery-card.gc-poetry {
+    border-color: #f5a8ce;
+    background: #fff5fa;
+}
+
+.perf-gallery-card.gc-past {
+    opacity: 0.7;
+}
+
+.perf-gallery-img-wrap {
+    width: 120px;
+    height: 152px;
+    overflow: hidden;
+    background: #eee;
+    position: relative;
+}
+
+.perf-gallery-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.perf-gallery-img-wrap img.pf-loaded {
+    opacity: 1;
+}
+
+.perf-gallery-type-badge {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 8px;
+    color: white;
+    background: rgba(46, 125, 50, 0.85);
+}
+
+.gc-music .perf-gallery-type-badge {
+    background: rgba(68, 60, 215, 0.85);
+}
+
+.gc-poetry .perf-gallery-type-badge {
+    background: rgba(214, 0, 110, 0.85);
+}
+
+.perf-gallery-caption {
+    padding: 7px 8px 9px;
+}
+
+.perf-gallery-caption-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gc-music .perf-gallery-caption-title {
+    color: #1006c6;
+}
+
+.gc-poetry .perf-gallery-caption-title {
+    color: #8a0040;
+}
+
+.perf-gallery-caption-date {
+    font-size: 10px;
+    color: #999;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+    .perf-gallery-card {
+        flex: 0 0 105px;
+    }
+
+    .perf-gallery-img-wrap {
+        width: 105px;
+        height: 133px;
+    }
+}
+
+/* =============================================================
+   13. PODCAST SECTION
+   performer.podcast may be a single URL or an array of URLs
+   (see events-schema.json → $defs.podcastUrls). Rendered as
+   a collapsible list, mirroring the flyer gallery pattern.
+   ============================================================= */
+
+.perf-podcast-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.perf-podcast-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2e7d32;
+    letter-spacing: 0.03em;
+}
+
+.perf-podcast-summary::-webkit-details-marker {
+    display: none;
+}
+
+.perf-podcast-summary::before {
+    content: "▶";
+    font-size: 10px;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+details.perf-podcast-section[open]>.perf-podcast-summary::before {
+    transform: rotate(90deg);
+}
+
+.perf-podcast-summary:hover {
+    background: #f9fdf9;
+}
+
+.perf-podcast-hint {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: normal;
+    letter-spacing: 0;
+}
+
+.perf-podcast-list {
+    padding: 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* One card per podcast/feed URL on the performer */
+.perf-podcast-feed {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+    overflow: hidden;
+}
+
+.perf-podcast-feed-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+
+.perf-podcast-feed-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #eee;
+}
+
+.perf-podcast-feed-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.perf-podcast-feed-header-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.perf-podcast-feed-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #2e7d32;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.perf-podcast-feed-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.perf-podcast-feed-title a:hover {
+    text-decoration: underline;
+}
+
+.perf-podcast-feed-sub {
+    font-size: 11px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.perf-podcast-feed-sub.is-error {
+    color: #a3005f;
+    white-space: normal;
+}
+
+.perf-podcast-feed-open {
+    font-size: 11px;
+    font-weight: bold;
+    color: #2e7d32;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.perf-podcast-feed-open:hover {
+    text-decoration: underline;
+}
+
+/* Nested per-feed "Episodes" collapsible — episodes for a given feed
+    are only fetched the first time this is opened. */
+.perf-podcast-episodes-details {
+    border-top: 1px solid #eee;
+}
+
+.perf-podcast-episodes-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-size: 12px;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.perf-podcast-episodes-summary::-webkit-details-marker {
+    display: none;
+}
+
+.perf-podcast-episodes-summary::before {
+    content: "▶";
+    font-size: 9px;
+    margin-right: 7px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::before {
+    transform: rotate(90deg);
+}
+
+.perf-podcast-episodes-summary:hover {
+    background: #f9fdf9;
+}
+
+.perf-podcast-episodes-hint {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: normal;
+}
+
+.perf-podcast-episodes-body {
+    padding: 0 0 4px;
+}
+
+/* 16:9 embed used by the Videos section — created only when its
+    collapsible is opened, removed again when it's closed. */
+.perf-video-frame {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin: 0 12px 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #000;
+}
+
+.perf-video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.perf-podcast-feed-status {
+    padding: 12px;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.perf-podcast-feed-status.is-error {
+    color: #a3005f;
+    font-style: normal;
+}
+
+.perf-podcast-episode-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.perf-podcast-episode {
+    padding: 9px 12px;
+    border-top: 1px solid #eee;
+}
+
+.perf-podcast-episode:first-child {
+    border-top: none;
+}
+
+.perf-podcast-episode-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.perf-podcast-episode-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.perf-podcast-episode-title {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.perf-podcast-episode-meta {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.perf-podcast-episode-preview-btn {
+    flex-shrink: 0;
+    font: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    color: #2e7d32;
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 20px;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.perf-podcast-episode-preview-btn:hover {
+    background: #d4ecd6;
+}
+
+.perf-podcast-episode-audio {
+    margin-top: 8px;
+}
+
+.perf-podcast-episode-audio audio {
+    width: 100%;
+    display: block;
+    height: 32px;
+}
+
+.perf-podcast-more {
+    align-self: flex-start;
+    font: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #2e7d32;
+    background: none;
+    border: 1px dashed #a5d6a7;
+    border-radius: 20px;
+    padding: 5px 14px;
+    margin: 10px 12px 12px;
+    cursor: pointer;
+}
+
+.perf-podcast-more:hover {
+    background: #f1f8e9;
+}
+
+.perf-podcast-fallback-link {
+    display: block;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #2e7d32;
+    text-decoration: none;
+}
+
+.perf-podcast-fallback-link:hover {
+    text-decoration: underline;
+}
+
+/* =============================================================
+   14. ALL-PERFORMERS LANDING COLLAPSIBLE
+   ============================================================= */
+
+.all-performers-details {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.all-performers-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.all-performers-summary::-webkit-details-marker {
+    display: none;
+}
+
+.all-performers-summary::before {
+    content: "▶";
+    font-size: 10px;
+    margin-right: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+    color: #2e7d32;
+}
+
+.all-performers-details[open]>.all-performers-summary::before {
+    transform: rotate(90deg);
+}
+
+.all-performers-label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.all-performers-hint {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.all-performers-details[open] .all-performers-hint {
+    opacity: 0;
+}
+
+.all-performers-summary:hover {
+    background: #f9fdf9;
+    border-radius: 8px;
+}
+
+.all-performers-body {
+    padding: 4px 16px 16px;
+    border-top: 1px solid #eee;
+}
+
+/* =============================================================
+   15. TROUPE LINEUP CONFIG SUB-SECTIONS
+   ============================================================= */
+
+.troupe-config-details {
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid #8d6e63;
+    border-radius: 4px;
+    background: #fafaf8;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.troupe-config-details:last-child {
+    margin-bottom: 0;
+}
+
+.troupe-config-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.troupe-config-summary::-webkit-details-marker {
+    display: none;
+}
+
+.troupe-config-summary::before {
+    content: "▶";
+    font-size: 10px;
+    color: #8d6e63;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.troupe-config-details[open]>.troupe-config-summary::before {
+    transform: rotate(90deg);
+}
+
+.troupe-config-summary:hover {
+    background: #f5f0ed;
+}
+
+.troupe-config-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #4e342e;
+    flex: 1;
+}
+
+.troupe-config-badge {
+    font-size: 11px;
+    background: #efebe9;
+    color: #6d4c41;
+    border: 1px solid #d7ccc8;
+    border-radius: 20px;
+    padding: 2px 9px;
+    white-space: nowrap;
+}
+
+.troupe-config-body {
+    padding: 10px 14px 14px;
+    border-top: 1px solid #eee;
+}
+
+.troupe-config-chips {
+    margin-bottom: 12px;
+}
+
+
+/* =============================================================
+   16. PERFORMER TYPE FILTERS & LIST TAGS
+   ============================================================= */
+
+.perf-type-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* Performance-type filter buttons — see .type-filter-btn in
+    shared-styles.css (shared with the venues listing page) */
+
+.simple-list-row-tags {
+    display: inline-flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.simple-list-row-type-tag {
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 7px;
+    border-radius: 20px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.simple-list-row-type-tag.type-music {
+    background: #e8eaf6;
+    color: #1a237e;
+}
+
+.simple-list-row-type-tag.type-poetry {
+    background: #fde8f2;
+    color: #8a0040;
+}
+
+.simple-list-row-type-tag.type-troupe {
+    background: #efe6e2;
+    color: #4e342e;
+}
+
+/* =============================================================
+   17. PERFORMER SEARCH (LANDING PAGE)
+   ============================================================= */
+
+.perf-search-wrap {
+    margin-bottom: 14px;
+}
+
+.perf-search-wrap .dir-search-input {
+    border-color: #a5d6a7;
+}
+
+.perf-search-wrap .dir-search-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+}

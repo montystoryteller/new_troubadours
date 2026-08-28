@@ -1,0 +1,529 @@
+/* =============================================================
+   storyclub-styles.css
+   Styles for new_troubadours_storyclub.html
+   Depends on shared-styles.css being loaded first.
+   ============================================================= */
+
+/* ── Page layout ─────────────────────────────────────── */
+
+.directory-intro {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    max-width: 720px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
+}
+
+/* Multiple columns on wide screens (matches the venues directory
+   page), collapsing to a single column on mobile. Day-of-week
+   headings and the "no clubs match" message are the only other
+   direct children — both explicitly span the full grid width via
+   inline grid-column:1/-1, so only the club cards become cells. */
+.club-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+    align-items: start;
+}
+
+.club-list-grid > .event {
+    margin-bottom: 0;
+}
+
+.club-header {
+    background: white;
+    border-radius: 8px;
+    padding: 24px 28px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-left: 6px solid #4CAF50;
+}
+
+.club-header h1 {
+    text-align: left;
+    margin: 0 0 6px 0;
+    font-size: 26px;
+    color: #1b5e20;
+}
+
+.club-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.club-meta a {
+    color: #2e7d32;
+    text-decoration: none;
+}
+
+.club-meta a:hover {
+    text-decoration: underline;
+}
+
+.club-schedule {
+    font-style: italic;
+    color: #2e7d32;
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+/* Featured guest: "feat. Name" on single-club upcoming/scheduled dates */
+.club-featured-guest {
+    font-size: 14px;
+    font-style: italic;
+    color: #555;
+    margin: 3px 0 0 0;
+}
+
+.club-featured-guest a {
+    color: #2e7d32;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.club-featured-guest a:hover {
+    text-decoration: underline;
+}
+
+/* Featured guest on directory listing cards */
+.club-dir-featured-guest {
+    font-size: 12px;
+    font-style: italic;
+    color: #888;
+    margin-top: 2px;
+}
+
+.club-venue {
+    font-size: 15px;
+    color: #555;
+    margin-top: 2px;
+}
+
+.club-icons {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+/* ── Tonight / tomorrow alert ────────────────────────── */
+.meeting-alert {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.meeting-alert.tonight {
+    background: #fc9f1d;
+    color: white;
+    box-shadow: 0 2px 8px rgba(27, 94, 32, 0.35);
+}
+
+.meeting-alert.tomorrow {
+    background: #e3e3e3;
+    color: #ed2cd4;
+    border: 2px solid #b6b9b6;
+}
+
+.meeting-alert .alert-icon {
+    font-size: 22px;
+}
+
+/* ── Section headers ─────────────────────────────────── */
+.section-heading {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 28px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #c8e6c9;
+}
+
+.section-heading.past {
+    border-bottom-color: #ddd;
+    color: #888;
+}
+
+.section-heading.upcoming {
+    border-bottom-color: #4CAF50;
+    color: #1b5e20;
+}
+
+/* ── Regular (recurring) event card ─────────────────── */
+/* Re-uses .event styles from shared-styles.css */
+
+/* ── Specific event cards ────────────────────────────── */
+.specific-event {
+    background: white;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.specific-event.is-special {
+    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+    border: 2px solid #2e7d32;
+    color: white;
+}
+
+.specific-event.is-past {
+    opacity: 0.6;
+    filter: grayscale(30%);
+}
+
+.specific-event .showname {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.specific-event.is-special .showname {
+    color: white;
+}
+
+.specific-event .performer {
+    font-style: italic;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.specific-event.is-special .performer {
+    color: white;
+}
+
+.specific-event .event-date {
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.specific-event.is-special .event-date {
+    color: #e8f5e9;
+}
+
+.specific-event .event-location {
+    color: #777;
+    font-style: italic;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.specific-event.is-special .event-location {
+    color: #c8e6c9;
+}
+
+.specific-event .event-description {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.specific-event.is-special .event-description {
+    color: #e8f5e9;
+}
+
+.specific-event .event-tickets {
+    margin-top: 8px;
+}
+
+.specific-event.is-special .event-tickets a {
+    color: #ffeb3b;
+    border-bottom-color: #fff59d;
+}
+
+/* Expand/collapse for description */
+.expand-btn {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 8px;
+    padding: 5px 12px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.specific-event.is-special .expand-btn {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.expand-btn:hover {
+    background: #388e3c;
+}
+
+.specific-event.is-special .expand-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.expandable {
+    display: none;
+    margin-top: 10px;
+    animation: slideDown 0.25s ease-out;
+}
+
+.expandable.open {
+    display: block;
+}
+
+/* Video trailer embed (responsive 16:9), shown in the "Video preview" expandable */
+.event-video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    padding-bottom: 56.25%;
+    /* 16:9 */
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.event-video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* ── Map ─────────────────────────────────────────────── */
+#map-container {
+    height: 280px;
+    margin-bottom: 20px;
+}
+
+/* ── Error / not found ───────────────────────────────── */
+.not-found {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+/* ── Flyer image ─────────────────────────────────────── */
+.club-flyer {
+    max-width: 260px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    margin-top: 10px;
+}
+
+/* ── Additional flyers gallery ───────────────────────── */
+.club-flyer-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.club-flyer-gallery-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.club-flyer-gallery-img {
+    max-width: 140px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Past dated flyers: greyed out, brightened back to full colour on
+   hover — matches the treatment on the venues page */
+.club-flyer-gallery-img-past {
+    filter: grayscale(100%);
+    opacity: 0.55;
+    transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.club-flyer-gallery-img-past:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+.club-flyer-gallery-caption {
+    font-size: 0.78rem;
+    color: #666;
+    text-align: center;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 600px) {
+    .club-header {
+        padding: 16px;
+    }
+
+    .club-header h1 {
+        font-size: 20px;
+    }
+}
+
+/* ── "What's on" period quick-filters ───────────────────── */
+.period-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e8f5e9;
+}
+
+.period-filter-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 4px;
+}
+
+.period-btn {
+    padding: 5px 13px;
+    border: 1.5px solid #c8e6c9;
+    border-radius: 20px;
+    background: white;
+    color: #2e7d32;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    font-weight: 500;
+}
+
+.period-btn:hover {
+    background: #f1f8f1;
+    border-color: #4CAF50;
+}
+
+.period-btn.active {
+    background: #4CAF50;
+    border-color: #2e7d32;
+    color: white;
+    font-weight: bold;
+}
+
+/* ── Next-meeting badge on club cards ────────────────────── */
+.next-meeting-badge {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    letter-spacing: 0.01em;
+}
+
+.next-meeting-badge.today {
+    background: #e53935;
+    color: white;
+}
+
+.next-meeting-badge.tomorrow {
+    background: #ff6f00;
+    color: white;
+}
+
+.next-meeting-badge.thisweek {
+    background: #f5f5f5;
+    color: #2e7d32;
+    border: 1px solid #ddd;
+}
+
+.next-meeting-badge.nextweek {
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+}
+
+.next-meeting-badge.later {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .period-filter-row {
+        gap: 4px;
+    }
+
+    .period-btn {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+}
+
+/* ── Status messages (loading, error) ────────────────── */
+.status-message {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.status-message--loading {
+    color: #999;
+}
+
+.status-message--error {
+    color: #c00;
+}
+
+/* Next meeting date shown in club header */
+.club-next-meeting {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+/* ── Feature slots list ──────────────────────────────── */
+.feature-slot {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 9px 14px;
+    background: white;
+    border-left: 4px solid #a5d6a7;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+}
+
+.feature-slot.is-past {
+    opacity: 0.55;
+    filter: grayscale(30%);
+    border-left-color: #ccc;
+}
+
+.feature-slot-date {
+    color: #555;
+    white-space: nowrap;
+    min-width: 160px;
+}
+
+.feature-slot-performer {
+    font-weight: bold;
+    color: #1b5e20;
+}
+
+.feature-slot-performer a {
+    color: #2e7d32;
+    text-decoration: none;
+}
+
+.feature-slot-performer a:hover {
+    text-decoration: underline;
+}

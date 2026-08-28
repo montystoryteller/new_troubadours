@@ -1,617 +1,949 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Podcast Feed Curator</title>
-<style>
-*{box-sizing:border-box}
-:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17202a;background:#f4f6f8}
-body{margin:0}
-.wrap{max-width:1450px;margin:auto;padding:22px 16px}
-h1{margin:0 0 3px;font-size:27px}.sub{color:#667085;margin-bottom:16px;font-size:14px}
-.toolbar{background:#fff;border:1px solid #dfe4ea;border-radius:12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-button{font:inherit;font-weight:600;border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}
-button:hover{background:#f8fafc}.primary{background:#1d4ed8;color:white;border-color:#1d4ed8}.primary:hover{background:#1e40af}
-.danger{color:#b42318}.file-button input{display:none}
-.workspace{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-.panel{background:#fff;border:1px solid #dfe4ea;border-radius:12px;overflow:hidden}
-.panel-head{padding:13px 14px;border-bottom:1px solid #e5e7eb;display:flex;gap:8px;align-items:center;justify-content:space-between}
-.panel-head h2{font-size:17px;margin:0}.panel-body{padding:12px}
-.source-tools{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:10px}
-input,textarea,select{font:inherit;width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px}
-textarea{min-height:85px;resize:vertical}
-.hint{font-size:12px;color:#667085;margin:8px 0 12px}
-.feed-list{display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 250px);overflow:auto;padding-right:2px}
-.card{border:1px solid #dfe4ea;border-radius:9px;padding:10px;background:#fff}
-.card:hover{border-color:#aeb9c6}.card.dragging{opacity:.45}
-.source-card{cursor:grab}.my-card{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:start;cursor:default}
-.handle{font-size:20px;color:#667085;cursor:grab;user-select:none}
-.card-title{font-weight:700;font-size:14px;line-height:1.3;margin-bottom:4px}
-.meta{font-size:11px;color:#667085;line-height:1.45}
-.card-actions{display:flex;gap:4px}
-.small{padding:5px 8px;font-size:12px}
-.empty{border:1px dashed #cbd5e1;border-radius:9px;padding:25px 12px;text-align:center;color:#667085}
-.badge{font-size:11px;color:#475467;background:#f2f4f7;padding:3px 7px;border-radius:99px}
-.dropzone{min-height:150px;border:2px dashed transparent;border-radius:9px;padding:2px}
-.dropzone.over{border-color:#4f7cff;background:#f7f9ff}
-.feed-settings{border-top:1px solid #e5e7eb;margin-top:12px;padding-top:12px}
-.feed-settings summary{cursor:pointer;font-weight:700}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
-label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
-.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:10}
-.dialog{background:#fff;border-radius:14px;width:min(760px,100%);max-height:94vh;overflow:auto;padding:18px}
-.dialog-actions{display:flex;gap:8px;margin-top:15px}
-.hidden{display:none!important}
-.notice{font-size:12px;background:#eef4ff;color:#334155;padding:9px;border-radius:8px;margin:9px 0}
-.preview-holder:empty{display:none}
-.preview-holder audio{width:100%;display:block;height:32px}
-.preview-details{display:flex;gap:8px;align-items:flex-start}
-.preview-details-body{flex:1;min-width:0}
-.preview-thumb{width:56px;height:56px;border-radius:7px;object-fit:cover;flex:none;background:#eef1f4}
-.preview-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
-.preview-desc{white-space:pre-wrap;font-size:12.5px;line-height:1.45;color:#334155;margin-top:8px;max-height:170px;overflow:auto;padding-top:8px;border-top:1px solid #eef1f4}
-.proxy-hint{color:#b42318}
-.proxy-hint button{margin-left:2px}
-@media(max-width:850px){.workspace{grid-template-columns:1fr}.feed-list{max-height:500px}}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.my-card{grid-template-columns:25px 1fr}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Podcast Feed Curator</title>
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #17202a;
+      background: #f4f6f8
+    }
+
+    body {
+      margin: 0
+    }
+
+    .wrap {
+      max-width: 1450px;
+      margin: auto;
+      padding: 22px 16px
+    }
+
+    h1 {
+      margin: 0 0 3px;
+      font-size: 27px
+    }
+
+    .sub {
+      color: #667085;
+      margin-bottom: 16px;
+      font-size: 14px
+    }
+
+    .toolbar {
+      background: #fff;
+      border: 1px solid #dfe4ea;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px
+    }
+
+    button {
+      font: inherit;
+      font-weight: 600;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer
+    }
+
+    button:hover {
+      background: #f8fafc
+    }
+
+    .primary {
+      background: #1d4ed8;
+      color: white;
+      border-color: #1d4ed8
+    }
+
+    .primary:hover {
+      background: #1e40af
+    }
+
+    .danger {
+      color: #b42318
+    }
+
+    .file-button input {
+      display: none
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #dfe4ea;
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    .panel-head {
+      padding: 13px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .panel-head h2 {
+      font-size: 17px;
+      margin: 0
+    }
+
+    .panel-body {
+      padding: 12px
+    }
+
+    .source-tools {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px;
+      margin-bottom: 10px
+    }
+
+    input,
+    textarea,
+    select {
+      font: inherit;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px
+    }
+
+    textarea {
+      min-height: 85px;
+      resize: vertical
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #667085;
+      margin: 8px 0 12px
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: calc(100vh - 250px);
+      overflow: auto;
+      padding-right: 2px
+    }
+
+    .card {
+      border: 1px solid #dfe4ea;
+      border-radius: 9px;
+      padding: 10px;
+      background: #fff
+    }
+
+    .card:hover {
+      border-color: #aeb9c6
+    }
+
+    .card.dragging {
+      opacity: .45
+    }
+
+    .source-card {
+      cursor: grab
+    }
+
+    .my-card {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 9px;
+      align-items: start;
+      cursor: default
+    }
+
+    .handle {
+      font-size: 20px;
+      color: #667085;
+      cursor: grab;
+      user-select: none
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.3;
+      margin-bottom: 4px
+    }
+
+    .meta {
+      font-size: 11px;
+      color: #667085;
+      line-height: 1.45
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 4px
+    }
+
+    .small {
+      padding: 5px 8px;
+      font-size: 12px
+    }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 9px;
+      padding: 25px 12px;
+      text-align: center;
+      color: #667085
+    }
+
+    .badge {
+      font-size: 11px;
+      color: #475467;
+      background: #f2f4f7;
+      padding: 3px 7px;
+      border-radius: 99px
+    }
+
+    .dropzone {
+      min-height: 150px;
+      border: 2px dashed transparent;
+      border-radius: 9px;
+      padding: 2px
+    }
+
+    .dropzone.over {
+      border-color: #4f7cff;
+      background: #f7f9ff
+    }
+
+    .feed-settings {
+      border-top: 1px solid #e5e7eb;
+      margin-top: 12px;
+      padding-top: 12px
+    }
+
+    .feed-settings summary {
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 9px
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: #0008;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      z-index: 10
+    }
+
+    .dialog {
+      background: #fff;
+      border-radius: 14px;
+      width: min(760px, 100%);
+      max-height: 94vh;
+      overflow: auto;
+      padding: 18px
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    .notice {
+      font-size: 12px;
+      background: #eef4ff;
+      color: #334155;
+      padding: 9px;
+      border-radius: 8px;
+      margin: 9px 0
+    }
+
+    .preview-holder:empty {
+      display: none
+    }
+
+    .preview-holder audio {
+      width: 100%;
+      display: block;
+      height: 32px
+    }
+
+    .preview-details {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start
+    }
+
+    .preview-details-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .preview-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 7px;
+      object-fit: cover;
+      flex: none;
+      background: #eef1f4
+    }
+
+    .preview-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 5px
+    }
+
+    .preview-desc {
+      white-space: pre-wrap;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #334155;
+      margin-top: 8px;
+      max-height: 170px;
+      overflow: auto;
+      padding-top: 8px;
+      border-top: 1px solid #eef1f4
+    }
+
+    .proxy-hint {
+      color: #b42318
+    }
+
+    .proxy-hint button {
+      margin-left: 2px
+    }
+
+    @media(max-width:850px) {
+      .workspace {
+        grid-template-columns: 1fr
+      }
+
+      .feed-list {
+        max-height: 500px
+      }
+    }
+
+    @media(max-width:600px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .my-card {
+        grid-template-columns: 25px 1fr
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-<h1>Podcast Feed Curator</h1>
-<div class="sub">Browse source podcasts on the left and drag episodes into your own feed on the right.</div>
+  <div class="wrap">
+    <h1>Podcast Feed Curator</h1>
+    <div class="sub">Browse source podcasts on the left and drag episodes into your own feed on the right.</div>
 
-<div class="toolbar">
-  <label class="file-button"><button type="button">Open source RSS</button><input id="file" type="file" accept=".xml,.rss,text/xml,application/rss+xml"></label>
-  <button id="sourceUrl">Load source URL</button>
-  <button id="libraryBtn">📚 Load from library</button>
-  <button class="primary" id="addBtn">+ Add manually</button>
-  <button id="exportBtn">Export my RSS</button>
-</div>
-
-<div class="workspace">
-  <!-- SOURCE -->
-  <section class="panel">
-    <div class="panel-head">
-      <h2 id="sourceTitle">Source podcast</h2>
-      <span class="badge" id="sourceCount">0 episodes</span>
+    <div class="toolbar">
+      <label class="file-button"><button type="button">Open source RSS</button><input id="file" type="file"
+          accept=".xml,.rss,text/xml,application/rss+xml"></label>
+      <button id="sourceUrl">Load source URL</button>
+      <button id="libraryBtn">📚 Load from library</button>
+      <button class="primary" id="addBtn">+ Add manually</button>
+      <button id="exportBtn">Export my RSS</button>
     </div>
-    <div id="sourceUrlLine" class="hint hidden" style="margin:8px 14px 0;word-break:break-all"></div>
-    <details id="sourceAbout" class="hidden" style="margin:6px 14px 0">
-      <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#475467">About this podcast</summary>
-      <div id="sourceAboutBody" style="display:flex;gap:10px;margin-top:7px;font-size:12.5px;line-height:1.45;color:#334155"></div>
-    </details>
-    <div class="panel-body">
-      <div class="source-tools">
-        <input id="sourceSearch" placeholder="Search episodes…">
-        <button id="clearSource">Clear</button>
-      </div>
-      <div class="hint">Drag an episode from this panel into <b>My feed</b>. You can load another podcast afterwards. Episodes with audio show a ▶ Preview button.</div>
-      <div id="sourceNotice" class="notice hidden"></div>
-      <div id="sourceList" class="feed-list"></div>
-    </div>
-  </section>
 
-  <!-- MY FEED -->
-  <section class="panel">
-    <div class="panel-head">
-      <h2>My feed</h2>
-      <span class="badge" id="myCount">0 episodes</span>
-    </div>
-    <div class="panel-body">
-      <div id="dropzone" class="dropzone">
-        <div id="myList" class="feed-list"></div>
-      </div>
-
-      <div class="feed-settings">
-        <details open>
-          <summary>Feed settings</summary>
-          <div class="grid">
-            <div><label>Title</label><input id="feedTitle" value="My Curated Podcast"></div>
-            <div><label>Website</label><input id="feedLink"></div>
-            <div><div><label>Author</label><input id="feedAuthor"></div></div>
-            <div><div><label>Language</label><input id="feedLanguage" value="en-gb"></div></div>
-          </div>
-          <label style="margin-top:9px">Description</label>
-          <textarea id="feedDescription"></textarea>
-          <label style="margin-top:9px">Artwork URL</label>
-          <input id="feedImage">
+    <div class="workspace">
+      <!-- SOURCE -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="sourceTitle">Source podcast</h2>
+          <span class="badge" id="sourceCount">0 episodes</span>
+        </div>
+        <div id="sourceUrlLine" class="hint hidden" style="margin:8px 14px 0;word-break:break-all"></div>
+        <details id="sourceAbout" class="hidden" style="margin:6px 14px 0">
+          <summary style="cursor:pointer;font-size:12px;font-weight:700;color:#475467">About this podcast</summary>
+          <div id="sourceAboutBody"
+            style="display:flex;gap:10px;margin-top:7px;font-size:12.5px;line-height:1.45;color:#334155"></div>
         </details>
+        <div class="panel-body">
+          <div class="source-tools">
+            <input id="sourceSearch" placeholder="Search episodes…">
+            <button id="clearSource">Clear</button>
+          </div>
+          <div class="hint">Drag an episode from this panel into <b>My feed</b>. You can load another podcast
+            afterwards. Episodes with audio show a ▶ Preview button.</div>
+          <div id="sourceNotice" class="notice hidden"></div>
+          <div id="sourceList" class="feed-list"></div>
+        </div>
+      </section>
+
+      <!-- MY FEED -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2>My feed</h2>
+          <span class="badge" id="myCount">0 episodes</span>
+        </div>
+        <div class="panel-body">
+          <div id="dropzone" class="dropzone">
+            <div id="myList" class="feed-list"></div>
+          </div>
+
+          <div class="feed-settings">
+            <details open>
+              <summary>Feed settings</summary>
+              <div class="grid">
+                <div><label>Title</label><input id="feedTitle" value="My Curated Podcast"></div>
+                <div><label>Website</label><input id="feedLink"></div>
+                <div>
+                  <div><label>Author</label><input id="feedAuthor"></div>
+                </div>
+                <div>
+                  <div><label>Language</label><input id="feedLanguage" value="en-gb"></div>
+                </div>
+              </div>
+              <label style="margin-top:9px">Description</label>
+              <textarea id="feedDescription"></textarea>
+              <label style="margin-top:9px">Artwork URL</label>
+              <input id="feedImage">
+            </details>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- EDITOR -->
+  <div id="modal" class="modal hidden">
+    <div class="dialog">
+      <h2 id="modalTitle">Episode</h2>
+      <div class="grid">
+        <div><label>Title</label><input id="eTitle"></div>
+        <div><label>Published</label><input id="eDate" type="datetime-local"></div>
+        <div><label>Episode link</label><input id="eLink"></div>
+        <div><label>Audio / enclosure URL</label><input id="eAudio"></div>
+        <div><label>Audio MIME type</label><input id="eType" value="audio/mpeg"></div>
+        <div><label>Audio size (bytes)</label><input id="eLength"></div>
+        <div><label>Author</label><input id="eAuthor"></div>
+        <div><label>Duration</label><input id="eDuration" placeholder="01:23:45"></div>
+        <div><label>Explicit</label><select id="eExplicit">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+            <option value="clean">Clean</option>
+          </select></div>
+        <div><label>Artwork URL</label><input id="eImage"></div>
+      </div>
+      <label style="margin-top:9px">Description</label>
+      <textarea id="eDescription"></textarea>
+      <label>GUID</label><input id="eGuid">
+      <div class="dialog-actions">
+        <button class="primary" id="saveBtn">Save episode</button>
+        <button id="cancelBtn">Cancel</button>
       </div>
     </div>
-  </section>
-</div>
-</div>
+  </div>
 
-<!-- EDITOR -->
-<div id="modal" class="modal hidden">
-<div class="dialog">
-<h2 id="modalTitle">Episode</h2>
-<div class="grid">
-<div><label>Title</label><input id="eTitle"></div>
-<div><label>Published</label><input id="eDate" type="datetime-local"></div>
-<div><label>Episode link</label><input id="eLink"></div>
-<div><label>Audio / enclosure URL</label><input id="eAudio"></div>
-<div><label>Audio MIME type</label><input id="eType" value="audio/mpeg"></div>
-<div><label>Audio size (bytes)</label><input id="eLength"></div>
-<div><label>Author</label><input id="eAuthor"></div>
-<div><label>Duration</label><input id="eDuration" placeholder="01:23:45"></div>
-<div><label>Explicit</label><select id="eExplicit"><option value="no">No</option><option value="yes">Yes</option><option value="clean">Clean</option></select></div>
-<div><label>Artwork URL</label><input id="eImage"></div>
-</div>
-<label style="margin-top:9px">Description</label>
-<textarea id="eDescription"></textarea>
-<label>GUID</label><input id="eGuid">
-<div class="dialog-actions">
-<button class="primary" id="saveBtn">Save episode</button>
-<button id="cancelBtn">Cancel</button>
-</div>
-</div>
-</div>
+  <!-- LIBRARY PICKER -->
+  <div id="libraryModal" class="modal hidden">
+    <div class="dialog">
+      <h2>Load from library</h2>
+      <div class="hint" style="margin-top:0">
+        Podcast links found in events_normalized.json — top-level podcast series, and performers' own podcast links.
+      </div>
+      <input id="libSearch" placeholder="Search podcasts or performers…">
+      <div id="libList" class="feed-list" style="margin-top:10px;max-height:55vh"></div>
+      <div class="dialog-actions">
+        <button id="libCancelBtn">Close</button>
+      </div>
+    </div>
+  </div>
 
-<!-- LIBRARY PICKER -->
-<div id="libraryModal" class="modal hidden">
-<div class="dialog">
-<h2>Load from library</h2>
-<div class="hint" style="margin-top:0">
-  Podcast links found in events_normalized.json — top-level podcast series, and performers' own podcast links.
-</div>
-<input id="libSearch" placeholder="Search podcasts or performers…">
-<div id="libList" class="feed-list" style="margin-top:10px;max-height:55vh"></div>
-<div class="dialog-actions">
-<button id="libCancelBtn">Close</button>
-</div>
-</div>
-</div>
+  <script src="podcast_utils.js"></script>
+  <script>
+    "use strict";
 
-<script src="podcast_utils.js"></script>
-<script>
-"use strict";
+    const state = {
+      source: { title: "", url: "", meta: null, items: [] },
+      feed: { title: "My Curated Podcast", description: "", link: "", language: "en-gb", author: "", image: "" },
+      items: []
+    };
+    let editing = -1;
+    let dragSourceIndex = -1;
+    let dragMyIndex = -1;
 
-const state={
- source:{title:"",url:"",meta:null,items:[]},
- feed:{title:"My Curated Podcast",description:"",link:"",language:"en-gb",author:"",image:""},
- items:[]
-};
-let editing=-1;
-let dragSourceIndex=-1;
-let dragMyIndex=-1;
+    const $ = id => document.getElementById(id);
 
-const $=id=>document.getElementById(id);
-
-function slugify(v){
- return String(v||"").toLowerCase().trim()
-   .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"curated-feed";
-}
-function esc(v){
- return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function cdata(v){
- return "<![CDATA["+String(v??"").replaceAll("]]>","]]]]><![CDATA[>")+"]]>";
-}
-function rfc822(v){
- const d=new Date(v||Date.now());
- return Number.isNaN(d.getTime())?new Date().toUTCString():d.toUTCString();
-}
-// formatDate, parseFeed (as parsePodcastFeed) and friends now live in
-// podcast_utils.js, shared with the performer profile page.
-function formatDate(v){ return formatPodcastDate(v); }
-function parseFeed(xml){ return parsePodcastFeed(xml); }
-function renderSource(){
- const q=$("sourceSearch").value.trim().toLowerCase();
- const items=state.source.items.filter(x=>
-   !q || [x.title,x.author,x.description].join(" ").toLowerCase().includes(q)
- );
- $("sourceTitle").textContent=state.source.title||"Source podcast";
- $("sourceCount").textContent=`${state.source.items.length} episodes`;
- if(state.source.url){
-   $("sourceUrlLine").innerHTML=`Feed: <a href="${esc(state.source.url)}" target="_blank" rel="noopener">${esc(state.source.url)}</a> <button type="button" class="small" id="copySourceUrl">Copy</button>`;
-   $("sourceUrlLine").classList.remove("hidden");
-   $("copySourceUrl").onclick=()=>navigator.clipboard.writeText(state.source.url).catch(()=>{});
- }else{
-   $("sourceUrlLine").classList.add("hidden");
-   $("sourceUrlLine").innerHTML="";
- }
- const meta=state.source.meta;
- if(meta&&(meta.description||meta.image||meta.author)){
-   $("sourceAboutBody").innerHTML=`
-     ${meta.image?`<img src="${esc(meta.image)}" alt="" style="width:64px;height:64px;border-radius:8px;object-fit:cover;flex:none;background:#eef1f4">`:""}
+    function slugify(v) {
+      return String(v || "").toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "curated-feed";
+    }
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function cdata(v) {
+      return "<![CDATA[" + String(v ?? "").replaceAll("]]>", "]]]]><![CDATA[>") + "]]>";
+    }
+    function rfc822(v) {
+      const d = new Date(v || Date.now());
+      return Number.isNaN(d.getTime()) ? new Date().toUTCString() : d.toUTCString();
+    }
+    // formatDate, parseFeed (as parsePodcastFeed) and friends now live in
+    // podcast_utils.js, shared with the performer profile page.
+    function formatDate(v) { return formatPodcastDate(v); }
+    function parseFeed(xml) { return parsePodcastFeed(xml); }
+    function renderSource() {
+      const q = $("sourceSearch").value.trim().toLowerCase();
+      const items = state.source.items.filter(x =>
+        !q || [x.title, x.author, x.description].join(" ").toLowerCase().includes(q)
+      );
+      $("sourceTitle").textContent = state.source.title || "Source podcast";
+      $("sourceCount").textContent = `${state.source.items.length} episodes`;
+      if (state.source.url) {
+        $("sourceUrlLine").innerHTML = `Feed: <a href="${esc(state.source.url)}" target="_blank" rel="noopener">${esc(state.source.url)}</a> <button type="button" class="small" id="copySourceUrl">Copy</button>`;
+        $("sourceUrlLine").classList.remove("hidden");
+        $("copySourceUrl").onclick = () => navigator.clipboard.writeText(state.source.url).catch(() => { });
+      } else {
+        $("sourceUrlLine").classList.add("hidden");
+        $("sourceUrlLine").innerHTML = "";
+      }
+      const meta = state.source.meta;
+      if (meta && (meta.description || meta.image || meta.author)) {
+        $("sourceAboutBody").innerHTML = `
+     ${meta.image ? `<img src="${esc(meta.image)}" alt="" style="width:64px;height:64px;border-radius:8px;object-fit:cover;flex:none;background:#eef1f4">` : ""}
      <div style="min-width:0">
-       ${meta.author?`<div style="font-weight:700;margin-bottom:3px">${esc(meta.author)}</div>`:""}
-       ${meta.description?`<div style="white-space:pre-wrap">${esc(meta.description).trim()}</div>`:""}
-       ${meta.link?`<a href="${esc(meta.link)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:5px">Podcast website ↗</a>`:""}
+       ${meta.author ? `<div style="font-weight:700;margin-bottom:3px">${esc(meta.author)}</div>` : ""}
+       ${meta.description ? `<div style="white-space:pre-wrap">${esc(meta.description).trim()}</div>` : ""}
+       ${meta.link ? `<a href="${esc(meta.link)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:5px">Podcast website ↗</a>` : ""}
      </div>`;
-   $("sourceAbout").classList.remove("hidden");
- }else{
-   $("sourceAbout").classList.add("hidden");
-   $("sourceAboutBody").innerHTML="";
- }
- if(!items.length){
-   $("sourceList").innerHTML='<div class="empty">No matching episodes.</div>';
-   return;
- }
- $("sourceList").innerHTML=items.map(x=>`
+        $("sourceAbout").classList.remove("hidden");
+      } else {
+        $("sourceAbout").classList.add("hidden");
+        $("sourceAboutBody").innerHTML = "";
+      }
+      if (!items.length) {
+        $("sourceList").innerHTML = '<div class="empty">No matching episodes.</div>';
+        return;
+      }
+      $("sourceList").innerHTML = items.map(x => `
  <div class="card source-card" draggable="true" data-source-id="${x.id}">
    <div class="card-title">${esc(x.title)}</div>
-   <div class="meta">${esc(x.author||"")} ${x.pubDate?" · "+esc(formatDate(x.pubDate)):""}</div>
-   ${x.enclosureUrl?`<div class="card-actions" style="margin-top:6px"><button type="button" class="small" data-preview-src="${x.id}">▶ Preview</button></div><div class="preview-holder" data-preview-holder="${x.id}"></div>`:""}
+   <div class="meta">${esc(x.author || "")} ${x.pubDate ? " · " + esc(formatDate(x.pubDate)) : ""}</div>
+   ${x.enclosureUrl ? `<div class="card-actions" style="margin-top:6px"><button type="button" class="small" data-preview-src="${x.id}">▶ Preview</button></div><div class="preview-holder" data-preview-holder="${x.id}"></div>` : ""}
  </div>`).join("");
- document.querySelectorAll("[data-source-id]").forEach(el=>{
-   const x=state.source.items.find(i=>i.id===el.dataset.sourceId);
-   el.addEventListener("dragstart",()=>{dragSourceIndex=state.source.items.indexOf(x);el.classList.add("dragging")});
-   el.addEventListener("dragend",()=>{dragSourceIndex=-1;el.classList.remove("dragging")});
- });
- document.querySelectorAll("[data-preview-src]").forEach(b=>{
-   b.addEventListener("click",e=>{e.stopPropagation();togglePreview(b.dataset.previewSrc,true)});
- });
-}
-function renderMyFeed(){
- $("myCount").textContent=`${state.items.length} episodes`;
- if(!state.items.length){
-   $("myList").innerHTML='<div class="empty">Drop episodes here from the source podcast.</div>';
- }else{
-   $("myList").innerHTML=state.items.map((x,i)=>`
+      document.querySelectorAll("[data-source-id]").forEach(el => {
+        const x = state.source.items.find(i => i.id === el.dataset.sourceId);
+        el.addEventListener("dragstart", () => { dragSourceIndex = state.source.items.indexOf(x); el.classList.add("dragging") });
+        el.addEventListener("dragend", () => { dragSourceIndex = -1; el.classList.remove("dragging") });
+      });
+      document.querySelectorAll("[data-preview-src]").forEach(b => {
+        b.addEventListener("click", e => { e.stopPropagation(); togglePreview(b.dataset.previewSrc, true) });
+      });
+    }
+    function renderMyFeed() {
+      $("myCount").textContent = `${state.items.length} episodes`;
+      if (!state.items.length) {
+        $("myList").innerHTML = '<div class="empty">Drop episodes here from the source podcast.</div>';
+      } else {
+        $("myList").innerHTML = state.items.map((x, i) => `
    <div class="card my-card" draggable="true" data-my-index="${i}">
      <div class="handle">☰</div>
      <div>
        <div class="card-title">${esc(x.title)}</div>
-       <div class="meta">${esc(x.author||"")} ${x.pubDate?" · "+esc(formatDate(x.pubDate)):""}${x.enclosureUrl?" · audio linked":""}</div>
+       <div class="meta">${esc(x.author || "")} ${x.pubDate ? " · " + esc(formatDate(x.pubDate)) : ""}${x.enclosureUrl ? " · audio linked" : ""}</div>
      </div>
      <div class="card-actions">
-       ${x.enclosureUrl?`<button type="button" class="small" data-preview-my="${x.id}">▶ Preview</button>`:""}
+       ${x.enclosureUrl ? `<button type="button" class="small" data-preview-my="${x.id}">▶ Preview</button>` : ""}
        <button class="small" data-edit="${i}">Edit</button>
        <button class="small danger" data-delete="${i}">Delete</button>
      </div>
-     ${x.enclosureUrl?`<div class="preview-holder" data-preview-holder="${x.id}" style="grid-column:1/-1"></div>`:""}
+     ${x.enclosureUrl ? `<div class="preview-holder" data-preview-holder="${x.id}" style="grid-column:1/-1"></div>` : ""}
    </div>`).join("");
- }
- document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editItem(+b.dataset.edit));
- document.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>deleteItem(+b.dataset.delete));
- document.querySelectorAll("[data-preview-my]").forEach(b=>{
-   b.addEventListener("click",e=>{e.stopPropagation();togglePreview(b.dataset.previewMy,false)});
- });
- document.querySelectorAll("[data-my-index]").forEach(el=>{
-   el.addEventListener("dragstart",()=>{dragMyIndex=+el.dataset.myIndex;el.classList.add("dragging")});
-   el.addEventListener("dragend",()=>{dragMyIndex=-1;el.classList.remove("dragging")});
-   el.addEventListener("dragover",e=>e.preventDefault());
-   el.addEventListener("drop",e=>{
-     e.preventDefault();
-     if(dragSourceIndex>=0)return;
-     const to=+el.dataset.myIndex;
-     if(dragMyIndex<0||dragMyIndex===to)return;
-     const [x]=state.items.splice(dragMyIndex,1);
-     state.items.splice(to,0,x);
-     renderMyFeed();
-   });
- });
-}
-function render(){
- $("feedTitle").value=state.feed.title||"";
- $("feedLink").value=state.feed.link||"";
- $("feedAuthor").value=state.feed.author||"";
- $("feedLanguage").value=state.feed.language||"en-gb";
- $("feedDescription").value=state.feed.description||"";
- $("feedImage").value=state.feed.image||"";
- renderSource();renderMyFeed();
-}
-function syncFeed(){
- state.feed.title=$("feedTitle").value.trim();
- state.feed.link=$("feedLink").value.trim();
- state.feed.author=$("feedAuthor").value.trim();
- state.feed.language=$("feedLanguage").value.trim()||"en-gb";
- state.feed.description=$("feedDescription").value;
- state.feed.image=$("feedImage").value.trim();
-}
-function formatDuration(d){ return formatPodcastDuration(d); }
-function togglePreview(id,isSource){
- const holder=document.querySelector(`[data-preview-holder="${id}"]`);
- if(!holder)return;
- if(holder.dataset.open==="1"){
-   holder.innerHTML="";holder.dataset.open="0";
-   return;
- }
- // Close any other open preview so only one plays at a time.
- document.querySelectorAll('.preview-holder[data-open="1"]').forEach(h=>{h.innerHTML="";h.dataset.open="0"});
- const item=(isSource?state.source.items:state.items).find(i=>i.id===id);
- if(!item||!item.enclosureUrl)return;
- holder.dataset.open="1";
- const badges=[
-   item.duration?`<span class="badge">${esc(formatDuration(item.duration))}</span>`:"",
-   item.explicit&&item.explicit!=="no"?`<span class="badge">Explicit</span>`:"",
-   item.link?`<a class="badge" href="${esc(item.link)}" target="_blank" rel="noopener">Episode page ↗</a>`:""
- ].filter(Boolean).join(" ");
- holder.innerHTML=`
+      }
+      document.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => editItem(+b.dataset.edit));
+      document.querySelectorAll("[data-delete]").forEach(b => b.onclick = () => deleteItem(+b.dataset.delete));
+      document.querySelectorAll("[data-preview-my]").forEach(b => {
+        b.addEventListener("click", e => { e.stopPropagation(); togglePreview(b.dataset.previewMy, false) });
+      });
+      document.querySelectorAll("[data-my-index]").forEach(el => {
+        el.addEventListener("dragstart", () => { dragMyIndex = +el.dataset.myIndex; el.classList.add("dragging") });
+        el.addEventListener("dragend", () => { dragMyIndex = -1; el.classList.remove("dragging") });
+        el.addEventListener("dragover", e => e.preventDefault());
+        el.addEventListener("drop", e => {
+          e.preventDefault();
+          if (dragSourceIndex >= 0) return;
+          const to = +el.dataset.myIndex;
+          if (dragMyIndex < 0 || dragMyIndex === to) return;
+          const [x] = state.items.splice(dragMyIndex, 1);
+          state.items.splice(to, 0, x);
+          renderMyFeed();
+        });
+      });
+    }
+    function render() {
+      $("feedTitle").value = state.feed.title || "";
+      $("feedLink").value = state.feed.link || "";
+      $("feedAuthor").value = state.feed.author || "";
+      $("feedLanguage").value = state.feed.language || "en-gb";
+      $("feedDescription").value = state.feed.description || "";
+      $("feedImage").value = state.feed.image || "";
+      renderSource(); renderMyFeed();
+    }
+    function syncFeed() {
+      state.feed.title = $("feedTitle").value.trim();
+      state.feed.link = $("feedLink").value.trim();
+      state.feed.author = $("feedAuthor").value.trim();
+      state.feed.language = $("feedLanguage").value.trim() || "en-gb";
+      state.feed.description = $("feedDescription").value;
+      state.feed.image = $("feedImage").value.trim();
+    }
+    function formatDuration(d) { return formatPodcastDuration(d); }
+    function togglePreview(id, isSource) {
+      const holder = document.querySelector(`[data-preview-holder="${id}"]`);
+      if (!holder) return;
+      if (holder.dataset.open === "1") {
+        holder.innerHTML = ""; holder.dataset.open = "0";
+        return;
+      }
+      // Close any other open preview so only one plays at a time.
+      document.querySelectorAll('.preview-holder[data-open="1"]').forEach(h => { h.innerHTML = ""; h.dataset.open = "0" });
+      const item = (isSource ? state.source.items : state.items).find(i => i.id === id);
+      if (!item || !item.enclosureUrl) return;
+      holder.dataset.open = "1";
+      const badges = [
+        item.duration ? `<span class="badge">${esc(formatDuration(item.duration))}</span>` : "",
+        item.explicit && item.explicit !== "no" ? `<span class="badge">Explicit</span>` : "",
+        item.link ? `<a class="badge" href="${esc(item.link)}" target="_blank" rel="noopener">Episode page ↗</a>` : ""
+      ].filter(Boolean).join(" ");
+      holder.innerHTML = `
  <div class="preview-details">
-   ${item.image?`<img class="preview-thumb" src="${esc(item.image)}" alt="">`:""}
+   ${item.image ? `<img class="preview-thumb" src="${esc(item.image)}" alt="">` : ""}
    <div class="preview-details-body">
-     ${badges?`<div class="preview-badges">${badges}</div>`:""}
+     ${badges ? `<div class="preview-badges">${badges}</div>` : ""}
      <audio controls autoplay src="${esc(item.enclosureUrl)}"></audio>
    </div>
  </div>
- ${item.description?`<div class="preview-desc">${esc(item.description).trim()}</div>`:""}
+ ${item.description ? `<div class="preview-desc">${esc(item.description).trim()}</div>` : ""}
  <div class="meta proxy-hint hidden">Playback failed — the host may be blocking direct access. <button type="button" class="small" data-retry-proxy="1">Try via CORS proxy</button></div>`;
- const audio=holder.querySelector("audio");
- const hint=holder.querySelector(".proxy-hint");
- audio.addEventListener("error",()=>hint.classList.remove("hidden"),{once:true});
- holder.querySelector("[data-retry-proxy]").addEventListener("click",()=>{
-   hint.classList.add("hidden");
-   audio.src=proxiedPodcastUrl(item.enclosureUrl);
-   audio.play().catch(()=>hint.classList.remove("hidden"));
- });
-}
-function addFromSource(index){
- const source=state.source.items[index];
- if(!source)return;
- // Duplicate detection by GUID, enclosure URL or link.
- const duplicate=state.items.some(x=>
-   (source.guid&&x.guid===source.guid) ||
-   (source.enclosureUrl&&x.enclosureUrl===source.enclosureUrl) ||
-   (source.link&&x.link===source.link)
- );
- if(duplicate){alert("That episode is already in your feed.");return;}
- state.items.push({...source,id:crypto.randomUUID()});
- renderMyFeed();
-}
-$("dropzone").addEventListener("dragover",e=>{
- e.preventDefault();
- $("dropzone").classList.add("over");
-});
-$("dropzone").addEventListener("dragleave",e=>{
- if(!$("dropzone").contains(e.relatedTarget))$("dropzone").classList.remove("over");
-});
-$("dropzone").addEventListener("drop",e=>{
- e.preventDefault();
- $("dropzone").classList.remove("over");
- if(dragSourceIndex>=0){
-   addFromSource(dragSourceIndex);
-   dragSourceIndex=-1;
- }
-});
-function addManual(){
- editing=-1;
- openEditor({
-   title:"",pubDate:new Date().toISOString(),link:"",enclosureUrl:"",
-   enclosureType:"audio/mpeg",enclosureLength:"",author:state.feed.author||"",
-   duration:"",explicit:"no",image:"",description:"",guid:""
- });
-}
-function editItem(i){editing=i;openEditor(state.items[i])}
-function openEditor(x){
- $("modalTitle").textContent=editing<0?"Add episode":"Edit episode";
- $("eTitle").value=x.title||"";
- $("eDate").value=x.pubDate&&!Number.isNaN(new Date(x.pubDate).getTime())?new Date(x.pubDate).toISOString().slice(0,16):"";
- $("eLink").value=x.link||"";
- $("eAudio").value=x.enclosureUrl||"";
- $("eType").value=x.enclosureType||"audio/mpeg";
- $("eLength").value=x.enclosureLength||"";
- $("eAuthor").value=x.author||"";
- $("eDuration").value=x.duration||"";
- $("eExplicit").value=x.explicit||"no";
- $("eImage").value=x.image||"";
- $("eDescription").value=x.description||"";
- $("eGuid").value=x.guid||"";
- $("modal").classList.remove("hidden");
-}
-function closeModal(){$("modal").classList.add("hidden")}
-function saveItem(){
- const title=$("eTitle").value.trim(),audio=$("eAudio").value.trim();
- if(!title)return alert("Title is required.");
- if(!audio)return alert("Audio / enclosure URL is required.");
- const x={
-   id:editing<0?crypto.randomUUID():(state.items[editing]?.id||crypto.randomUUID()),
-   title,pubDate:new Date($("eDate").value||Date.now()).toISOString(),
-   link:$("eLink").value.trim(),enclosureUrl:audio,
-   enclosureType:$("eType").value.trim()||"audio/mpeg",
-   enclosureLength:$("eLength").value.trim(),author:$("eAuthor").value.trim(),
-   duration:$("eDuration").value.trim(),explicit:$("eExplicit").value||"no",
-   image:$("eImage").value.trim(),description:$("eDescription").value,
-   guid:$("eGuid").value.trim()
- };
- if(!x.guid)x.guid=x.link||x.enclosureUrl||crypto.randomUUID();
- if(editing<0)state.items.push(x);else state.items[editing]=x;
- closeModal();renderMyFeed();
-}
-function deleteItem(i){
- if(confirm("Remove this episode from your feed?")){state.items.splice(i,1);renderMyFeed()}
-}
-async function loadLocal(file){
- try{
-   const {feed,items}=parseFeed(await file.text());
-   state.source={title:feed.title,url:"",meta:feed,items};
-   // First source feed can conveniently initialise the blank show settings.
-   if(!state.items.length && !state.feed.link && state.feed.title==="My Curated Podcast"){
-     state.feed={...feed,title:feed.title+" — Curated"};
-   }
-   render();
- }catch(e){alert("Could not read feed: "+e.message)}
-}
-// CORS proxying, feed discovery/fetching, and parsing now live in
-// podcast_utils.js (proxiedPodcastUrl, loadPodcastFeed, etc.), shared with
-// the performer profile page.
-async function loadUrl(){
- const url=prompt("Source podcast: paste the RSS feed URL, or just the podcast's website (autodiscovery will try to find the feed):");
- if(!url)return;
- await loadSourceFromUrl(url);
-}
-// Shared by loadUrl() (typed-in URL) and the library picker (a URL chosen
-// from events_normalized.json) — does the actual fetch+parse+render.
-async function loadSourceFromUrl(url){
- $("sourceNotice").classList.add("hidden");
- try{
-   const {feedUrl,feed,items,viaProxy}=await loadPodcastFeed(url);
-   state.source={title:feed.title,url:feedUrl,meta:feed,items};
-   renderSource();
-   const notes=[];
-   const typedUrl=/^https?:\/\//i.test(url)?url:"https://"+url;
-   if(feedUrl!==typedUrl)notes.push("Feed found via autodiscovery at "+feedUrl+".");
-   if(viaProxy)notes.push("Loaded through the corsproxy.nl fallback proxy.");
-   if(notes.length){
-     $("sourceNotice").textContent=notes.join(" ");
-     $("sourceNotice").classList.remove("hidden");
-   }
- }catch(e){
-   alert("Could not load a feed from that address, even via autodiscovery and the corsproxy.nl fallback.\n\nTry pasting the exact RSS/XML URL, or download the file and use “Open source RSS”.\n\nDetails: "+e.message);
- }
-}
+      const audio = holder.querySelector("audio");
+      const hint = holder.querySelector(".proxy-hint");
+      audio.addEventListener("error", () => hint.classList.remove("hidden"), { once: true });
+      holder.querySelector("[data-retry-proxy]").addEventListener("click", () => {
+        hint.classList.add("hidden");
+        audio.src = proxiedPodcastUrl(item.enclosureUrl);
+        audio.play().catch(() => hint.classList.remove("hidden"));
+      });
+    }
+    function addFromSource(index) {
+      const source = state.source.items[index];
+      if (!source) return;
+      // Duplicate detection by GUID, enclosure URL or link.
+      const duplicate = state.items.some(x =>
+        (source.guid && x.guid === source.guid) ||
+        (source.enclosureUrl && x.enclosureUrl === source.enclosureUrl) ||
+        (source.link && x.link === source.link)
+      );
+      if (duplicate) { alert("That episode is already in your feed."); return; }
+      state.items.push({ ...source, id: crypto.randomUUID() });
+      renderMyFeed();
+    }
+    $("dropzone").addEventListener("dragover", e => {
+      e.preventDefault();
+      $("dropzone").classList.add("over");
+    });
+    $("dropzone").addEventListener("dragleave", e => {
+      if (!$("dropzone").contains(e.relatedTarget)) $("dropzone").classList.remove("over");
+    });
+    $("dropzone").addEventListener("drop", e => {
+      e.preventDefault();
+      $("dropzone").classList.remove("over");
+      if (dragSourceIndex >= 0) {
+        addFromSource(dragSourceIndex);
+        dragSourceIndex = -1;
+      }
+    });
+    function addManual() {
+      editing = -1;
+      openEditor({
+        title: "", pubDate: new Date().toISOString(), link: "", enclosureUrl: "",
+        enclosureType: "audio/mpeg", enclosureLength: "", author: state.feed.author || "",
+        duration: "", explicit: "no", image: "", description: "", guid: ""
+      });
+    }
+    function editItem(i) { editing = i; openEditor(state.items[i]) }
+    function openEditor(x) {
+      $("modalTitle").textContent = editing < 0 ? "Add episode" : "Edit episode";
+      $("eTitle").value = x.title || "";
+      $("eDate").value = x.pubDate && !Number.isNaN(new Date(x.pubDate).getTime()) ? new Date(x.pubDate).toISOString().slice(0, 16) : "";
+      $("eLink").value = x.link || "";
+      $("eAudio").value = x.enclosureUrl || "";
+      $("eType").value = x.enclosureType || "audio/mpeg";
+      $("eLength").value = x.enclosureLength || "";
+      $("eAuthor").value = x.author || "";
+      $("eDuration").value = x.duration || "";
+      $("eExplicit").value = x.explicit || "no";
+      $("eImage").value = x.image || "";
+      $("eDescription").value = x.description || "";
+      $("eGuid").value = x.guid || "";
+      $("modal").classList.remove("hidden");
+    }
+    function closeModal() { $("modal").classList.add("hidden") }
+    function saveItem() {
+      const title = $("eTitle").value.trim(), audio = $("eAudio").value.trim();
+      if (!title) return alert("Title is required.");
+      if (!audio) return alert("Audio / enclosure URL is required.");
+      const x = {
+        id: editing < 0 ? crypto.randomUUID() : (state.items[editing]?.id || crypto.randomUUID()),
+        title, pubDate: new Date($("eDate").value || Date.now()).toISOString(),
+        link: $("eLink").value.trim(), enclosureUrl: audio,
+        enclosureType: $("eType").value.trim() || "audio/mpeg",
+        enclosureLength: $("eLength").value.trim(), author: $("eAuthor").value.trim(),
+        duration: $("eDuration").value.trim(), explicit: $("eExplicit").value || "no",
+        image: $("eImage").value.trim(), description: $("eDescription").value,
+        guid: $("eGuid").value.trim()
+      };
+      if (!x.guid) x.guid = x.link || x.enclosureUrl || crypto.randomUUID();
+      if (editing < 0) state.items.push(x); else state.items[editing] = x;
+      closeModal(); renderMyFeed();
+    }
+    function deleteItem(i) {
+      if (confirm("Remove this episode from your feed?")) { state.items.splice(i, 1); renderMyFeed() }
+    }
+    async function loadLocal(file) {
+      try {
+        const { feed, items } = parseFeed(await file.text());
+        state.source = { title: feed.title, url: "", meta: feed, items };
+        // First source feed can conveniently initialise the blank show settings.
+        if (!state.items.length && !state.feed.link && state.feed.title === "My Curated Podcast") {
+          state.feed = { ...feed, title: feed.title + " — Curated" };
+        }
+        render();
+      } catch (e) { alert("Could not read feed: " + e.message) }
+    }
+    // CORS proxying, feed discovery/fetching, and parsing now live in
+    // podcast_utils.js (proxiedPodcastUrl, loadPodcastFeed, etc.), shared with
+    // the performer profile page.
+    async function loadUrl() {
+      const url = prompt("Source podcast: paste the RSS feed URL, or just the podcast's website (autodiscovery will try to find the feed):");
+      if (!url) return;
+      await loadSourceFromUrl(url);
+    }
+    // Shared by loadUrl() (typed-in URL) and the library picker (a URL chosen
+    // from events_normalized.json) — does the actual fetch+parse+render.
+    async function loadSourceFromUrl(url) {
+      $("sourceNotice").classList.add("hidden");
+      try {
+        const { feedUrl, feed, items, viaProxy } = await loadPodcastFeed(url);
+        state.source = { title: feed.title, url: feedUrl, meta: feed, items };
+        renderSource();
+        const notes = [];
+        const typedUrl = /^https?:\/\//i.test(url) ? url : "https://" + url;
+        if (feedUrl !== typedUrl) notes.push("Feed found via autodiscovery at " + feedUrl + ".");
+        if (viaProxy) notes.push("Loaded through the corsproxy.nl fallback proxy.");
+        if (notes.length) {
+          $("sourceNotice").textContent = notes.join(" ");
+          $("sourceNotice").classList.remove("hidden");
+        }
+      } catch (e) {
+        alert("Could not load a feed from that address, even via autodiscovery and the corsproxy.nl fallback.\n\nTry pasting the exact RSS/XML URL, or download the file and use “Open source RSS”.\n\nDetails: " + e.message);
+      }
+    }
 
-// ---------------------------------------------------------------------------
-// Library picker
-// If an events_normalized.json is reachable alongside this page (the same
-// data file the performer profile pages use — see events-schema.json), pull
-// out every podcast URL it contains — both top-level `podcasts[].url`
-// entries and each performer's `podcast` field(s) — and let the user load
-// one straight in in a couple of clicks, instead of hunting down and typing
-// a feed URL by hand. If the file isn't reachable (e.g. this tool is being
-// used standalone), the button just says so and nothing else changes.
-// ---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
+    // Library picker
+    // If an events_normalized.json is reachable alongside this page (the same
+    // data file the performer profile pages use — see events-schema.json), pull
+    // out every podcast URL it contains — both top-level `podcasts[].url`
+    // entries and each performer's `podcast` field(s) — and let the user load
+    // one straight in in a couple of clicks, instead of hunting down and typing
+    // a feed URL by hand. If the file isn't reachable (e.g. this tool is being
+    // used standalone), the button just says so and nothing else changes.
+    // ---------------------------------------------------------------------------
 
-let libraryEntries = null; // null = not yet fetched; [] = fetched, none found
+    let libraryEntries = null; // null = not yet fetched; [] = fetched, none found
 
-async function ensureLibraryEntries(){
- if(libraryEntries!==null)return libraryEntries;
- try{
-   const res=await fetch("events_normalized.json");
-   if(!res.ok)throw new Error("HTTP "+res.status);
-   libraryEntries=buildLibraryEntries(await res.json());
- }catch(e){
-   libraryEntries=[];
- }
- return libraryEntries;
-}
+    async function ensureLibraryEntries() {
+      if (libraryEntries !== null) return libraryEntries;
+      try {
+        const res = await fetch("events_normalized.json");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        libraryEntries = buildLibraryEntries(await res.json());
+      } catch (e) {
+        libraryEntries = [];
+      }
+      return libraryEntries;
+    }
 
-function buildLibraryEntries(data){
- const entries=[];
- const seen=new Set();
- function addEntry(label,group,url){
-   if(typeof url!=="string"||!url.trim())return;
-   const key=group+"|"+label+"|"+url;
-   if(seen.has(key))return;
-   seen.add(key);
-   entries.push({label,group,url:url.trim()});
- }
+    function buildLibraryEntries(data) {
+      const entries = [];
+      const seen = new Set();
+      function addEntry(label, group, url) {
+        if (typeof url !== "string" || !url.trim()) return;
+        const key = group + "|" + label + "|" + url;
+        if (seen.has(key)) return;
+        seen.add(key);
+        entries.push({ label, group, url: url.trim() });
+      }
 
- // Top-level `podcasts` registry (events-schema.json → $defs.podcast) — a
- // podcast series in its own right, not tied to a single performer.
- (Array.isArray(data?.podcasts)?data.podcasts:[]).forEach(p=>{
-   addEntry(p?.series_title||p?.podcast_id||"Untitled podcast","Podcast series",p?.url);
- });
+      // Top-level `podcasts` registry (events-schema.json → $defs.podcast) — a
+      // podcast series in its own right, not tied to a single performer.
+      (Array.isArray(data?.podcasts) ? data.podcasts : []).forEach(p => {
+        addEntry(p?.series_title || p?.podcast_id || "Untitled podcast", "Podcast series", p?.url);
+      });
 
- // Performers' own podcast(s) (events-schema.json → $defs.podcastUrls) — a
- // single URL string, or an array of them.
- const performers=data?.performers&&typeof data.performers==="object"?data.performers:{};
- Object.values(performers).forEach(perf=>{
-   const raw=perf?.podcast;
-   const urls=Array.isArray(raw)?raw:(raw?[raw]:[]);
-   urls.forEach((u,i)=>{
-     const label=urls.length>1?`${perf?.name||"Performer"} (podcast ${i+1})`:(perf?.name||"Performer");
-     addEntry(label,"Performer",u);
-   });
- });
+      // Performers' own podcast(s) (events-schema.json → $defs.podcastUrls) — a
+      // single URL string, or an array of them.
+      const performers = data?.performers && typeof data.performers === "object" ? data.performers : {};
+      Object.values(performers).forEach(perf => {
+        const raw = perf?.podcast;
+        const urls = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+        urls.forEach((u, i) => {
+          const label = urls.length > 1 ? `${perf?.name || "Performer"} (podcast ${i + 1})` : (perf?.name || "Performer");
+          addEntry(label, "Performer", u);
+        });
+      });
 
- entries.sort((a,b)=>a.group===b.group?a.label.localeCompare(b.label):a.group.localeCompare(b.group));
- return entries;
-}
+      entries.sort((a, b) => a.group === b.group ? a.label.localeCompare(b.label) : a.group.localeCompare(b.group));
+      return entries;
+    }
 
-async function openLibraryModal(){
- const entries=await ensureLibraryEntries();
- if(entries.length===0){
-   $("sourceNotice").textContent="No podcast library found — events_normalized.json isn't reachable here, or it has no podcast links in it.";
-   $("sourceNotice").classList.remove("hidden");
-   return;
- }
- $("libSearch").value="";
- renderLibraryList(entries);
- $("libraryModal").classList.remove("hidden");
- $("libSearch").focus();
-}
+    async function openLibraryModal() {
+      const entries = await ensureLibraryEntries();
+      if (entries.length === 0) {
+        $("sourceNotice").textContent = "No podcast library found — events_normalized.json isn't reachable here, or it has no podcast links in it.";
+        $("sourceNotice").classList.remove("hidden");
+        return;
+      }
+      $("libSearch").value = "";
+      renderLibraryList(entries);
+      $("libraryModal").classList.remove("hidden");
+      $("libSearch").focus();
+    }
 
-function renderLibraryList(entries){
- const q=($("libSearch").value||"").trim().toLowerCase();
- const filtered=q?entries.filter(e=>e.label.toLowerCase().includes(q)||e.url.toLowerCase().includes(q)):entries;
- const list=$("libList");
- list.innerHTML="";
- if(filtered.length===0){
-   list.innerHTML='<div class="empty">No matches</div>';
-   return;
- }
- let lastGroup=null;
- filtered.forEach(e=>{
-   if(e.group!==lastGroup){
-     lastGroup=e.group;
-     const heading=document.createElement("div");
-     heading.style.cssText="font-size:11px;font-weight:700;color:#667085;text-transform:uppercase;letter-spacing:.04em;margin:10px 2px 3px";
-     heading.textContent=e.group;
-     list.appendChild(heading);
-   }
-   const card=document.createElement("div");
-   card.className="card";
-   card.style.cursor="pointer";
-   card.innerHTML=`<div class="card-title">${esc(e.label)}</div><div class="meta">${esc(e.url)}</div>`;
-   card.onclick=()=>{
-     $("libraryModal").classList.add("hidden");
-     loadSourceFromUrl(e.url);
-   };
-   list.appendChild(card);
- });
-}
+    function renderLibraryList(entries) {
+      const q = ($("libSearch").value || "").trim().toLowerCase();
+      const filtered = q ? entries.filter(e => e.label.toLowerCase().includes(q) || e.url.toLowerCase().includes(q)) : entries;
+      const list = $("libList");
+      list.innerHTML = "";
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty">No matches</div>';
+        return;
+      }
+      let lastGroup = null;
+      filtered.forEach(e => {
+        if (e.group !== lastGroup) {
+          lastGroup = e.group;
+          const heading = document.createElement("div");
+          heading.style.cssText = "font-size:11px;font-weight:700;color:#667085;text-transform:uppercase;letter-spacing:.04em;margin:10px 2px 3px";
+          heading.textContent = e.group;
+          list.appendChild(heading);
+        }
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.cursor = "pointer";
+        card.innerHTML = `<div class="card-title">${esc(e.label)}</div><div class="meta">${esc(e.url)}</div>`;
+        card.onclick = () => {
+          $("libraryModal").classList.add("hidden");
+          loadSourceFromUrl(e.url);
+        };
+        list.appendChild(card);
+      });
+    }
 
-function exportRSS(){
- syncFeed();
- const items=state.items.map(x=>`<item>
+    function exportRSS() {
+      syncFeed();
+      const items = state.items.map(x => `<item>
 <title>${esc(x.title)}</title>
 <link>${esc(x.link)}</link>
-<guid isPermaLink="${x.guid===x.link?"true":"false"}">${esc(x.guid)}</guid>
+<guid isPermaLink="${x.guid === x.link ? "true" : "false"}">${esc(x.guid)}</guid>
 <pubDate>${rfc822(x.pubDate)}</pubDate>
 <description>${cdata(x.description)}</description>
-${x.author?`<itunes:author>${esc(x.author)}</itunes:author>`:""}
-${x.duration?`<itunes:duration>${esc(x.duration)}</itunes:duration>`:""}
-<itunes:explicit>${esc(x.explicit||"no")}</itunes:explicit>
-${x.image?`<itunes:image href="${esc(x.image)}"/>`:""}
-<enclosure url="${esc(x.enclosureUrl)}" type="${esc(x.enclosureType||"audio/mpeg")}"${x.enclosureLength?` length="${esc(x.enclosureLength)}"`:""}/>
+${x.author ? `<itunes:author>${esc(x.author)}</itunes:author>` : ""}
+${x.duration ? `<itunes:duration>${esc(x.duration)}</itunes:duration>` : ""}
+<itunes:explicit>${esc(x.explicit || "no")}</itunes:explicit>
+${x.image ? `<itunes:image href="${esc(x.image)}"/>` : ""}
+<enclosure url="${esc(x.enclosureUrl)}" type="${esc(x.enclosureType || "audio/mpeg")}"${x.enclosureLength ? ` length="${esc(x.enclosureLength)}"` : ""}/>
 </item>`).join("\n");
 
- const xml=`<?xml version="1.0" encoding="UTF-8"?>
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
 <channel>
 <title>${esc(state.feed.title)}</title>
 <link>${esc(state.feed.link)}</link>
 <description>${cdata(state.feed.description)}</description>
-<language>${esc(state.feed.language||"en-gb")}</language>
-${state.feed.author?`<itunes:author>${esc(state.feed.author)}</itunes:author>`:""}
-${state.feed.image?`<itunes:image href="${esc(state.feed.image)}"/>`:""}
+<language>${esc(state.feed.language || "en-gb")}</language>
+${state.feed.author ? `<itunes:author>${esc(state.feed.author)}</itunes:author>` : ""}
+${state.feed.image ? `<itunes:image href="${esc(state.feed.image)}"/>` : ""}
 ${items}
 </channel>
 </rss>`;
 
- const defaultName=slugify(state.feed.title)+".xml";
- let name=prompt("File name for the exported RSS:",defaultName);
- if(name===null)return; // user cancelled export
- name=name.trim()||defaultName;
- if(!/\.xml$/i.test(name))name+=".xml";
+      const defaultName = slugify(state.feed.title) + ".xml";
+      let name = prompt("File name for the exported RSS:", defaultName);
+      if (name === null) return; // user cancelled export
+      name = name.trim() || defaultName;
+      if (!/\.xml$/i.test(name)) name += ".xml";
 
- const blob=new Blob([xml],{type:"application/rss+xml;charset=utf-8"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);a.download=name;
- document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-}
+      const blob = new Blob([xml], { type: "application/rss+xml;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
 
-$("file").onchange=e=>{const f=e.target.files[0];if(f)loadLocal(f);e.target.value=""};
-$("sourceUrl").onclick=loadUrl;
-$("libraryBtn").onclick=openLibraryModal;
-$("libSearch").oninput=()=>renderLibraryList(libraryEntries||[]);
-$("libCancelBtn").onclick=()=>$("libraryModal").classList.add("hidden");
-$("libraryModal").onclick=e=>{if(e.target===$("libraryModal"))$("libraryModal").classList.add("hidden")};
-$("sourceSearch").oninput=renderSource;
-$("clearSource").onclick=()=>{state.source={title:"",url:"",meta:null,items:[]};$("sourceSearch").value="";$("sourceNotice").classList.add("hidden");renderSource()};
-$("addBtn").onclick=addManual;
-$("exportBtn").onclick=exportRSS;
-$("saveBtn").onclick=saveItem;
-$("cancelBtn").onclick=closeModal;
-$("modal").onclick=e=>{if(e.target===$("modal"))closeModal()};
+    $("file").onchange = e => { const f = e.target.files[0]; if (f) loadLocal(f); e.target.value = "" };
+    $("sourceUrl").onclick = loadUrl;
+    $("libraryBtn").onclick = openLibraryModal;
+    $("libSearch").oninput = () => renderLibraryList(libraryEntries || []);
+    $("libCancelBtn").onclick = () => $("libraryModal").classList.add("hidden");
+    $("libraryModal").onclick = e => { if (e.target === $("libraryModal")) $("libraryModal").classList.add("hidden") };
+    $("sourceSearch").oninput = renderSource;
+    $("clearSource").onclick = () => { state.source = { title: "", url: "", meta: null, items: [] }; $("sourceSearch").value = ""; $("sourceNotice").classList.add("hidden"); renderSource() };
+    $("addBtn").onclick = addManual;
+    $("exportBtn").onclick = exportRSS;
+    $("saveBtn").onclick = saveItem;
+    $("cancelBtn").onclick = closeModal;
+    $("modal").onclick = e => { if (e.target === $("modal")) closeModal() };
 
-render();
-</script>
+    render();
+  </script>
 </body>
+
 </html>
