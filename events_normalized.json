@@ -5,7 +5,7 @@
       "name": "Crick Crack Club",
       "promoter_link": "https://crickcrackclub.com/",
       "promoter_venues": ["the-cube-kingsdown", "hoxton-hall"],
-      "promoter_artists": ["debs-newbold"]
+      "promoter_artists": ["debs-newbold", "emily-hennessey", "sheema-mukherjee", "ben-haggerty", "steph-brittain"]
     }
   },
   "festivals": {
@@ -1755,7 +1755,7 @@
           "date_added": "27/08/2026"
         }
       ],
-      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "performer_ids": ["hugh-lupton", "sarah-moody"],
       "description": "An evening of mystery tales with master storyteller Hugh Lupton and Cellist Sarah Moody.\n\n\n\nDemons, archangels & djinns; hoopoes, swallows, fish, donkeys and maggots; kings, queens, merchants, fools and the voice from the heart of the whirlwind all contend in this rich interweaving of Apocryphal and Old Testament mystery tales drawing from Jewish, Islamic and Christian sources.\n\n\n\nAudiences will encounter Adam and Eve, Solomon and Sheba, Tobias and the Angel, Job and his Comforters… stories that underpin our culture… told in the picture language of the heart, with vigour and humour, with rich language and deep magic.\n\n\n\nThis is a chance to shake off old habitual pieties and hear these ancient tales with fresh ears.\n\n\n\nIn this performance master-storyteller Hugh Lupton is joined by acclaimed cellist Sarah Moody whose wonderful playing is inspired by the music of all three Abrahamic traditions, reminding us that at the core of these cultures (that have been at loggerheads for most of the last thousand years) lies a shared mythology.\n\n\n\nThis is a gripping, accessible and moving performance aimed at adult audiences (not suitable for under 14s). ",
       "isSpecial": true
     },
@@ -1776,7 +1776,7 @@
       "description": "A fatherless son\n\nA daughter's lament\n\nA pig stolen from its spit\n\nFires burning out at sea\n\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny — an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
       "isSpecial": true
     },
-    "ben-haggarty-steph-brittain-the-bodies-on-the-beach": {
+    "emily-hennessey-sheema-mukherjee-girl-didnt-die": {
       "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
       "showname": "The Girl Who Didn't Die",
       "show_dates": [
@@ -4146,7 +4146,7 @@
       "performer_ids": ["jess-silk", "joe-solo"],
       "tour_description": "You know when you wake up every day and can't quite believe what you are seeing? Well, Jess Silk and Joe Solo feel the same and, after two sell out tours together, have decided to fill some rooms once again with real people, real voices and real heart. There are just four special Autumn shows lined up, with special guest Matt Johnson joining for the finale. The only time they will be together for some time, so if you want shout WTF at the world too, grab a ticket and get down the front.",
       "tour_flyer": "tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg",
-      "tour_flyers": ["tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg", "tour_wtf_jess_joe_autumn_2026.jpg"],
+      "touring_event_flyers": ["tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg", "tour_wtf_jess_joe_autumn_2026.jpg"],
       "tags": [
         "music",
         "tour",
@@ -5658,7 +5658,7 @@
       "event_flyer": "2026_01_21_stinginthetale_whatton.jpg",
       "isSpecial": true,
       "venue_id": "lock-91-bar-manchester",
-      "performer_id": "maria-buckley-whatton"
+      "performer_id": "maria-whatton"
     },
     {
       "name": "Backstories [Chris Richardson]",
@@ -13482,7 +13482,6 @@
       "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. ",
       "podcast_appearances" : [{"podcast": "The Secret Life of Writers Podcast", "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/", "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3" , "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"}],
       "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"],
-      "podcastX": ["https://podcasts.apple.com/bb/podcast/daniel-morden-storyteller/id1451723191", "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391"],
       "youtube_videos": [ {"story_name": "Daniel Morden (Taking the Tradition On)", "yt_url": "https://www.youtube.com/watch?v=0vn7eZGm1bc"}, {"story_name": "Daniel Morden (World Storytelling Cafe)", "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"}]
     },
     "the-travelling-talesman-cliff-eastabrook": {
@@ -13565,6 +13564,7 @@
     },
     "nick-hennessey-emily-hennessey": {
       "id": "nick-hennessey-emily-hennessey",
+      "performer_ids": ["nick-hennessey", "emily-hennessey"],
       "name": "Nick  Hennessey | Emily Hennessey",
       "url": "",
       "bio": "Husband and wife team, Nick and Emily Hennessey are both acclaimed storytellers in their own right.\n\n\n\nNick Hennessey is an internationally acclaimed storyteller, playwright, folk singer, song writer and musician. He has told stories for more than 20 years, performing at venues such as the South Bank Centre and Royal Albert Hall. He is particularly drawn to North European cultural traditions and has been awarded high honours in Finland for his work on their National Epic, Kalevala.\n\n\n\nEmily Hennessey is a playful and dynamic performance storyteller with a great love of Hindu mythology. She has travelled over 10,000 miles across India and Nepal by train, bus, rattling rickshaw and bicycle. Emily has toured in India, Iceland and Japan and performed at venues and festivals across Europe. She spent many months at the Kattaikkuttu School in Tamil Nadu, learning from the children who perform stories from the Mahabharata through music, dance and song."
@@ -13775,6 +13775,7 @@
       "id": "sheema-mukherjee",
       "name": "Sheema Mukherjee",
       "url": "http://www.mukherjee.co.uk/",
+      "musician": true,
       "bio": "Sheema Mukherjee, established sitar player and composer; a regular in Transglobal Underground playing sitar and electric bass; a key member in The Imagined Village project; a formidable collaborator with internationally renowned artists from many genres."
     },
     "emily-hennessey": {
@@ -13908,9 +13909,9 @@
       "url": "http://www.iandouglas-storyteller.co.uk/",
       "bio": "Ian Douglas is a Storyteller and Theatre Maker Who works extensively across the British Isles. With over 20 years of experience delivering storytelling, performance and theatre activities for schools, arts organisations, communities and festivals across Britain, he has developed a practise approach which mixes sensitivity, Commedic energy and wit leading to a style all of his own.\n\n\n\n The origins of Ian's work are steeped in the traditions of street theatre which has helped him develop his unique storytelling style. His work has been described as 'truly inspirational' and draws upon a rich vein of British folk tales and world myths."
     },
-    "maria-buckley-whatton": {
-      "id": "maria-buckley-whatton",
-      "name": "Maria Buckley Whatton",
+    "maria-whatton": {
+      "id": "maria-whatton",
+      "name": "Maria Whatton",
       "url": "https://www.storytellermaria.com/",
       "bio": "Maria Whatton is a treasured storyteller and fiction author. A winner of Outstanding Female Storyteller of Great Britain in 2013 (British Awards for Storytelling Excellence) she is renowned for her compelling, vibrant performances.\n\n\n\n She has a vast knowledge of traditional stories passed down by her Irish father and grandmother which she brings to life with her lucid, engaging style."
     },
