@@ -1038,6 +1038,42 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     padding: 0 0 4px;
 }
 
+/* Badges shown under a video's title in the Videos section: the series
+   it's from (e.g. "World Storytelling Cafe") and, separately, its format
+   (e.g. "interview", "telling") — see collectPerformerVideoAppearances()
+   in performers.js. */
+.perf-video-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+.perf-video-source-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
+}
+
+.perf-video-format-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: normal;
+    padding: 1px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    text-transform: capitalize;
+    background: #f5f5f5;
+    color: #777;
+    border: 1px solid #ddd;
+}
+
 .perf-video-frame {
     position: relative;
     width: 100%;

@@ -1442,11 +1442,18 @@ function renderPodcastSection(performer) {
 function resolvePodcastAppearanceMeta(appearance) {
   if (appearance.podcast_id && podcastsLookup[appearance.podcast_id]) {
     const p = podcastsLookup[appearance.podcast_id];
-    return { name: p.series_title || appearance.podcast_id, url: p.url || "" };
+    return {
+      name: p.series_title || appearance.podcast_id,
+      url: p.url || "",
+      // podcasts[].format (e.g. "telling", "interview") — purely
+      // descriptive, shown alongside the series name if present.
+      format: p.format || "",
+    };
   }
   return {
     name: appearance.podcast || "Podcast",
     url: appearance.podcast_url || "",
+    format: "",
   };
 }
 
@@ -1473,6 +1480,11 @@ function collectPerformerAppearances(performer) {
           : [];
       if (!ids.includes(performerId)) return;
       if (!item.title || !item.enclosureUrl) return;
+      // Items with a yt_url are rendered in the Videos section instead
+      // (see collectPerformerVideoAppearances) — an item wouldn't
+      // normally carry both, but if it does, prefer video and skip it
+      // here rather than showing it twice.
+      if (item.yt_url) return;
       fromRegistry.push({
         episode_name: item.title,
         audio_url: item.enclosureUrl,
@@ -1533,6 +1545,18 @@ function renderPodcastAppearancesSection(performer) {
       metaLine.appendChild(metaLink || document.createTextNode(meta.name));
       body.appendChild(metaLine);
     }
+    // Format badge (e.g. "interview", "telling") — same badge style used
+    // in the Videos section, kept separate from the name/link above so
+    // the link stays a clean click target.
+    if (meta.format) {
+      const badges = document.createElement("div");
+      badges.className = "perf-video-badges";
+      const formatBadge = document.createElement("span");
+      formatBadge.className = "perf-video-format-badge";
+      formatBadge.textContent = meta.format;
+      badges.appendChild(formatBadge);
+      body.appendChild(badges);
+    }
 
     top.appendChild(body);
 
@@ -1576,13 +1600,24 @@ function renderPodcastAppearancesSection(performer) {
 
 // ---------------------------------------------------------------------------
 // Videos section
-// performer.youtube_videos (see events-schema.json → $defs.youtubeVideo)
-// lists YouTube videos of a performer, each labelled with a story/piece
-// name rather than necessarily the video's own YouTube title. Each video
-// gets its own nested collapsible (not just a play button, per the brief)
-// — its embed is only created the first time THAT video's collapsible is
-// opened, and is torn down again (stopping playback) if it's closed, so
-// nothing ever loads for a video a visitor never expands.
+// Two sources are merged here:
+//   1. Registry-sourced — episode items (in the top-level `podcasts`
+//      registry, see events-schema.json → $defs.podcast / $defs.podcastEpisode)
+//      tagged with this performer's id via performer_id/performer_ids,
+//      whose item carries a yt_url. This is the preferred home for a
+//      video going forward (e.g. World Storytelling Cafe, Taking the
+//      Tradition On), since it also captures the series name/presenter
+//      and lets one series' videos be reused across every performer
+//      it features.
+//   2. Legacy inline — performer.youtube_videos (see events-schema.json
+//      → $defs.youtubeVideo), each labelled with a story/piece name
+//      rather than necessarily the video's own YouTube title. Kept for
+//      performers not yet migrated into the podcasts registry.
+// Each video gets its own nested collapsible (not just a play button,
+// per the brief) — its embed is only created the first time THAT
+// video's collapsible is opened, and is torn down again (stopping
+// playback) if it's closed, so nothing ever loads for a video a
+// visitor never expands.
 // ---------------------------------------------------------------------------
 
 function extractYoutubeId(url) {
@@ -1601,12 +1636,54 @@ function extractYoutubeId(url) {
   return null;
 }
 
-function renderVideosSection(performer) {
-  const videos = Array.isArray(performer.youtube_videos)
-    ? performer.youtube_videos.filter(
-        (v) => v && v.yt_url && extractYoutubeId(v.yt_url),
-      )
+// Merges the two video sources described above into the shape the
+// renderer below expects: { story_name, yt_url, source?, format? }.
+// `source`/`format` (the podcast series' title/format) are only set for
+// registry-sourced entries, since inline entries don't belong to a series.
+function collectPerformerVideoAppearances(performer) {
+  const fromRegistry = [];
+  Object.values(podcastsLookup).forEach((podcast) => {
+    (podcast.items || []).forEach((item) => {
+      const ids = Array.isArray(item.performer_ids)
+        ? item.performer_ids
+        : item.performer_id
+          ? [item.performer_id]
+          : [];
+      if (!ids.includes(performerId)) return;
+      if (!item.yt_url || !extractYoutubeId(item.yt_url)) return;
+      fromRegistry.push({
+        story_name: item.title || podcast.series_title || "Untitled video",
+        yt_url: item.yt_url,
+        source: podcast.series_title || "",
+        format: podcast.format || "",
+      });
+    });
+  });
+
+  const inline = Array.isArray(performer.youtube_videos)
+    ? performer.youtube_videos
+        .filter((v) => v && v.yt_url && extractYoutubeId(v.yt_url))
+        .map((v) => ({ story_name: v.story_name, yt_url: v.yt_url }))
     : [];
+
+  // De-dupe by YouTube video id — a performer whose video has since been
+  // added to the podcasts registry (with performer_id set) may still
+  // carry the old inline entry for the same video; keep the
+  // registry-sourced version (listed first) so it wins, and drop the
+  // inline duplicate rather than showing the same video twice.
+  const seen = new Set();
+  const merged = [];
+  [...fromRegistry, ...inline].forEach((v) => {
+    const vid = extractYoutubeId(v.yt_url);
+    if (!vid || seen.has(vid)) return;
+    seen.add(vid);
+    merged.push(v);
+  });
+  return merged;
+}
+
+function renderVideosSection(performer) {
+  const videos = collectPerformerVideoAppearances(performer);
   const section = document.getElementById("perfVideosSection");
   if (videos.length === 0) {
     section.style.display = "none";
@@ -1635,9 +1712,36 @@ function renderVideosSection(performer) {
     const summary = document.createElement("summary");
     summary.className = "perf-podcast-episodes-summary";
 
-    const label = document.createElement("span");
+    // Reuse .perf-podcast-episode-body's flex:1/min-width:0 so the title
+    // (and, for registry-sourced videos, a series subtitle beneath it)
+    // takes the available space, pushing the hint to the right edge —
+    // matching the appearances list's title+meta layout.
+    const textCol = document.createElement("div");
+    textCol.className = "perf-podcast-episode-body";
+
+    const label = document.createElement("div");
     label.textContent = video.story_name || "Untitled video";
-    summary.appendChild(label);
+    textCol.appendChild(label);
+
+    if (video.source || video.format) {
+      const badges = document.createElement("div");
+      badges.className = "perf-video-badges";
+      if (video.source) {
+        const sourceBadge = document.createElement("span");
+        sourceBadge.className = "perf-video-source-badge";
+        sourceBadge.textContent = video.source;
+        badges.appendChild(sourceBadge);
+      }
+      if (video.format) {
+        const formatBadge = document.createElement("span");
+        formatBadge.className = "perf-video-format-badge";
+        formatBadge.textContent = video.format;
+        badges.appendChild(formatBadge);
+      }
+      textCol.appendChild(badges);
+    }
+
+    summary.appendChild(textCol);
 
     const hint = document.createElement("span");
     hint.className = "perf-podcast-episodes-hint";
