@@ -5,7 +5,7 @@
    ============================================================= */
 
 /* =============================================================
-   3. PERFORMER HERO
+   1. PERFORMER HERO
    ============================================================= */
 
 .performer-hero {
@@ -100,7 +100,7 @@
 
 
 /* =============================================================
-   4. STATS ROW
+   2. STATS ROW
    ============================================================= */
 
 .stats-row {
@@ -136,7 +136,7 @@
 
 
 /* =============================================================
-   5. CONTENT SECTIONS
+   3. CONTENT SECTIONS
    ============================================================= */
 
 .content-section {
@@ -162,7 +162,7 @@
 
 
 /* =============================================================
-   6. TOUR CARDS
+   4. TOUR CARDS
    ============================================================= */
 
 .tour-card {
@@ -321,7 +321,7 @@
 
 
 /* =============================================================
-   7. EVENT ROWS (other appearances, festival rows)
+   5. EVENT ROWS (other appearances, festival rows)
    ============================================================= */
 
 /* Performer-specific event row sub-classes */
@@ -347,7 +347,7 @@
 
 
 /* =============================================================
-   8. RESPONSIVE
+   6. RESPONSIVE
    ============================================================= */
 
 @media (max-width: 600px) {
@@ -373,7 +373,7 @@
 
 
 /* =============================================================
-   9. REPERTOIRE CARD
+   7. REPERTOIRE CARD
    Variant of .tour-card where the show description is the focus.
    ============================================================= */
 
@@ -402,7 +402,7 @@
 }
 
 /* =============================================================
-   10. COMPOUND PERFORMER (member links, chips)
+   8. COMPOUND PERFORMER (member links, chips)
    ============================================================= */
 
 /* Linked individual names in the h1 */
@@ -461,7 +461,7 @@
 }
 
 /* =============================================================
-   11. FLYER THUMBNAILS & LIGHTBOX
+   9. FLYER THUMBNAILS & LIGHTBOX
    ============================================================= */
 
 .perf-flyer-thumb {
@@ -651,7 +651,7 @@
 }
 
 /* =============================================================
-   12. FLYER GALLERY SECTION
+   10. FLYER GALLERY SECTION
    ============================================================= */
 
 .perf-flyer-gallery {
@@ -842,7 +842,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
 }
 
 /* =============================================================
-   13. PODCAST SECTION
+   11. PODCAST SECTION
    performer.podcast may be a single URL or an array of URLs
    (see events-schema.json → $defs.podcastUrls). Rendered as
    a collapsible list, mirroring the flyer gallery pattern.
@@ -1170,7 +1170,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 /* =============================================================
-   14. ALL-PERFORMERS LANDING COLLAPSIBLE
+   12. ALL-PERFORMERS LANDING COLLAPSIBLE
    ============================================================= */
 
 .all-performers-details {
@@ -1233,7 +1233,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 /* =============================================================
-   15. TROUPE LINEUP CONFIG SUB-SECTIONS
+   13. TROUPE LINEUP CONFIG SUB-SECTIONS
    ============================================================= */
 
 .troupe-config-details {
@@ -1308,7 +1308,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 
 
 /* =============================================================
-   16. PERFORMER TYPE FILTERS & LIST TAGS
+   14. PERFORMER TYPE FILTERS & LIST TAGS
    ============================================================= */
 
 .perf-type-filters {
@@ -1355,7 +1355,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 /* =============================================================
-   17. PERFORMER SEARCH (LANDING PAGE)
+   15. PERFORMER SEARCH (LANDING PAGE)
    ============================================================= */
 
 .perf-search-wrap {
