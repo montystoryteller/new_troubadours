@@ -13,6 +13,32 @@
     <link rel="stylesheet" href="shared-styles.css">
     <style>
         /* ── Page layout ─────────────────────────────────────── */
+
+        .directory-intro {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            max-width: 720px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+
+        /* Multiple columns on wide screens (matches the venues directory
+           page), collapsing to a single column on mobile. Day-of-week
+           headings and the "no clubs match" message are the only other
+           direct children — both explicitly span the full grid width via
+           inline grid-column:1/-1, so only the club cards become cells. */
+        .club-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+
+        .club-list-grid > .event {
+            margin-bottom: 0;
+        }
+
         .club-header {
             background: white;
             border-radius: 8px;
@@ -522,6 +548,7 @@
         <a href="new_troubadours_performers.html">🎤 Performers</a>
         <a href="new_troubadours_venues.html">📍 Venues</a>
         <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_media.html">🎥 Watch &amp; Listen</a>
         <a href="new_troubadours_stats.html">📊 Stats</a>
     </nav>
 
@@ -900,6 +927,41 @@
                 return;
             }
 
+            // Performer lookup helper — must come before anything below
+            // that calls it. tourClubEvents/repertoireClubEvents (built
+            // just below) both call resolveClubEventPerformer() while
+            // constructing each event, so this can't be declared any later
+            // than here even though it reads more naturally next to the
+            // other lookups further down.
+            const performers = data.performers || {};
+            function performerName(id) {
+                return id && performers[id] ? performers[id].name : null;
+            }
+            function performerUrl(id) {
+                return id && performers[id] ? performers[id].url || null : null;
+            }
+
+            // Resolves a tour/repertoire-show record's performer(s) into the
+            // shape renderSpecificEvent() already expects: a linkable
+            // performer_id when there's exactly one performer, or a
+            // plain-text joined `performer` string when there's more than
+            // one (renderSpecificEvent() falls back to plain text via
+            // `ev.performer` whenever performer_id doesn't resolve to a
+            // name, so this doesn't require any change there). Some records
+            // give a single performer_id, others an array performer_ids —
+            // both are handled the same way performers.html's own
+            // performerMatches() already does.
+            function resolveClubEventPerformer(obj) {
+                const ids = Array.isArray(obj.performer_ids) && obj.performer_ids.length
+                    ? obj.performer_ids
+                    : (obj.performer_id ? [obj.performer_id] : []);
+                if (ids.length === 1) return { performer_id: ids[0], performer: null };
+                if (ids.length > 1) {
+                    return { performer_id: null, performer: ids.map(id => performerName(id) || id).join(' & ') };
+                }
+                return { performer_id: null, performer: null };
+            }
+
             // Find all specific events for this club
             const today = getTodayMidnight();
 
@@ -913,6 +975,12 @@
             // stop that's also that club's regular night). expandTourDates()
             // (shared_utils.js) flattens any array-format dates first, so a
             // multi-night stop is picked up correctly too.
+            //
+            // Some tour_dates entries in the data use a bare `club` field
+            // instead of `club_event` for the same purpose — that's not
+            // (yet) treated as equivalent here, so those dates currently
+            // don't appear on the club's page. Flagged separately; not
+            // silently changed by this fix.
             const tours = data.tours || {};
             const tourClubEvents = [];
             for (const tourKey in tours) {
@@ -922,10 +990,12 @@
                     .forEach(tourDate => {
                         const _date = parseDateString(tourDate.date);
                         if (!_date) return;
+                        const { performer_id, performer } = resolveClubEventPerformer(tour);
                         tourClubEvents.push({
                             name: tour.name,
                             showname: tour.tour_name || tour.name,
-                            performer_id: tour.performer_id || null,
+                            performer_id,
+                            performer,
                             venue_id: tourDate.venue_id,
                             time: tourDate.time || tour.time || null,
                             price: tourDate.price || tour.price || null,
@@ -941,8 +1011,46 @@
                     });
             }
 
+            // Repertoire shows: same idea as tour dates above, but each
+            // show_dates[] entry opts in via a plain `club` field (per the
+            // schema's showDate.club, "the club night this date belongs
+            // to") rather than a separate `club_event` flag — repertoire
+            // shows don't otherwise have a general-purpose, non-club-opt-in
+            // use for `club`, so there's no ambiguity to resolve here the
+            // way there is for tour_dates.
+            const repertoireShows = data.repertoire_shows || {};
+            const repertoireClubEvents = [];
+            for (const showKey in repertoireShows) {
+                const show = repertoireShows[showKey];
+                expandTourDates(show.show_dates)
+                    .filter(showDate => showDate.club === clubId)
+                    .forEach(showDate => {
+                        const _date = parseDateString(showDate.date);
+                        if (!_date) return;
+                        const { performer_id, performer } = resolveClubEventPerformer(show);
+                        repertoireClubEvents.push({
+                            name: show.name,
+                            showname: show.showname || show.name,
+                            performer_id,
+                            performer,
+                            venue_id: showDate.venue_id,
+                            time: showDate.time || null,
+                            price: showDate.price || null,
+                            description: show.description || null,
+                            ticket_url: showDate.ticket_url || null,
+                            fb_event: showDate.fb_event || null,
+                            video_trailer: showDate.video_trailer || show.video_trailer || null,
+                            isSpecial: !!showDate.isSpecial || !!show.isSpecial,
+                            isCancelled: !!showDate.isCancelled,
+                            isSoldOut: !!showDate.isSoldOut,
+                            _date,
+                        });
+                    });
+            }
+
             const allSpecific = clubSpecificEvents
                 .concat(tourClubEvents)
+                .concat(repertoireClubEvents)
                 .sort((a, b) => a._date - b._date);
 
             const pastEvents = allSpecific.filter(e => e._date < today);
@@ -960,15 +1068,6 @@
 
             // Venue lookup
             const venue = data.venues[clubRecord.venue_id] || null;
-
-            // Performer lookup helper
-            const performers = data.performers || {};
-            function performerName(id) {
-                return id && performers[id] ? performers[id].name : null;
-            }
-            function performerUrl(id) {
-                return id && performers[id] ? performers[id].url || null : null;
-            }
 
             // Resolve feature_slots for a given Date → { name, url, id } or null
             function featuredGuestForDate(date) {
@@ -1614,9 +1713,19 @@
             };
 
             // ── Page title ───────────────────────────────────────────────────────
+            // Clear the "Building directory…" placeholder set above — everything
+            // from here on appends directly to root, so it would otherwise be left
+            // sitting permanently as the first child once the real content is built.
+            root.innerHTML = '';
+
             const h1 = document.createElement('h1');
             h1.textContent = 'Story Clubs';
             root.appendChild(h1);
+
+            const intro = document.createElement('p');
+            intro.className = 'directory-intro';
+            intro.innerHTML = "<em>It's always worth checking direct to see if an apparently scheduled club event is on. Clubs often take a month or two off in the summer, dates change around Christmas and Easter, or if a special event is booked, etc.</em>";
+            root.appendChild(intro);
 
             // ── Collapsible map ──────────────────────────────────────────────────
             // mapHandle.map is null until the user opens the panel for the first time.
@@ -1848,6 +1957,7 @@
 
             // ── Club list container ──────────────────────────────────────────────
             const listWrap = document.createElement('div');
+            listWrap.className = 'club-list-grid';
             root.appendChild(listWrap);
 
             // ── Badge helpers ────────────────────────────────────────────────────
@@ -1888,7 +1998,7 @@
 
                 if (visible.length === 0) {
                     const p = document.createElement('p');
-                    p.style.cssText = 'text-align:center;color:#aaa;padding:30px;font-style:italic;';
+                    p.style.cssText = 'text-align:center;color:#aaa;padding:30px;font-style:italic;grid-column:1/-1;';
                     p.textContent = 'No clubs match the current filters.';
                     listWrap.appendChild(p);
                     return;
@@ -1922,7 +2032,7 @@
                         if (!activePeriod && !activeDay && day !== currentDay) {
                             currentDay = day;
                             const h2 = document.createElement('h2');
-                            h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;';
+                            h2.style.cssText = 'font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;grid-column:1/-1;';
                             h2.textContent = day ? day + 's' : 'Variable / irregular';
                             listWrap.appendChild(h2);
                         }
