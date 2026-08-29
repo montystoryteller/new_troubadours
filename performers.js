@@ -1933,6 +1933,111 @@ function renderTroupeConfigs(troupe) {
 }
 
 // ---------------------------------------------------------------------------
+// Tour/repertoire "history" — full past-date detail
+// The stats badges only ever gave a *count* of past dates, with no way to
+// see which venues/when — everything actually visible elsewhere on the
+// page (the Other Appearances list) shows real detail even for past
+// events. These two helpers flatten one tour_dates/show_dates entry into
+// the same flat-event shape renderEventRow() expects (a lighter version of
+// what buildTourMergedEvent()/buildShowMergedEvent() do for the calendar
+// in event_display.js, which isn't loaded on this page), so the past-dates
+// collapsible added in renderTourCard()/renderTouringShowCard() below can
+// reuse that renderer — and its date/venue/badge/flyer handling — as-is.
+// ---------------------------------------------------------------------------
+
+function tourDateToEventRow(tour, td) {
+  return {
+    name: tour.tour_name || tour.name,
+    showname: tour.name,
+    date: td.date,
+    time: td.time || tour.time || null,
+    venue_id: td.venue_id,
+    performer_id: tour.performer_id,
+    isMusic: tour.isMusic,
+    isPoetry: tour.isPoetry,
+    isSpecial: tour.isSpecial,
+    ticket_url: td.ticket_url,
+    event_flyer: td.event_flyer || tour.tour_flyer || null,
+  };
+}
+
+function showDateToEventRow(show, sd) {
+  return {
+    name: show.name,
+    showname: show.showname || show.name,
+    date: sd.date,
+    time: sd.time || null,
+    venue_id: sd.venue_id,
+    performer_id: show.performer_id,
+    isSpecial: show.isSpecial,
+    ticket_url: sd.ticket_url,
+    event_flyer: sd.event_flyer || show.touring_event_flyer || null,
+  };
+}
+
+function sortByDate(a, b) {
+  const da = parseDateString(a.date),
+    db = parseDateString(b.date);
+  if (!da && !db) return 0;
+  if (!da) return 1;
+  if (!db) return -1;
+  return da - db;
+}
+
+/**
+ * Appends a "Past dates (N)" collapsible to `card`, listing every entry in
+ * `pastDates` (oldest first) via renderEventRow(), using `toEventRow` to
+ * flatten each date entry first. No-op if there are no past dates.
+ * @param {HTMLElement} card
+ * @param {object[]} pastDates
+ * @param {(dateEntry: object) => object} toEventRow
+ */
+/**
+ * Appends a "{titlePrefix} (N)" collapsible to `card`, listing every entry
+ * in `dateEntries` (chronological order) via renderEventRow(), using
+ * `toEventRow` to flatten each date entry first. No-op if there are no
+ * entries. Used for both the Upcoming dates (open by default, so nothing
+ * currently visible becomes an extra click) and Past dates (closed by
+ * default) sections on tour/repertoire cards — previously Upcoming was a
+ * row of button-styled pips while Past was a dropdown; this makes both
+ * behave the same way.
+ * @param {HTMLElement} card
+ * @param {object[]} dateEntries
+ * @param {(dateEntry: object) => object} toEventRow
+ * @param {{ titlePrefix: string, defaultOpen?: boolean }} options
+ */
+function renderDateCollapsible(
+  card,
+  dateEntries,
+  toEventRow,
+  { titlePrefix, defaultOpen = false },
+) {
+  if (dateEntries.length === 0) return;
+
+  const details = document.createElement("details");
+  details.className = "tour-history-details";
+  if (defaultOpen) details.open = true;
+
+  const summary = document.createElement("summary");
+  summary.className = "tour-history-summary";
+  summary.textContent = `${titlePrefix} (${dateEntries.length})`;
+  const hint = document.createElement("span");
+  hint.className = "tour-history-hint";
+  hint.textContent = defaultOpen ? "click to collapse" : "click to expand";
+  summary.appendChild(hint);
+  details.appendChild(summary);
+
+  const list = document.createElement("div");
+  list.className = "tour-history-list";
+  [...dateEntries]
+    .sort(sortByDate)
+    .forEach((d) => renderEventRow(list, toEventRow(d)));
+  details.appendChild(list);
+
+  card.appendChild(details);
+}
+
+// ---------------------------------------------------------------------------
 // Tour card
 // ---------------------------------------------------------------------------
 
@@ -1988,7 +2093,10 @@ function renderTourCard(container, tourId, tour) {
   } else {
     const badge = document.createElement("span");
     badge.className = "tour-completed-badge";
-    badge.textContent = "Completed";
+    badge.textContent =
+      pastDates.length > 0
+        ? `Completed (${pastDates.length} date${pastDates.length !== 1 ? "s" : ""})`
+        : "Completed";
     header.appendChild(badge);
   }
 
@@ -2087,26 +2195,17 @@ function renderTourCard(container, tourId, tour) {
     card.appendChild(meta);
   }
 
-  // Upcoming date pills
-  const upcoming = futureDates.slice(0, 6);
-  if (upcoming.length > 0) {
-    const pips = document.createElement("div");
-    pips.className = "tour-date-pips";
-    upcoming.forEach((td) => {
-      const d = parseDateString(td.date);
-      const pip = document.createElement("span");
-      pip.className = "date-pip";
-      pip.textContent = formatShortDate(d);
-      pips.appendChild(pip);
-    });
-    if (futureDates.length > 6) {
-      const more = document.createElement("span");
-      more.className = "date-pip date-pip-more";
-      more.textContent = `+${futureDates.length - 6} more`;
-      pips.appendChild(more);
-    }
-    card.appendChild(pips);
-  }
+  // Upcoming and past dates — both as collapsibles (upcoming open by
+  // default so nothing currently visible needs an extra click; past
+  // closed by default). See renderDateCollapsible().
+  const toEventRow = (td) => tourDateToEventRow(tour, td);
+  renderDateCollapsible(card, futureDates, toEventRow, {
+    titlePrefix: "Upcoming dates",
+    defaultOpen: true,
+  });
+  renderDateCollapsible(card, pastDates, toEventRow, {
+    titlePrefix: "Past dates",
+  });
 
   // View tour link
   const footer = document.createElement("div");
@@ -2188,40 +2287,17 @@ function renderTouringShowCard(container, tsId, ts) {
     card.appendChild(desc);
   }
 
-  // Upcoming dates as compact pills — venue city + ticket link
-  if (futureDates.length > 0) {
-    const pipsLabel = document.createElement("div");
-    pipsLabel.className = "repertoire-dates-label";
-    pipsLabel.textContent = "Upcoming dates:";
-    card.appendChild(pipsLabel);
-
-    const pips = document.createElement("div");
-    pips.className = "tour-date-pips";
-    futureDates.forEach((sd) => {
-      const d = parseDateString(sd.date);
-      const venue = sd.venue_id ? venuesLookup[sd.venue_id] : null;
-      const pip = document.createElement("span");
-      pip.className = "date-pip";
-
-      const dateText = d ? formatShortDate(d) : "TBC";
-      const venueText = venue ? venue.city || venue.name : "";
-      pip.textContent = venueText ? `${dateText} · ${venueText}` : dateText;
-
-      if (sd.ticket_url) {
-        const a = document.createElement("a");
-        a.href = sanitizeUrl(sd.ticket_url) || "#";
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.className = "ticket-link";
-        a.textContent = "tickets";
-        a.onclick = (e) => e.stopPropagation();
-        pip.appendChild(document.createTextNode(" "));
-        pip.appendChild(a);
-      }
-      pips.appendChild(pip);
-    });
-    card.appendChild(pips);
-  }
+  // Upcoming and past dates — both as collapsibles (upcoming open by
+  // default so nothing currently visible needs an extra click; past
+  // closed by default). See renderDateCollapsible().
+  const toEventRow = (sd) => showDateToEventRow(ts, sd);
+  renderDateCollapsible(card, futureDates, toEventRow, {
+    titlePrefix: "Upcoming dates",
+    defaultOpen: true,
+  });
+  renderDateCollapsible(card, pastDates, toEventRow, {
+    titlePrefix: "Past dates",
+  });
 
   container.appendChild(card);
 }
