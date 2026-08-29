@@ -2083,6 +2083,139 @@
     }
   },
   "tours": {
+    "tony-wright-winter-2026": {
+      "tour_name": "Tony Wright Winter Tour, 2026",
+      "name": "Tony Wright Winter Tour 2026",
+      "isMusic": true,
+      "tour_dates": [
+        {
+          "date": "18/11/2026",
+          "venue_id": "crauford-arms-milton-keynes",
+          "time": "7pm",
+          "price": "£15 (+ £2.25)",
+          "ticket_url": "https://www.seetickets.com/event/tony-wright-terrorvision-/the-craufurd-arms/3683398",
+          "date_added": "29/08/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "19/11/2026",
+          "venue_id": "strings-bar-venue-isle-of-wight",
+          "time": "7.30pm",
+          "price": "£17 (+ £1.70)",
+          "ticket_url": "https://www.gigantic.com/tony-wright-tickets/isle-of-wight-strings-bar-venue/2026-11-19-19-30",
+          "date_added": "29/08/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "ridgmount-pavilion-tunbridge-wells",
+          "time": "Doors 7pm",
+          "price": "£17 (+£1.70)",
+          "ticket_url": "https://www.seetickets.com/event/tony-wright-terrorvision-/the-ridgemont-pavilion/3638624",
+          "date_added": "29/08/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "22/11/2026",
+          "venue_id": "katie-fitzgeralds-stourbridge",
+          "time": "8pm",
+          "price": "£15 (+£1.50)",
+          "ticket_url": "https://wegottickets.com/f/24347",
+          "date_added": "29/08/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "02/12/2026",
+          "venue_id": "the-golden-hinde-london",
+          "time": "7.30pm",
+          "price": "£25",
+          "ticket_url": "https://www.goldenhinde.co.uk/whats-on/10-music/781-tony-wright-terrorvision-live-on-the-golden-hinde",
+          "isSpecial": true
+        },
+        {
+          "date": "03/12/2026",
+          "venue_id": "late-lounge-rhyl",
+          "price": "£15 (+fees)",
+          "ticket_url": "https://www.ticketsource.com/we-rhyl-rock-you/tony-wright-terrorvision-mike-west/e-rbkoxe",
+          "event_flyer": "2026_12_03_tony_wright_rhyl.webp",
+          "isSpecial": true
+        },
+        {
+          "date": "04/12/2026",
+          "venue_id": "the-rigger-newcastle-under-lyme",
+          "time": "7pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://www.gigantic.com/tony-wright-tickets/newcastle-under-lyme-the-rigger/2026-12-04-18-00",
+          "isSpecial": true
+        },
+        {
+          "date": "05/12/2026",
+          "venue_id": "barnoldswick-music-arts-centre",
+          "isSpecial": true,
+          "isSoldOut": true
+        },
+        {
+          "date": "06/12/2026",
+          "venue_id": "central-bar-gateshead",
+          "time": "7.30pm",
+          "price": "£20 (+ £2)",
+          "ticket_url": "https://www.seetickets.com/event/tony-wright/the-central-bar/3673138",
+          "isSpecial": true
+        },
+        {
+          "date": "09/12/2026",
+          "venue_id": "george-street-wmc",
+          "time": "7pm",
+          "price": "£15 (+ £1.96)",
+          "ticket_url": "https://www.eventbrite.co.uk/e/tony-wright-tickets-1993141987338",
+          "isSpecial": true
+        },
+        {
+          "date": "10/12/2026",
+          "venue_id": "adelphi-hull",
+          "time": "8pm",
+          "price": "£17 (+ £1.70)",
+          "ticket_url": "https://www.seetickets.com/event/tony-wright-terrorvision-/the-new-adelphi-club/3691801",
+          "event_flyer": "2026_12_10_tony_wright_adelphi.jpg",
+          "isSpecial": true
+        },
+        {
+          "date": "11/12/2026",
+          "venue_id": "amped-huddersfield",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://www.seetickets.com/event/tony-wright/amped/3688560",
+          "isSpecial": true
+        },
+        {
+          "date": "12/12/2026",
+          "venue_id": "the-giffard-wolverhampton",
+          "time": "7.30pm",
+          "ticket_url": "https://www.ticketsource.com/livewireeventsandpromotions/livewire-presents-tony-wright-of-terrorvision/e-rggbmk",
+          "event_flyer": "2026_12_12_tony_wright_giffard_arms.jpg",
+          "isSpecial": true
+        },
+        {
+          "date": "17/12/2026",
+          "venue_id": "the-courthouse-otley",
+          "time": "7.15pm",
+          "price": "£16",
+          "ticket_url": "https://otleycourthouse.org.uk/events/tony-wright/",
+          "isSpecial": true
+        },
+        {
+          "date": "18/12/2026",
+          "venue_id": "compass-cafe-blackpool",
+          "time": "7.30pm",
+          "price": "£17.50 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/f/24257",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "tony-wright",
+      "touring_event_flyer": "tour_tony_wright_winter_2026.jpg",
+      "isSpecial": true
+    },
     "undercover-hippy-solo-undercover-hippy-solo-tour-2026": {
       "tour_name": "Undercover Hippy Solo Tour 2026",
       "name": "Undercover Hippy Solo Tour 2026",
@@ -2257,6 +2390,61 @@
       "tour_description": "Spreading words of empowerment and appreciation in a town near you...",
       "touring_event_flyer": "tour_bassie_gracie_autumn_2026.jpg",
       "isSpecial": true
+    },
+    "tony-wright-spring-summer-2026": {
+      "tour_name": "Tony Wright, Spring/Summer Tour 2026",
+      "name": "Tony Wright, Spring/Summer Tour 2026",
+      "tour_dates": [
+        {
+          "date": "24/04/2026",
+          "venue_id": "the-live-rooms-chester",
+          "isSpecial": true
+        },
+        {
+          "date": "25/04/2026",
+          "venue_id": "waterloo-music-bar-blackpool",
+          "isSpecial": true
+        },
+        {
+          "date": "26/04/2026",
+          "venue_id": "the-patriot-crumlin",
+          "isSpecial": true
+        },
+        {
+          "date": "28/04/2026",
+          "venue_id": "concorde-2-brighton",
+          "isSpecial": true
+        },
+        {
+          "date": "29/04/2026",
+          "venue_id": "crauford-arms-milton-keynes",
+          "isSpecial": true
+        },
+        {
+          "date": "30/04/2026",
+          "venue_id": "nightrain-bradford",
+          "isSpecial": true
+        },
+        {
+          "date": "06/05/2026",
+          "venue_id": "applestump-records-nantwich",
+          "isSpecial": true
+        },
+        {
+          "date": "08/05/2026",
+          "venue_id": "the-underground-bradford",
+          "isSpecial": true
+        },
+        {
+          "date": "10/05/2026",
+          "venue_id": "the-old-cold-store-nottingham",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "tony-wright",
+      "tour_description": "Spring / summer tour",
+      "touring_event_flyer": "tour_tony_wright_spring_summer_2026.jpg",
+      "isMusic": true
     },
     "attila-fiery-words-autumn-2026": {
       "tour_name": "Fiery Words for Hellish Times",
@@ -7810,7 +7998,7 @@
       "date_added": "15/07/2026",
       "time": "7-10pm",
       "price": "£5 suggested donation",
-      "description": "Join us on Friday 24th July for a special storytelling evening at The Nose. We want to bring more stories to this year's Walton Arts Festival, and the money raised on this evening will go towards inviting more storytellers.\n\n\n\nOur theme for the night is ‘Out of the Blue'.  Hosted by Cydnei and with stories from Gerry Donlon, Gemma Garwood, Stephen Foster-Pilkington, Katy Bingham- Best, Nancy Stevenson, Lorna MacKinnon, Charlie Rose, Steve Gregory, Mer Richardson, Fay Dingaway & sounds by Catherine Shrubshall.\n\n\n\nA suggested donation is £5, but you can pay what you want (more or less), and there will be a prize raffle on the evening. It will be great to see you there!",
+      "description": "Join us on Friday 24th July for a special storytelling evening at The Nose. We want to bring more stories to this year's Walton Arts Festival, and the money raised on this evening will go towards inviting more storytellers.\n\n\n\nOur theme for the night is 'Out of the Blue'.  Hosted by Cydnei and with stories from Gerry Donlon, Gemma Garwood, Stephen Foster-Pilkington, Katy Bingham- Best, Nancy Stevenson, Lorna MacKinnon, Charlie Rose, Steve Gregory, Mer Richardson, Fay Dingaway & sounds by Catherine Shrubshall.\n\n\n\nA suggested donation is £5, but you can pay what you want (more or less), and there will be a prize raffle on the evening. It will be great to see you there!",
       "event_flyer": "2026_07_24_out_of_blue.webp",
       "ticket_url": "https://thenose.org/products/out-of-the-blue-storytelling-fundraiser",
       "fb_event": 1074986398186596,
@@ -13647,6 +13835,221 @@
         51.23514,
         -2.31298
       ]
+    },
+        "the-live-rooms-chester": {
+      "id": "the-live-rooms-chester",
+      "name": "The Live Rooms, Chester",
+      "city": "Chester",
+      "postcode": "CH1 3DR",
+      "full_address": "The Live Rooms, 1 Station Road, Chester, CH1 3DR",
+      "url": "https://www.theliverooms.com/",
+      "latlon": [
+        53.1969,
+        -2.88216
+      ]
+    },
+    "waterloo-music-bar-blackpool": {
+      "id": "waterloo-music-bar-blackpool",
+      "name": "Waterloo Music Bar, Blackpool",
+      "city": "Blackpool",
+      "postcode": "FY4 2AF",
+      "full_address": "Waterloo Music Bar, 116 Waterloo  Road,  Blackpool,  FY4 2AF",
+      "url": "https://www.waterloomusicbar.com/",
+      "latlon": [
+        53.79943,
+        -3.04355
+      ]
+    },
+    "the-patriot-crumlin": {
+      "id": "the-patriot-crumlin",
+      "name": "The Patriot, Crumlin",
+      "city": "Newport",
+      "postcode": "NP11 4PT",
+      "full_address": "The Patriot, Main St, Crumlin, Newport, NP11 4PT",
+      "url": "https://home-of-rock.co.uk/",
+      "latlon": [
+        51.67854,
+        -3.13967
+      ]
+    },
+    "concorde-2-brighton": {
+      "id": "concorde-2-brighton",
+      "name": "Concorde 2, Brighton",
+      "city": "Brighton",
+      "postcode": "BN2 1EN",
+      "full_address": "Concorde 2, 286A Madeira Drive, Madeira Drive, Brighton, BN2 1EN",
+      "url": "https://www.concorde2.co.uk/",
+      "latlon": [
+        50.81725,
+        -0.12266
+      ]
+    },
+    "crauford-arms-milton-keynes": {
+      "id": "crauford-arms-milton-keynes",
+      "name": "Crauford Arms, Milton Keynes",
+      "city": "Milton Keynes",
+      "postcode": "MK12 5LT",
+      "full_address": "Crauford Arms, 59 Stratford Road, Wolverton, MK12 5LT",
+      "url": "https://www.thecraufurdarms.com/",
+      "latlon": [
+        52.06254,
+        -0.8145
+      ]
+    },
+    "nightrain-bradford": {
+      "id": "nightrain-bradford",
+      "name": "Nightrain, Bradford",
+      "city": "Bradford",
+      "postcode": "BD1 1RB",
+      "full_address": "Nightrain, 7-19, Queensgate, Bradford, BD1 1RB",
+      "url": "https://nightrain.co.uk/",
+      "latlon": [
+        53.79444,
+        -1.75393
+      ]
+    },
+    "applestump-records-nantwich": {
+      "id": "applestump-records-nantwich",
+      "name": "Applestump Records, Nantwich",
+      "city": "Nantwich",
+      "postcode": "CW5 5AL",
+      "full_address": "Applestump Records, 4 Oatmarket, Nantwich, CW5 5AL",
+      "url": "https://www.applestumprecords.com/gigs",
+      "latlon": [
+        53.06777,
+        -2.52281
+      ]
+    },
+    "the-underground-bradford": {
+      "id": "the-underground-bradford",
+      "name": "The Underground, Bradford",
+      "city": "Bradford",
+      "postcode": "BD1 3QR",
+      "full_address": "The Underground, 9 Duke St, Bradford, BD1 3QR",
+      "url": "https://www.undergroundbradford.co.uk/",
+      "latlon": [
+        53.79593,
+        -1.7543
+      ]
+    },
+        "strings-bar-venue-isle-of-wight": {
+      "id": "strings-bar-venue-isle-of-wight",
+      "name": "Strings Bar & Venue, Isle of Wight",
+      "city": "Newport, Isle of Wight",
+      "postcode": "PO30 1RR",
+      "full_address": "Strings Bar & Venue, 9 Bowling Green Lane, Newport, Isle of Wight, PO30 1RR",
+      "url": "https://www.stringsbarandvenue.com/",
+      "latlon": [
+        50.69774,
+        -1.29475
+      ]
+    },
+    "ridgmount-pavilion-tunbridge-wells": {
+      "id": "ridgmount-pavilion-tunbridge-wells",
+      "name": "Ridgmount Pavilion, Tunbridge Wells",
+      "city": "Tunbridge Wells",
+      "postcode": "TN4 0NA",
+      "full_address": "Ridgmount Pavilion, 131 London Road, Southborough, Tunbridge Wells, TN4 0NA",
+      "latlon": [
+        51.1563,
+        0.26013
+      ]
+    },
+    "late-lounge-rhyl": {
+      "id": "late-lounge-rhyl",
+      "name": "Late Lounge, Rhyl",
+      "city": "Rhyl",
+      "postcode": "LL18 1UB",
+      "full_address": "Late Lounge, 92 High Street, Y Rhyl, LL18 1UB",
+      "url": "https://frontroomrhyl.co.uk/",
+      "latlon": [
+        53.31959,
+        -3.48884
+      ]
+    },
+    "the-rigger-newcastle-under-lyme": {
+      "id": "the-rigger-newcastle-under-lyme",
+      "name": "The Rigger, Newcastle-Under-Lyme",
+      "city": "Newcastle-Under-Lyme",
+      "postcode": "ST5 1BT",
+      "full_address": "The Rigger, Marsh Parade, Newcastle-under-Lyme, ST5 1BT",
+      "url": "https://www.theriggervenue.co.uk/",
+      "latlon": [
+        53.01163,
+        -2.21917
+      ]
+    },
+    "central-bar-gateshead": {
+      "id": "central-bar-gateshead",
+      "name": "Central Bar, Gateshead",
+      "city": "Gateshead",
+      "postcode": "NE8 2AN",
+      "full_address": "Central Bar, Half Moon Lane, Gateshead, NE8 2AN",
+      "url": "https://www.facebook.com/central.gateshead/",
+      "latlon": [
+        54.96545,
+        -1.60493
+      ]
+    },
+    "george-street-wmc": {
+      "id": "george-street-wmc",
+      "name": "George Street WMC",
+      "city": "Nottingham",
+      "postcode": "NG15 7DN",
+      "full_address": "George Street Working Mens Club, George Street, Hucknall, Nottingham, NG15 7DN",
+      "url": "https://www.facebook.com/groups/110663308959326/",
+      "latlon": [
+        53.04217,
+        -1.20877
+      ]
+    },
+    "amped-huddersfield": {
+      "id": "amped-huddersfield",
+      "name": "Amped, Huddersfield",
+      "city": "Huddersfield",
+      "postcode": "HD1 2RA",
+      "full_address": "Amped, Zetland Street, Huddersfield, HD1 2RA",
+      "url": "https://ampedhudd.co.uk/",
+      "latlon": [
+        53.64425,
+        -1.77929
+      ]
+    },
+    "the-giffard-wolverhampton": {
+      "id": "the-giffard-wolverhampton",
+      "name": "The Giffard, Wolverhampton",
+      "city": "Wolverhampton",
+      "postcode": "WV1 3NX",
+      "full_address": "The Giffard Arms, 64 Victoria Street, Wolverhampton, WV1 3NX",
+      "url": "https://www.facebook.com/GiffardArms",
+      "latlon": [
+        52.58539,
+        -2.12948
+      ]
+    },
+    "the-courthouse-otley": {
+      "id": "the-courthouse-otley",
+      "name": "The Courthouse, Otley",
+      "city": "Otley",
+      "postcode": "LS21 3AN",
+      "full_address": "The Courthouse, Courthouse Street, Otley, LS21 3AN",
+      "url": "https://otleycourthouse.org.uk/",
+      "latlon": [
+        53.90631,
+        -1.6934
+      ]
+    },
+    "compass-cafe-blackpool": {
+      "id": "compass-cafe-blackpool",
+      "name": "Compass Cafe, Blackpool",
+      "city": "Blackpool",
+      "postcode": "FY1 1DU",
+      "full_address": "Compass Cafe, 24 Birley Street, Blackpool, FY1 1DU",
+      "url": "https://www.facebook.com/compasscafebar/",
+      "latlon": [
+        53.81833,
+        -3.053
+      ]
     }
   },
   "performers": {
@@ -14705,7 +15108,7 @@
       "name": "Lucy Huzzard",
       "musician": true,
       "url": "https://lucyandhazel.co.uk/",
-      "bio": "From a lifetime steeped in European folk music and dance, Lucy Huzzard weaves traditional melodies, new compositions and evocative soundscapes into Beth’s story-scapes. On melodeon, percussion, voice and ukulele she accompanies Beth as they take the audience through the door into the story realm."
+      "bio": "From a lifetime steeped in European folk music and dance, Lucy Huzzard weaves traditional melodies, new compositions and evocative soundscapes into Beth's story-scapes. On melodeon, percussion, voice and ukulele she accompanies Beth as they take the audience through the door into the story realm."
     },
     "gaz-brookfield-and-the-company-of-thieves": {
       "id": "gaz-brookfield-and-the-company-of-thieves",
@@ -14781,6 +15184,12 @@
       "musician": true,
       "url": "",
       "bio": "Jess Silk is a guitarist, singer and songwriter from the Black Country. Her passionate and  melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, powerful voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene.\n\n\n\nMatt Johnson is a Midlands based Singer / songwriter who really wears his heart on his sleeve at the same times as completely captivating his audience. His subjects range from his family and the love of his life through to his view of the world now and his opinion on the plight of the oceans and our wildlife. He has a fantastic ear for melodyand bulids a hook into every song that has his audience singing back at him by the second chorus."
+    },
+    "tony-wright": {
+      "id": "tony-wright",
+      "name": "Tony Wright",
+      "url": "https://www.tonywright.net/",
+      "bio": "Tony Wright is best known as the singer for Bradford rock band Terrorvision. However, when he's not touring with Terrorvision, he writes, records and tours under his own name with a setlist made up of songs he has written on his acoustic guitar - some upbeat, some melancholic, but all thought-provoking.\n\n\n\nTo say Tony is a busy man would be an understatement. In addition to his three albums with his post-Terrorvision band 'LaikaDog', he has now released three solo albums to date. 'Thoughts 'n' All' is just Tony and his acoustic guitar. The follow up, 'Walnut Dash', brought the evolution of Tony with his acoustic guitar and a full band. The latest 'The Anti Album' is set to be his most ambitious album yet. The album takes influence from his previous works whilst managing to carve out its own place in Tony's respectable discography.\n\n\n\nTony always looks to pick up inspiration anywhere he can find it as he is always thinking about writing new material. Be sure to catch him on the road because you never know - you might just end up being the subject of one of his songs"
     },
     "jess-silk-joe-solo": {
       "id": "jess-silk-joe-solo",
