@@ -130,6 +130,16 @@ function renderAllPerformers() {
   };
   typeFilterWrap.appendChild(allTypeBtn);
 
+  const noneTypeBtn = document.createElement("button");
+  noneTypeBtn.className = "dir-filter-btn";
+  noneTypeBtn.textContent = "None";
+  noneTypeBtn.onclick = () => {
+    activeTypes.clear();
+    refreshTypeBtns();
+    applyFilters();
+  };
+  typeFilterWrap.appendChild(noneTypeBtn);
+
   const typeBtnEls = [];
   TYPE_DEFS.forEach(({ key, label }) => {
     const btn = document.createElement("button");
@@ -154,6 +164,10 @@ function renderAllPerformers() {
       "active-teal",
       activeTypes.size === TYPE_DEFS.length,
     );
+    // Highlighted only when every type button is off — i.e. the actual
+    // "nothing selected" state — not merely "not all selected" (that's
+    // just the normal look of any partial selection).
+    noneTypeBtn.classList.toggle("active-teal", activeTypes.size === 0);
   }
 
   container.appendChild(typeFilterWrap);
