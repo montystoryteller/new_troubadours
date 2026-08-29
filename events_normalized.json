@@ -8226,6 +8226,21 @@
       "date_added": "27/08/2026"
     },
     {
+      "name": "The Castle of Truth [Chris Adriaanse]",
+      "showname": "The Castle of Truth",
+      "description": "So what is the Castle of Truth? And what secrets does it hold? Join us in an evening of intertwined stories set to enchant and enthral as we step inside to find out.\n\n\n\nThis is a journey into the castle depths to find the lies within and storytelling that has been described as “Magical,  “Immersive” and “Better than Netflix”.\n\n\n\nThe Castle of Truth shines its light on us all, where there are no simple answers.\n\n\n\nAmid social unrest, Hermynia Zur Mühlen published her political fairy tale The Castle of Truth in 1924 about a woman drawn by a light to a mountain top and forced to re-examine her life. Revolutionary at the time, the work later fell into obscurity. Chris has revived her work and will be premiering it at our story evening.",
+      "date": "04/09/2026",
+      "time": "7.30-9.30pm",
+      "price": "Entry on the door. £8.  £6 hardship rate,  £10 philanthropist.",
+      "link": "https://www.abitcrack.com/",
+      "facebook": "https://www.facebook.com/ABitCrack",
+      "isSpecial": true,
+      "club": "abitcrack",
+      "venue_id": "the-chillingham-arms",
+      "performer_id": "chris-adriaanse",
+      "date_added": "29/08/2026"
+    },
+    {
       "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
       "showname": "Stories of the Vikings: creation, destruction, magic",
       "date": "07/09/2026",
@@ -8391,6 +8406,20 @@
       "performer_id": "dave-tonge",
       "date_added": "26/08/2026",
       "isSpecial": true
+    },
+    {
+      "name": "Equinox Arts: An Evening of Live Music and Storytelling [Merl Fluin]",
+      "showname": "Equinox Arts: An Evening of Live Music and Storytelling",
+      "date": "19/09/2026",
+      "time": "5.30-8pm",
+      "club": "",
+      "price": "£12.75",
+      "description": "Join Saddhabhaya, Nick Hudson and Merl Fluin for an evening of equinox enchantments.\n\n\n\nEquinox is a mysterious time. Day and night are in balance, summer trembles on the brink of autumn, the planet holds its breath. We mark the moment with songs and stories of stillness and change.\n\n\n\nIn the first half of a perfectly balanced evening, Nick and Saddhabhaya play familiar tunes and original material. Expect an eclectic, bittersweet mix of silly and serious, darkness and light.\n\n\n\nIn the second  half, Merl tells wild and wondrous stories of Padmasambhava, the Precious Guru who was born from a lotus, tamed gods and demons, and brought the Tantra to Tibet. Shimmering on the threshold between myth and history, gazing at the world with his famous wrathful smile, he's the perfect Buddha for liminal times — and this year, Padmasambhava Day falls on the equinox weekend",
+      "ticket_url": "https://www.tickettailor.com/events/merlfluin/2284629?",
+      "isSpecial": true,
+      "fb_event": 2183851955800671,
+      "venue_id": "buddhist-centre-southampton",
+      "performer_id": "merl-fluin"
     },
     {
       "name": "The Saga of the Ring [Jon Mason]",
