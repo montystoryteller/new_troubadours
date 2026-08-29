@@ -412,11 +412,23 @@ function displayTourDates(tour, status) {
   const datesContainer = document.getElementById("tourDatesList");
   datesContainer.innerHTML = "";
 
-  // Show the hide-past checkbox only for current tours
+  // "Hide past dates" defaults to checked (see the checkbox's HTML) and
+  // only makes sense as a *default* for a tour that's still ongoing
+  // (status "current" straddles today) — that's the one case with a
+  // genuinely useful past/upcoming split to hide. Previously the label
+  // (and checkbox) were simply hidden for any other status, but the
+  // checkbox stayed checked underneath — so a fully completed ("past")
+  // tour silently filtered out every single date with no visible control
+  // left to un-hide them. Fixed by explicitly un-checking it for anything
+  // that isn't "current", and keeping the control visible for "past" too
+  // (not just "current") so it's still there to toggle if wanted — a
+  // "future" tour has no past dates yet, so there's nothing for it to do
+  // there, and it stays hidden in that case as before.
   const hidePastLabel = document.getElementById("hidePastLabel");
-  //const hidePastCheckbox = document.getElementById("hidePastDates");
-  //hidePastCheckbox.checked = false;
-  hidePastLabel.style.display = status === "current" ? "" : "none";
+  const hidePastCheckbox = document.getElementById("hidePastDates");
+  hidePastLabel.style.display =
+    status === "current" || status === "past" ? "" : "none";
+  hidePastCheckbox.checked = status === "current";
 
   // Set subtitle: show name + performer
   const subtitle = document.getElementById("tourDatesSubtitle");

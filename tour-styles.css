@@ -273,9 +273,17 @@ select {
         height: 600px;
     }
 
+    /* Scroll internally instead of growing the whole page taller than the
+       map beside it — a tour with a long run of dates previously just
+       kept going well past the map's bottom edge. Matches .events-list in
+       events-styles.css (same max-height/overflow-y, same 600px), which
+       solves the identical problem for the main calendar page's map+list
+       view — kept as plain internal scroll rather than also pinning the
+       list itself, same as that reference. */
     .tour-dates-list {
         flex: 1;
-        max-height: none;
+        max-height: 600px;
+        overflow-y: auto;
     }
 }
 
