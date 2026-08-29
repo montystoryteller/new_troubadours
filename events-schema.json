@@ -159,7 +159,8 @@
         "city":           { "type": "string", "description": "Rare free-text city override (normally derived from venue_id instead)." },
         "venue":          { "type": "string", "description": "Rare free-text venue-name override (normally derived from venue_id instead)." },
         "performer_id":   { "type": "string", "description": "Rare per-date performer override, e.g. a guest replacing the usual performer for one stop." },
-        "club":           { "type": "string" }
+        "club":           { "type": "string" },
+        "description_prefix": { "type": "string", "description": "Rare per-date text prepended ahead of the resolved show/tour description when this date's listing is displayed — e.g. a promoter's own billing copy (\"The Crick Crack Club presents...\"). Rendered as `{description_prefix}\\n\\n\\n\\n{description}` (see combineDescriptionWithPrefix() in shared_utils.js), i.e. as its own leading paragraph, not merged into the description text itself." }
       },
       "required": ["date", "venue_id"],
       "additionalProperties": true
@@ -170,8 +171,9 @@
       "type": "object",
       "properties": {
         "tour_name":            { "type": "string", "description": "Full display name, conventionally \"{Show} ({Run}) [{Performer}]\".", "examples": ["Dauntless (2026)"] },
-        "name":                 { "type": "string", "description": "Short show name without the run/performer suffix.", "examples": ["Dauntless"] },
-        "tour_description":     { "type": "string", "description": "Long-form description; paragraphs are conventionally separated by a blank double-line (\\n\\n\\n\\n) in the source text." },
+        "repertoire_id":  {"type": "string", "description": "Key into the top-level `repertoire_shows` object, when this tour is a touring run of an already-registered repertoire show. When set, applyRepertoireInheritance() in shared_utils.js copies name, showname, performer_id, performer_ids, video_trailer and touring_event_flyer from that repertoire_shows entry onto this tour for any of those fields the tour doesn't set itself (each is overridden individually — a tour can set its own name but still inherit performer_id, for instance). tour_description is a special case: it falls back to the repertoire show's `description` specifically, rather than being listed as a plain inheritable field, since the two field names differ. This runs once when events_normalized.json is loaded, so every consumer (tour page, calendar, search, flyers) sees the already-resolved values without needing repertoire-aware logic of its own."},
+        "name":                 { "type": "string", "description": "Short show name without the run/performer suffix. Inherited from repertoire_shows[repertoire_id].name if omitted — see repertoire_id.", "examples": ["Dauntless"] },
+        "tour_description":     { "type": "string", "description": "Long-form description; paragraphs are conventionally separated by a blank double-line (\\n\\n\\n\\n) in the source text. If omitted and repertoire_id is set, falls back to repertoire_shows[repertoire_id].description — see repertoire_id." },
         "touring_event_flyer":  { "type": "string", "description": "Headline flyer image filename representing the WHOLE tour (shown once on the flyers page, rather than repeated per date). Also accepted under the legacy alias `tour_flyer`." },
         "tour_flyer":           { "type": "string", "description": "Legacy alias for touring_event_flyer — either name is accepted." },
         "touring_event_flyers": {
@@ -212,6 +214,7 @@
       "description": "One date for a repertoire show, inside show.show_dates[].",
       "type": "object",
       "properties": {
+        "repertoire_id":  {"type": "string", "description": "[TO DO — flagged during schema review: no show_dates entry in the actual data sets this; the one real repertoire_id in repertoire_shows data is instead set on the repertoireShow record itself (debs-newbold-dauntless), which isn't documented anywhere in this schema either. Worth confirming whether that's a stray self-reference left over from copying the tour-level repertoire_id pattern, or genuinely meant to live at one/both of these levels, then updating data + schema to match.] Unique identifier for repertoire show." },
         "date":           { "$ref": "#/$defs/dateOrDates" },
         "time":           { "type": "string" },
         "club":           { "type": "string", "description": "Key into `events[].club` for the club night this date belongs to." },
@@ -224,7 +227,8 @@
         "video_trailer":  { "$ref": "#/$defs/youtubeUrl", "description": "Per-date override of the show's video_trailer." },
         "date_added":     { "type": "string", "description": "DD/MM/YYYY — when this date was added, used to surface it in the \"new events\" panel." },
         "isCancelled":    { "type": "boolean", "default": false },
-        "isSoldOut":      { "type": "boolean", "default": false }
+        "isSoldOut":      { "type": "boolean", "default": false },
+        "description_prefix": { "type": "string", "description": "Rare per-date text prepended ahead of the show's description when this date's listing is displayed — e.g. a promoter's own billing copy (\"The Crick Crack Club presents...\"). Rendered as `{description_prefix}\\n\\n\\n\\n{description}` (see combineDescriptionWithPrefix() in shared_utils.js), i.e. as its own leading paragraph, not merged into the description text itself." }
       },
       "required": ["date", "venue_id"],
       "additionalProperties": true
@@ -236,12 +240,14 @@
       "properties": {
         "name":                 { "type": "string", "description": "Full display name, conventionally \"{Show} [{Performer}]\"." },
         "showname":             { "type": "string", "description": "Short show name without the performer suffix." },
-        "description":          { "type": "string" },
+        "description":          { "type": "string", "description": "Referenced by tours[].repertoire_id — a tour with no tour_description of its own falls back to this. See tour.repertoire_id." },
         "touring_event_flyer":  { "type": "string", "description": "Headline flyer image filename for the whole show (one card, not repeated per date)." },
         "isSpecial":            { "type": "boolean" },
         "isTouringShow":        { "type": "boolean" },
         "performer_id":         { "type": "string" },
+        "performer_ids":        { "type": "array", "items": { "type": "string" }, "description": "For multi-performer shows." },
         "video_trailer":        { "$ref": "#/$defs/youtubeUrl", "description": "Show-level YouTube trailer; individual show_dates entries may override this per-date." },
+        "repertoire_id":        { "type": "string", "description": "[TO DO — flagged during schema review: this only appears once in the actual data (debs-newbold-dauntless), set to the record's own key. A repertoireShow is already looked up BY that key from tours[].repertoire_id, so a matching field on the record itself is redundant unless something else is meant to read it. Confirm whether this was meant to go here at all before adding more of these — may just be a copy/paste slip from adding the tour-level field.]" },
         "show_dates":           { "type": "array", "items": { "$ref": "#/$defs/showDate" } }
       },
       "required": ["name", "showname", "performer_id", "show_dates"],
@@ -442,6 +448,8 @@
         "presenter":    { "type": "string" },
         "schedule":     { "type": "string" },
         "url":          { "type": "string" },
+        "type":         { "type": "string", "description": "What is the media type; by default  we assume 'audio', but may also be 'video' [TO DO should this be clarified as 'embedded_video', 'youtube_video', etc?)]"},
+        "format":       { "type": "string", "description": "What format do the episodes take. For example, a 'telling', or an 'interview'. [TO DO - should this be a default for the podcast that can be over-ridden by a similar parameter in the episode?]" },
         "items": {
           "type": "array",
           "items": { "$ref": "#/$defs/podcastEpisode" },
@@ -454,7 +462,7 @@
 
     "podcastEpisode": {
       "type": "object",
-      "description": "One episode belonging to a podcast series (podcasts[].items[]). Field names follow the shape parsePodcastFeed() in podcast_utils.js already produces from a real RSS/Atom feed (title, link, description, pubDate, duration, enclosureUrl, enclosureType, enclosureLength, guid, image), so a synced feed's items can be merged in directly. performer_id/performer_ids optionally tags who's featured/guesting on this episode; omit both for an ordinary episode with no particular performer attached.",
+      "description": "One episode belonging to a podcast series (podcasts[].items[]). Field names follow the shape parsePodcastFeed() in podcast_utils.js already produces from a real RSS/Atom feed (title, link, description, pubDate, duration, enclosureUrl, enclosureType, enclosureLength, guid, image), so a synced feed's items can be merged in directly. performer_id/performer_ids optionally tags who's featured/guesting on this episode; omit both for an ordinary episode with no particular performer attached.[TO DO - how do episode 'yt_url' and podcast 'type' (eg video) and fit in with this? Does they sit badly?]",
       "properties": {
         "title":           { "type": "string" },
         "link":            { "type": "string", "description": "Episode webpage URL." },
@@ -467,7 +475,8 @@
         "guid":            { "type": "string" },
         "image":           { "type": "string" },
         "performer_id":    { "type": "string", "description": "Key into the top-level `performers` object, for a single featured/guest performer." },
-        "performer_ids":   { "type": "array", "items": { "type": "string" }, "description": "For an episode featuring more than one performer." }
+        "performer_ids":   { "type": "array", "items": { "type": "string" }, "description": "For an episode featuring more than one performer." },
+        "yt_url":           { "type": "string", "description": "If the podcast is a 'vodeo' type, then it may be from a Youtube podcast. [TO DO do we need to better think how to handle youtube podcasts? Should this be 'embedded-player-url' or similar?]"}
       },
       "required": ["title", "enclosureUrl"],
       "additionalProperties": true
