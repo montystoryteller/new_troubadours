@@ -636,6 +636,7 @@ async function loadEventsData(cacheBuster) {
           const { timestamp, data } = JSON.parse(cached);
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
+          applyRepertoireInheritance(eventsData);
           const podcastsLookup = buildPodcastsLookup(eventsData);
           console.log(`✓ Loaded events data from cache`);
           console.log(`  - ${Object.keys(venuesLookup).length} venues`);
@@ -670,6 +671,7 @@ async function loadEventsData(cacheBuster) {
       return null;
     }
     const eventsData = await response.json();
+    applyRepertoireInheritance(eventsData);
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
     const performersLookup = eventsData.performers || {};
@@ -734,6 +736,91 @@ function buildPodcastsLookup(eventsData) {
   return lookup;
 }
 
+/** True for undefined/null/""/[] — the "nothing set here" values a field
+ * needs to have before inheritance is allowed to fill it in. */
+function isBlankValue(v) {
+  return (
+    v === undefined ||
+    v === null ||
+    v === "" ||
+    (Array.isArray(v) && v.length === 0)
+  );
+}
+
+// Fields copied from a repertoire_shows entry onto a tour that references
+// it via repertoire_id, when the tour doesn't set its own value. tour_
+// description is handled separately below since it maps to a
+// differently-named field (repertoire.description) rather than a same-
+// name one.
+const TOUR_REPERTOIRE_INHERITABLE_FIELDS = [
+  "name",
+  "showname",
+  "performer_id",
+  "performer_ids",
+  "video_trailer",
+  "touring_event_flyer",
+];
+
+/**
+ * A tour that carries a repertoire_id (see events-schema.json →
+ * $defs.tour.repertoire_id) is a touring run of a show already registered
+ * in the top-level `repertoire_shows` — rather than repeat that show's
+ * title, performer, description and video trailer on every tour, they can
+ * be inherited from the repertoire_shows entry and only overridden where
+ * the tour listing sets its own value. Mutates each tour in `eventsData`
+ * in place, so this only needs to run once when the data is loaded —
+ * every downstream consumer (tour page, calendar/search merges in
+ * event_display.js, flyers, etc.) then just reads the tour's own fields
+ * as normal. Safe to call more than once: a field that's already been
+ * inherited looks identical to one set directly on the tour, so re-running
+ * this is a no-op for it.
+ * @param {object} eventsData
+ */
+function applyRepertoireInheritance(eventsData) {
+  const tours = eventsData?.tours || {};
+  const repertoireShows = eventsData?.repertoire_shows || {};
+
+  Object.values(tours).forEach((tour) => {
+    if (!tour?.repertoire_id) return;
+    const rep = repertoireShows[tour.repertoire_id];
+    if (!rep) {
+      console.warn(
+        `Tour "${tour.tour_name || tour.name}" references unknown repertoire_id: ${tour.repertoire_id}`,
+      );
+      return;
+    }
+
+    TOUR_REPERTOIRE_INHERITABLE_FIELDS.forEach((field) => {
+      if (isBlankValue(tour[field]) && !isBlankValue(rep[field])) {
+        tour[field] = rep[field];
+      }
+    });
+
+    // Special case: tour_description <- repertoire.description (different
+    // field names, so it can't go through the same-name loop above).
+    if (isBlankValue(tour.tour_description) && !isBlankValue(rep.description)) {
+      tour.tour_description = rep.description;
+    }
+  });
+}
+
+/**
+ * Combine a per-date `description_prefix` (see events-schema.json →
+ * $defs.tourDate.description_prefix / $defs.showDate.description_prefix)
+ * with a tour/show's resolved description, in the paragraph-separated
+ * shape appendParagraphs() expects — the prefix becomes its own leading
+ * paragraph, not text merged into the description itself. If there's no
+ * base description, the prefix is returned alone; if there's no prefix,
+ * the description is returned unchanged.
+ * @param {string|null|undefined} prefix
+ * @param {string|null|undefined} description
+ * @returns {string|null}
+ */
+function combineDescriptionWithPrefix(prefix, description) {
+  const parts = [prefix, description].filter((p) => p && p.trim());
+  return parts.length > 0 ? parts.join(PARAGRAPH_SEPARATOR) : null;
+}
+
 /**
  * Background check for newer events data on the server using HTTP HEAD request.
  * If a newer version is found (based on Last-Modified or ETag), silently
@@ -781,6 +868,7 @@ async function checkForNewerEventsDataBackground() {
       const response = await fetch(`events_normalized.json?v=${Date.now()}`);
       if (response.ok) {
         const eventsData = await response.json();
+        applyRepertoireInheritance(eventsData);
         const toursLookup = eventsData.tours || {};
         const venuesLookup = eventsData.venues || {};
         const performersLookup = eventsData.performers || {};

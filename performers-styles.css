@@ -262,6 +262,35 @@
     margin-bottom: 8px;
 }
 
+.tour-card-desc p {
+    margin: 0 0 8px;
+}
+
+.tour-card-desc p:last-child {
+    margin-bottom: 0;
+}
+
+.tour-card-desc-full {
+    margin-top: 8px;
+}
+
+.tour-card-desc-toggle {
+    display: inline-block;
+    margin-top: 2px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    cursor: pointer;
+}
+
+.tour-card-desc-toggle:hover {
+    text-decoration: underline;
+}
+
 .tour-card-meta {
     font-size: 12px;
     color: #888;

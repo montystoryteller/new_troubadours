@@ -1108,7 +1108,6 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
 
 const PERF_PODCAST_FEEDS_VISIBLE = 4;
 const PERF_PODCAST_EPISODES_VISIBLE = 5;
-
 // Recognise a handful of common podcast-hosting domains so a feed card
 // can show a friendly platform name before (or if) the real feed title
 // loads. Anything else falls back to the bare hostname.
@@ -1663,7 +1662,11 @@ function collectPerformerVideoAppearances(performer) {
   const inline = Array.isArray(performer.youtube_videos)
     ? performer.youtube_videos
         .filter((v) => v && v.yt_url && extractYoutubeId(v.yt_url))
-        .map((v) => ({ story_name: v.story_name, yt_url: v.yt_url }))
+        .map((v) => ({
+          story_name: v.story_name,
+          yt_url: v.yt_url,
+          format: v.format || "",
+        }))
     : [];
 
   // De-dupe by YouTube video id — a performer whose video has since been
@@ -1933,6 +1936,10 @@ function renderTroupeConfigs(troupe) {
 // Tour card
 // ---------------------------------------------------------------------------
 
+// How much of the first paragraph to show before collapsing behind a
+// "more…" toggle — see the Description block in renderTourCard().
+const TOUR_CARD_DESC_PREVIEW_LENGTH = 200;
+
 function renderTourCard(container, tourId, tour) {
   const today = getTodayMidnight();
   const dates = tour.tour_dates || [];
@@ -2015,16 +2022,60 @@ function renderTourCard(container, tourId, tour) {
     }
   }
 
-  // Description
+  // Description — collapsed by default (first paragraph, capped at
+  // TOUR_CARD_DESC_PREVIEW_LENGTH chars), with a "more…" toggle that swaps
+  // in the complete, multi-paragraph description in place. Unlike the
+  // Repertoire cards below (which always show everything, since the show
+  // is the primary thing there and there's no separate detail page to
+  // link out to), a tour card is a preview linking to the full tour page
+  // — but tour_description text inherited from a repertoire show (see
+  // applyRepertoireInheritance() in shared_utils.js) can run much longer
+  // than the old hand-written tour blurbs, so it's worth letting people
+  // read the whole thing here too without having to leave the page.
   if (tour.tour_description) {
+    const paras = tour.tour_description
+      .split("\n\n\n\n")
+      .map((p) => p.replace(/\n\n/g, " ").trim())
+      .filter(Boolean);
+    const firstPara = paras[0] || "";
+    const isTruncated = firstPara.length > TOUR_CARD_DESC_PREVIEW_LENGTH;
+    const hasMore = isTruncated || paras.length > 1;
+
     const desc = document.createElement("div");
     desc.className = "tour-card-desc";
-    const firstPara = tour.tour_description
-      .split("\n\n\n\n")[0]
-      .replace(/\n\n/g, " ")
-      .trim();
-    desc.textContent =
-      firstPara.length > 200 ? firstPara.slice(0, 197) + "…" : firstPara;
+
+    const previewP = document.createElement("p");
+    previewP.textContent = isTruncated
+      ? firstPara.slice(0, TOUR_CARD_DESC_PREVIEW_LENGTH - 1).trimEnd() + "…"
+      : firstPara;
+    desc.appendChild(previewP);
+
+    if (hasMore) {
+      const fullWrap = document.createElement("div");
+      fullWrap.className = "tour-card-desc-full";
+      fullWrap.style.display = "none";
+      paras.forEach((p) => {
+        const el = document.createElement("p");
+        el.textContent = p;
+        fullWrap.appendChild(el);
+      });
+      desc.appendChild(fullWrap);
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "tour-card-desc-toggle";
+      toggle.textContent = "more…";
+      toggle.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const isOpen = fullWrap.style.display !== "none";
+        fullWrap.style.display = isOpen ? "none" : "block";
+        previewP.style.display = isOpen ? "" : "none";
+        toggle.textContent = isOpen ? "more…" : "less";
+      };
+      desc.appendChild(toggle);
+    }
+
     card.appendChild(desc);
   }
 

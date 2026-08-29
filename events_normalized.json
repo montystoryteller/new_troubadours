@@ -2368,7 +2368,6 @@
       "tour_name": "Dauntless (2026)",
       "repertoire_id": "debs-newbold-dauntless",
       "name": "Dauntless",
-      "tour_description": "Award-winning storyteller, Debs Newbold, gleefully delivers the boisterous, remarkable and inspirational story of her hero, Grainne ni Mhaille, aka Grace O'Malley, the legendary Irish clan chief and queen of the sea\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
       "touring_event_flyer": "",
       "isSpecial": true,
       "performer_id": "debs-newbold",
@@ -2813,8 +2812,8 @@
     },
     "corinne-harragin-troubled-waters-winter-2025": {
       "tour_name": "Troubled Waters (Winter 2025 Tour) [Corinne Harragin]",
+      "repertoire_id": "corinne-harragin-troubled-waters",
       "name": "Troubled Waters",
-      "tour_description": "With over 4,000 miles of polluted waterways, Britain and Ireland's rivers are in ruin.\n\n\n\nThis vibrant new tapestry of transporting tales winds through stories that have shaped our relationship with rivers, the lifeblood of our landscape. \n\n\n\nLeaping salmon, fishtail women, mythical raves & sacred springs… These enchanting and surprising tales present characters who question what is set in stone and find their own flow. \n\n\n\nWith each meandering stream and rushing river, we dip our toes into vital waters and ask what new connections are found when we look with fresh eyes beneath the surface?\n\n\n\n ​Created & performed by Corinne Harragin\n\n\n\nArtwork by Rhona Oughton\n\n\n\n Photography by Henry Kenyon \n\n\n\n Trailer by Ruby Ingleheart\n\n\n\n Music for trailer by Emily Magpie",
       "touring_event_flyer": "",
       "isSpecial": true,
       "tour_dates": [
@@ -2980,8 +2979,6 @@
       "repertoire_id": "corinne-harragin-troubled-waters",
       "tour_name": "Troubled Waters (Spring 2026 Tour) [Corinne Harragin]",
       "name": "Troubled Waters",
-      "tour_description": "With over 4,000 miles of polluted waterways, Britain and Ireland's rivers are in ruin.\n\n\n\nThis vibrant new tapestry of transporting tales winds through stories that have shaped our relationship with rivers, the lifeblood of our landscape. \n\n\n\nLeaping salmon, fishtail women, mythical raves & sacred springs… These enchanting and surprising tales present characters who question what is set in stone and find their own flow. \n\n\n\nWith each meandering stream and rushing river, we dip our toes into vital waters and ask what new connections are found when we look with fresh eyes beneath the surface?\n\n\n\nCreated & performed by Corinne Harragin\n\n\n\nArtwork by Rhona Oughton\n\n\n\n Photography by Henry Kenyon \n\n\n\n Trailer by Ruby Ingleheart\n\n\n\n Music for trailer by Emily Magpie",
-      "video_trailer": "https://www.youtube.com/watch?v=qlZWmjm5VPI",
       "touring_event_flyer": "",
       "isSpecial": true,
       "tour_dates": [

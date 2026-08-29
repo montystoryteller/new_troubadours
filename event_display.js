@@ -710,6 +710,13 @@ function createEventData(baseEvent, date, eventType) {
  * Build the merged event object for a single tour date.
  * Used by both processTourEvents() and searchAllUpcoming().
  *
+ * Note: the tour's own name/performer/video_trailer/tour_description may
+ * themselves already be inherited from a linked repertoire_shows entry —
+ * see applyRepertoireInheritance() in shared_utils.js, which resolves that
+ * once at load time so tour.* here can just be read directly. The only
+ * repertoire-related thing still handled here is description_prefix,
+ * which is per-date so can't be resolved that early.
+ *
  * @param {object} tour     - The tour record from toursLookup.
  * @param {string} tourKey  - The tour's key (used as tour_id).
  * @param {object} tourDate - One entry from tour.tour_dates[].
@@ -725,7 +732,10 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
     time: tourDate.time || tour.time || null,
     price: tourDate.price || tour.price || null,
     venue_id: tourDate.venue_id,
-    description: tour.tour_description || null,
+    description: combineDescriptionWithPrefix(
+      tourDate.description_prefix,
+      tour.tour_description || null,
+    ),
     event_flyer: tourDate.event_flyer || null,
     tour_flyer: tour.tour_flyer || null,
     video_trailer: tourDate.video_trailer || tour.video_trailer || null,
@@ -756,7 +766,10 @@ function buildShowMergedEvent(show, showKey, showDate) {
     price: showDate.price || show.price || null,
     venue_id: showDate.venue_id,
     club: showDate.club || show.club || null,
-    description: show.description || null,
+    description: combineDescriptionWithPrefix(
+      showDate.description_prefix,
+      show.description || null,
+    ),
     event_flyer: showDate.event_flyer || null,
     touring_event_flyer: show.touring_event_flyer || null,
     video_trailer: showDate.video_trailer || show.video_trailer || null,
