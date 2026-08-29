@@ -27,6 +27,69 @@ let pfImgLoader = null;
 // Bootstrap
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// "Featured on a named series" / "has media" — used to badge performers on
+// both the directory listing and their own page.
+//
+// featuredSeriesFor() is the stronger signal: an actual guest credit on one
+// of the site's recognised industry-standard interview/telling series
+// (currently World Storytelling Cafe and Taking the Tradition On), pulled
+// from the podcasts registry — see events-schema.json → $defs.podcast.
+//
+// hasAnyMedia() is deliberately coarse: true if this performer has *any*
+// video, own podcast feed, or podcast-guest appearance, without saying
+// which. The directory listing only has room for one icon per signal, and
+// spelling out video-vs-podcast-vs-appearance there would be more clutter
+// than it's worth — a performer's own page already breaks these out
+// properly (Videos / Podcasts / Podcast Appearances sections).
+// ---------------------------------------------------------------------------
+
+const FEATURED_SERIES = [
+  { podcastId: "world-storytelling-cafe", shortLabel: "WSC" },
+  { podcastId: "taking-the-tradition-on-podcast", shortLabel: "TTTO" },
+];
+
+function podcastCreditIncludesAny(podcast, ids) {
+  return (podcast?.items || []).some((item) => {
+    const itemIds = Array.isArray(item.performer_ids)
+      ? item.performer_ids
+      : item.performer_id
+        ? [item.performer_id]
+        : [];
+    return itemIds.some((id) => ids.has(id));
+  });
+}
+
+function featuredSeriesFor(ids) {
+  return FEATURED_SERIES.filter(({ podcastId }) =>
+    podcastCreditIncludesAny(podcastsLookup[podcastId], ids),
+  ).map(({ podcastId, shortLabel }) => ({
+    shortLabel,
+    fullName: podcastsLookup[podcastId]?.series_title || shortLabel,
+  }));
+}
+
+function hasAnyMedia(performer, ids) {
+  if (
+    Array.isArray(performer.youtube_videos) &&
+    performer.youtube_videos.length > 0
+  )
+    return true;
+  if (
+    performer.podcast &&
+    (typeof performer.podcast === "string" || performer.podcast.length > 0)
+  )
+    return true;
+  if (
+    Array.isArray(performer.podcast_appearances) &&
+    performer.podcast_appearances.length > 0
+  )
+    return true;
+  return Object.values(podcastsLookup).some((podcast) =>
+    podcastCreditIncludesAny(podcast, ids),
+  );
+}
+
 function renderAllPerformers() {
   const container = document.getElementById("performerContent");
   container.innerHTML = "";
@@ -104,6 +167,8 @@ function renderAllPerformers() {
         href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
         isTroupe: isTroupe(p),
         types,
+        hasMedia: hasAnyMedia(p, aliasIds),
+        featuredSeries: featuredSeriesFor(aliasIds),
       };
     });
 
@@ -282,6 +347,26 @@ function renderAllPerformers() {
       tag.className = `simple-list-row-type-tag type-${ty}`;
       tag.textContent = TYPE_TAG_LABELS[ty];
       tagGroup.appendChild(tag);
+    });
+    // Media icon — see hasAnyMedia(); deliberately one combined icon
+    // rather than separate video/podcast/appearance icons (their own
+    // page breaks those out properly).
+    if (entry.hasMedia) {
+      const mediaIcon = document.createElement("span");
+      mediaIcon.className = "simple-list-row-media-icon";
+      mediaIcon.textContent = "🎬";
+      mediaIcon.title = "Has video and/or podcast content";
+      tagGroup.appendChild(mediaIcon);
+    }
+    // Featured-series badge(s) — a guest credit on a recognised
+    // industry-standard series (see FEATURED_SERIES), separate from the
+    // generic media icon above since it's a stronger credential.
+    entry.featuredSeries.forEach(({ shortLabel, fullName }) => {
+      const seriesBadge = document.createElement("span");
+      seriesBadge.className = "simple-list-row-series-tag";
+      seriesBadge.textContent = shortLabel;
+      seriesBadge.title = `Featured on ${fullName}`;
+      tagGroup.appendChild(seriesBadge);
     });
     if (tagGroup.children.length > 0) row.appendChild(tagGroup);
     list.appendChild(row);
@@ -603,6 +688,22 @@ function renderPerformer() {
     badgesDiv.appendChild(badge);
   }
 
+  // Featured-series badge(s) — see featuredSeriesFor(); same credit check
+  // used on the directory listing. performer.aliases mirrors the aliasIds
+  // set built there (pid + declared aliases), matching the direct-id
+  // credit-matching convention already used by collectPerformerVideoAppearances()/
+  // collectPerformerAppearances() rather than expanding through compound
+  // performer_ids (podcast items tag individuals directly in practice).
+  featuredSeriesFor(
+    new Set([performerId, ...(performer.aliases || [])]),
+  ).forEach(({ shortLabel, fullName }) => {
+    const badge = document.createElement("span");
+    badge.className = "performer-badge performer-badge-series";
+    badge.textContent = `🌍 ${shortLabel}`;
+    badge.title = `Featured on ${fullName}`;
+    badgesDiv.appendChild(badge);
+  });
+
   // External links: website, Facebook, Facebook page/group, Instagram, Podcast
   const websiteDiv = document.getElementById("performerWebsite");
 
@@ -717,6 +818,21 @@ function renderPerformer() {
   );
   const myFestivals = Object.entries(eventsData.festivals || {}).filter(
     ([, f]) => (f.performers || []).some((p) => p.performer_id === performerId),
+  );
+
+  // Collaborators — note myFestivals is deliberately excluded here: sharing
+  // a festival bill isn't performing together (see collectCollaborators()).
+  renderCollaboratorsSection(
+    collectCollaborators([
+      ...myTours.map(([, t]) => ({ record: t, displayName: t.tour_name || t.name })),
+      ...myTouringShows.map(([, ts]) => ({
+        record: ts,
+        displayName: ts.showname || ts.name,
+      })),
+      ...mySpecific.map((e) => ({ record: e, displayName: e.showname || e.name })),
+      ...myMusic.map((e) => ({ record: e, displayName: e.showname || e.name })),
+      ...myPoetry.map((e) => ({ record: e, displayName: e.showname || e.name })),
+    ]),
   );
 
   // Count all tour dates
@@ -1699,7 +1815,136 @@ function collectPerformerVideoAppearances(performer) {
   return merged;
 }
 
+// ---------------------------------------------------------------------------
+// Collaborators
+// Other performers who shared an actual performance with this one — the
+// same tour_dates/show_dates/specific-event entry, not just the same
+// festival lineup (a festival bill lists several unrelated acts on the
+// same day, which isn't "performing together" in the sense meant here —
+// see renderPerformer(), which deliberately doesn't feed myFestivals into
+// this). A shared credit shows up either as an explicit performer_ids[]
+// array on the record (e.g. a tour billed as "Daniel Morden & Hugh
+// Lupton"), or as a compound/troupe performer_id that includes this
+// performer among its declared members (e.g. viewing Gillian Brownson's
+// page, whose tour is billed under the joint id
+// "gillian-brownson-dragon-storytellers"). Deliberately excludes the case
+// where record.performer_id === performerId itself: that's just this
+// performer's (or, when viewing a troupe's own page, the troupe's own)
+// ordinary billing, already shown in the page header/member chips above —
+// not a collaboration with someone else.
+// ---------------------------------------------------------------------------
+
+function collectCollaborators(records) {
+  const map = new Map(); // collaboratorId -> Set of shared show/tour names
+
+  records.forEach(({ record, displayName }) => {
+    const castIds = new Set();
+
+    if (
+      Array.isArray(record.performer_ids) &&
+      record.performer_ids.includes(performerId)
+    ) {
+      record.performer_ids.forEach((id) => castIds.add(id));
+    }
+
+    if (
+      record.performer_id &&
+      record.performer_id !== performerId &&
+      compoundIdsForMe.has(record.performer_id)
+    ) {
+      const compound = performersLookup[record.performer_id];
+      const compoundMembers = compound?.performer_ids || compound?.ids || [];
+      compoundMembers.forEach((id) => castIds.add(id));
+    }
+
+    castIds.forEach((id) => {
+      if (id === performerId) return;
+      if (!map.has(id)) map.set(id, new Set());
+      if (displayName) map.get(id).add(displayName);
+    });
+  });
+
+  return map;
+}
+
+/**
+ * @param {Map<string, Set<string>>} collaborators - id -> shared show/tour names
+ */
+function renderCollaboratorsSection(collaborators) {
+  const section = document.getElementById("perfCollaboratorsSection");
+  const ids = [...collaborators.keys()]
+    .filter((id) => performersLookup[id])
+    .sort((a, b) =>
+      (performersLookup[a]?.name || a).localeCompare(
+        performersLookup[b]?.name || b,
+      ),
+    );
+
+  if (ids.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfCollaboratorsHint").textContent =
+    `${ids.length} collaborator${ids.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfCollaboratorsList");
+  list.innerHTML = "";
+
+  ids.forEach((id) => {
+    const p = performersLookup[id];
+    const showNames = [...(collaborators.get(id) || [])].filter(Boolean);
+
+    const row = document.createElement("div");
+    row.className = "perf-collaborator-row";
+
+    const nameLine = document.createElement("div");
+    nameLine.className = "perf-collaborator-name-line";
+
+    const a = document.createElement("a");
+    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+    a.className = "perf-collaborator-name";
+    a.textContent = p.name;
+    nameLine.appendChild(a);
+
+    // Musician/Poet badges — same convention as the page-header badges
+    // (see renderPerformer()), checking declared members too in case the
+    // collaborator is itself a compound/troupe entry.
+    const members = p.performer_ids || p.ids || [];
+    const isMusicianCollab =
+      p.musician === true ||
+      members.some((mid) => performersLookup[mid]?.musician === true);
+    const isPoetCollab =
+      p.poet === true ||
+      members.some((mid) => performersLookup[mid]?.poet === true);
+    if (isMusicianCollab) {
+      const badge = document.createElement("span");
+      badge.className = "performer-badge performer-badge-musician";
+      badge.textContent = "🎵 Musician";
+      nameLine.appendChild(badge);
+    }
+    if (isPoetCollab) {
+      const badge = document.createElement("span");
+      badge.className = "performer-badge performer-badge-poet";
+      badge.textContent = "✒️ Poet";
+      nameLine.appendChild(badge);
+    }
+    row.appendChild(nameLine);
+
+    if (showNames.length > 0) {
+      const meta = document.createElement("div");
+      meta.className = "perf-collaborator-meta";
+      meta.textContent = showNames.join(", ");
+      row.appendChild(meta);
+    }
+
+    list.appendChild(row);
+  });
+}
+
 function renderVideosSection(performer) {
+
   const videos = collectPerformerVideoAppearances(performer);
   const section = document.getElementById("perfVideosSection");
   if (videos.length === 0) {

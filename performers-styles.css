@@ -82,6 +82,12 @@
     border: 1px solid #9fa8da;
 }
 
+.performer-badge-series {
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
+}
+
 .performer-website a {
     color: #185FA5;
     font-size: 14px;
@@ -1072,7 +1078,42 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     padding: 0 0 4px;
 }
 
-/* Badges shown under a video's title in the Videos section: the series
+/* Collaborators section — see collectCollaborators()/
+   renderCollaboratorsSection() in performers.js. */
+.perf-collaborator-row {
+    padding: 9px 12px;
+    border-top: 1px solid #eee;
+}
+
+.perf-collaborator-row:first-child {
+    border-top: none;
+}
+
+.perf-collaborator-name-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.perf-collaborator-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.perf-collaborator-name:hover {
+    text-decoration: underline;
+}
+
+.perf-collaborator-meta {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+
+
    it's from (e.g. "World Storytelling Cafe") and, separately, its format
    (e.g. "interview", "telling") — see collectPerformerVideoAppearances()
    in performers.js. */
@@ -1414,6 +1455,26 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 .simple-list-row-type-tag.type-troupe {
     background: #efe6e2;
     color: #4e342e;
+}
+
+/* Media icon + featured-series badge — see hasAnyMedia()/featuredSeriesFor()
+   in performers.js. */
+.simple-list-row-media-icon {
+    font-size: 11px;
+    display: inline-block;
+}
+
+.simple-list-row-series-tag {
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    padding: 1px 7px;
+    border-radius: 20px;
+    display: inline-block;
+    white-space: nowrap;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
 }
 
 /* =============================================================
