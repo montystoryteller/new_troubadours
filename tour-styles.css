@@ -41,10 +41,36 @@
     margin: 20px 0;
 }
 
-.tour-flyer img {
-    width: 100%;
+/* Applied via JS (displayTour() in tour_display.js) only when there's more
+   than one tour-level flyer — gives them real room to sit side by side
+   instead of being squeezed into the width sized for a single hero image. */
+.tour-flyer.tour-flyer-multi {
+    max-width: 900px;
+}
+
+/* Wrapper for one <img> per tour-level flyer (getTourLevelFlyers() —
+   tour_flyer + touring_event_flyer + touring_event_flyers). A single
+   flyer fills the row exactly as the old single hero image did; two or
+   more sit side by side when there's room, wrapping to stacked on
+   narrower viewports regardless of the container's max-width above. */
+.tour-hero-flyers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.tour-hero-flyer-img {
+    flex: 1 1 260px;
+    max-width: 100%;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.tour-hero-flyer-img:hover {
+    transform: translateY(-2px);
 }
 
 .tour-trailer {

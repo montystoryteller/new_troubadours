@@ -261,9 +261,8 @@ function displayTour(tourId) {
   const performerIds = getTourLinkPerformerIds(tour);
 
   const flyerContainer = document.getElementById("tourFlyerContainer");
-  const flyerImage = document.getElementById("tourFlyerImage");
 
-  // Rebuild container children in explicit order: top links → image → bottom links.
+  // Rebuild container children in explicit order: top links → flyer(s) → bottom links.
   // This avoids positional insertBefore/appendChild drift across repeated displayTour calls.
   flyerContainer.innerHTML = "";
 
@@ -325,7 +324,40 @@ function displayTour(tourId) {
     flyerContainer.appendChild(tagRow);
   }
 
-  flyerContainer.appendChild(flyerImage); // always re-attach image in the middle
+  // Tour-level flyer(s) — getTourLevelFlyers() (shared_utils.js) merges
+  // tour_flyer + touring_event_flyer + touring_event_flyers. ALL of them
+  // are shown here as heroes (side by side/stacked via CSS), since these
+  // are the tour's own official artwork rather than per-date one-offs —
+  // none are demoted into the collapsed "Per-date flyers" gallery further
+  // down the page (see renderTourFlyers()), which covers only per-date
+  // flyers. Clicking any hero opens the same lightbox used for that
+  // gallery, scoped to just the tour-level set so prev/next flips between
+  // them.
+  const tourLevelFlyers = getTourLevelFlyers(tour);
+  const heroFlyerRow = document.createElement("div");
+  heroFlyerRow.className = "tour-hero-flyers";
+  // Widen the outer container when there's more than one flyer, so two
+  // (or more) get real room to sit side by side rather than being
+  // squeezed into the width sized for a single hero image — flex-wrap
+  // still falls back to stacked on any viewport too narrow for that.
+  flyerContainer.classList.toggle("tour-flyer-multi", tourLevelFlyers.length > 1);
+  const heroLightboxItems = tourLevelFlyers.map((f) => ({
+    src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`,
+    label: f.label,
+  }));
+  tourLevelFlyers.forEach((f, i) => {
+    const img = document.createElement("img");
+    img.src = heroLightboxItems[i].src;
+    img.alt =
+      tourLevelFlyers.length > 1
+        ? `${tour.name} tour flyer — ${f.label}`
+        : `${tour.name} tour flyer`;
+    img.className = "tour-hero-flyer-img";
+    img.onclick = () => openTourFlyerLightbox(heroLightboxItems, i);
+    heroFlyerRow.appendChild(img);
+  });
+
+  flyerContainer.appendChild(heroFlyerRow); // always re-attach flyer(s) in the middle
 
   // Bottom (footer-styled) website links, grouped in one row.
   if (bottomWebsiteLinks.length > 0) {
@@ -335,15 +367,10 @@ function displayTour(tourId) {
     flyerContainer.appendChild(bottomGroup);
   }
 
-  const tourLevelFlyers = getTourLevelFlyers(tour);
   if (tourLevelFlyers.length > 0) {
-    flyerImage.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(tourLevelFlyers[0].filename)}`;
-    flyerImage.alt = `${tour.name} tour flyer`;
-    flyerImage.style.display = "block";
     flyerContainer.style.display = "block";
   } else {
-    flyerImage.style.display = "none";
-    // Show container if there are links, even if image is missing
+    // Show container if there are links, even if no flyer image
     flyerContainer.style.display = performerIds.size > 0 ? "block" : "none";
   }
 
@@ -622,14 +649,11 @@ const flyerImgLoader = createLazyImageLoader({
 function renderTourFlyers(tour) {
   const BASE_EVENT = "./storyclub_assets/event_flyers/";
 
-  // Gather all flyers: tour-level (tour_flyer + touring_event_flyers) + per-date
+  // Per-date flyers only. Tour-level flyers (tour_flyer + touring_event_flyer
+  // + touring_event_flyers) are all shown as heroes at the top of the page
+  // instead (see displayTour()) — deliberately excluded here so the same
+  // image isn't shown twice.
   const flyers = [];
-  getTourLevelFlyers(tour).forEach((f) => {
-    flyers.push({
-      src: BASE_EVENT + sanitizeFlyerPath(f.filename),
-      label: f.label,
-    });
-  });
   (tour.tour_dates || []).forEach((d) => {
     const dateFlyers = getEventLevelFlyers(d);
     if (dateFlyers.length === 0) return;
@@ -665,7 +689,7 @@ function renderTourFlyers(tour) {
 
   const summary = document.createElement("summary");
   summary.className = "tour-flyer-summary";
-  summary.textContent = `\u{1F5BC} Flyers for this tour (${flyers.length})`;
+  summary.textContent = `\u{1F5BC} Per-date flyers (${flyers.length})`;
   details.appendChild(summary);
 
   // ── Strip of thumbnails — images lazy-loaded when panel opens ─────────────
