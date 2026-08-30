@@ -1916,3 +1916,159 @@ function clearSchedulesCache() {
     console.warn("Failed to clear schedules cache:", e);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Podcast/video appearance resolution — shared by the performer profile
+// page (performers.js) and the cross-performer Watch & Listen page
+// (media.js), so both stay in sync with the podcasts registry schema
+// (podcast_id/format/type, item performer_id/performer_ids/yt_url — see
+// events-schema.json → $defs.podcast/$defs.podcastEpisode) instead of
+// media.js quietly drifting from whatever performers.js does, which is
+// what had happened before this was pulled out to one place.
+// ---------------------------------------------------------------------------
+
+/**
+ * Extracts an 11-char YouTube video id from a watch/youtu.be/shorts/embed
+ * URL, or null if `url` isn't a recognisable YouTube URL.
+ * @param {string} url
+ * @returns {string|null}
+ */
+function extractYoutubeId(url) {
+  try {
+    const u = new URL(url);
+    if (/(^|\.)youtu\.be$/.test(u.hostname))
+      return u.pathname.slice(1).split("/")[0] || null;
+    if (u.searchParams.get("v")) return u.searchParams.get("v");
+    const embedMatch = u.pathname.match(/\/embed\/([^/?]+)/);
+    if (embedMatch) return embedMatch[1];
+    const shortsMatch = u.pathname.match(/\/shorts\/([^/?]+)/);
+    if (shortsMatch) return shortsMatch[1];
+  } catch (e) {
+    /* not a valid URL */
+  }
+  return null;
+}
+
+/**
+ * Resolves a single podcast appearance's display name/url/format, whether
+ * it came from the podcasts registry (podcast_id set) or an older inline
+ * performer.podcast_appearances entry (bare podcast/podcast_url strings).
+ * @param {object} appearance
+ * @param {Object<string, object>} podcastsLookup
+ * @returns {{name: string, url: string, format: string}}
+ */
+function resolvePodcastAppearanceMeta(appearance, podcastsLookup) {
+  if (appearance.podcast_id && podcastsLookup[appearance.podcast_id]) {
+    const p = podcastsLookup[appearance.podcast_id];
+    return {
+      name: p.series_title || appearance.podcast_id,
+      url: p.url || "",
+      // podcasts[].format (e.g. "telling", "interview") — purely
+      // descriptive, shown alongside the series name if present.
+      format: p.format || "",
+    };
+  }
+  return {
+    name: appearance.podcast || "Podcast",
+    url: appearance.podcast_url || "",
+    format: "",
+  };
+}
+
+/**
+ * Merges two sources of a performer's AUDIO podcast appearances into one
+ * list:
+ *   1. Registry-sourced — episodes tagged with this performer's id (via
+ *      performer_id/performer_ids) on any podcast's items[]. Preferred
+ *      home for anything on a registered series.
+ *   2. Inline — performer.podcast_appearances, for one-off guest spots on
+ *      a podcast that isn't registered (older entries carrying a
+ *      podcast_id are still honoured for backward compatibility).
+ * Items with a yt_url are excluded — those belong in
+ * collectPerformerVideoAppearances() instead (an item wouldn't normally
+ * carry both an enclosureUrl and a yt_url, but if it did, video wins
+ * rather than showing the same appearance twice).
+ * @param {object} performer
+ * @param {string} performerId
+ * @param {Object<string, object>} podcastsLookup
+ * @returns {object[]}
+ */
+function collectPerformerAppearances(performer, performerId, podcastsLookup) {
+  const inline = Array.isArray(performer.podcast_appearances)
+    ? performer.podcast_appearances.filter((a) => a && a.episode_name)
+    : [];
+  const fromRegistry = [];
+  Object.values(podcastsLookup).forEach((podcast) => {
+    (podcast.items || []).forEach((item) => {
+      const ids = Array.isArray(item.performer_ids)
+        ? item.performer_ids
+        : item.performer_id
+          ? [item.performer_id]
+          : [];
+      if (!ids.includes(performerId)) return;
+      if (!item.title || !item.enclosureUrl) return;
+      if (item.yt_url) return;
+      fromRegistry.push({
+        episode_name: item.title,
+        audio_url: item.enclosureUrl,
+        episode_url: item.link || "",
+        podcast_id: podcast.podcast_id,
+      });
+    });
+  });
+  return [...fromRegistry, ...inline];
+}
+
+/**
+ * Merges two sources of a performer's VIDEO appearances into one list:
+ * registry-sourced episodes with a yt_url (tagged via performer_id/
+ * performer_ids on any podcast's items[]) plus the performer's own inline
+ * youtube_videos. De-duped by YouTube video id — a video that's since
+ * been added to the registry may still carry an old inline entry for the
+ * same video; the registry-sourced version (listed first) wins.
+ * @param {object} performer
+ * @param {string} performerId
+ * @param {Object<string, object>} podcastsLookup
+ * @returns {{story_name: string, yt_url: string, source?: string, format?: string}[]}
+ */
+function collectPerformerVideoAppearances(performer, performerId, podcastsLookup) {
+  const fromRegistry = [];
+  Object.values(podcastsLookup).forEach((podcast) => {
+    (podcast.items || []).forEach((item) => {
+      const ids = Array.isArray(item.performer_ids)
+        ? item.performer_ids
+        : item.performer_id
+          ? [item.performer_id]
+          : [];
+      if (!ids.includes(performerId)) return;
+      if (!item.yt_url || !extractYoutubeId(item.yt_url)) return;
+      fromRegistry.push({
+        story_name: item.title || podcast.series_title || "Untitled video",
+        yt_url: item.yt_url,
+        source: podcast.series_title || "",
+        format: podcast.format || "",
+      });
+    });
+  });
+
+  const inline = Array.isArray(performer.youtube_videos)
+    ? performer.youtube_videos
+        .filter((v) => v && v.yt_url && extractYoutubeId(v.yt_url))
+        .map((v) => ({
+          story_name: v.story_name,
+          yt_url: v.yt_url,
+          format: v.format || "",
+        }))
+    : [];
+
+  const seen = new Set();
+  const merged = [];
+  [...fromRegistry, ...inline].forEach((v) => {
+    const vid = extractYoutubeId(v.yt_url);
+    if (!vid || seen.has(vid)) return;
+    seen.add(vid);
+    merged.push(v);
+  });
+  return merged;
+}
+

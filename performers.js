@@ -1575,65 +1575,17 @@ function renderPodcastSection(performer) {
 // that's only requested if/when the visitor presses ▶ Preview.
 // ---------------------------------------------------------------------------
 
-function resolvePodcastAppearanceMeta(appearance) {
-  if (appearance.podcast_id && podcastsLookup[appearance.podcast_id]) {
-    const p = podcastsLookup[appearance.podcast_id];
-    return {
-      name: p.series_title || appearance.podcast_id,
-      url: p.url || "",
-      // podcasts[].format (e.g. "telling", "interview") — purely
-      // descriptive, shown alongside the series name if present.
-      format: p.format || "",
-    };
-  }
-  return {
-    name: appearance.podcast || "Podcast",
-    url: appearance.podcast_url || "",
-    format: "",
-  };
-}
-
-// Merges two sources of a performer's podcast appearances into the
-// shape addAppearance() below already expects:
-//   1. Registry-sourced — episodes tagged with this performer's id
-//      (via performer_id/performer_ids) on any podcast's items[].
-//      This is the preferred home for anything on a registered series.
-//   2. Inline — performer.podcast_appearances, now used only for
-//      one-off guest spots on a podcast that isn't registered (though
-//      older entries carrying a podcast_id are still honoured here
-//      for backward compatibility with data not yet migrated).
-function collectPerformerAppearances(performer) {
-  const inline = Array.isArray(performer.podcast_appearances)
-    ? performer.podcast_appearances.filter((a) => a && a.episode_name)
-    : [];
-  const fromRegistry = [];
-  Object.values(podcastsLookup).forEach((podcast) => {
-    (podcast.items || []).forEach((item) => {
-      const ids = Array.isArray(item.performer_ids)
-        ? item.performer_ids
-        : item.performer_id
-          ? [item.performer_id]
-          : [];
-      if (!ids.includes(performerId)) return;
-      if (!item.title || !item.enclosureUrl) return;
-      // Items with a yt_url are rendered in the Videos section instead
-      // (see collectPerformerVideoAppearances) — an item wouldn't
-      // normally carry both, but if it does, prefer video and skip it
-      // here rather than showing it twice.
-      if (item.yt_url) return;
-      fromRegistry.push({
-        episode_name: item.title,
-        audio_url: item.enclosureUrl,
-        episode_url: item.link || "",
-        podcast_id: podcast.podcast_id,
-      });
-    });
-  });
-  return [...fromRegistry, ...inline];
-}
+// resolvePodcastAppearanceMeta(), collectPerformerAppearances(), and
+// extractYoutubeId()/collectPerformerVideoAppearances() are defined in
+// shared_utils.js (also used by media.js) — see that file's "Podcast/video
+// appearance resolution" section.
 
 function renderPodcastAppearancesSection(performer) {
-  const appearances = collectPerformerAppearances(performer);
+  const appearances = collectPerformerAppearances(
+    performer,
+    performerId,
+    podcastsLookup,
+  );
   const section = document.getElementById("perfPodcastAppearancesSection");
   if (appearances.length === 0) {
     section.style.display = "none";
@@ -1671,7 +1623,7 @@ function renderPodcastAppearancesSection(performer) {
     title.textContent = appearance.episode_name;
     body.appendChild(title);
 
-    const meta = resolvePodcastAppearanceMeta(appearance);
+    const meta = resolvePodcastAppearanceMeta(appearance, podcastsLookup);
     if (meta.name) {
       const metaLine = document.createElement("div");
       metaLine.className = "perf-podcast-episode-meta";
@@ -1756,71 +1708,8 @@ function renderPodcastAppearancesSection(performer) {
 // visitor never expands.
 // ---------------------------------------------------------------------------
 
-function extractYoutubeId(url) {
-  try {
-    const u = new URL(url);
-    if (/(^|\.)youtu\.be$/.test(u.hostname))
-      return u.pathname.slice(1).split("/")[0] || null;
-    if (u.searchParams.get("v")) return u.searchParams.get("v");
-    const embedMatch = u.pathname.match(/\/embed\/([^/?]+)/);
-    if (embedMatch) return embedMatch[1];
-    const shortsMatch = u.pathname.match(/\/shorts\/([^/?]+)/);
-    if (shortsMatch) return shortsMatch[1];
-  } catch (e) {
-    /* not a valid URL */
-  }
-  return null;
-}
-
-// Merges the two video sources described above into the shape the
-// renderer below expects: { story_name, yt_url, source?, format? }.
-// `source`/`format` (the podcast series' title/format) are only set for
-// registry-sourced entries, since inline entries don't belong to a series.
-function collectPerformerVideoAppearances(performer) {
-  const fromRegistry = [];
-  Object.values(podcastsLookup).forEach((podcast) => {
-    (podcast.items || []).forEach((item) => {
-      const ids = Array.isArray(item.performer_ids)
-        ? item.performer_ids
-        : item.performer_id
-          ? [item.performer_id]
-          : [];
-      if (!ids.includes(performerId)) return;
-      if (!item.yt_url || !extractYoutubeId(item.yt_url)) return;
-      fromRegistry.push({
-        story_name: item.title || podcast.series_title || "Untitled video",
-        yt_url: item.yt_url,
-        source: podcast.series_title || "",
-        format: podcast.format || "",
-      });
-    });
-  });
-
-  const inline = Array.isArray(performer.youtube_videos)
-    ? performer.youtube_videos
-        .filter((v) => v && v.yt_url && extractYoutubeId(v.yt_url))
-        .map((v) => ({
-          story_name: v.story_name,
-          yt_url: v.yt_url,
-          format: v.format || "",
-        }))
-    : [];
-
-  // De-dupe by YouTube video id — a performer whose video has since been
-  // added to the podcasts registry (with performer_id set) may still
-  // carry the old inline entry for the same video; keep the
-  // registry-sourced version (listed first) so it wins, and drop the
-  // inline duplicate rather than showing the same video twice.
-  const seen = new Set();
-  const merged = [];
-  [...fromRegistry, ...inline].forEach((v) => {
-    const vid = extractYoutubeId(v.yt_url);
-    if (!vid || seen.has(vid)) return;
-    seen.add(vid);
-    merged.push(v);
-  });
-  return merged;
-}
+// extractYoutubeId() and collectPerformerVideoAppearances() are defined in
+// shared_utils.js (also used by media.js).
 
 // ---------------------------------------------------------------------------
 // Collaborators
@@ -1952,7 +1841,11 @@ function renderCollaboratorsSection(collaborators) {
 
 function renderVideosSection(performer) {
 
-  const videos = collectPerformerVideoAppearances(performer);
+  const videos = collectPerformerVideoAppearances(
+    performer,
+    performerId,
+    podcastsLookup,
+  );
   const section = document.getElementById("perfVideosSection");
   if (videos.length === 0) {
     section.style.display = "none";

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch &amp; Listen — New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="media-styles.css">
+</head>
+
+<body>
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_festival.html">🎪 Festivals</a>
+        <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_media.html" aria-current="page">🎥 Watch &amp; Listen</a>
+        <a href="new_troubadours_stats.html">📊 Stats</a>
+    </nav>
+
+    <h1>The New Troubadours — Watch &amp; Listen</h1>
+    <h2>Recorded performances and podcast guest spots from the circuit</h2>
+
+    <div class="filter-bar">
+        <label class="filter-bar-label" for="mediaSearch">Search</label>
+        <input type="text" id="mediaSearch" placeholder="Search by performer or title…" autocomplete="off">
+        <span class="media-result-count" id="resultCount"></span>
+    </div>
+
+    <div id="loadingMsg">Loading…</div>
+    <div id="noResultsMsg" style="display:none;">No matches for that search.</div>
+
+    <section class="media-section" id="watchSection" style="display:none;">
+        <h2 class="media-section-heading">🎥 Watch</h2>
+        <p class="media-section-sub">Recorded performances on YouTube, by performer.</p>
+        <div id="watchGroups"></div>
+        <div class="media-empty-msg" id="watchEmptyMsg" style="display:none;">No videos yet.</div>
+    </section>
+
+    <section class="media-section" id="listenSection" style="display:none;">
+        <h2 class="media-section-heading">🎧 Listen</h2>
+        <p class="media-section-sub">Podcast guest spots, by performer. Click ▶ to play an episode in place —
+            nothing loads until you ask for it.</p>
+        <div id="listenGroups"></div>
+        <div class="media-empty-msg" id="listenEmptyMsg" style="display:none;">No podcast appearances yet.</div>
+    </section>
+
+    <script src="shared_utils.js"></script>
+    <script src="podcast_utils.js"></script>
+    <script src="media.js"></script>
+</body>
+
+</html>

@@ -62,6 +62,12 @@
 
 .tour-hero-flyer-img {
     flex: 1 1 260px;
+    /* Overrides flexbox's default min-width:auto, which for an <img>
+       resolves to its own intrinsic pixel width (these are full poster
+       scans, often 1000px+ wide) — without this, the browser won't
+       shrink either image enough to actually sit side by side, and
+       flex-wrap pushes the second one onto its own line instead. */
+    min-width: 0;
     max-width: 100%;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
