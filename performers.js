@@ -64,6 +64,7 @@ function featuredSeriesFor(ids) {
   return FEATURED_SERIES.filter(({ podcastId }) =>
     podcastCreditIncludesAny(podcastsLookup[podcastId], ids),
   ).map(({ podcastId, shortLabel }) => ({
+    podcastId,
     shortLabel,
     fullName: podcastsLookup[podcastId]?.series_title || shortLabel,
   }));
@@ -360,12 +361,17 @@ function renderAllPerformers() {
     }
     // Featured-series badge(s) — a guest credit on a recognised
     // industry-standard series (see FEATURED_SERIES), separate from the
-    // generic media icon above since it's a stronger credential.
-    entry.featuredSeries.forEach(({ shortLabel, fullName }) => {
-      const seriesBadge = document.createElement("span");
+    // generic media icon above since it's a stronger credential. Links to
+    // that series' scoped view on the Watch & Listen page (media.js
+    // reads ?series=<podcast_id> — see also the same link built in
+    // renderPerformer() for the header badge).
+    entry.featuredSeries.forEach(({ podcastId, shortLabel, fullName }) => {
+      const seriesBadge = document.createElement("a");
+      seriesBadge.href = `new_troubadours_media.html?series=${encodeURIComponent(podcastId)}`;
       seriesBadge.className = "simple-list-row-series-tag";
       seriesBadge.textContent = shortLabel;
-      seriesBadge.title = `Featured on ${fullName}`;
+      seriesBadge.title = `Featured on ${fullName} — view all episodes`;
+      seriesBadge.onclick = (e) => e.stopPropagation();
       tagGroup.appendChild(seriesBadge);
     });
     if (tagGroup.children.length > 0) row.appendChild(tagGroup);
@@ -552,6 +558,65 @@ function renderAllPerformers() {
 // Main render
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// "Agenda" ordering for the top-level Tours/Repertoire/Other
+// appearances/Festivals listings — soonest-upcoming first, then most
+// recently completed first below that, rather than a flat oldest-to-
+// newest list that would bury anything upcoming under years of history
+// (or, for tours/touring shows/festivals, no date-based order at all).
+// ---------------------------------------------------------------------------
+
+/**
+ * Given a list of Date objects for one tour/show/festival, picks the one
+ * date "representing" it for sorting purposes: the soonest upcoming date
+ * if it has any, otherwise its most recent past date.
+ * @param {(Date|null)[]} dates
+ * @returns {Date|null}
+ */
+function representativeDate(dates) {
+  const valid = dates.filter(Boolean);
+  if (valid.length === 0) return null;
+  const today = getTodayMidnight();
+  const future = valid.filter((d) => d >= today).sort((a, b) => a - b);
+  if (future.length > 0) return future[0];
+  return valid.sort((a, b) => b - a)[0];
+}
+
+/**
+ * Comparator factory: sorts so every item with an upcoming representative
+ * date comes first (soonest first), then every item whose representative
+ * date is in the past comes after (most recent first), then anything with
+ * no date at all sinks to the very bottom.
+ * @param {(item: any) => Date|null} getDate
+ */
+function upcomingFirstThenRecent(getDate) {
+  const today = getTodayMidnight();
+  return (a, b) => {
+    const da = getDate(a);
+    const db = getDate(b);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    const aFuture = da >= today;
+    const bFuture = db >= today;
+    if (aFuture && bFuture) return da - db; // soonest upcoming first
+    if (!aFuture && !bFuture) return db - da; // most recent past first
+    return aFuture ? -1 : 1; // any upcoming beats any past
+  };
+}
+
+function representativeTourDate(tour) {
+  return representativeDate(
+    (tour.tour_dates || []).map((td) => parseDateString(td.date)),
+  );
+}
+
+function representativeShowDate(show) {
+  return representativeDate(
+    (show.show_dates || []).map((sd) => parseDateString(sd.date)),
+  );
+}
+
 function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
 
@@ -694,13 +759,16 @@ function renderPerformer() {
   // credit-matching convention already used by collectPerformerVideoAppearances()/
   // collectPerformerAppearances() rather than expanding through compound
   // performer_ids (podcast items tag individuals directly in practice).
+  // Links to that series' scoped view on the Watch & Listen page
+  // (media.js reads ?series=<podcast_id>).
   featuredSeriesFor(
     new Set([performerId, ...(performer.aliases || [])]),
-  ).forEach(({ shortLabel, fullName }) => {
-    const badge = document.createElement("span");
+  ).forEach(({ podcastId, shortLabel, fullName }) => {
+    const badge = document.createElement("a");
+    badge.href = `new_troubadours_media.html?series=${encodeURIComponent(podcastId)}`;
     badge.className = "performer-badge performer-badge-series";
     badge.textContent = `🌍 ${shortLabel}`;
-    badge.title = `Featured on ${fullName}`;
+    badge.title = `Featured on ${fullName} — view all episodes`;
     badgesDiv.appendChild(badge);
   });
 
@@ -799,13 +867,12 @@ function renderPerformer() {
   }
 
   // Gather all data for this performer
-  const myTours = Object.entries(toursLookup).filter(([, t]) =>
-    performerMatches(t),
-  );
-  const myTouringShows = Object.entries(
-    eventsData.repertoire_shows || {},
-  ).filter(([, ts]) => performerMatches(ts));
-  // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
+  const myTours = Object.entries(toursLookup)
+    .filter(([, t]) => performerMatches(t))
+    .sort(upcomingFirstThenRecent(([, t]) => representativeTourDate(t)));
+  const myTouringShows = Object.entries(eventsData.repertoire_shows || {})
+    .filter(([, ts]) => performerMatches(ts))
+    .sort(upcomingFirstThenRecent(([, ts]) => representativeShowDate(ts)));  // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
   // same convention as tour_dates — see expandTourDates() in shared_utils.js.
   const mySpecific = expandTourDates(
     (eventsData.specificEvents || []).filter((e) => performerMatches(e)),
@@ -816,9 +883,9 @@ function renderPerformer() {
   const myPoetry = expandTourDates(
     (eventsData.poetryEvents || []).filter((e) => performerMatches(e)),
   );
-  const myFestivals = Object.entries(eventsData.festivals || {}).filter(
-    ([, f]) => (f.performers || []).some((p) => p.performer_id === performerId),
-  );
+  const myFestivals = Object.entries(eventsData.festivals || {})
+    .filter(([, f]) => (f.performers || []).some((p) => p.performer_id === performerId))
+    .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
 
   // Collaborators — note myFestivals is deliberately excluded here: sharing
   // a festival bill isn't performing together (see collectCollaborators()).
@@ -901,14 +968,9 @@ function renderPerformer() {
   }
 
   // Specific + music + poetry events
-  const allOther = [...mySpecific, ...myMusic, ...myPoetry].sort((a, b) => {
-    const da = parseDateString(a.date),
-      db = parseDateString(b.date);
-    if (!da && !db) return 0;
-    if (!da) return 1;
-    if (!db) return -1;
-    return da - db;
-  });
+  const allOther = [...mySpecific, ...myMusic, ...myPoetry].sort(
+    upcomingFirstThenRecent((e) => parseDateString(e.date)),
+  );
   if (allOther.length > 0) {
     document.getElementById("eventsSection").style.display = "";
     // Heading: "Appearances" when sole content, "Other appearances" when alongside tours/shows
@@ -2181,7 +2243,7 @@ function renderDateCollapsible(
   card,
   dateEntries,
   toEventRow,
-  { titlePrefix, defaultOpen = false },
+  { titlePrefix, defaultOpen = false, sortDescending = false },
 ) {
   if (dateEntries.length === 0) return;
 
@@ -2200,8 +2262,11 @@ function renderDateCollapsible(
 
   const list = document.createElement("div");
   list.className = "tour-history-list";
+  // Upcoming dates read soonest-first (ascending); past dates read most-
+  // recent-first (descending) — reverse chronological, so the thing that
+  // just happened is at the top rather than buried below years-old dates.
   [...dateEntries]
-    .sort(sortByDate)
+    .sort(sortDescending ? (a, b) => sortByDate(b, a) : sortByDate)
     .forEach((d) => renderEventRow(list, toEventRow(d)));
   details.appendChild(list);
 
@@ -2379,6 +2444,7 @@ function renderTourCard(container, tourId, tour) {
   });
   renderDateCollapsible(card, pastDates, toEventRow, {
     titlePrefix: "Past dates",
+    sortDescending: true,
   });
 
   // View tour link
@@ -2472,6 +2538,7 @@ function renderTouringShowCard(container, tsId, ts) {
   });
   renderDateCollapsible(card, pastDates, toEventRow, {
     titlePrefix: "Past dates",
+    sortDescending: true,
   });
 
   container.appendChild(card);

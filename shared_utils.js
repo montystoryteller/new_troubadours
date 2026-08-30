@@ -2047,6 +2047,7 @@ function collectPerformerVideoAppearances(performer, performerId, podcastsLookup
         yt_url: item.yt_url,
         source: podcast.series_title || "",
         format: podcast.format || "",
+        podcast_id: podcast.podcast_id,
       });
     });
   });

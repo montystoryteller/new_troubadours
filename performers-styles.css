@@ -86,6 +86,8 @@
     background: var(--theme-green-bg);
     color: var(--theme-green-dark);
     border: 1px solid var(--theme-green-border);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .performer-website a {
@@ -1475,6 +1477,8 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     background: var(--theme-green-bg);
     color: var(--theme-green-dark);
     border: 1px solid var(--theme-green-border);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* =============================================================

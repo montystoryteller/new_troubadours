@@ -1,6 +1,21 @@
 let podcastsLookup = {};
-let videoItems = []; // { performerId, performerName, title, videoId, embedUrl, source?, format? }
-let audioItems = []; // { performerId, performerName, episode_name, audio_url, episode_url, podcast_id?, podcast?, podcast_url? }
+let videoItems = []; // { performerId, performerName, title, videoId, embedUrl, source?, format?, podcast_id? }
+let audioItems = []; // { performerId, performerName, episode_name, audio_url, episode_url, podcast_id?, podcast?, podcast_url?, format? }
+
+// Format-filter state (see renderFormatFilterBar()) — populated once at
+// init() from whatever format values actually appear in the data (only
+// "telling"/"interview" exist at time of writing, but this stays correct
+// if more are added). "" (empty string) is its own bucket, "Other", for
+// items with no format set at all — most podcasts/videos don't have one.
+let allFormats = [];
+let activeFormats = new Set();
+
+// Series lock (see readSeriesLockFromUrl()) — set when the page is
+// opened with ?series=<podcast_id>, e.g. from a 🌍 WSC/TTTO badge on the
+// performers page. Restricts both Watch and Listen to that one series
+// (on top of, not instead of, the search box and format filter), with a
+// banner + clear link to drop back to the full page.
+let seriesLock = null;
 
 // collectPerformerAppearances()/collectPerformerVideoAppearances()/
 // resolvePodcastAppearanceMeta()/extractYoutubeId() are defined in
@@ -22,8 +37,6 @@ const videoThumbLoader = createLazyImageLoader({
   rootMargin: "250px 0px",
   errorMessage: "Thumbnail not available",
 });
-
-
 
 function groupByPerformer(items) {
   const groups = new Map(); // performerId -> { performerName, items: [] }
@@ -307,28 +320,127 @@ function renderListenSection(items, searchActive) {
 }
 
 // ── Search / filter ──────────────────────────────────────────────────
+
+// Builds the "All / None / Telling / Interview / Other" format chips and
+// inserts them right after the search bar. Fully self-styled (see
+// .format-chip in media-styles.css) rather than reusing the directory
+// page's .dir-filter-btn/.type-filter-btn/.active-teal classes — those
+// are defined in shared-styles.css, and whatever combination of rules
+// makes them render correctly there didn't carry over cleanly here (the
+// "active" state showed dark, barely-readable text on the green
+// background instead of white). A no-op if there's only one format (or
+// none) in the data — nothing to usefully filter by in that case.
+function renderFormatFilterBar() {
+  const existing = document.getElementById("formatFilterBar");
+  if (existing) existing.remove();
+  if (allFormats.length < 2) return;
+
+  const wrap = document.createElement("div");
+  wrap.id = "formatFilterBar";
+  wrap.className = "format-filter-bar";
+
+  const label = document.createElement("span");
+  label.className = "filter-bar-label";
+  label.textContent = "Format";
+  wrap.appendChild(label);
+
+  const allBtn = document.createElement("button");
+  allBtn.className = "format-chip format-chip-meta active";
+  allBtn.textContent = "All";
+  allBtn.onclick = () => {
+    allFormats.forEach((f) => activeFormats.add(f));
+    refreshFormatBtns();
+    applyFilter();
+  };
+  wrap.appendChild(allBtn);
+
+  const noneBtn = document.createElement("button");
+  noneBtn.className = "format-chip format-chip-meta";
+  noneBtn.textContent = "None";
+  noneBtn.onclick = () => {
+    activeFormats.clear();
+    refreshFormatBtns();
+    applyFilter();
+  };
+  wrap.appendChild(noneBtn);
+
+  const formatBtnEls = [];
+  allFormats.forEach((f) => {
+    const btn = document.createElement("button");
+    btn.className = "format-chip active";
+    btn.dataset.format = f;
+    btn.textContent = f ? capitalise(f) : "Other";
+    btn.onclick = () => {
+      if (activeFormats.has(f)) activeFormats.delete(f);
+      else activeFormats.add(f);
+      refreshFormatBtns();
+      applyFilter();
+    };
+    formatBtnEls.push(btn);
+    wrap.appendChild(btn);
+  });
+
+  function refreshFormatBtns() {
+    formatBtnEls.forEach((btn) =>
+      btn.classList.toggle("active", activeFormats.has(btn.dataset.format)),
+    );
+    allBtn.classList.toggle("active", activeFormats.size === allFormats.length);
+    noneBtn.classList.toggle("active", activeFormats.size === 0);
+  }
+
+  document.querySelector(".filter-bar").insertAdjacentElement("afterend", wrap);
+}
+
+// Reads ?series=<podcast_id> from the URL, validates it against the
+// loaded podcasts registry, and — if valid — renders a "Currently
+// showing: X" banner with a link back to the unscoped page. Called once
+// at init(); the podcast_id itself (not e.g. its series_title) is what's
+// matched against each item's own podcast_id below in applyFilter().
+function readSeriesLockFromUrl() {
+  const param = new URLSearchParams(window.location.search).get("series");
+  if (!param || !podcastsLookup[param]) return;
+  seriesLock = param;
+
+  const banner = document.createElement("div");
+  banner.className = "series-lock-banner";
+  const seriesName = podcastsLookup[param].series_title || param;
+  const label = document.createElement("span");
+  label.textContent = `Showing: ${seriesName}`;
+  banner.appendChild(label);
+  const clear = document.createElement("a");
+  clear.href = "new_troubadours_media.html";
+  clear.className = "series-lock-clear";
+  clear.textContent = "✕ Show everything";
+  banner.appendChild(clear);
+  document.querySelector(".filter-bar").insertAdjacentElement("afterend", banner);
+}
+
 function applyFilter() {
   const q = document.getElementById("mediaSearch").value.trim().toLowerCase();
   const matchesVideo = (v) =>
-    !q ||
-    v.performerName.toLowerCase().includes(q) ||
-    v.title.toLowerCase().includes(q);
+    (!q ||
+      v.performerName.toLowerCase().includes(q) ||
+      v.title.toLowerCase().includes(q)) &&
+    activeFormats.has(v.format || "") &&
+    (!seriesLock || v.podcast_id === seriesLock);
   const matchesAudio = (a) =>
-    !q ||
-    a.performerName.toLowerCase().includes(q) ||
-    a.episode_name.toLowerCase().includes(q);
+    (!q ||
+      a.performerName.toLowerCase().includes(q) ||
+      a.episode_name.toLowerCase().includes(q)) &&
+    activeFormats.has(a.format || "") &&
+    (!seriesLock || a.podcast_id === seriesLock);
 
   const filteredVideos = videoItems.filter(matchesVideo);
   const filteredAudio = audioItems.filter(matchesAudio);
 
-  // Auto-expand groups only when there's an active search — landing on
-  // the page with nothing typed keeps every performer collapsed (see
-  // makeMediaGroupDetails()), but once someone's deliberately searched
-  // for something, showing the matching group(s) already open saves an
-  // extra click on what they were just looking for.
-  const searchActive = q.length > 0;
-  renderWatchSection(filteredVideos, searchActive);
-  renderListenSection(filteredAudio, searchActive);
+  // Auto-expand groups when there's an active search OR a series lock —
+  // landing on the page with neither keeps every performer collapsed
+  // (see makeMediaGroupDetails()), but a deliberate search, or arriving
+  // via a series badge, is a strong enough signal to show the match(es)
+  // already open.
+  const revealActive = q.length > 0 || !!seriesLock;
+  renderWatchSection(filteredVideos, revealActive);
+  renderListenSection(filteredAudio, revealActive);
 
   const total = filteredVideos.length + filteredAudio.length;
   document.getElementById("resultCount").textContent = q
@@ -377,6 +489,7 @@ function applyFilter() {
         embedUrl,
         source: v.source || "",
         format: v.format || "",
+        podcast_id: v.podcast_id || "",
       });
     });
 
@@ -387,10 +500,21 @@ function applyFilter() {
           performerId,
           performerName: performer.name || performerId,
           ...a,
+          format: resolvePodcastAppearanceMeta(a, podcastsLookup).format || "",
         });
       },
     );
   });
+
+  // Format-filter setup — every distinct format value actually present
+  // in the data (see renderFormatFilterBar()), all active by default so
+  // nothing is hidden until the user actually narrows it down.
+  allFormats = [
+    ...new Set([...videoItems, ...audioItems].map((i) => i.format || "")),
+  ].sort();
+  activeFormats = new Set(allFormats);
+  renderFormatFilterBar();
+  readSeriesLockFromUrl();
 
   document.getElementById("loadingMsg").style.display = "none";
   applyFilter();

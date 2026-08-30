@@ -34,6 +34,82 @@
     white-space: nowrap;
 }
 
+/* Format filter chips — see renderFormatFilterBar() in media.js. Button
+   classes themselves (.dir-filter-btn/.type-filter-btn/.active-teal/
+   .active) are defined in shared-styles.css (loaded site-wide) and
+   reused as-is, matching the performer directory's type filter. */
+.format-filter-bar {
+    background: white;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Format chips — fully self-contained (not reusing shared-styles.css's
+   .dir-filter-btn/.type-filter-btn, whose "active" state didn't carry
+   over the white text here). Un-selected: plain outline. Selected
+   (.active): solid green fill, white text. */
+.format-chip {
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid #a5d6a7;
+    background: white;
+    color: #2e7d32;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.format-chip:hover {
+    background: #e8f5e9;
+}
+
+.format-chip.active {
+    background: #2e7d32;
+    border-color: #2e7d32;
+    color: white;
+}
+
+.format-chip.active:hover {
+    background: #276029;
+}
+
+.format-chip-meta {
+    font-style: italic;
+}
+
+/* Series-lock banner — shown when the page is opened with
+   ?series=<podcast_id> (see readSeriesLockFromUrl() in media.js), e.g.
+   from a 🌍 WSC/TTTO badge on the performers page. */
+.series-lock-banner {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: 13.5px;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.series-lock-clear {
+    font-weight: normal;
+    font-size: 12.5px;
+    color: #2e7d32;
+    text-decoration: underline;
+}
+
 /* ── Section chrome ──────────────────────────────────── */
 .media-section {
     margin-bottom: 34px;
