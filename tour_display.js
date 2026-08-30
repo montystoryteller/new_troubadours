@@ -592,10 +592,13 @@ function createTourDateElement(tourDate, tour, past = false) {
     createTourExpandable(div, "More Info", tourDate.description, "text");
   }
 
-  // --- Event Flyer Button (Only if it exists for this specific date) ---
-  if (tourDate.event_flyer) {
-    createTourExpandable(div, "Event Flyer", tourDate.event_flyer, "image");
-  }
+  // --- Event Flyer Button(s) — one per flyer if this date has more than one ---
+  const dateFlyers = getEventLevelFlyers(tourDate);
+  dateFlyers.forEach((f, i) => {
+    const label =
+      dateFlyers.length > 1 ? `Event Flyer ${i + 1}` : "Event Flyer";
+    createTourExpandable(div, label, f.filename, "image");
+  });
 
   return div;
 }
@@ -628,16 +631,21 @@ function renderTourFlyers(tour) {
     });
   });
   (tour.tour_dates || []).forEach((d) => {
-    if (!d.event_flyer?.trim()) return;
+    const dateFlyers = getEventLevelFlyers(d);
+    if (dateFlyers.length === 0) return;
     const date = parseDateString(d.date);
     const venue = d.venue_id && venuesLookup[d.venue_id];
-    const label = date
+    const dateLabel = date
       ? date.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) +
         (venue ? " · " + venue.name : "")
       : venue
         ? venue.name
         : "Event flyer";
-    flyers.push({ src: BASE_EVENT + sanitizeFlyerPath(d.event_flyer), label });
+    dateFlyers.forEach((f, i) => {
+      const label =
+        dateFlyers.length > 1 ? `${dateLabel} (${i + 1})` : dateLabel;
+      flyers.push({ src: BASE_EVENT + sanitizeFlyerPath(f.filename), label });
+    });
   });
 
   // Remove any existing gallery

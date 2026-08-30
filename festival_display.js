@@ -1023,15 +1023,19 @@ function displayFestival(festivalId) {
   // Performers
   renderFestivalPerformers(fest);
 
-  // Flyer
+  // Flyer(s) — getEventLevelFlyers() merges event_flyer/event_flyers
+  // (see shared_utils.js); render one image per flyer.
   const flyerEl = document.getElementById("festivalFlyer");
   flyerEl.innerHTML = "";
-  if (fest.event_flyer) {
-    const img = document.createElement("img");
-    img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(fest.event_flyer)}`;
-    img.alt = `${fest.name} flyer`;
-    img.className = "festival-flyer-img";
-    flyerEl.appendChild(img);
+  const festFlyers = getEventLevelFlyers(fest);
+  if (festFlyers.length > 0) {
+    festFlyers.forEach((f) => {
+      const img = document.createElement("img");
+      img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`;
+      img.alt = f.label ? `${fest.name} ${f.label.toLowerCase()}` : `${fest.name} flyer`;
+      img.className = "festival-flyer-img";
+      flyerEl.appendChild(img);
+    });
     flyerEl.style.display = "block";
   } else {
     flyerEl.style.display = "none";

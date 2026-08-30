@@ -685,8 +685,26 @@ function createEventData(baseEvent, date, eventType) {
     eventData.performer_ids = allPerformerIds;
 
     eventData.description = baseEvent.description || null;
-    eventData.event_flyer = baseEvent.event_flyer || null;
+    // getEventLevelFlyers() merges event_flyer/event_flyer2/event_flyers
+    // (see shared_utils.js) — works the same whether baseEvent is a raw
+    // specificEvent/musicEvent/poetryEvent or an already-merged tour/show
+    // date from buildTourMergedEvent()/buildShowMergedEvent() below, since
+    // both pass those same field names through.
+    const eventFlyers = getEventLevelFlyers(baseEvent);
+    eventData.event_flyer = eventFlyers[0]?.filename || null;
+    eventData.event_flyers = eventFlyers;
+    // tour_flyers is fully resolved (and may have more than one entry) by
+    // buildTourMergedEvent(), which has the actual tour record to call
+    // getTourLevelFlyers() on; a raw musicEvent/poetryEvent's rare direct
+    // tour_flyer field (this function has no tour record to resolve
+    // further here) just becomes a single-entry list, so callers can
+    // always read tour_flyers either way.
     eventData.tour_flyer = baseEvent.tour_flyer || null;
+    eventData.tour_flyers = Array.isArray(baseEvent.tour_flyers)
+      ? baseEvent.tour_flyers
+      : baseEvent.tour_flyer
+        ? [{ filename: baseEvent.tour_flyer, label: "Tour flyer" }]
+        : [];
     eventData.fb_event = baseEvent.fb_event || null;
     eventData.ticket_url = baseEvent.ticket_url || null;
     eventData.wider_event = baseEvent.wider_event || null;
@@ -723,6 +741,7 @@ function createEventData(baseEvent, date, eventType) {
  * @returns {object}
  */
 function buildTourMergedEvent(tour, tourKey, tourDate) {
+  const tourFlyers = getTourLevelFlyers(tour);
   return {
     name: tour.name,
     tour_id: tourKey,
@@ -737,7 +756,9 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
       tour.tour_description || null,
     ),
     event_flyer: tourDate.event_flyer || null,
-    tour_flyer: tour.tour_flyer || null,
+    event_flyers: tourDate.event_flyers || null,
+    tour_flyer: tourFlyers[0]?.filename || null,
+    tour_flyers: tourFlyers,
     video_trailer: tourDate.video_trailer || tour.video_trailer || null,
     fb_event: tourDate.fb_event || null,
     ticket_url: tourDate.ticket_url || null,
@@ -771,6 +792,7 @@ function buildShowMergedEvent(show, showKey, showDate) {
       show.description || null,
     ),
     event_flyer: showDate.event_flyer || null,
+    event_flyers: showDate.event_flyers || null,
     touring_event_flyer: show.touring_event_flyer || null,
     video_trailer: showDate.video_trailer || show.video_trailer || null,
     fb_event: showDate.fb_event || null,
@@ -879,6 +901,7 @@ function buildFestivalData(festKey, fest, venue, festStart, festEnd) {
     website: fest.website || null,
     description: fest.description || null,
     event_flyer: fest.event_flyer || null,
+    event_flyers: getEventLevelFlyers(fest),
     schedule_populated:
       Array.isArray(fest.schedule) && fest.schedule.length > 0,
     stage_count: Array.isArray(fest.stages) ? fest.stages.length : 0,
@@ -1830,14 +1853,16 @@ function getExpandableContent(event) {
 
   const flyers = [];
 
-  // event flyer
-  if (event.event_flyer && event.event_flyer.trim()) {
+  // event flyer(s) — event.event_flyers is the full de-duplicated list
+  // resolved by createEventData() via getEventLevelFlyers(); render every
+  // one, not just the first.
+  (event.event_flyers || []).forEach((f) => {
     flyers.push({
-      path: event.event_flyer,
+      path: f.filename,
       basePath: "./storyclub_assets/event_flyers/",
-      altSuffix: "event flyer",
+      altSuffix: f.label || "event flyer",
     });
-  }
+  });
 
   // club flyer(s) for this specific date — filenames in the club's flyers[]
   // list prefixed YYYY_MM_DD that match this occurrence's date. Shown ahead
@@ -1861,20 +1886,20 @@ function getExpandableContent(event) {
     });
   }
 
-  // Add tour flyer - check event first, then tour lookup
-  let tourFlyer = event.tour_flyer;
-  if (!tourFlyer && event.tour_id && toursLookup[event.tour_id]) {
-    tourFlyer = toursLookup[event.tour_id].tour_flyer;
+  // Tour flyer(s) - event.tour_flyers is the resolved list from
+  // createEventData()/buildTourMergedEvent(); fall back to a direct tour
+  // lookup for any caller that bypassed that path.
+  let tourFlyers = Array.isArray(event.tour_flyers) ? event.tour_flyers : [];
+  if (tourFlyers.length === 0 && event.tour_id && toursLookup[event.tour_id]) {
+    tourFlyers = getTourLevelFlyers(toursLookup[event.tour_id]);
   }
-
-  // tour flyer
-  if (tourFlyer && tourFlyer.trim()) {
+  tourFlyers.forEach((f) => {
     flyers.push({
-      path: tourFlyer,
+      path: f.filename,
       basePath: "./storyclub_assets/event_flyers/",
-      altSuffix: "tour flyer",
+      altSuffix: f.label || "tour flyer",
     });
-  }
+  });
 
   // Video trailer - check event first (already resolved from tour/show at
   // merge time), then fall back to a direct tour lookup for safety.

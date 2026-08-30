@@ -38,6 +38,25 @@
       "type": "string"
     },
 
+    "eventFlyersList": {
+      "type": "array",
+      "description": "Preferred way to give a single date/event MORE THAN ONE flyer (e.g. a reprint, or separate artwork supplied by different promoters). Coexists with that record's own `event_flyer` (and, for specificEvents only, the now-removed legacy `event_flyer2`) — all are merged, in order, by getEventLevelFlyers() in shared_utils.js, de-duplicated by filename. Each entry is either a plain filename string, or an object with an optional caption. Same shape as tour.touring_event_flyers, just at the individual date/event level rather than the whole-tour level.",
+      "items": {
+        "oneOf": [
+          { "type": "string", "description": "Just a filename — gets an auto-generated label (\"Event flyer\", or \"Event flyer 1\", \"Event flyer 2\"... if there's more than one across all fields)." },
+          {
+            "type": "object",
+            "properties": {
+              "flyer":   { "type": "string", "description": "Filename. Aliases: src, path, filename." },
+              "label":   { "type": "string", "description": "Optional caption shown under the thumbnail. Aliases: caption, title." }
+            },
+            "required": ["flyer"]
+          }
+        ]
+      },
+      "examples": [["flyer_v1.jpg", { "flyer": "flyer_reprint.jpg", "label": "Reprint" }]]
+    },
+
     "venue": {
       "description": "A venue record, keyed by a slug id (e.g. \"wardrobe-theatre-bristol\") in the top-level `venues` object.",
       "type": "object",
@@ -145,6 +164,7 @@
         "ticket_url":     { "type": "string" },
         "fb_event":       { "type": ["string", "integer"], "description": "Facebook event id, used to build a facebook.com/events/{id} link." },
         "event_flyer":    { "type": "string", "description": "Filename for a flyer specific to this individual date." },
+        "event_flyers":   { "$ref": "#/$defs/eventFlyersList" },
         "tour_flyer":     { "type": "string", "description": "Per-date override of the tour's headline flyer (rare — usually set at tour level instead)." },
         "video_trailer":  { "$ref": "#/$defs/youtubeUrl", "description": "Per-date override of the tour's video_trailer; falls back to the tour-level value if omitted." },
         "club_event":     { "type": "string", "description": "Opts this date into a club's own event listing — set to the matching club id from `events[].club`. Picked up by the story-club page alongside that club's regular nights." },
@@ -224,6 +244,7 @@
         "online":         { "type": "string", "description": "Attendance mode for this date.", "examples": ["hybrid", "online", "in-person"] },
         "fb_event":       { "type": ["string", "integer"] },
         "event_flyer":    { "type": "string", "description": "Flyer specific to this individual date." },
+        "event_flyers":   { "$ref": "#/$defs/eventFlyersList" },
         "video_trailer":  { "$ref": "#/$defs/youtubeUrl", "description": "Per-date override of the show's video_trailer." },
         "date_added":     { "type": "string", "description": "DD/MM/YYYY — when this date was added, used to surface it in the \"new events\" panel." },
         "isCancelled":    { "type": "boolean", "default": false },
@@ -267,7 +288,7 @@
         "price":            { "type": "string" },
         "description":      { "type": "string" },
         "event_flyer":      { "type": "string" },
-        "event_flyer2":     { "type": "string", "description": "A second flyer image, when supplied." },
+        "event_flyers":     { "$ref": "#/$defs/eventFlyersList" },
         "video_trailer":    { "$ref": "#/$defs/youtubeUrl" },
         "ticket_url":       { "type": "string" },
         "fb_event":         { "type": ["string", "integer"] },
@@ -314,6 +335,7 @@
         "price":          { "type": "string" },
         "description":    { "type": "string" },
         "event_flyer":    { "type": "string" },
+        "event_flyers":   { "$ref": "#/$defs/eventFlyersList" },
         "tour_flyer":     { "type": "string", "description": "Rare — used when a music event is also linked to a tour-level flyer." },
         "ticket_url":     { "type": "string" },
         "fb_event":       { "type": ["string", "integer"] },
@@ -338,6 +360,7 @@
         "price":          { "type": "string" },
         "description":    { "type": "string" },
         "event_flyer":    { "type": "string" },
+        "event_flyers":   { "$ref": "#/$defs/eventFlyersList" },
         "tour_flyer":     { "type": "string", "description": "Rare — used when a poetry event is also linked to a tour-level flyer." },
         "ticket_url":     { "type": "string" },
         "fb_event":       { "type": ["string", "integer"] },
@@ -407,6 +430,7 @@
         "facebook":          { "type": "string" },
         "description":       { "type": "string" },
         "event_flyer":       { "type": "string" },
+        "event_flyers":      { "$ref": "#/$defs/eventFlyersList" },
         "price":             { "type": "string" },
         "age_bands":         { "type": "array", "items": { "type": "string" } },
         "performers_tbc":    { "type": "boolean" },

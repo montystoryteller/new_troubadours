@@ -651,32 +651,35 @@ async function loadFlyers() {
   // its own card instead of being silently dropped by parseDate().
   for (const { dataKey, defaultType } of FLAT_EVENT_SOURCES) {
     for (const e of data[dataKey] || []) {
-      if (!e.event_flyer?.trim()) continue;
+      const eFlyers = getEventLevelFlyers(e);
+      if (eFlyers.length === 0) continue;
       const type = e.isMusic ? "music" : e.isPoetry ? "poetry" : defaultType;
       const clubRec = e.club
         ? (data.events || []).find((c) => c.club === e.club)
         : null;
       const dates = Array.isArray(e.date) ? e.date : [e.date];
       for (const dateStr of dates) {
-        push(
-          e.event_flyer,
-          "event",
-          dateStr,
-          type,
-          e.showname || e.name,
-          e.performer_id,
-          e.venue_id,
-          e.ticket_url,
-          {
-            clubId: e.club || "",
-            fbEvent: e.fb_event
-              ? `https://www.facebook.com/events/${e.fb_event}`
-              : "",
-            clubLink: clubRec?.link || "",
-            isCancelled: !!e.isCancelled,
-            isSoldOut: !!e.isSoldOut,
-          },
-        );
+        for (const f of eFlyers) {
+          push(
+            f.filename,
+            "event",
+            dateStr,
+            type,
+            e.showname || e.name,
+            e.performer_id,
+            e.venue_id,
+            e.ticket_url,
+            {
+              clubId: e.club || "",
+              fbEvent: e.fb_event
+                ? `https://www.facebook.com/events/${e.fb_event}`
+                : "",
+              clubLink: clubRec?.link || "",
+              isCancelled: !!e.isCancelled,
+              isSoldOut: !!e.isSoldOut,
+            },
+          );
+        }
       }
     }
   }
@@ -736,35 +739,38 @@ async function loadFlyers() {
       );
     });
 
-    // per-date event flyers — one card each for individual dates that have their own flyer
+    // per-date event flyers — one card each for individual dates that have
+    // their own flyer(s); getEventLevelFlyers() (shared_utils.js) merges
+    // event_flyer/event_flyer2/event_flyers, one card per flyer.
     for (const d of datesInWindow) {
-      if (!d.event_flyer?.trim()) continue;
-      push(
-        d.event_flyer,
-        "event",
-        d.date,
-        "tour",
-        tour.tour_name || tour.name,
-        tour.performer_id,
-        d.venue_id,
-        d.ticket_url,
-        {
-          ...tourExtra,
-          tourDateRange: null, // single-date card — no range label
-          tourDateCount: 1,
-          fbEvent: d.fb_event
-            ? `https://www.facebook.com/events/${d.fb_event}`
-            : "",
-          tonightSpotlight: resolveSpotlight(
-            d._dt.toDateString() === now.toDateString() ? d : null,
-          ),
-          tomorrowSpotlight: resolveSpotlight(
-            d._dt.toDateString() === tomorrow.toDateString() ? d : null,
-          ),
-          isCancelled: !!d.isCancelled,
-          isSoldOut: !!d.isSoldOut,
-        },
-      );
+      for (const f of getEventLevelFlyers(d)) {
+        push(
+          f.filename,
+          "event",
+          d.date,
+          "tour",
+          tour.tour_name || tour.name,
+          tour.performer_id,
+          d.venue_id,
+          d.ticket_url,
+          {
+            ...tourExtra,
+            tourDateRange: null, // single-date card — no range label
+            tourDateCount: 1,
+            fbEvent: d.fb_event
+              ? `https://www.facebook.com/events/${d.fb_event}`
+              : "",
+            tonightSpotlight: resolveSpotlight(
+              d._dt.toDateString() === now.toDateString() ? d : null,
+            ),
+            tomorrowSpotlight: resolveSpotlight(
+              d._dt.toDateString() === tomorrow.toDateString() ? d : null,
+            ),
+            isCancelled: !!d.isCancelled,
+            isSoldOut: !!d.isSoldOut,
+          },
+        );
+      }
     }
   }
 
@@ -801,44 +807,46 @@ async function loadFlyers() {
     }
 
     for (const sd of show.show_dates || []) {
-      const flyer = sd.event_flyer?.trim();
-      if (!flyer) continue;
+      const sdFlyers = getEventLevelFlyers(sd);
+      if (sdFlyers.length === 0) continue;
       const dates = Array.isArray(sd.date) ? sd.date : [sd.date];
       for (const dateStr of dates) {
-        push(
-          flyer,
-          "event",
-          dateStr,
-          "story",
-          show.showname || show.name,
-          show.performer_id,
-          sd.venue_id,
-          sd.ticket_url,
-          {},
-        );
+        for (const f of sdFlyers) {
+          push(
+            f.filename,
+            "event",
+            dateStr,
+            "story",
+            show.showname || show.name,
+            show.performer_id,
+            sd.venue_id,
+            sd.ticket_url,
+            {},
+          );
+        }
       }
     }
   }
 
   // festivals
   for (const [, fest] of Object.entries(data.festivals || {})) {
-    const flyer = fest.event_flyer?.trim();
-    if (!flyer) continue;
-    push(
-      flyer,
-      "event",
-      fest.start_date,
-      "festival",
-      fest.name,
-      null,
-      fest.venue_id,
-      fest.ticket_url,
-      {
-        festEnd: fest.end_date ? parseDate(fest.end_date) : null,
-        festWebsite: fest.website || "",
-        festFacebook: fest.facebook || "",
-      },
-    );
+    for (const f of getEventLevelFlyers(fest)) {
+      push(
+        f.filename,
+        "event",
+        fest.start_date,
+        "festival",
+        fest.name,
+        null,
+        fest.venue_id,
+        fest.ticket_url,
+        {
+          festEnd: fest.end_date ? parseDate(fest.end_date) : null,
+          festWebsite: fest.website || "",
+          festFacebook: fest.facebook || "",
+        },
+      );
+    }
   }
 
   // club generic flyers — shown for clubs that have no upcoming specific event flyers

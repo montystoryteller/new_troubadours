@@ -1283,25 +1283,26 @@ function extractFlyersForEntry(entry) {
     entry.type === "poetry"
   ) {
     const e = entry.data;
-    add(e.event_flyer);
-    add(e.event_flyer2);
+    getEventLevelFlyers(e).forEach((f) => add(f.filename));
     add(e.tour_flyer);
   } else if (entry.type === "tour") {
     const { tour, tourDate } = entry.data;
-    if (tourDate.event_flyer?.trim()) {
-      add(tourDate.event_flyer);
+    const dateFlyers = getEventLevelFlyers(tourDate);
+    if (dateFlyers.length > 0) {
+      dateFlyers.forEach((f) => add(f.filename));
     } else {
       getTourLevelFlyers(tour).forEach((f) => add(f.filename));
     }
   } else if (entry.type === "show") {
     const { ts, showDate } = entry.data;
-    if (showDate.event_flyer?.trim()) {
-      add(showDate.event_flyer);
+    const dateFlyers = getEventLevelFlyers(showDate);
+    if (dateFlyers.length > 0) {
+      dateFlyers.forEach((f) => add(f.filename));
     } else {
       add(ts.touring_event_flyer);
     }
   } else if (entry.type === "festival") {
-    add(entry.data.festival.event_flyer);
+    getEventLevelFlyers(entry.data.festival).forEach((f) => add(f.filename));
   }
   return out;
 }

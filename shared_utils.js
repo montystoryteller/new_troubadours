@@ -334,6 +334,70 @@ function getTourLevelFlyers(tour) {
   return out;
 }
 
+/**
+ * Resolve all per-date/per-event flyers for a single tourDate, showDate,
+ * specificEvent, musicEvent, poetryEvent, or festival record into one
+ * normalized, ordered, de-duplicated list — the same shape/approach as
+ * getTourLevelFlyers() above, but for an individual event/date rather
+ * than a whole tour. Three data shapes are supported and may all be
+ * present on the same record:
+ *   - `event_flyer` (primary): a single filename string.
+ *   - `event_flyer2` (legacy, specificEvents only — being phased out):
+ *     a second filename string, previously the only way to give an event
+ *     more than one flyer. Still read here for any old data that hasn't
+ *     been migrated yet, but new data should use `event_flyers` instead.
+ *   - `event_flyers` (current, plural): an array, where each entry is
+ *     either a plain filename string, or an object such as
+ *     `{ flyer: "poster.jpg", label: "Reprint" }` (also accepts
+ *     `src`/`path`/`filename` and `caption`/`title` as aliases for
+ *     `flyer`/`label`).
+ *
+ * Entries are ordered `event_flyer`, then `event_flyer2`, then the
+ * `event_flyers` list, and de-duplicated by filename.
+ *
+ * @param {object} eventOrDate
+ * @returns {{filename: string, label: string}[]}
+ */
+function getEventLevelFlyers(eventOrDate) {
+  const out = [];
+  const seen = new Set();
+
+  function add(filename, customLabel) {
+    const clean = (filename || "").trim();
+    if (!clean || seen.has(clean)) return;
+    seen.add(clean);
+    out.push({ filename: clean, label: customLabel || null });
+  }
+
+  if (eventOrDate?.event_flyer?.trim()) {
+    add(eventOrDate.event_flyer);
+  }
+
+  if (eventOrDate?.event_flyer2?.trim()) {
+    add(eventOrDate.event_flyer2);
+  }
+
+  if (Array.isArray(eventOrDate?.event_flyers)) {
+    eventOrDate.event_flyers.forEach((entry) => {
+      if (typeof entry === "string") {
+        add(entry);
+      } else if (entry && typeof entry === "object") {
+        const filename =
+          entry.flyer || entry.src || entry.path || entry.filename;
+        const label = entry.label || entry.caption || entry.title || null;
+        add(filename, label);
+      }
+    });
+  }
+
+  out.forEach((f, i) => {
+    if (!f.label)
+      f.label = out.length > 1 ? `Event flyer ${i + 1}` : "Event flyer";
+  });
+
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // DOM helpers
 // ---------------------------------------------------------------------------

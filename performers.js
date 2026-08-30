@@ -1071,41 +1071,46 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
 
   const today = getTodayMidnight();
 
-  // Tours — tour-level flyer first, then per-date flyers
+  // Tours — tour-level flyer(s) first, then per-date flyer(s).
+  // getTourLevelFlyers()/getEventLevelFlyers() (shared_utils.js) each
+  // resolve to a de-duplicated list; add() itself also dedupes by
+  // flyerName+dateStr, so looping every flyer here is safe even if the
+  // same filename somehow appears in both places.
   myTours.forEach(([, tour]) => {
-    if (tour.tour_flyer?.trim()) {
-      const dates = tour.tour_dates || [];
-      const first = dates[0] ? parseDateString(dates[0].date) : null;
-      const last = dates[dates.length - 1]
-        ? parseDateString(dates[dates.length - 1].date)
-        : null;
-      const range =
-        first && last && first.getTime() !== last.getTime()
-          ? `${formatShortDate(first)} – ${formatShortDate(last)}`
-          : first
-            ? formatShortDate(first)
-            : "";
-      const allPast = last && last < today;
+    const dates = tour.tour_dates || [];
+    const first = dates[0] ? parseDateString(dates[0].date) : null;
+    const last = dates[dates.length - 1]
+      ? parseDateString(dates[dates.length - 1].date)
+      : null;
+    const range =
+      first && last && first.getTime() !== last.getTime()
+        ? `${formatShortDate(first)} – ${formatShortDate(last)}`
+        : first
+          ? formatShortDate(first)
+          : "";
+    const allPast = last && last < today;
+    getTourLevelFlyers(tour).forEach((f) => {
       add(
-        tour.tour_flyer,
+        f.filename,
         tour.tour_name || tour.name,
         range,
         tour.isMusic,
         allPast,
         tour.isPoetry,
       );
-    }
+    });
     (tour.tour_dates || []).forEach((td) => {
-      if (!td.event_flyer?.trim()) return;
       const d = parseDateString(td.date);
-      add(
-        td.event_flyer,
-        tour.tour_name || tour.name,
-        d ? formatShortDate(d) : td.date || "",
-        tour.isMusic,
-        d && d < today,
-        tour.isPoetry,
-      );
+      getEventLevelFlyers(td).forEach((f) => {
+        add(
+          f.filename,
+          tour.tour_name || tour.name,
+          d ? formatShortDate(d) : td.date || "",
+          tour.isMusic,
+          d && d < today,
+          tour.isPoetry,
+        );
+      });
     });
   });
 
@@ -1116,31 +1121,33 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
       add(tsFlyer, ts.showname || ts.name, "", false, false, false);
     }
     (ts.show_dates || []).forEach((sd) => {
-      if (!sd.event_flyer?.trim()) return;
       const d = parseDateString(sd.date);
-      add(
-        sd.event_flyer,
-        ts.showname || ts.name,
-        d ? formatShortDate(d) : sd.date || "",
-        false,
-        d && d < today,
-        false,
-      );
+      getEventLevelFlyers(sd).forEach((f) => {
+        add(
+          f.filename,
+          ts.showname || ts.name,
+          d ? formatShortDate(d) : sd.date || "",
+          false,
+          d && d < today,
+          false,
+        );
+      });
     });
   });
 
   // Specific + music + poetry events
   allOther.forEach((e) => {
-    if (!e.event_flyer?.trim()) return;
     const d = parseDateString(e.date);
-    add(
-      e.event_flyer,
-      e.showname || e.name,
-      d ? formatShortDate(d) : e.date || "",
-      !!e.isMusic,
-      d && d < today,
-      !!e.isPoetry,
-    );
+    getEventLevelFlyers(e).forEach((f) => {
+      add(
+        f.filename,
+        e.showname || e.name,
+        d ? formatShortDate(d) : e.date || "",
+        !!e.isMusic,
+        d && d < today,
+        !!e.isPoetry,
+      );
+    });
   });
 
   if (items.length === 0) return;
@@ -2216,7 +2223,16 @@ function tourDateToEventRow(tour, td) {
     isPoetry: tour.isPoetry,
     isSpecial: tour.isSpecial,
     ticket_url: td.ticket_url,
-    event_flyer: td.event_flyer || tour.tour_flyer || null,
+    // First of this date's own flyer(s), falling back to the tour's —
+    // getEventLevelFlyers()/getTourLevelFlyers() (shared_utils.js) apply
+    // the full event_flyer/event_flyer2/event_flyers and
+    // tour_flyer/touring_event_flyer/touring_event_flyers precedence;
+    // renderEventRow() only shows one flyer button per row, so just the
+    // first is used here.
+    event_flyer:
+      getEventLevelFlyers(td)[0]?.filename ||
+      getTourLevelFlyers(tour)[0]?.filename ||
+      null,
   };
 }
 
@@ -2230,7 +2246,10 @@ function showDateToEventRow(show, sd) {
     performer_id: show.performer_id,
     isSpecial: show.isSpecial,
     ticket_url: sd.ticket_url,
-    event_flyer: sd.event_flyer || show.touring_event_flyer || null,
+    event_flyer:
+      getEventLevelFlyers(sd)[0]?.filename ||
+      show.touring_event_flyer ||
+      null,
   };
 }
 
@@ -2327,10 +2346,13 @@ function renderTourCard(container, tourId, tour) {
   const card = document.createElement("div");
   card.className = `tour-card${isMusic ? " tour-card-music" : ""}${isPoetry ? " tour-card-poetry" : ""}`;
 
-  // Flyer thumbnail (floated right)
-  if (tour.tour_flyer?.trim()) {
+  // Flyer thumbnail (floated right) — first of the tour's flyers, via
+  // getTourLevelFlyers() (shared_utils.js), which covers
+  // tour_flyer/touring_event_flyer/touring_event_flyers.
+  const tourCardFlyer = getTourLevelFlyers(tour)[0]?.filename;
+  if (tourCardFlyer) {
     card.appendChild(
-      makePerfFlyerThumb(tour.tour_flyer, tour.tour_name || tour.name),
+      makePerfFlyerThumb(tourCardFlyer, tour.tour_name || tour.name),
     );
   }
 
@@ -2499,11 +2521,12 @@ function renderTouringShowCard(container, tsId, ts) {
   const card = document.createElement("div");
   card.className = "tour-card repertoire-card";
 
-  // Flyer thumbnail from touring_event_flyer or first show_date event_flyer
+  // Flyer thumbnail from touring_event_flyer, or the first date's own
+  // flyer(s) via getEventLevelFlyers() (shared_utils.js).
   const tsFlyer =
     ts.touring_event_flyer ||
     ts.event_flyer ||
-    (dates.length > 0 && dates[0].event_flyer) ||
+    (dates.length > 0 && getEventLevelFlyers(dates[0])[0]?.filename) ||
     null;
   if (tsFlyer?.trim()) {
     card.appendChild(makePerfFlyerThumb(tsFlyer, ts.showname || ts.name));
