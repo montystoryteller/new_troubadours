@@ -773,6 +773,28 @@ select {
     color: #fff;
 }
 
+/* Small tag on the "overview" card for a repertoire show — see
+   repertoireShowAsTourShape()/buildCombinedToursLookup() in
+   tour_display.js. */
+.now-touring-repertoire-badge {
+    display: inline-block;
+    font-size: 0.68em;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 20px;
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+    vertical-align: middle;
+}
+
+.tour-page-subtitle {
+    font-weight: normal;
+    font-size: 1.05em;
+    color: #666;
+    margin-top: -8px;
+}
+
 /* Performer */
 .now-touring-performer {
     font-size: 0.85em;

@@ -2541,6 +2541,19 @@ function renderTouringShowCard(container, tsId, ts) {
     sortDescending: true,
   });
 
+  // View show link — the Touring Shows page (tour_display.js) treats a
+  // repertoire show as just another browsable item, under a synthetic id
+  // "rep:<showId>" (see repertoireShowAsTourShape() there) so it can't
+  // collide with a real tour id.
+  const footer = document.createElement("div");
+  footer.className = "tour-card-footer";
+  const viewLink = document.createElement("a");
+  viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`;
+  viewLink.className = "tour-view-link";
+  viewLink.textContent = "View full show →";
+  footer.appendChild(viewLink);
+  card.appendChild(footer);
+
   container.appendChild(card);
 }
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tour Details - New Troubadours</title>
+    <title>Touring Shows - New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
@@ -27,7 +27,7 @@
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
         <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
-        <a href="new_troubadours_tour_guide.html" aria-current="page">🎭 Tours</a>
+        <a href="new_troubadours_tour_guide.html" aria-current="page">🎭 Touring Shows</a>
         <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
         <a href="new_troubadours_performers.html">🎤 Performers</a>
         <a href="new_troubadours_venues.html">📍 Venues</a>
@@ -37,7 +37,8 @@
         <a href="new_troubadours_stats.html">📊 Stats</a>
     </nav>
 
-    <h1>The New Troubadours — Storytelling, Music and Punk Poet Tour Details</h1>
+    <h1>The New Troubadours — Touring Shows</h1>
+    <h2 class="tour-page-subtitle">Storytelling, music, and punk-poet shows on tour or in ongoing repertoire</h2>
 
     <div id="pastToursPanel">
         <details class="past-tours-details">
@@ -87,12 +88,12 @@
                 <option value="">Select a performer...</option>
             </select>
 
-            <label for="tourSelect">Tour:</label>
+            <label for="tourSelect">Touring show:</label>
             <select id="tourSelect" onchange="handleTourChange()">
-                <option value="">Select a tour...</option>
+                <option value="">Select a touring show...</option>
             </select>
 
-            <button onclick="loadTour()" class="btn-primary">Show Tour</button>
+            <button onclick="loadTour()" class="btn-primary">Show</button>
         </div>
 
         <div class="share-container">

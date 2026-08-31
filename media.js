@@ -109,19 +109,82 @@ function makeMediaGroupDetails(group, noun, buildBody, defaultOpen) {
 }
 
 // ── Watch (video) rendering ──────────────────────────────────────────
-function closeAllVideoCards(exceptCard) {
-  document.querySelectorAll(".video-card.open").forEach((card) => {
-    if (card === exceptCard) return;
-    card.classList.remove("open");
-    const frame = card.querySelector("iframe");
-    if (frame) frame.src = "";
-  });
+
+// One shared "now playing" panel per page, rather than each thumbnail
+// morphing into its own (non-autoplaying) iframe in place — that required
+// a confusing second click inside the embed itself to actually start
+// playback, and stayed constrained to the thumbnail grid's narrow column
+// width. Clicking any thumbnail now just points this one big panel at
+// that video (with autoplay=1, since the click is a direct user gesture)
+// and scrolls it into view; clicking another thumbnail re-targets it.
+function getNowPlayingPanel() {
+  let panel = document.getElementById("nowPlayingPanel");
+  if (panel) return panel;
+
+  panel = document.createElement("div");
+  panel.id = "nowPlayingPanel";
+  panel.className = "now-playing-panel";
+  panel.style.display = "none";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "now-playing-close";
+  closeBtn.setAttribute("aria-label", "Close video");
+  closeBtn.textContent = "✕";
+  closeBtn.addEventListener("click", closeNowPlaying);
+  panel.appendChild(closeBtn);
+
+  const frameWrap = document.createElement("div");
+  frameWrap.className = "now-playing-frame-wrap";
+  const iframe = document.createElement("iframe");
+  iframe.className = "now-playing-iframe";
+  iframe.frameBorder = "0";
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.allowFullscreen = true;
+  frameWrap.appendChild(iframe);
+  panel.appendChild(frameWrap);
+
+  const title = document.createElement("div");
+  title.className = "now-playing-title";
+  panel.appendChild(title);
+
+  document.getElementById("watchGroups").insertAdjacentElement(
+    "beforebegin",
+    panel,
+  );
+  return panel;
+}
+
+function closeNowPlaying() {
+  const panel = document.getElementById("nowPlayingPanel");
+  if (!panel) return;
+  panel.style.display = "none";
+  panel.querySelector("iframe").src = "";
+  document
+    .querySelectorAll(".video-card-thumb.playing")
+    .forEach((el) => el.classList.remove("playing"));
+}
+
+function playVideoInPanel(item, thumbBtn) {
+  const panel = getNowPlayingPanel();
+  document
+    .querySelectorAll(".video-card-thumb.playing")
+    .forEach((el) => el.classList.remove("playing"));
+  thumbBtn.classList.add("playing");
+  panel.querySelector("iframe").src = `${item.embedUrl}?autoplay=1`;
+  panel.querySelector(".now-playing-title").textContent = item.title;
+  panel.style.display = "";
+  panel.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function makeVideoCard(item) {
   const card = document.createElement("div");
   card.className = "video-card";
 
+  // Plain clickable thumbnail — no per-card play/iframe state; clicking
+  // always targets the one shared now-playing panel (see above).
   const thumbBtn = document.createElement("button");
   thumbBtn.className = "video-card-thumb";
   thumbBtn.setAttribute("aria-label", `Play video: ${item.title}`);
@@ -135,28 +198,7 @@ function makeVideoCard(item) {
   thumbBtn.appendChild(thumbImg);
   videoThumbLoader.observe(thumbImg);
 
-  const playIcon = document.createElement("span");
-  playIcon.className = "video-card-play";
-  playIcon.textContent = "▶";
-  thumbBtn.appendChild(playIcon);
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "video-card-frame-wrap";
-  const iframe = document.createElement("iframe");
-  iframe.title = item.title;
-  iframe.frameBorder = "0";
-  iframe.allow =
-    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-  iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.allowFullscreen = true;
-  wrapper.appendChild(iframe);
-
-  thumbBtn.addEventListener("click", () => {
-    const isOpen = card.classList.contains("open");
-    closeAllVideoCards(card);
-    card.classList.toggle("open", !isOpen);
-    iframe.src = isOpen ? "" : item.embedUrl;
-  });
+  thumbBtn.addEventListener("click", () => playVideoInPanel(item, thumbBtn));
 
   const caption = document.createElement("div");
   caption.className = "video-card-caption";
@@ -189,7 +231,6 @@ function makeVideoCard(item) {
   }
 
   card.appendChild(thumbBtn);
-  card.appendChild(wrapper);
   card.appendChild(caption);
   return card;
 }

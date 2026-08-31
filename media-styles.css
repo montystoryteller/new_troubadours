@@ -245,44 +245,74 @@ details.media-group-details[open] > .media-group-summary::before {
     opacity: 1;
 }
 
-.video-card.open .video-card-thumb {
-    display: none;
+/* Highlight whichever thumbnail is currently loaded into the shared
+   now-playing panel below (see playVideoInPanel() in media.js). */
+.video-card-thumb.playing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 3px solid #2e7d32;
+    box-sizing: border-box;
+    pointer-events: none;
 }
 
-.video-card-play {
+/* ── Shared "now playing" panel — one per page, not one per thumbnail.
+   Clicking any thumbnail (in any performer group) points this at that
+   video and scrolls it into view; a real, fixed-size, always-legible
+   player rather than a thumbnail card awkwardly stretching in place. See
+   getNowPlayingPanel()/playVideoInPanel() in media.js. ────────────────── */
+.now-playing-panel {
+    position: relative;
+    background: #111;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    max-width: 800px;
+    margin: 0 auto 24px;
+    overflow: hidden;
+}
+
+.now-playing-close {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 44px;
-    height: 44px;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    background: rgba(0, 0, 0, 0.65);
     color: white;
-    font-size: 16px;
+    font-size: 15px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.video-card-frame-wrap {
+.now-playing-close:hover {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.now-playing-frame-wrap {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    display: none;
 }
 
-.video-card.open .video-card-frame-wrap {
-    display: block;
-}
-
-.video-card-frame-wrap iframe {
+.now-playing-iframe {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     border: 0;
+}
+
+.now-playing-title {
+    padding: 10px 14px;
+    color: white;
+    font-size: 0.95em;
+    font-weight: 600;
 }
 
 .video-card-caption {

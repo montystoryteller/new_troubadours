@@ -3,8 +3,132 @@ let markers = [];
 let eventsData = null;
 let venuesLookup = {};
 let performersLookup = {};
-let toursLookup = {};
+let toursLookup = {}; // combined: real tours + synthetic "rep:<id>" entries for repertoire shows — see buildCombinedToursLookup()
+let repertoireShowsLookup = {};
 let currentTour = null; // Store current tour for map filtering
+
+// ---------------------------------------------------------------------------
+// "Touring Shows" merge — a repertoire show (top-level `repertoire_shows`)
+// is treated as just another browsable item on this page, alongside real
+// tours. Rather than duplicating every function below into a parallel
+// "repertoire" version, each repertoire show is adapted into the same
+// tour-shaped object (repertoireShowAsTourShape()) and merged into
+// toursLookup under a synthetic id prefixed "rep:" (so it can never
+// collide with a real tour id). Everything else in this file — dropdowns,
+// the Now Touring/Upcoming/Past panels, the map, the dates list, flyer
+// galleries — reads that combined toursLookup and never needs to know
+// which kind of record it's actually looking at.
+//
+// buildCombinedToursLookup() returns a shallow copy, so this never mutates
+// the shared eventsData.tours object other pages/reloads rely on.
+// ---------------------------------------------------------------------------
+
+const REPERTOIRE_ID_PREFIX = "rep:";
+
+function repertoireShowAsTourShape(showId, show) {
+  return {
+    __repertoireShowId: showId,
+    tour_name: show.name,
+    name: show.showname || show.name,
+    showname: show.showname || show.name,
+    tour_description: show.description || "",
+    tour_dates: show.show_dates || [],
+    tour_flyer: show.touring_event_flyer || "",
+    touring_event_flyer: show.touring_event_flyer || "",
+    video_trailer: show.video_trailer || "",
+    performer_id: show.performer_id || null,
+    performer_ids: Array.isArray(show.performer_ids) ? show.performer_ids : [],
+    isSpecial: !!show.isSpecial,
+    isMusic: false,
+    isPoetry: false,
+    repertoire_id: null,
+  };
+}
+
+function buildCombinedToursLookup(realTours, repertoireShows) {
+  const combined = { ...(realTours || {}) };
+  Object.entries(repertoireShows || {}).forEach(([showId, show]) => {
+    combined[REPERTOIRE_ID_PREFIX + showId] = repertoireShowAsTourShape(
+      showId,
+      show,
+    );
+  });
+  return combined;
+}
+
+/**
+ * Builds the grouped dropdown entries for one performer: each repertoire
+ * show they're in (with any tours that repertoire_id-link to it nested
+ * right after, as "↳ Tour Name"), followed by an "Other Tours" group for
+ * anything left over. Repertoire shows are listed first — see the
+ * "Touring Shows" merge note above: a repertoire show represents the
+ * more polished, established form of a show, so it leads.
+ * @param {string} performerId
+ * @returns {{groupLabel: string|null, items: {id: string, label: string}[]}[]}
+ */
+function buildTourDropdownGroups(performerId) {
+  const troupeRecord = performersLookup[performerId];
+  const aliasIds = new Set([performerId, ...(troupeRecord?.aliases || [])]);
+  const showMatches = (show) =>
+    aliasIds.has(show.performer_id) ||
+    (Array.isArray(show.performer_ids) &&
+      show.performer_ids.some((id) => aliasIds.has(id)));
+
+  const myShowIds = Object.entries(repertoireShowsLookup)
+    .filter(([, show]) => showMatches(show))
+    .map(([id]) => id)
+    .sort((a, b) => {
+      const na = repertoireShowsLookup[a].showname || repertoireShowsLookup[a].name;
+      const nb = repertoireShowsLookup[b].showname || repertoireShowsLookup[b].name;
+      return na.localeCompare(nb);
+    });
+
+  const usedTourIds = new Set();
+  const groups = [];
+
+  myShowIds.forEach((showId) => {
+    const show = repertoireShowsLookup[showId];
+    const items = [
+      {
+        id: REPERTOIRE_ID_PREFIX + showId,
+        label: `${show.showname || show.name} — overview`,
+      },
+    ];
+    Object.entries(toursLookup)
+      .filter(
+        ([, t]) => t.repertoire_id === showId && aliasIds.has(t.performer_id),
+      )
+      .sort((a, b) =>
+        (a[1].tour_name || a[1].name).localeCompare(b[1].tour_name || b[1].name),
+      )
+      .forEach(([tourId, t]) => {
+        usedTourIds.add(tourId);
+        items.push({ id: tourId, label: `↳ ${t.tour_name || t.name}` });
+      });
+    groups.push({ groupLabel: `🔁 ${show.showname || show.name}`, items });
+  });
+
+  const orphanItems = Object.entries(toursLookup)
+    .filter(
+      ([id, t]) =>
+        !t.__repertoireShowId &&
+        !usedTourIds.has(id) &&
+        aliasIds.has(t.performer_id),
+    )
+    .sort((a, b) =>
+      (a[1].tour_name || a[1].name).localeCompare(b[1].tour_name || b[1].name),
+    )
+    .map(([id, t]) => ({ id, label: t.tour_name || t.name }));
+
+  if (orphanItems.length > 0) {
+    groups.push({
+      groupLabel: groups.length > 0 ? "Other Tours" : null,
+      items: orphanItems,
+    });
+  }
+
+  return groups;
+}
 
 // UK_IRELAND_BOUNDS, ICON_SVG — defined in shared_utils.js
 
@@ -81,7 +205,7 @@ function shareTourLink() {
   const performerId = performerSelect.value;
 
   if (!tourId) {
-    alert("Please select a tour first");
+    alert("Please select a touring show first");
     return;
   }
 
@@ -143,7 +267,7 @@ function handlePerformerChange() {
   const tourSelect = document.getElementById("tourSelect");
 
   // Clear tour dropdown
-  tourSelect.innerHTML = '<option value="">Select a tour...</option>';
+  tourSelect.innerHTML = '<option value="">Select a touring show...</option>';
 
   if (!performerId) {
     // Optional: Clear the map/content if no performer is selected
@@ -151,31 +275,36 @@ function handlePerformerChange() {
     return;
   }
 
-  // Find tours for this performer (including any troupe config aliases)
-  const troupeRecord = performersLookup[performerId];
-  const aliasIds = new Set([performerId, ...(troupeRecord?.aliases || [])]);
-  const performerTours = Object.entries(toursLookup)
-    .filter(([_, tour]) => aliasIds.has(tour.performer_id))
-    .map(([id, tour]) => ({ id, name: tour.tour_name || tour.name }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const groups = buildTourDropdownGroups(performerId);
+  const allIds = [];
 
-  performerTours.forEach((tour) => {
-    const option = document.createElement("option");
-    option.value = tour.id;
-    option.textContent = tour.name;
-    tourSelect.appendChild(option);
+  groups.forEach(({ groupLabel, items }) => {
+    let container = tourSelect;
+    if (groupLabel) {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = groupLabel;
+      tourSelect.appendChild(optgroup);
+      container = optgroup;
+    }
+    items.forEach(({ id, label }) => {
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = label;
+      container.appendChild(option);
+      allIds.push(id);
+    });
   });
 
-  // If there are tours available, handle the display logic
-  if (performerTours.length === 1) {
-    // If only one tour, select and display it automatically
-    const soleTourId = performerTours[0].id;
-    tourSelect.value = soleTourId;
-    displayTour(soleTourId);
-    updateURL(soleTourId);
-  } else if (performerTours.length > 1) {
-    // Optional: If there are multiple tours, you might want to clear
-    // the previous tour's view until they pick one from the new list
+  // If there's exactly one selectable thing, handle the display logic
+  if (allIds.length === 1) {
+    // If only one, select and display it automatically
+    const soleId = allIds[0];
+    tourSelect.value = soleId;
+    displayTour(soleId);
+    updateURL(soleId);
+  } else if (allIds.length > 1) {
+    // Optional: If there are multiple, you might want to clear
+    // the previous view until they pick one from the new list
     document.getElementById("tourContent").style.display = "none";
     markers = clearMarkers(map, markers);
   }
@@ -216,7 +345,7 @@ function updateURL(tourId) {
 function loadTour() {
   const tourId = document.getElementById("tourSelect").value;
   if (!tourId) {
-    alert("Please select a tour");
+    alert("Please select a touring show");
     return;
   }
 
@@ -1046,6 +1175,13 @@ function buildTouringCard(tourId, tour, allDates, badgeText) {
   const showName = document.createElement("div");
   showName.className = "now-touring-show-name";
   showName.textContent = tour.showname || tour.name;
+  if (tour.__repertoireShowId) {
+    const repBadge = document.createElement("span");
+    repBadge.className = "now-touring-repertoire-badge";
+    repBadge.textContent = "🔁 Repertoire";
+    showName.appendChild(document.createTextNode(" "));
+    showName.appendChild(repBadge);
+  }
   card.appendChild(showName);
 
   if (performer) {
@@ -1279,7 +1415,8 @@ function refreshEventsData() {
   }
 
   eventsData = result.eventsData;
-  toursLookup = result.toursLookup;
+  repertoireShowsLookup = eventsData.repertoire_shows || {};
+  toursLookup = buildCombinedToursLookup(result.toursLookup, repertoireShowsLookup);
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
 

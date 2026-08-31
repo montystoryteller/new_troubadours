@@ -10,8 +10,11 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <!-- Non-blocking load — see event_guide.html for the full explanation. -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" as="style" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" media="print" onload="this.media='all'; this.onload=null;">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" media="print"
+        onload="this.media='all'; this.onload=null;">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    </noscript>
     <link rel="stylesheet" href="event_builder-styles.css">
 </head>
 
@@ -20,7 +23,7 @@
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
         <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
-        <a href="new_troubadours_tour_guide.html">🎭 Tours</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Touring Shows</a>
         <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
         <a href="new_troubadours_performers.html">🎤 Performers</a>
         <a href="new_troubadours_venues.html">📍 Venues</a>
@@ -344,7 +347,8 @@
             <div class="field-row">
                 <label>Aliases</label>
                 <div>
-                    <input type="text" id="perf-aliases" placeholder="comma-separated performer ids, e.g. old-slug, combined-billing-id">
+                    <input type="text" id="perf-aliases"
+                        placeholder="comma-separated performer ids, e.g. old-slug, combined-billing-id">
                     <div class="field-hint">Other ids this performer is sometimes tagged under in tour/event records —
                         e.g. a legacy slug, or a combined-billing id from before they went solo. Anything matched
                         against an alias is treated as this performer everywhere on the site (search, filters,
@@ -354,7 +358,8 @@
 
             <div class="field-row">
                 <label>Facebook page</label>
-                <input type="url" id="perf-facebook-group" placeholder="(optional) facebook group/page, if different from the personal profile above">
+                <input type="url" id="perf-facebook-group"
+                    placeholder="(optional) facebook group/page, if different from the personal profile above">
             </div>
 
             <div class="field-row">
