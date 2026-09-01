@@ -2549,7 +2549,7 @@
       ],
       "performer_id": "attila-the-stockbroker",
       "tour_description": "Autumn 2026 tour to celebrate his 10th book of poems, \"Fiery Words for Hellish Times\".",
-      "touring_event_flyer": "tour_attilia_autumn_2026.jpeg",
+      "touring_event_flyers": ["tour_attilia_autumn_2026.jpeg", "tour_attila_scotland_autumn_2026.jpg"],
       "isSpecial": true
     },
     "debs-newbold-dauntless-2026": {
