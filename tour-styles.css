@@ -782,9 +782,9 @@ select {
     font-weight: 600;
     padding: 1px 7px;
     border-radius: 20px;
-    background: #fff3e0;
-    color: #e65100;
-    border: 1px solid #ffcc80;
+    background: #ede7f6;
+    color: #5e4b8b;
+    border: 1px solid #c9b8e8;
     vertical-align: middle;
 }
 
@@ -923,6 +923,40 @@ select {
 
 .now-touring-details {
     border-top: 4px solid #6d4c2a;
+}
+
+.repertoire-browse-details {
+    border-top: 4px solid #5e4b8b;
+}
+
+.repertoire-browse-details .upcoming-tours-summary-label {
+    color: #5e4b8b;
+}
+
+.repertoire-browse-details .upcoming-tours-summary:hover {
+    background: #f8f6fc;
+}
+
+.repertoire-browse-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid #eee;
+    cursor: pointer;
+}
+
+.repertoire-browse-row:first-child {
+    border-top: none;
+}
+
+.repertoire-browse-row:hover .now-touring-show-name {
+    text-decoration: underline;
+}
+
+.repertoire-browse-row-body {
+    min-width: 0;
+    flex: 1;
 }
 
 .now-touring-details .upcoming-tours-summary-label {

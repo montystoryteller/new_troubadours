@@ -262,6 +262,118 @@ function populatePerformerDropdown() {
   });
 }
 
+/**
+ * Builds one clickable row for the "Browse Repertoire Shows" collapsible
+ * — reuses the same click-through behaviour as buildTouringCard() in the
+ * Now Touring/Upcoming/Previous panels (fill in Performer + Touring show
+ * to match, then display), but as a plain row rather than a full card,
+ * and tolerant of a show having zero dates of its own (e.g. Troubled
+ * Waters, whose dates all come via linked tours) — buildTouringCard()
+ * assumes a non-empty date range, which doesn't hold here.
+ */
+function buildRepertoireBrowseRow(repId, tour) {
+  const { record: performer } = resolvePerformerDisplay(
+    tour.performer_id,
+    performersLookup,
+  );
+
+  const dates = expandTourDates(tour.tour_dates || [])
+    .map((d) => parseDateString(d.date))
+    .filter(Boolean)
+    .sort((a, b) => a - b);
+
+  const row = document.createElement("div");
+  row.className = "repertoire-browse-row";
+
+  const flyers = getTourLevelFlyers(tour);
+  if (flyers.length > 0) {
+    const thumb = document.createElement("div");
+    thumb.className = "now-touring-flyer-thumb";
+    const img = document.createElement("img");
+    img.dataset.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(flyers[0].filename)}`;
+    img.alt = `${tour.showname || tour.name} flyer`;
+    img.addEventListener("load", () => img.classList.add("loaded"));
+    flyerImgLoader.observe(img);
+    thumb.appendChild(img);
+    row.appendChild(thumb);
+  }
+
+  const body = document.createElement("div");
+  body.className = "repertoire-browse-row-body";
+
+  const name = document.createElement("div");
+  name.className = "now-touring-show-name";
+  name.textContent = tour.showname || tour.name;
+  body.appendChild(name);
+
+  if (performer) {
+    const perfName = document.createElement("div");
+    perfName.className = "now-touring-performer";
+    perfName.textContent = performer.name;
+    body.appendChild(perfName);
+  }
+
+  const stat = document.createElement("div");
+  stat.className = "now-touring-dates";
+  stat.textContent =
+    dates.length === 0
+      ? "See linked tours for dates"
+      : dates.length === 1
+        ? fmtShort(dates[0])
+        : `${fmtShort(dates[0])} → ${fmtShort(dates[dates.length - 1])}`;
+  body.appendChild(stat);
+
+  row.appendChild(body);
+
+  row.addEventListener("click", () => {
+    const { id: resolvedPerformerId } = resolvePerformerDisplay(
+      tour.performer_id,
+      performersLookup,
+    );
+    document.getElementById("performerSelect").value = resolvedPerformerId;
+    handlePerformerChange();
+    document.getElementById("tourSelect").value = repId;
+    displayTour(repId);
+    updateURL(repId);
+    document
+      .getElementById("tourContent")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  return row;
+}
+
+/**
+ * Populates the "Browse Repertoire Shows" collapsible — every repertoire
+ * show, flat, regardless of whether any tour links to it (a
+ * complementary entry point to the main Performer → Touring show flow
+ * below, for when you know the show but not which performer to look
+ * under first).
+ */
+function renderRepertoireBrowseList() {
+  const body = document.getElementById("repertoireBrowseBody");
+  if (!body) return;
+  body.innerHTML = "";
+
+  const entries = Object.entries(toursLookup)
+    .filter(([, t]) => t.__repertoireShowId)
+    .sort((a, b) =>
+      (a[1].showname || a[1].name).localeCompare(b[1].showname || b[1].name),
+    );
+
+  const label = document.getElementById("repertoireBrowseSummaryLabel");
+  if (label) label.textContent = `🔁 Browse Repertoire Shows (${entries.length})`;
+
+  if (entries.length === 0) {
+    body.innerHTML = '<p class="loading-state">No repertoire shows yet.</p>';
+    return;
+  }
+
+  entries.forEach(([repId, tour]) =>
+    body.appendChild(buildRepertoireBrowseRow(repId, tour)),
+  );
+}
+
 function handlePerformerChange() {
   const performerId = document.getElementById("performerSelect").value;
   const tourSelect = document.getElementById("tourSelect");
@@ -1437,6 +1549,7 @@ function refreshEventsData() {
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     populatePerformerDropdown();
+    renderRepertoireBrowseList();
     console.log("Performer dropdown populated");
 
     renderNowTouringPanel();
