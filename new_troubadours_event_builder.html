@@ -169,6 +169,11 @@
             </div>
 
             <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="ev-facebook" placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
+            </div>
+
+            <div class="field-row">
                 <label>Flags</label>
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="ev-special" checked> Special event</label>
@@ -1432,11 +1437,13 @@
             document.getElementById("tour-flyer-rows").appendChild(flyerRowTemplate());
         }
 
-        // Returns { touring_event_flyer, touring_event_flyers } — the singular
+        // Returns { [singularKey]: ... } or { [pluralKey]: [...] } — the singular
         // field is used for the common one-flyer-no-caption case (keeps output
         // clean/backward-compatible); the plural array is used as soon as
-        // there's more than one flyer, or any flyer has a caption.
-        function readFlyerRows(container) {
+        // there's more than one flyer, or any flyer has a caption. Reused for
+        // both tour-level flyers (touring_event_flyer/touring_event_flyers) and
+        // per-date flyers (event_flyer/event_flyers).
+        function readFlyerRows(container, singularKey = "touring_event_flyer", pluralKey = "touring_event_flyers") {
             const rows = Array.from(container.querySelectorAll(".date-row"))
                 .map(row => ({
                     flyer: row.querySelector(".fr-filename").value.trim(),
@@ -1446,10 +1453,10 @@
 
             if (rows.length === 0) return {};
             if (rows.length === 1 && !rows[0].label) {
-                return { touring_event_flyer: rows[0].flyer };
+                return { [singularKey]: rows[0].flyer };
             }
             return {
-                touring_event_flyers: rows.map(r => r.label ? { flyer: r.flyer, label: r.label } : r.flyer),
+                [pluralKey]: rows.map(r => r.label ? { flyer: r.flyer, label: r.label } : r.flyer),
             };
         }
 
@@ -1504,6 +1511,14 @@
                 <div class="field-row">
                     <label>Club event</label>
                     <input type="text" class="dr-club-event" list="clubOptions" placeholder="(optional) link this date into a club's event list">
+                </div>
+                <div class="field-row">
+                    <label>Event flyer(s)</label>
+                    <div>
+                        <div class="date-rows dr-flyer-rows"></div>
+                        <button type="button" class="add-date-btn dr-add-flyer" style="margin-top:6px;">Add another flyer</button>
+                        <div class="field-hint">Flyer(s) for this date only (as opposed to the tour's headline flyer above). One flyer saves as event_flyer; add more, or give one a caption, to save as event_flyers.</div>
+                    </div>
                 </div>` : `
                 <div class="field-row">
                     <label>Club</label>
@@ -1539,6 +1554,15 @@
             const venueField = buildEntityField(grid.querySelector(".dr-venue-field"), "venue");
             row._venueField = venueField;
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
+
+            if (kind === "tour") {
+                const flyerRowsContainer = grid.querySelector(".dr-flyer-rows");
+                flyerRowsContainer.appendChild(flyerRowTemplate());
+                grid.querySelector(".dr-add-flyer").addEventListener("click", () => {
+                    flyerRowsContainer.appendChild(flyerRowTemplate());
+                });
+                row._flyerRowsContainer = flyerRowsContainer;
+            }
             return row;
         }
 
@@ -1572,6 +1596,9 @@
                     const clubEvent = row.querySelector(".dr-club-event").value.trim();
                     if (clubEvent) entry.club_event = clubEvent;
                     entry.isSpecial = row.querySelector(".dr-special").checked;
+                    const flyerFields = readFlyerRows(row._flyerRowsContainer, "event_flyer", "event_flyers");
+                    if (flyerFields.event_flyer) entry.event_flyer = flyerFields.event_flyer;
+                    if (flyerFields.event_flyers) entry.event_flyers = flyerFields.event_flyers;
                 } else {
                     const club = row.querySelector(".dr-club").value.trim();
                     const online = row.querySelector(".dr-online").value;
@@ -1635,6 +1662,7 @@
             const video = document.getElementById("ev-video").value.trim();
             const ticketUrl = document.getElementById("ev-ticket-url").value.trim();
             const fbEvent = document.getElementById("ev-fb-event").value.trim();
+            const facebook = document.getElementById("ev-facebook").value.trim();
             const dateAdded = document.getElementById("ev-date-added").value.trim();
             if (dateAdded) record.date_added = dateAdded;
             if (time) record.time = time;
@@ -1647,6 +1675,7 @@
             if (video) record.video_trailer = video;
             if (ticketUrl) record.ticket_url = ticketUrl;
             if (fbEvent) record.fb_event = fbEvent;
+            if (facebook) record.facebook = facebook;
             if (document.getElementById("ev-cancelled").checked) record.isCancelled = true;
             if (document.getElementById("ev-soldout").checked) record.isSoldOut = true;
 
@@ -1667,7 +1696,7 @@
 
         function clearEventForm() {
             ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-price",
-                "ev-description", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event"]
+                "ev-description", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("ev-date-added-today").checked = false;
             document.getElementById("ev-date-added").readOnly = false;
@@ -1717,7 +1746,7 @@
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
             const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
-            const flyerFields = readFlyerRows(document.getElementById("tour-flyer-rows"));
+            const flyerFields = readFlyerRows(document.getElementById("tour-flyer-rows"), "touring_event_flyer", "touring_event_flyers");
             const video = document.getElementById("tour-video").value.trim();
             if (description) record.tour_description = description;
             if (flyerFields.touring_event_flyer) record.touring_event_flyer = flyerFields.touring_event_flyer;
