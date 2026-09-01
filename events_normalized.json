@@ -2083,6 +2083,169 @@
     }
   },
   "tours": {
+    "gaz-brookfield-autumn-2026": {
+      "tour_name": "Gaz Brookfield Autumn 2026 Tour",
+      "name": "Gaz Brookfield Autumn 2026 Tour",
+      "tour_dates": [
+        {
+          "date": "03/10/2026",
+          "venue_id": "bedford-esquires",
+          "time": "7.30pm",
+          "price": "£15 (+ £2.45)",
+          "ticket_url": "https://www.seetickets.com/event/gaz-brookfield/bedford-esquires/3595681",
+          "date_added": "01/09/2026",
+          "isSpecial": true
+        },
+        {
+          "date": "08/10/2026",
+          "venue_id": "aces-eights-london",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/25611",
+          "isSpecial": true
+        },
+        {
+          "date": "09/10/2026",
+          "venue_id": "three-wise-monkeys-colchester",
+          "time": "7.30pm",
+          "price": "£15 +bf",
+          "ticket_url": "https://threewisemonkeyscolchester.com/events/gaz-brookfield/",
+          "isSpecial": true
+        },
+        {
+          "date": "10/10/2026",
+          "venue_id": "star-inn-guildford",
+          "time": "8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://www.seetickets.com/event/gaz-brookfield/the-star-inn/3595836",
+          "isSpecial": true
+        },
+        {
+          "date": "16/10/2026",
+          "venue_id": "marrs-bar-worcester",
+          "time": "8pm",
+          "price": "£15 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/f/16188",
+          "isSpecial": true
+        },
+        {
+          "date": "17/10/2026",
+          "venue_id": "the-pump-trowbridge",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/25610",
+          "isSpecial": true
+        },
+        {
+          "date": "23/10/2026",
+          "venue_id": "the-victoria-swindon",
+          "time": "8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://www.seetickets.com/event/gaz-brookfield/the-victoria/3596623",
+          "isSpecial": true
+        },
+        {
+          "date": "28/10/2026",
+          "venue_id": "the-international-leicester",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://www.gigantic.com/gaz-brookfield-tickets/leicester-the-international/2026-10-28-19-30",
+          "isSpecial": true
+        },
+        {
+          "date": "29/10/2026",
+          "venue_id": "greystones-sheffield",
+          "time": "7.30pm",
+          "price": "£16 (+ £1.60)",
+          "ticket_url": "https://wegottickets.com/f/16192",
+          "isSpecial": true
+        },
+        {
+          "date": "30/10/2026",
+          "venue_id": "gullivers-manchester",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/16191",
+          "isSpecial": true
+        },
+        {
+          "date": "05/11/2026",
+          "venue_id": "the-brunswick-hove",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://good-show.co.uk/events/gaz-brookfield-autumn-2026-tour-at-the-brunswick-rm8nry",
+          "isSpecial": true
+        },
+        {
+          "date": "06/11/2026",
+          "venue_id": "cavern-club-exeter",
+          "time": "7pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/16182",
+          "isSpecial": true
+        },
+        {
+          "date": "07/11/2026",
+          "venue_id": "joiners-southampton",
+          "time": "7pm",
+          "price": "£15 +bf",
+          "ticket_url": "https://joiners.vticket.co.uk/product.php/3027/gaz-brookfield",
+          "event_flyer": "2026_11_07_gaz_brookfield_joiners.jpg",
+          "isSpecial": true
+        },
+        {
+          "date": "19/11/2026",
+          "venue_id": "crooked-crow-bar-leighton-buzzard",
+          "price": "£16.95",
+          "ticket_url": "https://dice.fm/event/oegp3m-gaz-brookfield-19th-nov-crooked-crow-bar-leighton-buzzard-tickets",
+          "isSpecial": true
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "frog-fiddle-cheltenham",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/25605",
+          "event_flyer": "2026_11_20_gaz_brookfield_frog_fiddle.jpeg",
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "katie-fitzgeralds-stourbridge",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/16200",
+          "isSpecial": true
+        },
+        {
+          "date": "26/11/2026",
+          "venue_id": "fulford-arms",
+          "time": "7.30pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/f/25606",
+          "isSpecial": true
+        },
+        {
+          "date": "04/12/2026",
+          "venue_id": "rescue-rooms-nottingham",
+          "time": "6.30pm",
+          "price": "£19.13",
+          "ticket_url": "https://www.alttickets.com/gaz-brookfield-and-the-company-of-thieves-tickets/nottingham-rescue-rooms/2026-12-04-18-30",
+          "isSpecial": true
+        },
+        {
+          "date": "05/12/2026",
+          "venue_id": "the-fleece-bristol",
+          "time": "7pm",
+          "price": "£19.04",
+          "ticket_url": "https://www.eventbrite.co.uk/e/gaz-brookfield-the-company-of-thieves-xmas-show-tickets-1980033152460",
+          "isSpecial": true
+        }
+      ],
+      "performer_id": "gaz-brookfield",
+      "touring_event_flyer": "tour_gaz_brookfield_autumn_2026.jpg",
+      "isMusic": true
+    },
     "tony-wright-winter-2026": {
       "tour_name": "Tony Wright Winter Tour, 2026",
       "name": "Tony Wright Winter Tour 2026",
@@ -8939,6 +9102,19 @@
       "club": "",
       "price": "",
       "description": "",
+      "event_flyers": ["2026_09_25_jess_silk.jpg", "jess-silk-sept-2026.png", "jess_silk_autumn-2026.png"],
+      "isMusic": true,
+      "venue_id": "nellys-retro-vintage-stratford",
+      "performer_id": "jess-silk"
+    },
+    {
+      "name": "Jess Silk",
+      "showname": "",
+      "date": "25/09/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "",
+      "description": "",
       "event_flyers": ["2026_09_25_jess_silk.jpg", "jess-silk-sept-2026.png"],
       "isMusic": true,
       "venue_id": "nellys-retro-vintage-stratford",
@@ -13962,7 +14138,7 @@
         -1.7543
       ]
     },
-        "strings-bar-venue-isle-of-wight": {
+    "strings-bar-venue-isle-of-wight": {
       "id": "strings-bar-venue-isle-of-wight",
       "name": "Strings Bar & Venue, Isle of Wight",
       "city": "Newport, Isle of Wight",
@@ -14080,6 +14256,134 @@
         53.81833,
         -3.053
       ]
+    },
+    "bedford-esquires": {
+      "id": "bedford-esquires",
+      "name": "Bedford Esquires",
+      "city": "Bedford",
+      "postcode": "MK40 2QG",
+      "full_address": "Esquires, 60A Bromham Road, Bedford, MK40 2QG",
+      "url": "https://www.bedfordesquires.co.uk/",
+      "latlon": [
+        52.13917,
+        -0.4742
+      ]
+    },
+    "aces-eights-london": {
+      "id": "aces-eights-london",
+      "name": "Aces & Eights, London",
+      "city": "London",
+      "postcode": "NW5 2HP",
+      "full_address": "Aces & Eights, 156-158 Fortess Rd, London, NW5 2HP",
+      "url": "https://www.acesandeightssaloonbar.com/",
+      "latlon": [
+        51.55673,
+        -0.1384
+      ]
+    },
+    "three-wise-monkeys-colchester": {
+      "id": "three-wise-monkeys-colchester",
+      "name": "Three Wise Monkeys, Colchester",
+      "city": "Colchester",
+      "postcode": "CO1 1DN",
+      "full_address": "Three Wise Monkeys, 60 High St, Colchester, CO1 1DN",
+      "url": "https://threewisemonkeyscolchester.com/",
+      "latlon": [
+        51.88953,
+        0.90235
+      ]
+    },
+    "star-inn-guildford": {
+      "id": "star-inn-guildford",
+      "name": "Star Inn, Guildford",
+      "city": "Guildford",
+      "postcode": "GU1 3TY",
+      "full_address": "Star Inn, 2 Quarry Street, Guildford, GU1 3TY",
+      "url": "https://www.starinnguildford.co.uk/",
+      "latlon": [
+        51.23504,
+        -0.57489
+      ]
+    },
+    "marrs-bar-worcester": {
+      "id": "marrs-bar-worcester",
+      "name": "Marrs Bar, Worcester",
+      "city": "Worcester",
+      "postcode": "WR1 1TA",
+      "full_address": "Marrs Bar, 12 Pierpoint Street, Worcester, WR1 1TA",
+      "url": "https://www.marrsbar.co.uk/",
+      "latlon": [
+        52.1956,
+        -2.22065
+      ]
+    },
+    "the-international-leicester": {
+      "id": "the-international-leicester",
+      "name": "The International, Leicester",
+      "city": "Leicester",
+      "postcode": "LE13UA",
+      "full_address": "The International, Garden St Leicester, LE1 3UA",
+      "url": "https://www.the-international.co.uk/",
+      "latlon": [
+        52.64009,
+        -1.13201
+      ]
+    },
+    "gullivers-manchester": {
+      "id": "gullivers-manchester",
+      "name": "Gullivers, Manchester",
+      "city": "Manchester",
+      "postcode": "M4 1LW",
+      "full_address": "Gullivers, 109 Oldham Street, Manchester, M4 1LW",
+      "url": "https://gulliversnq.info/",
+      "latlon": [
+        53.4839,
+        -2.23394
+      ]
+    },
+    "cavern-club-exeter": {
+      "id": "cavern-club-exeter",
+      "name": "Cavern Club, Exeter",
+      "city": "Exeter",
+      "postcode": "EX4 3RP",
+      "full_address": "Cavern Club, 83-84 Queen St, Exeter, EX4 3RP",
+      "url": "https://www.cavernclub.co.uk/",
+      "latlon": [
+        50.72471,
+        -3.53199
+      ]
+    },
+    "crooked-crow-bar-leighton-buzzard": {
+      "id": "crooked-crow-bar-leighton-buzzard",
+      "name": "Crooked Crow Bar, Leighton Buzzard",
+      "city": "Leighton Buzzard",
+      "postcode": "LU7 1DH",
+      "full_address": "Crooked Crow Bar, 27 Waterborne Walk, Leighton Buzzard, LU7 1DH",
+      "url": "https://www.crookedcrowbar.com/",
+      "latlon": [
+        51.91681,
+        -0.66283
+      ]
+    },
+    "frog-fiddle-cheltenham": {
+      "id": "frog-fiddle-cheltenham",
+      "name": "Frog & Fiddle, Cheltenham",
+      "city": "Cheltenham",
+      "postcode": "GL50 3HW",
+      "full_address": "Frog & Fiddle, 313-315, High Street, Cheltenham, GL50 3HW",
+      "url": "https://www.frogandfiddle.butcombe.com/",
+      "latlon": [
+        51.90323,
+        -2.07914
+      ]
+    },
+    "rescue-rooms-nottingham": {
+      "id": "rescue-rooms-nottingham",
+      "name": "Rescue Rooms, Nottingham",
+      "city": "Nottingham",
+      "postcode": "NG1 5JT",
+      "full_address": "Rescue Rooms,",
+      "url": "https://www.rescuerooms.com/"
     }
   },
   "performers": {
