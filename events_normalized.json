@@ -20,7 +20,7 @@
       "website": "https://artemis-storytelling.co.uk/storyfix",
       "facebook": "",
       "description": "",
-      "event_flyer": "exeter_story_fix_2026_flyer.png",
+      "event_flyers": ["exeter_story_fix_2026_flyer.png", "exeter_story_fix_2026a_flyer.png", "exeter_story_fix_2026b_flyer.png/"],
       "performers": [{
           "performer_id": "nick-hennessey",
           "role": ""
