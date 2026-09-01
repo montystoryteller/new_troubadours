@@ -8939,7 +8939,7 @@
       "club": "",
       "price": "",
       "description": "",
-      "event_flyer": "2026_09_25_jess_silk.jpg",
+      "event_flyers": ["2026_09_25_jess_silk.jpg", "jess-silk-sept-2026.png"],
       "isMusic": true,
       "venue_id": "nellys-retro-vintage-stratford",
       "performer_id": "jess-silk"
@@ -8953,6 +8953,7 @@
       "price": "£12.50(+£1.30)",
       "isMusic": true,
       "isSpecial": true,
+      "event_flyer": "jess-silk-sept-2026.png",
       "venue_id": "katie-fitzgeralds-stourbridge"
     },
     {
@@ -8961,6 +8962,7 @@
       "time": "4pm",
       "ticket_url": "https://www.bandsintown.com/e/107889447",
       "isMusic": true,
+      "event_flyer": "jess-silk-sept-2026.png",
       "isSpecial": true,
       "venue_id": "foxtails-chorley"
     },
