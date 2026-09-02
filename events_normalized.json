@@ -8449,6 +8449,20 @@
       "performer_id": "jason-buck"
     },
     {
+      "name": "Tall Tales and Storied Steps - A Story Walk at St John's Old Malden [Alastair K Daniel]",
+      "showname": "Tall Tales and Storied Steps - A Story Walk at St John's Old Malden",
+      "date": "12/09/2026",
+      "time": "2.30-3.30pm",
+      "club": "threeheadsinawell",
+      "price": "Free",
+      "event_flyer": "2026_09_12_alastair_daniel_old_malden.jpg",
+      "description": "Join local and widely-travelled performance storyteller Alastair K Daniel on a story walk round St John's Church Old Malden, with tales of dragons, devils and disguises. Weaving together stories from a range of traditions with the local environment, Alastair invites old and young to see the church and its surroundings with fresh eyes and, at the same time, learn something of the true history of the building and its people.\n\n\n\nAlastair K Daniel is an international storyteller, artist-educator and long-standing member of Surrey Storytellers (which meets in the parish). He is a member of the St John's community and helps to lead Junior Church.\n\n\n\nMeet outside the church by the War Memorial in time for a 2.30pm start. The walk is very gentle, but please wear sensible shoes and bring an umbrella or rain-wear if the forecast suggests unsettled weather.",
+      "isSpecial": true,
+      "date_added": "03/09/2026",
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": "alastair-k-daniel"
+    },
+    {
       "name": "Taffy Thomas/Eliza Carthy",
       "showname": "Taffy Thomas/Eliza Carthy",
       "date": "13/09/2026",
@@ -8710,7 +8724,7 @@
       "time": "7pm",
       "club": "feastoffools",
       "price": "",
-      "description": "",
+      "description": "Join us for the latest in our series of Teller's Special nights, where we give the first half to a handful of our regular story tellers, then concentrate on one performer for the second half. This time we feature Lynette Hill and her story of Horse. Creatures of wind and storm, so we are told, horses were first created by the gods to carry messages between Heaven and Earth. Or are they descended from dragons and intended as sacred gifts to help people carry their burdens Lynette Hill tells the stories of how horses became humanity's companions and what happened next...",
       "ticket_url": "",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
@@ -8949,6 +8963,20 @@
       "isSpecial": true
     },
     {
+      "name": "Feast of Fools [feat. Lisa Schneidau]",
+      "showname": "Feast of Fools [feat. Lisa Schneidau]",
+      "date": "03/02/2027",
+      "time": "7pm",
+      "club": "feastoffools",
+      "price": "",
+      "description": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "03/09/2026",
+      "venue_id": "quaker-meeting-house-northampton",
+      "performer_id": "lisa-schneidau"
+    },
+    {
       "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",
       "showname": "Fire & Ice Stories from a life on two continents",
       "date": "26/02/2027",
@@ -8971,6 +8999,20 @@
       "club": "blast",
       "price": "£10",
       "isSpecial": true
+    },
+    {
+      "name": "Kulkolka [Ronnie Conboy]",
+      "showname": "Kulkolka",
+      "date": "03/11/2027",
+      "time": "7pm",
+      "club": "feastoffools",
+      "price": "",
+      "description": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "date_added": "03/09/2026",
+      "venue_id": "quaker-meeting-house-northampton",
+      "performer_id": "ronnie-conboy"
     }
   ],
   "musicEvents": [
@@ -10944,10 +10986,10 @@
     },
     "st-johns-church-hall-worcester-park": {
       "id": "st-johns-church-hall-worcester-park",
-      "name": "St. John's Church Hall",
+      "name": "St. John's Church Hall, Old Malden",
       "city": "Worcester Park",
       "postcode": "KT4 7NY",
-      "full_address": "St. John's Church Hall, Worcester Park, KT4 7NY",
+      "full_address": "St. John's Church Hall, Worcester Park, Church Road, Old Malden, KT4 7NY",
       "url": "https://www.stjohnsoldmalden.org.uk/church-hall/",
       "latlon": [
         51.38317,
@@ -15267,6 +15309,12 @@
       "name": "Alim Kamara",
       "url": "https://www.alimkamara.com/",
       "bio": "Alim Kamara is a British-Sierra Leonean rapper and storyteller. As a child living in Sierra Leone, Alim would listen to Djelis (storytellers), admiring the way they weaved lessons through their tales. Stories quickly became central to his life, and when he moved to London and started his music career, he used this same technique to achieve number one singles in both Sierra Leone and Nigeria.\n\n\n\nHe established Storie Storie to share the traditional African stories of his childhood in the UK. Through the organisation, he performs and runs workshops through schools, businesses and festivals.\n\n\n\nAlim and his inspirational speakers share cultural and life issues through storytelling that demonstrates success, disappointments, persistence and hard work. They share the tools that empower listeners to feel happy, express themselves and succeed."
+    },
+    "alastair-k-daniel": {
+      "id": "alastair-k-daniel",
+      "name": "Alastair K. Daniel",
+      "url": "https://www.akdaniel.co.uk/",
+      "bio": "Alastair K Daniel is an international storyteller, artist-educator and long-standing member of Surrey Storytellers. He often performs under the banner of 'The Story Tent'."
     },
     "simon-heywood": {
       "id": "simon-heywood",
