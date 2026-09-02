@@ -541,9 +541,15 @@
             </div>
 
             <div class="field-row">
-                <label></label>
-                <div class="field-hint">Members aren't set here — they're added via the "Combined/troupe billing name"
-                    option on the Performer field when you build a tour/show/event featuring this group.</div>
+                <label>Troupe members</label>
+                <div>
+                    <div id="perf-members-field"></div>
+                    <div class="field-hint">Only used if "Troupe / group" above is checked. Pick existing
+                        performers (or type a new name to create one) for each member — saved as `performer_ids`,
+                        with their names also saved as `members` for a display-name fallback. Leave empty if you'd
+                        rather set membership later, or via the "Combined/troupe billing name" option on the
+                        Performer field when building a tour/show/event featuring this group.</div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -680,6 +686,20 @@
             <div class="field-row">
                 <label>URL</label>
                 <input type="url" id="podcast-url">
+            </div>
+
+            <div class="field-row">
+                <label>Media type</label>
+                <select id="podcast-type">
+                    <option value="">(default — audio)</option>
+                    <option value="audio">Audio</option>
+                    <option value="video">Video</option>
+                </select>
+            </div>
+
+            <div class="field-row">
+                <label>Format</label>
+                <input type="text" id="podcast-format" placeholder="e.g. telling, interview">
             </div>
 
             <div class="field-row">
@@ -1253,6 +1273,53 @@
             };
         }
 
+        // A repeatable list of performer pickers only — like buildMultiPerformerField
+        // but without its "combined/troupe billing name" extra, since that's only
+        // relevant when billing several individuals together under a new group
+        // name. Used wherever we just need "zero or more performers": a troupe's
+        // own member list, or multiple guests on a podcast episode.
+        function buildPerformerIdListField(container, addLabel = "Add another performer") {
+            container.innerHTML = "";
+            const list = document.createElement("div");
+            list.className = "multi-performer-list";
+            container.appendChild(list);
+
+            function addRow() {
+                const row = document.createElement("div");
+                row.className = "multi-performer-row";
+                const fieldHolder = document.createElement("div");
+                fieldHolder.style.flex = "1";
+                row._field = buildEntityField(fieldHolder, "performer");
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "mp-remove";
+                removeBtn.textContent = "×";
+                removeBtn.title = "Remove performer";
+                removeBtn.addEventListener("click", () => {
+                    if (list.children.length > 1) row.remove();
+                });
+
+                row.appendChild(fieldHolder);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            }
+            addRow();
+
+            const addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className = "add-performer-btn";
+            addBtn.textContent = addLabel;
+            addBtn.addEventListener("click", addRow);
+            container.appendChild(addBtn);
+
+            return { rows: () => Array.from(list.children) };
+        }
+
+        function readPerformerIdListField(field) {
+            return field.rows().map(row => resolveEntityField(row._field)).filter(Boolean);
+        }
+
         // Resolves a multi-performer field to { performer_id?, performer_ids?, displayName }.
         // - 0 performers: returns {} (displayName "")
         // - 1 performer, no combined name: performer_id = that one id (same
@@ -1282,7 +1349,7 @@
                 }
                 if (!combinedId) {
                     combinedId = uniqueId(slugify(combinedName), id => !!performersLookup[id] || !!newPerformers[id]);
-                    newPerformers[combinedId] = { id: combinedId, name: combinedName, type: "troupe", performer_ids: ids };
+                    newPerformers[combinedId] = { id: combinedId, name: combinedName, type: "troupe", troupe: true, performer_ids: ids };
                 }
                 result.performer_id = combinedId;
             } else if (ids.length === 1) {
@@ -1453,16 +1520,20 @@
 
         // podcast.items — used when creating a NEW podcast series in the
         // Podcast Series tab, to optionally seed it with known episodes.
-        // Each row reuses the same performer entity-picker as everywhere
-        // else in the builder, since a guest spot is exactly the case worth
-        // recording here (leave it blank for an ordinary, unattributed episode).
+        // Fields mirror the podcastEpisode schema shape (minus feed-only
+        // plumbing like guid/enclosureType/enclosureLength, which a synced
+        // RSS feed fills in itself and a person manually seeding a series
+        // wouldn't usually know). Each row reuses the same repeatable
+        // performer-picker list as elsewhere, since an episode can feature
+        // more than one guest (leave it empty for an ordinary, unattributed
+        // episode).
         function buildPodcastEpisodesField(container) {
             container.innerHTML = "";
             const list = document.createElement("div");
             list.className = "subitem-list";
             container.appendChild(list);
 
-            const entityFields = new Map(); // row element -> entity field handle
+            const performerFields = new Map(); // row element -> performer-id-list field handle
 
             function addRow() {
                 const row = document.createElement("div");
@@ -1472,10 +1543,15 @@
                 fieldsWrap.innerHTML = `
                     <input type="text" class="ep-title" placeholder="Episode title">
                     <input type="url" class="ep-audio-url" placeholder="Direct audio URL (e.g. .mp3)">
-                    <input type="url" class="ep-link" placeholder="Episode webpage URL (optional)">`;
+                    <input type="url" class="ep-link" placeholder="Episode webpage URL (optional)">
+                    <input type="url" class="ep-yt-url" placeholder="YouTube URL (optional, for video episodes)">
+                    <input type="text" class="ep-pubdate" placeholder="Publish date, DD/MM/YYYY (optional)">
+                    <input type="text" class="ep-duration" placeholder="Duration, e.g. 34:12 (optional)">
+                    <input type="url" class="ep-image" placeholder="Episode artwork URL (optional)">
+                    <textarea class="ep-description" placeholder="Episode description (optional)"></textarea>`;
                 const performerWrap = document.createElement("div");
                 fieldsWrap.appendChild(performerWrap);
-                entityFields.set(row, buildEntityField(performerWrap, "performer"));
+                performerFields.set(row, buildPerformerIdListField(performerWrap, "Add another guest"));
 
                 const removeBtn = document.createElement("button");
                 removeBtn.type = "button";
@@ -1483,7 +1559,7 @@
                 removeBtn.textContent = "×";
                 removeBtn.title = "Remove";
                 removeBtn.addEventListener("click", () => {
-                    if (list.children.length > 1) { row.remove(); entityFields.delete(row); }
+                    if (list.children.length > 1) { row.remove(); performerFields.delete(row); }
                 });
                 row.appendChild(fieldsWrap);
                 row.appendChild(removeBtn);
@@ -1501,20 +1577,31 @@
 
             return {
                 rows: () => Array.from(list.children),
-                entityFieldFor: (row) => entityFields.get(row),
+                performerFieldFor: (row) => performerFields.get(row),
             };
         }
         function readPodcastEpisodesField(field) {
             return field.rows().map(row => {
                 const title = row.querySelector(".ep-title").value.trim();
                 const audioUrl = row.querySelector(".ep-audio-url").value.trim();
-                const link = row.querySelector(".ep-link").value.trim();
                 if (!title || !audioUrl) return null;
                 const item = { title, enclosureUrl: audioUrl };
+                const link = row.querySelector(".ep-link").value.trim();
+                const ytUrl = row.querySelector(".ep-yt-url").value.trim();
+                const pubDate = row.querySelector(".ep-pubdate").value.trim();
+                const duration = row.querySelector(".ep-duration").value.trim();
+                const image = row.querySelector(".ep-image").value.trim();
+                const description = encodeParagraphBreaks(row.querySelector(".ep-description").value);
                 if (link) item.link = link;
-                const entityField = field.entityFieldFor(row);
-                const performerId = entityField ? resolveEntityField(entityField) : null;
-                if (performerId) item.performer_id = performerId;
+                if (ytUrl) item.yt_url = ytUrl;
+                if (pubDate) item.pubDate = pubDate;
+                if (duration) item.duration = duration;
+                if (image) item.image = image;
+                if (description) item.description = description;
+                const performerField = field.performerFieldFor(row);
+                const performerIds = performerField ? readPerformerIdListField(performerField) : [];
+                if (performerIds.length === 1) item.performer_id = performerIds[0];
+                else if (performerIds.length > 1) item.performer_ids = performerIds;
                 return item;
             }).filter(Boolean);
         }
@@ -2245,11 +2332,12 @@
             }
         }
 
-        let perfPodcastLinks, perfYoutubeVideos, perfPodcastAppearances;
+        let perfPodcastLinks, perfYoutubeVideos, perfPodcastAppearances, perfMembersField;
         function initPerformerForm() {
             perfPodcastLinks = buildPodcastLinksField(document.getElementById("perf-podcast-field"));
             perfYoutubeVideos = buildYoutubeVideosField(document.getElementById("perf-youtube-field"));
             perfPodcastAppearances = buildPodcastAppearancesField(document.getElementById("perf-podcast-appearances-field"));
+            perfMembersField = buildPerformerIdListField(document.getElementById("perf-members-field"), "Add another member");
         }
 
         function addPerformerToBatch() {
@@ -2291,7 +2379,15 @@
             if (aliasesRaw) record.aliases = aliasesRaw.split(",").map(s => s.trim()).filter(Boolean);
             if (document.getElementById("perf-musician").checked) record.musician = true;
             if (document.getElementById("perf-poet").checked) record.poet = true;
-            if (document.getElementById("perf-troupe").checked) record.type = "troupe";
+            if (document.getElementById("perf-troupe").checked) {
+                record.type = "troupe";
+                record.troupe = true;
+                const memberIds = readPerformerIdListField(perfMembersField);
+                if (memberIds.length) {
+                    record.performer_ids = memberIds;
+                    record.members = memberIds.map(mid => repertoirePerformerLabel(mid));
+                }
+            }
 
             newPerformers[id] = record;
             refreshBatchSummary();
@@ -2390,9 +2486,13 @@
             const presenter = document.getElementById("podcast-presenter").value.trim();
             const schedule = document.getElementById("podcast-schedule").value.trim();
             const url = document.getElementById("podcast-url").value.trim();
+            const type = document.getElementById("podcast-type").value;
+            const format = document.getElementById("podcast-format").value.trim();
             if (presenter) record.presenter = presenter;
             if (schedule) record.schedule = schedule;
             if (url) record.url = url;
+            if (type) record.type = type;
+            if (format) record.format = format;
             const items = readPodcastEpisodesField(podcastEpisodesField);
             if (items.length) record.items = items;
 
@@ -2402,8 +2502,9 @@
         }
 
         function clearPodcastForm() {
-            ["podcast-key", "podcast-title", "podcast-presenter", "podcast-schedule", "podcast-url"]
+            ["podcast-key", "podcast-title", "podcast-presenter", "podcast-schedule", "podcast-url", "podcast-format"]
                 .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("podcast-type").value = "";
             podcastKeyAutoValue = "";
             initPodcastForm();
         }
