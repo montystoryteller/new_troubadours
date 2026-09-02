@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://newtroubadours.montystoryteller.org/sitemap.xml
