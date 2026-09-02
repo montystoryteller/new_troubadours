@@ -47,6 +47,7 @@
             <button class="type-tab" data-type="performer">New Performer</button>
             <button class="type-tab" data-type="venue">New Venue</button>
             <button class="type-tab" data-type="podcast">Podcast Series</button>
+            <button class="type-tab" data-type="festival">Festival</button>
             <button class="type-tab" data-type="enrich">Enrich</button>
         </div>
 
@@ -129,6 +130,16 @@
             </div>
 
             <div class="field-row">
+                <label>Festival</label>
+                <div>
+                    <input type="text" id="ev-wider-event" list="festivalOptions"
+                        placeholder="Existing festival id, if this is part of a larger festival">
+                    <div class="field-hint">Saved as `wider_event`. Leave blank if this isn't part of a festival. New
+                        festivals added via the Festival tab in this session will appear here automatically.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Price</label>
                 <div>
                     <div class="price-input-row">
@@ -198,6 +209,26 @@
             </div>
 
             <div class="field-row">
+                <label>Link to repertoire show</label>
+                <div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <select id="tour-repertoire-performer-filter" style="flex:1; min-width:160px;">
+                            <option value="">— all performers —</option>
+                        </select>
+                        <select id="tour-repertoire-show-select" style="flex:2; min-width:220px;">
+                            <option value="">— standalone tour (no repertoire link) —</option>
+                        </select>
+                    </div>
+                    <div class="field-hint" id="tour-repertoire-hint"></div>
+                    <div class="field-hint">Optional. If this tour is a touring run of an already-registered
+                        repertoire show, link it here (saved as `repertoire_id`) so show name, performer, video
+                        trailer and headline flyer are inherited automatically at load time — filter by performer
+                        first to keep the list short. You can still fill in the fields below to override any of
+                        those for just this tour.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Tour name</label>
                 <div>
                     <input type="text" id="tour-tourname" placeholder="e.g. Dauntless (2026)">
@@ -206,7 +237,7 @@
 
             <div class="field-row">
                 <label>Show name</label>
-                <input type="text" id="tour-name" placeholder="e.g. Dauntless">
+                <input type="text" id="tour-name" placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
             </div>
 
             <div class="field-row">
@@ -316,6 +347,112 @@
             <div class="btn-row">
                 <button class="btn-add-batch" onclick="addShowToBatch()">Add to batch</button>
                 <button class="btn-clear-form" onclick="clearShowForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Festival panel ──────────────────────────────────── -->
+        <div class="panel" id="panel-festival" style="display:none;">
+            <h2>Festival</h2>
+
+            <div class="field-row">
+                <label>Festival key (id)</label>
+                <input type="text" id="festival-key" placeholder="auto-suggested, edit if needed">
+            </div>
+
+            <div class="field-row">
+                <label>Name</label>
+                <input type="text" id="festival-name" placeholder="e.g. Bristol Storytelling Festival 2026">
+            </div>
+
+            <div class="field-row">
+                <label>Short name</label>
+                <input type="text" id="festival-short-name" placeholder="(optional) e.g. BSF 2026">
+            </div>
+
+            <div class="field-row">
+                <label>Start date</label>
+                <input type="text" id="festival-start-date" placeholder="DD/MM/YYYY">
+            </div>
+
+            <div class="field-row">
+                <label>End date</label>
+                <input type="text" id="festival-end-date" placeholder="DD/MM/YYYY">
+            </div>
+
+            <div class="field-row">
+                <label>Primary type</label>
+                <input type="text" id="festival-primary-type" placeholder="e.g. storytelling, folk, music">
+            </div>
+
+            <div class="field-row">
+                <label>Venue</label>
+                <div id="festival-venue-field"></div>
+            </div>
+
+            <div class="field-row">
+                <label>Ticket URL</label>
+                <input type="url" id="festival-ticket-url">
+            </div>
+
+            <div class="field-row">
+                <label>Website</label>
+                <input type="url" id="festival-website">
+            </div>
+
+            <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="festival-facebook">
+            </div>
+
+            <div class="field-row">
+                <label>Price</label>
+                <input type="text" id="festival-price" placeholder="e.g. £45 weekend / £15 day">
+            </div>
+
+            <div class="field-row">
+                <label>Age bands</label>
+                <input type="text" id="festival-age-bands" placeholder="comma-separated, e.g. Family friendly, Adults only">
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="festival-description" placeholder="Festival description"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Flyer(s)</label>
+                <div>
+                    <div class="date-rows" id="festival-flyer-rows"></div>
+                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()" style="margin-top:6px;">Add
+                        another flyer</button>
+                    <div class="field-hint">One flyer saves as event_flyer; add more, or give one a caption, to save
+                        as event_flyers.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="festival-performers-tbc"> Performers TBC</label>
+                </div>
+            </div>
+
+            <h3>Performers</h3>
+            <div id="festival-performer-rows"></div>
+            <button type="button" class="add-date-btn" onclick="addFestivalPerformerRow()" style="margin-top:10px;">Add
+                performer</button>
+
+            <h3>Stages</h3>
+            <div id="festival-stage-rows"></div>
+            <button type="button" class="add-date-btn" onclick="addFestivalStageRow()" style="margin-top:10px;">Add
+                stage</button>
+            <p class="field-hint">The full day-by-day running order (`schedule`) isn't built here yet — add that
+                directly in the exported JSON once you know the programme, referencing these stage ids and
+                performers.</p>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addFestivalToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearFestivalForm()">Clear form</button>
             </div>
         </div>
 
@@ -659,6 +796,7 @@
     <datalist id="performerOptions"></datalist>
     <datalist id="venueOptions"></datalist>
     <datalist id="clubOptions"></datalist>
+    <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -668,14 +806,17 @@
         let performersLookup = {};
         let venuesLookup = {};
         let podcastsLookup = {};
+        let festivalsLookup = {};
+        let repertoireShowsLookup = {};
         let clubIds = [];
         let existingTourKeys = new Set();
         let existingShowKeys = new Set();
+        let existingFestivalKeys = new Set();
         const newPerformers = {};
         const newVenues = {};
 
         // Batch of records waiting to be exported
-        const batch = { events: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], podcasts: [], podcastEpisodeAdditions: [] };
+        const batch = { events: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], podcastEpisodeAdditions: [] };
 
         // ── Paragraph-break encoding ─────────────────────────────────────────
         // House convention (see tour_description in events-schema.json): a
@@ -1382,7 +1523,7 @@
             tab.addEventListener("click", () => {
                 document.querySelectorAll(".type-tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
-                ["event", "tour", "show", "performer", "venue", "podcast", "enrich"].forEach(t => {
+                ["event", "tour", "show", "performer", "venue", "podcast", "festival", "enrich"].forEach(t => {
                     document.getElementById(`panel-${t}`).style.display = t === tab.dataset.type ? "" : "none";
                 });
             });
@@ -1436,6 +1577,91 @@
         function addTourFlyerRow() {
             document.getElementById("tour-flyer-rows").appendChild(flyerRowTemplate());
         }
+        function addFestivalFlyerRow() {
+            document.getElementById("festival-flyer-rows").appendChild(flyerRowTemplate());
+        }
+
+        // ── Festival performer / stage row helpers ──────────────────────────
+        function festivalPerformerRowTemplate() {
+            const row = document.createElement("div");
+            row.className = "date-row";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "date-row-remove";
+            removeBtn.textContent = "×";
+            removeBtn.addEventListener("click", () => row.remove());
+            row.appendChild(removeBtn);
+
+            const grid = document.createElement("div");
+            grid.innerHTML = `
+                <div class="field-row">
+                    <label>Performer</label>
+                    <div class="fp-performer-field"></div>
+                </div>
+                <div class="field-row">
+                    <label>Role</label>
+                    <input type="text" class="fp-role" placeholder="(optional) e.g. headliner, host, workshop leader">
+                </div>
+            `;
+            row.appendChild(grid);
+            row._performerField = buildEntityField(grid.querySelector(".fp-performer-field"), "performer");
+            return row;
+        }
+
+        function addFestivalPerformerRow() {
+            document.getElementById("festival-performer-rows").appendChild(festivalPerformerRowTemplate());
+        }
+
+        function readFestivalPerformerRows(container) {
+            return Array.from(container.children).map(row => {
+                const performerId = resolveEntityField(row._performerField);
+                if (!performerId) return null;
+                const role = row.querySelector(".fp-role").value.trim();
+                const entry = { performer_id: performerId };
+                if (role) entry.role = role;
+                return entry;
+            }).filter(Boolean);
+        }
+
+        function festivalStageRowTemplate() {
+            const row = document.createElement("div");
+            row.className = "date-row";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "date-row-remove";
+            removeBtn.textContent = "×";
+            removeBtn.addEventListener("click", () => row.remove());
+            row.appendChild(removeBtn);
+
+            const grid = document.createElement("div");
+            grid.innerHTML = `
+                <div class="field-row">
+                    <label>Stage name</label>
+                    <input type="text" class="fs-name" placeholder="e.g. Main Marquee">
+                </div>
+                <div class="field-row">
+                    <label>Stage id</label>
+                    <input type="text" class="fs-id" placeholder="(optional — auto-slugged from name if left blank)">
+                </div>
+            `;
+            row.appendChild(grid);
+            return row;
+        }
+
+        function addFestivalStageRow() {
+            document.getElementById("festival-stage-rows").appendChild(festivalStageRowTemplate());
+        }
+
+        function readFestivalStageRows(container) {
+            return Array.from(container.children).map(row => {
+                const name = row.querySelector(".fs-name").value.trim();
+                if (!name) return null;
+                const stageId = row.querySelector(".fs-id").value.trim() || slugify(name);
+                return { stage_id: stageId, name };
+            }).filter(Boolean);
+        }
 
         // Returns { [singularKey]: ... } or { [pluralKey]: [...] } — the singular
         // field is used for the common one-flyer-no-caption case (keeps output
@@ -1444,7 +1670,7 @@
         // both tour-level flyers (touring_event_flyer/touring_event_flyers) and
         // per-date flyers (event_flyer/event_flyers).
         function readFlyerRows(container, singularKey = "touring_event_flyer", pluralKey = "touring_event_flyers") {
-            const rows = Array.from(container.querySelectorAll(".date-row"))
+            const rows = Array.from(container.children)
                 .map(row => ({
                     flyer: row.querySelector(".fr-filename").value.trim(),
                     label: row.querySelector(".fr-label").value.trim(),
@@ -1574,7 +1800,11 @@
         }
 
         function readDateRows(container, kind) {
-            return Array.from(container.querySelectorAll(".date-row")).map(row => {
+            // Use direct children rather than .querySelectorAll(".date-row") —
+            // tour date rows nest their own per-date flyer rows (also styled
+            // with the shared .date-row class), and querySelectorAll would
+            // wrongly pick those up too since it matches any descendant.
+            return Array.from(container.children).map(row => {
                 const dateRaw = row.querySelector(".dr-date").value.trim();
                 const dates = dateRaw.split(",").map(s => s.trim()).filter(Boolean);
                 const entry = {
@@ -1656,6 +1886,7 @@
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
             const time = document.getElementById("ev-time").value.trim();
             const club = document.getElementById("ev-club").value.trim();
+            const widerEvent = document.getElementById("ev-wider-event").value.trim();
             const price = document.getElementById("ev-price").value.trim();
             const description = encodeParagraphBreaks(document.getElementById("ev-description").value);
             const flyer = document.getElementById("ev-flyer").value.trim();
@@ -1667,6 +1898,7 @@
             if (dateAdded) record.date_added = dateAdded;
             if (time) record.time = time;
             if (club) record.club = club;
+            if (widerEvent) record.wider_event = widerEvent;
             if (price) record.price = price;
             const priceBreakdown = resolvePriceBreakdownField(evPriceBreakdown);
             if (priceBreakdown) record.price_breakdown = priceBreakdown;
@@ -1695,7 +1927,7 @@
         }
 
         function clearEventForm() {
-            ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-price",
+            ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-wider-event", "ev-price",
                 "ev-description", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("ev-date-added-today").checked = false;
@@ -1708,20 +1940,99 @@
 
         // ── Tour form ────────────────────────────────────────────────────────
         let tourPerformerMulti;
+
+        // Repertoire shows already saved on disk, plus any added to the batch
+        // in this session — combined so a tour can link to a show the person
+        // just created without needing to reload the page first.
+        function getRepertoireShowsCombined() {
+            return { ...repertoireShowsLookup, ...Object.fromEntries(batch.shows.map(s => [s.key, s.record])) };
+        }
+
+        function repertoirePerformerLabel(id) {
+            if (!id) return "";
+            return performersLookup[id]?.name || newPerformers[id]?.name || id;
+        }
+
+        // Populates the performer-filter dropdown from whichever performers
+        // are actually attached to a repertoire show, then refreshes the
+        // dependent show dropdown. Filtering by performer first keeps the
+        // show list short instead of one long alphabetical dump of every
+        // repertoire show on the site.
+        function refreshTourRepertoireOptions() {
+            const filterSelect = document.getElementById("tour-repertoire-performer-filter");
+            const showSelect = document.getElementById("tour-repertoire-show-select");
+            if (!filterSelect || !showSelect) return;
+
+            const shows = getRepertoireShowsCombined();
+            const performerIds = new Set();
+            Object.values(shows).forEach(s => {
+                if (s.performer_id) performerIds.add(s.performer_id);
+                (s.performer_ids || []).forEach(id => performerIds.add(id));
+            });
+
+            const previousFilter = filterSelect.value;
+            const sortedPerformers = [...performerIds].sort((a, b) => repertoirePerformerLabel(a).localeCompare(repertoirePerformerLabel(b)));
+            filterSelect.innerHTML = `<option value="">— all performers —</option>` +
+                sortedPerformers.map(id => `<option value="${id}">${repertoirePerformerLabel(id).replace(/"/g, "&quot;")}</option>`).join("");
+            if (sortedPerformers.includes(previousFilter)) filterSelect.value = previousFilter;
+
+            refreshTourRepertoireShowSelect();
+        }
+
+        function refreshTourRepertoireShowSelect() {
+            const filterSelect = document.getElementById("tour-repertoire-performer-filter");
+            const showSelect = document.getElementById("tour-repertoire-show-select");
+            if (!filterSelect || !showSelect) return;
+
+            const shows = getRepertoireShowsCombined();
+            const filterId = filterSelect.value;
+            const previousShow = showSelect.value;
+            const entries = Object.entries(shows)
+                .filter(([, s]) => !filterId || s.performer_id === filterId || (s.performer_ids || []).includes(filterId))
+                .sort((a, b) => (a[1].showname || a[1].name || "").localeCompare(b[1].showname || b[1].name || ""));
+
+            showSelect.innerHTML = `<option value="">— standalone tour (no repertoire link) —</option>` +
+                entries.map(([key, s]) => `<option value="${key}">${(s.showname || s.name || key).replace(/"/g, "&quot;")} (${key})</option>`).join("");
+            if (entries.some(([key]) => key === previousShow)) showSelect.value = previousShow;
+
+            updateTourRepertoireHint();
+        }
+
+        function updateTourRepertoireHint() {
+            const showSelect = document.getElementById("tour-repertoire-show-select");
+            const hint = document.getElementById("tour-repertoire-hint");
+            if (!showSelect || !hint) return;
+            const key = showSelect.value;
+            if (!key) { hint.textContent = ""; return; }
+            const s = getRepertoireShowsCombined()[key];
+            if (!s) { hint.textContent = ""; return; }
+            const performerNames = [s.performer_id, ...(s.performer_ids || [])].filter(Boolean).map(repertoirePerformerLabel).join(", ");
+            hint.textContent = `Linked to "${s.showname || s.name}"${performerNames ? ` [${performerNames}]` : ""} — leave Show name/Performer/Video trailer/Tour flyer blank above to inherit them from this show.`;
+        }
+
         function initTourForm() {
             tourPerformerMulti = buildMultiPerformerField(document.getElementById("tour-performer-field"));
             document.getElementById("tour-date-rows").innerHTML = "";
             addTourDateRow();
             document.getElementById("tour-flyer-rows").innerHTML = "";
             addTourFlyerRow();
+            refreshTourRepertoireOptions();
         }
 
         let tourKeyAutoValue = "";
         function suggestTourKey() {
             const keyField = document.getElementById("tour-key");
             if (keyField.value && keyField.value !== tourKeyAutoValue) return; // user has edited it manually
-            const firstPerformerName = tourPerformerMulti.getRows()[0]?.input.value.trim() || "";
-            const name = document.getElementById("tour-name").value.trim();
+            let firstPerformerName = tourPerformerMulti.getRows()[0]?.input.value.trim() || "";
+            let name = document.getElementById("tour-name").value.trim();
+            const repertoireId = document.getElementById("tour-repertoire-show-select").value;
+            if (repertoireId) {
+                const show = getRepertoireShowsCombined()[repertoireId];
+                if (show) {
+                    if (!name) name = show.showname || show.name || "";
+                    if (!firstPerformerName) firstPerformerName = repertoirePerformerLabel(show.performer_id || (show.performer_ids || [])[0]);
+                }
+            }
             tourKeyAutoValue = [slugify(firstPerformerName), slugify(name)].filter(Boolean).join("-");
             keyField.value = tourKeyAutoValue;
         }
@@ -1731,18 +2042,25 @@
             const name = document.getElementById("tour-name").value.trim();
             const perf = resolveMultiPerformerField(tourPerformerMulti);
             const dateRows = readDateRows(document.getElementById("tour-date-rows"), "tour");
-            if (!tourName || !name || !perf.performer_id && !perf.performer_ids || !dateRows.length) {
-                alert("Please fill in tour name, show name, at least one performer, and at least one valid tour date (with venue).");
+            const repertoireId = document.getElementById("tour-repertoire-show-select").value;
+            const hasPerformer = !!(perf.performer_id || perf.performer_ids);
+            if (!tourName || (!name && !repertoireId) || (!hasPerformer && !repertoireId) || !dateRows.length) {
+                alert("Please fill in tour name, and either a show name + performer or a linked repertoire show, plus at least one valid tour date (with venue).");
                 return;
             }
-            let key = document.getElementById("tour-key").value.trim() || slugify(`${perf.performer_id || perf.displayName}-${name}`);
+            const linkedShow = repertoireId ? getRepertoireShowsCombined()[repertoireId] : null;
+            const keyBasisName = name || linkedShow?.showname || linkedShow?.name || "";
+            const keyBasisPerformer = perf.performer_id || perf.displayName ||
+                (linkedShow ? repertoirePerformerLabel(linkedShow.performer_id || (linkedShow.performer_ids || [])[0]) : "");
+            let key = document.getElementById("tour-key").value.trim() || slugify(`${keyBasisPerformer}-${keyBasisName}`);
             key = uniqueId(key, k => existingTourKeys.has(k) || batch.tours.some(t => t.key === k));
 
             const record = {
                 tour_name: tourName,
-                name,
                 tour_dates: dateRows,
             };
+            if (repertoireId) record.repertoire_id = repertoireId;
+            if (name) record.name = name;
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
             const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
@@ -1766,6 +2084,8 @@
             ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-video"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("tour-kind").value = "story";
+            document.getElementById("tour-repertoire-performer-filter").value = "";
+            document.getElementById("tour-repertoire-show-select").value = "";
             tourKeyAutoValue = "";
             initTourForm();
         }
@@ -1828,6 +2148,82 @@
             document.getElementById("show-touring").checked = false;
             showKeyAutoValue = "";
             initShowForm();
+        }
+
+        // ── Festival form ────────────────────────────────────────────────────
+        let festivalVenueField;
+        function initFestivalForm() {
+            festivalVenueField = buildEntityField(document.getElementById("festival-venue-field"), "venue");
+            document.getElementById("festival-flyer-rows").innerHTML = "";
+            addFestivalFlyerRow();
+            document.getElementById("festival-performer-rows").innerHTML = "";
+            addFestivalPerformerRow();
+            document.getElementById("festival-stage-rows").innerHTML = "";
+        }
+
+        let festivalKeyAutoValue = "";
+        function suggestFestivalKey() {
+            const keyField = document.getElementById("festival-key");
+            if (keyField.value && keyField.value !== festivalKeyAutoValue) return;
+            const name = document.getElementById("festival-name").value.trim();
+            festivalKeyAutoValue = slugify(name);
+            keyField.value = festivalKeyAutoValue;
+        }
+
+        function addFestivalToBatch() {
+            const name = document.getElementById("festival-name").value.trim();
+            const startDate = document.getElementById("festival-start-date").value.trim();
+            const endDate = document.getElementById("festival-end-date").value.trim();
+            const venueId = resolveEntityField(festivalVenueField);
+            if (!name || !startDate || !endDate || !venueId) {
+                alert("Please fill in at least a name, start date, end date, and venue.");
+                return;
+            }
+            let key = document.getElementById("festival-key").value.trim() || slugify(name);
+            key = uniqueId(key, k => existingFestivalKeys.has(k) || batch.festivals.some(f => f.key === k));
+
+            const record = { name, start_date: startDate, end_date: endDate, venue_id: venueId };
+            const shortName = document.getElementById("festival-short-name").value.trim();
+            const primaryType = document.getElementById("festival-primary-type").value.trim();
+            const ticketUrl = document.getElementById("festival-ticket-url").value.trim();
+            const website = document.getElementById("festival-website").value.trim();
+            const facebook = document.getElementById("festival-facebook").value.trim();
+            const price = document.getElementById("festival-price").value.trim();
+            const ageBands = document.getElementById("festival-age-bands").value.trim();
+            const description = encodeParagraphBreaks(document.getElementById("festival-description").value);
+            if (shortName) record.short_name = shortName;
+            if (primaryType) record.primary_type = primaryType;
+            if (ticketUrl) record.ticket_url = ticketUrl;
+            if (website) record.website = website;
+            if (facebook) record.facebook = facebook;
+            if (price) record.price = price;
+            if (ageBands) record.age_bands = ageBands.split(",").map(s => s.trim()).filter(Boolean);
+            if (description) record.description = description;
+            if (document.getElementById("festival-performers-tbc").checked) record.performers_tbc = true;
+
+            const flyerFields = readFlyerRows(document.getElementById("festival-flyer-rows"), "event_flyer", "event_flyers");
+            if (flyerFields.event_flyer) record.event_flyer = flyerFields.event_flyer;
+            if (flyerFields.event_flyers) record.event_flyers = flyerFields.event_flyers;
+
+            const performers = readFestivalPerformerRows(document.getElementById("festival-performer-rows"));
+            if (performers.length) record.performers = performers;
+
+            const stages = readFestivalStageRows(document.getElementById("festival-stage-rows"));
+            if (stages.length) record.stages = stages;
+
+            batch.festivals.push({ key, record });
+            refreshBatchSummary();
+            clearFestivalForm();
+        }
+
+        function clearFestivalForm() {
+            ["festival-key", "festival-name", "festival-short-name", "festival-start-date", "festival-end-date",
+                "festival-primary-type", "festival-ticket-url", "festival-website", "festival-facebook",
+                "festival-price", "festival-age-bands", "festival-description"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("festival-performers-tbc").checked = false;
+            festivalKeyAutoValue = "";
+            initFestivalForm();
         }
 
         // ── Standalone new performer ─────────────────────────────────────────
@@ -2026,6 +2422,7 @@
                 ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1) })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1) })),
                 ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1) })),
+                ...batch.festivals.map((f, i) => ({ tag: "festival", label: `${f.record.name} (${f.key})`, remove: () => batch.festivals.splice(i, 1) })),
                 ...batch.podcasts.map((r, i) => ({ tag: "podcast", label: `${r.series_title} (${r.podcast_id})`, remove: () => batch.podcasts.splice(i, 1) })),
                 ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1) })),
             ];
@@ -2060,6 +2457,7 @@
             if (batch.poetryEvents.length) out.poetryEvents = batch.poetryEvents;
             if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
             if (batch.shows.length) out.repertoire_shows = Object.fromEntries(batch.shows.map(s => [s.key, s.record]));
+            if (batch.festivals.length) out.festivals = Object.fromEntries(batch.festivals.map(f => [f.key, f.record]));
             if (batch.podcasts.length) out.podcasts = batch.podcasts;
             if (batch.podcastEpisodeAdditions.length) out.podcastEpisodeAdditions = batch.podcastEpisodeAdditions;
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
@@ -2097,6 +2495,10 @@
                     .map(v => `<option value="${(v.name || "").replace(/"/g, "&quot;")}">`).join("");
             document.getElementById("clubOptions").innerHTML =
                 clubIds.map(c => `<option value="${c.replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("festivalOptions").innerHTML =
+                [...Object.keys(festivalsLookup), ...batch.festivals.map(f => f.key)]
+                    .map(id => `<option value="${id.replace(/"/g, "&quot;")}">`).join("");
+            refreshTourRepertoireOptions();
             document.getElementById("podcastOptions").innerHTML =
                 [...Object.values(podcastsLookup), ...batch.podcasts]
                     .map(p => `<option value="${(p.series_title || "").replace(/"/g, "&quot;")}">`).join("");
@@ -2609,9 +3011,12 @@
                 performersLookup = result.performersLookup;
                 venuesLookup = result.venuesLookup;
                 podcastsLookup = Object.fromEntries((result.eventsData.podcasts || []).map(p => [p.podcast_id, p]));
+                festivalsLookup = result.eventsData.festivals || {};
                 clubIds = [...new Set((result.eventsData.events || []).map(e => e.club).filter(Boolean))];
                 existingTourKeys = new Set(Object.keys(result.toursLookup || {}));
                 existingShowKeys = new Set(Object.keys(result.eventsData.repertoire_shows || {}));
+                repertoireShowsLookup = result.eventsData.repertoire_shows || {};
+                existingFestivalKeys = new Set(Object.keys(festivalsLookup));
 
                 refreshDatalists();
 
@@ -2625,12 +3030,19 @@
             initShowForm();
             initPerformerForm();
             initPodcastForm();
+            initFestivalForm();
 
             document.getElementById("tour-name").addEventListener("input", suggestTourKey);
             document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);
+            document.getElementById("tour-repertoire-performer-filter").addEventListener("change", refreshTourRepertoireShowSelect);
+            document.getElementById("tour-repertoire-show-select").addEventListener("change", () => {
+                updateTourRepertoireHint();
+                suggestTourKey();
+            });
             document.getElementById("show-showname").addEventListener("input", suggestShowKey);
             document.getElementById("show-performer-field").addEventListener("input", suggestShowKey);
             document.getElementById("podcast-title").addEventListener("input", suggestPodcastId);
+            document.getElementById("festival-name").addEventListener("input", suggestFestivalKey);
 
             document.getElementById("perf-name").addEventListener("input", updatePerfNameStatus);
 
