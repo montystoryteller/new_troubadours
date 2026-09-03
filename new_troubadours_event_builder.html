@@ -16,6 +16,40 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
     </noscript>
     <link rel="stylesheet" href="event_builder-styles.css">
+    <style>
+        /* Small persistent captions for the bare-input rows built by
+           buildSubitemList (podcast links/videos/appearances/episodes).
+           Placeholder text alone disappears once a field is filled in,
+           which makes an already-populated row ambiguous — these labels
+           stay visible regardless of content. Sized/coloured to match the
+           existing .field-hint / .entity-status convention rather than
+           introducing a new visual weight. */
+        .subitem-field-label {
+            display: block;
+            font-size: 0.78em;
+            font-weight: 600;
+            color: #757575;
+            margin-bottom: 2px;
+        }
+        .subitem-field-group {
+            display: flex;
+            flex-direction: column;
+        }
+        /* event_builder-styles.css only styles inputs inside .subitem-row-fields;
+           the podcast-episode description field is a textarea, so give it the
+           same treatment for visual consistency. */
+        .subitem-row-fields textarea {
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 50px;
+            resize: vertical;
+        }
+    </style>
 </head>
 
 <body class="page-builder">
@@ -1462,7 +1496,11 @@
                 addLabel: "Add another podcast link",
                 buildRowFields: (wrap) => {
                     wrap.className = "subitem-row-fields";
-                    wrap.innerHTML = `<input type="url" class="pl-url" placeholder="https://... (podcast episode or show page)">`;
+                    wrap.innerHTML = `
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Podcast link</label>
+                            <input type="url" class="pl-url" placeholder="https://... (podcast episode or show page)">
+                        </div>`;
                 },
             });
         }
@@ -1483,8 +1521,14 @@
                 buildRowFields: (wrap) => {
                     wrap.className = "subitem-row-fields two-col";
                     wrap.innerHTML = `
-                        <input type="text" class="ytv-story-name" placeholder="Story/piece name">
-                        <input type="url" class="ytv-url" placeholder="https://www.youtube.com/watch?v=...">`;
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Story/piece name</label>
+                            <input type="text" class="ytv-story-name" placeholder="e.g. The Selkie Wife">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">YouTube URL</label>
+                            <input type="url" class="ytv-url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>`;
                 },
             });
         }
@@ -1541,11 +1585,26 @@
                 buildRowFields: (wrap) => {
                     wrap.className = "subitem-row-fields";
                     wrap.innerHTML = `
-                        <input type="text" class="pa-podcast" list="podcastOptions" placeholder="Podcast name (matches an existing series if possible)">
-                        <input type="url" class="pa-podcast-url" placeholder="Podcast homepage URL (only needed if it's not an existing series)">
-                        <input type="text" class="pa-episode-name" placeholder="Episode title / description of the appearance">
-                        <input type="url" class="pa-audio-url" placeholder="Direct audio URL (e.g. .mp3) — required">
-                        <input type="url" class="pa-episode-url" placeholder="Episode webpage URL (optional)">`;
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Podcast name</label>
+                            <input type="text" class="pa-podcast" list="podcastOptions" placeholder="Matches an existing series if possible">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Podcast homepage URL</label>
+                            <input type="url" class="pa-podcast-url" placeholder="Only needed if it's not an existing series">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Episode title / description</label>
+                            <input type="text" class="pa-episode-name" placeholder="Episode title / description of the appearance">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Direct audio URL (required)</label>
+                            <input type="url" class="pa-audio-url" placeholder="e.g. .mp3 file — not the episode webpage">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Episode webpage URL</label>
+                            <input type="url" class="pa-episode-url" placeholder="(optional)">
+                        </div>`;
                 },
             });
         }
@@ -1639,14 +1698,38 @@
                 const fieldsWrap = document.createElement("div");
                 fieldsWrap.className = "subitem-row-fields";
                 fieldsWrap.innerHTML = `
-                    <input type="text" class="ep-title" placeholder="Episode title">
-                    <input type="url" class="ep-audio-url" placeholder="Direct audio URL (e.g. .mp3)">
-                    <input type="url" class="ep-link" placeholder="Episode webpage URL (optional)">
-                    <input type="url" class="ep-yt-url" placeholder="YouTube URL (optional, for video episodes)">
-                    <input type="text" class="ep-pubdate" placeholder="Publish date, DD/MM/YYYY (optional)">
-                    <input type="text" class="ep-duration" placeholder="Duration, e.g. 34:12 (optional)">
-                    <input type="url" class="ep-image" placeholder="Episode artwork URL (optional)">
-                    <textarea class="ep-description" placeholder="Episode description (optional)"></textarea>`;
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Episode title</label>
+                        <input type="text" class="ep-title" placeholder="Episode title">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Direct audio URL</label>
+                        <input type="url" class="ep-audio-url" placeholder="e.g. .mp3 file">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Episode webpage URL</label>
+                        <input type="url" class="ep-link" placeholder="(optional)">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">YouTube URL</label>
+                        <input type="url" class="ep-yt-url" placeholder="(optional, for video episodes)">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Publish date</label>
+                        <input type="text" class="ep-pubdate" placeholder="DD/MM/YYYY (optional)">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Duration</label>
+                        <input type="text" class="ep-duration" placeholder="e.g. 34:12 (optional)">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Episode artwork URL</label>
+                        <input type="url" class="ep-image" placeholder="(optional)">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Description</label>
+                        <textarea class="ep-description" placeholder="(optional)"></textarea>
+                    </div>`;
                 const performerWrap = document.createElement("div");
                 fieldsWrap.appendChild(performerWrap);
                 performerFields.set(row, buildPerformerIdListField(performerWrap, "Add another guest"));
