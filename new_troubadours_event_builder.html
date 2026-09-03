@@ -3259,6 +3259,36 @@
             return 2 * R * Math.asin(Math.sqrt(a));
         }
 
+        // Adds a small "▾ Hide N results" toggle above a just-populated scan
+        // results list, so a long list of suggestion rows can be collapsed
+        // out of the way once reviewed, rather than sitting open
+        // indefinitely and pushing the rest of the page down. Call this once,
+        // right after a scan handler has finished appending its result rows
+        // into resultsEl. Collapsing only hides the rows visually — it
+        // doesn't remove them, so "Generate patch"/checkbox state and any
+        // other code that reads .enrich-result-row elements is unaffected
+        // either way.
+        function addResultsCollapseToggle(resultsEl, count, noun = "result") {
+            const rowsWrap = document.createElement("div");
+            rowsWrap.className = "enrich-results-rows";
+            while (resultsEl.firstChild) rowsWrap.appendChild(resultsEl.firstChild);
+
+            const label = n => `${n} ${noun}${n === 1 ? "" : "s"}`;
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "entity-details-toggle";
+            toggle.style.marginBottom = "8px";
+            toggle.textContent = `▾ Hide ${label(count)}`;
+            toggle.addEventListener("click", () => {
+                const collapsed = rowsWrap.style.display === "none";
+                rowsWrap.style.display = collapsed ? "" : "none";
+                toggle.textContent = collapsed ? `▾ Hide ${label(count)}` : `▸ Show ${label(count)}`;
+            });
+
+            resultsEl.appendChild(toggle);
+            resultsEl.appendChild(rowsWrap);
+        }
+
         document.getElementById("enrich-file-input").addEventListener("change", async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -3509,6 +3539,7 @@
                 row._candidate = r;
                 resultsEl.appendChild(row);
             });
+            addResultsCollapseToggle(resultsEl, parsedRows.length, "suggestion");
             actionsEl.style.display = "";
             actionsEl._rows = parsedRows;
         });
@@ -3565,6 +3596,7 @@
                     </div>`;
                 resultsEl.appendChild(row);
             });
+            addResultsCollapseToggle(resultsEl, candidates.length, "venue");
             actionsEl.style.display = "";
         });
 
@@ -3646,6 +3678,7 @@
                     </div>`;
                 resultsEl.appendChild(row);
             });
+            addResultsCollapseToggle(resultsEl, candidates.length, "venue");
             actionsEl.style.display = "";
         });
 
@@ -3748,6 +3781,7 @@
                     </div>`;
                 resultsEl.appendChild(row);
             });
+            addResultsCollapseToggle(resultsEl, found.length, "possible duplicate");
         });
 
         (async () => {
