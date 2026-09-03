@@ -49,6 +49,41 @@
             min-height: 50px;
             resize: vertical;
         }
+        /* Batch summary list: Edit/Preview buttons, styled distinctly from
+           the destructive-looking Remove button (.batch-list button, red). */
+        .batch-list-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .batch-edit-btn,
+        .batch-preview-btn {
+            background: white;
+            color: var(--theme-green-dark);
+            border: 1px solid var(--theme-green);
+            border-radius: 4px;
+            padding: 3px 9px;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+        .batch-edit-btn:hover,
+        .batch-preview-btn:hover {
+            background: var(--theme-green-bg);
+        }
+        .batch-list li.batch-preview-row {
+            display: block;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-top: -2px;
+        }
+        .batch-preview-row pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.82em;
+        }
     </style>
 </head>
 
@@ -1876,14 +1911,14 @@
             });
         }
 
-        document.querySelectorAll(".type-tab").forEach(tab => {
-            tab.addEventListener("click", () => {
-                document.querySelectorAll(".type-tab").forEach(t => t.classList.remove("active"));
-                tab.classList.add("active");
-                ["event", "tour", "show", "performer", "venue", "podcast", "festival", "enrich"].forEach(t => {
-                    document.getElementById(`panel-${t}`).style.display = t === tab.dataset.type ? "" : "none";
-                });
+        function switchToTab(type) {
+            document.querySelectorAll(".type-tab").forEach(t => t.classList.toggle("active", t.dataset.type === type));
+            ["event", "tour", "show", "performer", "venue", "podcast", "festival", "enrich"].forEach(t => {
+                document.getElementById(`panel-${t}`).style.display = t === type ? "" : "none";
             });
+        }
+        document.querySelectorAll(".type-tab").forEach(tab => {
+            tab.addEventListener("click", () => switchToTab(tab.dataset.type));
         });
 
         // The Venue tab's fields are static (not dynamically rebuilt per
@@ -2728,13 +2763,15 @@
                 btn.type = "button";
                 btn.className = "add-subitem-btn";
                 btn.textContent = "Edit this record";
-                btn.addEventListener("click", () => {
-                    editing = { source, id: match.id, original: JSON.parse(JSON.stringify(match)) };
-                    populate(match);
-                    renderEditingBanner();
-                });
+                btn.addEventListener("click", () => startEditing(match, source));
                 statusEl.appendChild(span);
                 statusEl.appendChild(btn);
+            }
+
+            function startEditing(match, source) {
+                editing = { source, id: match.id, original: JSON.parse(JSON.stringify(match)) };
+                populate(match);
+                renderEditingBanner();
             }
 
             function renderEditingBanner() {
@@ -2760,6 +2797,11 @@
                     if (!name) { statusEl.innerHTML = ""; return; }
                     renderMatchPrompt(name);
                 },
+                // Jumps straight into editing a specific record without going
+                // through the name-typing match flow — used by the Batch
+                // list's "Edit" action, which already knows exactly which
+                // record it means.
+                edit(match, source) { startEditing(match, source); },
                 getEditing: () => editing,
                 reset() { editing = null; statusEl.innerHTML = ""; },
             };
@@ -3070,20 +3112,52 @@
             const emptyMsg = document.getElementById("batchEmptyMsg");
             list.innerHTML = "";
             const allItems = [
-                ...Object.keys(newPerformers).map(id => ({ tag: "performer", label: `${newPerformers[id].name} (new performer: ${id})`, remove: () => delete newPerformers[id] })),
-                ...Object.keys(updatedPerformers).map(id => ({ tag: "performer-edit", label: `${updatedPerformers[id].name} (editing existing performer: ${id})`, remove: () => delete updatedPerformers[id] })),
-                ...Object.keys(newVenues).map(id => ({ tag: "venue", label: `${newVenues[id].name} (new venue: ${id})`, remove: () => delete newVenues[id] })),
-                ...Object.keys(updatedVenues).map(id => ({ tag: "venue-edit", label: `${updatedVenues[id].name} (editing existing venue: ${id})`, remove: () => delete updatedVenues[id] })),
-                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1) })),
-                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1) })),
-                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1) })),
-                ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1) })),
-                ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1) })),
-                ...batch.festivals.map((f, i) => ({ tag: "festival", label: `${f.record.name} (${f.key})`, remove: () => batch.festivals.splice(i, 1) })),
-                ...Object.keys(updatedFestivals).map(id => ({ tag: "festival-edit", label: `${updatedFestivals[id].name} (editing existing festival: ${id})`, remove: () => delete updatedFestivals[id] })),
-                ...batch.podcasts.map((r, i) => ({ tag: "podcast", label: `${r.series_title} (${r.podcast_id})`, remove: () => batch.podcasts.splice(i, 1) })),
-                ...Object.keys(updatedPodcasts).map(id => ({ tag: "podcast-edit", label: `${updatedPodcasts[id].series_title} (editing existing podcast: ${id})`, remove: () => delete updatedPodcasts[id] })),
-                ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1) })),
+                ...Object.keys(newPerformers).map(id => ({
+                    tag: "performer", label: `${newPerformers[id].name} (new performer: ${id})`,
+                    remove: () => delete newPerformers[id], previewData: newPerformers[id],
+                    edit: () => { switchToTab("performer"); perfMatcher.edit(newPerformers[id], "batch"); },
+                })),
+                ...Object.keys(updatedPerformers).map(id => ({
+                    tag: "performer-edit", label: `${updatedPerformers[id].name} (editing existing performer: ${id})`,
+                    remove: () => delete updatedPerformers[id], previewData: updatedPerformers[id],
+                    edit: () => { switchToTab("performer"); perfMatcher.edit(updatedPerformers[id], "lookup"); },
+                })),
+                ...Object.keys(newVenues).map(id => ({
+                    tag: "venue", label: `${newVenues[id].name} (new venue: ${id})`,
+                    remove: () => delete newVenues[id], previewData: newVenues[id],
+                    edit: () => { switchToTab("venue"); venueMatcher.edit(newVenues[id], "batch"); },
+                })),
+                ...Object.keys(updatedVenues).map(id => ({
+                    tag: "venue-edit", label: `${updatedVenues[id].name} (editing existing venue: ${id})`,
+                    remove: () => delete updatedVenues[id], previewData: updatedVenues[id],
+                    edit: () => { switchToTab("venue"); venueMatcher.edit(updatedVenues[id], "lookup"); },
+                })),
+                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1), previewData: r })),
+                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r })),
+                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r })),
+                ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1), previewData: t.record })),
+                ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1), previewData: s.record })),
+                ...batch.festivals.map((f, i) => ({
+                    tag: "festival", label: `${f.record.name} (${f.key})`,
+                    remove: () => batch.festivals.splice(i, 1), previewData: f.record,
+                    edit: () => { switchToTab("festival"); festivalMatcher.edit({ id: f.key, ...f.record }, "batch"); },
+                })),
+                ...Object.keys(updatedFestivals).map(id => ({
+                    tag: "festival-edit", label: `${updatedFestivals[id].name} (editing existing festival: ${id})`,
+                    remove: () => delete updatedFestivals[id], previewData: updatedFestivals[id],
+                    edit: () => { switchToTab("festival"); festivalMatcher.edit({ id, ...updatedFestivals[id] }, "lookup"); },
+                })),
+                ...batch.podcasts.map((r, i) => ({
+                    tag: "podcast", label: `${r.series_title} (${r.podcast_id})`,
+                    remove: () => batch.podcasts.splice(i, 1), previewData: r,
+                    edit: () => { switchToTab("podcast"); podcastMatcher.edit({ id: r.podcast_id, ...r }, "batch"); },
+                })),
+                ...Object.keys(updatedPodcasts).map(id => ({
+                    tag: "podcast-edit", label: `${updatedPodcasts[id].series_title} (editing existing podcast: ${id})`,
+                    remove: () => delete updatedPodcasts[id], previewData: updatedPodcasts[id],
+                    edit: () => { switchToTab("podcast"); podcastMatcher.edit({ id, ...updatedPodcasts[id] }, "lookup"); },
+                })),
+                ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1), previewData: a })),
             ];
             emptyMsg.style.display = allItems.length ? "none" : "";
             allItems.forEach(item => {
@@ -3097,11 +3171,55 @@
                 span.textContent = item.label;
                 left.appendChild(tag);
                 left.appendChild(span);
-                const btn = document.createElement("button");
-                btn.textContent = "Remove";
-                btn.addEventListener("click", () => { item.remove(); refreshBatchSummary(); });
+
+                const actions = document.createElement("span");
+                actions.className = "batch-list-actions";
+
+                const previewBtn = document.createElement("button");
+                previewBtn.type = "button";
+                previewBtn.className = "batch-preview-btn";
+                previewBtn.textContent = "Preview";
+                previewBtn.addEventListener("click", () => {
+                    const existing = li.nextElementSibling;
+                    if (existing && existing.classList.contains("batch-preview-row") && existing._forLi === li) {
+                        existing.remove();
+                        return;
+                    }
+                    if (existing && existing.classList.contains("batch-preview-row")) existing.remove();
+                    const previewLi = document.createElement("li");
+                    previewLi.className = "batch-preview-row";
+                    previewLi._forLi = li;
+                    const pre = document.createElement("pre");
+                    pre.textContent = JSON.stringify(item.previewData, null, 2);
+                    previewLi.appendChild(pre);
+                    li.after(previewLi);
+                });
+                actions.appendChild(previewBtn);
+
+                if (item.edit) {
+                    const editBtn = document.createElement("button");
+                    editBtn.type = "button";
+                    editBtn.className = "batch-edit-btn";
+                    editBtn.textContent = "Edit";
+                    editBtn.addEventListener("click", () => {
+                        item.edit();
+                        const activeTab = document.querySelector(".type-tab.active");
+                        const panel = activeTab && document.getElementById(`panel-${activeTab.dataset.type}`);
+                        if (panel && typeof panel.scrollIntoView === "function") {
+                            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                    });
+                    actions.appendChild(editBtn);
+                }
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.textContent = "Remove";
+                removeBtn.addEventListener("click", () => { item.remove(); refreshBatchSummary(); });
+                actions.appendChild(removeBtn);
+
                 li.appendChild(left);
-                li.appendChild(btn);
+                li.appendChild(actions);
                 list.appendChild(li);
             });
         }
