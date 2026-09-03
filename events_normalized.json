@@ -5392,6 +5392,11 @@
             "performer_id": "tuup",
             "title": "Debut performance from Tuup",
             "yt_url": "https://www.youtube.com/watch?v=ROKhPjGNpMY"
+          },
+          {
+            "performer_id": "baden-prince",
+            "title": "Debut performance from Baden Prince",
+            "yt_url": "https://www.youtube.com/watch?v=RNRVjGBg16g"
           }
       ]
     },
@@ -8396,6 +8401,7 @@
       "price": "Entry on the door. £8.  £6 hardship rate,  £10 philanthropist.",
       "link": "https://www.abitcrack.com/",
       "facebook": "https://www.facebook.com/ABitCrack",
+      "fb_event": "1610755257129366",
       "isSpecial": true,
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
@@ -8829,13 +8835,13 @@
       "isSpecial": true
     },
     {
-      "name": "Mama, Me and ... [Baden Prince]",
-      "showname": "Mama, Me and ...",
+      "name": "What a Woman [Baden Prince]",
+      "showname": "What a Woman",
       "date": "04/11/2026",
       "time": "7pm",
       "club": "feastoffools",
       "price": "",
-      "description": "",
+      "description": "The joyous Antiguan-born poet, performer and storyteller Baden Prince brings 'a celebration of my Caribbean upbringing and of my grandmother who raised me.'",
       "ticket_url": "",
       "isSpecial": true,
       "fb_event": 1708196187259422,
@@ -15064,11 +15070,21 @@
       "url": "https://storyfromseeds.com/",
       "bio": "Maria was the Irish Storyteller in Residence for Kerry Writers Museum from 2019 to 2022. She was the Artistic Director for the Listowel International Storytelling Festival 2020 to 2022. Maria is currently working as an archivist with Sheahan's Storytelling Cottage in Finuge — a 300 year old traditional Rambling House in Finuge, Co. Kerry.\n\n\n\nShe is a well-known popular storyteller on the storytelling circuit in Ireland and on the Cyberspace Platform. She is a well-known Bean An Tí (Irish Session Host) on the Irish Storytelling Circuit."
     },
-    "baden-prince": {
+  "baden-prince": {
       "id": "baden-prince",
       "name": "Baden Prince",
       "url": "https://worldstorytellingcafe.com/baden-prince/",
-      "bio": "Baden Prince Baden is a writer, poet, storyteller and performer."
+      "bio": "Baden Prince Baden is a writer, poet, storyteller and performer.\n\n\n\nOver the past few years Baden has developed an impressive reputation as a storyteller, largely due to a series of appearances at the East Anglian Storytelling Festival where he has delighted and enthralled audiences young, old and young at heart. He was a featured artist at Halsway Manor's '3 Golden Apples' Storytelling Festival in October 2018, by special invitation of organiser and host Taffy Thomas MBE; has been invited to perform at events in Southend-on-Sea, Havering, Swindon and London as part of this year's National Storytelling Week; and most recently at Glastonbury and the Cambridge Folk Festival.\n\n\n\nBaden's repertoire incorporates 'traditional' tales from the Caribbean and all over the world, as well as original, self-penned material. As a writer and performer Baden engages reader and audience with a style that is warm, self-assured and displays an entertaining blend of insight and humour.",
+      "youtube_videos": [
+        {
+          "story_name": "The Cracked Pot",
+          "yt_url": "https://www.youtube.com/watch?v=J5kFu8ZpKDI"
+        },
+        {
+          "story_name": "Baden Prince at The Curious House of Stories",
+          "yt_url": "https://www.youtube.com/watch?v=Ggs__2WeB6I"
+        }
+      ]
     },
     "lynette-hill": {
       "id": "lynette-hil",
