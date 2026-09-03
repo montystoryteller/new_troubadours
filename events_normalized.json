@@ -6,6 +6,13 @@
       "promoter_link": "https://crickcrackclub.com/",
       "promoter_venues": ["the-cube-kingsdown", "hoxton-hall"],
       "promoter_artists": ["debs-newbold", "emily-hennessey", "sheema-mukherjee", "ben-haggerty", "steph-brittain"]
+    },
+    "sally-port-walks-talks": {
+      "promoter_id": "sally-port-walks-talks",
+      "name": "Sally Port Walks & Talks",
+      "promoter_link": "https://www.sallyporttours.co.uk/",
+      "promoter_venues": [],
+      "facebook": "https://www.facebook.com/profile.php?id=61565881770644"
     }
   },
   "festivals": {
@@ -1846,6 +1853,33 @@
       "description": "A fatherless son\n\nA daughter's lament\n\nA pig stolen from its spit\n\nFires burning out at sea\n\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny — an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
       "isSpecial": true
     },
+    "sally-port-history-portsmouth-pubs": {
+      "name": "History of the Hostelries of Old Portsmouth [Dave Clark]",
+      "showname": "History of the Hostelries of Old Portsmouth",
+      "show_dates": [
+        {
+          "date": "10/09/2026",
+          "time": "4-8pm, story walk",
+          "fb_event": 1716487779983120,
+          "promoter": "sally-port-walks-talks",
+          "price": "£12 (+ £1.70)",
+          "venue_id": "sally-port-inn",
+          "ticket_url": ""
+        },
+        {
+          "date": "03/10/2026",
+          "time": "1-4pm, story walk",
+          "promoter": "sally-port-walks-talks",
+          "price": "£12 (+ £1.70)",
+          "venue_id": "sally-port-inn",
+          "ticket_url": "https://www.eventbrite.co.uk/e/history-of-the-hostelries-of-old-portsmouth-tickets-1998543641832"
+        }
+      ],
+      "type": "history-walk",
+      "description": "Dive into the stories and secrets of Old Portsmouth’s oldest pubs in this fun, in-person tour!\n\n\n\nHistory of the Hostelries of Old Portsmouth\n\n\n\nJoin us in person for a fascinating dive into the oldest hostelries of Portsmouth! Discover the stories, legends, and secrets behind these historic pubs and inns that shaped the city's past. Whether you're a history buff or just curious, this event promises an informative and lively exploration (you buy your own drinks, the group supplies the fun and laughter). Don't miss out on this chance to step back in time and experience the charm of Old Portsmouth's hospitality! Starting and finishing at the historic Sally Port Inn, we aim to visit The Dolphin, The Bridge Tavern, Spice Island Inn, Still & West and the Wellington. Food can be taken at any of these famous hostelries once the tour has finished.",
+      "isSpecial": true,
+      "performer_id": "dave-clark"
+    },
     "emily-hennessey-sheema-mukherjee-girl-didnt-die": {
       "name": "The Girl Who Didn't Die [Emily Hennessey + Sheema Mukherjee]",
       "showname": "The Girl Who Didn't Die",
@@ -1896,41 +1930,42 @@
       "showname": "Doom Scrolls — The Never Ending Prophecies of the Sibyls",
       "show_dates": [
         {
-        "date": "12/09/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30pm",
-      "promoter": "crickcrack",
-      "price": "£14.43",
-      "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-oemdjrk?ref=montystoryteller.org",
-      "venue_id": "cranborne-earthouse"
+          "date": "12/09/2026",
+          "date_added": "27/06/2026",
+          "time": "7.30pm",
+          "promoter": "crickcrack",
+          "price": "£14.43",
+          "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-oemdjrk?ref=montystoryteller.org",
+          "venue_id": "cranborne-earthouse"
         },
-      {
-        "date": "17/09/2026",
-      "date_added": "27/06/2026",
-      "time": "8pm",
-      "promoter": "crickcrack",
-      "price": "£12.50",
-      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-17-sep-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-156517#e156517",
-      "venue_id": "the-cube-kingsdown"
+        {
+          "date": "17/09/2026",
+          "date_added": "27/06/2026",
+          "time": "8pm",
+          "promoter": "crickcrack",
+          "price": "£12.50",
+          "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-17-sep-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-156517#e156517",
+          "venue_id": "the-cube-kingsdown"
         },
-      {
-        "date": "23/09/2026",
-      "date_added": "27/06/2026",
-      "time": "7pm",
-      "promoter": "crickcrack",
-      "price": "£13.50",
-      "ticket_url": "https://dice.fm/event/pynn3l-fairytales-for-grown-ups-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-23rd-sep-folklore-hoxton-london-tickets",
-      "venue_id": "folklore-hoxton"
+        {
+          "date": "23/09/2026",
+          "date_added": "27/06/2026",
+          "time": "7pm",
+          "promoter": "crickcrack",
+          "price": "£13.50",
+          "ticket_url": "https://dice.fm/event/pynn3l-fairytales-for-grown-ups-doom-scrolls-the-never-ending-prophecies-of-the-sibyls-23rd-sep-folklore-hoxton-london-tickets",
+          "venue_id": "folklore-hoxton"
         },
-      {
-        "date": "24/09/2026",
-      "date_added": "27/06/2026",
-      "time": "7.30-10.30pm",
-      "promoter": "crickcrack",
-      "price": "£13",
-      "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-doom-scrolls",
-      "venue_id": "the-story-museum-oxford"
-        }],
+        {
+          "date": "24/09/2026",
+          "date_added": "27/06/2026",
+          "time": "7.30-10.30pm",
+          "promoter": "crickcrack",
+          "price": "£13",
+          "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-doom-scrolls",
+          "venue_id": "the-story-museum-oxford"
+        }
+      ],
       "description": "Possessed by gods?\n\n\n\nOff their heads on laughing gas?\n\n\n\nThe mouthpieces of the state?\n\n\n\nOr the ancient world's most influential influencers?\n\n\n\nThe prophecies of the Sibyls thread through ancient myth. Feared, revered and frequently misunderstood, the Sibyls stood at the crossroads of religion, politics and performance. Their visions promised answers while leaving everyone wondering what they actually meant.\n\n\n\nFrom a mountain in the southeast of Italy to the depths of the underworld, Lucy Lill tells the stories of the women whose words founded cities, brought down armies and caused an epic amount of confusion.\n\n\n\nShe might know your future, but that doesn't mean she's going to tell you...",
       "isSpecial": true,
       "performer_id": "lucy-lill"
@@ -8409,21 +8444,6 @@
       "date_added": "29/08/2026"
     },
     {
-      "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
-      "showname": "Stories of the Vikings: creation, destruction, magic",
-      "date": "07/09/2026",
-      "time": "7pm for 7.30pm start",
-      "club": "",
-      "price": "£15.00, Booking fee: £1.50",
-      "event_flyer": "",
-      "description": "Jason Buck Storyteller brings you another chance to see his sell-out show of the legends of the Norse, of the Viking Gods, monsters ... and plenty of giants along the way.\n\n\n\nFrom the the creation … of everything ... through adventures with Odin, Loki and Thor, to the death of the bright God Baldur, and Ragnarok … the end of everything",
-      "ticket_url": "https://wegottickets.com/af/671/f/22100",
-      "isSpecial": true,
-      "date_added": "15/08/2026",
-      "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
-    },
-    {
       "name": "The Attercliffe Stupid Club [Carmel Page]",
       "showname": "The Attercliffe Stupid Club",
       "date": "04/09/2026",
@@ -8438,6 +8458,21 @@
       "venue_id": "imperial-rooms-matlock",
       "performer_id": "carmel-page",
       "date_added": "24/08/2026"
+    },
+    {
+      "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
+      "showname": "Stories of the Vikings: creation, destruction, magic",
+      "date": "07/09/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "",
+      "price": "£15.00, Booking fee: £1.50",
+      "event_flyer": "",
+      "description": "Jason Buck Storyteller brings you another chance to see his sell-out show of the legends of the Norse, of the Viking Gods, monsters ... and plenty of giants along the way.\n\n\n\nFrom the the creation … of everything ... through adventures with Odin, Loki and Thor, to the death of the bright God Baldur, and Ragnarok … the end of everything",
+      "ticket_url": "https://wegottickets.com/af/671/f/22100",
+      "isSpecial": true,
+      "date_added": "15/08/2026",
+      "venue_id": "cafe-9-sheffield",
+      "performer_id": "jason-buck"
     },
     {
       "name": "Dark Norse - Shadows of the Vikings [Jason Buck]",
@@ -10257,6 +10292,18 @@
       "latlon": [
         52.58728,
         -2.12718
+      ]
+    },
+    "sally-port-inn": {
+      "id": "sally-port-inn",
+      "name": "Sally Port Inn, Portsmouth",
+      "city": "Portsmouth",
+      "postcode": "PO1 2LU",
+      "full_address": "Sally Port Inn, 57-58 High Street, Old Portsmouth, PO1 2LU",
+      "url": "https://thesallyport.co.uk/",
+      "latlon": [
+        50.78959,
+        -1.10523
       ]
     },
     "talliston-house": {
@@ -15367,6 +15414,12 @@
       "name": "Simon Heywood",
       "url": "https://shonaleigh.uk/about/simon-heywood/",
       "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University's National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996."
+    },
+    "dave-clark": {
+      "id": "dave-clark",
+      "name": "Dave Clark",
+      "url": "https://www.sallyporttours.co.uk/team/",
+      "bio": "Dave brings a wealth of experience and knowledge to our team, with over 40 years of service in the UK Civil Service. His career took him across the globe, working on diverse and impactful projects. As a qualified learning and development professional with diplomas in Archaeology, The Romans in Britain, and Genealogy, Dave has a passion for uncovering and sharing history.\n\n\n\nIn recent years, Dave has captivated audiences with engaging presentations on topics such as Pompeii and Herculaneum, the fascinating history of Fishbourne Roman Palace, and the intricate world of drug smuggling into the UK.\n\n\n\nDave's commitment to heritage and education extends to his time as a volunteer in visitor services at Fishbourne Roman Palace, where he delivered guided tours of the Collection’s Discovery Centre and the Palace itself. He also led historical walks through Fishbourne Village and Chichester City, bringing local history to life for visitors.\n\n\n\nDave's expertise and storytelling skills make him a valued guide and presenter, offering unique insights and unforgettable experiences."
     },
     "shonaleigh": {
       "id": "shonaleigh",
