@@ -14623,7 +14623,25 @@
       "id": "tim-ralphs",
       "name": "Tim Ralphs",
       "url": "https://timralphs.com/",
-      "bio": "Tim Ralphs is a storyteller and active exponent of narrative in art. He also works as a public engagement consultant where he focuses on connecting academic researchers with non-specialists.\n\n\n\nHis storytelling is rooted in the oral tradition: The craft of a speaker weaving language and gesture to entrance an audience and bring a tale to life.\n\n\n\n His stories are drawn from a rich medley of myth and folk tale, but also include live adaptations of absurd texts and wondrous reimaginings of classic fairytale material in evocative urban settings. As an ambassador and advocate for storytelling, Tim's repertoire reflects the need for the craft to appeal to today's listeners and tomorrow's tellers."
+      "bio": "Tim Ralphs is a storyteller and active exponent of narrative in art. He also works as a public engagement consultant where he focuses on connecting academic researchers with non-specialists.\n\n\n\nHis storytelling is rooted in the oral tradition: The craft of a speaker weaving language and gesture to entrance an audience and bring a tale to life.\n\n\n\nHis stories are drawn from a rich medley of myth and folk tale, but also include live adaptations of absurd texts and wondrous reimaginings of classic fairytale material in evocative urban settings. As an ambassador and advocate for storytelling, Tim's repertoire reflects the need for the craft to appeal to today's listeners and tomorrow's tellers.",
+      "youtube_videos": [
+        {
+          "story_name": "There came a Devil to a game of scrabble",
+          "yt_url": "https://www.youtube.com/watch?v=JKZSrsOr86U"
+        },
+        {
+          "story_name": "The Buried Moon by",
+          "yt_url": "https://www.youtube.com/watch?v=8gemIg4EpN4"
+        },
+        {
+          "story_name": "The Soul of Jonah Jones",
+          "yt_url": "https://www.youtube.com/watch?v=_-PUgzSraMM"
+        },
+        {
+          "story_name": "The fishermans heart",
+          "yt_url": "https://www.youtube.com/watch?v=kaTHvi0VONE"
+        }
+      ]
     },
     "welsh-whisperers": {
       "id": "welsh-whisperers",
