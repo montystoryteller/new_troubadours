@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data &amp; Stats — New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="stats-styles.css">
+</head>
+
+<body>
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Touring Shows</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="stats.html" aria-current="page">📊 Stats</a>
+    </nav>
+
+    <h1>Data &amp; Statistics</h1>
+    <p class="page-subtitle">The New Troubadours — computed live from events_normalized.json</p>
+
+    <div id="loadingState">Loading data…</div>
+
+    <div class="stats-share-bar" id="statsShareBar" style="display:none">
+        <button onclick="copyStatsLink()">📋 Copy link to current view</button>
+        <span id="statsCopyFeedback">✓ Link copied!</span>
+    </div>
+
+    <div id="statsContent" style="display:none;"></div>
+
+    <div class="about" id="colophon">
+        <p>Hacked together by Tony Hirst in conversation with <code>Claude.ai</code>. For corrections: <code>montystoryteller
+                AT gmail
+                DOT com</code></p>
+        <p id="dataLastUpdated"><em></em></p>
+    </div>
+
+    <script src="shared_utils.js"></script>
+    <script src="shared_guessers.js"></script>
+    <script src="stats.js"></script>
+</body>
+
+</html>
