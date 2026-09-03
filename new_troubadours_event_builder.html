@@ -361,7 +361,10 @@
 
             <div class="field-row">
                 <label>Name</label>
-                <input type="text" id="festival-name" placeholder="e.g. Bristol Storytelling Festival 2026">
+                <div>
+                    <input type="text" id="festival-name" placeholder="e.g. Bristol Storytelling Festival 2026">
+                    <div id="festival-name-status" class="entity-status"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -588,7 +591,10 @@
 
             <div class="field-row">
                 <label>Name</label>
-                <input type="text" id="venue-name" placeholder="e.g. Wardrobe Theatre">
+                <div>
+                    <input type="text" id="venue-name" placeholder="e.g. Wardrobe Theatre">
+                    <div id="venue-name-status" class="entity-status"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -670,7 +676,10 @@
 
             <div class="field-row">
                 <label>Series title</label>
-                <input type="text" id="podcast-title" placeholder="e.g. Taking Tradition On">
+                <div>
+                    <input type="text" id="podcast-title" placeholder="e.g. Taking Tradition On">
+                    <div id="podcast-title-status" class="entity-status"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -801,6 +810,14 @@
                 is different: each entry's <code>item</code> needs appending, by hand, into the
                 <code>items</code> array of the existing podcast named by its <code>podcast_id</code> —
                 it's a patch against a podcast that already exists, not a new top-level record.
+                <br><br>
+                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code> and
+                <code>updatedPodcasts</code> come from using "Edit this record" on an existing entry — each
+                is a <strong>complete, edited replacement</strong> for the entry with that same id/key, not a
+                partial patch. Overwrite the matching entry in <code>performers</code> / <code>venues</code> /
+                <code>festivals</code> / <code>podcasts</code> with it wholesale (any field you didn't touch
+                is carried over unchanged from what was loaded, but any field you cleared out will be gone
+                from the replacement — check before overwriting if that matters).
             </div>
             <div class="output-actions">
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
@@ -834,6 +851,21 @@
         let existingFestivalKeys = new Set();
         const newPerformers = {};
         const newVenues = {};
+        // Edits to records that already exist on disk (matched via the
+        // "Edit this record" flow), keyed the same as the record being
+        // edited. Kept separate from newPerformers/newVenues/etc so the
+        // batch summary and output can clearly label these as updates to
+        // existing entries rather than brand-new ones.
+        const updatedPerformers = {};
+        const updatedVenues = {};
+        const updatedFestivals = {};
+        const updatedPodcasts = {};
+        // "Edit this record" matcher handles for each single-record panel
+        // (Performer/Venue/Festival/Podcast Series) — declared up here rather
+        // than down by each panel's functions, since the Venue tab's static
+        // wiring runs (and calls initVenueMatcher()) at script-load time,
+        // before that section of the script is otherwise reached.
+        let perfMatcher, venueMatcher, festivalMatcher, podcastMatcher;
 
         // Batch of records waiting to be exported
         const batch = { events: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], podcastEpisodeAdditions: [] };
@@ -853,6 +885,13 @@
                 .map(p => p.trim())
                 .filter(p => p.length > 0)
                 .join("\n\n\n\n");
+        }
+
+        // Inverse of the above, for loading an existing record's text back
+        // into a textarea for editing — collapses the stored four-\n paragraph
+        // break down to an ordinary blank line, so it reads and edits normally.
+        function decodeParagraphBreaksForEdit(text) {
+            return (text || "").replace(/\n{3,}/g, "\n\n");
         }
 
         // ── Slugify ──────────────────────────────────────────────────────────
@@ -1313,11 +1352,25 @@
             addBtn.addEventListener("click", addRow);
             container.appendChild(addBtn);
 
-            return { rows: () => Array.from(list.children) };
+            return { rows: () => Array.from(list.children), addRow };
         }
 
         function readPerformerIdListField(field) {
             return field.rows().map(row => resolveEntityField(row._field)).filter(Boolean);
+        }
+
+        // Fills a performer-id-list field (built by buildPerformerIdListField)
+        // with a set of performer ids — used when loading an existing record
+        // into the form for editing (e.g. a troupe's members).
+        function populatePerformerIdListField(field, ids) {
+            const wanted = ids && ids.length ? ids : [""];
+            const rows = field.rows();
+            while (rows.length < wanted.length) { field.addRow(); rows.push(field.rows()[field.rows().length - 1]); }
+            field.rows().forEach((row, i) => {
+                const name = wanted[i] ? repertoirePerformerLabel(wanted[i]) : "";
+                row._field.input.value = name;
+                row._field.input.dispatchEvent(new Event("input"));
+            });
         }
 
         // Resolves a multi-performer field to { performer_id?, performer_ids?, displayName }.
@@ -1399,7 +1452,7 @@
             addBtn.addEventListener("click", addRow);
             container.appendChild(addBtn);
 
-            return { rows: () => Array.from(list.children) };
+            return { rows: () => Array.from(list.children), addRow };
         }
 
         // performer.podcast — one or more links to a podcast the performer
@@ -1417,6 +1470,10 @@
             const urls = field.rows().map(row => row.querySelector(".pl-url").value.trim()).filter(Boolean);
             if (!urls.length) return null;
             return urls.length === 1 ? urls[0] : urls;
+        }
+        function populatePodcastLinksField(field, value) {
+            const urls = value ? (Array.isArray(value) ? value : [value]) : [];
+            populateRowsBySelector(field, urls, [".pl-url"]);
         }
 
         // performer.youtube_videos
@@ -1438,6 +1495,35 @@
                     yt_url: row.querySelector(".ytv-url").value.trim(),
                 }))
                 .filter(v => v.story_name && v.yt_url);
+        }
+        function populateYoutubeVideosField(field, videos) {
+            populateRowsBySelector(field, videos || [], [
+                [".ytv-story-name", v => v.story_name],
+                [".ytv-url", v => v.yt_url],
+            ]);
+        }
+
+        // Shared helper for filling a subitem-list field's rows back in when
+        // loading an existing record for editing. `items` is the array of
+        // values to distribute one-per-row; `selectors` is either a single
+        // CSS selector (one input per row) or an array of [selector, getter]
+        // pairs for a multi-field row. Adds rows as needed, and always
+        // leaves at least the one blank starter row if `items` is empty.
+        function populateRowsBySelector(field, items, selectors) {
+            const wanted = items.length ? items : [];
+            let rows = field.rows();
+            while (rows.length < Math.max(wanted.length, 1)) { field.addRow(); rows = field.rows(); }
+            rows.forEach((row, i) => {
+                const item = wanted[i];
+                if (Array.isArray(selectors) && typeof selectors[0] === "string") {
+                    // single-field row: selectors === [".sel"]
+                    row.querySelector(selectors[0]).value = item != null ? item : "";
+                } else {
+                    selectors.forEach(([sel, getter]) => {
+                        row.querySelector(sel).value = item ? (getter(item) || "") : "";
+                    });
+                }
+            });
         }
 
         // performer.podcast_appearances — identifies the podcast either by
@@ -1462,6 +1548,18 @@
                         <input type="url" class="pa-episode-url" placeholder="Episode webpage URL (optional)">`;
                 },
             });
+        }
+        // Populates from the performer's existing (inline-only) podcast_appearances
+        // — matched appearances never get stored back onto the performer, so an
+        // existing record's array here is already exactly the one-off ones.
+        function populatePodcastAppearancesField(field, appearances) {
+            populateRowsBySelector(field, appearances || [], [
+                [".pa-podcast", a => a.podcast],
+                [".pa-podcast-url", a => a.podcast_url],
+                [".pa-episode-name", a => a.episode_name],
+                [".pa-audio-url", a => a.audio_url],
+                [".pa-episode-url", a => a.episode_url],
+            ]);
         }
         // Returns { inline, additions }.
         //   inline     — one-off appearances with no matching registered podcast;
@@ -1578,6 +1676,7 @@
             return {
                 rows: () => Array.from(list.children),
                 performerFieldFor: (row) => performerFields.get(row),
+                addRow,
             };
         }
         function readPodcastEpisodesField(field) {
@@ -1604,6 +1703,28 @@
                 else if (performerIds.length > 1) item.performer_ids = performerIds;
                 return item;
             }).filter(Boolean);
+        }
+        // Loads an existing podcast's items[] back into the episode rows for
+        // editing. Each row's guest performer list is repopulated from
+        // performer_id/performer_ids together.
+        function populatePodcastEpisodesField(field, items) {
+            const wanted = items || [];
+            let rows = field.rows();
+            while (rows.length < Math.max(wanted.length, 1)) { field.addRow(); rows = field.rows(); }
+            rows.forEach((row, i) => {
+                const item = wanted[i];
+                row.querySelector(".ep-title").value = item?.title || "";
+                row.querySelector(".ep-audio-url").value = item?.enclosureUrl || "";
+                row.querySelector(".ep-link").value = item?.link || "";
+                row.querySelector(".ep-yt-url").value = item?.yt_url || "";
+                row.querySelector(".ep-pubdate").value = item?.pubDate || "";
+                row.querySelector(".ep-duration").value = item?.duration || "";
+                row.querySelector(".ep-image").value = item?.image || "";
+                row.querySelector(".ep-description").value = decodeParagraphBreaksForEdit(item?.description);
+                const performerIds = item ? [item.performer_id, ...(item.performer_ids || [])].filter(Boolean) : [];
+                const performerField = field.performerFieldFor(row);
+                if (performerField) populatePerformerIdListField(performerField, performerIds);
+            });
         }
 
         document.querySelectorAll(".type-tab").forEach(tab => {
@@ -1633,6 +1754,8 @@
                 document.getElementById("venue-latlon").value = `${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}`;
             },
         });
+        initVenueMatcher();
+        document.getElementById("venue-name").addEventListener("input", (e) => venueMatcher.updateStatus(e.target.value.trim()));
 
         // ── Date row helpers (shared shape for tour_dates / show_dates) ────
         function flyerRowTemplate() {
@@ -2239,6 +2362,65 @@
 
         // ── Festival form ────────────────────────────────────────────────────
         let festivalVenueField;
+        function populateFestivalForm(match) {
+            document.getElementById("festival-key").value = match.id;
+            document.getElementById("festival-name").value = match.name || "";
+            document.getElementById("festival-short-name").value = match.short_name || "";
+            document.getElementById("festival-start-date").value = match.start_date || "";
+            document.getElementById("festival-end-date").value = match.end_date || "";
+            document.getElementById("festival-primary-type").value = match.primary_type || "";
+            document.getElementById("festival-ticket-url").value = match.ticket_url || "";
+            document.getElementById("festival-website").value = match.website || "";
+            document.getElementById("festival-facebook").value = match.facebook || "";
+            document.getElementById("festival-price").value = match.price || "";
+            document.getElementById("festival-age-bands").value = (match.age_bands || []).join(", ");
+            document.getElementById("festival-description").value = decodeParagraphBreaksForEdit(match.description);
+            document.getElementById("festival-performers-tbc").checked = !!match.performers_tbc;
+
+            festivalVenueField = buildEntityField(document.getElementById("festival-venue-field"), "venue");
+            const venueName = match.venue_id ? (venuesLookup[match.venue_id]?.name || newVenues[match.venue_id]?.name || match.venue_id) : "";
+            festivalVenueField.input.value = venueName;
+            festivalVenueField.input.dispatchEvent(new Event("input"));
+
+            const flyerRowsContainer = document.getElementById("festival-flyer-rows");
+            const flyerEntries = match.event_flyers
+                ? match.event_flyers.map(f => (typeof f === "string" ? { flyer: f, label: "" } : { flyer: f.flyer, label: f.label || "" }))
+                : (match.event_flyer ? [{ flyer: match.event_flyer, label: "" }] : []);
+            flyerRowsContainer.innerHTML = "";
+            addFestivalFlyerRow();
+            let flyerRows = Array.from(flyerRowsContainer.children);
+            while (flyerRows.length < Math.max(flyerEntries.length, 1)) { addFestivalFlyerRow(); flyerRows = Array.from(flyerRowsContainer.children); }
+            flyerRows.forEach((row, i) => {
+                row.querySelector(".fr-filename").value = flyerEntries[i]?.flyer || "";
+                row.querySelector(".fr-label").value = flyerEntries[i]?.label || "";
+            });
+
+            document.getElementById("festival-performer-rows").innerHTML = "";
+            addFestivalPerformerRow();
+            const perfRowsField = { rows: () => Array.from(document.getElementById("festival-performer-rows").children), addRow: addFestivalPerformerRow };
+            const wantedPerformers = match.performers && match.performers.length ? match.performers : [];
+            let pRows = perfRowsField.rows();
+            while (pRows.length < Math.max(wantedPerformers.length, 1)) { perfRowsField.addRow(); pRows = perfRowsField.rows(); }
+            pRows.forEach((row, i) => {
+                const p = wantedPerformers[i];
+                row._performerField.input.value = p ? repertoirePerformerLabel(p.performer_id) : "";
+                row._performerField.input.dispatchEvent(new Event("input"));
+                row.querySelector(".fp-role").value = p ? (p.role || "") : "";
+            });
+
+            document.getElementById("festival-stage-rows").innerHTML = "";
+            const stageRowsField = { rows: () => Array.from(document.getElementById("festival-stage-rows").children), addRow: addFestivalStageRow };
+            const wantedStages = match.stages || [];
+            if (wantedStages.length) {
+                let sRows = stageRowsField.rows();
+                while (sRows.length < wantedStages.length) { stageRowsField.addRow(); sRows = stageRowsField.rows(); }
+                sRows.forEach((row, i) => {
+                    row.querySelector(".fs-name").value = wantedStages[i]?.name || "";
+                    row.querySelector(".fs-id").value = wantedStages[i]?.stage_id || "";
+                });
+            }
+        }
+
         function initFestivalForm() {
             festivalVenueField = buildEntityField(document.getElementById("festival-venue-field"), "venue");
             document.getElementById("festival-flyer-rows").innerHTML = "";
@@ -2246,6 +2428,19 @@
             document.getElementById("festival-performer-rows").innerHTML = "";
             addFestivalPerformerRow();
             document.getElementById("festival-stage-rows").innerHTML = "";
+            festivalMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("festival-name-status"),
+                findExisting: name => {
+                    const found = Object.entries(festivalsLookup).find(([, r]) => (r.name || "").toLowerCase() === name.toLowerCase());
+                    return found ? { id: found[0], ...found[1] } : null;
+                },
+                findBatch: name => {
+                    const found = batch.festivals.find(f => (f.record.name || "").toLowerCase() === name.toLowerCase());
+                    return found ? { id: found.key, ...found.record } : null;
+                },
+                populate: populateFestivalForm,
+                entityLabel: "festival",
+            });
         }
 
         let festivalKeyAutoValue = "";
@@ -2266,8 +2461,19 @@
                 alert("Please fill in at least a name, start date, end date, and venue.");
                 return;
             }
-            let key = document.getElementById("festival-key").value.trim() || slugify(name);
-            key = uniqueId(key, k => existingFestivalKeys.has(k) || batch.festivals.some(f => f.key === k));
+            const editing = festivalMatcher.getEditing();
+            if (!editing) {
+                const existing = Object.entries(festivalsLookup).find(([, r]) => (r.name || "").toLowerCase() === name.toLowerCase())
+                    || (batch.festivals.find(f => (f.record.name || "").toLowerCase() === name.toLowerCase()) ? [null, null] : null);
+                const batchExisting = batch.festivals.find(f => (f.record.name || "").toLowerCase() === name.toLowerCase());
+                if (existing || batchExisting) {
+                    const existingId = batchExisting ? batchExisting.key : existing[0];
+                    alert(`A festival named "${name}" already exists (id: ${existingId}). Click "Edit this record" above to update it, or change the name if you meant to add a different festival.`);
+                    return;
+                }
+            }
+            let key = editing ? editing.id : (document.getElementById("festival-key").value.trim() || slugify(name));
+            if (!editing) key = uniqueId(key, k => existingFestivalKeys.has(k) || batch.festivals.some(f => f.key === k));
 
             const record = { name, start_date: startDate, end_date: endDate, venue_id: venueId };
             const shortName = document.getElementById("festival-short-name").value.trim();
@@ -2298,7 +2504,16 @@
             const stages = readFestivalStageRows(document.getElementById("festival-stage-rows"));
             if (stages.length) record.stages = stages;
 
-            batch.festivals.push({ key, record });
+            if (editing && editing.source === "batch") {
+                const idx = batch.festivals.findIndex(f => f.key === editing.id);
+                if (idx !== -1) batch.festivals[idx] = { key: editing.id, record };
+                else batch.festivals.push({ key: editing.id, record });
+            } else if (editing && editing.source === "lookup") {
+                delete updatedFestivals[key];
+                updatedFestivals[key] = record;
+            } else {
+                batch.festivals.push({ key, record });
+            }
             refreshBatchSummary();
             clearFestivalForm();
         }
@@ -2309,27 +2524,99 @@
                 "festival-price", "festival-age-bands", "festival-description"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("festival-performers-tbc").checked = false;
+            document.getElementById("festival-name-status").innerHTML = "";
             festivalKeyAutoValue = "";
             initFestivalForm();
         }
 
-        // ── Standalone new performer ─────────────────────────────────────────
-        // Live search-as-you-type against existing + session-created performers,
-        // so duplicates get spotted before "Add to batch" (which still blocks
-        // them outright).
-        function updatePerfNameStatus() {
-            const statusEl = document.getElementById("perf-name-status");
-            const name = document.getElementById("perf-name").value.trim();
-            if (!name) { statusEl.textContent = ""; statusEl.className = "entity-status"; return; }
-            const match = Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
-                || Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
-            if (match) {
-                statusEl.textContent = `Matches existing performer — id: ${match.id}`;
-                statusEl.className = "entity-status match";
-            } else {
-                statusEl.textContent = "No match — will be added as a new performer";
-                statusEl.className = "entity-status new";
+        // ── Match-existing-record helper ─────────────────────────────────────
+        // Shared by the Performer / Venue / Festival / Podcast Series panels:
+        // when the name/title typed matches an already-registered record — on
+        // disk (findExisting), or already pending in this session's batch
+        // (findBatch) — this offers an explicit "Edit this record" action
+        // rather than silently blocking or creating a same-name duplicate.
+        // The caller supplies populate(record) to fill the form when that's
+        // clicked; everything else (status text, edit/cancel banner) is
+        // handled generically. Loading only happens on the explicit click, not
+        // as-you-type, so a transient mid-typing match never clobbers fields.
+        function makeRecordMatcher({ statusEl, findExisting, findBatch, populate, entityLabel }) {
+            let editing = null; // { source: "lookup" | "batch", id, original } | null
+
+            function renderMatchPrompt(name) {
+                const batchMatch = findBatch(name);
+                const existingMatch = !batchMatch && findExisting(name);
+                const match = batchMatch || existingMatch;
+                statusEl.innerHTML = "";
+                if (!match) {
+                    const span = document.createElement("span");
+                    span.className = "entity-status new";
+                    span.textContent = `No match — will be added as a new ${entityLabel}`;
+                    statusEl.appendChild(span);
+                    return;
+                }
+                const source = batchMatch ? "batch" : "lookup";
+                const span = document.createElement("span");
+                span.className = "entity-status match";
+                span.textContent = `Matches ${source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${match.id}. `;
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "add-subitem-btn";
+                btn.textContent = "Edit this record";
+                btn.addEventListener("click", () => {
+                    editing = { source, id: match.id, original: JSON.parse(JSON.stringify(match)) };
+                    populate(match);
+                    renderEditingBanner();
+                });
+                statusEl.appendChild(span);
+                statusEl.appendChild(btn);
             }
+
+            function renderEditingBanner() {
+                statusEl.innerHTML = "";
+                const span = document.createElement("span");
+                span.className = "entity-status match";
+                span.textContent = `Editing ${editing.source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${editing.id}. Change fields below, then use "Add to batch" to save. `;
+                const cancelBtn = document.createElement("button");
+                cancelBtn.type = "button";
+                cancelBtn.className = "add-subitem-btn";
+                cancelBtn.textContent = "Cancel edit (start new instead)";
+                cancelBtn.addEventListener("click", () => {
+                    editing = null;
+                    statusEl.innerHTML = "";
+                });
+                statusEl.appendChild(span);
+                statusEl.appendChild(cancelBtn);
+            }
+
+            return {
+                updateStatus(name) {
+                    if (editing) return; // keep showing the editing banner while they tweak fields
+                    if (!name) { statusEl.innerHTML = ""; return; }
+                    renderMatchPrompt(name);
+                },
+                getEditing: () => editing,
+                reset() { editing = null; statusEl.innerHTML = ""; },
+            };
+        }
+
+        // ── Standalone new performer ─────────────────────────────────────────
+        function populatePerformerForm(record) {
+            document.getElementById("perf-name").value = record.name || "";
+            document.getElementById("perf-url").value = record.url || "";
+            document.getElementById("perf-bio").value = decodeParagraphBreaksForEdit(record.bio);
+            document.getElementById("perf-type").value = (record.type && record.type !== "troupe") ? record.type : "";
+            document.getElementById("perf-facebook").value = record.facebook || "";
+            document.getElementById("perf-facebook-group").value = record.facebook_group || "";
+            document.getElementById("perf-instagram").value = record.instagram || "";
+            document.getElementById("perf-tickets-url").value = record.tickets_url || "";
+            document.getElementById("perf-aliases").value = (record.aliases || []).join(", ");
+            document.getElementById("perf-musician").checked = !!record.musician;
+            document.getElementById("perf-poet").checked = !!record.poet;
+            document.getElementById("perf-troupe").checked = !!record.troupe || record.type === "troupe";
+            populatePodcastLinksField(perfPodcastLinks, record.podcast);
+            populateYoutubeVideosField(perfYoutubeVideos, record.youtube_videos);
+            populatePodcastAppearancesField(perfPodcastAppearances, record.podcast_appearances);
+            populatePerformerIdListField(perfMembersField, record.performer_ids);
         }
 
         let perfPodcastLinks, perfYoutubeVideos, perfPodcastAppearances, perfMembersField;
@@ -2338,6 +2625,13 @@
             perfYoutubeVideos = buildYoutubeVideosField(document.getElementById("perf-youtube-field"));
             perfPodcastAppearances = buildPodcastAppearancesField(document.getElementById("perf-podcast-appearances-field"));
             perfMembersField = buildPerformerIdListField(document.getElementById("perf-members-field"), "Add another member");
+            perfMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("perf-name-status"),
+                findExisting: name => Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                findBatch: name => Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                populate: populatePerformerForm,
+                entityLabel: "performer",
+            });
         }
 
         function addPerformerToBatch() {
@@ -2346,13 +2640,16 @@
                 alert("Please enter a name.");
                 return;
             }
-            const existing = Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
-                || Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
-            if (existing) {
-                alert(`A performer named "${name}" already exists (id: ${existing.id}). Nothing added.`);
-                return;
+            const editing = perfMatcher.getEditing();
+            if (!editing) {
+                const existing = Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
+                    || Object.values(newPerformers).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+                if (existing) {
+                    alert(`A performer named "${name}" already exists (id: ${existing.id}). Click "Edit this record" above to update it, or change the name if you meant to add someone new.`);
+                    return;
+                }
             }
-            const id = uniqueId(slugify(name), id => !!performersLookup[id] || !!newPerformers[id]);
+            const id = editing ? editing.id : uniqueId(slugify(name), id => !!performersLookup[id] || !!newPerformers[id]);
             const record = { id, name };
             const url = document.getElementById("perf-url").value.trim();
             const bio = encodeParagraphBreaks(document.getElementById("perf-bio").value);
@@ -2389,7 +2686,14 @@
                 }
             }
 
-            newPerformers[id] = record;
+            if (editing && editing.source === "batch") {
+                newPerformers[id] = record; // overwrite in place, same key
+            } else if (editing && editing.source === "lookup") {
+                delete updatedPerformers[id]; // in case of a re-edit within the same session
+                updatedPerformers[id] = record;
+            } else {
+                newPerformers[id] = record;
+            }
             refreshBatchSummary();
             clearPerformerForm();
         }
@@ -2401,26 +2705,51 @@
             document.getElementById("perf-musician").checked = false;
             document.getElementById("perf-poet").checked = false;
             document.getElementById("perf-troupe").checked = false;
-            const statusEl = document.getElementById("perf-name-status");
-            statusEl.textContent = "";
-            statusEl.className = "entity-status";
+            document.getElementById("perf-name-status").innerHTML = "";
             initPerformerForm();
         }
 
         // ── Standalone new venue ──────────────────────────────────────────────
+        function populateVenueForm(record) {
+            document.getElementById("venue-name").value = record.name || "";
+            document.getElementById("venue-city").value = record.city || "";
+            document.getElementById("venue-postcode").value = record.postcode || "";
+            document.getElementById("venue-full-address").value = record.full_address || "";
+            document.getElementById("venue-url").value = record.url || "";
+            document.getElementById("venue-tickets-url").value = record.tickets_url || "";
+            document.getElementById("venue-email").value = record.email || "";
+            document.getElementById("venue-facebook").value = record.facebook || "";
+            document.getElementById("venue-instagram").value = record.instagram || "";
+            document.getElementById("venue-description").value = decodeParagraphBreaksForEdit(record.description);
+            document.getElementById("venue-latlon").value = (record.latlon && record.latlon.length === 2) ? record.latlon.join(", ") : "";
+        }
+
+        function initVenueMatcher() {
+            venueMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("venue-name-status"),
+                findExisting: name => Object.values(venuesLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                findBatch: name => Object.values(newVenues).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                populate: populateVenueForm,
+                entityLabel: "venue",
+            });
+        }
+
         function addVenueToBatch() {
             const name = document.getElementById("venue-name").value.trim();
             if (!name) {
                 alert("Please enter a name.");
                 return;
             }
-            const existing = Object.values(venuesLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
-                || Object.values(newVenues).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
-            if (existing) {
-                alert(`A venue named "${name}" already exists (id: ${existing.id}). Nothing added.`);
-                return;
+            const editing = venueMatcher.getEditing();
+            if (!editing) {
+                const existing = Object.values(venuesLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase())
+                    || Object.values(newVenues).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
+                if (existing) {
+                    alert(`A venue named "${name}" already exists (id: ${existing.id}). Click "Edit this record" above to update it, or change the name if you meant to add somewhere new.`);
+                    return;
+                }
             }
-            const id = uniqueId(slugify(name), id => !!venuesLookup[id] || !!newVenues[id]);
+            const id = editing ? editing.id : uniqueId(slugify(name), id => !!venuesLookup[id] || !!newVenues[id]);
             const record = { id, name };
             const city = document.getElementById("venue-city").value.trim();
             const postcode = document.getElementById("venue-postcode").value.trim();
@@ -2446,7 +2775,14 @@
                 if (parts.length === 2 && parts.every(n => !isNaN(n))) record.latlon = parts;
             }
 
-            newVenues[id] = record;
+            if (editing && editing.source === "batch") {
+                newVenues[id] = record;
+            } else if (editing && editing.source === "lookup") {
+                delete updatedVenues[id];
+                updatedVenues[id] = record;
+            } else {
+                newVenues[id] = record;
+            }
             refreshBatchSummary();
             clearVenueForm();
         }
@@ -2456,6 +2792,8 @@
                 "venue-tickets-url", "venue-email", "venue-facebook", "venue-instagram",
                 "venue-description", "venue-latlon"]
                 .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("venue-name-status").innerHTML = "";
+            initVenueMatcher();
         }
 
         // ── Standalone podcast series ────────────────────────────────────────
@@ -2469,8 +2807,33 @@
         }
 
         let podcastEpisodesField;
+        function populatePodcastForm(match) {
+            document.getElementById("podcast-key").value = match.id;
+            document.getElementById("podcast-title").value = match.series_title || "";
+            document.getElementById("podcast-presenter").value = match.presenter || "";
+            document.getElementById("podcast-schedule").value = match.schedule || "";
+            document.getElementById("podcast-url").value = match.url || "";
+            document.getElementById("podcast-type").value = match.type || "";
+            document.getElementById("podcast-format").value = match.format || "";
+            podcastEpisodesField = buildPodcastEpisodesField(document.getElementById("podcast-episodes-field"));
+            populatePodcastEpisodesField(podcastEpisodesField, match.items);
+        }
+
         function initPodcastForm() {
             podcastEpisodesField = buildPodcastEpisodesField(document.getElementById("podcast-episodes-field"));
+            podcastMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("podcast-title-status"),
+                findExisting: title => {
+                    const found = Object.values(podcastsLookup).find(p => (p.series_title || "").toLowerCase() === title.toLowerCase());
+                    return found ? { id: found.podcast_id, ...found } : null;
+                },
+                findBatch: title => {
+                    const found = batch.podcasts.find(p => (p.series_title || "").toLowerCase() === title.toLowerCase());
+                    return found ? { id: found.podcast_id, ...found } : null;
+                },
+                populate: populatePodcastForm,
+                entityLabel: "podcast series",
+            });
         }
 
         function addPodcastToBatch() {
@@ -2479,8 +2842,17 @@
                 alert("Please enter a series title.");
                 return;
             }
-            let key = document.getElementById("podcast-key").value.trim() || slugify(seriesTitle);
-            key = uniqueId(key, k => !!podcastsLookup[k] || batch.podcasts.some(p => p.podcast_id === k));
+            const editing = podcastMatcher.getEditing();
+            if (!editing) {
+                const existing = Object.values(podcastsLookup).find(p => (p.series_title || "").toLowerCase() === seriesTitle.toLowerCase())
+                    || batch.podcasts.find(p => (p.series_title || "").toLowerCase() === seriesTitle.toLowerCase());
+                if (existing) {
+                    alert(`A podcast series named "${seriesTitle}" already exists (id: ${existing.podcast_id}). Click "Edit this record" above to update it, or change the title if you meant to add a different series.`);
+                    return;
+                }
+            }
+            let key = editing ? editing.id : (document.getElementById("podcast-key").value.trim() || slugify(seriesTitle));
+            if (!editing) key = uniqueId(key, k => !!podcastsLookup[k] || batch.podcasts.some(p => p.podcast_id === k));
 
             const record = { podcast_id: key, series_title: seriesTitle };
             const presenter = document.getElementById("podcast-presenter").value.trim();
@@ -2496,7 +2868,16 @@
             const items = readPodcastEpisodesField(podcastEpisodesField);
             if (items.length) record.items = items;
 
-            batch.podcasts.push(record);
+            if (editing && editing.source === "batch") {
+                const idx = batch.podcasts.findIndex(p => p.podcast_id === editing.id);
+                if (idx !== -1) batch.podcasts[idx] = record;
+                else batch.podcasts.push(record);
+            } else if (editing && editing.source === "lookup") {
+                delete updatedPodcasts[key];
+                updatedPodcasts[key] = record;
+            } else {
+                batch.podcasts.push(record);
+            }
             refreshBatchSummary();
             clearPodcastForm();
         }
@@ -2505,6 +2886,7 @@
             ["podcast-key", "podcast-title", "podcast-presenter", "podcast-schedule", "podcast-url", "podcast-format"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("podcast-type").value = "";
+            document.getElementById("podcast-title-status").innerHTML = "";
             podcastKeyAutoValue = "";
             initPodcastForm();
         }
@@ -2517,14 +2899,18 @@
             list.innerHTML = "";
             const allItems = [
                 ...Object.keys(newPerformers).map(id => ({ tag: "performer", label: `${newPerformers[id].name} (new performer: ${id})`, remove: () => delete newPerformers[id] })),
+                ...Object.keys(updatedPerformers).map(id => ({ tag: "performer-edit", label: `${updatedPerformers[id].name} (editing existing performer: ${id})`, remove: () => delete updatedPerformers[id] })),
                 ...Object.keys(newVenues).map(id => ({ tag: "venue", label: `${newVenues[id].name} (new venue: ${id})`, remove: () => delete newVenues[id] })),
+                ...Object.keys(updatedVenues).map(id => ({ tag: "venue-edit", label: `${updatedVenues[id].name} (editing existing venue: ${id})`, remove: () => delete updatedVenues[id] })),
                 ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1) })),
                 ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1) })),
                 ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1) })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1) })),
                 ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1) })),
                 ...batch.festivals.map((f, i) => ({ tag: "festival", label: `${f.record.name} (${f.key})`, remove: () => batch.festivals.splice(i, 1) })),
+                ...Object.keys(updatedFestivals).map(id => ({ tag: "festival-edit", label: `${updatedFestivals[id].name} (editing existing festival: ${id})`, remove: () => delete updatedFestivals[id] })),
                 ...batch.podcasts.map((r, i) => ({ tag: "podcast", label: `${r.series_title} (${r.podcast_id})`, remove: () => batch.podcasts.splice(i, 1) })),
+                ...Object.keys(updatedPodcasts).map(id => ({ tag: "podcast-edit", label: `${updatedPodcasts[id].series_title} (editing existing podcast: ${id})`, remove: () => delete updatedPodcasts[id] })),
                 ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1) })),
             ];
             emptyMsg.style.display = allItems.length ? "none" : "";
@@ -2552,14 +2938,18 @@
         function generateOutput() {
             const out = {};
             if (Object.keys(newPerformers).length) out.newPerformers = newPerformers;
+            if (Object.keys(updatedPerformers).length) out.updatedPerformers = updatedPerformers;
             if (Object.keys(newVenues).length) out.newVenues = newVenues;
+            if (Object.keys(updatedVenues).length) out.updatedVenues = updatedVenues;
             if (batch.events.length) out.specificEvents = batch.events;
             if (batch.musicEvents.length) out.musicEvents = batch.musicEvents;
             if (batch.poetryEvents.length) out.poetryEvents = batch.poetryEvents;
             if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
             if (batch.shows.length) out.repertoire_shows = Object.fromEntries(batch.shows.map(s => [s.key, s.record]));
             if (batch.festivals.length) out.festivals = Object.fromEntries(batch.festivals.map(f => [f.key, f.record]));
+            if (Object.keys(updatedFestivals).length) out.updatedFestivals = updatedFestivals;
             if (batch.podcasts.length) out.podcasts = batch.podcasts;
+            if (Object.keys(updatedPodcasts).length) out.updatedPodcasts = updatedPodcasts;
             if (batch.podcastEpisodeAdditions.length) out.podcastEpisodeAdditions = batch.podcastEpisodeAdditions;
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
         }
@@ -3142,10 +3532,16 @@
             });
             document.getElementById("show-showname").addEventListener("input", suggestShowKey);
             document.getElementById("show-performer-field").addEventListener("input", suggestShowKey);
-            document.getElementById("podcast-title").addEventListener("input", suggestPodcastId);
-            document.getElementById("festival-name").addEventListener("input", suggestFestivalKey);
+            document.getElementById("podcast-title").addEventListener("input", (e) => {
+                suggestPodcastId();
+                podcastMatcher.updateStatus(e.target.value.trim());
+            });
+            document.getElementById("festival-name").addEventListener("input", (e) => {
+                suggestFestivalKey();
+                festivalMatcher.updateStatus(e.target.value.trim());
+            });
 
-            document.getElementById("perf-name").addEventListener("input", updatePerfNameStatus);
+            document.getElementById("perf-name").addEventListener("input", (e) => perfMatcher.updateStatus(e.target.value.trim()));
 
             refreshBatchSummary();
         })();
