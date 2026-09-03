@@ -1027,12 +1027,12 @@
                     button: detailsPanel.querySelector(".entity-geocode-btn"),
                     statusEl: detailsPanel.querySelector(".entity-geocode-status"),
                     mapEl: detailsPanel.querySelector(".entity-geocode-map"),
-                    getQuery: () => [
-                        input.value.trim(),
-                        detailsPanel.querySelector('[data-field="full_address"]').value.trim(),
-                        detailsPanel.querySelector('[data-field="postcode"]').value.trim(),
-                        detailsPanel.querySelector('[data-field="city"]').value.trim(),
-                    ].filter(Boolean).join(", "),
+                    getCandidates: () => buildVenueGeocodeCandidates({
+                        name: input.value.trim(),
+                        fullAddress: detailsPanel.querySelector('[data-field="full_address"]').value.trim(),
+                        postcode: detailsPanel.querySelector('[data-field="postcode"]').value.trim(),
+                        city: detailsPanel.querySelector('[data-field="city"]').value.trim(),
+                    }),
                     onResult: (r) => {
                         detailsPanel.querySelector('[data-field="latlon"]').value = `${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}`;
                     },
@@ -1235,33 +1235,66 @@
             };
         }
 
+        // Builds an ordered list of geocoding queries to try, from most to
+        // least specific. Nominatim's free-form search is well known to
+        // return zero results when a business/POI name is combined with a
+        // full street address in one query — even when either piece alone
+        // would resolve fine (see e.g. github.com/osm-search/Nominatim
+        // issues #164, #1224) — so rather than a single query, this tries a
+        // cascade: the fullest address-only string first, then a bare
+        // postcode (by far the most reliably-matched single thing in the
+        // UK), then the venue name with just its city, as a last resort for
+        // a named point of interest with no confidently-parseable address.
+        // Full_address, when given, is trusted as already a complete line
+        // (street, town, postcode) — it's used alone rather than also
+        // tacking the individual postcode/city fields on top of it, which
+        // just produces a garbled, duplicated query.
+        function buildVenueGeocodeCandidates({ name, fullAddress, postcode, city }) {
+            const candidates = [];
+            const primary = fullAddress || [name, city, postcode].filter(Boolean).join(", ");
+            if (primary) candidates.push(primary);
+            if (postcode && postcode !== primary) candidates.push(postcode);
+            const nameAndCity = [name, city].filter(Boolean).join(", ");
+            if (nameAndCity && nameAndCity !== primary) candidates.push(nameAndCity);
+            return [...new Set(candidates)].map(q => `${q}, UK`);
+        }
+
         // Wires a "Geocode" button + adjacent status line (and, optionally, a
         // small preview map) to a query-builder and a result-handler, so the
         // same flow can be reused anywhere a venue's lat/lon needs filling in.
-        function wireGeocodeButton({ button, statusEl, mapEl, getQuery, onResult }) {
+        function wireGeocodeButton({ button, statusEl, mapEl, getCandidates, onResult }) {
             let previewMap = null;
             let previewMarker = null;
             button.addEventListener("click", async () => {
-                const query = (getQuery() || "").trim();
+                const candidates = (getCandidates() || []).map(q => q.trim()).filter(Boolean);
                 if (mapEl) mapEl.style.display = "none";
-                if (!query) {
+                if (!candidates.length) {
                     statusEl.textContent = "Enter a venue name or address first.";
                     statusEl.className = "geocode-status geocode-status-error";
                     return;
                 }
                 const originalText = button.textContent;
                 button.disabled = true;
-                button.textContent = "Geocoding…";
                 statusEl.textContent = "";
                 statusEl.className = "geocode-status";
                 try {
-                    const result = await geocodeQuery(query);
+                    let result = null;
+                    let matchedQuery = null;
+                    for (const query of candidates) {
+                        button.textContent = candidates.length > 1 ? `Geocoding (trying "${query}")…` : "Geocoding…";
+                        result = await geocodeQuery(query);
+                        if (result) { matchedQuery = query; break; }
+                    }
                     if (!result) {
-                        statusEl.textContent = `No match found for "${query}".`;
+                        const triedList = candidates.map(q => `"${q}"`).join(", ");
+                        statusEl.textContent = candidates.length > 1
+                            ? `No match found. Tried: ${triedList}.`
+                            : `No match found for ${triedList}.`;
                         statusEl.className = "geocode-status geocode-status-error";
                     } else {
                         onResult(result);
-                        statusEl.innerHTML = `Matched: ${result.display_name} — <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank" rel="noopener">© OpenStreetMap contributors</a>`;
+                        const viaNote = (matchedQuery !== candidates[0]) ? ` (matched via "${matchedQuery}")` : "";
+                        statusEl.innerHTML = `Matched: ${result.display_name}${viaNote} — <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank" rel="noopener">© OpenStreetMap contributors</a>`;
                         statusEl.className = "geocode-status geocode-status-ok";
                         if (mapEl) {
                             mapEl.style.display = "block";
@@ -1827,12 +1860,12 @@
             button: document.getElementById("venue-geocode-btn"),
             statusEl: document.getElementById("venue-geocode-status"),
             mapEl: document.getElementById("venue-geocode-map"),
-            getQuery: () => [
-                document.getElementById("venue-name").value.trim(),
-                document.getElementById("venue-full-address").value.trim(),
-                document.getElementById("venue-postcode").value.trim(),
-                document.getElementById("venue-city").value.trim(),
-            ].filter(Boolean).join(", "),
+            getCandidates: () => buildVenueGeocodeCandidates({
+                name: document.getElementById("venue-name").value.trim(),
+                fullAddress: document.getElementById("venue-full-address").value.trim(),
+                postcode: document.getElementById("venue-postcode").value.trim(),
+                city: document.getElementById("venue-city").value.trim(),
+            }),
             onResult: (r) => {
                 document.getElementById("venue-latlon").value = `${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}`;
             },
