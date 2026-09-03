@@ -632,6 +632,15 @@
             </div>
 
             <div class="field-row">
+                <label>Venue type</label>
+                <div>
+                    <input type="text" id="venue-type" list="venueTypeOptions"
+                        placeholder="e.g. Pub / bar / café — pick a suggestion, type your own, or leave blank">
+                    <div class="field-hint" id="venue-type-hint"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>City</label>
                 <input type="text" id="venue-city">
             </div>
@@ -821,6 +830,28 @@
             </div>
 
             <div class="enrich-section">
+                <h3>🏷️ Suggested venue types</h3>
+                <p class="field-hint">
+                    Scans venues with no <code>venue_type</code> set, and suggests one using the same
+                    name-based heuristic the Stats page uses to categorise venues (see
+                    <code>shared_guessers.js</code>). A guess of "Other / unknown" is left unchecked by
+                    default, since it's not really telling you anything — review the rest before applying.
+                </p>
+                <button class="btn-add-batch" id="enrich-venuetype-scan-btn" disabled>Scan for suggested venue
+                    types</button>
+                <div id="enrich-venuetype-results"></div>
+                <div class="btn-row" id="enrich-venuetype-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-venuetype-generate-btn">Generate patch from
+                        checked rows</button>
+                </div>
+                <textarea id="enrich-venuetype-output" readonly style="display:none;"></textarea>
+                <div class="btn-row" id="enrich-venuetype-output-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-venuetype-copy-btn">Copy to clipboard</button>
+                    <button class="btn-secondary-action" id="enrich-venuetype-download-btn">Download .json</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>🔁 Possible duplicate venues</h3>
                 <p class="field-hint">
                     Flags venue pairs with similar names, a matching postcode, or coordinates within about
@@ -866,12 +897,14 @@
 
     <datalist id="performerOptions"></datalist>
     <datalist id="venueOptions"></datalist>
+    <datalist id="venueTypeOptions"></datalist>
     <datalist id="clubOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="shared_utils.js"></script>
+    <script src="shared_guessers.js"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
         let performersLookup = {};
@@ -1871,7 +1904,24 @@
             },
         });
         initVenueMatcher();
-        document.getElementById("venue-name").addEventListener("input", (e) => venueMatcher.updateStatus(e.target.value.trim()));
+        document.getElementById("venueTypeOptions").innerHTML =
+            VENUE_TYPE_SUGGESTIONS.map(t => `<option value="${t.replace(/"/g, "&quot;")}">`).join("");
+        let venueTypeAutoValue = "";
+        document.getElementById("venue-name").addEventListener("input", (e) => {
+            venueMatcher.updateStatus(e.target.value.trim());
+            // Auto-suggest a venue type from the name, the same heuristic the
+            // stats page uses to categorise venues — but only while the field
+            // is still empty or holds our own last suggestion, so it never
+            // overwrites something the person typed or picked themselves.
+            const typeField = document.getElementById("venue-type");
+            if (typeField.value && typeField.value !== venueTypeAutoValue) return;
+            const name = e.target.value.trim();
+            if (!name) { typeField.value = ""; venueTypeAutoValue = ""; document.getElementById("venue-type-hint").textContent = ""; return; }
+            venueTypeAutoValue = classifyVenueType(name);
+            typeField.value = venueTypeAutoValue;
+            document.getElementById("venue-type-hint").textContent =
+                `Suggested from the venue name — edit, pick a different option, or clear it if this doesn't fit.`;
+        });
 
         // ── Date row helpers (shared shape for tour_dates / show_dates) ────
         function flyerRowTemplate() {
@@ -2828,6 +2878,8 @@
         // ── Standalone new venue ──────────────────────────────────────────────
         function populateVenueForm(record) {
             document.getElementById("venue-name").value = record.name || "";
+            document.getElementById("venue-type").value = record.venue_type || "";
+            document.getElementById("venue-type-hint").textContent = "";
             document.getElementById("venue-city").value = record.city || "";
             document.getElementById("venue-postcode").value = record.postcode || "";
             document.getElementById("venue-full-address").value = record.full_address || "";
@@ -2867,6 +2919,7 @@
             }
             const id = editing ? editing.id : uniqueId(slugify(name), id => !!venuesLookup[id] || !!newVenues[id]);
             const record = { id, name };
+            const venueType = document.getElementById("venue-type").value.trim();
             const city = document.getElementById("venue-city").value.trim();
             const postcode = document.getElementById("venue-postcode").value.trim();
             const fullAddress = document.getElementById("venue-full-address").value.trim();
@@ -2877,6 +2930,7 @@
             const instagram = document.getElementById("venue-instagram").value.trim();
             const description = encodeParagraphBreaks(document.getElementById("venue-description").value);
             const latlonRaw = document.getElementById("venue-latlon").value.trim();
+            if (venueType) record.venue_type = venueType;
             if (city) record.city = city;
             if (postcode) record.postcode = postcode;
             if (fullAddress) record.full_address = fullAddress;
@@ -2904,11 +2958,13 @@
         }
 
         function clearVenueForm() {
-            ["venue-name", "venue-city", "venue-postcode", "venue-full-address", "venue-url",
+            ["venue-name", "venue-type", "venue-city", "venue-postcode", "venue-full-address", "venue-url",
                 "venue-tickets-url", "venue-email", "venue-facebook", "venue-instagram",
                 "venue-description", "venue-latlon"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("venue-name-status").innerHTML = "";
+            document.getElementById("venue-type-hint").textContent = "";
+            venueTypeAutoValue = "";
             initVenueMatcher();
         }
 
@@ -3213,6 +3269,7 @@
                 const venueCount = Object.keys(enrichedData.venues || {}).length;
                 statusEl.textContent = `Loaded ${venueCount} venues from "${file.name}".`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = false;
+                document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
@@ -3220,6 +3277,7 @@
                 enrichedData = null;
                 statusEl.textContent = `Couldn't read that file as JSON: ${err.message}`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = true;
+                document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
@@ -3546,6 +3604,87 @@
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = "postcode-patch.json";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        // -- Suggested venue types -----------------------------------------------
+        // Reuses classifyVenueType() from shared_guessers.js — the exact same
+        // heuristic the Stats page uses — so a suggestion here always matches
+        // what that venue would already be categorised as over there.
+        document.getElementById("enrich-venuetype-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-venuetype-results");
+            const actionsEl = document.getElementById("enrich-venuetype-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData || !enrichedData.venues) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No venues to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const candidates = [];
+            Object.entries(enrichedData.venues).forEach(([id, v]) => {
+                if (v.venue_type) return;
+                const candidate = classifyVenueType(v.name);
+                candidates.push({ id, name: v.name || id, candidate });
+            });
+            if (!candidates.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No venues missing a venue_type.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            candidates.forEach(c => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.venueId = c.id;
+                row.dataset.venueType = c.candidate;
+                const isUnknown = c.candidate === "Other / unknown";
+                row.innerHTML = `
+                    <input type="checkbox" ${isUnknown ? "" : "checked"} class="enrich-venuetype-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${c.name}</div>
+                        <div class="enrich-result-detail">Suggested type: <strong>${c.candidate}</strong></div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-venuetype-generate-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-venuetype-results .enrich-result-row");
+            const patch = { venues: {} };
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-venuetype-check");
+                if (!checkbox.checked) return;
+                patch.venues[row.dataset.venueId] = { venue_type: row.dataset.venueType };
+                if (enrichedData && enrichedData.venues && enrichedData.venues[row.dataset.venueId]) {
+                    enrichedData.venues[row.dataset.venueId].venue_type = row.dataset.venueType;
+                }
+            });
+            const output = document.getElementById("enrich-venuetype-output");
+            const outputActions = document.getElementById("enrich-venuetype-output-actions");
+            if (!Object.keys(patch.venues).length) {
+                output.style.display = "none";
+                outputActions.style.display = "none";
+                alert("No rows checked.");
+                return;
+            }
+            output.value = JSON.stringify(patch, null, 2);
+            output.style.display = "";
+            outputActions.style.display = "";
+            markEnrichedDataDirty();
+        });
+
+        document.getElementById("enrich-venuetype-copy-btn").addEventListener("click", () => {
+            const output = document.getElementById("enrich-venuetype-output");
+            navigator.clipboard.writeText(output.value);
+        });
+
+        document.getElementById("enrich-venuetype-download-btn").addEventListener("click", () => {
+            const output = document.getElementById("enrich-venuetype-output");
+            const blob = new Blob([output.value], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "venue-type-patch.json";
             a.click();
             URL.revokeObjectURL(a.href);
         });
