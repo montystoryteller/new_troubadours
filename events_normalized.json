@@ -8723,9 +8723,9 @@
       "date": "07/10/2026",
       "time": "7pm",
       "club": "feastoffools",
-      "price": "",
+      "price": "General admission: £5.40 + £0.60 / Confirmed performer: £3.60 + £0.40",
       "description": "Join us for the latest in our series of Teller's Special nights, where we give the first half to a handful of our regular story tellers, then concentrate on one performer for the second half. This time we feature Lynette Hill and her story of Horse. Creatures of wind and storm, so we are told, horses were first created by the gods to carry messages between Heaven and Earth. Or are they descended from dragons and intended as sacred gifts to help people carry their burdens Lynette Hill tells the stories of how horses became humanity's companions and what happened next...",
-      "ticket_url": "",
+      "ticket_url": "https://wegottickets.com/f/26997",
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "lynette-hill"
@@ -8743,6 +8743,18 @@
       "time": "7.30pm for 8pm",
       "club": "blast",
       "price": "£10",
+      "isSpecial": true
+    },
+    {
+      "name": "Folk Horror Stories [Daniel Morden]",
+      "showname": "Folk Horror Stories",
+      "date": "15/10/2026",
+      "venue_id": "the-riverfront-newport",
+      "performer_id": "daniel-morden",
+      "date_added": "03/09/2026",
+      "price": "£14",
+      "description": "Ancient folklore meets modern anxiety... Dive into the eerie and unsettling world of Folk Horror. Contemporary authors and film-makers draw on the archiac folk and fairytales of our ancestors to reveal another, more precarious relationship with our environment -in which we are no longer in charge... Expect shapeshifters, foolhardy pacts and unquiet graves. Don't expect happily ever after!",
+      "ticket_url": "https://newportlive.ticketsolve.com/ticketbooth/shows/1173675973",
       "isSpecial": true
     },
     {
@@ -15044,7 +15056,7 @@
       "id": "lynette-hil",
       "name": "Lynette Hill",
       "url": "https://www.facebook.com/lynettehilluk",
-      "bio": "Joyous creator and teller of tall tales and 2023 Bard of Stony Stratford"
+      "bio": "Lynette Hill is a Milton Keynes-based writer and performance storyteller who served as 2023 Bard of Stony Stratford. She has been telling tales comic, spooky and historic at festivals, schools, care homes and multi-faith events in Buckinghamshire, Northamptonshire and beyond since 2015.\n\n\n\nShe founded and hosts Bletchley's monthly storytelling show for grownups, Tales Tattled & Told  and is the author of the fantasy novel series The Glass Singers. A former newspaper reporter, she has written for The Washington Post, the Public Medical News and other print and online media outlets.\n\n\n\nYou can also catch her at 2 pm on most Tuesdays telling Tall Tales at the Hospital on Milton Keynes Hospital radio."
     },
     "liz-weir": {
       "id": "liz-weir",
