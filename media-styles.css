@@ -203,7 +203,7 @@ details.media-group-details[open] > .media-group-summary::before {
 }
 
 /* ── Video cards (same component as the Video Trailers section
-    on new_troubadours_flyers.html) ─────────────────────── */
+    on flyers.html) ─────────────────────── */
 .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

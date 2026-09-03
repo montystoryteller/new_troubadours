@@ -25,7 +25,7 @@ const MONTHS = [
 const BASE_EVENT = "./storyclub_assets/event_flyers/";
 const BASE_CLUB = "./storyclub_assets/club_flyers/";
 
-const CALENDAR = "new_troubadours_event_guide.html";
+const CALENDAR = "event_guide.html";
 
 function escapeHtml(text) {
   if (!text) return "";
@@ -119,7 +119,7 @@ function openCtxMenu(item, x, y) {
 
   // Internal pages
   if (item.type === "tour" && item.tourKey) {
-    let tourUrl = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(item.tourKey)}`;
+    let tourUrl = `tour_guide.html?tour=${encodeURIComponent(item.tourKey)}`;
     if (item.performerId)
       tourUrl += `&performer=${encodeURIComponent(item.performerId)}`;
     menuItem("🗺", "Tour dates & map", tourUrl);
@@ -128,7 +128,7 @@ function openCtxMenu(item, x, y) {
     menuItem(
       "ℹ️",
       "Club page",
-      `new_troubadours_storyclub.html?club=${encodeURIComponent(item.clubId)}`,
+      `storyclub.html?club=${encodeURIComponent(item.clubId)}`,
     );
   }
 

@@ -77,7 +77,7 @@ function makeMediaGroupDetails(group, noun, buildBody, defaultOpen) {
   const summary = document.createElement("summary");
   summary.className = "media-group-summary";
   const link = document.createElement("a");
-  link.href = `new_troubadours_performers.html?performer=${encodeURIComponent(group.performerId)}`;
+  link.href = `performers.html?performer=${encodeURIComponent(group.performerId)}`;
   link.textContent = group.performerName;
   // Don't let a click on the performer's own name also toggle the
   // accordion open/closed — it should just navigate.
@@ -150,10 +150,9 @@ function getNowPlayingPanel() {
   title.className = "now-playing-title";
   panel.appendChild(title);
 
-  document.getElementById("watchGroups").insertAdjacentElement(
-    "beforebegin",
-    panel,
-  );
+  document
+    .getElementById("watchGroups")
+    .insertAdjacentElement("beforebegin", panel);
   return panel;
 }
 
@@ -449,11 +448,13 @@ function readSeriesLockFromUrl() {
   label.textContent = `Showing: ${seriesName}`;
   banner.appendChild(label);
   const clear = document.createElement("a");
-  clear.href = "new_troubadours_media.html";
+  clear.href = "media.html";
   clear.className = "series-lock-clear";
   clear.textContent = "✕ Show everything";
   banner.appendChild(clear);
-  document.querySelector(".filter-bar").insertAdjacentElement("afterend", banner);
+  document
+    .querySelector(".filter-bar")
+    .insertAdjacentElement("afterend", banner);
 }
 
 function applyFilter() {

@@ -1,5 +1,5 @@
 // festival_display.js
-// Drives new_troubadours_festival.html
+// Drives festival.html
 // Depends on shared_utils.js being loaded first.
 
 let map;
@@ -730,7 +730,7 @@ function showCfTooltip(item, anchor) {
           p.appendChild(document.createTextNode(", "));
         }
         const perfLink = document.createElement("a");
-        perfLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(perfId)}`;
+        perfLink.href = `performers.html?performer=${encodeURIComponent(perfId)}`;
         perfLink.style.cssText =
           "color:inherit;text-decoration:underline;cursor:pointer;";
         perfLink.title = `View ${performersLookup[perfId]?.name || perfId} profile`;
@@ -749,7 +749,7 @@ function showCfTooltip(item, anchor) {
     h.className = "cf-tooltip-host";
     if (item.hostId) {
       const a = document.createElement("a");
-      a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(item.hostId)}`;
+      a.href = `performers.html?performer=${encodeURIComponent(item.hostId)}`;
       a.className = "cf-tooltip-host-link";
       a.textContent = item.host;
       h.appendChild(document.createTextNode("Hosted by "));
@@ -773,7 +773,7 @@ function showCfTooltip(item, anchor) {
     const venueName = venuesLookup[item.venueId].name;
     stageEl.appendChild(document.createTextNode("📍 "));
     const venueLink = document.createElement("a");
-    venueLink.href = `new_troubadours_venues.html?venue=${encodeURIComponent(item.venueId)}`;
+    venueLink.href = `venues.html?venue=${encodeURIComponent(item.venueId)}`;
     venueLink.style.cssText =
       "color:inherit;text-decoration:underline;cursor:pointer;";
     venueLink.title = `View ${venueName} page`;
@@ -982,7 +982,7 @@ function displayFestival(festivalId) {
     }
     if (fest.venue_id) {
       const vl = document.createElement("a");
-      vl.href = `new_troubadours_venues.html?venue=${encodeURIComponent(fest.venue_id)}`;
+      vl.href = `venues.html?venue=${encodeURIComponent(fest.venue_id)}`;
       vl.className = "venue-page-link";
       vl.textContent = "i";
       venueEl.appendChild(vl);
@@ -1032,7 +1032,9 @@ function displayFestival(festivalId) {
     festFlyers.forEach((f) => {
       const img = document.createElement("img");
       img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`;
-      img.alt = f.label ? `${fest.name} ${f.label.toLowerCase()}` : `${fest.name} flyer`;
+      img.alt = f.label
+        ? `${fest.name} ${f.label.toLowerCase()}`
+        : `${fest.name} flyer`;
       img.className = "festival-flyer-img";
       flyerEl.appendChild(img);
     });
@@ -1145,7 +1147,7 @@ function renderFestivalPerformers(fest) {
     const row = document.createElement("div");
     row.className = "festival-performer-row";
     const a = document.createElement("a");
-    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(p.id)}`;
+    a.href = `performers.html?performer=${encodeURIComponent(p.id)}`;
     a.textContent = p.name;
     a.className = "festival-performer-link";
     row.appendChild(a);
@@ -1226,7 +1228,7 @@ function buildSpecificEventCard(item) {
     const perfDiv = document.createElement("div");
     perfDiv.className = "event-performer";
     const a = document.createElement("a");
-    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(event.performer_id)}`;
+    a.href = `performers.html?performer=${encodeURIComponent(event.performer_id)}`;
     a.className = "event-performer-link";
     a.textContent = p.name;
     perfDiv.appendChild(a);
@@ -1238,7 +1240,7 @@ function buildSpecificEventCard(item) {
     const venueEl = createVenueElement(venue);
     if (event.venue_id) {
       const vl = document.createElement("a");
-      vl.href = `new_troubadours_venues.html?venue=${encodeURIComponent(event.venue_id)}`;
+      vl.href = `venues.html?venue=${encodeURIComponent(event.venue_id)}`;
       vl.className = "venue-page-link";
       vl.textContent = "i";
       vl.onclick = (e) => e.stopPropagation();
@@ -1306,7 +1308,7 @@ function buildTourDateCard(item) {
   div.appendChild(showDiv);
 
   const badge = document.createElement("a");
-  badge.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourKey)}`;
+  badge.href = `tour_guide.html?tour=${encodeURIComponent(tourKey)}`;
   badge.className = "touring-badge festival-tour-badge";
   badge.textContent = "🎭 Tour date";
   badge.onclick = (e) => e.stopPropagation();
@@ -1317,7 +1319,7 @@ function buildTourDateCard(item) {
     const perfDiv = document.createElement("div");
     perfDiv.className = "event-performer";
     const a = document.createElement("a");
-    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
+    a.href = `performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
     a.className = "event-performer-link";
     a.textContent = p.name;
     perfDiv.appendChild(a);
@@ -1329,7 +1331,7 @@ function buildTourDateCard(item) {
     const venueEl = createVenueElement(venue);
     if (tourDate.venue_id) {
       const vl = document.createElement("a");
-      vl.href = `new_troubadours_venues.html?venue=${encodeURIComponent(tourDate.venue_id)}`;
+      vl.href = `venues.html?venue=${encodeURIComponent(tourDate.venue_id)}`;
       vl.className = "venue-page-link";
       vl.textContent = "i";
       vl.onclick = (e) => e.stopPropagation();
@@ -1587,7 +1589,7 @@ function buildFestivalCard(festId, fest) {
         perfEl.appendChild(document.createTextNode(", "));
       }
       const link = document.createElement("a");
-      link.href = `new_troubadours_performers.html?performer=${encodeURIComponent(p.id)}`;
+      link.href = `performers.html?performer=${encodeURIComponent(p.id)}`;
       link.className = "venue-page-link";
       link.title = `View ${p.name} profile`;
       link.style.cssText = "color:inherit;text-decoration:none;";

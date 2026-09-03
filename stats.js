@@ -244,10 +244,10 @@ function legend(segments) {
 // ---------------------------------------------------------------------------
 // Page URL constants — change filenames here, not scattered through the code
 // ---------------------------------------------------------------------------
-const URL_PERFORMER = "new_troubadours_performers.html";
-const URL_VENUE = "new_troubadours_venues.html";
-const URL_TOUR = "new_troubadours_tour_guide.html";
-const URL_EVENTS = "new_troubadours_event_guide.html";
+const URL_PERFORMER = "performers.html";
+const URL_VENUE = "venues.html";
+const URL_TOUR = "tour_guide.html";
+const URL_EVENTS = "event_guide.html";
 
 function colouredBarChart(rows, maxVal, rowClass) {
   const chart = el("div", "bar-chart");

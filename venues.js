@@ -490,7 +490,7 @@ function renderAllVenues() {
           .addTo(map)
           .bindPopup(popup)
           .on("click", () => {
-            location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`;
+            location.href = `venues.html?venue=${encodeURIComponent(vid)}`;
           });
         if (!markersByType[vtype]) markersByType[vtype] = [];
         markersByType[vtype].push(marker);
@@ -570,7 +570,7 @@ function renderAllVenues() {
       row.className = "venue-list-card";
       row.style.borderLeftColor = colour;
       row.onclick = () => {
-        location.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`;
+        location.href = `venues.html?venue=${encodeURIComponent(vid)}`;
       };
 
       const nameEl = document.createElement("div");
@@ -1091,7 +1091,7 @@ function renderEventRow(container, entry, isPast) {
       const p = document.createElement("div");
       p.className = "event-row-performer";
       const a = document.createElement("a");
-      a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(e.performer_id)}`;
+      a.href = `performers.html?performer=${encodeURIComponent(e.performer_id)}`;
       a.textContent = perf.name;
       p.appendChild(a);
       detail.appendChild(p);
@@ -1149,7 +1149,7 @@ function renderEventRow(container, entry, isPast) {
       const p = document.createElement("div");
       p.className = "event-row-performer";
       const a = document.createElement("a");
-      a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
+      a.href = `performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
       a.textContent = perf.name;
       p.appendChild(a);
       detail.appendChild(p);
@@ -1176,7 +1176,7 @@ function renderEventRow(container, entry, isPast) {
       badges.appendChild(a);
     }
     const viewLink = document.createElement("a");
-    viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+    viewLink.href = `tour_guide.html?tour=${encodeURIComponent(tourId)}`;
     viewLink.className = "ticket-link";
     viewLink.textContent = "View tour";
     badges.appendChild(viewLink);
@@ -1200,7 +1200,7 @@ function renderEventRow(container, entry, isPast) {
       const p = document.createElement("div");
       p.className = "event-row-performer";
       const a = document.createElement("a");
-      a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(ts.performer_id)}`;
+      a.href = `performers.html?performer=${encodeURIComponent(ts.performer_id)}`;
       a.textContent = perf.name;
       p.appendChild(a);
       detail.appendChild(p);
@@ -1408,7 +1408,7 @@ function renderNearbyVenues() {
     row.className = "nearby-row";
 
     const a = document.createElement("a");
-    a.href = `new_troubadours_venues.html?venue=${encodeURIComponent(vid)}`;
+    a.href = `venues.html?venue=${encodeURIComponent(vid)}`;
     a.className = "nearby-name";
     a.textContent = v.name;
     row.appendChild(a);

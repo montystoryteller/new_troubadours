@@ -618,8 +618,7 @@ async function renderPage(data, clubId) {
     div.appendChild(document.createTextNode("feat. "));
     const a = document.createElement("a");
     a.href =
-      guest.url ||
-      `new_troubadours_performers.html?performer=${encodeURIComponent(guest.id)}`;
+      guest.url || `performers.html?performer=${encodeURIComponent(guest.id)}`;
     if (guest.url) {
       a.target = "_blank";
       a.rel = "noopener noreferrer";
@@ -639,7 +638,7 @@ async function renderPage(data, clubId) {
   const pageHeader = document.createElement("div");
   pageHeader.className = "page-header";
   const backLink = document.createElement("a");
-  backLink.href = "new_troubadours_storyclub.html";
+  backLink.href = "storyclub.html";
   backLink.className = "back-link";
   backLink.textContent = "← All story clubs";
   pageHeader.appendChild(backLink);
@@ -1131,7 +1130,7 @@ async function renderPage(data, clubId) {
           const safeUrl = rec.url ? sanitizeUrl(rec.url) : null;
           const perfUrl =
             safeUrl ||
-            `new_troubadours_performers.html?performer=${encodeURIComponent(performerId)}`;
+            `performers.html?performer=${encodeURIComponent(performerId)}`;
           const a = document.createElement("a");
           a.href = perfUrl;
           if (safeUrl) {
@@ -1695,8 +1694,7 @@ async function renderDirectory(data) {
         card.className = "event";
         card.id = "club-card-" + c.club;
         card.style.cursor = "pointer";
-        card.onclick = () =>
-          (location.href = `new_troubadours_storyclub.html?club=${c.club}`);
+        card.onclick = () => (location.href = `storyclub.html?club=${c.club}`);
 
         const name = document.createElement("div");
         name.className = "event-name";

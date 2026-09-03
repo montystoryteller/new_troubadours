@@ -78,8 +78,10 @@ function buildTourDropdownGroups(performerId) {
     .filter(([, show]) => showMatches(show))
     .map(([id]) => id)
     .sort((a, b) => {
-      const na = repertoireShowsLookup[a].showname || repertoireShowsLookup[a].name;
-      const nb = repertoireShowsLookup[b].showname || repertoireShowsLookup[b].name;
+      const na =
+        repertoireShowsLookup[a].showname || repertoireShowsLookup[a].name;
+      const nb =
+        repertoireShowsLookup[b].showname || repertoireShowsLookup[b].name;
       return na.localeCompare(nb);
     });
 
@@ -99,7 +101,9 @@ function buildTourDropdownGroups(performerId) {
         ([, t]) => t.repertoire_id === showId && aliasIds.has(t.performer_id),
       )
       .sort((a, b) =>
-        (a[1].tour_name || a[1].name).localeCompare(b[1].tour_name || b[1].name),
+        (a[1].tour_name || a[1].name).localeCompare(
+          b[1].tour_name || b[1].name,
+        ),
       )
       .forEach(([tourId, t]) => {
         usedTourIds.add(tourId);
@@ -158,7 +162,11 @@ function getTourStatus(tour) {
 // already a standalone performer.
 function expandPerformerId(id, performersLookup) {
   const record = performersLookup && performersLookup[id];
-  if (record && Array.isArray(record.performer_ids) && record.performer_ids.length > 0) {
+  if (
+    record &&
+    Array.isArray(record.performer_ids) &&
+    record.performer_ids.length > 0
+  ) {
     return record.performer_ids.filter(Boolean);
   }
   return [id];
@@ -362,7 +370,8 @@ function renderRepertoireBrowseList() {
     );
 
   const label = document.getElementById("repertoireBrowseSummaryLabel");
-  if (label) label.textContent = `🔁 Browse Repertoire Shows (${entries.length})`;
+  if (label)
+    label.textContent = `🔁 Browse Repertoire Shows (${entries.length})`;
 
   if (entries.length === 0) {
     body.innerHTML = '<p class="loading-state">No repertoire shows yet.</p>';
@@ -543,7 +552,7 @@ function displayTour(tourId) {
 
     // Performer profile page — rendered as a small tag/pill button.
     const tag = document.createElement("a");
-    tag.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+    tag.href = `performers.html?performer=${encodeURIComponent(id)}`;
     tag.className = "performer-tag";
     tag.textContent = perf.name;
     profileTags.push(tag);
@@ -581,7 +590,10 @@ function displayTour(tourId) {
   // (or more) get real room to sit side by side rather than being
   // squeezed into the width sized for a single hero image — flex-wrap
   // still falls back to stacked on any viewport too narrow for that.
-  flyerContainer.classList.toggle("tour-flyer-multi", tourLevelFlyers.length > 1);
+  flyerContainer.classList.toggle(
+    "tour-flyer-multi",
+    tourLevelFlyers.length > 1,
+  );
   const heroLightboxItems = tourLevelFlyers.map((f) => ({
     src: `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`,
     label: f.label,
@@ -842,7 +854,7 @@ function createTourDateElement(tourDate, tour, past = false) {
   if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
     const venueEl = createVenueElement(venuesLookup[tourDate.venue_id]);
     const venuePageLink = document.createElement("a");
-    venuePageLink.href = `new_troubadours_venues.html?venue=${encodeURIComponent(tourDate.venue_id)}`;
+    venuePageLink.href = `venues.html?venue=${encodeURIComponent(tourDate.venue_id)}`;
     venuePageLink.className = "venue-page-link";
     venuePageLink.title = "View venue page";
     venuePageLink.textContent = "i";
@@ -874,7 +886,7 @@ function createTourDateElement(tourDate, tour, past = false) {
 // getTourLevelFlyers() — defined in shared_utils.js. Normalizes the
 // legacy singular `tour_flyer` and the current `touring_event_flyers`
 // list into one ordered, de-duplicated array of {filename, label}.
-// Shared with new_troubadours_flyers.html so both pages agree on how
+// Shared with flyers.html so both pages agree on how
 // tour-level flyers resolve.
 
 // ── Shared lazy-image observer for tour flyers ────────────────────────────────
@@ -1528,7 +1540,10 @@ function refreshEventsData() {
 
   eventsData = result.eventsData;
   repertoireShowsLookup = eventsData.repertoire_shows || {};
-  toursLookup = buildCombinedToursLookup(result.toursLookup, repertoireShowsLookup);
+  toursLookup = buildCombinedToursLookup(
+    result.toursLookup,
+    repertoireShowsLookup,
+  );
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
 

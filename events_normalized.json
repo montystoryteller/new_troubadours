@@ -1875,9 +1875,9 @@
           "ticket_url": "https://www.eventbrite.co.uk/e/history-of-the-hostelries-of-old-portsmouth-tickets-1998543641832"
         }
       ],
-      "type": "history-walk",
       "description": "Dive into the stories and secrets of Old Portsmouth’s oldest pubs in this fun, in-person tour!\n\n\n\nHistory of the Hostelries of Old Portsmouth\n\n\n\nJoin us in person for a fascinating dive into the oldest hostelries of Portsmouth! Discover the stories, legends, and secrets behind these historic pubs and inns that shaped the city's past. Whether you're a history buff or just curious, this event promises an informative and lively exploration (you buy your own drinks, the group supplies the fun and laughter). Don't miss out on this chance to step back in time and experience the charm of Old Portsmouth's hospitality! Starting and finishing at the historic Sally Port Inn, we aim to visit The Dolphin, The Bridge Tavern, Spice Island Inn, Still & West and the Wellington. Food can be taken at any of these famous hostelries once the tour has finished.",
       "isSpecial": true,
+      "isStoryWalk": true,
       "performer_id": "dave-clark"
     },
     "emily-hennessey-sheema-mukherjee-girl-didnt-die": {

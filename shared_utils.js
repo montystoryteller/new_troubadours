@@ -237,9 +237,9 @@ const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;
 /**
  * Parse a club flyer filename's YYYY_MM_DD date prefix, if it has one.
  * Used by event_display.js (to attach the flyer to the matching recurring
- * occurrence), new_troubadours_flyers.html (to file it as a dated "story"
- * card instead of a generic always-on club card), new_troubadours_storyclub.html
- * (to caption/grey it on the club's own page), and new_troubadours_venues.html
+ * occurrence), flyers.html (to file it as a dated "story"
+ * card instead of a generic always-on club card), storyclub.html
+ * (to caption/grey it on the club's own page), and venues.html
  * (to grey it once past) — keep this the single implementation so the four
  * pages can't drift out of sync on what counts as a "dated" flyer.
  * @param {string} filename
@@ -284,7 +284,7 @@ function parseDatedClubFlyer(filename) {
  * the same flyer under more than one field (e.g. during a migration)
  * doesn't produce a duplicate card/thumbnail.
  *
- * Used by both tour_display.js (tour guide page) and new_troubadours_flyers.html
+ * Used by both tour_display.js (tour guide page) and flyers.html
  * (flyers grid) — keep this the single implementation rather than copying it,
  * so the two pages can't drift out of sync with each other.
  *
@@ -543,7 +543,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
         ? toursLookup[tid].tour_name
         : "TOUR";
     const tourLink = document.createElement("a");
-    tourLink.href = `new_troubadours_tour_guide.html?tour=${tid}`;
+    tourLink.href = `tour_guide.html?tour=${tid}`;
     tourLink.target = "_blank";
     tourLink.rel = "noopener noreferrer";
     tourLink.textContent = `VIEW: ${tourName}`;
@@ -2031,7 +2031,11 @@ function collectPerformerAppearances(performer, performerId, podcastsLookup) {
  * @param {Object<string, object>} podcastsLookup
  * @returns {{story_name: string, yt_url: string, source?: string, format?: string}[]}
  */
-function collectPerformerVideoAppearances(performer, performerId, podcastsLookup) {
+function collectPerformerVideoAppearances(
+  performer,
+  performerId,
+  podcastsLookup,
+) {
   const fromRegistry = [];
   Object.values(podcastsLookup).forEach((podcast) => {
     (podcast.items || []).forEach((item) => {
@@ -2072,4 +2076,3 @@ function collectPerformerVideoAppearances(performer, performerId, podcastsLookup
   });
   return merged;
 }
-

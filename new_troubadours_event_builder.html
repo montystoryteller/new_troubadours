@@ -31,10 +31,12 @@
             color: #757575;
             margin-bottom: 2px;
         }
+
         .subitem-field-group {
             display: flex;
             flex-direction: column;
         }
+
         /* event_builder-styles.css only styles inputs inside .subitem-row-fields;
            the podcast-episode description field is a textarea, so give it the
            same treatment for visual consistency. */
@@ -49,6 +51,7 @@
             min-height: 50px;
             resize: vertical;
         }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -56,6 +59,7 @@
             gap: 6px;
             flex-shrink: 0;
         }
+
         .batch-edit-btn,
         .batch-preview-btn {
             background: white;
@@ -66,10 +70,12 @@
             font-size: 0.85em;
             cursor: pointer;
         }
+
         .batch-edit-btn:hover,
         .batch-preview-btn:hover {
             background: var(--theme-green-bg);
         }
+
         .batch-list li.batch-preview-row {
             display: block;
             background: #fafafa;
@@ -78,6 +84,7 @@
             padding: 8px 10px;
             margin-top: -2px;
         }
+
         .batch-preview-row pre {
             margin: 0;
             white-space: pre-wrap;
@@ -91,14 +98,14 @@
 
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
-        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
-        <a href="new_troubadours_tour_guide.html">🎭 Touring Shows</a>
-        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
-        <a href="new_troubadours_performers.html">🎤 Performers</a>
-        <a href="new_troubadours_venues.html">📍 Venues</a>
-        <a href="new_troubadours_festival.html">🎪 Festivals</a>
-        <a href="new_troubadours_flyers.html">📋 Flyers</a>
-        <a href="new_troubadours_stats.html">📊 Stats</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Touring Shows</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="stats.html">📊 Stats</a>
     </nav>
 
     <div class="builder-wrap">
@@ -250,7 +257,8 @@
 
             <div class="field-row">
                 <label>Facebook</label>
-                <input type="url" id="ev-facebook" placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
+                <input type="url" id="ev-facebook"
+                    placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
             </div>
 
             <div class="field-row">
@@ -306,7 +314,8 @@
 
             <div class="field-row">
                 <label>Show name</label>
-                <input type="text" id="tour-name" placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
+                <input type="text" id="tour-name"
+                    placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
             </div>
 
             <div class="field-row">
@@ -431,7 +440,8 @@
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="festival-name" list="festivalOptions" placeholder="e.g. Bristol Storytelling Festival 2026">
+                    <input type="text" id="festival-name" list="festivalOptions"
+                        placeholder="e.g. Bristol Storytelling Festival 2026">
                     <div id="festival-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -483,7 +493,8 @@
 
             <div class="field-row">
                 <label>Age bands</label>
-                <input type="text" id="festival-age-bands" placeholder="comma-separated, e.g. Family friendly, Adults only">
+                <input type="text" id="festival-age-bands"
+                    placeholder="comma-separated, e.g. Family friendly, Adults only">
             </div>
 
             <div class="field-row">
@@ -495,7 +506,8 @@
                 <label>Flyer(s)</label>
                 <div>
                     <div class="date-rows" id="festival-flyer-rows"></div>
-                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()" style="margin-top:6px;">Add
+                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()"
+                        style="margin-top:6px;">Add
                         another flyer</button>
                     <div class="field-hint">One flyer saves as event_flyer; add more, or give one a caption, to save
                         as event_flyers.</div>

@@ -2,7 +2,7 @@
  * podcast_utils.js
  * Shared RSS/Atom podcast feed fetching + parsing utilities.
  * Used by podcast-feed-curator.html and by the podcast section on
- * new_troubadours_performers.html.
+ * performers.html.
  *
  * This file is deliberately DOM-rendering agnostic — it only fetches,
  * discovers, and parses feeds into plain data ({feed, items}). Each page
@@ -125,7 +125,14 @@ async function resolvePodcastFeedUrl(input) {
   // (podcast hosts like Podomatic, Libsyn, Buzzsprout, etc. are fairly
   // consistent here).
   const origin = new URL(url).origin + "/";
-  const guesses = ["rss2.xml", "rss.xml", "feed.xml", "rss", "feed", "podcast.xml"];
+  const guesses = [
+    "rss2.xml",
+    "rss.xml",
+    "feed.xml",
+    "rss",
+    "feed",
+    "podcast.xml",
+  ];
   for (const g of guesses) {
     try {
       const candidate = new URL(g, origin).toString();
@@ -188,13 +195,23 @@ function parsePodcastFeed(xml) {
       const enc = el.querySelector("enclosure");
       const image = el.querySelector("itunes\\:image");
       const link = _podcastText(el, ["link"]);
-      const guid = _podcastText(el, ["guid"]) || link || enc?.getAttribute("url") || "episode-" + i;
+      const guid =
+        _podcastText(el, ["guid"]) ||
+        link ||
+        enc?.getAttribute("url") ||
+        "episode-" + i;
       return {
         id: crypto.randomUUID(),
         title: _podcastText(el, ["title"]) || "Untitled episode",
         link,
-        description: _podcastText(el, ["description", "content\\:encoded", "itunes\\:summary"]),
-        pubDate: _podcastText(el, ["pubDate", "dc\\:date", "published", "updated"]) || new Date().toISOString(),
+        description: _podcastText(el, [
+          "description",
+          "content\\:encoded",
+          "itunes\\:summary",
+        ]),
+        pubDate:
+          _podcastText(el, ["pubDate", "dc\\:date", "published", "updated"]) ||
+          new Date().toISOString(),
         author: _podcastText(el, ["itunes\\:author", "author", "dc\\:creator"]),
         duration: _podcastText(el, ["itunes\\:duration"]),
         explicit: _podcastText(el, ["itunes\\:explicit"]) || "no",
@@ -233,7 +250,11 @@ function formatPodcastDate(v) {
   const d = new Date(v);
   return Number.isNaN(d.getTime())
     ? v
-    : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    : d.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
 }
 
 /**

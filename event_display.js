@@ -1466,7 +1466,7 @@ function createEventElement(event) {
     const guestUrl = event.featured_guest.url
       ? sanitizeUrl(event.featured_guest.url)
       : null;
-    const profileUrl = `new_troubadours_performers.html?performer=${encodeURIComponent(event.featured_guest.id)}`;
+    const profileUrl = `performers.html?performer=${encodeURIComponent(event.featured_guest.id)}`;
     featDiv.appendChild(document.createTextNode("feat. "));
     const nameEl = document.createElement("a");
     nameEl.href = guestUrl || profileUrl;
@@ -1526,7 +1526,7 @@ function createEventHeader(event) {
   // Info icon → club page (for any story club with an id)
   if (event.isStoryclub && event.club) {
     const infoLink = document.createElement("a");
-    infoLink.href = `new_troubadours_storyclub.html?club=${encodeURIComponent(event.club)}`;
+    infoLink.href = `storyclub.html?club=${encodeURIComponent(event.club)}`;
     infoLink.title = `More about ${event.name}`;
     infoLink.className = "event-club-info-link";
     infoLink.addEventListener("click", (e) => e.stopPropagation());
@@ -1580,7 +1580,7 @@ function createEventHeader(event) {
     const label = fest?.short_name || fest?.name || event.wider_event;
     header.appendChild(document.createTextNode(" "));
     const weBadge = document.createElement("a");
-    weBadge.href = `new_troubadours_festival.html?festival=${encodeURIComponent(event.wider_event)}`;
+    weBadge.href = `festival.html?festival=${encodeURIComponent(event.wider_event)}`;
     weBadge.className = "event-badge event-wider-event-badge";
     weBadge.title = `Part of ${fest?.name || event.wider_event}`;
     weBadge.textContent = `🎪 ${label}`;
@@ -1656,7 +1656,7 @@ function createPerformerSection(event) {
 
       // Info icon immediately after this name
       const perfPageLink = document.createElement("a");
-      perfPageLink.href = `new_troubadours_performers.html?performer=${encodeURIComponent(resolvedId)}`;
+      perfPageLink.href = `performers.html?performer=${encodeURIComponent(resolvedId)}`;
       perfPageLink.className = "venue-page-link";
       perfPageLink.title = `View ${perf?.name || "performer"} profile`;
       perfPageLink.textContent = "i";
@@ -1667,7 +1667,7 @@ function createPerformerSection(event) {
         performerDiv.appendChild(document.createTextNode(" ["));
 
         const clubLink = document.createElement("a");
-        clubLink.href = `new_troubadours_storyclub.html?club=${encodeURIComponent(event.club)}`;
+        clubLink.href = `storyclub.html?club=${encodeURIComponent(event.club)}`;
         clubLink.title = `View ${event.club} club page`;
         clubLink.className = "event-club-link";
         clubLink.style.cssText =
@@ -1704,7 +1704,7 @@ function createLocationSection(event) {
   });
   if (event.venue_id) {
     const venuePageLink = document.createElement("a");
-    venuePageLink.href = `new_troubadours_venues.html?venue=${encodeURIComponent(event.venue_id)}`;
+    venuePageLink.href = `venues.html?venue=${encodeURIComponent(event.venue_id)}`;
     venuePageLink.className = "venue-page-link";
     venuePageLink.title = "View venue page";
     venuePageLink.textContent = "i";
@@ -1806,7 +1806,7 @@ function createTicketsSection(event) {
           ? toursLookup[tid].tour_name
           : "TOUR";
       const tourLink = document.createElement("a");
-      tourLink.href = `new_troubadours_tour_guide.html?tour=${tid}`;
+      tourLink.href = `tour_guide.html?tour=${tid}`;
       tourLink.target = "_blank";
       tourLink.textContent = `VIEW: ${tourName}`;
       tourLink.className = "tour-link";
@@ -2230,7 +2230,7 @@ function createFestivalElement(fest) {
   }
 
   const progLink = document.createElement("a");
-  progLink.href = `new_troubadours_festival.html?festival=${fest.festival_id}`;
+  progLink.href = `festival.html?festival=${fest.festival_id}`;
   progLink.className = "festival-programme-link";
   progLink.textContent = fest.schedule_populated
     ? "📋 Full programme →"
@@ -3099,7 +3099,7 @@ function refreshEventsData() {
 // -----------------------------------------------------------------------
 
 /** Currently-selected period for the New Events panel. */
-let newEventsPeriod = 'week';
+let newEventsPeriod = "week";
 
 /**
  * Parse a date_added string (DD/MM/YYYY) and return a midnight Date,
@@ -3108,11 +3108,11 @@ let newEventsPeriod = 'week';
  * @returns {Date|null}
  */
 function parseDateAdded(dateAddedStr) {
-    if (!dateAddedStr || typeof dateAddedStr !== 'string') return null;
-    const trimmed = dateAddedStr.trim();
-    if (!trimmed) return null;
-    // parseDateString() is defined in shared_utils.js (DD/MM/YYYY)
-    return parseDateString(trimmed);
+  if (!dateAddedStr || typeof dateAddedStr !== "string") return null;
+  const trimmed = dateAddedStr.trim();
+  if (!trimmed) return null;
+  // parseDateString() is defined in shared_utils.js (DD/MM/YYYY)
+  return parseDateString(trimmed);
 }
 
 /**
@@ -3121,12 +3121,12 @@ function parseDateAdded(dateAddedStr) {
  * @returns {Date}
  */
 function newEventsCutoff(period) {
-    const today = getTodayMidnight();  // shared_utils.js
-    const cutoff = new Date(today);
-    if (period === 'week') cutoff.setDate(cutoff.getDate() - 7);
-    else if (period === 'twoweeks') cutoff.setDate(cutoff.getDate() - 14);
-    else cutoff.setMonth(cutoff.getMonth() - 1);
-    return cutoff;
+  const today = getTodayMidnight(); // shared_utils.js
+  const cutoff = new Date(today);
+  if (period === "week") cutoff.setDate(cutoff.getDate() - 7);
+  else if (period === "twoweeks") cutoff.setDate(cutoff.getDate() - 14);
+  else cutoff.setMonth(cutoff.getMonth() - 1);
+  return cutoff;
 }
 
 /**
@@ -3136,8 +3136,8 @@ function newEventsCutoff(period) {
  * @returns {boolean}
  */
 function isNewlyAdded(record, cutoff) {
-    const d = parseDateAdded(record.date_added);
-    return d !== null && d >= cutoff;
+  const d = parseDateAdded(record.date_added);
+  return d !== null && d >= cutoff;
 }
 
 /**
@@ -3155,41 +3155,44 @@ function isNewlyAdded(record, cutoff) {
  * @returns {HTMLElement}
  */
 function buildNewEventCard(info) {
-    const shell = document.createElement('div');
-    shell.className = 'new-event-card new-event-card-full';
+  const shell = document.createElement("div");
+  shell.className = "new-event-card new-event-card-full";
 
-    // "Added" date banner
-    if (info.dateAdded) {
-        const addedDate = parseDateAdded(info.dateAdded);
-        const addedFormatted = addedDate
-            ? String(addedDate.getDate()).padStart(2, '0') + '/'
-            + String(addedDate.getMonth() + 1).padStart(2, '0') + '/'
-            + addedDate.getFullYear()
-            : info.dateAdded;
-        const addedBanner = document.createElement('div');
-        addedBanner.className = 'new-event-added-banner';
-        addedBanner.textContent = '\uD83C\uDD95 added: ' + addedFormatted;
-        shell.appendChild(addedBanner);
-    }
+  // "Added" date banner
+  if (info.dateAdded) {
+    const addedDate = parseDateAdded(info.dateAdded);
+    const addedFormatted = addedDate
+      ? String(addedDate.getDate()).padStart(2, "0") +
+        "/" +
+        String(addedDate.getMonth() + 1).padStart(2, "0") +
+        "/" +
+        addedDate.getFullYear()
+      : info.dateAdded;
+    const addedBanner = document.createElement("div");
+    addedBanner.className = "new-event-added-banner";
+    addedBanner.textContent = "\uD83C\uDD95 added: " + addedFormatted;
+    shell.appendChild(addedBanner);
+  }
 
-    // Full event card — same as used in the main events list
-    try {
-        const cardEl = info.isFestival
-            ? createFestivalElement(info.eventData)
-            : createEventElement(info.eventData);
-        // Remove map-click handler — no map visible in this panel
-        cardEl.style.cursor = 'default';
-        cardEl.onclick = null;
-        shell.appendChild(cardEl);
-    } catch (e) {
-        const fallback = document.createElement('div');
-        fallback.className = 'new-event-name';
-        fallback.textContent = (info.eventData && info.eventData.name) || '(unnamed)';
-        shell.appendChild(fallback);
-        console.warn('buildNewEventCard: card creation failed', e);
-    }
+  // Full event card — same as used in the main events list
+  try {
+    const cardEl = info.isFestival
+      ? createFestivalElement(info.eventData)
+      : createEventElement(info.eventData);
+    // Remove map-click handler — no map visible in this panel
+    cardEl.style.cursor = "default";
+    cardEl.onclick = null;
+    shell.appendChild(cardEl);
+  } catch (e) {
+    const fallback = document.createElement("div");
+    fallback.className = "new-event-name";
+    fallback.textContent =
+      (info.eventData && info.eventData.name) || "(unnamed)";
+    shell.appendChild(fallback);
+    console.warn("buildNewEventCard: card creation failed", e);
+  }
 
-    return shell;
+  return shell;
 }
 
 /**
@@ -3200,7 +3203,7 @@ function buildNewEventCard(info) {
  * @returns {string}
  */
 function formatNewEventDate(d) {
-    return `${DAYS_OF_WEEK[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+  return `${DAYS_OF_WEEK[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 /**
@@ -3216,131 +3219,168 @@ function formatNewEventDate(d) {
  * @returns {object[]}
  */
 function collectNewlyAddedEvents(cutoff) {
-    if (!eventsData) return [];
+  if (!eventsData) return [];
 
-    const today = getTodayMidnight();
-    const sixMonths = new Date(today);
-    sixMonths.setMonth(sixMonths.getMonth() + 6);
+  const today = getTodayMidnight();
+  const sixMonths = new Date(today);
+  sixMonths.setMonth(sixMonths.getMonth() + 6);
 
-    const results = [];
+  const results = [];
 
-    function dateAddedSortKey(dateAddedStr) {
-        const d = parseDateAdded(dateAddedStr);
-        return d ? d.getTime() : 0;
-    }
+  function dateAddedSortKey(dateAddedStr) {
+    const d = parseDateAdded(dateAddedStr);
+    return d ? d.getTime() : 0;
+  }
 
-    function push(eventData, isFestival, dateAdded, eventDate) {
-        results.push({
-            eventData,
-            isFestival: !!isFestival,
-            dateAdded,
-            _dateAddedMs: dateAddedSortKey(dateAdded),
-            _eventDate: eventDate || null,
-        });
-    }
-
-    // --- 1. Recurring events (storyclubs) ---
-    for (const ev of eventsData.events || []) {
-        if (!isNewlyAdded(ev, cutoff)) continue;
-        const dates = parseSchedule(ev.schedule, today, sixMonths);
-        const useDate = dates.length > 0 ? dates[0] : today;
-        push(createEventData(ev, useDate, 'storyclub'), false, ev.date_added, useDate);
-    }
-
-    // --- 2. Folk nights ---
-    for (const ev of eventsData.folkNights || []) {
-        if (!isNewlyAdded(ev, cutoff)) continue;
-        const dates = parseSchedule(ev.schedule, today, sixMonths);
-        const useDate = dates.length > 0 ? dates[0] : today;
-        push(createEventData(ev, useDate, 'folk'), false, ev.date_added, useDate);
-    }
-
-    // --- 3. Irish sessions ---
-    for (const ev of eventsData.irishSessions || []) {
-        if (!isNewlyAdded(ev, cutoff)) continue;
-        const dates = parseSchedule(ev.schedule, today, sixMonths);
-        const useDate = dates.length > 0 ? dates[0] : today;
-        push(createEventData(ev, useDate, 'session'), false, ev.date_added, useDate);
-    }
-
-    // --- 4. Specific / story-show events ---
-    for (const ev of eventsData.specificEvents || []) {
-        if (!isNewlyAdded(ev, cutoff)) continue;
-        // expandDatetimes() is defined in event_display.js
-        const expanded = expandDatetimes(ev);
-        if (expanded.length === 0) continue;
-        // Show all dates for the event (each as its own card entry), or
-        // just the first upcoming one to keep the panel concise.
-        const upcoming = expanded
-            .filter(({ date }) => date >= today)
-            .sort((a, b) => a.date - b.date);
-        const toRender = upcoming.length > 0 ? [upcoming[0]] : [expanded[0]];
-        for (const { flatEvent, date } of toRender) {
-            push(createEventData(flatEvent, date, 'special'), false, ev.date_added, date);
-        }
-    }
-
-    // --- 5. Music events ---
-    for (const ev of eventsData.musicEvents || []) {
-        if (!isNewlyAdded(ev, cutoff)) continue;
-        const eventDate = parseDateString(ev.date);
-        if (!eventDate) continue;
-        push(createEventData(ev, eventDate, 'music'), false, ev.date_added, eventDate);
-    }
-
-    // --- 6. Tours (one entry per tour, showing the first upcoming date) ---
-    const tours = eventsData.tours || {};
-    for (const tourKey in tours) {
-        const tour = tours[tourKey];
-        if (!isNewlyAdded(tour, cutoff)) continue;
-        if (!tour.isMusic && !tour.isSpecial) continue;
-        const eventType = tour.isMusic ? 'music' : 'special';
-        const upcomingTourDates = (tour.tour_dates || [])
-            .map(td => ({ td, date: parseDateString(td.date) }))
-            .filter(({ date }) => date && date >= today)
-            .sort((a, b) => a.date - b.date);
-        if (upcomingTourDates.length === 0) continue;
-        const { td: firstTd, date: firstDate } = upcomingTourDates[0];
-        const mergedEvent = buildTourMergedEvent(tour, tourKey, firstTd);
-        push(createEventData(mergedEvent, firstDate, eventType), false, tour.date_added, firstDate);
-    }
-
-    // --- 7. Touring shows (one entry per show, showing the first upcoming date) ---
-    const touringShows = eventsData.repertoire_shows || {};
-    for (const showKey in touringShows) {
-        const show = touringShows[showKey];
-        if (!isNewlyAdded(show, cutoff)) continue;
-        const eventType = show.isSpecial ? 'special' : 'storyclub';
-        const upcomingShowDates = (show.show_dates || [])
-            .map(sd => ({ sd, date: parseDateString(sd.date) }))
-            .filter(({ date }) => date && date >= today)
-            .sort((a, b) => a.date - b.date);
-        if (upcomingShowDates.length === 0) continue;
-        const { sd: firstSd, date: firstDate } = upcomingShowDates[0];
-        const mergedEvent = buildShowMergedEvent(show, showKey, firstSd);
-        push(createEventData(mergedEvent, firstDate, eventType), false, show.date_added, firstDate);
-    }
-
-    // --- 8. Festivals ---
-    const festivals = eventsData.festivals || {};
-    for (const [festKey, fest] of Object.entries(festivals)) {
-        if (!isNewlyAdded(fest, cutoff)) continue;
-        const festStart = parseDateString(fest.start_date);
-        const festEnd = parseDateString(fest.end_date);
-        if (!festStart || !festEnd) continue;
-        const venue = venuesLookup[fest.venue_id] || {};
-        const festData = buildFestivalData(festKey, fest, venue, festStart, festEnd);
-        push(festData, true, fest.date_added, festStart);
-    }
-
-    // Sort: newest date_added first; within same date, chronological event date.
-    results.sort((a, b) => {
-        if (b._dateAddedMs !== a._dateAddedMs) return b._dateAddedMs - a._dateAddedMs;
-        const aMs = a._eventDate ? a._eventDate.getTime() : Infinity;
-        const bMs = b._eventDate ? b._eventDate.getTime() : Infinity;
-        return aMs - bMs;
+  function push(eventData, isFestival, dateAdded, eventDate) {
+    results.push({
+      eventData,
+      isFestival: !!isFestival,
+      dateAdded,
+      _dateAddedMs: dateAddedSortKey(dateAdded),
+      _eventDate: eventDate || null,
     });
-    return results;
+  }
+
+  // --- 1. Recurring events (storyclubs) ---
+  for (const ev of eventsData.events || []) {
+    if (!isNewlyAdded(ev, cutoff)) continue;
+    const dates = parseSchedule(ev.schedule, today, sixMonths);
+    const useDate = dates.length > 0 ? dates[0] : today;
+    push(
+      createEventData(ev, useDate, "storyclub"),
+      false,
+      ev.date_added,
+      useDate,
+    );
+  }
+
+  // --- 2. Folk nights ---
+  for (const ev of eventsData.folkNights || []) {
+    if (!isNewlyAdded(ev, cutoff)) continue;
+    const dates = parseSchedule(ev.schedule, today, sixMonths);
+    const useDate = dates.length > 0 ? dates[0] : today;
+    push(createEventData(ev, useDate, "folk"), false, ev.date_added, useDate);
+  }
+
+  // --- 3. Irish sessions ---
+  for (const ev of eventsData.irishSessions || []) {
+    if (!isNewlyAdded(ev, cutoff)) continue;
+    const dates = parseSchedule(ev.schedule, today, sixMonths);
+    const useDate = dates.length > 0 ? dates[0] : today;
+    push(
+      createEventData(ev, useDate, "session"),
+      false,
+      ev.date_added,
+      useDate,
+    );
+  }
+
+  // --- 4. Specific / story-show events ---
+  for (const ev of eventsData.specificEvents || []) {
+    if (!isNewlyAdded(ev, cutoff)) continue;
+    // expandDatetimes() is defined in event_display.js
+    const expanded = expandDatetimes(ev);
+    if (expanded.length === 0) continue;
+    // Show all dates for the event (each as its own card entry), or
+    // just the first upcoming one to keep the panel concise.
+    const upcoming = expanded
+      .filter(({ date }) => date >= today)
+      .sort((a, b) => a.date - b.date);
+    const toRender = upcoming.length > 0 ? [upcoming[0]] : [expanded[0]];
+    for (const { flatEvent, date } of toRender) {
+      push(
+        createEventData(flatEvent, date, "special"),
+        false,
+        ev.date_added,
+        date,
+      );
+    }
+  }
+
+  // --- 5. Music events ---
+  for (const ev of eventsData.musicEvents || []) {
+    if (!isNewlyAdded(ev, cutoff)) continue;
+    const eventDate = parseDateString(ev.date);
+    if (!eventDate) continue;
+    push(
+      createEventData(ev, eventDate, "music"),
+      false,
+      ev.date_added,
+      eventDate,
+    );
+  }
+
+  // --- 6. Tours (one entry per tour, showing the first upcoming date) ---
+  const tours = eventsData.tours || {};
+  for (const tourKey in tours) {
+    const tour = tours[tourKey];
+    if (!isNewlyAdded(tour, cutoff)) continue;
+    if (!tour.isMusic && !tour.isSpecial) continue;
+    const eventType = tour.isMusic ? "music" : "special";
+    const upcomingTourDates = (tour.tour_dates || [])
+      .map((td) => ({ td, date: parseDateString(td.date) }))
+      .filter(({ date }) => date && date >= today)
+      .sort((a, b) => a.date - b.date);
+    if (upcomingTourDates.length === 0) continue;
+    const { td: firstTd, date: firstDate } = upcomingTourDates[0];
+    const mergedEvent = buildTourMergedEvent(tour, tourKey, firstTd);
+    push(
+      createEventData(mergedEvent, firstDate, eventType),
+      false,
+      tour.date_added,
+      firstDate,
+    );
+  }
+
+  // --- 7. Touring shows (one entry per show, showing the first upcoming date) ---
+  const touringShows = eventsData.repertoire_shows || {};
+  for (const showKey in touringShows) {
+    const show = touringShows[showKey];
+    if (!isNewlyAdded(show, cutoff)) continue;
+    const eventType = show.isSpecial ? "special" : "storyclub";
+    const upcomingShowDates = (show.show_dates || [])
+      .map((sd) => ({ sd, date: parseDateString(sd.date) }))
+      .filter(({ date }) => date && date >= today)
+      .sort((a, b) => a.date - b.date);
+    if (upcomingShowDates.length === 0) continue;
+    const { sd: firstSd, date: firstDate } = upcomingShowDates[0];
+    const mergedEvent = buildShowMergedEvent(show, showKey, firstSd);
+    push(
+      createEventData(mergedEvent, firstDate, eventType),
+      false,
+      show.date_added,
+      firstDate,
+    );
+  }
+
+  // --- 8. Festivals ---
+  const festivals = eventsData.festivals || {};
+  for (const [festKey, fest] of Object.entries(festivals)) {
+    if (!isNewlyAdded(fest, cutoff)) continue;
+    const festStart = parseDateString(fest.start_date);
+    const festEnd = parseDateString(fest.end_date);
+    if (!festStart || !festEnd) continue;
+    const venue = venuesLookup[fest.venue_id] || {};
+    const festData = buildFestivalData(
+      festKey,
+      fest,
+      venue,
+      festStart,
+      festEnd,
+    );
+    push(festData, true, fest.date_added, festStart);
+  }
+
+  // Sort: newest date_added first; within same date, chronological event date.
+  results.sort((a, b) => {
+    if (b._dateAddedMs !== a._dateAddedMs)
+      return b._dateAddedMs - a._dateAddedMs;
+    const aMs = a._eventDate ? a._eventDate.getTime() : Infinity;
+    const bMs = b._eventDate ? b._eventDate.getTime() : Infinity;
+    return aMs - bMs;
+  });
+  return results;
 }
 
 /**
@@ -3351,33 +3391,37 @@ function collectNewlyAddedEvents(cutoff) {
  * @param {HTMLElement|null}          [activeBtn]  - The button that was clicked (for styling).
  */
 function showNewEvents(period, activeBtn) {
-    newEventsPeriod = period;
+  newEventsPeriod = period;
 
-    // Update active button styling
-    document.querySelectorAll('.new-events-btn').forEach(b => b.classList.remove('active'));
-    if (activeBtn) activeBtn.classList.add('active');
+  // Update active button styling
+  document
+    .querySelectorAll(".new-events-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (activeBtn) activeBtn.classList.add("active");
 
-    const listEl = document.getElementById('newEventsList');
+  const listEl = document.getElementById("newEventsList");
 
-    if (!eventsData) {
-        listEl.innerHTML = '<div class="new-events-placeholder">Events data not yet loaded — please wait a moment and try again.</div>';
-        return;
-    }
+  if (!eventsData) {
+    listEl.innerHTML =
+      '<div class="new-events-placeholder">Events data not yet loaded — please wait a moment and try again.</div>';
+    return;
+  }
 
-    const cutoff = newEventsCutoff(period);
-    const records = collectNewlyAddedEvents(cutoff);
+  const cutoff = newEventsCutoff(period);
+  const records = collectNewlyAddedEvents(cutoff);
 
-    listEl.innerHTML = '';
+  listEl.innerHTML = "";
 
-    if (records.length === 0) {
-        const msg = document.createElement('div');
-        msg.className = 'new-events-placeholder';
-        msg.textContent = 'No events with a date_added field found for this period.';
-        listEl.appendChild(msg);
-        return;
-    }
+  if (records.length === 0) {
+    const msg = document.createElement("div");
+    msg.className = "new-events-placeholder";
+    msg.textContent =
+      "No events with a date_added field found for this period.";
+    listEl.appendChild(msg);
+    return;
+  }
 
-    records.forEach(info => listEl.appendChild(buildNewEventCard(info)));
+  records.forEach((info) => listEl.appendChild(buildNewEventCard(info)));
 }
 
 /**
@@ -3385,17 +3429,22 @@ function showNewEvents(period, activeBtn) {
  * Called once when the panel is first opened.
  */
 function refreshNewEventsCounts() {
-    const countsEl = document.getElementById('newEventsCounts');
+  const countsEl = document.getElementById("newEventsCounts");
 
-    const weekCount = collectNewlyAddedEvents(newEventsCutoff('week')).length;
-    const twoWeekCount = collectNewlyAddedEvents(newEventsCutoff('twoweeks')).length;
-    const monthCount = collectNewlyAddedEvents(newEventsCutoff('month')).length;
+  const weekCount = collectNewlyAddedEvents(newEventsCutoff("week")).length;
+  const twoWeekCount = collectNewlyAddedEvents(
+    newEventsCutoff("twoweeks"),
+  ).length;
+  const monthCount = collectNewlyAddedEvents(newEventsCutoff("month")).length;
 
-    document.getElementById('necWeek').textContent = `${weekCount} over last 7 days`;
-    document.getElementById('necTwoWeeks').textContent = `${twoWeekCount} over last 2 weeks`;
-    document.getElementById('necMonth').textContent = `${monthCount} over last month`;
+  document.getElementById("necWeek").textContent =
+    `${weekCount} over last 7 days`;
+  document.getElementById("necTwoWeeks").textContent =
+    `${twoWeekCount} over last 2 weeks`;
+  document.getElementById("necMonth").textContent =
+    `${monthCount} over last month`;
 
-    countsEl.style.display = 'inline-flex';
+  countsEl.style.display = "inline-flex";
 }
 
 /**
@@ -3409,12 +3458,12 @@ function refreshNewEventsCounts() {
  * @param {MouseEvent}                e
  */
 function openNewEventsPanelFor(period, btnId, e) {
-    e.stopPropagation();
-    const panel = document.getElementById('newEventsPanel');
-    panel._openedByChip = true;   // signal to the toggle listener
-    panel.open = true;
-    newEventsPeriod = period;
-    showNewEvents(period, document.getElementById(btnId));
+  e.stopPropagation();
+  const panel = document.getElementById("newEventsPanel");
+  panel._openedByChip = true; // signal to the toggle listener
+  panel.open = true;
+  newEventsPeriod = period;
+  showNewEvents(period, document.getElementById(btnId));
 }
 
 /** (set by event_display.js's load handler),
@@ -3422,25 +3471,32 @@ function openNewEventsPanelFor(period, btnId, e) {
  * without the user needing to open the panel first.
  */
 function waitForDataThenCount() {
-    // eventsData is initialised to null in event_display.js; wait until
-    // loadEventsData() has replaced it with a real object.
-    if (eventsData !== null && eventsData !== undefined &&
-        (eventsData.events || eventsData.specificEvents || eventsData.musicEvents)) {
-        refreshNewEventsCounts();
-    } else {
-        setTimeout(waitForDataThenCount, 150);
-    }
+  // eventsData is initialised to null in event_display.js; wait until
+  // loadEventsData() has replaced it with a real object.
+  if (
+    eventsData !== null &&
+    eventsData !== undefined &&
+    (eventsData.events || eventsData.specificEvents || eventsData.musicEvents)
+  ) {
+    refreshNewEventsCounts();
+  } else {
+    setTimeout(waitForDataThenCount, 150);
+  }
 }
-window.addEventListener('load', () => setTimeout(waitForDataThenCount, 200));
+window.addEventListener("load", () => setTimeout(waitForDataThenCount, 200));
 
 // When the panel is opened, render the event cards for the selected period.
-document.getElementById('newEventsPanel').addEventListener('toggle', function () {
+document
+  .getElementById("newEventsPanel")
+  .addEventListener("toggle", function () {
     if (this.open) {
-        if (this._openedByChip) {
-            this._openedByChip = false;  // consume the flag; showNewEvents already called
-            return;
-        }
-        showNewEvents(newEventsPeriod,
-            document.getElementById('newEventsThisWeekBtn'));
+      if (this._openedByChip) {
+        this._openedByChip = false; // consume the flag; showNewEvents already called
+        return;
+      }
+      showNewEvents(
+        newEventsPeriod,
+        document.getElementById("newEventsThisWeekBtn"),
+      );
     }
-});
+  });

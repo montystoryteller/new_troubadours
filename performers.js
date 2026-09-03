@@ -165,7 +165,7 @@ function renderAllPerformers() {
         bioLower: (p.bio || "").toLowerCase(),
         showNamesLower: showNames.map((s) => s.toLowerCase()),
         showNames,
-        href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
+        href: `performers.html?performer=${encodeURIComponent(pid)}`,
         isTroupe: isTroupe(p),
         types,
         hasMedia: hasAnyMedia(p, aliasIds),
@@ -367,7 +367,7 @@ function renderAllPerformers() {
     // renderPerformer() for the header badge).
     entry.featuredSeries.forEach(({ podcastId, shortLabel, fullName }) => {
       const seriesBadge = document.createElement("a");
-      seriesBadge.href = `new_troubadours_media.html?series=${encodeURIComponent(podcastId)}`;
+      seriesBadge.href = `media.html?series=${encodeURIComponent(podcastId)}`;
       seriesBadge.className = "simple-list-row-series-tag";
       seriesBadge.textContent = shortLabel;
       seriesBadge.title = `Featured on ${fullName} — view all episodes`;
@@ -512,7 +512,7 @@ function renderAllPerformers() {
           nameLower: p.name.toLowerCase(),
           showNamesLower: showNames.map((s) => s.toLowerCase()),
           showNames,
-          href: `new_troubadours_performers.html?performer=${encodeURIComponent(pid)}`,
+          href: `performers.html?performer=${encodeURIComponent(pid)}`,
         };
       });
 
@@ -682,7 +682,7 @@ function renderPerformer() {
         });
         if (matchId) {
           const a = document.createElement("a");
-          a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(matchId)}`;
+          a.href = `performers.html?performer=${encodeURIComponent(matchId)}`;
           a.textContent = trimmed;
           a.className = "performer-member-link";
           nameEl.appendChild(a);
@@ -694,7 +694,7 @@ function renderPerformer() {
   } else if (members.length === 1) {
     // Single declared member — link it
     const a = document.createElement("a");
-    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(members[0])}`;
+    a.href = `performers.html?performer=${encodeURIComponent(members[0])}`;
     a.textContent = performer.name;
     a.className = "performer-member-link";
     nameEl.appendChild(a);
@@ -710,7 +710,7 @@ function renderPerformer() {
       const p = performersLookup[id];
       if (!p) return;
       const chip = document.createElement("a");
-      chip.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+      chip.href = `performers.html?performer=${encodeURIComponent(id)}`;
       chip.className = "performer-member-chip";
       // Avatar initials
       const initials = p.name
@@ -765,7 +765,7 @@ function renderPerformer() {
     new Set([performerId, ...(performer.aliases || [])]),
   ).forEach(({ podcastId, shortLabel, fullName }) => {
     const badge = document.createElement("a");
-    badge.href = `new_troubadours_media.html?series=${encodeURIComponent(podcastId)}`;
+    badge.href = `media.html?series=${encodeURIComponent(podcastId)}`;
     badge.className = "performer-badge performer-badge-series";
     badge.textContent = `🌍 ${shortLabel}`;
     badge.title = `Featured on ${fullName} — view all episodes`;
@@ -872,7 +872,7 @@ function renderPerformer() {
     .sort(upcomingFirstThenRecent(([, t]) => representativeTourDate(t)));
   const myTouringShows = Object.entries(eventsData.repertoire_shows || {})
     .filter(([, ts]) => performerMatches(ts))
-    .sort(upcomingFirstThenRecent(([, ts]) => representativeShowDate(ts)));  // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
+    .sort(upcomingFirstThenRecent(([, ts]) => representativeShowDate(ts))); // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
   // same convention as tour_dates — see expandTourDates() in shared_utils.js.
   const mySpecific = expandTourDates(
     (eventsData.specificEvents || []).filter((e) => performerMatches(e)),
@@ -884,21 +884,32 @@ function renderPerformer() {
     (eventsData.poetryEvents || []).filter((e) => performerMatches(e)),
   );
   const myFestivals = Object.entries(eventsData.festivals || {})
-    .filter(([, f]) => (f.performers || []).some((p) => p.performer_id === performerId))
+    .filter(([, f]) =>
+      (f.performers || []).some((p) => p.performer_id === performerId),
+    )
     .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
 
   // Collaborators — note myFestivals is deliberately excluded here: sharing
   // a festival bill isn't performing together (see collectCollaborators()).
   renderCollaboratorsSection(
     collectCollaborators([
-      ...myTours.map(([, t]) => ({ record: t, displayName: t.tour_name || t.name })),
+      ...myTours.map(([, t]) => ({
+        record: t,
+        displayName: t.tour_name || t.name,
+      })),
       ...myTouringShows.map(([, ts]) => ({
         record: ts,
         displayName: ts.showname || ts.name,
       })),
-      ...mySpecific.map((e) => ({ record: e, displayName: e.showname || e.name })),
+      ...mySpecific.map((e) => ({
+        record: e,
+        displayName: e.showname || e.name,
+      })),
       ...myMusic.map((e) => ({ record: e, displayName: e.showname || e.name })),
-      ...myPoetry.map((e) => ({ record: e, displayName: e.showname || e.name })),
+      ...myPoetry.map((e) => ({
+        record: e,
+        displayName: e.showname || e.name,
+      })),
     ]),
   );
 
@@ -1861,7 +1872,7 @@ function renderCollaboratorsSection(collaborators) {
     nameLine.className = "perf-collaborator-name-line";
 
     const a = document.createElement("a");
-    a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
     a.className = "perf-collaborator-name";
     a.textContent = p.name;
     nameLine.appendChild(a);
@@ -1902,7 +1913,6 @@ function renderCollaboratorsSection(collaborators) {
 }
 
 function renderVideosSection(performer) {
-
   const videos = collectPerformerVideoAppearances(
     performer,
     performerId,
@@ -2095,7 +2105,7 @@ function renderTroupeConfigs(troupe) {
         const m = performersLookup[mid];
         if (!m) return;
         const chip = document.createElement("a");
-        chip.href = `new_troubadours_performers.html?performer=${encodeURIComponent(mid)}`;
+        chip.href = `performers.html?performer=${encodeURIComponent(mid)}`;
         chip.className = "performer-member-chip";
         const initials = m.name
           .split(/\s+/)
@@ -2202,9 +2212,7 @@ function showDateToEventRow(show, sd) {
     isSpecial: show.isSpecial,
     ticket_url: sd.ticket_url,
     event_flyer:
-      getEventLevelFlyers(sd)[0]?.filename ||
-      show.touring_event_flyer ||
-      null,
+      getEventLevelFlyers(sd)[0]?.filename || show.touring_event_flyer || null,
   };
 }
 
@@ -2350,7 +2358,7 @@ function renderTourCard(container, tourId, tour) {
         const p = performersLookup[id];
         if (!p) return null;
         const a = document.createElement("a");
-        a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+        a.href = `performers.html?performer=${encodeURIComponent(id)}`;
         a.textContent = p.name;
         a.className = "tour-view-link";
         a.onclick = (e) => e.stopPropagation();
@@ -2451,7 +2459,7 @@ function renderTourCard(container, tourId, tour) {
   const footer = document.createElement("div");
   footer.className = "tour-card-footer";
   const viewLink = document.createElement("a");
-  viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+  viewLink.href = `tour_guide.html?tour=${encodeURIComponent(tourId)}`;
   viewLink.className = "tour-view-link";
   viewLink.textContent = "View full tour →";
   footer.appendChild(viewLink);
@@ -2548,7 +2556,7 @@ function renderTouringShowCard(container, tsId, ts) {
   const footer = document.createElement("div");
   footer.className = "tour-card-footer";
   const viewLink = document.createElement("a");
-  viewLink.href = `new_troubadours_tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`;
+  viewLink.href = `tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`;
   viewLink.className = "tour-view-link";
   viewLink.textContent = "View full show →";
   footer.appendChild(viewLink);
@@ -2632,7 +2640,7 @@ function renderEventRow(container, event) {
         const p = performersLookup[id];
         if (p) {
           const a = document.createElement("a");
-          a.href = `new_troubadours_performers.html?performer=${encodeURIComponent(id)}`;
+          a.href = `performers.html?performer=${encodeURIComponent(id)}`;
           a.textContent = p.name;
           a.onclick = (e) => e.stopPropagation();
           coDiv.appendChild(a);
@@ -2872,8 +2880,19 @@ function formatMediumDate(d) {
 // in the DOM stay here.
 
 document.getElementById("pfClose").onclick = closePerfFlyer;
-document.getElementById("pfPrev").onclick = () => { if (_pfIdx > 0) { _pfIdx--; showPfSlide(); } };
-document.getElementById("pfNext").onclick = () => { if (_pfIdx < _pfItems.length - 1) { _pfIdx++; showPfSlide(); } };
-document.getElementById("perfFlyerLightbox").addEventListener("click", e => {
-    if (e.target === document.getElementById("perfFlyerLightbox")) closePerfFlyer();
+document.getElementById("pfPrev").onclick = () => {
+  if (_pfIdx > 0) {
+    _pfIdx--;
+    showPfSlide();
+  }
+};
+document.getElementById("pfNext").onclick = () => {
+  if (_pfIdx < _pfItems.length - 1) {
+    _pfIdx++;
+    showPfSlide();
+  }
+};
+document.getElementById("perfFlyerLightbox").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("perfFlyerLightbox"))
+    closePerfFlyer();
 });
