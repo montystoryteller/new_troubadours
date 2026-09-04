@@ -2652,37 +2652,58 @@
         {
           "date": "04/09/2026",
           "venue_id": "quay-arts-newport",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7.30pm",
+          "price": "£16.75",
+          "ticket_url": "https://tix.uk/en/quayarts/buyingflow/tickets/16266/24281/"
         },
         {
           "date": "12/09/2026",
           "venue_id": "ltbshowrooms-coventry",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7pm",
+          "price": "£10 (+ £1)",
+          "ticket_url": "https://wegottickets.com/f/25161"
         },
         {
           "date": "17/09/2026",
           "venue_id": "wharf-chambers-leeds",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7pm",
+          "price": "£10 (+ £1)",
+          "ticket_url": "https://wegottickets.com/event/691280"
         },
         {
           "date": "18/09/2026",
           "venue_id": "forum-darlington",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7.30pm",
+          "price": "£13 (+ £1.30)",
+          "ticket_url": "https://www.seetickets.com/event/attila-the-stockbroker-newtown-neurotics/the-forum-music-centre/3603399"
         },
         {
           "date": "21/09/2026",
           "venue_id": "artisan-tap-stoke",
-          "isSpecial": true
+          "isSpecial": true,
+          "price": "£10 (+ £1)",
+          "event_flyer": "2026_09_21_attila_neurotics_artisan_tap.jpg",
+          "ticket_url": "https://www.seetickets.com/event/newtown-neurotics-attila-the-stockbroker/artisan-tap/3609687?aff=id1allg"
         },
         {
           "date": "04/10/2026",
           "venue_id": "dublin-castle-camden",
-          "isSpecial": true
+          "isSpecial": true,
+          "price": "£12 (+ £1.20)",
+          "time": "1.30pm",
+          "ticket_url": "https://wegottickets.com/f/25175"
         },
         {
           "date": "24/10/2026",
           "venue_id": "the-riverfront-newport",
-          "isSpecial": true
+          "isSpecial": true,
+          "ticket_url": "https://newportlive.ticketsolve.com/ticketbooth/shows/1173673604/events/428796850",
+          "time": "8pm",
+          "price": "£14 / £12"
         },
         {
           "date": "31/10/2026",
@@ -2692,17 +2713,26 @@
         {
           "date": "04/11/2026",
           "venue_id": "macarts-galashiels",
-          "isSpecial": true
+          "isSpecial": true,
+          "ticket_url": "https://www.ticketsource.com/macarts/attila-the-stockbroker-fiery-words-for-hellish-times/e-zkplkp",
+          "time": "7.30pm",
+          "price": "£10 (+ £0.78) / £8 + (£0.62)"
         },
         {
           "date": "05/11/2026",
           "venue_id": "the-mill-cafe-gatehouse-of-fleet",
-          "isSpecial": true
+          "isSpecial": true,
+          "ticket_url": "https://www.tickettailor.com/events/gatehouseoffleetfestivalgroup/2333973",
+          "time": "7.30pm",
+          "price": "£10 (+ £0.50)"
         },
         {
           "date": "06/11/2026",
           "venue_id": "50rpm-coatbridge",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7.30pm",
+          "price": "£14 (+ £1.40)",
+          "ticket_url": "https://wegottickets.com/f/16646"
         },
         {
           "date": "07/11/2026",
@@ -2712,12 +2742,18 @@
         {
           "date": "08/11/2026",
           "venue_id": "clarks-on-lindsay-street-dundee",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "4pm",
+          "price": "£10 (+ £1)",
+          "ticket_url": "https://wegottickets.com/f/24877"
         },
         {
           "date": "10/11/2026",
           "venue_id": "krakatoa-aberdeen",
-          "isSpecial": true
+          "isSpecial": true,
+          "time": "7.30pm",
+          "price": "£8 (+ £0.80)",
+          "ticket_url": "https://wegottickets.com/f/25092"
         },
         {
           "date": "11/11/2026",
