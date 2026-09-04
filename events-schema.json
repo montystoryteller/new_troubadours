@@ -115,6 +115,43 @@
         }
       ]
     },
+    "structuredTimeEntry": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "doors",
+            "start",
+            "end",
+            null
+          ],
+          "description": "Which moment this time refers to. null means a plain, unlabelled time — used when there's just one time and no need to label it."
+        },
+        "time": {
+          "type": "string",
+          "description": "The time itself, in whatever casual format the site already uses (e.g. '7.30pm', '8pm', '7:30-9pm').",
+          "examples": [
+            "8pm",
+            "7.30pm"
+          ]
+        }
+      },
+      "required": [
+        "time"
+      ],
+      "additionalProperties": false
+    },
+    "structuredTimeList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/structuredTimeEntry"
+      },
+      "description": "Optional structured alternative/companion to the free-text `time` field on the same record. When present, the event builder auto-generates `time` by textualising these entries — e.g. a single unlabelled entry becomes '8pm'; labelled entries join as 'Doors 7pm, Start 8.30pm'. `time` remains the field everything else reads; `structured_time` is only ever a convenience for producing/editing it, and `time` can still be hand-edited afterwards without touching this."
+    },
     "youtubeUrl": {
       "description": "Optional YouTube trailer URL (watch/youtu.be/shorts/embed form). Rendered via getYouTubeEmbedUrl() in shared_utils.js, which validates the host and converts it to a safe youtube-nocookie.com /embed/ URL; anything else is silently ignored by the front end.",
       "type": "string"
@@ -385,6 +422,9 @@
             "7.30pm"
           ]
         },
+        "structured_time": {
+          "$ref": "#/$defs/structuredTimeList"
+        },
         "price": {
           "type": "string",
           "examples": [
@@ -620,6 +660,9 @@
         "time": {
           "type": "string"
         },
+        "structured_time": {
+          "$ref": "#/$defs/structuredTimeList"
+        },
         "club": {
           "type": "string",
           "description": "Key into `events[].club` for the club night this date belongs to."
@@ -761,6 +804,9 @@
         "time": {
           "type": "string"
         },
+        "structured_time": {
+          "$ref": "#/$defs/structuredTimeList"
+        },
         "club": {
           "type": "string",
           "description": "Key into `events[].club`, if this is happening at an existing club night."
@@ -881,6 +927,9 @@
         "time": {
           "type": "string"
         },
+        "structured_time": {
+          "$ref": "#/$defs/structuredTimeList"
+        },
         "club": {
           "type": "string"
         },
@@ -945,6 +994,9 @@
         },
         "time": {
           "type": "string"
+        },
+        "structured_time": {
+          "$ref": "#/$defs/structuredTimeList"
         },
         "club": {
           "type": "string"

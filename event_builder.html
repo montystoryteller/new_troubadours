@@ -193,7 +193,10 @@
 
             <div class="field-row">
                 <label>Time</label>
-                <input type="text" id="ev-time" placeholder="e.g. 7.30-9pm">
+                <div>
+                    <input type="text" id="ev-time" placeholder="e.g. 7.30-9pm">
+                    <div id="ev-structured-time-field"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -1566,6 +1569,190 @@
         // in whatever inputs a particular field needs; reading them back out
         // is left to a field-specific reader (see below), so this only owns
         // the repeatable-row plumbing.
+        // Optional "doors / start / end" breakdown for any plain-text time
+        // field. Builds a small collapsible list of {type, time} rows next
+        // to the given text input, and keeps that input's value
+        // auto-generated from them whenever a row changes — e.g. a single
+        // unlabelled row becomes "8pm"; "Doors" + "Start" rows become
+        // "Doors 7pm, Start 8.30pm". The plain text field remains the actual
+        // value everything else reads (`time`); this is only ever a
+        // convenience for producing/editing it, and stays fully
+        // hand-editable afterwards regardless of whether it was ever opened.
+        //
+        // If the text is then hand-edited so it no longer matches what the
+        // rows below it would generate, that's flagged rather than silently
+        // left to rot: exporting both a `time` string and a `structured_time`
+        // that contradicts it would be worse than not having structured_time
+        // at all. A mismatch shows a warning with an explicit choice
+        // (restore the text from the rows, or discard the rows and keep the
+        // typed text) rather than guessing — parsing arbitrary hand-edited
+        // prose back into rows isn't reliable enough to attempt. If left
+        // unresolved, getEntries() returns nothing for that mismatched state,
+        // so a save never exports a structured_time that disagrees with time.
+        function buildStructuredTimeField(container, timeInput) {
+            container.innerHTML = "";
+            const STRUCTURED_TIME_LABELS = { doors: "Doors", start: "Start", end: "End" };
+            let lastGenerated = null; // text we last wrote FROM the rows, to tell our own echo from a real hand-edit
+
+            function textFor(entries) {
+                if (!entries.length) return null;
+                return (entries.length === 1 && !entries[0].type)
+                    ? entries[0].time
+                    : entries.map(e => e.type ? `${STRUCTURED_TIME_LABELS[e.type]} ${e.time}` : e.time).join(", ");
+            }
+
+            function readEntries() {
+                return Array.from(list.children).map(row => ({
+                    type: row.querySelector(".st-type").value || null,
+                    time: row.querySelector(".st-time").value.trim(),
+                })).filter(e => e.time);
+            }
+
+            function isMismatched() {
+                const entries = readEntries();
+                if (!entries.length) return false;
+                return timeInput.value.trim() !== textFor(entries);
+            }
+
+            function updateMismatchBanner() {
+                mismatchBanner.style.display = isMismatched() ? "" : "none";
+            }
+
+            function regenerate() {
+                const entries = readEntries();
+                const text = textFor(entries);
+                if (text === null) return; // no valid rows -- don't clobber a manually-typed time
+                lastGenerated = text;
+                timeInput.value = text;
+                timeInput.dispatchEvent(new Event("input"));
+                updateMismatchBanner();
+            }
+
+            function addRow(type, time) {
+                const row = document.createElement("div");
+                row.className = "subitem-row";
+                const fieldsWrap = document.createElement("div");
+                fieldsWrap.className = "subitem-row-fields two-col";
+                fieldsWrap.innerHTML = `
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Label</label>
+                        <select class="st-type">
+                            <option value="">(no label)</option>
+                            <option value="doors">Doors</option>
+                            <option value="start">Start</option>
+                            <option value="end">End</option>
+                        </select>
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Time</label>
+                        <input type="text" class="st-time" placeholder="e.g. 7.30pm">
+                    </div>`;
+                fieldsWrap.querySelector(".st-type").value = type || "";
+                fieldsWrap.querySelector(".st-time").value = time || "";
+                fieldsWrap.querySelector(".st-type").addEventListener("change", regenerate);
+                fieldsWrap.querySelector(".st-time").addEventListener("input", regenerate);
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "subitem-remove";
+                removeBtn.textContent = "×";
+                removeBtn.addEventListener("click", () => { row.remove(); regenerate(); });
+
+                row.appendChild(fieldsWrap);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            }
+
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "add-subitem-btn";
+            toggle.textContent = "+ Add doors/start/end breakdown";
+
+            const rowsWrap = document.createElement("div");
+            rowsWrap.style.display = "none";
+            rowsWrap.style.marginTop = "8px";
+
+            const mismatchBanner = document.createElement("div");
+            mismatchBanner.className = "field-hint";
+            mismatchBanner.style.display = "none";
+            mismatchBanner.style.color = "#b26a00";
+            const warnText = document.createElement("div");
+            warnText.textContent = "⚠ This no longer matches the breakdown below, so it won't be saved as structured data unless you resolve that.";
+            const restoreBtn = document.createElement("button");
+            restoreBtn.type = "button";
+            restoreBtn.className = "add-subitem-btn";
+            restoreBtn.style.marginRight = "6px";
+            restoreBtn.textContent = "Restore from breakdown";
+            restoreBtn.addEventListener("click", regenerate);
+            const discardBtn = document.createElement("button");
+            discardBtn.type = "button";
+            discardBtn.className = "add-subitem-btn";
+            discardBtn.textContent = "Discard breakdown, keep this text";
+            discardBtn.addEventListener("click", () => {
+                list.innerHTML = "";
+                lastGenerated = null;
+                rowsWrap.style.display = "none";
+                toggle.style.display = "";
+            });
+            mismatchBanner.appendChild(warnText);
+            mismatchBanner.appendChild(restoreBtn);
+            mismatchBanner.appendChild(discardBtn);
+            rowsWrap.appendChild(mismatchBanner);
+
+            const list = document.createElement("div");
+            list.className = "subitem-list";
+            rowsWrap.appendChild(list);
+
+            const addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className = "add-subitem-btn";
+            addBtn.textContent = "Add another time";
+            addBtn.addEventListener("click", () => addRow());
+
+            const hint = document.createElement("div");
+            hint.className = "field-hint";
+            hint.textContent = "Fills in the Time field above from these — you can still edit it by hand afterwards.";
+
+            rowsWrap.appendChild(addBtn);
+            rowsWrap.appendChild(hint);
+
+            toggle.addEventListener("click", () => {
+                rowsWrap.style.display = "";
+                toggle.style.display = "none";
+                if (!list.children.length) addRow();
+            });
+
+            timeInput.addEventListener("input", () => {
+                // Only a genuine hand-edit needs checking — skip the echo
+                // from our own regenerate() just having set this value.
+                if (timeInput.value.trim() !== lastGenerated) updateMismatchBanner();
+            });
+
+            container.appendChild(toggle);
+            container.appendChild(rowsWrap);
+
+            return {
+                // Exporting a stale structured_time that contradicts the
+                // actual time text would be worse than exporting none —
+                // so a still-mismatched state yields nothing here, even
+                // though the rows themselves are left in place for the
+                // person to resolve later rather than being cleared.
+                getEntries: () => (isMismatched() ? [] : readEntries()),
+                populate(entries) {
+                    list.innerHTML = "";
+                    if (entries && entries.length) {
+                        entries.forEach(e => addRow(e.type, e.time));
+                        lastGenerated = textFor(readEntries());
+                        rowsWrap.style.display = "";
+                        toggle.style.display = "none";
+                    } else {
+                        rowsWrap.style.display = "none";
+                        toggle.style.display = "";
+                    }
+                },
+            };
+        }
+
         function buildSubitemList(container, { buildRowFields, addLabel }) {
             container.innerHTML = "";
             const list = document.createElement("div");
@@ -2133,7 +2320,10 @@
                 </div>
                 <div class="field-row">
                     <label>Time</label>
-                    <input type="text" class="dr-time" placeholder="e.g. 7.30pm">
+                    <div>
+                        <input type="text" class="dr-time" placeholder="e.g. 7.30pm">
+                        <div class="dr-structured-time-field"></div>
+                    </div>
                 </div>
                 <div class="field-row">
                     <label>Price</label>
@@ -2202,6 +2392,7 @@
             row.appendChild(grid);
             const venueField = buildEntityField(grid.querySelector(".dr-venue-field"), "venue");
             row._venueField = venueField;
+            row._structuredTimeField = buildStructuredTimeField(grid.querySelector(".dr-structured-time-field"), grid.querySelector(".dr-time"));
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
 
             if (kind === "tour") {
@@ -2239,6 +2430,8 @@
                 const ticketUrl = row.querySelector(".dr-ticket-url").value.trim();
                 const video = row.querySelector(".dr-video").value.trim();
                 if (time) entry.time = time;
+                const structuredTime = row._structuredTimeField.getEntries();
+                if (structuredTime.length) entry.structured_time = structuredTime;
                 if (price) entry.price = price;
                 if (ticketUrl) entry.ticket_url = ticketUrl;
                 if (video) entry.video_trailer = video;
@@ -2272,9 +2465,11 @@
         let evPerformerMulti;
         let evVenueField;
         let evPriceBreakdown;
+        let evStructuredTimeField;
         function initEventForm() {
             evPerformerMulti = buildMultiPerformerField(document.getElementById("ev-performer-field"));
             evVenueField = buildEntityField(document.getElementById("ev-venue-field"), "venue");
+            evStructuredTimeField = buildStructuredTimeField(document.getElementById("ev-structured-time-field"), document.getElementById("ev-time"));
             wireDateAddedCheckbox(document.getElementById("ev-date-added-today"), document.getElementById("ev-date-added"));
             const priceBreakdownContainer = document.getElementById("ev-price-breakdown-field");
             evPriceBreakdown = buildPriceBreakdownField(priceBreakdownContainer);
@@ -2320,6 +2515,8 @@
             const dateAdded = document.getElementById("ev-date-added").value.trim();
             if (dateAdded) record.date_added = dateAdded;
             if (time) record.time = time;
+            const structuredTime = evStructuredTimeField.getEntries();
+            if (structuredTime.length) record.structured_time = structuredTime;
             if (club) record.club = club;
             if (widerEvent) record.wider_event = widerEvent;
             if (price) record.price = price;
