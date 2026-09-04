@@ -8496,6 +8496,21 @@
       "date_added": "24/08/2026"
     },
     {
+      "name": "Storytelling, Nature and Irish Folklore [Eddie Lenihan]",
+      "showname": "Storytelling, Nature and Irish Folklore",
+      "date": "05/09/2026",
+      "time": "11.30am",
+      "club": "",
+      "price": "",
+      "event_flyer": "",
+      "description": "Join us in person for an unforgettable morning with Eddie Lenihan, Ireland's legendary storyteller. Dive into the magical world of Irish folklore and explore the wonders of nature through captivating tales that have been passed down for generations. Perfect for little people who love a good story and wants to connect with Ireland's rich cultural heritage!",
+      "ticket_url": "https://www.eventbrite.com/e/storytelling-nature-and-irish-folklore-with-eddie-lenihan-tickets-1998872774276",
+      "isSpecial": true,
+      "date_added": "04/09/2026",
+      "venue_id": "waterford-central-library",
+      "performer_id": "eddie-lenihan"
+    },
+    {
       "name": "Stories of the Vikings: creation, destruction, magic [Jason Buck]",
       "showname": "Stories of the Vikings: creation, destruction, magic",
       "date": "07/09/2026",
@@ -9736,10 +9751,22 @@
         -2.16446
       ]
     },
+    "waterford-central-library": {
+      "id": "waterford-central-library",
+      "name": "Waterford Central Library",
+      "city": "Waterford",
+      "postcode": "X91 V045",
+      "full_address": "Waterford Central Library, 6 Lady Lane, Waterford, X91 V045, Ireland",
+      "url": "https://waterfordlibraries.ie/chunk/central-library/",
+      "latlon": [
+        52.25956,
+        -7.11108
+      ]
+    },
     "rougemont-room-exeter": {
       "id": "rougemont-room-exeter",
-      "name": "Rougemont Room",
-      "city": "Exeter Library",
+      "name": "Rougemont Room, Exeter Library",
+      "city": "Exeter",
       "postcode": "EX4 3PQ",
       "full_address": "Rougemont Room, Exeter Library, Exeter, EX4 3PQ",
       "url": "https://discover.librariesunlimited.org.uk/-/exeter-library#/",
