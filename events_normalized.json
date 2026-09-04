@@ -8810,6 +8810,19 @@
       "isSpecial": true
     },
     {
+      "name": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland [Lisa Schneidau]",
+      "showname": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland",
+      "date": "07/10/2026",
+      "time": "7pm",
+      "price": "£20",
+      "description": "Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nJoin storyteller Lisa Schneidau for an evening of dark tales of oak and yew, rowan and blackthorn, as we wander through the greenwood in our imaginations. After all what is a folk tale, but a tangled woodland of words, where anything could happen?",
+      "ticket_url": "https://arundells.org/events/tree-folk-tales/",
+      "isSpecial": true,
+      "venue_id": "arundells-salisbury",
+      "date_added": "04/09/2026",
+      "performer_id": "lisa-schneidau"
+    },
+    {
       "name": "Open Tellers' Special Night [feat. Lynette Hill]",
       "showname": "Open Tellers' Special Night [feat. Lynette Hill]",
       "date": "07/10/2026",
@@ -12832,6 +12845,15 @@
       "full_address": "Condover Village Hall, Shrewsbury, SY5 7AA",
       "url": "https://www.condovervillagehall.co.uk/",
       "latlon": [52.64925,-2.74988]
+    },
+    "arundells-salisbury": {
+      "id": "arundells-salisbury",
+      "name": "Arundells, Salisbury",
+      "city": "Salisbury",
+      "postcode": "SP5 5NJ",
+      "full_address": "Arundells, 59 The Close, Salisbury, SP1 2EN",
+      "url": "https://arundells.org/",
+      "latlon": [51.06593,-1.79985]
     },
     "sixpenny-handley-village-hall": {
       "id": "sixpenny-handley-village-hall",
