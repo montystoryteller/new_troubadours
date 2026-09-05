@@ -777,40 +777,6 @@ function renderVenue() {
   const irishSessions = (eventsData.irishSessions || []).filter(
     (e) => e.venue_id === venueId,
   );
-  const specificEvents = (eventsData.specificEvents || []).filter(
-    (e) => e.venue_id === venueId,
-  );
-  const musicEvents = (eventsData.musicEvents || []).filter(
-    (e) => e.venue_id === venueId,
-  );
-  const poetryEvents = (eventsData.poetryEvents || []).filter(
-    (e) => e.venue_id === venueId,
-  );
-
-  // Tour dates at this venue
-  const tourDatesHere = [];
-  Object.entries(toursLookup).forEach(([tourId, tour]) => {
-    (tour.tour_dates || []).forEach((td) => {
-      if (td.venue_id === venueId) {
-        tourDatesHere.push({ tour, tourId, tourDate: td });
-      }
-    });
-  });
-
-  // Touring show dates at this venue
-  const showDatesHere = [];
-  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
-    (ts.show_dates || []).forEach((sd) => {
-      if (sd.venue_id === venueId) {
-        showDatesHere.push({ ts, tsId, showDate: sd });
-      }
-    });
-  });
-
-  // Festival at this venue
-  const festivalsHere = Object.entries(eventsData.festivals || {}).filter(
-    ([, f]) => f.venue_id === venueId,
-  );
 
   // Regular clubs
   if (regularClubs.length > 0) {
@@ -844,7 +810,86 @@ function renderVenue() {
 
   // Sort specific + music + tour dates by date
   const today = getTodayMidnight();
-  const allDated = [
+  const allDated = collectDatedEventsForVenue(venueId);
+
+  const upcoming = allDated.filter((e) => e.date >= today);
+  const past = allDated.filter((e) => e.date < today);
+
+  if (upcoming.length > 0) {
+    document.getElementById("upcomingSection").style.display = "";
+    upcoming.forEach((e) =>
+      renderEventRow(document.getElementById("upcomingList"), e, false),
+    );
+  }
+
+  if (past.length > 0) {
+    document.getElementById("pastSection").style.display = "";
+    // Show most recent first for past
+    [...past]
+      .reverse()
+      .forEach((e) =>
+        renderEventRow(document.getElementById("pastList"), e, true),
+      );
+  }
+
+  // Flyers gallery — current/upcoming in full colour, past greyed out
+  renderVenueFlyers(regularClubs, allDated, today);
+
+  // Nearby venues
+  renderNearbyVenues();
+
+  // Nearby events (next 7 days, across nearby venues)
+  renderNearbyEvents(today);
+}
+
+// ---------------------------------------------------------------------------
+// Dated-event collection (shared by the current venue and nearby venues)
+// ---------------------------------------------------------------------------
+
+function collectTourDatesForVenue(vid) {
+  const tourDatesHere = [];
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      if (td.venue_id === vid) {
+        tourDatesHere.push({ tour, tourId, tourDate: td });
+      }
+    });
+  });
+  return tourDatesHere;
+}
+
+function collectShowDatesForVenue(vid) {
+  const showDatesHere = [];
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      if (sd.venue_id === vid) {
+        showDatesHere.push({ ts, tsId, showDate: sd });
+      }
+    });
+  });
+  return showDatesHere;
+}
+
+// Gathers all one-off dated events (specific/music/poetry/tour/show/festival)
+// at a given venue, sorted chronologically. Recurring club nights are
+// deliberately excluded — they have no single "date" of their own.
+function collectDatedEventsForVenue(vid) {
+  const specificEvents = (eventsData.specificEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const musicEvents = (eventsData.musicEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const poetryEvents = (eventsData.poetryEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const tourDatesHere = collectTourDatesForVenue(vid);
+  const showDatesHere = collectShowDatesForVenue(vid);
+  const festivalsHere = Object.entries(eventsData.festivals || {}).filter(
+    ([, f]) => f.venue_id === vid,
+  );
+
+  return [
     ...specificEvents.map((e) => ({
       type: "specific",
       date: parseDateString(e.date),
@@ -878,32 +923,6 @@ function renderVenue() {
   ]
     .filter((e) => e.date)
     .sort((a, b) => a.date - b.date);
-
-  const upcoming = allDated.filter((e) => e.date >= today);
-  const past = allDated.filter((e) => e.date < today);
-
-  if (upcoming.length > 0) {
-    document.getElementById("upcomingSection").style.display = "";
-    upcoming.forEach((e) =>
-      renderEventRow(document.getElementById("upcomingList"), e, false),
-    );
-  }
-
-  if (past.length > 0) {
-    document.getElementById("pastSection").style.display = "";
-    // Show most recent first for past
-    [...past]
-      .reverse()
-      .forEach((e) =>
-        renderEventRow(document.getElementById("pastList"), e, true),
-      );
-  }
-
-  // Flyers gallery — current/upcoming in full colour, past greyed out
-  renderVenueFlyers(regularClubs, allDated, today);
-
-  // Nearby venues
-  renderNearbyVenues();
 }
 
 // ---------------------------------------------------------------------------
@@ -1055,7 +1074,7 @@ function renderRegularClub(container, event, type) {
 // Dated event row (specific, music, tour date, festival)
 // ---------------------------------------------------------------------------
 
-function renderEventRow(container, entry, isPast) {
+function renderEventRow(container, entry, isPast, options = {}) {
   const row = document.createElement("div");
   row.className = `event-row${isPast ? " event-row-past" : ""}`;
 
@@ -1066,6 +1085,15 @@ function renderEventRow(container, entry, isPast) {
 
   const detail = document.createElement("div");
   detail.className = "event-row-detail";
+
+  if (options.showVenue && entry.venue) {
+    const venueLine = document.createElement("a");
+    venueLine.className = "event-row-venue";
+    venueLine.href = `venues.html?venue=${encodeURIComponent(entry.venueId)}`;
+    venueLine.textContent =
+      entry.venue.name + (entry.venue.city ? `, ${entry.venue.city}` : "");
+    detail.appendChild(venueLine);
+  }
 
   if (
     entry.type === "specific" ||
@@ -1255,6 +1283,7 @@ function renderEventRow(container, entry, isPast) {
 
   row.appendChild(detail);
   container.appendChild(row);
+  return row;
 }
 
 // ---------------------------------------------------------------------------
@@ -1383,12 +1412,12 @@ function renderVenueFlyers(regularClubs, allDated, today) {
 // Nearby venues
 // ---------------------------------------------------------------------------
 
-function renderNearbyVenues() {
-  if (!venue.latlon) return;
+function getNearbyVenues() {
+  if (!venue.latlon) return [];
   const [lat, lon] = venue.latlon;
   const RADIUS_KM = 20;
 
-  const nearby = Object.entries(venuesLookup)
+  return Object.entries(venuesLookup)
     .filter(([vid, v]) => vid !== venueId && v.latlon)
     .map(([vid, v]) => {
       const dist = haversineKm(lat, lon, v.latlon[0], v.latlon[1]);
@@ -1397,6 +1426,10 @@ function renderNearbyVenues() {
     .filter((x) => x.dist <= RADIUS_KM)
     .sort((a, b) => a.dist - b.dist)
     .slice(0, 8);
+}
+
+function renderNearbyVenues() {
+  const nearby = getNearbyVenues();
 
   if (nearby.length === 0) return;
 
@@ -1439,6 +1472,61 @@ function haversineKm(lat1, lon1, lat2, lon2) {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ---------------------------------------------------------------------------
+// Nearby events (one-off dated events at nearby venues, selectable horizon)
+// ---------------------------------------------------------------------------
+
+let nearbyEventsToday = null;
+
+function renderNearbyEvents(today) {
+  const nearby = getNearbyVenues();
+  if (nearby.length === 0) return;
+
+  nearbyEventsToday = today;
+  document.getElementById("nearbyEventsSection").style.display = "";
+
+  const horizonSelect = document.getElementById("nearbyEventsHorizon");
+  if (!horizonSelect.dataset.wired) {
+    horizonSelect.dataset.wired = "true";
+    horizonSelect.addEventListener("change", () =>
+      renderNearbyEventsList(Number(horizonSelect.value)),
+    );
+  }
+
+  renderNearbyEventsList(Number(horizonSelect.value));
+}
+
+function renderNearbyEventsList(days) {
+  const list = document.getElementById("nearbyEventsList");
+  list.innerHTML = "";
+
+  const today = nearbyEventsToday;
+  const horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + days);
+
+  const MAX_EVENTS = 15;
+  const upcomingNearby = getNearbyVenues()
+    .flatMap(({ vid, v }) =>
+      collectDatedEventsForVenue(vid)
+        .filter((e) => e.date >= today && e.date < horizon)
+        .map((e) => ({ ...e, venueId: vid, venue: v })),
+    )
+    .sort((a, b) => a.date - b.date)
+    .slice(0, MAX_EVENTS);
+
+  if (upcomingNearby.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "no-events";
+    empty.textContent = `No nearby events found in the next ${days} days.`;
+    list.appendChild(empty);
+    return;
+  }
+
+  upcomingNearby.forEach((entry) =>
+    renderEventRow(list, entry, false, { showVenue: true }),
+  );
 }
 
 // ---------------------------------------------------------------------------
