@@ -675,6 +675,29 @@ function getAutoCacheVersion() {
 }
 
 /**
+ * Build a human-readable diagnostic for a JSON.parse SyntaxError, since the
+ * native error message's position isn't always easy to locate in a large file.
+ * @param {string} text - The raw text that was passed to JSON.parse.
+ * @param {SyntaxError} error - The error thrown by JSON.parse.
+ * @returns {string} e.g. "Unexpected token } in JSON at position 123 (line 5, column 10): ...snippet..."
+ */
+function describeJsonParseError(text, error) {
+  const positionMatch = /position (\d+)/.exec(error.message);
+  if (!positionMatch) return error.message;
+
+  const position = Number(positionMatch[1]);
+  const before = text.slice(0, position);
+  const line = (before.match(/\n/g) || []).length + 1;
+  const column = position - before.lastIndexOf("\n");
+  const snippet = text.slice(
+    Math.max(0, position - 20),
+    Math.min(text.length, position + 20),
+  );
+
+  return `${error.message} (line ${line}, column ${column}) near: "...${snippet}..."`;
+}
+
+/**
  * Fetch events_normalized.json and populate the three shared lookup objects.
  * Uses localStorage to cache data within the same session (browser tab/window).
  * This avoids re-downloading the ~580KB JSON when navigating between pages.
@@ -697,7 +720,15 @@ async function loadEventsData(cacheBuster) {
       const cached = localStorage.getItem(CACHE_KEYS.DATA);
       if (cached) {
         try {
-          const { timestamp, data } = JSON.parse(cached);
+          let parsed;
+          try {
+            parsed = JSON.parse(cached);
+          } catch (parseError) {
+            throw new Error(
+              `Cached events data is corrupted: ${describeJsonParseError(cached, parseError)}`,
+            );
+          }
+          const { timestamp, data } = parsed;
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
           applyRepertoireInheritance(eventsData);
@@ -719,9 +750,7 @@ async function loadEventsData(cacheBuster) {
             lastUpdateTime: timestamp,
           };
         } catch (e) {
-          console.warn(
-            "Failed to parse cached events data, fetching fresh copy",
-          );
+          console.warn(`${e.message} — fetching fresh copy instead`);
           localStorage.removeItem(CACHE_KEYS.DATA);
         }
       }
@@ -734,7 +763,16 @@ async function loadEventsData(cacheBuster) {
       console.error("Failed to load events_normalized.json");
       return null;
     }
-    const eventsData = await response.json();
+    const responseText = await response.text();
+    let eventsData;
+    try {
+      eventsData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error(
+        `events_normalized.json is corrupted: ${describeJsonParseError(responseText, parseError)}`,
+      );
+      return null;
+    }
     applyRepertoireInheritance(eventsData);
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
@@ -931,7 +969,16 @@ async function checkForNewerEventsDataBackground() {
     if (needsRefresh) {
       const response = await fetch(`events_normalized.json?v=${Date.now()}`);
       if (response.ok) {
-        const eventsData = await response.json();
+        const responseText = await response.text();
+        let eventsData;
+        try {
+          eventsData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.warn(
+            `Background update: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
+          );
+          return;
+        }
         applyRepertoireInheritance(eventsData);
         const toursLookup = eventsData.tours || {};
         const venuesLookup = eventsData.venues || {};
