@@ -31,10 +31,12 @@
             color: #757575;
             margin-bottom: 2px;
         }
+
         .subitem-field-group {
             display: flex;
             flex-direction: column;
         }
+
         /* event_builder-styles.css only styles inputs inside .subitem-row-fields;
            the podcast-episode description field is a textarea, so give it the
            same treatment for visual consistency. */
@@ -49,6 +51,7 @@
             min-height: 50px;
             resize: vertical;
         }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -56,6 +59,7 @@
             gap: 6px;
             flex-shrink: 0;
         }
+
         .batch-edit-btn,
         .batch-preview-btn {
             background: white;
@@ -66,10 +70,12 @@
             font-size: 0.85em;
             cursor: pointer;
         }
+
         .batch-edit-btn:hover,
         .batch-preview-btn:hover {
             background: var(--theme-green-bg);
         }
+
         .batch-list li.batch-preview-row {
             display: block;
             background: #fafafa;
@@ -78,6 +84,7 @@
             padding: 8px 10px;
             margin-top: -2px;
         }
+
         .batch-preview-row pre {
             margin: 0;
             white-space: pre-wrap;
@@ -91,14 +98,14 @@
 
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
-        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
-        <a href="new_troubadours_tour_guide.html">🎭 Touring Shows</a>
-        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
-        <a href="new_troubadours_performers.html">🎤 Performers</a>
-        <a href="new_troubadours_venues.html">📍 Venues</a>
-        <a href="new_troubadours_festival.html">🎪 Festivals</a>
-        <a href="new_troubadours_flyers.html">📋 Flyers</a>
-        <a href="new_troubadours_stats.html">📊 Stats</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Touring Shows</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="stats.html">📊 Stats</a>
     </nav>
 
     <div class="builder-wrap">
@@ -214,15 +221,8 @@
             <div class="field-row">
                 <label>Price</label>
                 <div>
-                    <div class="price-input-row">
-                        <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
-                        <button type="button" class="entity-details-toggle" id="ev-price-breakdown-toggle">+ structured
-                            pricing</button>
-                    </div>
-                    <div class="field-hint">Structured pricing is optional and additive — the plain text price above is
-                        still what gets saved as `price`; this just also fills in `price_breakdown` alongside it. See
-                        events-schema-costings.md for the rationale.</div>
-                    <div id="ev-price-breakdown-field" style="display:none;"></div>
+                    <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
+                    <div id="ev-structured-price-field"></div>
                 </div>
             </div>
 
@@ -230,7 +230,8 @@
                 <label>Description</label>
                 <div>
                     <textarea id="ev-description" placeholder="Show description"></textarea>
-                    <button type="button" class="add-subitem-btn" id="ev-suggest-age-btn" style="margin-top:6px;">Suggest
+                    <button type="button" class="add-subitem-btn" id="ev-suggest-age-btn"
+                        style="margin-top:6px;">Suggest
                         age rating from description</button>
                     <div id="ev-age-suggestion" style="display:none;"></div>
                 </div>
@@ -271,7 +272,8 @@
 
             <div class="field-row">
                 <label>Facebook</label>
-                <input type="url" id="ev-facebook" placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
+                <input type="url" id="ev-facebook"
+                    placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
             </div>
 
             <div class="field-row">
@@ -327,7 +329,8 @@
 
             <div class="field-row">
                 <label>Show name</label>
-                <input type="text" id="tour-name" placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
+                <input type="text" id="tour-name"
+                    placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
             </div>
 
             <div class="field-row">
@@ -452,7 +455,8 @@
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="festival-name" list="festivalOptions" placeholder="e.g. Bristol Storytelling Festival 2026">
+                    <input type="text" id="festival-name" list="festivalOptions"
+                        placeholder="e.g. Bristol Storytelling Festival 2026">
                     <div id="festival-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -504,7 +508,8 @@
 
             <div class="field-row">
                 <label>Age bands</label>
-                <input type="text" id="festival-age-bands" placeholder="comma-separated, e.g. Family friendly, Adults only">
+                <input type="text" id="festival-age-bands"
+                    placeholder="comma-separated, e.g. Family friendly, Adults only">
             </div>
 
             <div class="field-row">
@@ -516,7 +521,8 @@
                 <label>Flyer(s)</label>
                 <div>
                     <div class="date-rows" id="festival-flyer-rows"></div>
-                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()" style="margin-top:6px;">Add
+                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()"
+                        style="margin-top:6px;">Add
                         another flyer</button>
                     <div class="field-hint">One flyer saves as event_flyer; add more, or give one a caption, to save
                         as event_flyers.</div>
@@ -854,18 +860,17 @@
             </div>
 
             <div class="enrich-section">
-                <h3>💷 Price breakdown suggestions</h3>
+                <h3>💷 Price format note</h3>
                 <p class="field-hint">
-                    Parses each free-text price/cost string it can confidently make sense of into a candidate
-                    <code>price_breakdown</code> (see events-schema-costings.md), marked <code>draft: true</code>
-                    so you can review and correct it later. Complex, prose-like pricing (festival weekend deals,
-                    deposits, etc.) is deliberately left alone rather than force-fit.
+                    The old "price breakdown suggestions" scanner that lived here has been retired — it
+                    produced a <code>price_breakdown</code> shape that was never actually added to the
+                    schema, and wasn't read by anything. Structured pricing is now built the same way as
+                    structured time: build it directly on an event/date's Price field in the relevant tab
+                    (as <code>structured_price</code>), which generates the <code>price</code> text for you.
+                    There's no free-text-to-structured scanner for existing data yet — only the builder's
+                    own "generate from structure" direction — but that'd be a reasonable follow-up if it'd
+                    help, mirroring the age-rating scanner.
                 </p>
-                <button class="btn-add-batch" id="enrich-price-scan-btn" disabled>Scan for parseable prices</button>
-                <div id="enrich-price-results"></div>
-                <div class="btn-row" id="enrich-price-actions" style="display:none;">
-                    <button class="btn-secondary-action" id="enrich-price-apply-btn">Apply checked rows</button>
-                </div>
             </div>
 
             <div class="enrich-section">
@@ -1202,115 +1207,229 @@
             return id;
         }
 
-        // ── Structured pricing (price_breakdown) ────────────────────────────
-        // Optional, additive alongside the plain-text price string — see
-        // events-schema-costings.json / events-schema-costings.md for the
-        // full design rationale. First pass, wired up to the Show/Event
-        // form's price field to try out how the shape feels in practice.
-        function priceTierRow() {
-            const row = document.createElement("div");
-            row.className = "price-tier-row";
-            row.innerHTML = `
-                <button type="button" class="price-tier-remove" title="Remove tier">×</button>
-                <input type="text" class="pt-label" placeholder="Label, e.g. concessions, U26, advance, zoom">
-                <input type="number" step="0.01" class="pt-amount" placeholder="Amount">
-                <input type="number" step="0.01" class="pt-min" placeholder="Min (range/PWYW)">
-                <input type="number" step="0.01" class="pt-max" placeholder="Max (range)">
-                <select class="pt-type">
-                    <option value="">Timing: —</option>
-                    <option value="advance">Advance</option>
-                    <option value="door">Door</option>
-                </select>
-                <select class="pt-attendance">
-                    <option value="">Attendance: —</option>
-                    <option value="in_person">In person</option>
-                    <option value="online">Online</option>
-                </select>
-                <label class="pb-inline-check"><input type="checkbox" class="pt-donation"> donation/suggested</label>
-                <label class="pb-inline-check"><input type="checkbox" class="pt-pwyw"> pay what you want</label>
-                <input type="number" step="0.01" class="pt-fee-amount" placeholder="Per-tier fee">
-                <label class="pb-inline-check"><input type="checkbox" class="pt-fee-included"> fee included</label>`;
-            row.querySelector(".price-tier-remove").addEventListener("click", () => row.remove());
-            return row;
-        }
-
-        function buildPriceBreakdownField(container) {
+        // Optional structured alternative/companion to any plain-text price
+        // field — mirrors buildStructuredTimeField exactly in spirit and
+        // mechanics (see its own comment for the fuller rationale): builds a
+        // small collapsible list of {type, label, amount, fee} rows, keeps
+        // the plain text field auto-generated from them, flags it (with the
+        // same restore/discard choice) if the text is then hand-edited out
+        // of sync, and never exports a stale structured_price that
+        // contradicts the actual price text.
+        //
+        // Deliberately kept simple: a flat list of typed entries joined with
+        // " / ", not an attempt to model every real-world pricing scheme
+        // (multi-day festival passes, deposits, etc.) as structured data —
+        // those stay exactly as free text in the plain field, same as today.
+        // The `fee` on an entry renders as "(+ £Y)", matching this site's
+        // existing "£10 (+ £1.50)" convention — which is also already
+        // specifically recognised and stripped out by parseEventPrice() in
+        // stats.js, so text generated here stays compatible with that.
+        function buildStructuredPriceField(container, priceInput) {
             container.innerHTML = "";
-            container.className = "price-breakdown-panel";
 
-            const tiersList = document.createElement("div");
-            tiersList.className = "price-tier-list";
-            tiersList.style.display = "grid";
-            tiersList.style.gap = "6px";
-            container.appendChild(tiersList);
+            const TYPE_WORDS = {
+                concession: "concessions", advance: "advance", earlybird: "earlybird",
+                door: "door", online: "online", member: "members",
+            };
 
-            const addTierBtn = document.createElement("button");
-            addTierBtn.type = "button";
-            addTierBtn.className = "btn-add-tier";
-            addTierBtn.textContent = "+ Add price tier";
-            addTierBtn.addEventListener("click", () => tiersList.appendChild(priceTierRow()));
-            container.appendChild(addTierBtn);
-
-            const feeRow = document.createElement("div");
-            feeRow.className = "price-fee-row";
-            feeRow.innerHTML = `
-                <span class="pb-fee-label">Whole-event booking fee (only if it's not tied to one specific tier above):</span>
-                <input type="number" step="0.01" class="pb-fee-amount" placeholder="Amount">
-                <label class="pb-inline-check"><input type="checkbox" class="pb-fee-included"> included in tier amounts</label>
-                <input type="text" class="pb-fee-note" placeholder="or a note, e.g. mentioned but no figure given">`;
-            container.appendChild(feeRow);
-
-            return { container, tiersList, feeRow };
-        }
-
-        function resolvePriceBreakdownField(field) {
-            if (!field) return null;
-            const tiers = [];
-            field.tiersList.querySelectorAll(".price-tier-row").forEach(row => {
-                const label = row.querySelector(".pt-label").value.trim();
-                const amount = row.querySelector(".pt-amount").value.trim();
-                const min = row.querySelector(".pt-min").value.trim();
-                const max = row.querySelector(".pt-max").value.trim();
-                const type = row.querySelector(".pt-type").value;
-                const attendance = row.querySelector(".pt-attendance").value;
-                const isDonation = row.querySelector(".pt-donation").checked;
-                const isPwyw = row.querySelector(".pt-pwyw").checked;
-                const feeAmount = row.querySelector(".pt-fee-amount").value.trim();
-                const feeIncluded = row.querySelector(".pt-fee-included").checked;
-
-                // Skip a tier row that was added but never actually filled in.
-                if (!label && !amount && !min && !max && !isDonation && !isPwyw && !feeAmount) return;
-
-                const tier = {};
-                if (label) tier.label = label;
-                if (amount) tier.amount = parseFloat(amount);
-                if (min) tier.min_amount = parseFloat(min);
-                if (max) tier.max_amount = parseFloat(max);
-                if (type) tier.type = type;
-                if (attendance) tier.attendance = attendance;
-                if (isDonation) tier.is_donation = true;
-                if (isPwyw) tier.is_pay_what_you_want = true;
-                if (feeAmount) tier.booking_fee_amount = parseFloat(feeAmount);
-                if (feeIncluded) tier.booking_fee_included = true;
-                tiers.push(tier);
-            });
-
-            const feeAmount = field.feeRow.querySelector(".pb-fee-amount").value.trim();
-            const feeIncluded = field.feeRow.querySelector(".pb-fee-included").checked;
-            const feeNote = field.feeRow.querySelector(".pb-fee-note").value.trim();
-            let bookingFee = null;
-            if (feeAmount || feeIncluded || feeNote) {
-                bookingFee = {};
-                if (feeAmount) bookingFee.amount = parseFloat(feeAmount);
-                if (feeIncluded) bookingFee.included_in_amounts = true;
-                if (feeNote) bookingFee.note = feeNote;
+            function formatAmount(n) {
+                return Number.isInteger(n) ? String(n) : n.toFixed(2);
             }
 
-            if (!tiers.length && !bookingFee) return null;
-            const out = {};
-            if (tiers.length) out.tiers = tiers;
-            if (bookingFee) out.booking_fee = bookingFee;
-            return out;
+            function renderEntry(e) {
+                let text;
+                if (e.type === "free") {
+                    text = e.label || "Free";
+                } else if (e.type === "donation") {
+                    text = e.label || "Donation";
+                    if (e.amount != null) text += ` (suggested £${formatAmount(e.amount)})`;
+                } else if (e.type === "pwyw") {
+                    text = e.label || "Pay what you can";
+                    if (e.amount != null) text += ` (suggested £${formatAmount(e.amount)})`;
+                } else if (e.type === "tier" || (e.label && !TYPE_WORDS[e.type])) {
+                    text = e.amount != null ? `£${formatAmount(e.amount)} ${e.label}` : e.label;
+                } else if (TYPE_WORDS[e.type]) {
+                    text = e.amount != null ? `£${formatAmount(e.amount)} ${TYPE_WORDS[e.type]}` : TYPE_WORDS[e.type];
+                } else {
+                    text = e.amount != null ? `£${formatAmount(e.amount)}` : "";
+                }
+                if (e.fee != null) text += ` (+ £${formatAmount(e.fee)})`;
+                return text;
+            }
+
+            function textFor(entries) {
+                if (!entries.length) return null;
+                return entries.map(renderEntry).filter(Boolean).join(" / ");
+            }
+
+            function readEntries() {
+                return Array.from(list.children).map(row => {
+                    const type = row.querySelector(".sp-type").value || null;
+                    const label = row.querySelector(".sp-label").value.trim();
+                    const amountRaw = row.querySelector(".sp-amount").value.trim();
+                    const feeRaw = row.querySelector(".sp-fee").value.trim();
+                    const e = {};
+                    if (type) e.type = type;
+                    if (label) e.label = label;
+                    if (amountRaw) e.amount = parseFloat(amountRaw);
+                    if (feeRaw) e.fee = parseFloat(feeRaw);
+                    return e;
+                }).filter(e => e.type || e.label || e.amount != null);
+            }
+
+            function isMismatched() {
+                const entries = readEntries();
+                if (!entries.length) return false;
+                return priceInput.value.trim() !== textFor(entries);
+            }
+
+            function updateMismatchBanner() {
+                mismatchBanner.style.display = isMismatched() ? "" : "none";
+            }
+
+            function regenerate() {
+                const entries = readEntries();
+                const text = textFor(entries);
+                if (text === null) return; // no valid rows -- don't clobber a manually-typed price
+                priceInput.value = text;
+                priceInput.dispatchEvent(new Event("input"));
+                updateMismatchBanner();
+            }
+
+            function addRow(entry) {
+                entry = entry || {};
+                const row = document.createElement("div");
+                row.className = "subitem-row";
+                const fieldsWrap = document.createElement("div");
+                fieldsWrap.className = "subitem-row-fields";
+                fieldsWrap.innerHTML = `
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Type</label>
+                        <select class="sp-type">
+                            <option value="">Standard</option>
+                            <option value="concession">Concession</option>
+                            <option value="advance">Advance</option>
+                            <option value="earlybird">Earlybird</option>
+                            <option value="door">Door / on the door</option>
+                            <option value="online">Online</option>
+                            <option value="member">Member</option>
+                            <option value="donation">Donation</option>
+                            <option value="pwyw">Pay what you can/want</option>
+                            <option value="free">Free</option>
+                            <option value="tier">Named tier (use Label below)</option>
+                        </select>
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Label (needed for a named tier; optional wording override otherwise)</label>
+                        <input type="text" class="sp-label" placeholder="e.g. Tier 1, Benefactor">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Amount (£)</label>
+                        <input type="number" step="0.01" class="sp-amount" placeholder="e.g. 10">
+                    </div>
+                    <div class="subitem-field-group">
+                        <label class="subitem-field-label">Fee on top (£, optional)</label>
+                        <input type="number" step="0.01" class="sp-fee" placeholder="e.g. 1.50">
+                    </div>`;
+                fieldsWrap.querySelector(".sp-type").value = entry.type || "";
+                fieldsWrap.querySelector(".sp-label").value = entry.label || "";
+                fieldsWrap.querySelector(".sp-amount").value = entry.amount != null ? entry.amount : "";
+                fieldsWrap.querySelector(".sp-fee").value = entry.fee != null ? entry.fee : "";
+                fieldsWrap.querySelectorAll("select, input").forEach(el => {
+                    el.addEventListener(el.tagName === "SELECT" ? "change" : "input", regenerate);
+                });
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "subitem-remove";
+                removeBtn.textContent = "×";
+                removeBtn.addEventListener("click", () => { row.remove(); regenerate(); });
+
+                row.appendChild(fieldsWrap);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            }
+
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "add-subitem-btn";
+            toggle.textContent = "+ Add structured pricing";
+
+            const rowsWrap = document.createElement("div");
+            rowsWrap.style.display = "none";
+            rowsWrap.style.marginTop = "8px";
+
+            const mismatchBanner = document.createElement("div");
+            mismatchBanner.className = "field-hint";
+            mismatchBanner.style.display = "none";
+            mismatchBanner.style.color = "#b26a00";
+            const warnText = document.createElement("div");
+            warnText.textContent = "⚠ This no longer matches the structured pricing below, so it won't be saved as structured data unless you resolve that.";
+            const restoreBtn = document.createElement("button");
+            restoreBtn.type = "button";
+            restoreBtn.className = "add-subitem-btn";
+            restoreBtn.style.marginRight = "6px";
+            restoreBtn.textContent = "Restore from structure";
+            restoreBtn.addEventListener("click", regenerate);
+            const discardBtn = document.createElement("button");
+            discardBtn.type = "button";
+            discardBtn.className = "add-subitem-btn";
+            discardBtn.textContent = "Discard structure, keep this text";
+            discardBtn.addEventListener("click", () => {
+                list.innerHTML = "";
+                rowsWrap.style.display = "none";
+                toggle.style.display = "";
+            });
+            mismatchBanner.appendChild(warnText);
+            mismatchBanner.appendChild(restoreBtn);
+            mismatchBanner.appendChild(discardBtn);
+            rowsWrap.appendChild(mismatchBanner);
+
+            const list = document.createElement("div");
+            list.className = "subitem-list";
+            rowsWrap.appendChild(list);
+
+            const addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className = "add-subitem-btn";
+            addBtn.textContent = "Add another price";
+            addBtn.addEventListener("click", () => addRow());
+
+            const hint = document.createElement("div");
+            hint.className = "field-hint";
+            hint.textContent = "Fills in the Price field above from these — you can still edit it by hand afterwards. Multiple entries join with \" / \", e.g. \"£8 advance / £10 door\".";
+
+            rowsWrap.appendChild(addBtn);
+            rowsWrap.appendChild(hint);
+
+            toggle.addEventListener("click", () => {
+                rowsWrap.style.display = "";
+                toggle.style.display = "none";
+                if (!list.children.length) addRow();
+            });
+
+            priceInput.addEventListener("input", () => {
+                if (readEntries().length) updateMismatchBanner();
+            });
+
+            container.appendChild(toggle);
+            container.appendChild(rowsWrap);
+
+            return {
+                getEntries: () => (isMismatched() ? [] : readEntries()),
+                populate(entries) {
+                    list.innerHTML = "";
+                    if (entries && entries.length) {
+                        entries.forEach(addRow);
+                        rowsWrap.style.display = "";
+                        toggle.style.display = "none";
+                    } else {
+                        rowsWrap.style.display = "none";
+                        toggle.style.display = "";
+                    }
+                    updateMismatchBanner();
+                },
+            };
         }
 
         // ── Geocoding (Nominatim / OpenStreetMap) ────────────────────────────
@@ -2457,7 +2576,10 @@
                 </div>
                 <div class="field-row">
                     <label>Price</label>
-                    <input type="text" class="dr-price" placeholder="e.g. £10">
+                    <div>
+                        <input type="text" class="dr-price" placeholder="e.g. £10">
+                        <div class="dr-structured-price-field"></div>
+                    </div>
                 </div>
                 <div class="field-row">
                     <label>Ticket URL</label>
@@ -2523,6 +2645,7 @@
             const venueField = buildEntityField(grid.querySelector(".dr-venue-field"), "venue");
             row._venueField = venueField;
             row._structuredTimeField = buildStructuredTimeField(grid.querySelector(".dr-structured-time-field"), grid.querySelector(".dr-time"));
+            row._structuredPriceField = buildStructuredPriceField(grid.querySelector(".dr-structured-price-field"), grid.querySelector(".dr-price"));
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
 
             if (kind === "tour") {
@@ -2563,6 +2686,8 @@
                 const structuredTime = row._structuredTimeField.getEntries();
                 if (structuredTime.length) entry.structured_time = structuredTime;
                 if (price) entry.price = price;
+                const structuredPrice = row._structuredPriceField.getEntries();
+                if (structuredPrice.length) entry.structured_price = structuredPrice;
                 if (ticketUrl) entry.ticket_url = ticketUrl;
                 if (video) entry.video_trailer = video;
                 const dateAdded = row.querySelector(".dr-date-added").value.trim();
@@ -2594,19 +2719,14 @@
         // ── Specific / Music event form ─────────────────────────────────────
         let evPerformerMulti;
         let evVenueField;
-        let evPriceBreakdown;
+        let evStructuredPriceField;
         let evStructuredTimeField;
         function initEventForm() {
             evPerformerMulti = buildMultiPerformerField(document.getElementById("ev-performer-field"));
             evVenueField = buildEntityField(document.getElementById("ev-venue-field"), "venue");
             evStructuredTimeField = buildStructuredTimeField(document.getElementById("ev-structured-time-field"), document.getElementById("ev-time"));
+            evStructuredPriceField = buildStructuredPriceField(document.getElementById("ev-structured-price-field"), document.getElementById("ev-price"));
             wireDateAddedCheckbox(document.getElementById("ev-date-added-today"), document.getElementById("ev-date-added"));
-            const priceBreakdownContainer = document.getElementById("ev-price-breakdown-field");
-            evPriceBreakdown = buildPriceBreakdownField(priceBreakdownContainer);
-            priceBreakdownContainer.style.display = "none";
-            document.getElementById("ev-price-breakdown-toggle").onclick = () => {
-                priceBreakdownContainer.style.display = priceBreakdownContainer.style.display === "none" ? "grid" : "none";
-            };
             wireAgeSuggestionButton({
                 descriptionEl: document.getElementById("ev-description"),
                 ratingEl: document.getElementById("ev-age-rating"),
@@ -2657,8 +2777,8 @@
             if (club) record.club = club;
             if (widerEvent) record.wider_event = widerEvent;
             if (price) record.price = price;
-            const priceBreakdown = resolvePriceBreakdownField(evPriceBreakdown);
-            if (priceBreakdown) record.price_breakdown = priceBreakdown;
+            const structuredPrice = evStructuredPriceField.getEntries();
+            if (structuredPrice.length) record.structured_price = structuredPrice;
             if (description) record.description = description;
             const ageRating = document.getElementById("ev-age-rating").value.trim();
             const minAgeRaw = document.getElementById("ev-min-age").value.trim();
@@ -3770,7 +3890,6 @@
                 document.getElementById("enrich-postcode-scan-btn").disabled = false;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
-                document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
@@ -3779,7 +3898,6 @@
                 document.getElementById("enrich-postcode-scan-btn").disabled = true;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
-                document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
@@ -3796,240 +3914,6 @@
             a.download = "events_normalized-enriched.json";
             a.click();
             URL.revokeObjectURL(a.href);
-        });
-
-        // -- Price breakdown suggestions ----------------------------------------
-        // Heuristic, regex-based — not an LLM call — so it runs instantly over
-        // hundreds of records and behaves the same way every time. It's meant
-        // to give a head start, not a final answer: every candidate is tagged
-        // draft: true, and anything it can't confidently make sense of (long,
-        // multi-clause pricing — festival weekend deals, deposits, etc.) is
-        // deliberately left alone rather than force-fit into structure.
-        function parsePriceString(raw) {
-            if (!raw) return null;
-            const text = raw.trim();
-            if (!text) return null;
-
-            if (text.length > 100 || /\b(deposit|non-refundable|weekend|camping)\b/i.test(text) || /before \d|after \d/i.test(text)) {
-                return null;
-            }
-
-            const lower = text.toLowerCase();
-            let working = text;
-            let bookingFee = null;
-
-            const feeAmountMatch = working.match(/\(?\s*\+\s*£?\s*(\d+(?:\.\d{1,2})?)\s*(?:booking fee)?\)?/i);
-            if (feeAmountMatch) {
-                bookingFee = { amount: parseFloat(feeAmountMatch[1]) };
-                working = working.replace(feeAmountMatch[0], " ");
-            } else if (/booking fee/i.test(working)) {
-                bookingFee = { note: "Booking fee mentioned; amount not stated." };
-                working = working.replace(/booking fee/i, " ");
-            }
-
-            function splitOutsideBrackets(str, re) {
-                const parts = [];
-                let depth = 0, current = "";
-                for (let i = 0; i < str.length; i++) {
-                    const ch = str[i];
-                    if (ch === "(" || ch === "[") depth++;
-                    if (ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
-                    if (depth === 0 && re.test(ch)) {
-                        parts.push(current);
-                        current = "";
-                    } else {
-                        current += ch;
-                    }
-                }
-                parts.push(current);
-                return parts;
-            }
-
-            function finalize(tiers) {
-                if (!tiers.length && !bookingFee) return null;
-                const out = { draft: true };
-                if (tiers.length) out.tiers = tiers;
-                if (bookingFee) out.booking_fee = bookingFee;
-                return out;
-            }
-
-            // Pay-what-you-want
-            if (/pay[\s-]?(?:as[\s-]?you|what you)[\s-]?(?:like|want|can|feel|decide)/i.test(lower)) {
-                const minMatch = working.match(/min(?:imum)?\.?\s*£?\s*(\d+(?:\.\d{1,2})?)/i);
-                const tier = { label: "pay what you like", is_pay_what_you_want: true };
-                if (minMatch) tier.min_amount = parseFloat(minMatch[1]);
-                return finalize([tier]);
-            }
-
-            // Free / bare donations (anchored to start so "...go free" mid-sentence doesn't false-trigger)
-            const looksFree = /^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text) || /^donations?$/i.test(text);
-            if (looksFree) {
-                const tiers = [];
-                if (/\bfree\b/i.test(text) && (/^free\b/i.test(text) || /\bfree\s*\/|\/\s*free\b/i.test(text))) tiers.push({ label: "free", amount: 0 });
-                const donationMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*suggested donation/i);
-                if (donationMatch) tiers.push({ label: "suggested donation", amount: parseFloat(donationMatch[1]), is_donation: true });
-                if (!tiers.length) tiers.push({ label: "donation", is_donation: true });
-                return finalize(tiers);
-            }
-
-            // Suggested donation (without "free")
-            const suggestedMatch = working.match(/suggested\s*(?:donation)?:?\s*£?\s*(\d+(?:\.\d{1,2})?)(?:\s*-\s*£?\s*(\d+(?:\.\d{1,2})?))?/i);
-            if (suggestedMatch) {
-                const tier = { label: "suggested donation", is_donation: true };
-                if (suggestedMatch[2]) {
-                    tier.min_amount = parseFloat(suggestedMatch[1]);
-                    tier.max_amount = parseFloat(suggestedMatch[2]);
-                } else {
-                    tier.amount = parseFloat(suggestedMatch[1]);
-                }
-                return finalize([tier]);
-            }
-
-            // Plain range, no other qualifiers
-            const rangeMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*-\s*£?\s*(\d+(?:\.\d{1,2})?)\b/);
-            if (rangeMatch && !/advance|\badv\b|door|zoom|online|concession|\bconc\b/i.test(lower)) {
-                return finalize([{ label: "standard", min_amount: parseFloat(rangeMatch[1]), max_amount: parseFloat(rangeMatch[2]) }]);
-            }
-
-            // Bracketed pair: "£X (£Y label)" or "£X [£Y label]"
-            const bracketMatch = working.match(/£\s*(\d+(?:\.\d{1,2})?)\s*[\(\[]\s*£?\s*(\d+(?:\.\d{1,2})?)\s*([a-z0-9][a-z0-9\s\/]*)?[\)\]]/i);
-            if (bracketMatch) {
-                const rawLabel = (bracketMatch[3] || "").trim();
-                const secondTier = { label: rawLabel || "concession", amount: parseFloat(bracketMatch[2]) };
-                if (/zoom|online|stream/i.test(rawLabel)) secondTier.attendance = "online";
-                if (/advance|\badv\b/i.test(rawLabel)) secondTier.type = "advance";
-                if (/door/i.test(rawLabel)) secondTier.type = "door";
-                return finalize([{ label: "standard", amount: parseFloat(bracketMatch[1]) }, secondTier]);
-            }
-
-            // Segment-based parsing for slash/comma-separated multi-tier lists
-            const segments = splitOutsideBrackets(working, /[,\/]/).map(s => s.trim()).filter(Boolean);
-            const tiers = [];
-            segments.forEach((seg, i) => {
-                const segLower = seg.toLowerCase();
-                const plusMinMatch = seg.match(/£?\s*(\d+(?:\.\d{1,2})?)\s*\+\s*$/);
-                const amountMatch = plusMinMatch || seg.match(/£?\s*(\d+(?:\.\d{1,2})?)/);
-                if (!amountMatch) return;
-                const amount = parseFloat(amountMatch[1]);
-                let type = null, attendance = null, label = null;
-                if (/advance|\badv\b/.test(segLower)) type = "advance";
-                else if (/\bdoor(s)?\b|on the door/.test(segLower)) type = "door";
-                if (/zoom|online|stream/.test(segLower)) attendance = "online";
-                if (/concession|\bconc\b/.test(segLower)) label = "concession";
-                else if (/\bu\d{2}\b|under\s?\d+/.test(segLower)) label = (seg.match(/\bu\d{2}\b|under\s?\d+/i) || [""])[0].trim();
-                else if (/child|kid/.test(segLower)) label = "children";
-                else if (/student/.test(segLower)) label = "student";
-                else if (/family/.test(segLower)) label = "family ticket";
-                if (!label && !type && !attendance) label = i === 0 ? "standard" : `tier ${i + 1}`;
-                const tier = plusMinMatch ? { min_amount: amount } : { amount };
-                if (label) tier.label = label;
-                if (type) tier.type = type;
-                if (attendance) tier.attendance = attendance;
-                tiers.push(tier);
-            });
-            return finalize(tiers);
-        }
-
-
-        function summarizePriceBreakdown(pb) {
-            const parts = (pb.tiers || []).map(t => {
-                let s = t.label || "tier";
-                if (t.amount !== undefined) s += ` £${t.amount}`;
-                else if (t.min_amount !== undefined && t.max_amount !== undefined) s += ` £${t.min_amount}-£${t.max_amount}`;
-                else if (t.min_amount !== undefined) s += ` (min £${t.min_amount})`;
-                if (t.type) s += ` [${t.type}]`;
-                if (t.attendance) s += ` [${t.attendance}]`;
-                return s;
-            });
-            if (pb.booking_fee) {
-                parts.push(pb.booking_fee.amount !== undefined ? `+£${pb.booking_fee.amount} booking fee` : "booking fee (amount unstated)");
-            }
-            return parts.join(", ");
-        }
-
-        // Collects every record in the loaded data that has a price/cost
-        // string but no price_breakdown yet (or one already marked draft, so
-        // re-scanning after further edits is possible), across every record
-        // type that carries pricing.
-        function collectPriceCandidates(data) {
-            const found = [];
-            function consider(record, label) {
-                if (!record) return;
-                const priceField = "cost" in record ? "cost" : "price";
-                const raw = record[priceField];
-                if (!raw) return;
-                if (record.price_breakdown && !record.price_breakdown.draft) return;
-                found.push({ record, raw, label });
-            }
-            (data.specificEvents || []).forEach(r => consider(r, r.showname || r.name || "Story show"));
-            (data.musicEvents || []).forEach(r => consider(r, r.showname || r.name || "Music event"));
-            (data.folkNights || []).forEach(r => consider(r, r.name || "Folk night"));
-            (data.spokenword || []).forEach(r => consider(r, r.name || "Spoken word night"));
-            (data.events || []).forEach(r => consider(r, r.club || r.name || "Recurring club"));
-            (data.workshops || []).forEach(r => consider(r, r.title || "Workshop"));
-            Object.values(data.tours || {}).forEach(t => {
-                (t.tour_dates || []).forEach(td => consider(td, `${t.name || "Tour"} date`));
-            });
-            Object.values(data.repertoire_shows || {}).forEach(s => {
-                (s.show_dates || []).forEach(sd => consider(sd, `${s.name || "Show"} date`));
-            });
-            return found;
-        }
-
-        document.getElementById("enrich-price-scan-btn").addEventListener("click", () => {
-            const resultsEl = document.getElementById("enrich-price-results");
-            const actionsEl = document.getElementById("enrich-price-actions");
-            resultsEl.innerHTML = "";
-            if (!enrichedData) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No data loaded.</div>';
-                actionsEl.style.display = "none";
-                return;
-            }
-            const candidates = collectPriceCandidates(enrichedData);
-            const parsedRows = [];
-            candidates.forEach(c => {
-                const suggestion = parsePriceString(c.raw);
-                if (suggestion) parsedRows.push({ ...c, suggestion });
-            });
-            if (!parsedRows.length) {
-                resultsEl.innerHTML = '<div class="enrich-empty">Nothing left to parse — either everything already has a price_breakdown, or none of the remaining price text could be confidently parsed.</div>';
-                actionsEl.style.display = "none";
-                return;
-            }
-            parsedRows.forEach((r, i) => {
-                const row = document.createElement("div");
-                row.className = "enrich-result-row";
-                row.dataset.rowIndex = i;
-                row.innerHTML = `
-                    <input type="checkbox" checked class="enrich-price-check">
-                    <div class="enrich-result-main">
-                        <div class="enrich-result-name">${r.label}</div>
-                        <div class="enrich-result-detail">Original: "${r.raw}"</div>
-                        <div class="enrich-result-detail">Suggested: ${summarizePriceBreakdown(r.suggestion)}</div>
-                    </div>`;
-                row._candidate = r;
-                resultsEl.appendChild(row);
-            });
-            addResultsCollapseToggle(resultsEl, parsedRows.length, "suggestion");
-            actionsEl.style.display = "";
-            actionsEl._rows = parsedRows;
-        });
-
-        document.getElementById("enrich-price-apply-btn").addEventListener("click", () => {
-            const rows = document.querySelectorAll("#enrich-price-results .enrich-result-row");
-            let applied = 0;
-            rows.forEach(row => {
-                if (!row.querySelector(".enrich-price-check").checked) return;
-                const { record, suggestion } = row._candidate;
-                record.price_breakdown = suggestion;
-                applied++;
-            });
-            if (!applied) {
-                alert("No rows checked.");
-                return;
-            }
-            alert(`Applied ${applied} price_breakdown suggestion(s) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
-            markEnrichedDataDirty();
         });
 
         // -- Missing postcodes -------------------------------------------------
@@ -4318,7 +4202,7 @@
 
                 statusEl.textContent = `Loaded ${Object.keys(performersLookup).length} performers, ${Object.keys(venuesLookup).length} venues, and ${Object.keys(podcastsLookup).length} podcast series.`;
             } else {
-                statusEl.textContent = "Could not load events_normalized.json — you can still build records, but performer/venue/podcast search won't have any existing suggestions.";
+                statusEl.textContent = "Could not load events_normalijso can still build records, but performer/venue/podcast search won't have any existing suggestions.";
             }
 
             initEventForm();

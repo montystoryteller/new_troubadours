@@ -152,6 +152,41 @@
       },
       "description": "Optional structured alternative/companion to the free-text `time` field on the same record. When present, the event builder auto-generates `time` by textualising these entries — e.g. a single unlabelled entry becomes '8pm'; labelled entries join as 'Doors 7pm, Start 8.30pm'. `time` remains the field everything else reads; `structured_time` is only ever a convenience for producing/editing it, and `time` can still be hand-edited afterwards without touching this."
     },
+    "structuredPriceEntry": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "What kind of price this entry represents. Free text, not a strict enum, so new categories can be added without a schema change — but the event builder's UI and renderer specifically understand: 'standard' (or omitted), 'concession', 'advance', 'earlybird', 'door', 'online', 'member', 'donation', 'pwyw' (pay what you can/want), 'free', and 'tier' (a named tier/band, e.g. a festival's Tier 1/Tier 2 — pair with `label`). Anything else is still rendered, just using `label` verbatim rather than a built-in wording."
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label. Required in practice for type 'tier' or any custom type (e.g. 'Tier 1', 'Benefactor', 'NUS members') since the renderer has no built-in wording for those; optional elsewhere as a wording override (e.g. 'suggested minimum' instead of the default 'suggested' on a pwyw/donation entry)."
+        },
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The headline amount for this entry, in pounds (e.g. 10, 1.5). Omitted for a plain 'free' entry with no note; for 'pwyw'/'donation' this is treated as a suggested/minimum amount rather than a fixed price."
+        },
+        "fee": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "An additional fee layered on top of `amount` for this entry specifically (e.g. a booking fee), rendered as '(+ £Y)' — this is exactly the '£10 (+ £1.50)' pattern common in this site's existing price text, and is also already specifically recognised and stripped out by parseEventPrice() in stats.js when it derives a face value for stats, so text generated in this shape stays compatible with that."
+        }
+      },
+      "additionalProperties": false
+    },
+    "structuredPriceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/structuredPriceEntry"
+      },
+      "description": "Optional structured alternative/companion to the free-text `price` field on the same record — mirrors how `structured_time` relates to `time`. When present, the event builder auto-generates `price` by rendering and joining these entries with ' / ' (e.g. a single {amount:10} becomes '£10'; {amount:10, fee:1.5} becomes '£10 (+ £1.50)'; {type:'advance', amount:8} plus {type:'door', amount:10} becomes '£8 advance / £10 door'). `price` remains the field everything else reads (including parseEventPrice() in stats.js, which only ever looks at the text); `structured_price` is only ever a convenience for producing/editing it, stays fully hand-editable afterwards, and is intentionally kept simple for now — deliberately not attempting to model every real-world pricing scheme (e.g. multi-day festival passes with deposits) as structured data, just the common shapes (standard/concession/advance/door/tiers/donation/pwyw/free, each with an optional fee)."
+    },
     "youtubeUrl": {
       "description": "Optional YouTube trailer URL (watch/youtu.be/shorts/embed form). Rendered via getYouTubeEmbedUrl() in shared_utils.js, which validates the host and converts it to a safe youtube-nocookie.com /embed/ URL; anything else is silently ignored by the front end.",
       "type": "string"
@@ -359,7 +394,7 @@
       "additionalProperties": true
     },
     "podcastUrls": {
-      "description": "One or more podcast links for a performer (episode pages, show pages, or listen-on-X links — whatever the performer links to). A single URL string, OR an array of URL strings for a performer with several podcasts/series. Code that reads performer.podcast should always normalize via Array.isArray() before use — see normalisePodcastUrls() in new_troubadours_performers.html, which renders these in the collapsible podcast section on the performer profile page.",
+      "description": "One or more podcast links for a performer (episode pages, show pages, or listen-on-X links — whatever the performer links to). A single URL string, OR an array of URL strings for a performer with several podcasts/series. Code that reads performer.podcast should always normalize via Array.isArray() before use — see normalisePodcastUrls() in performers.html, which renders these in the collapsible podcast section on the performer profile page.",
       "oneOf": [
         {
           "type": "string"
@@ -431,6 +466,9 @@
             "£14",
             "£8 [£6.50]"
           ]
+        },
+        "structured_price": {
+          "$ref": "#/$defs/structuredPriceList"
         },
         "venue_id": {
           "type": "string",
@@ -681,6 +719,9 @@
         "price": {
           "type": "string"
         },
+        "structured_price": {
+          "$ref": "#/$defs/structuredPriceList"
+        },
         "ticket_url": {
           "type": "string"
         },
@@ -836,6 +877,9 @@
         "price": {
           "type": "string"
         },
+        "structured_price": {
+          "$ref": "#/$defs/structuredPriceList"
+        },
         "description": {
           "type": "string"
         },
@@ -969,6 +1013,9 @@
         "price": {
           "type": "string"
         },
+        "structured_price": {
+          "$ref": "#/$defs/structuredPriceList"
+        },
         "description": {
           "type": "string"
         },
@@ -1047,6 +1094,9 @@
         },
         "price": {
           "type": "string"
+        },
+        "structured_price": {
+          "$ref": "#/$defs/structuredPriceList"
         },
         "description": {
           "type": "string"
