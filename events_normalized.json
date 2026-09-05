@@ -5071,6 +5071,7 @@
       "facebook": "https://www.facebook.com/lynettehilluk",
       "club": "talestattledtold",
       "venue_id": "rectory-cottages-bletchley",
+      "tickets_url": "https://wegottickets.com/TravelingwordsProductions",
       "feature_slots" : [ ["21/03/2026", "janet-crouch"], ["18/04/2026", "lisa-schneidau"]]
     },
     {
@@ -8676,6 +8677,21 @@
       "isSpecial": true
     },
     {
+      "name": "A Celebration of Bletchley's history [Tales Tattled & Told tellers]",
+      "showname": "A Celebration of Bletchley's history",
+      "date": "18/09/2026",
+      "time": "7pm",
+      "club": "talestattledtold",
+      "price": "",
+      "description": "Join Tales Tattled & Told in this joyous celebration of Bletchley’s history.\n\n\n\nTales Tattled & Told is proud to kick off it's eighth season of storytelling by and for grown-ups by taking part in this year's Heritage Open Days (find more HOD events here).\n\n\n\nLocal storytellers Pete Boyce, Stella Girvin, Stephen Hobbs, Terrie Howey-Moore and Jane Lambourne bring tales of times past in Bletchley, Milton Keynes and wider Buckinghamshire.\n\n\n\nPlus the joyous music of Fraser Winterbottom!\n\n\n\nWhose faces are those, that look down from the ceiling of the Rectory Cottages in Bletchley? Come on in and find out.\n\n\n\nDo you know all of the secrets of Bletchley Park? Are you sure?\n\n\n\nWhat happened on the day that a suffragette challenged Prime Minister H.H. Asquith at Bletchley Manor? Was that in 1909 or 1911?\n\n\n\nThis event is intended for ages 16 and older.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/20104",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_ids": ["pete-boyce", "stella-girvin", "stephen-hobbs", "terrie-howey-moore", "jane-lambourne"]
+    },
+    {
       "name": "Equinox Arts: An Evening of Live Music and Storytelling [Merl Fluin]",
       "showname": "Equinox Arts: An Evening of Live Music and Storytelling",
       "date": "19/09/2026",
@@ -8863,6 +8879,21 @@
       "isSpecial": true
     },
     {
+      "name": "Pete Boyce [ + Tales Tattled & Told tellers]",
+      "showname": "Pete Boyce",
+      "date": "17/10/2026",
+      "time": "Door time: 7:00pm, start time: 7:30pm",
+      "club": "talestattledtold",
+      "price": "£7 (+ £0.70) / £9 on the door",
+      "description": "Join us for another night of wild and wonderful words by and for adults.\n\n\n\nPete Boyce headlines this joyous evening of storytelling and acoustic music at the historic Rectory Cottages at 49 Church Green Rd, Bletchley, MK3 6BJ.\n\n\n\nHosted by Stephen Hobbs. With the wonderful music of A D Stranik.\n\n\n\nWith more stories from Stella Girvin and Lynette Hill.\n\n\n\nThis event is intended for ages 16 and older.\n\n\n\nTickets are £7.70 online through WeGotTickets.com and £9 at the door. Doors open at 7 pm for a 7:30 pm start.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/20274",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_id": "pete-boyce"
+    },
+    {
       "name": "The Luck Child & Other Strange Tales [Daniel Morden]",
       "showname": "The Luck Child & Other Strange Tales",
       "date": "17/10/2026",
@@ -8966,6 +8997,21 @@
       "isSpecial": true
     },
     {
+      "name": "Marion Leeper & Lynette Hill [ + Tales Tattled & Told tellers]",
+      "showname": "Marion Leeper & Lynette Hill",
+      "date": "21/11/2026",
+      "time": "Door time: 7:00pm, start time: 7:30pm",
+      "club": "talestattledtold",
+      "price": "£7 (+ £0.70) / £9 on the door",
+      "description": "Join us for another night of wild and wicked words by and for adults.\n\n\n\nLynette Hill and Marion Leeper share the headline slot at another joyous evening of storytelling and acoustic music at the historic Rectory Cottages at 49 Church Green Rd, Bletchley, MK3 6BJ.\n\n\n\nMarion Leeper puts a different spin on a familiar tale. You can forget tragic swans and duplicitous princes as Marion tells how 'The Swan Bride Hits Back!'\n\n\n\nMarion grew up in a family of tale-tellers and has been telling stories ever since, with more stories than she can ever quite count rattling round her head. Her versions of traditional tales range from stories embedded in the dark earth of the fens, to unexplored corners of myth and legend.\n\n\n\nHosted by Pete Boyce. With music from the wonderful a capella choir and Tales Tattled & Told favorite, Gracenotes!\n\n\n\nWith more stories from Stephen Hobbs and Jane Lambourne.\n\n\n\nThis event is intended for ages 16 and older.\n\n\n\nTickets are £7.70 online through WeGotTickets.com and £9 at the door. Doors open at 7 pm for a 7:30 pm start.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/20275",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_ids": ["marion-leeper", "lynette-hill"]
+    },
+    {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
       "showname": "Midwinter Open Tellers' Night [Feast of Fools]",
       "date": "02/12/2026",
@@ -8977,6 +9023,21 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": ""
+    },
+    {
+      "name": "Janet Crouch [ + Tales Tattled & Told tellers]",
+      "showname": "Janet Crouch",
+      "date": "19/12/2026",
+      "time": "Door time: 7:00pm, start time: 7:30pm",
+      "club": "talestattledtold",
+      "price": "£7 (+ £0.70) / £9 on the door",
+      "description": "Is it Mrs. Claus? That may be her alter ego, but she's joining Tales Tattled & Told as Janet Crouch, storyteller extraordinaire! Come along to enjoy an evening of traditional, modern and even a few true Christmas Tales.\n\n\n\nStephen Eames hosts another joyous evening of storytelling and acoustic music at the historic Rectory Cottages at 49 Church Green Rd, Bletchley, MK3 6BJ. With a double-bill of music in celebration of the festive season brought by Gallows Fair and B Road!\n\n\n\nWith more stories from Lou Tribus, Stephen Hobbs and Lynette Hill. And of course Shirley's wonderful cakes!\n\n\n\nThis event is intended for ages 16 and older.\n\n\n\nTickets are £7.70 online through WeGotTickets.com and £9 at the door. Doors open at 7 pm for a 7:30 pm start.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/20277",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_id": "janet-crouch"
     },
     {
       "name": "A Christmas Carol [Jason Buck]",
@@ -9080,6 +9141,21 @@
       "isSpecial": true
     },
     {
+      "name": "Jane Lambourne [ + Tales Tattled & Told tellers]",
+      "showname": "Jane Lambourne",
+      "date": "16/01/2027",
+      "time": "Door time: 7:00pm, start time: 7:30pm",
+      "club": "talestattledtold",
+      "price": "£7 (+ £0.70) / £9 on the door",
+      "description": "Join us for another night of wild and wonderful words by and for adults.\n\n\n\nJane Lambourne headlines this joyous evening of storytelling and acoustic music at the historic Rectory Cottages at 49 Church Green Rd, Bletchley, MK3 6BJ.\n\n\n\nHosted by Stephen Eames. With the wonderful music of Rebecca LaChance.\n\n\n\nAnd more stories and perhaps some poetry from Stella Girvin, Stephen Hobbs and Lynette Hill.\n\n\n\nThis event is intended for ages 16 and older.\n\n\n\nDoors open at 7 pm for a 7:30 pm start. Tickets are £12 online through WeGotTickets.com and at the door.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/25341",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_id": "jane-lambourne"
+    },
+    {
       "name": "Feast of Fools [feat. Lisa Schneidau]",
       "showname": "Feast of Fools [feat. Lisa Schneidau]",
       "date": "03/02/2027",
@@ -9092,6 +9168,21 @@
       "date_added": "03/09/2026",
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "lisa-schneidau"
+    },
+    {
+      "name": "Stephen Hobbs [ + Tales Tattled & Told tellers]",
+      "showname": "Stephen Hobbs",
+      "date": "07/02/2027",
+      "time": "Door time: 7:00pm, start time: 7:30pm",
+      "club": "talestattledtold",
+      "price": "£7 (+ £0.70) / £9 on the door",
+      "description": "Tales Tattled & Told is proud to present Stony Stratford's own Stephen Hobbs as we celebrate National Storytelling Week in conjunction with StonyWords Literary Festival!\n\n\n\nHosted by Lynette Hill. With folk music by local legends Rivermouse!\n\n\n\nPlus the joyous stories of Pete Boyce and the one and only Terrie Howey-Moore. And, fingers crossed, the newly cloaked Bard of Stony Stratford.\n\n\n\nThis event is intended for ages 16 and older.\n\n\n\nDoors open at 7 pm for a 7:30 pm start. Tickets are £12 online through WeGotTickets.com and at the door.",
+      "isSpecial": true,
+      "event_flyer": "",
+      "ticket_url": "https://wegottickets.com/f/25352",
+      "date_added": "05/09/2026",
+      "venue_id": "rectory-cottages-bletchley",
+      "performer_id": "stephen-hobbs"
     },
     {
       "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",
@@ -15097,6 +15188,7 @@
     },
     "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley": {
       "id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
+      "performer_ids": ["lynette-hill", "stephen-hobbs", "peter-boyce"],
       "name": "Lynette Hill, Stephen Hobbs, Rebecca LaChance, Peter Boyce, 2026 Bard of Stony Stratford, Gill and Patrick Larley",
       "url": "",
       "bio": ""
@@ -15505,6 +15597,35 @@
       "name": "Dave Clark",
       "url": "https://www.sallyporttours.co.uk/team/",
       "bio": "Dave brings a wealth of experience and knowledge to our team, with over 40 years of service in the UK Civil Service. His career took him across the globe, working on diverse and impactful projects. As a qualified learning and development professional with diplomas in Archaeology, The Romans in Britain, and Genealogy, Dave has a passion for uncovering and sharing history.\n\n\n\nIn recent years, Dave has captivated audiences with engaging presentations on topics such as Pompeii and Herculaneum, the fascinating history of Fishbourne Roman Palace, and the intricate world of drug smuggling into the UK.\n\n\n\nDave's commitment to heritage and education extends to his time as a volunteer in visitor services at Fishbourne Roman Palace, where he delivered guided tours of the Collection’s Discovery Centre and the Palace itself. He also led historical walks through Fishbourne Village and Chichester City, bringing local history to life for visitors.\n\n\n\nDave's expertise and storytelling skills make him a valued guide and presenter, offering unique insights and unforgettable experiences."
+    },
+    "pete-boyce": {
+      "id": "pete-boyce",
+      "name": "Pete Boyce",
+      "bio": "Local teller with Tales Tattled and Told."
+    },
+    "stella-girvin": {
+      "id": "stella-girvin",
+      "name": "Stella Girvin",
+      "bio": "Local teller with Tales Tattled and Told."
+    },
+    "stephen-hobbs": {
+      "id": "stephen-hobbs",
+      "name": "Stephen Hobbs",
+      "url": "https://stephenhobbslive.weebly.com/",
+      "bio": "Local teller with Tales Tattled and Told."
+    },
+    "terrie-howey-moore": {
+      "id": "terrie-howey-moore",
+      "name": "Terrie Howey-Moore",
+      "bio": "Terrie Howey-Moore is also known as storyteller Red Phoenix (she was given that nickname as a heritage storyteller in Edinburgh). Terrie began her professional storytelling journey in 2003 and founded Red Phoenix in 2007, and has been performing in theatre and facilitating performance workshops since 1992. Awarded a Winston Churchill Fellowship in 2012 for cross-cultural mentoring of emerging storytellers across Canada and America, and earning a PhD in Storytelling in 2021**, she combines academic expertise with creative practice. She is a heritage specialist and has extensive experience working within the care sector, particularly SEND, as well as in education from early years through to university. Terrie is a performer, educator, writer and  dramaturg, offering her skills freelance besides utilising them in her own performances and workshops.\n\n\n\nTerrie specialises in traditional oral storytelling told from memory. For her, storytelling is a shared art between teller and listener: the teller crafts the tale, guiding the listener through the story's landscape where the listener's own lived experience shapes their interpretation of the narrative; making each performance a unique interactive adventure and alive in its telling.",
+      "url": "https://redphoenixstory.co.uk/"
+    },
+    "jane-lambourne": {
+      "id": "jane-lambourne",
+      "name": "Jane Lambourne",
+      "bio": "Local teller with Tales Tattled and Told.",
+      "url": "https://wassledine.co.uk/storytelling-old/countryside-events/",
+      "facebook": "https://www.facebook.com/wassledine.stories/"
     },
     "shonaleigh": {
       "id": "shonaleigh",
