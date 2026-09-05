@@ -974,8 +974,8 @@ async function checkForNewerEventsDataBackground() {
         try {
           eventsData = JSON.parse(responseText);
         } catch (parseError) {
-          console.warn(
-            `Background update: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
+          console.error(
+            `DATA LOADING ERROR: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
           );
           return;
         }
