@@ -507,6 +507,33 @@
     display: inline-block;
 }
 
+/* Flags a venue whose latlon is missing or malformed, so bad geodata
+   (e.g. an empty [] instead of proper coordinates) is visible at a
+   glance in the directory listing rather than silently dropped off
+   the map. */
+.venue-list-card-no-latlon {
+    outline: 2px solid #e53935;
+    outline-offset: -1px;
+}
+
+.venue-no-latlon-badge {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* Missing-coordinates warning shown at the bottom of a single venue's
+   page (see hasLatlon() in venues.js). */
+.venue-no-latlon-warning {
+    margin: 20px 0 0;
+    padding: 14px 18px;
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
 
 /* =============================================================
    11. RESPONSIVE

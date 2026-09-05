@@ -49,6 +49,15 @@ function preloadLeafletWhenIdle() {
   }
 }
 
+// Single source of truth for "does this venue have usable coordinates".
+// `venue.latlon` being present isn't enough on its own — some venues have
+// it set to an empty array [] rather than being missing outright, and []
+// is truthy in JS, so a plain `if (v.latlon)` check lets those through
+// and crashes downstream Leaflet calls that expect a real [lat, lon] pair.
+function hasLatlon(v) {
+  return Array.isArray(v?.latlon) && v.latlon.length === 2;
+}
+
 // ---------------------------------------------------------------------------
 // Bootstrap
 // ---------------------------------------------------------------------------
@@ -177,7 +186,7 @@ function renderAllVenues() {
     if (activeCity && entry.v.city !== activeCity) return false;
     if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase()))
       return false;
-    if (mapBounds && entry.v.latlon) {
+    if (mapBounds && hasLatlon(entry.v)) {
       if (!mapBounds.contains(entry.v.latlon)) return false;
     }
     return true;
@@ -206,6 +215,36 @@ function renderAllVenues() {
         marker.remove();
       }
     });
+  }
+
+  // Zoom/pan the map to fit whatever the toggle-style filters (venue
+  // type / performance type / city) currently leave visible — mirrors
+  // fitMapToEvents() on the events page. A no-op if the map hasn't been
+  // opened yet; there's nothing to fit until then, and it'll be called
+  // again on open via the onInit callback below.
+  function fitMapToVisibleVenues() {
+    if (!mapHandle.map) return;
+    const map = mapHandle.map;
+
+    const visibleCoords = venueIndex
+      .filter((entry) => markerVisible(entry) && hasLatlon(entry.v))
+      .map((entry) => entry.v.latlon);
+
+    if (visibleCoords.length === 0) {
+      map.setView([53.0, -2.0], 6); // no matches (or none with coords) — reset to the full UK view
+    } else if (visibleCoords.length === 1) {
+      map.setView(visibleCoords[0], 12);
+    } else {
+      map.fitBounds(L.latLngBounds(visibleCoords), { padding: [30, 30] });
+    }
+
+    // Set mapBounds directly from the view we just chose rather than
+    // waiting on a moveend/zoomend event — fitBounds()/setView() don't
+    // reliably fire one when the pan is small enough not to need a
+    // matching zoom change, and we want the list filter to match the
+    // map immediately either way.
+    mapBounds = map.getBounds();
+    renderList();
   }
 
   // ── Marker registry (populated lazily when the map first opens) ──────
@@ -295,6 +334,7 @@ function renderAllVenues() {
 
       // If the map is already open, update marker visibility respecting all filters
       syncMarkerVisibility();
+      fitMapToVisibleVenues();
     }
 
     allTypeBtn.addEventListener("click", () => applyTypeFilter(null));
@@ -327,6 +367,7 @@ function renderAllVenues() {
       refreshPtypeBtns();
       renderList();
       syncMarkerVisibility();
+      fitMapToVisibleVenues();
     });
     ptypeBtnsWrap.appendChild(allPtypeBtn);
 
@@ -342,6 +383,7 @@ function renderAllVenues() {
         refreshPtypeBtns();
         renderList();
         syncMarkerVisibility();
+        fitMapToVisibleVenues();
       });
       ptypeBtnEls.push(btn);
       ptypeBtnsWrap.appendChild(btn);
@@ -386,6 +428,7 @@ function renderAllVenues() {
       refreshPtypeBtns();
       renderList();
       syncMarkerVisibility();
+      fitMapToVisibleVenues();
     }
     unionBtn.addEventListener("click", () => applyPtypeMode("union"));
     intersectionBtn.addEventListener("click", () =>
@@ -437,6 +480,10 @@ function renderAllVenues() {
       // Sync map markers — hide any that don't match the active filters
       syncMarkerVisibility();
 
+      // Zoom to fit the selected city's venues, or back out to the full
+      // view when returning to "All".
+      fitMapToVisibleVenues();
+
       // Close the panel once a selection is made (except "All")
       if (city !== null) cityDetails.open = false;
     }
@@ -473,7 +520,7 @@ function renderAllVenues() {
     400,
     (map) => {
       venueIndex.forEach(({ vid, v, vtype, ptypes }) => {
-        if (!v.latlon || v.latlon.length === 0) return;
+        if (!hasLatlon(v)) return;
         const colour = VTYPE_COLOURS[vtype] || "#999";
         const ptypeLine =
           ptypes.size > 0
@@ -516,12 +563,31 @@ function renderAllVenues() {
         });
       }
 
+      // Fit the view to whatever the pre-existing filters leave visible,
+      // the first time the map is opened (mirrors fitMapToEvents() on the
+      // events page).
+      fitMapToVisibleVenues();
+
       // ── Bounds filter on zoom/pan (mirrors events page behaviour) ───
+      // Deliberately zoomend/dragend rather than moveend: opening this
+      // panel calls map.invalidateSize(), which — because the map was
+      // rendered at 0×0 while the <details> was collapsed — schedules its
+      // own corrective pan and fires a *moveend* a couple of hundred ms
+      // later purely to fix the tile layout, not because anyone moved
+      // the map. Listening on moveend meant that phantom event was
+      // captured as mapBounds, often with the map still mid-layout, which
+      // is why the venue list could go blank right after opening the map
+      // or otherwise resizing it. zoomend/dragend only fire for a real
+      // user zoom or drag, so they don't have that problem. (fitBounds()
+      // calls below update mapBounds directly rather than relying on
+      // these events, so programmatic re-centring still keeps the list
+      // in sync.)
       function updateFromMapBounds() {
         mapBounds = map.getBounds();
         renderList();
       }
-      map.on("moveend", updateFromMapBounds);
+      map.on("zoomend", updateFromMapBounds);
+      map.on("dragend", updateFromMapBounds);
 
       // Clear bounds filter when the map panel is collapsed
       mapHandle.details.addEventListener("toggle", () => {
@@ -569,6 +635,8 @@ function renderAllVenues() {
       row.id = "venue-row-" + vid;
       row.className = "venue-list-card";
       row.style.borderLeftColor = colour;
+      const hasCoords = hasLatlon(v);
+      if (!hasCoords) row.classList.add("venue-list-card-no-latlon");
       row.onclick = () => {
         location.href = `venues.html?venue=${encodeURIComponent(vid)}`;
       };
@@ -603,6 +671,13 @@ function renderAllVenues() {
         pill.textContent = def.label;
         row.appendChild(pill);
       });
+
+      if (!hasCoords) {
+        const noLatlonBadge = document.createElement("span");
+        noLatlonBadge.className = "venue-type-badge venue-no-latlon-badge";
+        noLatlonBadge.textContent = "⚠️ No location";
+        row.appendChild(noLatlonBadge);
+      }
 
       if (v.url) {
         const a = document.createElement("a");
@@ -669,7 +744,7 @@ function renderAllVenues() {
     renderVenue();
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("venueContent").style.display = "";
-    if (venue.latlon) {
+    if (hasLatlon(venue)) {
       loadLeaflet()
         .then(() => {
           initVenueMap();
@@ -740,7 +815,7 @@ function renderVenue() {
     linksDiv.appendChild(a);
   }
   // Google Maps link
-  if (venue.latlon) {
+  if (hasLatlon(venue)) {
     if (linksDiv.children.length > 0)
       linksDiv.appendChild(document.createTextNode(" · "));
     const a = document.createElement("a");
@@ -763,8 +838,17 @@ function renderVenue() {
   renderInfoTable();
 
   // Map
-  if (!venue.latlon) {
+  if (!hasLatlon(venue)) {
     document.getElementById("map-container").style.display = "none";
+
+    // Flag it clearly at the bottom of the page too — an editor scanning
+    // the venue itself is more likely to notice it there than to infer
+    // it from the map section merely being absent.
+    const warning = document.createElement("p");
+    warning.className = "venue-no-latlon-warning";
+    warning.textContent =
+      "⚠️ This venue is missing map coordinates (latlon), so it won't show on any map or in map-based filtering until that's added.";
+    document.getElementById("venueContent").appendChild(warning);
   }
 
   // Gather all events at this venue
@@ -1413,12 +1497,12 @@ function renderVenueFlyers(regularClubs, allDated, today) {
 // ---------------------------------------------------------------------------
 
 function getNearbyVenues() {
-  if (!venue.latlon) return [];
+  if (!hasLatlon(venue)) return [];
   const [lat, lon] = venue.latlon;
   const RADIUS_KM = 20;
 
   return Object.entries(venuesLookup)
-    .filter(([vid, v]) => vid !== venueId && v.latlon)
+    .filter(([vid, v]) => vid !== venueId && hasLatlon(v))
     .map(([vid, v]) => {
       const dist = haversineKm(lat, lon, v.latlon[0], v.latlon[1]);
       return { vid, v, dist };
