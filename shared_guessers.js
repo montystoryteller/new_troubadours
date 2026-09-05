@@ -80,3 +80,82 @@ const VENUE_TYPE_SUGGESTIONS = [
     "Online",
     "Other / unknown",
 ];
+
+// ---------------------------------------------------------------------------
+// Age-rating parser — a best-effort scan of event description text for
+// common age-suitability phrasing (e.g. "suitable for ages 8+", "18+",
+// "family friendly"), used to SUGGEST an age_rating/min_age, never to set
+// them automatically. Always returns the exact sentence it matched, so a
+// caller can offer to remove that sentence from the description once its
+// content has been captured as a structured field instead.
+//
+// This is necessarily a rough heuristic over free-form prose, not a
+// classifier with any guarantee of coverage — a null return just means
+// nothing recognisable was found, not that the event has no age guidance.
+// ---------------------------------------------------------------------------
+function parseAgeRatingFromText(text) {
+    if (!text) return null;
+    // Split on sentence-ending punctuation or blank lines, keeping each
+    // sentence's original casing/punctuation so it can be matched back
+    // against the description verbatim later, for removal.
+    const sentences = text.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
+    const AGE_CUE_WORDS = /suitable|recommended|appropriate|age|years|content|audience|rated|certificate/i;
+
+    for (const sentence of sentences) {
+        const s = sentence;
+
+        // "18+", adult content, adults only, mature themes — checked first
+        // since it's the most specific/unambiguous signal.
+        if (/\b18\s*\+|\badults?[\s-]only\b|\badult content\b|\bmature (?:content|themes|audiences)\b|\bexplicit content\b/i.test(s)) {
+            return { rating: "Adult content (18+)", minAge: 18, sentence };
+        }
+
+        // "ages 8+", "age 8 and over", "aged 12 or above"
+        let m = s.match(/\b(?:ages?|aged)\s*(\d{1,2})\s*(?:\+|and (?:over|above|up|older)|or (?:over|above|older))/i);
+        if (m) {
+            const n = parseInt(m[1], 10);
+            return { rating: `${n}+`, minAge: n, sentence };
+        }
+
+        // "suitable/recommended/appropriate for (ages) 8+"
+        m = s.match(/\b(?:suitable|recommended|appropriate)\s+for\s+(?:ages?\s*)?(\d{1,2})\s*\+/i);
+        if (m) {
+            const n = parseInt(m[1], 10);
+            return { rating: `${n}+`, minAge: n, sentence };
+        }
+
+        // A bare "N+" only counts if the sentence also has a suitability cue
+        // word, to avoid false positives on prices ("£8+ donations") or
+        // other unrelated numbers.
+        m = s.match(/\b(\d{1,2})\s*\+/);
+        if (m && AGE_CUE_WORDS.test(s) && !/[£$€]\s*\d/.test(s)) {
+            const n = parseInt(m[1], 10);
+            return { rating: `${n}+`, minAge: n, sentence };
+        }
+
+        // Family friendly / all ages
+        if (/\bfamily[\s-]friendly\b|\ball ages\b|\bsuitable for (?:the )?(?:whole )?family\b|\bsuitable for all ages\b/i.test(s)) {
+            return { rating: "Family friendly", minAge: null, sentence };
+        }
+
+        // Not suitable for children / no children
+        if (/\bnot suitable for (?:young )?children\b|\bno children\b|\bnot recommended for children\b/i.test(s)) {
+            return { rating: "Not suitable for children", minAge: null, sentence };
+        }
+    }
+    return null;
+}
+
+// Canonical suggestions for an age_rating datalist — a mix of the parser's
+// own possible outputs and a few other common phrasings, for anywhere a UI
+// wants to offer them without requiring free-text entry.
+const AGE_RATING_SUGGESTIONS = [
+    "Family friendly",
+    "Suitable for all ages",
+    "8+",
+    "12+",
+    "14+",
+    "16+",
+    "Adult content (18+)",
+    "Not suitable for children",
+];

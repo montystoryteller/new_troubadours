@@ -359,7 +359,7 @@
       "additionalProperties": true
     },
     "podcastUrls": {
-      "description": "One or more podcast links for a performer (episode pages, show pages, or listen-on-X links — whatever the performer links to). A single URL string, OR an array of URL strings for a performer with several podcasts/series. Code that reads performer.podcast should always normalize via Array.isArray() before use — see normalisePodcastUrls() in performers.html, which renders these in the collapsible podcast section on the performer profile page.",
+      "description": "One or more podcast links for a performer (episode pages, show pages, or listen-on-X links — whatever the performer links to). A single URL string, OR an array of URL strings for a performer with several podcasts/series. Code that reads performer.podcast should always normalize via Array.isArray() before use — see normalisePodcastUrls() in new_troubadours_performers.html, which renders these in the collapsible podcast section on the performer profile page.",
       "oneOf": [
         {
           "type": "string"
@@ -492,6 +492,17 @@
         "description": {
           "type": "string",
           "description": "Rare per-date description override."
+        },
+        "age_rating": {
+          "type": "string",
+          "description": "Optional free-text age-suitability descriptor for display, e.g. 'Family friendly', 'Suitable for ages 8+', 'Adult content (18+)'. Not a strict enum. The event builder's Enrich tab and the event form's \"Suggest from description\" action can both propose one by parsing common cues out of `description` (via parseAgeRatingFromText() in shared_guessers.js) — always a suggestion to review, not authoritative."
+        },
+        "min_age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
         "city": {
           "type": "string",
@@ -741,6 +752,17 @@
           "type": "string",
           "description": "Referenced by tours[].repertoire_id — a tour with no tour_description of its own falls back to this. See tour.repertoire_id."
         },
+        "age_rating": {
+          "type": "string",
+          "description": "Optional free-text age-suitability descriptor for display, e.g. 'Family friendly', 'Suitable for ages 8+', 'Adult content (18+)'. Not a strict enum. The event builder's Enrich tab and the event form's \"Suggest from description\" action can both propose one by parsing common cues out of `description` (via parseAgeRatingFromText() in shared_guessers.js) — always a suggestion to review, not authoritative."
+        },
+        "min_age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
+        },
         "touring_event_flyer": {
           "type": "string",
           "description": "Headline flyer image filename for the whole show (one card, not repeated per date)."
@@ -816,6 +838,17 @@
         },
         "description": {
           "type": "string"
+        },
+        "age_rating": {
+          "type": "string",
+          "description": "Optional free-text age-suitability descriptor for display, e.g. 'Family friendly', 'Suitable for ages 8+', 'Adult content (18+)'. Not a strict enum. The event builder's Enrich tab and the event form's \"Suggest from description\" action can both propose one by parsing common cues out of `description` (via parseAgeRatingFromText() in shared_guessers.js) — always a suggestion to review, not authoritative."
+        },
+        "min_age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
         "event_flyer": {
           "type": "string"
@@ -939,6 +972,17 @@
         "description": {
           "type": "string"
         },
+        "age_rating": {
+          "type": "string",
+          "description": "Optional free-text age-suitability descriptor for display, e.g. 'Family friendly', 'Suitable for ages 8+', 'Adult content (18+)'. Not a strict enum. The event builder's Enrich tab and the event form's \"Suggest from description\" action can both propose one by parsing common cues out of `description` (via parseAgeRatingFromText() in shared_guessers.js) — always a suggestion to review, not authoritative."
+        },
+        "min_age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
+        },
         "event_flyer": {
           "type": "string"
         },
@@ -1006,6 +1050,17 @@
         },
         "description": {
           "type": "string"
+        },
+        "age_rating": {
+          "type": "string",
+          "description": "Optional free-text age-suitability descriptor for display, e.g. 'Family friendly', 'Suitable for ages 8+', 'Adult content (18+)'. Not a strict enum. The event builder's Enrich tab and the event form's \"Suggest from description\" action can both propose one by parsing common cues out of `description` (via parseAgeRatingFromText() in shared_guessers.js) — always a suggestion to review, not authoritative."
+        },
+        "min_age": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
         "event_flyer": {
           "type": "string"

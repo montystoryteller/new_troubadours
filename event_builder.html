@@ -31,12 +31,10 @@
             color: #757575;
             margin-bottom: 2px;
         }
-
         .subitem-field-group {
             display: flex;
             flex-direction: column;
         }
-
         /* event_builder-styles.css only styles inputs inside .subitem-row-fields;
            the podcast-episode description field is a textarea, so give it the
            same treatment for visual consistency. */
@@ -51,7 +49,6 @@
             min-height: 50px;
             resize: vertical;
         }
-
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -59,7 +56,6 @@
             gap: 6px;
             flex-shrink: 0;
         }
-
         .batch-edit-btn,
         .batch-preview-btn {
             background: white;
@@ -70,12 +66,10 @@
             font-size: 0.85em;
             cursor: pointer;
         }
-
         .batch-edit-btn:hover,
         .batch-preview-btn:hover {
             background: var(--theme-green-bg);
         }
-
         .batch-list li.batch-preview-row {
             display: block;
             background: #fafafa;
@@ -84,7 +78,6 @@
             padding: 8px 10px;
             margin-top: -2px;
         }
-
         .batch-preview-row pre {
             margin: 0;
             white-space: pre-wrap;
@@ -98,14 +91,14 @@
 
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
-        <a href="event_guide.html">🗺️ Calendar</a>
-        <a href="tour_guide.html">🎭 Touring Shows</a>
-        <a href="storyclub.html">📖 Story Clubs</a>
-        <a href="performers.html">🎤 Performers</a>
-        <a href="venues.html">📍 Venues</a>
-        <a href="festival.html">🎪 Festivals</a>
-        <a href="flyers.html">📋 Flyers</a>
-        <a href="stats.html">📊 Stats</a>
+        <a href="new_troubadours_event_guide.html">🗺️ Calendar</a>
+        <a href="new_troubadours_tour_guide.html">🎭 Touring Shows</a>
+        <a href="new_troubadours_storyclub.html">📖 Story Clubs</a>
+        <a href="new_troubadours_performers.html">🎤 Performers</a>
+        <a href="new_troubadours_venues.html">📍 Venues</a>
+        <a href="new_troubadours_festival.html">🎪 Festivals</a>
+        <a href="new_troubadours_flyers.html">📋 Flyers</a>
+        <a href="new_troubadours_stats.html">📊 Stats</a>
     </nav>
 
     <div class="builder-wrap">
@@ -235,7 +228,25 @@
 
             <div class="field-row">
                 <label>Description</label>
-                <textarea id="ev-description" placeholder="Show description"></textarea>
+                <div>
+                    <textarea id="ev-description" placeholder="Show description"></textarea>
+                    <button type="button" class="add-subitem-btn" id="ev-suggest-age-btn" style="margin-top:6px;">Suggest
+                        age rating from description</button>
+                    <div id="ev-age-suggestion" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Age rating</label>
+                <div>
+                    <input type="text" id="ev-age-rating" list="ageRatingOptions"
+                        placeholder="e.g. Family friendly, 8+, Adult content (18+) — free text, optional">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Minimum age</label>
+                <input type="number" id="ev-min-age" min="0" max="99" placeholder="(optional) plain number, e.g. 8">
             </div>
 
             <div class="field-row">
@@ -260,8 +271,7 @@
 
             <div class="field-row">
                 <label>Facebook</label>
-                <input type="url" id="ev-facebook"
-                    placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
+                <input type="url" id="ev-facebook" placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
             </div>
 
             <div class="field-row">
@@ -317,8 +327,7 @@
 
             <div class="field-row">
                 <label>Show name</label>
-                <input type="text" id="tour-name"
-                    placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
+                <input type="text" id="tour-name" placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
             </div>
 
             <div class="field-row">
@@ -443,8 +452,7 @@
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="festival-name" list="festivalOptions"
-                        placeholder="e.g. Bristol Storytelling Festival 2026">
+                    <input type="text" id="festival-name" list="festivalOptions" placeholder="e.g. Bristol Storytelling Festival 2026">
                     <div id="festival-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -496,8 +504,7 @@
 
             <div class="field-row">
                 <label>Age bands</label>
-                <input type="text" id="festival-age-bands"
-                    placeholder="comma-separated, e.g. Family friendly, Adults only">
+                <input type="text" id="festival-age-bands" placeholder="comma-separated, e.g. Family friendly, Adults only">
             </div>
 
             <div class="field-row">
@@ -509,8 +516,7 @@
                 <label>Flyer(s)</label>
                 <div>
                     <div class="date-rows" id="festival-flyer-rows"></div>
-                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()"
-                        style="margin-top:6px;">Add
+                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()" style="margin-top:6px;">Add
                         another flyer</button>
                     <div class="field-hint">One flyer saves as event_flyer; add more, or give one a caption, to save
                         as event_flyers.</div>
@@ -911,6 +917,22 @@
                 <button class="btn-add-batch" id="enrich-dupe-scan-btn" disabled>Scan for possible duplicates</button>
                 <div id="enrich-dupe-results"></div>
             </div>
+
+            <div class="enrich-section">
+                <h3>🔞 Possible age ratings</h3>
+                <p class="field-hint">
+                    Scans event/music/poetry descriptions with no <code>age_rating</code> set for common
+                    age-suitability phrasing (e.g. "suitable for ages 8+", "18+", "family friendly"), using
+                    the same heuristic as the event form's "Suggest age rating from description" button. This
+                    is a report only, not a patch you can apply automatically — unlike venues, individual
+                    events have no stable id in <code>events_normalized.json</code> to key a patch by, so
+                    each one needs finding and editing by hand. It's necessarily a rough guess over free-form
+                    prose — a blank result doesn't mean there's no age guidance, just that nothing
+                    recognisable was found.
+                </p>
+                <button class="btn-add-batch" id="enrich-age-scan-btn" disabled>Scan for age rating cues</button>
+                <div id="enrich-age-results"></div>
+            </div>
         </div>
 
         <!-- ── Output ──────────────────────────────────────────── -->
@@ -948,6 +970,7 @@
     <datalist id="performerOptions"></datalist>
     <datalist id="venueOptions"></datalist>
     <datalist id="venueTypeOptions"></datalist>
+    <datalist id="ageRatingOptions"></datalist>
     <datalist id="clubOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
@@ -1589,6 +1612,111 @@
         // prose back into rows isn't reliable enough to attempt. If left
         // unresolved, getEntries() returns nothing for that mismatched state,
         // so a save never exports a structured_time that disagrees with time.
+        // Wires a "Suggest age rating from description" button: on click,
+        // runs parseAgeRatingFromText() (shared_guessers.js) against the
+        // current description and, if it finds something, shows the exact
+        // sentence it matched plus the suggested rating, with a choice of
+        // accepting it (optionally also stripping that sentence out of the
+        // description, since its content is now captured as a structured
+        // field instead) or dismissing the suggestion outright. Never fires
+        // automatically while typing — only on request — so it doesn't
+        // interrupt drafting or nag on every keystroke.
+        function wireAgeSuggestionButton({ descriptionEl, ratingEl, minAgeEl, buttonEl, boxEl }) {
+            buttonEl.addEventListener("click", () => {
+                const match = parseAgeRatingFromText(descriptionEl.value);
+                boxEl.innerHTML = "";
+                if (!match) {
+                    boxEl.style.display = "";
+                    boxEl.className = "field-hint";
+                    boxEl.textContent = "No age-related cues found in the description.";
+                    return;
+                }
+                boxEl.style.display = "";
+                boxEl.className = "field-hint";
+                boxEl.style.color = "#1565c0";
+
+                const summary = document.createElement("div");
+                summary.innerHTML = `Found: "${match.sentence.replace(/</g, "&lt;")}"`;
+                boxEl.appendChild(summary);
+
+                const editRow = document.createElement("div");
+                editRow.style.marginTop = "6px";
+                editRow.style.marginBottom = "6px";
+                const editLabel = document.createElement("label");
+                editLabel.textContent = "Suggested rating (edit before using, if you'd rather word it differently): ";
+                editLabel.style.display = "block";
+                editLabel.style.fontWeight = "600";
+                editLabel.style.fontSize = "0.9em";
+                const editInput = document.createElement("input");
+                editInput.type = "text";
+                editInput.value = match.rating;
+                editInput.style.width = "100%";
+                editInput.style.boxSizing = "border-box";
+                editInput.style.marginTop = "3px";
+                editRow.appendChild(editLabel);
+                editRow.appendChild(editInput);
+                boxEl.appendChild(editRow);
+
+                if (match.minAge !== null) {
+                    const minAgeNote = document.createElement("div");
+                    minAgeNote.style.fontSize = "0.85em";
+                    minAgeNote.style.color = "#666";
+                    minAgeNote.textContent = `Minimum age will also be set to ${match.minAge}, regardless of how you word the rating above.`;
+                    boxEl.appendChild(minAgeNote);
+                }
+
+                const useExactBtn = document.createElement("button");
+                useExactBtn.type = "button";
+                useExactBtn.className = "add-subitem-btn";
+                useExactBtn.style.marginBottom = "6px";
+                useExactBtn.textContent = "Use exact wording from description instead";
+                useExactBtn.addEventListener("click", () => {
+                    editInput.value = match.sentence.replace(/[.!?]+$/, "").trim();
+                });
+                boxEl.appendChild(useExactBtn);
+                boxEl.appendChild(document.createElement("br"));
+
+                const useBtn = document.createElement("button");
+                useBtn.type = "button";
+                useBtn.className = "add-subitem-btn";
+                useBtn.style.marginTop = "6px";
+                useBtn.style.marginRight = "6px";
+                useBtn.textContent = "Use this";
+                useBtn.addEventListener("click", () => {
+                    ratingEl.value = editInput.value.trim();
+                    if (match.minAge !== null) minAgeEl.value = match.minAge;
+                    boxEl.style.display = "none";
+                });
+
+                const useAndRemoveBtn = document.createElement("button");
+                useAndRemoveBtn.type = "button";
+                useAndRemoveBtn.className = "add-subitem-btn";
+                useAndRemoveBtn.style.marginTop = "6px";
+                useAndRemoveBtn.style.marginRight = "6px";
+                useAndRemoveBtn.textContent = "Use this and remove sentence from description";
+                useAndRemoveBtn.addEventListener("click", () => {
+                    ratingEl.value = editInput.value.trim();
+                    if (match.minAge !== null) minAgeEl.value = match.minAge;
+                    // Remove exactly the matched sentence (and any immediately
+                    // trailing whitespace) from the description, leaving the
+                    // rest untouched rather than reformatting the whole thing.
+                    descriptionEl.value = descriptionEl.value.replace(match.sentence, "").replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+                    boxEl.style.display = "none";
+                });
+
+                const dismissBtn = document.createElement("button");
+                dismissBtn.type = "button";
+                dismissBtn.className = "add-subitem-btn";
+                dismissBtn.style.marginTop = "6px";
+                dismissBtn.textContent = "Dismiss";
+                dismissBtn.addEventListener("click", () => { boxEl.style.display = "none"; });
+
+                boxEl.appendChild(useBtn);
+                boxEl.appendChild(useAndRemoveBtn);
+                boxEl.appendChild(dismissBtn);
+            });
+        }
+
         function buildStructuredTimeField(container, timeInput) {
             container.innerHTML = "";
             const STRUCTURED_TIME_LABELS = { doors: "Doors", start: "Start", end: "End" };
@@ -2140,6 +2268,8 @@
         initVenueMatcher();
         document.getElementById("venueTypeOptions").innerHTML =
             VENUE_TYPE_SUGGESTIONS.map(t => `<option value="${t.replace(/"/g, "&quot;")}">`).join("");
+        document.getElementById("ageRatingOptions").innerHTML =
+            AGE_RATING_SUGGESTIONS.map(t => `<option value="${t.replace(/"/g, "&quot;")}">`).join("");
         let venueTypeAutoValue = "";
         document.getElementById("venue-name").addEventListener("input", (e) => {
             venueMatcher.updateStatus(e.target.value.trim());
@@ -2477,6 +2607,13 @@
             document.getElementById("ev-price-breakdown-toggle").onclick = () => {
                 priceBreakdownContainer.style.display = priceBreakdownContainer.style.display === "none" ? "grid" : "none";
             };
+            wireAgeSuggestionButton({
+                descriptionEl: document.getElementById("ev-description"),
+                ratingEl: document.getElementById("ev-age-rating"),
+                minAgeEl: document.getElementById("ev-min-age"),
+                buttonEl: document.getElementById("ev-suggest-age-btn"),
+                boxEl: document.getElementById("ev-age-suggestion"),
+            });
         }
 
         function addEventToBatch() {
@@ -2523,6 +2660,10 @@
             const priceBreakdown = resolvePriceBreakdownField(evPriceBreakdown);
             if (priceBreakdown) record.price_breakdown = priceBreakdown;
             if (description) record.description = description;
+            const ageRating = document.getElementById("ev-age-rating").value.trim();
+            const minAgeRaw = document.getElementById("ev-min-age").value.trim();
+            if (ageRating) record.age_rating = ageRating;
+            if (minAgeRaw) record.min_age = parseInt(minAgeRaw, 10);
             if (flyer) record.event_flyer = flyer;
             if (video) record.video_trailer = video;
             if (ticketUrl) record.ticket_url = ticketUrl;
@@ -2548,8 +2689,9 @@
 
         function clearEventForm() {
             ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-wider-event", "ev-price",
-                "ev-description", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
+                "ev-description", "ev-age-rating", "ev-min-age", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("ev-age-suggestion").style.display = "none";
             document.getElementById("ev-date-added-today").checked = false;
             document.getElementById("ev-date-added").readOnly = false;
             document.getElementById("ev-special").checked = true;
@@ -3629,6 +3771,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
+                document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -3637,6 +3780,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
+                document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -4109,6 +4253,51 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "possible duplicate");
+        });
+
+        // -- Possible age ratings (report only — events have no stable id) ------
+        document.getElementById("enrich-age-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-age-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const buckets = [
+                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["musicEvents", enrichedData.musicEvents || []],
+                ["poetryEvents", enrichedData.poetryEvents || []],
+            ];
+            const found = [];
+            buckets.forEach(([bucketName, list]) => {
+                (list || []).forEach(ev => {
+                    if (ev.age_rating || !ev.description) return;
+                    const match = parseAgeRatingFromText(ev.description);
+                    if (!match) return;
+                    found.push({
+                        bucket: bucketName,
+                        name: ev.showname || ev.name || "(untitled)",
+                        date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
+                        match,
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No unrated events with a recognisable age cue in their description.</div>';
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
+                        <div class="enrich-result-detail">Suggested: <strong>${f.match.rating}</strong>${f.match.minAge !== null ? ` (min age ${f.match.minAge})` : ""}</div>
+                        <div class="enrich-result-reasons">Found in description: "${f.match.sentence.replace(/</g, "&lt;")}"</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "event");
         });
 
         (async () => {
