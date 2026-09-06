@@ -1885,6 +1885,14 @@ function renderAllStats(data, venues, performers, tours) {
   // script) — kept as a bare global-scope call below so this still resolves
   // to it via the normal scope chain, unchanged from when it was local.
 
+  // This text-parsing heuristic is left exactly as it was — both call sites
+  // now check for a structured_price first (via getPriceFaceValue(), also
+  // in shared_guessers.js) and only fall back to parsing raw text with this
+  // function when a record has no structured_price. The two heuristics are
+  // NOT unified into one code path deliberately: this one is tuned against
+  // years of real free-text price strings, and merging it into the newer
+  // structured-entry-based logic risked subtly changing stats for existing
+  // data without a clear way to verify equivalence first.
   function parseEventPrice(raw) {
     if (!raw) return null;
     const s = raw.trim(),
@@ -2014,14 +2022,20 @@ function renderAllStats(data, venues, performers, tours) {
       ["events", "clubs"],
     ].forEach(([key, cat]) => {
       (data[key] || []).forEach((e) => {
-        const p = parseEventPrice(e.price);
+        const p =
+          e.structured_price && e.structured_price.length
+            ? getPriceFaceValue(e.structured_price)
+            : parseEventPrice(e.price);
         rows.push({
           cat,
           vtype: classifyVenueType(venues[e.venue_id]?.name || ""),
           face: p && !p.isFree && !p.isPwyw ? p.face : null,
           isFree: !!(p && p.isFree),
           isPwyw: !!(p && p.isPwyw),
-          hasPrice: !!(e.price && e.price.trim()),
+          hasPrice: !!(
+            (e.price && e.price.trim()) ||
+            (e.structured_price && e.structured_price.length)
+          ),
           startH: parseStartHour(e.time || ""),
           day: parseDayOfWeek(e.date || "", e.schedule || ""),
           groupKey: (e.showname || e.name || "").trim() || null,
@@ -2031,7 +2045,10 @@ function renderAllStats(data, venues, performers, tours) {
     // Tour dates — each tour is one "show"; group all dates under the tour name
     Object.entries(data.tours || {}).forEach(([tid, t]) => {
       (t.tour_dates || []).forEach((td) => {
-        const p = parseEventPrice(td.price);
+        const p =
+          td.structured_price && td.structured_price.length
+            ? getPriceFaceValue(td.structured_price)
+            : parseEventPrice(td.price);
         const perfType = classifyPerformanceType(t); // 'music' | 'poetry' | 'story'
         const cat = perfType === "story" ? "storytelling" : perfType;
         rows.push({
@@ -2040,7 +2057,10 @@ function renderAllStats(data, venues, performers, tours) {
           face: p && !p.isFree && !p.isPwyw ? p.face : null,
           isFree: !!(p && p.isFree),
           isPwyw: !!(p && p.isPwyw),
-          hasPrice: !!(td.price && td.price.trim()),
+          hasPrice: !!(
+            (td.price && td.price.trim()) ||
+            (td.structured_price && td.structured_price.length)
+          ),
           startH: parseStartHour(td.time || t.time || ""),
           day: parseDayOfWeek(td.date || "", ""),
           groupKey: "tour:" + tid,

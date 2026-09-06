@@ -219,14 +219,6 @@
             </div>
 
             <div class="field-row">
-                <label>Price</label>
-                <div>
-                    <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
-                    <div id="ev-structured-price-field"></div>
-                </div>
-            </div>
-
-            <div class="field-row">
                 <label>Description</label>
                 <div>
                     <textarea id="ev-description" placeholder="Show description"></textarea>
@@ -248,6 +240,21 @@
             <div class="field-row">
                 <label>Minimum age</label>
                 <input type="number" id="ev-min-age" min="0" max="99" placeholder="(optional) plain number, e.g. 8">
+            </div>
+
+            <div class="field-row">
+                <label>Price</label>
+                <div>
+                    <input type="text" id="ev-price" placeholder="e.g. £8 / £6">
+                    <div style="margin-top:6px;">
+                        <button type="button" class="add-subitem-btn" id="ev-parse-price-text-btn">Parse this text into
+                            structured pricing</button>
+                        <button type="button" class="add-subitem-btn" id="ev-suggest-price-btn">Suggest price from
+                            description</button>
+                    </div>
+                    <div id="ev-price-suggestion" style="display:none;"></div>
+                    <div id="ev-structured-price-field"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -860,17 +867,19 @@
             </div>
 
             <div class="enrich-section">
-                <h3>💷 Price format note</h3>
+                <h3>💷 Possible structured pricing</h3>
                 <p class="field-hint">
-                    The old "price breakdown suggestions" scanner that lived here has been retired — it
-                    produced a <code>price_breakdown</code> shape that was never actually added to the
-                    schema, and wasn't read by anything. Structured pricing is now built the same way as
-                    structured time: build it directly on an event/date's Price field in the relevant tab
-                    (as <code>structured_price</code>), which generates the <code>price</code> text for you.
-                    There's no free-text-to-structured scanner for existing data yet — only the builder's
-                    own "generate from structure" direction — but that'd be a reasonable follow-up if it'd
-                    help, mirroring the age-rating scanner.
+                    Scans event/music/poetry price and description text for anything with no
+                    <code>structured_price</code> set that <code>parsePriceEntriesFromString()</code> /
+                    <code>parsePriceFromDescription()</code> (shared_guessers.js) can make sense of. This is a
+                    report only, not a patch you can apply automatically — like age ratings, individual
+                    events have no stable id in <code>events_normalized.json</code> to key a patch by, so
+                    each one needs finding and editing by hand. The older "price breakdown" scanner that used
+                    to live here produced a <code>price_breakdown</code> shape that was never actually added
+                    to the schema and wasn't read by anything, so it's been retired in favour of this.
                 </p>
+                <button class="btn-add-batch" id="enrich-price-scan-btn" disabled>Scan for parseable pricing</button>
+                <div id="enrich-price-results"></div>
             </div>
 
             <div class="enrich-section">
@@ -1227,39 +1236,8 @@
         function buildStructuredPriceField(container, priceInput) {
             container.innerHTML = "";
 
-            const TYPE_WORDS = {
-                concession: "concessions", advance: "advance", earlybird: "earlybird",
-                door: "door", online: "online", member: "members",
-            };
-
-            function formatAmount(n) {
-                return Number.isInteger(n) ? String(n) : n.toFixed(2);
-            }
-
-            function renderEntry(e) {
-                let text;
-                if (e.type === "free") {
-                    text = e.label || "Free";
-                } else if (e.type === "donation") {
-                    text = e.label || "Donation";
-                    if (e.amount != null) text += ` (suggested £${formatAmount(e.amount)})`;
-                } else if (e.type === "pwyw") {
-                    text = e.label || "Pay what you can";
-                    if (e.amount != null) text += ` (suggested £${formatAmount(e.amount)})`;
-                } else if (e.type === "tier" || (e.label && !TYPE_WORDS[e.type])) {
-                    text = e.amount != null ? `£${formatAmount(e.amount)} ${e.label}` : e.label;
-                } else if (TYPE_WORDS[e.type]) {
-                    text = e.amount != null ? `£${formatAmount(e.amount)} ${TYPE_WORDS[e.type]}` : TYPE_WORDS[e.type];
-                } else {
-                    text = e.amount != null ? `£${formatAmount(e.amount)}` : "";
-                }
-                if (e.fee != null) text += ` (+ £${formatAmount(e.fee)})`;
-                return text;
-            }
-
             function textFor(entries) {
-                if (!entries.length) return null;
-                return entries.map(renderEntry).filter(Boolean).join(" / ");
+                return renderStructuredPrice(entries);
             }
 
             function readEntries() {
@@ -1423,11 +1401,14 @@
                         entries.forEach(addRow);
                         rowsWrap.style.display = "";
                         toggle.style.display = "none";
+                        regenerate(); // write the generated text back — addRow() alone
+                        // sets each row's fields programmatically, which doesn't fire
+                        // the "input"/"change" listeners that normally trigger this.
                     } else {
                         rowsWrap.style.display = "none";
                         toggle.style.display = "";
+                        updateMismatchBanner();
                     }
-                    updateMismatchBanner();
                 },
             };
         }
@@ -1740,8 +1721,85 @@
         // field instead) or dismissing the suggestion outright. Never fires
         // automatically while typing — only on request — so it doesn't
         // interrupt drafting or nag on every keystroke.
+        // "Parse this text into structured pricing": takes whatever's
+        // currently typed in the price field itself (e.g. "10 + 1", "£10
+        // (+£1.50 booking fee)", "£8 advance / £10 door") and tries to turn
+        // it directly into structured rows via parsePriceEntriesFromString().
+        // Populating the widget re-generates the price text from the parsed
+        // entries, so the field ends up re-rendered in this tool's own
+        // canonical wording — a chance to notice if the parse didn't quite
+        // capture what was meant, before saving.
+        function wireParsePriceTextButton({ priceEl, structuredPriceField, buttonEl }) {
+            buttonEl.onclick = () => {
+                const entries = parsePriceEntriesFromString(priceEl.value);
+                if (!entries || !entries.length) {
+                    alert("Couldn't parse that into structured pricing — it'll stay as plain text.");
+                    return;
+                }
+                structuredPriceField.populate(entries);
+            };
+        }
+
+        // "Suggest price from description": mirrors wireAgeSuggestionButton's
+        // UX (matched sentence, accept / accept-and-remove / dismiss), but
+        // accepting populates the structured price rows directly — which
+        // regenerates the price text — rather than filling a single field.
+        function wirePriceSuggestionButton({ descriptionEl, structuredPriceField, buttonEl, boxEl }) {
+            buttonEl.onclick = () => {
+                const match = parsePriceFromDescription(descriptionEl.value);
+                boxEl.innerHTML = "";
+                if (!match) {
+                    boxEl.style.display = "";
+                    boxEl.className = "field-hint";
+                    boxEl.textContent = "No price-related cues found in the description.";
+                    return;
+                }
+                boxEl.style.display = "";
+                boxEl.className = "field-hint";
+                boxEl.style.color = "#1565c0";
+
+                const summary = document.createElement("div");
+                summary.innerHTML = `Found: "${match.sentence.replace(/</g, "&lt;")}" → suggested: <strong>${renderStructuredPrice(match.entries)}</strong>`;
+                boxEl.appendChild(summary);
+
+                const useBtn = document.createElement("button");
+                useBtn.type = "button";
+                useBtn.className = "add-subitem-btn";
+                useBtn.style.marginTop = "6px";
+                useBtn.style.marginRight = "6px";
+                useBtn.textContent = "Use this";
+                useBtn.addEventListener("click", () => {
+                    structuredPriceField.populate(match.entries);
+                    boxEl.style.display = "none";
+                });
+
+                const useAndRemoveBtn = document.createElement("button");
+                useAndRemoveBtn.type = "button";
+                useAndRemoveBtn.className = "add-subitem-btn";
+                useAndRemoveBtn.style.marginTop = "6px";
+                useAndRemoveBtn.style.marginRight = "6px";
+                useAndRemoveBtn.textContent = "Use this and remove sentence from description";
+                useAndRemoveBtn.addEventListener("click", () => {
+                    structuredPriceField.populate(match.entries);
+                    descriptionEl.value = descriptionEl.value.replace(match.sentence, "").replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+                    boxEl.style.display = "none";
+                });
+
+                const dismissBtn = document.createElement("button");
+                dismissBtn.type = "button";
+                dismissBtn.className = "add-subitem-btn";
+                dismissBtn.style.marginTop = "6px";
+                dismissBtn.textContent = "Dismiss";
+                dismissBtn.addEventListener("click", () => { boxEl.style.display = "none"; });
+
+                boxEl.appendChild(useBtn);
+                boxEl.appendChild(useAndRemoveBtn);
+                boxEl.appendChild(dismissBtn);
+            };
+        }
+
         function wireAgeSuggestionButton({ descriptionEl, ratingEl, minAgeEl, buttonEl, boxEl }) {
-            buttonEl.addEventListener("click", () => {
+            buttonEl.onclick = () => {
                 const match = parseAgeRatingFromText(descriptionEl.value);
                 boxEl.innerHTML = "";
                 if (!match) {
@@ -1833,7 +1891,7 @@
                 boxEl.appendChild(useBtn);
                 boxEl.appendChild(useAndRemoveBtn);
                 boxEl.appendChild(dismissBtn);
-            });
+            };
         }
 
         function buildStructuredTimeField(container, timeInput) {
@@ -1989,9 +2047,11 @@
                     list.innerHTML = "";
                     if (entries && entries.length) {
                         entries.forEach(e => addRow(e.type, e.time));
-                        lastGenerated = textFor(readEntries());
                         rowsWrap.style.display = "";
                         toggle.style.display = "none";
+                        regenerate(); // write the generated text back — addRow() alone
+                        // sets each row's fields programmatically, which doesn't fire
+                        // the "input"/"change" listeners that normally trigger this.
                     } else {
                         rowsWrap.style.display = "none";
                         toggle.style.display = "";
@@ -2733,6 +2793,17 @@
                 minAgeEl: document.getElementById("ev-min-age"),
                 buttonEl: document.getElementById("ev-suggest-age-btn"),
                 boxEl: document.getElementById("ev-age-suggestion"),
+            });
+            wireParsePriceTextButton({
+                priceEl: document.getElementById("ev-price"),
+                structuredPriceField: evStructuredPriceField,
+                buttonEl: document.getElementById("ev-parse-price-text-btn"),
+            });
+            wirePriceSuggestionButton({
+                descriptionEl: document.getElementById("ev-description"),
+                structuredPriceField: evStructuredPriceField,
+                buttonEl: document.getElementById("ev-suggest-price-btn"),
+                boxEl: document.getElementById("ev-price-suggestion"),
             });
         }
 
@@ -3891,6 +3962,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
+                document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -3899,6 +3971,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
+                document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -4184,6 +4257,65 @@
             addResultsCollapseToggle(resultsEl, found.length, "event");
         });
 
+        // -- Possible structured pricing (report only — events have no stable id) --
+        document.getElementById("enrich-price-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-price-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const buckets = [
+                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["musicEvents", enrichedData.musicEvents || []],
+                ["poetryEvents", enrichedData.poetryEvents || []],
+            ];
+            const found = [];
+            buckets.forEach(([bucketName, list]) => {
+                (list || []).forEach(ev => {
+                    if (ev.structured_price) return;
+                    // Prefer parsing the dedicated price text if there is
+                    // any; only fall back to scanning the description for a
+                    // price-related sentence when there's no price field to
+                    // go on at all.
+                    let entries = null;
+                    let source = null;
+                    let sentence = null;
+                    if (ev.price) {
+                        entries = parsePriceEntriesFromString(ev.price);
+                        if (entries) { source = "price field"; sentence = ev.price; }
+                    }
+                    if (!entries && ev.description) {
+                        const match = parsePriceFromDescription(ev.description);
+                        if (match) { entries = match.entries; source = "description"; sentence = match.sentence; }
+                    }
+                    if (!entries) return;
+                    found.push({
+                        bucket: bucketName,
+                        name: ev.showname || ev.name || "(untitled)",
+                        date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
+                        entries, source, sentence,
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No unstructured events with recognisable pricing in their price field or description.</div>';
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
+                        <div class="enrich-result-detail">Suggested structured_price: <strong>${renderStructuredPrice(f.entries)}</strong></div>
+                        <div class="enrich-result-reasons">Found in ${f.source}: "${f.sentence.replace(/</g, "&lt;")}"</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "event");
+        });
+
         (async () => {
             const result = await loadEventsData();
             const statusEl = document.getElementById("loadStatus");
@@ -4202,7 +4334,7 @@
 
                 statusEl.textContent = `Loaded ${Object.keys(performersLookup).length} performers, ${Object.keys(venuesLookup).length} venues, and ${Object.keys(podcastsLookup).length} podcast series.`;
             } else {
-                statusEl.textContent = "Could not load events_normalijso can still build records, but performer/venue/podcast search won't have any existing suggestions.";
+                statusEl.textContent = "Could not load events_normalized.json — you can still build records, but performer/venue/podcast search won't have any existing suggestions.";
             }
 
             initEventForm();
