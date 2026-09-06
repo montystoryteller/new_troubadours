@@ -114,42 +114,9 @@ function eventTypeFilterClass(flag) {
   return flag.replace(/^is/, "").toLowerCase();
 }
 
-const DAYS_OF_WEEK = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-const DAY_MAP = {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
-
-const OCCURRENCE_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, last: "last" };
+// DAYS_OF_WEEK, MONTHS_SHORT, DAY_MAP, OCCURRENCE_MAP — defined once in
+// shared_utils.js (loaded before this file), since event_display.js,
+// storyclub.js, and venues.js all used identical copies.
 
 /**
  * Parse a single "DD/MM/YYYY : H.MMpm" datetime string into { date, time }.
@@ -2272,11 +2239,7 @@ function highlightEvent(eventData) {
   }
 }
 
-function formatDate(date) {
-  // DAYS_OF_WEEK, MONTHS_SHORT — module-level constants above
-  return `${DAYS_OF_WEEK[date.getDay()]}, ${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
-}
-
+// formatDate() — defined in shared_utils.js
 // formatDateForInput() — defined in shared_utils.js
 
 function shouldShowEvent(eventData, filters) {

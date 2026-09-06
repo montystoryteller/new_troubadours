@@ -2828,50 +2828,6 @@ function renderFestivalRow(container, fid, festival) {
   container.appendChild(row);
 }
 
-// ---------------------------------------------------------------------------
-// Date formatting helpers
-// ---------------------------------------------------------------------------
-
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const MONTHS_LONG = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function formatShortDate(d) {
-  if (!d) return "";
-  return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
-}
-
-function formatMediumDate(d) {
-  if (!d) return "";
-  return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 // ── Performer-page flyer lightbox wiring ────────────────────────────────
 // State + functions (openPerfFlyer, closePerfFlyer, showPfSlide, pfLbKey,
 // makePerfFlyerThumb) now live in the main script block above, alongside

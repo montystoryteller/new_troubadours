@@ -1613,32 +1613,3 @@ function renderNearbyEventsList(days) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Date formatting helpers
-// ---------------------------------------------------------------------------
-
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function formatShortDate(d) {
-  return d ? `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}` : "";
-}
-
-function formatMediumDate(d) {
-  return d
-    ? `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`
-    : "";
-}

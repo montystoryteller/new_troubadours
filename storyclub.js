@@ -1,48 +1,12 @@
 // ── Constants (mirrors event_display.js) ─────────────────────────────────
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const MONTHS_LONG = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+// DAYS_OF_WEEK, MONTHS_SHORT — defined once in shared_utils.js (loaded
+// before this file); storyclub.js used to keep its own identical copies
+// under the names DAYS and MONTHS_SHORT.
 
-const FACEBOOK_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877f2"/><path d="M16.5 8H14c-.3 0-.5.2-.5.5V10H16l-.3 2.5H13.5V19h-2.5v-6.5H9V10h2V8.5C11 6.6 12.3 5.5 14 5.5c.8 0 2.5.1 2.5.1V8z" fill="#ffffff"/></svg>';
-const GLOBE_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
-const EMAIL_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>';
+
+// FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
+// copies of exactly the icons already in shared_utils.js's ICON_SVG
+// (.facebook, .website, .email respectively); use those instead.
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function parseDateString(s) {
@@ -110,9 +74,7 @@ function parseScheduleObject(schedule) {
   return start;
 }
 
-function formatDate(date) {
-  return `${DAYS[date.getDay()]}, ${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
-}
+// formatDate() — defined in shared_utils.js
 
 function scheduleLabel(schedule) {
   if (!schedule) return null;
@@ -718,19 +680,29 @@ async function renderPage(data, clubId) {
   const iconsRow = document.createElement("div");
   iconsRow.className = "club-icons";
   if (clubRecord.link) {
-    const g = icon(GLOBE_SVG, clubRecord.link, "event-website", "Website");
+    const g = icon(
+      ICON_SVG.website,
+      clubRecord.link,
+      "event-website",
+      "Website",
+    );
     g.querySelector("svg").style.fill = "#555";
     iconsRow.appendChild(g);
   }
   if (clubRecord.email) {
     iconsRow.appendChild(
-      icon(EMAIL_SVG, `mailto:${clubRecord.email}`, "event-email", "Email"),
+      icon(
+        ICON_SVG.email,
+        `mailto:${clubRecord.email}`,
+        "event-email",
+        "Email",
+      ),
     );
   }
   if (clubRecord.facebook) {
     iconsRow.appendChild(
       icon(
-        FACEBOOK_SVG,
+        ICON_SVG.facebook,
         normaliseFacebook(clubRecord.facebook),
         "event-facebook",
         "Facebook",
@@ -945,7 +917,7 @@ async function renderPage(data, clubId) {
         const fbA = document.createElement("a");
         fbA.href = fbUrl;
         fbA.target = "_blank";
-        fbA.innerHTML = FACEBOOK_SVG;
+        fbA.innerHTML = ICON_SVG.facebook;
         fbA.querySelector("svg").style.cssText =
           "width:20px;height:20px;vertical-align:middle;";
         tickets.appendChild(fbA);
@@ -1605,7 +1577,7 @@ async function renderDirectory(data) {
       cls = "thisweek";
       label =
         "🟢 " +
-        DAYS[nextDate.getDay()] +
+        DAYS_OF_WEEK[nextDate.getDay()] +
         " " +
         nextDate.getDate() +
         " " +
@@ -1613,7 +1585,7 @@ async function renderDirectory(data) {
     } else if (diffDays <= 13) {
       cls = "nextweek";
       label =
-        DAYS[nextDate.getDay()] +
+        DAYS_OF_WEEK[nextDate.getDay()] +
         " " +
         nextDate.getDate() +
         " " +
@@ -1734,7 +1706,7 @@ async function renderDirectory(data) {
           "display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;";
         const linkSrc = c.link || c.website || c.tickets_url;
         if (linkSrc) {
-          const a = icon(GLOBE_SVG, linkSrc, "event-website", "Website");
+          const a = icon(ICON_SVG.website, linkSrc, "event-website", "Website");
           // Match the grey color used in the single-club header
           a.querySelector("svg").style.fill = "#555";
           a.onclick = (e) => e.stopPropagation();
@@ -1744,13 +1716,18 @@ async function renderDirectory(data) {
           const fbHref = c.facebook.startsWith("http")
             ? c.facebook
             : `https://facebook.com/${c.facebook}`;
-          const a = icon(FACEBOOK_SVG, fbHref, "event-facebook", "Facebook");
+          const a = icon(
+            ICON_SVG.facebook,
+            fbHref,
+            "event-facebook",
+            "Facebook",
+          );
           a.onclick = (e) => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
           meta.appendChild(a);
         }
         if (c.email) {
           const a = icon(
-            EMAIL_SVG,
+            ICON_SVG.email,
             `mailto:${c.email}`,
             "event-email",
             "Email",

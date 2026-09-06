@@ -70,6 +70,103 @@ function showCopyFeedback(
 // ---------------------------------------------------------------------------
 
 /**
+ * Short month names, indexed by Date#getMonth() (0-11).
+ * Shared by event_display.js, storyclub.js, and venues.js — previously
+ * three identical copies of this exact array.
+ */
+const MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const MONTHS_LONG = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * Full day names, indexed by Date#getDay() (0 = Sunday).
+ * Shared by event_display.js (as DAYS_OF_WEEK) and storyclub.js (as
+ * DAYS) — previously two identical copies of this exact array.
+ */
+const DAYS_OF_WEEK = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+/**
+ * Lower-case day name -> Date#getDay() index. Used when parsing recurring
+ * schedule strings/objects like "3rd wednesday" or {day: "wednesday"}.
+ * Shared by event_display.js (as DAY_MAP) and storyclub.js (as
+ * _SCHED_DAY_MAP) — previously two identical copies of this exact object.
+ */
+const DAY_MAP = {
+  sunday: 0,
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
+};
+
+/**
+ * "1st"/"2nd"/"3rd"/"4th"/"last" -> the value findNthDayInMonth()-style
+ * helpers expect for `occurrence`. Shared by event_display.js (as
+ * OCCURRENCE_MAP) and storyclub.js (as _SCHED_OCC_MAP) — previously two
+ * identical copies of this exact object.
+ */
+const OCCURRENCE_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, last: "last" };
+
+function formatShortDate(d) {
+  if (!d) return "";
+  return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
+}
+
+function formatMediumDate(d) {
+  if (!d) return "";
+  return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/**
+ * Format a Date as "Weekday, D Mon YYYY", e.g. "Saturday, 6 Sep 2026".
+ * Shared by event_display.js and storyclub.js — previously two identical
+ * implementations (one read DAYS_OF_WEEK, the other DAYS; same array).
+ * @param {Date} date
+ * @returns {string}
+ */
+function formatDate(date) {
+  return `${DAYS_OF_WEEK[date.getDay()]}, ${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+/**
  * Parse a DD/MM/YYYY date string into a midnight-normalised Date object.
  * Returns null if the string is missing or malformed.
  * @param {string} dateStr
@@ -900,8 +997,7 @@ function handleEventsLoadFailure() {
     const cached = localStorage.getItem(CACHE_KEYS.DATA);
     if (cached) {
       const { timestamp, data } = JSON.parse(cached);
-      const { eventsData, venuesLookup, performersLookup, toursLookup } =
-        data;
+      const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
       const podcastsLookup = buildPodcastsLookup(eventsData);
       console.warn(
