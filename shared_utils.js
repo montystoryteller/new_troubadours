@@ -652,6 +652,35 @@ const CACHE_KEYS = {
 };
 
 /**
+ * Outcome of the most recent loadEventsData() call, so the colophon's
+ * status LED (see displayDataLastUpdated()) can reflect it:
+ *   "ok"          — fresh data, from a valid cache or a successful fetch.
+ *   "stale-cache" — the live feed failed (bad response or corrupt JSON),
+ *                   but a previously cached copy existed and is being
+ *                   shown instead.
+ *   "error"       — the live feed failed and there was no cache to fall
+ *                   back on; the page has no events data at all.
+ */
+let dataHealthStatus = { status: "ok", timestamp: null };
+
+/**
+ * Build the small "LED" status dot shown in the colophon next to the
+ * "Data last updated" line. Just constructs the element — callers decide
+ * where it goes.
+ * @param {"ok"|"stale-cache"|"error"} status
+ * @param {string} title - tooltip / accessible label text
+ * @returns {HTMLSpanElement}
+ */
+function buildDataHealthLed(status, title) {
+  const led = document.createElement("span");
+  led.className = `data-health-led data-health-${status}`;
+  led.title = title;
+  led.setAttribute("role", "img");
+  led.setAttribute("aria-label", title);
+  return led;
+}
+
+/**
  * Cache duration for computed schedules (24 hours in milliseconds).
  * Schedules are deterministic based on the raw data, so they only need to
  * be recalculated if the data changes or 24 hours have passed.
@@ -741,6 +770,7 @@ async function loadEventsData(cacheBuster) {
           // Check for newer data on the server in the background (doesn't block)
           checkForNewerEventsDataBackground();
 
+          dataHealthStatus = { status: "ok", timestamp };
           return {
             eventsData,
             venuesLookup,
@@ -761,7 +791,7 @@ async function loadEventsData(cacheBuster) {
     const response = await fetch(`events_normalized.json?v=${version}`);
     if (!response.ok) {
       console.error("Failed to load events_normalized.json");
-      return null;
+      return handleEventsLoadFailure();
     }
     const responseText = await response.text();
     let eventsData;
@@ -771,7 +801,7 @@ async function loadEventsData(cacheBuster) {
       console.error(
         `events_normalized.json is corrupted: ${describeJsonParseError(responseText, parseError)}`,
       );
-      return null;
+      return handleEventsLoadFailure();
     }
     applyRepertoireInheritance(eventsData);
     const toursLookup = eventsData.tours || {};
@@ -780,11 +810,12 @@ async function loadEventsData(cacheBuster) {
     const podcastsLookup = buildPodcastsLookup(eventsData);
 
     // Cache the data and headers in localStorage for other pages to use
+    const now = Date.now();
     try {
       localStorage.setItem(
         CACHE_KEYS.DATA,
         JSON.stringify({
-          timestamp: Date.now(),
+          timestamp: now,
           data: { eventsData, venuesLookup, performersLookup, toursLookup },
         }),
       );
@@ -806,18 +837,84 @@ async function loadEventsData(cacheBuster) {
     console.log(`  - ${Object.keys(performersLookup).length} performers`);
     console.log(`  - ${Object.keys(toursLookup).length} tours`);
 
+    dataHealthStatus = { status: "ok", timestamp: now };
     return {
       eventsData,
       venuesLookup,
       performersLookup,
       toursLookup,
       podcastsLookup,
-      lastUpdateTime: Date.now(),
+      lastUpdateTime: now,
     };
   } catch (error) {
     console.error("Error loading events:", error);
-    return null;
+    return handleEventsLoadFailure();
   }
+}
+
+/**
+ * Called from every failure path inside loadEventsData() (bad response, a
+ * live feed that failed to parse, or any other thrown error). Tries to
+ * recover a previously cached copy so the site can keep working with
+ * slightly stale data rather than showing nothing; sets dataHealthStatus
+ * accordingly either way, and — since displayDataLastUpdated() is never
+ * called by a page when loadEventsData() returns null — paints the
+ * colophon's status LED directly for the no-cache-available case, as
+ * that's the only place it would otherwise get shown.
+ * @returns {object|null} same shape loadEventsData() normally returns, or
+ *   null if there was no cache to fall back on either.
+ */
+function handleEventsLoadFailure() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEYS.DATA);
+    if (cached) {
+      const { timestamp, data } = JSON.parse(cached);
+      const { eventsData, venuesLookup, performersLookup, toursLookup } =
+        data;
+      applyRepertoireInheritance(eventsData);
+      const podcastsLookup = buildPodcastsLookup(eventsData);
+      console.warn(
+        "⚠ Live events feed failed — falling back to stale cached data",
+      );
+      dataHealthStatus = { status: "stale-cache", timestamp };
+      return {
+        eventsData,
+        venuesLookup,
+        performersLookup,
+        toursLookup,
+        podcastsLookup,
+        lastUpdateTime: timestamp,
+      };
+    }
+  } catch (e) {
+    console.warn("Stale-cache fallback also failed:", e);
+  }
+
+  dataHealthStatus = { status: "error", timestamp: null };
+  renderDataHealthIndicatorNow();
+  return null;
+}
+
+/**
+ * Paints the colophon's status LED directly, for the one outcome
+ * displayDataLastUpdated() never gets a chance to handle: the events feed
+ * failed and there's no cache to fall back on, so the page never receives
+ * a truthy `loaded` result and bails out before calling it.
+ */
+function renderDataHealthIndicatorNow() {
+  const el = document.getElementById("dataLastUpdated");
+  if (!el) return;
+  el.innerHTML = "";
+  el.appendChild(
+    buildDataHealthLed(
+      "error",
+      "Event data feed failed to load and no cached copy is available",
+    ),
+  );
+  const textSpan = document.createElement("span");
+  textSpan.className = "data-updated-text";
+  textSpan.textContent = "Event data unavailable";
+  el.appendChild(textSpan);
 }
 
 /**
@@ -924,6 +1021,26 @@ function combineDescriptionWithPrefix(prefix, description) {
 }
 
 /**
+ * Downgrades the colophon's status LED from green to orange when a
+ * background check discovers the live feed is unreachable or serving bad
+ * data, even though the page is still working fine from a cached copy
+ * (that's what makes it "stale-cache" rather than "error" — see
+ * dataHealthStatus above). By the time this runs, displayDataLastUpdated()
+ * has usually already painted the LED green, so this dispatches
+ * "eventsDataHealthChanged" for it to pick up and update in place.
+ * @param {string} reason - short human-readable explanation, used in the tooltip
+ */
+function flagBackgroundFeedDegraded(reason) {
+  if (dataHealthStatus.status !== "ok") return; // already reflects a problem
+  dataHealthStatus = { ...dataHealthStatus, status: "stale-cache", reason };
+  window.dispatchEvent(
+    new CustomEvent("eventsDataHealthChanged", {
+      detail: { status: "stale-cache", reason },
+    }),
+  );
+}
+
+/**
  * Background check for newer events data on the server using HTTP HEAD request.
  * If a newer version is found (based on Last-Modified or ETag), silently
  * updates the cache. This doesn't block the page or show any UI.
@@ -940,7 +1057,12 @@ async function checkForNewerEventsDataBackground() {
     const headResponse = await fetch("events_normalized.json", {
       method: "HEAD",
     });
-    if (!headResponse.ok) return;
+    if (!headResponse.ok) {
+      flagBackgroundFeedDegraded(
+        `Live feed returned ${headResponse.status} on a background check`,
+      );
+      return;
+    }
 
     const serverLastModified = headResponse.headers.get("Last-Modified");
     const serverEtag = headResponse.headers.get("ETag");
@@ -968,54 +1090,64 @@ async function checkForNewerEventsDataBackground() {
     // If there's a newer version, fetch and update cache silently
     if (needsRefresh) {
       const response = await fetch(`events_normalized.json?v=${Date.now()}`);
-      if (response.ok) {
-        const responseText = await response.text();
-        let eventsData;
-        try {
-          eventsData = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error(
-            `DATA LOADING ERROR: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
-          );
-          return;
-        }
-        applyRepertoireInheritance(eventsData);
-        const toursLookup = eventsData.tours || {};
-        const venuesLookup = eventsData.venues || {};
-        const performersLookup = eventsData.performers || {};
-        const newTimestamp = Date.now();
-
-        localStorage.setItem(
-          CACHE_KEYS.DATA,
-          JSON.stringify({
-            timestamp: newTimestamp,
-            data: { eventsData, venuesLookup, performersLookup, toursLookup },
-          }),
+      if (!response.ok) {
+        flagBackgroundFeedDegraded(
+          `Live feed returned ${response.status} while fetching an update`,
         );
-
-        localStorage.setItem(
-          CACHE_KEYS.HEADERS,
-          JSON.stringify({
-            lastModified: response.headers.get("Last-Modified"),
-            etag: response.headers.get("ETag"),
-          }),
-        );
-
-        // Clear schedule cache since the data has changed
-        clearSchedulesCache();
-
-        console.log("✓ Background update: refreshed cached events data");
-
-        // Dispatch event so pages can show a notification
-        window.dispatchEvent(
-          new CustomEvent("eventsDataUpdated", {
-            detail: { timestamp: newTimestamp },
-          }),
-        );
+        return;
       }
+      const responseText = await response.text();
+      let eventsData;
+      try {
+        eventsData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error(
+          `DATA LOADING ERROR: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
+        );
+        flagBackgroundFeedDegraded(
+          "Live feed is currently returning corrupted data",
+        );
+        return;
+      }
+      applyRepertoireInheritance(eventsData);
+      const toursLookup = eventsData.tours || {};
+      const venuesLookup = eventsData.venues || {};
+      const performersLookup = eventsData.performers || {};
+      const newTimestamp = Date.now();
+
+      localStorage.setItem(
+        CACHE_KEYS.DATA,
+        JSON.stringify({
+          timestamp: newTimestamp,
+          data: { eventsData, venuesLookup, performersLookup, toursLookup },
+        }),
+      );
+
+      localStorage.setItem(
+        CACHE_KEYS.HEADERS,
+        JSON.stringify({
+          lastModified: response.headers.get("Last-Modified"),
+          etag: response.headers.get("ETag"),
+        }),
+      );
+
+      // Clear schedule cache since the data has changed
+      clearSchedulesCache();
+
+      console.log("✓ Background update: refreshed cached events data");
+
+      // Dispatch event so pages can show a notification
+      window.dispatchEvent(
+        new CustomEvent("eventsDataUpdated", {
+          detail: { timestamp: newTimestamp },
+        }),
+      );
     }
   } catch (e) {
-    // Silently fail — this is a background operation that shouldn't affect the user
+    // Network-level failure reaching the feed at all (offline, DNS, CORS,
+    // etc). The page is still working fine from cache, so flag it as
+    // orange rather than leaving the LED silently green.
+    flagBackgroundFeedDegraded("Could not reach the live events feed");
     console.debug(
       "Background events data check failed (this is fine):",
       e.message,
@@ -1823,12 +1955,24 @@ function displayDataLastUpdated(lastUpdateTime) {
 
   const formatted = formatLastUpdateTime(lastUpdateTime);
 
-  // Build the display with timestamp and refresh link
+  // Build the display with a status LED, timestamp, and refresh link
   el.innerHTML = "";
+
+  const { status } = dataHealthStatus;
+  const LED_TITLES = {
+    ok: "Event data feed loaded successfully",
+    "stale-cache": `Event data feed failed to load — showing cached data from ${formatted}`,
+  };
+  el.appendChild(
+    buildDataHealthLed(status, LED_TITLES[status] || LED_TITLES.ok),
+  );
 
   const textSpan = document.createElement("span");
   textSpan.className = "data-updated-text";
-  textSpan.textContent = `Data last updated: ${formatted}`;
+  textSpan.textContent =
+    status === "stale-cache"
+      ? `Showing cached data from: ${formatted} (live feed unavailable)`
+      : `Data last updated: ${formatted}`;
   el.appendChild(textSpan);
 
   const refreshLink = document.createElement("a");
@@ -1848,7 +1992,17 @@ function displayDataLastUpdated(lastUpdateTime) {
     el._eventsDataUpdatedListenerAttached = true;
     window.addEventListener("eventsDataUpdated", (e) => {
       const newFormatted = formatLastUpdateTime(e.detail.timestamp);
+      dataHealthStatus = { status: "ok", timestamp: e.detail.timestamp };
       textSpan.textContent = `Data last updated: ${newFormatted}`;
+
+      // The background refresh succeeded, so the feed is healthy again —
+      // reflect that even if the LED had been orange/red up to now.
+      const ledEl = el.querySelector(".data-health-led");
+      if (ledEl) {
+        ledEl.className = "data-health-led data-health-ok";
+        ledEl.title = LED_TITLES.ok;
+        ledEl.setAttribute("aria-label", LED_TITLES.ok);
+      }
 
       // Show "just refreshed" status
       const statusSpan = document.createElement("span");
@@ -1860,6 +2014,28 @@ function displayDataLastUpdated(lastUpdateTime) {
       setTimeout(() => {
         if (statusSpan.parentNode) statusSpan.remove();
       }, 3000);
+    });
+  }
+
+  // Listen for a background check discovering the live feed is currently
+  // broken (unreachable, non-OK response, or corrupted body) even though
+  // we're serving perfectly good cached data — downgrades the LED from
+  // green to orange in place, since it was already painted green above
+  // before this background check had a chance to run.
+  if (!el._eventsDataHealthListenerAttached) {
+    el._eventsDataHealthListenerAttached = true;
+    window.addEventListener("eventsDataHealthChanged", (e) => {
+      const { status, reason } = e.detail;
+      dataHealthStatus = { ...dataHealthStatus, status };
+
+      const title = `Event data feed failed to load — showing cached data from ${formatted}${reason ? ` (${reason})` : ""}`;
+      const ledEl = el.querySelector(".data-health-led");
+      if (ledEl) {
+        ledEl.className = `data-health-led data-health-${status}`;
+        ledEl.title = title;
+        ledEl.setAttribute("aria-label", title);
+      }
+      textSpan.textContent = `Showing cached data from: ${formatted} (live feed unavailable)`;
     });
   }
 }

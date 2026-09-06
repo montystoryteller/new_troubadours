@@ -310,10 +310,45 @@ select {
     margin: 0 0 8px 0;
 }
 
+#dataLastUpdated {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
 .data-updated-text {
-    display: block;
     font-style: italic;
     margin-top: 8px;
+}
+
+/* Status LED next to the "Data last updated" line — reflects whether the
+   events_normalized.json feed loaded normally (green), failed but fell
+   back to a stale cached copy (orange), or failed with no cache at all
+   to fall back on (red). See loadEventsData() / displayDataLastUpdated()
+   in shared_utils.js. */
+.data-health-led {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+}
+
+.data-health-ok {
+    background: #4CAF50;
+    box-shadow: 0 0 4px #4CAF50;
+}
+
+.data-health-stale-cache {
+    background: #ff9800;
+    box-shadow: 0 0 4px #ff9800;
+}
+
+.data-health-error {
+    background: #e53935;
+    box-shadow: 0 0 4px #e53935;
 }
 
 .data-refresh-link {
