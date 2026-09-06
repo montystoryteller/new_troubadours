@@ -2120,20 +2120,10 @@ function createExpandableSection(event) {
     videoExpandableDiv.id = videoExpandableId;
     videoExpandableDiv.style.display = "none";
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "event-video-wrapper";
-
-    const iframe = document.createElement("iframe");
-    iframe.title = `${event.name} trailer`;
-    iframe.frameBorder = "0";
-    iframe.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-    iframe.referrerPolicy = "strict-origin-when-cross-origin";
-    iframe.allowFullscreen = true;
+    const { wrapper } = createVideoTrailerEmbed(`${event.name} trailer`);
     // src intentionally left unset here; toggleExpandable() sets it to
     // videoEmbedUrl when this tab is opened.
 
-    wrapper.appendChild(iframe);
     videoExpandableDiv.appendChild(wrapper);
     container.appendChild(videoExpandableDiv);
   }

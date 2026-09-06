@@ -196,6 +196,37 @@ function getYouTubeEmbedUrl(url) {
 }
 
 /**
+ * Build the wrapper + iframe DOM nodes for an embedded YouTube trailer.
+ * Shared by the events page (event_display.js) and the story club page
+ * (storyclub.js) so the iframe's permissions/attributes stay in sync if
+ * either ever needs to change — the two pages otherwise have their own,
+ * different button/toggle implementations, which this doesn't touch.
+ *
+ * The iframe's `src` is intentionally left unset: callers are
+ * responsible for setting it to the resolved embed URL when the trailer
+ * is opened, and clearing it back to "" when closed (or when another
+ * expandable takes its place), so playback actually stops rather than
+ * continuing to play off-screen.
+ * @param {string} title - accessible iframe title, e.g. "<event name> trailer"
+ * @returns {{wrapper: HTMLDivElement, iframe: HTMLIFrameElement}}
+ */
+function createVideoTrailerEmbed(title) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "event-video-wrapper";
+
+  const iframe = document.createElement("iframe");
+  iframe.title = title;
+  iframe.frameBorder = "0";
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.allowFullscreen = true;
+
+  wrapper.appendChild(iframe);
+  return { wrapper, iframe };
+}
+
+/**
  * Sanitize HTML to prevent XSS: convert text to safe HTML entities.
  * @param {string} text
  * @returns {string}

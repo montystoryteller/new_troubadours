@@ -993,20 +993,12 @@ async function renderPage(data, clubId) {
       const videoExpandable = document.createElement("div");
       videoExpandable.className = "expandable";
 
-      const videoWrapper = document.createElement("div");
-      videoWrapper.className = "event-video-wrapper";
-
-      const iframe = document.createElement("iframe");
-      iframe.title = `${ev.showname || ev.name} trailer`;
-      iframe.frameBorder = "0";
-      iframe.allow =
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-      iframe.referrerPolicy = "strict-origin-when-cross-origin";
-      iframe.allowFullscreen = true;
+      const { wrapper: videoWrapper, iframe } = createVideoTrailerEmbed(
+        `${ev.showname || ev.name} trailer`,
+      );
       // src is only set when opened, and cleared when closed,
       // so the trailer doesn't keep playing off-screen.
 
-      videoWrapper.appendChild(iframe);
       videoExpandable.appendChild(videoWrapper);
 
       videoBtn.addEventListener("click", () => {
