@@ -1820,11 +1820,11 @@
     "debs-newbold-dauntless": {
       "name": "DAUNTLESS — Grace O'Malley, Pirate Queen [Debs Newbold]",
       "showname": "DAUNTLESS — Grace O'Malley, Pirate Queen",
+      "performer_id": "debs-newbold",
       "show_dates": [
         {
           "date": "07/10/2026",
           "venue_id": "hoxton-hall",
-          "performer_id": "debs-newbold",
           "date_added": "26/08/2026",
           "time": "7.30pm",
           "club": "crickcrack",
@@ -3235,6 +3235,7 @@
     "corinne-harragin-troubled-waters-winter-2025": {
       "tour_name": "Troubled Waters (Winter 2025 Tour) [Corinne Harragin]",
       "repertoire_id": "corinne-harragin-troubled-waters",
+      "performer_id": "corinne-harragin",
       "name": "Troubled Waters",
       "touring_event_flyer": "",
       "isSpecial": true,
@@ -3271,9 +3272,8 @@
         },
         {
           "date": "02/11/2025",
-          "venue": "Old Crown Pub",
-          "city": "Kelston",
-          "ticket_url": "https://oldcrownkelston.com/fieldfayre"
+          "venue_id": "old-crown-kelston",
+          "city": "Kelston"
         },
         {
           "date": "06/12/2025",
@@ -3400,6 +3400,7 @@
     "corinne-harragin-troubled-waters-spring-2026": {
       "repertoire_id": "corinne-harragin-troubled-waters",
       "tour_name": "Troubled Waters (Spring 2026 Tour) [Corinne Harragin]",
+      "performer_id": "corinne-harragin",
       "name": "Troubled Waters",
       "touring_event_flyer": "",
       "isSpecial": true,
@@ -5781,7 +5782,7 @@
       "isSpecial": true,
       "fb_event": 1149093117173169,
       "geocode_missing": true,
-      "venue_id": "bowland-bridge-south",
+      "venue_id": "bowland-bridge",
       "performer_id": "nick-hennessey-emily-hennessey",
       "performer_ids": ["nick-hennessey", "emily-hennessey"]
     },
@@ -9795,6 +9796,18 @@
         -3.5302391
       ]
     },
+    "old-crown-kelston": {
+      "id": "old-crown-kelston",
+      "name": "Old Crown, Kelston",
+      "city": "Kelston",
+      "postcode": "BA1 9AQ",
+      "full_address": "Old Crown Inn, Kelston, Bath, United Kingdom, BA1 9AQ",
+      "url": "https://www.facebook.com/profile.php?id=100054328308337",
+      "latlon": [
+        51.40372,
+        -2.43262
+      ]
+    },
     "locks-inn-geldeston": {
       "id": "locks-inn-geldeston",
       "name": "Locks Inn",
@@ -10701,14 +10714,14 @@
         -3.2037223
       ]
     },
-    "bowland-bridge-south": {
-      "id": "bowland-bridge-south",
+    "bowland-bridge": {
+      "id": "bowland-bridge",
       "name": "Bowland Bridge",
       "city": "South Lakes",
       "postcode": "",
       "full_address": "Bowland Bridge, South Lakes",
       "url": "https://stealingthunder.co.uk/",
-      "latlon": []
+      "latlon": [54.298,-2.8977]
     },
     "newnham-social-club-cambridge": {
       "id": "newnham-social-club-cambridge",
@@ -12539,7 +12552,7 @@
       "postcode": "",
       "full_address": "Dart Music Festival, Dartmouth",
       "url": "https://www.dartmusicfestival.co.uk/",
-      "latlon": []
+      "latlon": [50.35139,-3.57858]
     },
     "aberavon-beach": {
       "id": "aberavon-beach",
