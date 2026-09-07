@@ -1805,6 +1805,7 @@ async function renderDirectory(data) {
         }
         if (meta.childNodes.length) card.appendChild(meta);
 
+        /*
         // If a dated flyer (clubRecord.flyers[], "YYYY_MM_DD_..." prefix)
         // matches the next occurrence shown on this card, show it as a
         // thumbnail — same detection used on the club's own page.
@@ -1827,6 +1828,7 @@ async function renderDirectory(data) {
             card.appendChild(thumb);
           }
         }
+        */
 
         listWrap.appendChild(card);
       }
