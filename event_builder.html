@@ -52,6 +52,15 @@
             resize: vertical;
         }
 
+        /* event_builder-styles.css's .btn-add-batch has no :disabled rule, so
+           a disabled scan button (before a feed is loaded) rendered fully
+           green/clickable-looking despite being functionally inert. */
+        .btn-add-batch:disabled {
+            background: #ccc;
+            color: #888;
+            cursor: default;
+        }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -867,20 +876,46 @@
             </div>
 
             <div class="enrich-section">
+                <h3>🧹 Formatting cleanup</h3>
+                <p class="field-hint">
+                    Safe, mechanical tidying only — trimming stray whitespace, collapsing doubled punctuation
+                    ("Free.." → "Free."), normalising UK postcode casing/spacing, and adding a missing
+                    <code>https://</code> to a URL-shaped field that's missing one entirely. Nothing here
+                    second-guesses what was actually written (that's what the scanners below do, each as its
+                    own judgement call) — this is deliberately not a content linter, and it doesn't check for
+                    structural problems like a venue_id that doesn't match any real venue; it just cleans up
+                    formatting.
+                </p>
+                <button class="btn-add-batch" id="enrich-format-scan-btn" disabled>Scan for formatting issues</button>
+                <div id="enrich-format-results"></div>
+                <div class="btn-row" id="enrich-format-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-format-apply-btn">Apply checked rows to loaded
+                        data</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>💷 Possible structured pricing</h3>
                 <p class="field-hint">
                     Scans event/music/poetry price and description text for anything with no
                     <code>structured_price</code> set that <code>parsePriceEntriesFromString()</code> /
-                    <code>parsePriceFromDescription()</code> (shared_guessers.js) can make sense of. This is a
-                    report only, not a patch you can apply automatically — like age ratings, individual
-                    events have no stable id in <code>events_normalized.json</code> to key a patch by, so
-                    each one needs finding and editing by hand. The older "price breakdown" scanner that used
-                    to live here produced a <code>price_breakdown</code> shape that was never actually added
-                    to the schema and wasn't read by anything, so it's been retired in favour of this.
+                    <code>parsePriceFromDescription()</code> (shared_guessers.js) can make sense of. Unlike
+                    venues, individual events have no stable id in <code>events_normalized.json</code>, so
+                    accepting a row here writes straight into this loaded copy of the data (by its position
+                    in the array) rather than producing a separate small patch file — use "Download full
+                    enriched JSON" above once you're done to get the whole updated file. The older "price
+                    breakdown" scanner that used to live here produced a <code>price_breakdown</code> shape
+                    that was never actually added to the schema and wasn't read by anything, so it's been
+                    retired in favour of this.
                 </p>
                 <button class="btn-add-batch" id="enrich-price-scan-btn" disabled>Scan for parseable pricing</button>
                 <div id="enrich-price-results"></div>
+                <div class="btn-row" id="enrich-price-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-price-apply-btn">Apply checked rows to loaded
+                        data</button>
+                </div>
             </div>
+
 
             <div class="enrich-section">
                 <h3>📮 Missing postcodes</h3>
@@ -937,15 +972,20 @@
                 <p class="field-hint">
                     Scans event/music/poetry descriptions with no <code>age_rating</code> set for common
                     age-suitability phrasing (e.g. "suitable for ages 8+", "18+", "family friendly"), using
-                    the same heuristic as the event form's "Suggest age rating from description" button. This
-                    is a report only, not a patch you can apply automatically — unlike venues, individual
-                    events have no stable id in <code>events_normalized.json</code> to key a patch by, so
-                    each one needs finding and editing by hand. It's necessarily a rough guess over free-form
-                    prose — a blank result doesn't mean there's no age guidance, just that nothing
-                    recognisable was found.
+                    the same heuristic as the event form's "Suggest age rating from description" button.
+                    Unlike venues, individual events have no stable id in
+                    <code>events_normalized.json</code>, so accepting a row here writes straight into this
+                    loaded copy of the data (by its position in the array) rather than producing a separate
+                    small patch file — use "Download full enriched JSON" above once you're done to get the
+                    whole updated file. It's necessarily a rough guess over free-form prose — a blank result
+                    doesn't mean there's no age guidance, just that nothing recognisable was found.
                 </p>
                 <button class="btn-add-batch" id="enrich-age-scan-btn" disabled>Scan for age rating cues</button>
                 <div id="enrich-age-results"></div>
+                <div class="btn-row" id="enrich-age-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-age-apply-btn">Apply checked rows to loaded
+                        data</button>
+                </div>
             </div>
         </div>
 
@@ -3963,6 +4003,7 @@
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
+                document.getElementById("enrich-format-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -3972,6 +4013,7 @@
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
+                document.getElementById("enrich-format-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -4215,9 +4257,11 @@
         // -- Possible age ratings (report only — events have no stable id) ------
         document.getElementById("enrich-age-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-age-results");
+            const actionsEl = document.getElementById("enrich-age-actions");
             resultsEl.innerHTML = "";
             if (!enrichedData) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
                 return;
             }
             const buckets = [
@@ -4227,12 +4271,13 @@
             ];
             const found = [];
             buckets.forEach(([bucketName, list]) => {
-                (list || []).forEach(ev => {
+                (list || []).forEach((ev, index) => {
                     if (ev.age_rating || !ev.description) return;
                     const match = parseAgeRatingFromText(ev.description);
                     if (!match) return;
                     found.push({
                         bucket: bucketName,
+                        index,
                         name: ev.showname || ev.name || "(untitled)",
                         date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
                         match,
@@ -4241,12 +4286,18 @@
             });
             if (!found.length) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No unrated events with a recognisable age cue in their description.</div>';
+                actionsEl.style.display = "none";
                 return;
             }
             found.forEach(f => {
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
+                row.dataset.bucket = f.bucket;
+                row.dataset.index = f.index;
+                row.dataset.rating = f.match.rating;
+                if (f.match.minAge !== null) row.dataset.minAge = f.match.minAge;
                 row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-age-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
                         <div class="enrich-result-detail">Suggested: <strong>${f.match.rating}</strong>${f.match.minAge !== null ? ` (min age ${f.match.minAge})` : ""}</div>
@@ -4255,14 +4306,39 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "event");
+            actionsEl.style.display = "";
         });
 
-        // -- Possible structured pricing (report only — events have no stable id) --
+        document.getElementById("enrich-age-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-age-results .enrich-result-row");
+            let applied = 0;
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-age-check");
+                if (!checkbox.checked) return;
+                const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
+                if (!ev) return;
+                ev.age_rating = row.dataset.rating;
+                if (row.dataset.minAge !== undefined) ev.min_age = parseInt(row.dataset.minAge, 10);
+                applied++;
+            });
+            if (!applied) {
+                alert("No rows checked.");
+                return;
+            }
+            alert(`Applied ${applied} age rating suggestion(s) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            markEnrichedDataDirty();
+        });
+
+        // -- Possible structured pricing (writes into loaded data directly — --
+        // -- events have no stable id to key a separate small patch by) ------
         document.getElementById("enrich-price-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-price-results");
+            const actionsEl = document.getElementById("enrich-price-actions");
             resultsEl.innerHTML = "";
             if (!enrichedData) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
                 return;
             }
             const buckets = [
@@ -4272,7 +4348,7 @@
             ];
             const found = [];
             buckets.forEach(([bucketName, list]) => {
-                (list || []).forEach(ev => {
+                (list || []).forEach((ev, index) => {
                     if (ev.structured_price) return;
                     // Prefer parsing the dedicated price text if there is
                     // any; only fall back to scanning the description for a
@@ -4292,6 +4368,7 @@
                     if (!entries) return;
                     found.push({
                         bucket: bucketName,
+                        index,
                         name: ev.showname || ev.name || "(untitled)",
                         date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
                         entries, source, sentence,
@@ -4300,12 +4377,17 @@
             });
             if (!found.length) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No unstructured events with recognisable pricing in their price field or description.</div>';
+                actionsEl.style.display = "none";
                 return;
             }
             found.forEach(f => {
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
+                row.dataset.bucket = f.bucket;
+                row.dataset.index = f.index;
+                row._entries = f.entries;
                 row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-price-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
                         <div class="enrich-result-detail">Suggested structured_price: <strong>${renderStructuredPrice(f.entries)}</strong></div>
@@ -4314,6 +4396,174 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "event");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-price-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-price-results .enrich-result-row");
+            let applied = 0;
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-price-check");
+                if (!checkbox.checked) return;
+                const bucketArr = enrichedData(enata[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
+                if (!ev) return;
+                ev.structured_price = row._entries;
+                ev.price = renderStructuredPrice(row._entries);
+                applied++;
+            });
+            if (!applied) {
+                alert("No rows checked.");
+                return;
+            }
+            alert(`Applied ${applied} structured pricing suggestion(s) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            markEnrichedDataDirty();
+        });
+
+        // -- Formatting cleanup ---------------------------------------------------
+        // Safe, mechanical fixes only — see the panel's own description for the
+        // scope decision. Each suggestion keeps a direct closure reference to
+        // where it came from (rather than a bucket+index like the age/price
+        // scanners), since venues/performers are objects keyed by id anyway,
+        // and it keeps this scanner independent of exactly how the array
+        // scanners above address their rows.
+        function cleanupWhitespaceAndPunctuation(text) {
+            if (typeof text !== "string") return text;
+            // Collapse runs of spaces/tabs (not newlines, to preserve this
+            // site's \n\n\n\n paragraph-break convention) and trim each
+            // line's edges, then collapse doubled terminal punctuation
+            // ("Free.." -> "Free.", "Really??" -> "Really?").
+            let out = text.split("\n").map(line => line.replace(/[ \t]+/g, " ").trim()).join("\n");
+            out = out.replace(/([.,!?])\1+/g, "$1");
+            return out.trim();
+        }
+
+        function normalizeUkPostcode(pc) {
+            if (typeof pc !== "string") return pc;
+            const compact = pc.replace(/\s+/g, "").toUpperCase();
+            const m = compact.match(/^([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})$/);
+            return m ? `${m[1]} ${m[2]}` : pc;
+        }
+
+        function fixMissingUrlScheme(url) {
+            if (typeof url !== "string") return url;
+            const trimmed = url.trim();
+            if (!trimmed || /^https?:\/\//i.test(trimmed) || trimmed.startsWith("/") || trimmed.startsWith("mailto:")) return url;
+            if (!trimmed.includes(".")) return url; // doesn't look like a domain
+            return `https://${trimmed}`;
+        }
+
+        function scanForFormattingFixes(data) {
+            const suggestions = [];
+            const addIfChanged = (label, before, after, apply) => {
+                if (after !== before) suggestions.push({ label, before, after, apply });
+            };
+
+            Object.entries(data.venues || {}).forEach(([id, v]) => {
+                ["name", "full_address", "description"].forEach(field => {
+                    if (v[field]) {
+                        const after = cleanupWhitespaceAndPunctuation(v[field]);
+                        addIfChanged(`venues.${id}.${field}`, v[field], after, () => { v[field] = after; });
+                    }
+                });
+                if (v.postcode) {
+                    const after = normalizeUkPostcode(v.postcode);
+                    addIfChanged(`venues.${id}.postcode`, v.postcode, after, () => { v.postcode = after; });
+                }
+                ["url", "tickets_url", "facebook", "instagram"].forEach(field => {
+                    if (v[field]) {
+                        const after = fixMissingUrlScheme(v[field]);
+                        addIfChanged(`venues.${id}.${field}`, v[field], after, () => { v[field] = after; });
+                    }
+                });
+            });
+
+            Object.entries(data.performers || {}).forEach(([id, p]) => {
+                ["name", "bio"].forEach(field => {
+                    if (p[field]) {
+                        const after = cleanupWhitespaceAndPunctuation(p[field]);
+                        addIfChanged(`performers.${id}.${field}`, p[field], after, () => { p[field] = after; });
+                    }
+                });
+                ["url", "facebook", "facebook_group", "instagram", "tickets_url"].forEach(field => {
+                    if (p[field]) {
+                        const after = fixMissingUrlScheme(p[field]);
+                        addIfChanged(`performers.${id}.${field}`, p[field], after, () => { p[field] = after; });
+                    }
+                });
+            });
+
+            [
+                ["specificEvents", data.specificEvents || data.events || []],
+                ["musicEvents", data.musicEvents || []],
+                ["poetryEvents", data.poetryEvents || []],
+            ].forEach(([bucketName, arr]) => {
+                arr.forEach((ev, index) => {
+                    const label = ev.showname || ev.name || "untitled";
+                    ["name", "showname", "description", "price", "time"].forEach(field => {
+                        if (ev[field]) {
+                            const after = cleanupWhitespaceAndPunctuation(ev[field]);
+                            addIfChanged(`${bucketName}[${index}] "${label}".${field}`, ev[field], after, () => { ev[field] = after; });
+                        }
+                    });
+                    if (ev.ticket_url) {
+                        const after = fixMissingUrlScheme(ev.ticket_url);
+                        addIfChanged(`${bucketName}[${index}] "${label}".ticket_url`, ev.ticket_url, after, () => { ev.ticket_url = after; });
+                    }
+                });
+            });
+
+            return suggestions;
+        }
+
+        document.getElementById("enrich-format-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-format-results");
+            const actionsEl = document.getElementById("enrich-format-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const suggestions = scanForFormattingFixes(enrichedData);
+            if (!suggestions.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No formatting issues found.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            suggestions.forEach(s => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row._apply = s.apply;
+                row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-format-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${s.label}</div>
+                        <div class="enrich-result-detail">
+                            <span style="color:#c62828;text-decoration:line-through;">${s.before.replace(/</g, "&lt;")}</span>
+                            → <span style="color:#2e7d32;">${s.after.replace(/</g, "&lt;")}</span>
+                        </div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, suggestions.length, "fix");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-format-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-format-results .enrich-result-row");
+            let applied = 0;
+            rows.forEach(row => {
+                if (!row.querySelector(".enrich-format-check").checked) return;
+                row._apply();
+                applied++;
+            });
+            if (!applied) {
+                alert("No rows checked.");
+                return;
+            }
+            alert(`Applied ${applied} formatting fix(es) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            markEnrichedDataDirty();
         });
 
         (async () => {
