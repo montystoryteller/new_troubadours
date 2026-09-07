@@ -132,6 +132,16 @@ function normaliseFacebook(fb) {
   return fb.startsWith("http") ? fb : `https://facebook.com/${fb}`;
 }
 
+// Mirrors getMonthParity()/resolveEventVenue() in event_display.js — a
+// club with `alternate_locations` rotates venues by calendar-month parity
+// (e.g. even months at one venue, odd months at another). Resolves to the
+// club's own `venue_id` when there's no override for that date's parity.
+function resolveClubVenueId(c, date) {
+  if (!date || !c.alternate_locations) return c.venue_id || null;
+  const parity = (date.getMonth() + 1) % 2 === 0 ? "even" : "odd";
+  return c.alternate_locations[parity]?.venue_id || c.venue_id || null;
+}
+
 // ── Shared schedule engine (used by both single-club view and directory) ──
 // Kept at module scope so renderDirectory can call it without duplication.
 const _SCHED_DAY_MAP = {
@@ -599,8 +609,16 @@ async function renderPage(data, clubId) {
   const nextScheduledDate = nextMeetingDate;
   const prevScheduledDate = prevMeetingDate;
 
-  // Venue lookup
-  const venue = data.venues[clubRecord.venue_id] || null;
+  // Venue lookup — clubs with `alternate_locations` rotate venue by the
+  // next meeting's month parity, so resolve that before looking it up
+  // rather than always using the club's own (possibly placeholder,
+  // e.g. "various") venue_id.
+  const venueIdForHeader = resolveClubVenueId(
+    clubRecord,
+    nextScheduledDate(clubRecord.schedule, clubRecord.exceptions || []) ||
+      today,
+  );
+  const venue = data.venues[venueIdForHeader] || null;
 
   // Resolve feature_slots for a given Date → { name, url, id } or null
   function featuredGuestForDate(date) {
@@ -1280,7 +1298,13 @@ async function renderDirectory(data) {
   // date, kept for the existing sort/feature-slot lookups.
   const today = getTodayMidnight();
   const clubIndex = clubs.map((c) => {
-    const venue = data.venues[c.venue_id] || {};
+    const nextOcc = nextOccurrence(c.schedule, c.exceptions);
+    // Clubs with alternate_locations rotate venue by month parity — resolve
+    // against the next occurrence (or today, if none) rather than always
+    // using the club's own (possibly placeholder) venue_id.
+    const venue =
+      data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)] ||
+      {};
     const parts = [
       c.name,
       venue.name,
@@ -1288,7 +1312,6 @@ async function renderDirectory(data) {
       venue.full_address,
       c.location,
     ].filter(Boolean);
-    const nextOcc = nextOccurrence(c.schedule, c.exceptions);
     return {
       c,
       searchText: parts.join(" ").toLowerCase(),
@@ -1373,7 +1396,10 @@ async function renderDirectory(data) {
     // Use clubIndex so we can call isVisible (which handles day/week/search/bounds)
     clubIndex.forEach((entry) => {
       const { c } = entry;
-      const venue = data.venues[c.venue_id];
+      const venue =
+        data.venues[
+          resolveClubVenueId(c, (entry.nextOcc && entry.nextOcc.date) || today)
+        ];
       if (!venue || !venue.latlon || venue.latlon.length === 0) return;
       if (!isVisible(entry)) return;
       const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ", " + venue.city : ""}<br><em>${c.schedule || ""}</em>`;
@@ -1399,7 +1425,10 @@ async function renderDirectory(data) {
   // so opening the map doesn't itself narrow the list.
   function fitDirMapToAllClubs() {
     const pts = clubIndex
-      .map(({ c }) => data.venues[c.venue_id])
+      .map(
+        ({ c, nextOcc }) =>
+          data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)],
+      )
       .filter((v) => v && v.latlon && v.latlon.length)
       .map((v) => v.latlon);
     if (pts.length) dirMap.fitBounds(pts, { padding: [40, 40] });
@@ -1431,7 +1460,13 @@ async function renderDirectory(data) {
   isVisible = function (entry) {
     if (!_isVisibleBase(entry)) return false;
     if (dirMap) {
-      const venue = data.venues[entry.c.venue_id];
+      const venue =
+        data.venues[
+          resolveClubVenueId(
+            entry.c,
+            (entry.nextOcc && entry.nextOcc.date) || today,
+          )
+        ];
       if (!venue || !venue.latlon || venue.latlon.length === 0) return false;
       if (!dirMap.getBounds().contains(venue.latlon)) return false;
     }
@@ -1572,8 +1607,10 @@ async function renderDirectory(data) {
     placeholder: "Search clubs by name, venue or location…",
     search: (term) =>
       clubIndex.filter((e) => e.searchText.includes(term)).slice(0, 8),
-    renderItem: ({ c }) => {
-      const venue = data.venues[c.venue_id] || {};
+    renderItem: ({ c, nextOcc }) => {
+      const venue =
+        data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)] ||
+        {};
       const item = document.createElement("div");
       const strong = document.createElement("strong");
       strong.textContent = c.name;
@@ -1702,7 +1739,10 @@ async function renderDirectory(data) {
       for (let i = batchIndex; i < endIndex; i++) {
         const entry = visible[i];
         const { c } = entry;
-        const venue = data.venues[c.venue_id];
+        const venue =
+          data.venues[
+            resolveClubVenueId(c, (entry.nextOcc && entry.nextOcc.date) || today)
+          ];
         const day = clubDay(c);
 
         // Day headings: show only when no period or day filter is narrowing things down
