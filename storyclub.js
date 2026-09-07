@@ -1736,9 +1736,14 @@ async function renderDirectory(data) {
           const s = document.createElement("div");
           s.className = "event-date";
 
-          // Cleanly uses our unified labelling helper safely
+          // Cleanly uses our unified labelling helper safely, plus the
+          // actual next occurrence date (not just the recurrence pattern)
           s.textContent =
-            scheduleLabel(c.schedule) + (c.time ? " \u2022 " + c.time : "");
+            scheduleLabel(c.schedule) +
+            (c.time ? " \u2022 " + c.time : "") +
+            (entry.nextMeeting
+              ? " \u2022 next: " + formatDate(entry.nextMeeting)
+              : "");
 
           card.appendChild(s);
         }
@@ -1799,6 +1804,29 @@ async function renderDirectory(data) {
           meta.appendChild(a);
         }
         if (meta.childNodes.length) card.appendChild(meta);
+
+        // If a dated flyer (clubRecord.flyers[], "YYYY_MM_DD_..." prefix)
+        // matches the next occurrence shown on this card, show it as a
+        // thumbnail — same detection used on the club's own page.
+        if (Array.isArray(c.flyers) && entry.nextMeeting) {
+          const matchingFlyer = c.flyers.find((f) => {
+            const d = parseDatedClubFlyer(f);
+            return (
+              d &&
+              d.getFullYear() === entry.nextMeeting.getFullYear() &&
+              d.getMonth() === entry.nextMeeting.getMonth() &&
+              d.getDate() === entry.nextMeeting.getDate()
+            );
+          });
+          if (matchingFlyer) {
+            const thumb = document.createElement("img");
+            thumb.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(matchingFlyer.trim())}`;
+            thumb.className = "club-dir-flyer-thumb";
+            thumb.alt = c.name;
+            thumb.loading = "lazy";
+            card.appendChild(thumb);
+          }
+        }
 
         listWrap.appendChild(card);
       }

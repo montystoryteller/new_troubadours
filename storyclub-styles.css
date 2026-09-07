@@ -107,6 +107,15 @@
     margin-top: 2px;
 }
 
+/* Dated flyer thumbnail on directory listing cards, shown when it
+   matches the card's next occurrence date. */
+.club-dir-flyer-thumb {
+    display: block;
+    width: 100%;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
 .club-venue {
     font-size: 15px;
     color: #555;

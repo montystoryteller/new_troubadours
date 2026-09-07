@@ -418,15 +418,7 @@ const imgLoader = createLazyImageLoader({
 // Lightweight check: does a recurring schedule string fire on a given date?
 // Handles: "Nth dayname", "last dayname", "every dayname", "Nth and Mth dayname",
 // "Nth dayname (even|odd months)", pipe-separated alternating patterns.
-const DAY_MAP = {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
+
 const OCC_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, last: "last" };
 
 function findNthDay(year, month, targetDay, occurrence) {
