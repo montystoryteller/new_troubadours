@@ -9381,8 +9381,7 @@
       "date_added": "07/09/2026",
       "fb_event": 1072441665199374,
       "venue_id": "kings-head-lichfield",
-      "performer_id": "bea-ferguson",
-      "age_rating": "Family friendly"
+      "performer_id": "bea-ferguson"
     },
     {
       "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
@@ -9439,8 +9438,7 @@
       "price": "£10.00 - £25.00",
       "description": "The Crick Crack Club presents a Storytelling Show with Daniel Morden\n\n\n\nAs Halloween approaches and the shadows stretch, the terrific Daniel Morden tells a classic Grimms' fairytale and other tales of strange and weird happenings.\n\n\n\nEverything you could hope for is here… dark forests, shadows & surprises, mysterious strangers, talking animals, goodies, baddies, booing, cheering, and a guest appearance by Mr B.L.Z. Bub himself!\n\n\n\nDANIEL MORDEN has enchanted audiences of all ages at festivals, theatres and schools across the UK and around the world, from the South Bank and the Barbican to Australia and the Arctic. He tells long ago once-upon-a-time stories of magic, and danger. In 2017 he was awarded the Hay Festival medal for his storytelling. Daniel is also well known to Haringey schools as the resident storyteller at Pendarren. Here's a chance to see what the fuss is about!",
       "ticket_url": "https://www.jacksonslane.org.uk/events/the-luck-child-and-other-strange-tales-daniel-morden/",
-      "isSpecial": true,
-      "age_rating": "Family friendly"
+      "isSpecial": true
     },
     {
       "name": "Icelandic Ghost Stories [Jason Buck]",
@@ -9511,8 +9509,7 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "merlins-cafe-bar-birmingham",
-      "performer_id": "jason-buck",
-      "age_rating": "Adults only"
+      "performer_id": "jason-buck"
     },
     {
       "name": "The Ghost Light [Owen Staton]",
@@ -9660,8 +9657,7 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "the-assembly-rooms-glastonbury",
-      "performer_id": "jason-buck",
-      "age_rating": "Adults only"
+      "performer_id": "jason-buck"
     },
     {
       "name": "The Nutcracker [Jason Buck]",
