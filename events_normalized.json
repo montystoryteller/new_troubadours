@@ -5280,8 +5280,12 @@
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/guesthousestorytellers",
       "club": "guesthouseST",
+      "exceptions": ["08/2026"],
       "tickets_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge",
-      "venue_id": "hillcrest-community-centre-newhaven"
+      "venue_id": "hillcrest-community-centre-newhaven",
+      "feature_slots": [["08/09/2026",
+          "jamie-crawford"], "13/10/2026",
+        "jon-mason"]
     },
     {
       "name": "Storytellers of Nottingham",
@@ -8315,7 +8319,7 @@
     {
       "name": "Telling the Trees [Xanthe Gresham Knight]",
       "showname": "Telling the Trees - Stories and Songs Celebrating our Rooted Friends",
-      "date": "09/12/2025",
+      "date": "14/07/2026",
       "time": "7.30-9.30pm",
       "club": "guesthouseST",
       "price": "£12 / £8",
@@ -8796,7 +8800,7 @@
     {
       "name": "What is storytelling? [Jamie Crawford]",
       "showname": "What is storytelling?",
-      "date": "08/09/2025",
+      "date": "08/09/2026",
       "time": "7.30-9.30pm",
       "club": "guesthouseST",
       "price": "£12 / £8",
