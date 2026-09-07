@@ -120,10 +120,6 @@ function renderAllVenues() {
   const root = document.getElementById("venueContent");
   root.innerHTML = "";
 
-  const h1 = document.createElement("h1");
-  h1.textContent = "Venues";
-  root.appendChild(h1);
-
   // Build sorted venue list (only venues with a name)
   const venueList = Object.entries(venuesLookup)
     .filter(([, v]) => v.name)

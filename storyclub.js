@@ -1369,10 +1369,6 @@ async function renderDirectory(data) {
   // sitting permanently as the first child once the real content is built.
   root.innerHTML = "";
 
-  const h1 = document.createElement("h1");
-  h1.textContent = "Story Clubs";
-  root.appendChild(h1);
-
   const intro = document.createElement("p");
   intro.className = "directory-intro";
   intro.innerHTML =
