@@ -5272,7 +5272,10 @@
       "time": "7.30-9.30pm",
       "facebook": "https://www.facebook.com/profile.php?id=100086449665967",
       "club": "quirkytales",
-      "venue_id": "making-space-1"
+      "venue_id": "making-space-1",
+      "flyers": [
+        "2026_09_08_wirral_quirky_club.jpg"
+      ]
     },
     {
       "name": "Guesthouse storytellers, Newhaven",
@@ -5280,12 +5283,19 @@
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/guesthousestorytellers",
       "club": "guesthouseST",
-      "exceptions": ["08/2026"],
+      "exceptions": [
+        "08/2026"
+      ],
       "tickets_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge",
       "venue_id": "hillcrest-community-centre-newhaven",
-      "feature_slots": [["08/09/2026",
-          "jamie-crawford"], "13/10/2026",
-        "jon-mason"]
+      "feature_slots": [
+        [
+          "08/09/2026",
+          "jamie-crawford"
+        ],
+        "13/10/2026",
+        "jon-mason"
+      ]
     },
     {
       "name": "Storytellers of Nottingham",
