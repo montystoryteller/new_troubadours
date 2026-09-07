@@ -4,8 +4,17 @@
       "promoter_id": "crickcrack",
       "name": "Crick Crack Club",
       "promoter_link": "https://crickcrackclub.com/",
-      "promoter_venues": ["the-cube-kingsdown", "hoxton-hall"],
-      "promoter_artists": ["debs-newbold", "emily-hennessey", "sheema-mukherjee", "ben-haggerty", "steph-brittain"]
+      "promoter_venues": [
+        "the-cube-kingsdown",
+        "hoxton-hall"
+      ],
+      "promoter_artists": [
+        "debs-newbold",
+        "emily-hennessey",
+        "sheema-mukherjee",
+        "ben-haggerty",
+        "steph-brittain"
+      ]
     },
     "sally-port-walks-talks": {
       "promoter_id": "sally-port-walks-talks",
@@ -27,11 +36,17 @@
       "website": "https://artemis-storytelling.co.uk/storyfix",
       "facebook": "",
       "description": "",
-      "event_flyers": ["exeter_story_fix_2026_flyer.png", "exeter_story_fix_2026a_flyer.png", "exeter_story_fix_2026b_flyer.png/"],
-      "performers": [{
+      "event_flyers": [
+        "exeter_story_fix_2026_flyer.png",
+        "exeter_story_fix_2026a_flyer.png",
+        "exeter_story_fix_2026b_flyer.png/"
+      ],
+      "performers": [
+        {
           "performer_id": "nick-hennessey",
           "role": ""
-        }],
+        }
+      ],
       "performers_tbc": true,
       "stages": [],
       "schedule": [
@@ -42,7 +57,12 @@
           "name": "Opening Night at Cygnet Theatre",
           "host_id": "sharon-jacksties",
           "type": "storytelling_shows",
-          "performer_ids": ["amy-douglas", "henry-everett", "inez-aponte", "rebecca-bletcher"]
+          "performer_ids": [
+            "amy-douglas",
+            "henry-everett",
+            "inez-aponte",
+            "rebecca-bletcher"
+          ]
         },
         {
           "date": "28/11/2026",
@@ -92,7 +112,8 @@
           "performer": "nick-hennessey",
           "type": "storytelling_shows",
           "ticket_url": ""
-        }]
+        }
+      ]
     },
     "east-anglian-storytelling-festival-2026": {
       "name": "East Anglian Storytelling Festival",
@@ -694,7 +715,11 @@
           "name": "Stories of Joy to go Home",
           "type": "group_telling",
           "performer": "Maria Credali, Tim Ralphs, Maria Gillen",
-          "performer_ids": ["maria-credali", "tim-ralphs", "maria-gillen"]
+          "performer_ids": [
+            "maria-credali",
+            "tim-ralphs",
+            "maria-gillen"
+          ]
         }
       ]
     },
@@ -1674,8 +1699,7 @@
       "facebook": "",
       "description": "Three extraordinary days. One beautiful town. Hundreds of stories waiting to be told.\n\n\n\nThis October, Monmouth comes alive with stories.\n\n\n\nFrom 2–4 October, Gather Round brings some of the UK's most captivating storytellers, myth-makers and performers to theatres, gardens, historic buildings, the library and pubs across this remarkable border town.\n\n\n\nCome for a story. Stay for the atmosphere. Discover Monmouth in a whole new way.\n\n\n\n✨ Meet the storytellers\n\n\n\nOn Saturday evening, step into the atmospheric Savoy Theatre for an unmissable night with acclaimed mythologist, storyteller and New York Times bestselling author Dr Martin Shaw.\n\n\n\nOn Friday night, look up at the stars and gather round for Alim Kamara, the acclaimed Nigerian storyteller. Bring a blanket, pack a picnic, bring your friends — and prepare to be transported.\n\n\n\nAcross the weekend, discover the powerful world of goddess stories with Sally Pomme Clayton, dive into tales of rivers and water with Corinne Harragin & Familia Theatre, and uncover Monmouth's fascinating past on story walks through the town.\n\n\n\nAnd it's not just for grown-ups.\n\n\n\nFree family storytelling, crafts and performances — sponsored by Menter Iaith Mynwy — mean there's plenty for younger story-lovers too.\n\n\n\nA festival you can wander into\n\n\n\nGather Round isn't just something you watch.\n\n\n\nIt's something you experience.\n\n\n\nWander from one story to another. Discover hidden corners of Monmouth. Hear ancient myths, local histories and extraordinary tales. Laugh, listen, wonder and see the town through new eyes.\n\n\n\nWhether you're a lifelong lover of stories or simply looking for something different this autumn, there really is something for everyone.",
       "event_flyer": "2026_10_04_monmouth_festival_stories.jpg",
-      "performers": [
-      ],
+      "performers": [],
       "performers_tbc": true,
       "stages": [],
       "schedule": []
@@ -1692,8 +1716,7 @@
       "facebook": "",
       "description": "",
       "event_flyer": "",
-      "performers": [
-      ],
+      "performers": [],
       "performers_tbc": true,
       "stages": [],
       "schedule": []
@@ -1710,8 +1733,7 @@
       "facebook": "",
       "description": "",
       "event_flyer": "",
-      "performers": [
-      ],
+      "performers": [],
       "performers_tbc": true,
       "stages": [],
       "schedule": []
@@ -1729,7 +1751,13 @@
       "facebook": "",
       "description": "Woodland myths and legends, nature, craft and community at the wild edge of Dartmoor\n\n\n\nwith Lisa Schneidau, Tony Whitehead, Shane Ibbs, Annie Watson and Robin Bowman\n\n\n\nIn our folk tales, things happen in the clearing in the woods.\n\n\n\nJoin us for a folk-fuelled weekend of wildwood story, ecology, skills, gentle ceremony and inspiration. \n\n\n\nOur theme for this immersive autumn weekend is 'hearth fire' — setting us up for the winter months ahead with fire, literal and mythical.\n\n\n\nWalking among the trees and gathering around the fire, we'll explore the myths and legends of the greenwood from the British Arthurian tradition. We'll share stories and songs of woodland wisdom in fairy tales from across the world. You'll learn about the trees of the season, woodland bird song in autumn, how to create fire as the ancients did, how to care for new woodland, and more… all of this in the middle of the wild woods as the trees change to their autumn colours.\n\n\n\nThe weekend will be held at the wonderful Moor Barton Wilding on the edge of Dartmoor in Devon, led by professional storytellers, ecologists and bushcraft experts. It will begin at 12.30pm on Friday with lunch, and finish at 2.30pm after lunch on Sunday, with all meals provided.\n\n\n\nMoor Barton Wilding has a brand new camping kitchen, a large covered lodge around the campfire, a sauna and compost toilets. There's woodland and wildlife of all kinds, including Dartmoor's first colony of beavers down in the valley. You can choose between camping onsite with your own camping kit, or staying in a choice of accommodation nearby (under your own arrangements at additional cost).\n\n\n\nNo dogs. Suitable for 18+. Terrain is uneven and may be challenging in places for those with mobility problems.",
       "event_flyer": "",
-      "performers": [ { "performer_id": "lisa-schneidau"}, { "performer_id": "shane-ibbs"}
+      "performers": [
+        {
+          "performer_id": "lisa-schneidau"
+        },
+        {
+          "performer_id": "shane-ibbs"
+        }
       ],
       "performers_tbc": false,
       "stages": [],
@@ -1805,7 +1833,10 @@
           "date_added": "27/08/2026"
         }
       ],
-      "performer_ids": ["hugh-lupton", "sarah-moody"],
+      "performer_ids": [
+        "hugh-lupton",
+        "sarah-moody"
+      ],
       "description": "An evening of mystery tales with master storyteller Hugh Lupton and Cellist Sarah Moody.\n\n\n\nDemons, archangels & djinns; hoopoes, swallows, fish, donkeys and maggots; kings, queens, merchants, fools and the voice from the heart of the whirlwind all contend in this rich interweaving of Apocryphal and Old Testament mystery tales drawing from Jewish, Islamic and Christian sources.\n\n\n\nAudiences will encounter Adam and Eve, Solomon and Sheba, Tobias and the Angel, Job and his Comforters… stories that underpin our culture… told in the picture language of the heart, with vigour and humour, with rich language and deep magic.\n\n\n\nThis is a chance to shake off old habitual pieties and hear these ancient tales with fresh ears.\n\n\n\nIn this performance master-storyteller Hugh Lupton is joined by acclaimed cellist Sarah Moody whose wonderful playing is inspired by the music of all three Abrahamic traditions, reminding us that at the core of these cultures (that have been at loggerheads for most of the last thousand years) lies a shared mythology.\n\n\n\nThis is a gripping, accessible and moving performance aimed at adult audiences (not suitable for under 14s). ",
       "isSpecial": true
     },
@@ -1831,10 +1862,10 @@
           "price": "£14.97",
           "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-mjeajyx?ref=montystoryteller.org",
           "description_prefix": "The Crick Crack Club presents\nDAUNTLESS — Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold"
-          }
-        ],
-        "description": "Storytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille — aka Grace O'Malley — legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
-        "isSpecial": true
+        }
+      ],
+      "description": "Storytelling powerhouse Debs Newbold gleefully delivers the boisterous, remarkable and inspirational story of her hero: Grainne ni Mhaille — aka Grace O'Malley — legendary Irish clan chief and queen of the sea.\n\n\n\nStowing away aboard her father's ship aged 8, Grace became a 16th century force of nature. A multilingual, seafaring weapons expert, leader of 2,000 men, rebel, politician, kingmaker and slayer, prodigious lover, avenging hero and notorious pirate. Best of all, she was real.\n\n\n\nFrom the west of Ireland to the court of Elizabeth I, from wild youth to even wilder old age, Dauntless is an epic celebration of uproarious stand-up storytelling, high drama and one fascinating 16th century feminist. No knights in shining armour need apply.",
+      "isSpecial": true
     },
     "ben-haggarty-steph-brittain-the-bodies-on-the-beach": {
       "name": "The Bodies on the Beach: The epic Irish myth of Fionn MacCumhaill",
@@ -1849,7 +1880,10 @@
           "date_added": "26/08/2026"
         }
       ],
-      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "performer_ids": [
+        "ben-haggarty",
+        "steph-brittain"
+      ],
       "description": "A fatherless son\n\nA daughter's lament\n\nA pig stolen from its spit\n\nFires burning out at sea\n\nAnd a dream\n\n\n\nOn the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never-ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill.\n\n\n\nStep into a maelstrom of myth, as storytellers Ben Haggarty and Steph Brittain pick through fragments of medieval manuscript, story and song, to piece together a story of love, loss and destiny — an Irish Iliad.\n\n\n\nRaw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\nWhat will survive the tide?",
       "isSpecial": true
     },
@@ -1921,7 +1955,10 @@
           "date_added": "26/08/2026"
         }
       ],
-      "performer_ids": ["emily-hennessey", "sheema-mukherjee"],
+      "performer_ids": [
+        "emily-hennessey",
+        "sheema-mukherjee"
+      ],
       "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
       "isSpecial": true
     },
@@ -1976,23 +2013,24 @@
       "description": "A position has just opened in our More-than-Human Resources Department! As the heroic head of the hiring committee for the divine pantheon, it's up to you to put together a team of sacred scribes, astral accountants and celestial problem-solvers. Tim has got the candidates for you to consider. With the right team of Godly governors in place, this incorporeal corporation is going places.",
       "isSpecial": true,
       "performer_id": "tim-ralphs",
-      "show_dates": [{
-        "date": "05/12/2025",
-        "time": "7.30-10pm",
-        "club": "matlockSCafe",
-        "price": "£8 [£6.50]",
-        "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/1922225",
-        "online": "hybrid",
-        "fb_event": 3200801733411778,
-        "venue_id": "imperial-rooms-matlock"
+      "show_dates": [
+        {
+          "date": "05/12/2025",
+          "time": "7.30-10pm",
+          "club": "matlockSCafe",
+          "price": "£8 [£6.50]",
+          "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/1922225",
+          "online": "hybrid",
+          "fb_event": 3200801733411778,
+          "venue_id": "imperial-rooms-matlock"
         },
         {
-        "date": "11/03/2026",
-        "time": "7.30pm",
-        "club": "torrianostorynight",
-        "price": "£10",
-        "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/1922225",
-        "venue_id": "torriano-meeting-house-london"
+          "date": "11/03/2026",
+          "time": "7.30pm",
+          "club": "torrianostorynight",
+          "price": "£10",
+          "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/1922225",
+          "venue_id": "torriano-meeting-house-london"
         }
       ]
     },
@@ -2004,7 +2042,8 @@
       "isSpecial": true,
       "isTouringShow": true,
       "performer_id": "sarah-liisa-wilkinson",
-      "show_dates": [{
+      "show_dates": [
+        {
           "date": "17/03/2026",
           "time": "7.30-10pm",
           "club": "sheffieldstoryforge",
@@ -2024,7 +2063,8 @@
           "ticket_url": "https://events.bl.uk/events/strange-girls-beautiful-monsters",
           "venue_id": "pavilion-british-library"
         }
-      ]},
+      ]
+    },
     "sarah-liisa-wilkinson-how-not-die-finland": {
       "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
       "showname": "HOW (NOT) TO DIE long ago in Finland",
@@ -2033,7 +2073,8 @@
       "isSpecial": true,
       "isTouringShow": true,
       "performer_id": "sarah-liisa-wilkinson",
-      "show_dates": [{
+      "show_dates": [
+        {
           "date": "07/11/2026",
           "date_added": "27/06/2026",
           "time": "7.30-10.30pm",
@@ -2073,7 +2114,8 @@
           "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-how-not-to-die-long-ago-in-finland/",
           "venue_id": "the-story-museum-oxford"
         }
-    ]},
+      ]
+    },
     "sally-pomme-clayton-mighty-goddess": {
       "name": "The Mighty Goddess [Sally Pomme Clayton]",
       "showname": "The Mighty Goddess",
@@ -2783,7 +2825,10 @@
       ],
       "performer_id": "attila-the-stockbroker",
       "tour_description": "Autumn 2026 tour to celebrate his 10th book of poems, \"Fiery Words for Hellish Times\".",
-      "touring_event_flyers": ["tour_attilia_autumn_2026.jpeg", "tour_attila_scotland_autumn_2026.jpg"],
+      "touring_event_flyers": [
+        "tour_attilia_autumn_2026.jpeg",
+        "tour_attila_scotland_autumn_2026.jpg"
+      ],
       "isSpecial": true
     },
     "debs-newbold-dauntless-2026": {
@@ -2796,7 +2841,11 @@
       "video_trailer": "https://www.youtube.com/watch?v=aBjt93dDzOs",
       "tour_dates": [
         {
-          "date": ["24/09/2026", "25/09/2026", "26/09/2026"],
+          "date": [
+            "24/09/2026",
+            "25/09/2026",
+            "26/09/2026"
+          ],
           "time": "7.30-9pm",
           "price": "£14",
           "ticket_url": "https://thewardrobetheatre.com/shows/dauntless-grace-omalley-pirate-queen/",
@@ -2829,7 +2878,13 @@
           "venue_id": "our-lady-of-the-assumption-church-hall-beeston"
         },
         {
-          "date": ["10/11/2026","11/11/2026","12/11/2026","13/11/2026", "10/11/2026"],
+          "date": [
+            "10/11/2026",
+            "11/11/2026",
+            "12/11/2026",
+            "13/11/2026",
+            "10/11/2026"
+          ],
           "time": "",
           "price": "",
           "club_event": "",
@@ -3279,7 +3334,8 @@
           "date": "06/12/2025",
           "venue_id": "bureau-centre-for-the-arts-blackburn",
           "ticket_url": "https://www.ticketsource.co.uk/whats-on/blackburn/the-bureau-centre-for-the-arts/troubled-waters-contemporary-retellings-of-ancient-river-legend-folklore-myth-corrine-harrigan/e-qmldgb?ref=montystoryteller.org"
-        }]
+        }
+      ]
     },
     "katy-cawkwell-lilith-autumn-winter-2026-2027": {
       "tour_name": "Lilith (Autumn-Winter 2026-2027) [Katy Cawkwell]",
@@ -3353,7 +3409,7 @@
         },
         {
           "date": "08/10/2026",
-          "price":"£ Pay what you want (min £5)",
+          "price": "£ Pay what you want (min £5)",
           "venue_id": "the-front-room-theatre-weston",
           "ticket_url": "https://frontroomwsm.com/event/lilith-the-other-side-of-the-story-storytelling-with-katy-cawkwell"
         },
@@ -3482,14 +3538,15 @@
           "price": "£10 (£8)",
           "ticket_url": "https://www.tickettailor.com/events/henbant/2070549",
           "fb_event": 1298398022433754
-        },{
+        },
+        {
           "date": "04/07/2026",
           "venue_id": "eastcott-community-centre-swindon",
           "price": "£10.84 ",
           "ticket_url": "https://www.ticketsource.com/forging-fantastical/troubled-waters-a-storytelling-show-by-corinne-harragin/e-jplyvk"
         }
       ]
-    }, 
+    },
     "nick-hennessey-dreaming-great-bear-2025": {
       "name": "Dreaming the Great Bear [Nick Hennessey]",
       "tour_name": "Dreaming the Great Bear",
@@ -3502,7 +3559,7 @@
       ],
       "isMusic": false,
       "isSpecial": true,
-      "club":"artsreachdorset",
+      "club": "artsreachdorset",
       "tour_dates": [
         {
           "date": "14/11/2025",
@@ -3522,97 +3579,105 @@
           "fb_event": 813746617897458,
           "venue_id": "broadmayne-village-hall-dorchester"
         }
-        ]
-      },
+      ]
+    },
     "haggerty_brittain-bodies-beach": {
       "name": "The Bodies on the Beach: The epic Irish myth of Fionn MacCumhaill [Ben Haggarty & Steph Brittain]",
       "tour_name": "The Bodies on the Beach: The epic Irish myth of Fionn MacCumhaill",
       "performer_id": "ben-haggarty-steph-brittain",
-      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "performer_ids": [
+        "ben-haggarty",
+        "steph-brittain"
+      ],
       "tour_description": "A fatherless son,\n\n\n\n A daughter's lament,\n\n\n\n A pig stolen from its spit,\n\n\n\n Fires burning out at sea,\n\n\n\n And a dream.\n\n\n\n  On the westernmost tip of Ireland, a beach of crystal white sand once ran crimson with the blood of a never- ending magical battle — the last battle fought by the epic hero, Fionn MacCumhaill. \n\n\n\n Ben Haggarty and Steph Brittain share a work -in -progress, picking through and piecing together fragments of voices, medieval manuscript, and song that tell a story of love and loss.\n\n\n\n Raw, lyrical, and unforgettable. This is not just a wild myth retold. It's an exploration of what it means to live, to regret, to sacrifice, and to endure in a relentless world.\n\n\n\n What will survive the tide? \n\n\n\n This performance is followed by an opportunity for post-show discussion and is part of a Research and Development project funded by the Arts Council of England.\n\n\n\n Two halves 60 mins. Age recommendation 16 +\n\n\n\n  Content advice: This show contains references to threat, violence and mutilation, incest, death in childbirth, and suicide, all contextualised within a paradigm of mythic narrative, archetype and metaphor.",
       "isMusic": false,
       "isSpecial": true,
       "tour_dates": [
         {
-      "date": "08/01/2026",
-      "time": "6.30pm",
-      "club": "cardiffSC",
-      "price": "£9.90 / £7.70",
-      "ticket_url": "https://wegottickets.com/af/671/event/683445/",
-      "isSpecial": true,
-      "fb_event": 2102203970315114,
-      "venue_id": "llanover-hall-arts-center-cardiff"
-    },
-    {"date": "10/02/2026",
-      "time": "7.30-10pm",
-      "club": "guesthouseST",
-      "price": "£12 / £8",
-      "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2034002",
-      "isSpecial": true,
-      "venue_id": "hillcrest-community-centre-newhaven"
-    },
-    {
-      "date": "04/03/2026",
-      "time": "7.15-9.45pm",
-      "club": "crickcrack",
-      "price": "£12, £10 concessions, £15 support the artist (+£1 booking fee)",
-      "ticket_url": "https://tickets.storypickandmix.co.uk/events/thehouseofrumour/2014267",
-      "isSpecial": true,
-      "fb_event": 1390857539185833,
-      "venue_id": "next-door-at-theatre-deli-ec3a",
-      "performer_id": "ben-haggarty-steph-brittain"
-    },
-    {
-      "date": "06/03/2026",
-      "time": "7.30pm",
-      "club": "crickcrack",
-      "price": "£12, £10 concessions",
-      "ticket_url": "https://bridportandwestbay.co.uk/product/the-bodies-on-the-beach-a-preview-at-the-lyric-theatre-friday-06-march/",
-      "isSpecial": true,
-      "fb_event": 1605762193927587,
-      "venue_id": "lyric-theatre-bridport",
-      "performer_id": "ben-haggarty-steph-brittain"
-    },
-    {
-      "date": "26/03/2026",
-      "time": "7-9pm",
-      "club": "crickcrack",
-      "price": "£10, £8 concessions",
-      "ticket_url": "https://www.leicestermuseums.org/event-details/?id=606d1dc6-eacb-4f12-b7e8-1e29c82d14b3",
-      "isSpecial": true,
-      "fb_event": 1457789589386678,
-      "venue_id": "leicester-guildhall",
-      "performer_id": "ben-haggarty-steph-brittain"
-    },
-    {
-      "date": "18/04/2026",
-      "time": "7-9pm",
-      "club": "crickcrack",
-      "price": "£13 (+£0.90 booking fee)",
-      "ticket_url": "https://www.ticketsource.co.uk/whats-on/cranborne/cranborne-earthouse/bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill/e-kqxblv?ref=montystoryteller.org",
-      "isSpecial": true,
-      "fb_event": 1197885285708477,
-      "venue_id": "cranborne-earthouse",
-      "performer_id": "ben-haggarty-steph-brittain"
-    },
-    {
-      "date": "23/04/2026",
-      "time": "8-10.15pm",
-      "club": "crickcrack",
-      "price": "£12.50",
-      "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-23-apr-bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill-147990#e147990",
-      "isSpecial": true,
-      "fb_event": 1384563516241836,
-      "venue_id": "the-cube-kingsdown",
-      "performer_id": "ben-haggarty-steph-brittain"
-    }
-    ]
+          "date": "08/01/2026",
+          "time": "6.30pm",
+          "club": "cardiffSC",
+          "price": "£9.90 / £7.70",
+          "ticket_url": "https://wegottickets.com/af/671/event/683445/",
+          "isSpecial": true,
+          "fb_event": 2102203970315114,
+          "venue_id": "llanover-hall-arts-center-cardiff"
+        },
+        {
+          "date": "10/02/2026",
+          "time": "7.30-10pm",
+          "club": "guesthouseST",
+          "price": "£12 / £8",
+          "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2034002",
+          "isSpecial": true,
+          "venue_id": "hillcrest-community-centre-newhaven"
+        },
+        {
+          "date": "04/03/2026",
+          "time": "7.15-9.45pm",
+          "club": "crickcrack",
+          "price": "£12, £10 concessions, £15 support the artist (+£1 booking fee)",
+          "ticket_url": "https://tickets.storypickandmix.co.uk/events/thehouseofrumour/2014267",
+          "isSpecial": true,
+          "fb_event": 1390857539185833,
+          "venue_id": "next-door-at-theatre-deli-ec3a",
+          "performer_id": "ben-haggarty-steph-brittain"
+        },
+        {
+          "date": "06/03/2026",
+          "time": "7.30pm",
+          "club": "crickcrack",
+          "price": "£12, £10 concessions",
+          "ticket_url": "https://bridportandwestbay.co.uk/product/the-bodies-on-the-beach-a-preview-at-the-lyric-theatre-friday-06-march/",
+          "isSpecial": true,
+          "fb_event": 1605762193927587,
+          "venue_id": "lyric-theatre-bridport",
+          "performer_id": "ben-haggarty-steph-brittain"
+        },
+        {
+          "date": "26/03/2026",
+          "time": "7-9pm",
+          "club": "crickcrack",
+          "price": "£10, £8 concessions",
+          "ticket_url": "https://www.leicestermuseums.org/event-details/?id=606d1dc6-eacb-4f12-b7e8-1e29c82d14b3",
+          "isSpecial": true,
+          "fb_event": 1457789589386678,
+          "venue_id": "leicester-guildhall",
+          "performer_id": "ben-haggarty-steph-brittain"
+        },
+        {
+          "date": "18/04/2026",
+          "time": "7-9pm",
+          "club": "crickcrack",
+          "price": "£13 (+£0.90 booking fee)",
+          "ticket_url": "https://www.ticketsource.co.uk/whats-on/cranborne/cranborne-earthouse/bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill/e-kqxblv?ref=montystoryteller.org",
+          "isSpecial": true,
+          "fb_event": 1197885285708477,
+          "venue_id": "cranborne-earthouse",
+          "performer_id": "ben-haggarty-steph-brittain"
+        },
+        {
+          "date": "23/04/2026",
+          "time": "8-10.15pm",
+          "club": "crickcrack",
+          "price": "£12.50",
+          "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-23-apr-bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill-147990#e147990",
+          "isSpecial": true,
+          "fb_event": 1384563516241836,
+          "venue_id": "the-cube-kingsdown",
+          "performer_id": "ben-haggarty-steph-brittain"
+        }
+      ]
     },
     "daniel-morden-hugh-lupton-stars-consolations-2026": {
       "name": "Stars and their Consolations",
       "tour_name": "Stars and their Consolations Tour",
       "performer_id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",
-      "performer_ids": ["daniel-morden", "hugh-lupton", "sarah-lianne-lewis"],
+      "performer_ids": [
+        "daniel-morden",
+        "hugh-lupton",
+        "sarah-lianne-lewis"
+      ],
       "tour_description": "A majestic, intimate and hypnotic re-imagining of Greek myths and legends weaving ancient stories, cosmic projections and a spine-tingling electro-acoustic soundscape.",
       "tour_flyer": "morden_lupton_stars.jpg",
       "video_trailer": "https://www.youtube.com/watch?v=VWdod7oNZaA",
@@ -3623,7 +3688,7 @@
       ],
       "isMusic": false,
       "isSpecial": true,
-      "club":"adversecamber",
+      "club": "adversecamber",
       "tour_dates": [
         {
           "date": "21/03/2026",
@@ -3805,7 +3870,7 @@
           "ticket_url": "https://www.eventbrite.co.uk/e/slaine-the-horned-god-manchester-tickets-1985046631912",
           "venue_id": "lock-91-bar-manchester"
         },
-         {
+        {
           "date": "23/05/2026",
           "time": "7.30pm",
           "price": "£5-12.50",
@@ -4124,7 +4189,10 @@
       "name": "Jess Silk + Matt Johnson — The Dashboard Jesus Tour",
       "tour_name": "Dashboard Jesus Tour",
       "performer_id": "jess-silk-matt-johnson",
-      "performer_ids": ["jess-silk", "matt-johnson"],
+      "performer_ids": [
+        "jess-silk",
+        "matt-johnson"
+      ],
       "tour_description": "",
       "tour_flyer": "tour_jess_silk_2026_dashboard_jesus.jpg",
       "tags": [
@@ -4223,34 +4291,35 @@
       ],
       "isMusic": true,
       "tour_dates": [
-      {
-        "date": "12/12/2025",
-        "time": "7.30pm",
-        "price": "£16.50 (+1.70)",
-        "ticket_url": "https://wegottickets.com/af/671/event/14466#location-28953",
-        "venue_id": "yes-manchester"
-      },
-      {
-        "date": "13/12/2025",
-        "time": "6.30pm",
-        "ticket_url": "https://www.alttickets.com/gaz-brookfield-tickets",
-        "venue_id": "bodega-nottingham"
-      },
-      {
-        "date": "19/12/2025",
-        "time": "7.30pm",
-        "price": "£16.00",
-        "ticket_url": "https://joiners.vticket.co.uk/product.php/2773/gaz-brookfield",
-        "venue_id": "joiners-southampton"
-      },
-      {
-        "date": "20/12/2025",
-        "time": "7.00pm",
-        "price": "£16.50",
-        "ticket_url": "https://www.eventbrite.co.uk/e/gaz-brookfield-the-company-of-thieves-xmas-show-tickets-1136139717479?aff=montystoryteller.org",
-        "venue_id": "the-fleece-bristol"
-      }
-      ]},
+        {
+          "date": "12/12/2025",
+          "time": "7.30pm",
+          "price": "£16.50 (+1.70)",
+          "ticket_url": "https://wegottickets.com/af/671/event/14466#location-28953",
+          "venue_id": "yes-manchester"
+        },
+        {
+          "date": "13/12/2025",
+          "time": "6.30pm",
+          "ticket_url": "https://www.alttickets.com/gaz-brookfield-tickets",
+          "venue_id": "bodega-nottingham"
+        },
+        {
+          "date": "19/12/2025",
+          "time": "7.30pm",
+          "price": "£16.00",
+          "ticket_url": "https://joiners.vticket.co.uk/product.php/2773/gaz-brookfield",
+          "venue_id": "joiners-southampton"
+        },
+        {
+          "date": "20/12/2025",
+          "time": "7.00pm",
+          "price": "£16.50",
+          "ticket_url": "https://www.eventbrite.co.uk/e/gaz-brookfield-the-company-of-thieves-xmas-show-tickets-1136139717479?aff=montystoryteller.org",
+          "venue_id": "the-fleece-bristol"
+        }
+      ]
+    },
     "gaz-brookfield-almost-all-village-halls-2026": {
       "name": "Gaz Brookfield — Almost All Village Halls Tour",
       "tour_name": "Almost All Village Halls Tour",
@@ -4385,7 +4454,7 @@
           "ticket_url": "https://wegottickets.com/af/671/event/683225",
           "venue_id": "nash-village-hall"
         },
-         {
+        {
           "date": "24/04/2026",
           "ticket_url": "https://wegottickets.com/af/671/event/673317",
           "venue_id": "chartham-village-hall",
@@ -4396,7 +4465,7 @@
           "ticket_url": "https://wegottickets.com/af/671/event/673318",
           "venue_id": "hassocks-adastra-hall",
           "event_flyer": "2026_04_gaz_crunch_time.jpg",
-          "isCancelled":true
+          "isCancelled": true
         },
         {
           "date": "01/05/2026",
@@ -4632,10 +4701,16 @@
       "name": "Jess Silk & Joe Solo — Whiskey Tango Foxtrot Tour",
       "tour_name": "Whiskey Tango Foxtrot Tour",
       "performer_id": "jess-silk-joe-solo",
-      "performer_ids": ["jess-silk", "joe-solo"],
+      "performer_ids": [
+        "jess-silk",
+        "joe-solo"
+      ],
       "tour_description": "You know when you wake up every day and can't quite believe what you are seeing? Well, Jess Silk and Joe Solo feel the same and, after two sell out tours together, have decided to fill some rooms once again with real people, real voices and real heart. There are just four special Autumn shows lined up, with special guest Matt Johnson joining for the finale. The only time they will be together for some time, so if you want shout WTF at the world too, grab a ticket and get down the front.",
       "tour_flyer": "tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg",
-      "touring_event_flyers": ["tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg", "tour_wtf_jess_joe_autumn_2026.jpg"],
+      "touring_event_flyers": [
+        "tour_jess_silk_joe_solo_whiskey_tango_foxtrot.jpg",
+        "tour_wtf_jess_joe_autumn_2026.jpg"
+      ],
       "tags": [
         "music",
         "tour",
@@ -4706,7 +4781,9 @@
       "link": "https://londondreamtime.com/",
       "club": "storytellingsunday",
       "venue_id": "love-shack-london",
-      "flyers": ["2026_07_26_loveshack-birds.jpg"]
+      "flyers": [
+        "2026_07_26_loveshack-birds.jpg"
+      ]
     },
     {
       "name": "Ship Inn Storytelling, Exeter",
@@ -4799,7 +4876,24 @@
       "club": "beestontales",
       "tickets_url": "https://www.tickettailor.com/events/beestontales/",
       "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
-      "feature_slots": [["17/12/2025", "steph-brittain"], ["21/01/2026", "nick-hennessey"], ["15/04/2026", "alys-torrance"],["20/05/2026", "amelia-ace-armande"]]
+      "feature_slots": [
+        [
+          "17/12/2025",
+          "steph-brittain"
+        ],
+        [
+          "21/01/2026",
+          "nick-hennessey"
+        ],
+        [
+          "15/04/2026",
+          "alys-torrance"
+        ],
+        [
+          "20/05/2026",
+          "amelia-ace-armande"
+        ]
+      ]
     },
     {
       "name": "Stories at the Stars",
@@ -5073,7 +5167,16 @@
       "club": "talestattledtold",
       "venue_id": "rectory-cottages-bletchley",
       "tickets_url": "https://wegottickets.com/TravelingwordsProductions",
-      "feature_slots" : [ ["21/03/2026", "janet-crouch"], ["18/04/2026", "lisa-schneidau"]]
+      "feature_slots": [
+        [
+          "21/03/2026",
+          "janet-crouch"
+        ],
+        [
+          "18/04/2026",
+          "lisa-schneidau"
+        ]
+      ]
     },
     {
       "name": "Northampton: Feast of Fools",
@@ -5083,7 +5186,24 @@
       "facebook": "https://www.facebook.com/StorytellingFeast",
       "club": "feastoffools",
       "venue_id": "quaker-meeting-house-northampton",
-      "feature_slots": [["04/02/2026", "shonaleigh"], ["03/06/2026", "hugh-lupton"], ["02/09/2026", "tim-ralphs"], ["04/11/2026", "baden-prince"]]
+      "feature_slots": [
+        [
+          "04/02/2026",
+          "shonaleigh"
+        ],
+        [
+          "03/06/2026",
+          "hugh-lupton"
+        ],
+        [
+          "02/09/2026",
+          "tim-ralphs"
+        ],
+        [
+          "04/11/2026",
+          "baden-prince"
+        ]
+      ]
     },
     {
       "name": "South Devon storytellers",
@@ -5102,7 +5222,9 @@
       "facebook": "https://www.facebook.com/profile.php?id=61580047292990",
       "club": "plymouthSCi",
       "venue_id": "snapdragons-victoria",
-      "flyers": ["2026_06_28_plymouth_storytelling_circle.jpg"]
+      "flyers": [
+        "2026_06_28_plymouth_storytelling_circle.jpg"
+      ]
     },
     {
       "name": "The Plough Storytelling Circle (North Devon)",
@@ -5131,8 +5253,18 @@
       "email": "lichfieldstorytellers@gmail.com",
       "club": "lichfieldST",
       "venue_id": "kings-head-lichfield",
-      "exceptions": ["11/08/2026", "09/2026"],
-      "feature_slots" : [ ["12/05/2026", "giles-abbott", "13/10/2026", "bea-ferguson"]]
+      "exceptions": [
+        "11/08/2026",
+        "09/2026"
+      ],
+      "feature_slots": [
+        [
+          "12/05/2026",
+          "giles-abbott",
+          "13/10/2026",
+          "bea-ferguson"
+        ]
+      ]
     },
     {
       "name": "Wirral Quirky Tales",
@@ -5212,7 +5344,28 @@
       "facebook": "https://www.facebook.com/ABitCrack",
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
-      "feature_slots": [["03/07/2026", "pyn-stockman"], ["07/08/2026", "harp-and-carp"], ["04/09/2026", "chris-adriaanse"], ["02/10/2026", "katy-cawkwell"], ["04/12/2026", "hugh-lupton-sarah-moody"]]
+      "feature_slots": [
+        [
+          "03/07/2026",
+          "pyn-stockman"
+        ],
+        [
+          "07/08/2026",
+          "harp-and-carp"
+        ],
+        [
+          "04/09/2026",
+          "chris-adriaanse"
+        ],
+        [
+          "02/10/2026",
+          "katy-cawkwell"
+        ],
+        [
+          "04/12/2026",
+          "hugh-lupton-sarah-moody"
+        ]
+      ]
     },
     {
       "name": "Cardiff Storytelling Circle",
@@ -5222,7 +5375,9 @@
       "facebook": "https://www.facebook.com/groups/1491740927748170/",
       "club": "cardiffSC",
       "venue_id": "chapter-arts-cardiff",
-      "exceptions": ["05/04/2026"]
+      "exceptions": [
+        "05/04/2026"
+      ]
     },
     {
       "name": "Mendip story circle",
@@ -5252,7 +5407,11 @@
     },
     {
       "name": "Bridport Three Apples",
-      "schedule": {"type": "fortnightly", "day": "monday","start": "25/05/2026"},
+      "schedule": {
+        "type": "fortnightly",
+        "day": "monday",
+        "start": "25/05/2026"
+      },
       "time": "7-9pm",
       "facebook": "https://www.facebook.com/brightontelltales",
       "club": "bridportthreeapples",
@@ -5282,7 +5441,7 @@
       "name": "Tales at the Tavern",
       "schedule": "1st wednesday",
       "time": "7.15-9.30pm",
-      "link":"https://talesatthetavern.co.uk/",
+      "link": "https://talesatthetavern.co.uk/",
       "club": "talesatthetavern",
       "description": "Open-mic slots of up 10 mins (approx) for performers, on a first come first served basis. To book a slot or find out more, contact Laura or Niall.\n\n\n\n *NEW: Sometimes, we give some space to tellers with something longer form to test. Also bookable in advance.\n\n\n\n As well as amazing stories and general joy, the Tavern does great food and drinks, and is a lovely welcoming place to be.",
       "facebook": "https://www.facebook.com/talesatthetavern/",
@@ -5320,7 +5479,12 @@
       "email": "astinginthetaleclub@gmail.com",
       "club": "stinginthetale",
       "venue_id": "lock-91-bar-manchester",
-      "feature_slots": [["20/05/2026", "sarah-rundle"]]
+      "feature_slots": [
+        [
+          "20/05/2026",
+          "sarah-rundle"
+        ]
+      ]
     },
     {
       "name": "3rd Wednesday Storytellers, [online]",
@@ -5381,97 +5545,97 @@
           "performer_id": "maria-credali",
           "title": "Debut Performance from Maria Credali",
           "yt_url": "https://www.youtube.com/watch?v=I8cr7XJEwBA"
-          },
-          {
-            "performer_id": "maria-credali",
-            "title": "A New Set of Stories from Maria Credali",
-            "yt_url": "https://www.youtube.com/watch?v=v3Pufd1HGEg"
-          },
-          {
-            "performer_id": "shonaleigh",
-            "title": "Stories with Shonaleigh",
-            "yt_url": "https://www.youtube.com/watch?v=dFxyJTVVxjg"
-          },
-          {
-            "performer_id": "lisa-schneidau",
-            "title": "Stories with Lisa Schneidau",
-            "yt_url": "https://www.youtube.com/watch?v=Bzo0YUcF4_A"
-          },
-          {
-            "performer_id": "lisa-schneidau",
-            "title": "Debut performance Lisa Schneidau",
-            "yt_url": "https://www.youtube.com/watch?v=XrHe3E7MATs"
-          },
-          {
-            "performer_id": "shane-ibbs",
-            "title": "A new set of stories from Shane Ibbs",
-            "yt_url": "https://www.youtube.com/watch?v=BgGYsnEMl64"
-          },
-          {
-            "performer_id": "amy-douglas",
-            "title": "Stories with Amy Douglas",
-            "yt_url": "https://www.youtube.com/watch?v=n9MNII_4fOg"
-          },
-          {
-            "performer_id": "hugh-lupton",
-            "title": "Stories with Hugh Lupton",
-            "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"
-          },
-          {
-            "performer_id": "dave-tonge",
-            "title": "A new set of stories Dave Tonge",
-            "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"
-          },
-          {
-            "performer_id": "cath-little",
-            "title": "Stories with Cath Little",
-            "yt_url": "https://www.youtube.com/watch?v=4mXBCofuQLw"
-          },
-          {
-            "performer_id": "daniel-morden",
-            "title": "Debut performance from Daniel Morden",
-            "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"
-          },
-          {
-            "performer_id": "hannah-brailsford",
-            "title": "Debut performance from Hannah Brailsford",
-            "yt_url": "https://www.youtube.com/watch?v=AP8KkktiU1g"
-          },
-          {
-            "performer_id": "maria-whatton",
-            "title": "Debut performance from Maria Whatton",
-            "yt_url": "https://www.youtube.com/watch?v=8Bg06CV4QDY"
-          },
-          {
-            "performer_id": "riika-polonen",
-            "title": "Debut performance from Riika Polonen",
-            "yt_url": "https://www.youtube.com/watch?v=t6t7RWFYyoY"
-          },
-          {
-            "performer_id": "mark-fraser",
-            "title": "Debut performance from Mark Fraser",
-            "yt_url": "https://www.youtube.com/watch?v=tY_UHYTUN6Q"
-          },
-          {
-            "performer_id": "tamar-eluned-williams",
-            "title": "Debut performance from Tamar Williams",
-            "yt_url": "https://www.youtube.com/watch?v=LDjkVc-DsEQ"
-          },
-          {
-            "performer_id": "sef-townsend",
-            "title": "Debut performance from Sef Townsend",
-            "yt_url": "https://www.youtube.com/watch?v=nOoxylE0LDc"
-          },
-          {
-            "performer_id": "tuup",
-            "title": "Debut performance from Tuup",
-            "yt_url": "https://www.youtube.com/watch?v=ROKhPjGNpMY"
-          },
-          {
-            "performer_id": "baden-prince",
-            "title": "Debut performance from Baden Prince",
-            "yt_url": "https://www.youtube.com/watch?v=RNRVjGBg16g"
-          }
+        },
+        {
+          "performer_id": "maria-credali",
+          "title": "A New Set of Stories from Maria Credali",
+          "yt_url": "https://www.youtube.com/watch?v=v3Pufd1HGEg"
+        },
+        {
+          "performer_id": "shonaleigh",
+          "title": "Stories with Shonaleigh",
+          "yt_url": "https://www.youtube.com/watch?v=dFxyJTVVxjg"
+        },
+        {
+          "performer_id": "lisa-schneidau",
+          "title": "Stories with Lisa Schneidau",
+          "yt_url": "https://www.youtube.com/watch?v=Bzo0YUcF4_A"
+        },
+        {
+          "performer_id": "lisa-schneidau",
+          "title": "Debut performance Lisa Schneidau",
+          "yt_url": "https://www.youtube.com/watch?v=XrHe3E7MATs"
+        },
+        {
+          "performer_id": "shane-ibbs",
+          "title": "A new set of stories from Shane Ibbs",
+          "yt_url": "https://www.youtube.com/watch?v=BgGYsnEMl64"
+        },
+        {
+          "performer_id": "amy-douglas",
+          "title": "Stories with Amy Douglas",
+          "yt_url": "https://www.youtube.com/watch?v=n9MNII_4fOg"
+        },
+        {
+          "performer_id": "hugh-lupton",
+          "title": "Stories with Hugh Lupton",
+          "yt_url": "https://www.youtube.com/watch?v=YHC0rbeEgB4"
+        },
+        {
+          "performer_id": "dave-tonge",
+          "title": "A new set of stories Dave Tonge",
+          "yt_url": "https://www.youtube.com/watch?v=TUHrwkvt4jU"
+        },
+        {
+          "performer_id": "cath-little",
+          "title": "Stories with Cath Little",
+          "yt_url": "https://www.youtube.com/watch?v=4mXBCofuQLw"
+        },
+        {
+          "performer_id": "daniel-morden",
+          "title": "Debut performance from Daniel Morden",
+          "yt_url": "https://www.youtube.com/watch?v=1kBuDNcTipU"
+        },
+        {
+          "performer_id": "hannah-brailsford",
+          "title": "Debut performance from Hannah Brailsford",
+          "yt_url": "https://www.youtube.com/watch?v=AP8KkktiU1g"
+        },
+        {
+          "performer_id": "maria-whatton",
+          "title": "Debut performance from Maria Whatton",
+          "yt_url": "https://www.youtube.com/watch?v=8Bg06CV4QDY"
+        },
+        {
+          "performer_id": "riika-polonen",
+          "title": "Debut performance from Riika Polonen",
+          "yt_url": "https://www.youtube.com/watch?v=t6t7RWFYyoY"
+        },
+        {
+          "performer_id": "mark-fraser",
+          "title": "Debut performance from Mark Fraser",
+          "yt_url": "https://www.youtube.com/watch?v=tY_UHYTUN6Q"
+        },
+        {
+          "performer_id": "tamar-eluned-williams",
+          "title": "Debut performance from Tamar Williams",
+          "yt_url": "https://www.youtube.com/watch?v=LDjkVc-DsEQ"
+        },
+        {
+          "performer_id": "sef-townsend",
+          "title": "Debut performance from Sef Townsend",
+          "yt_url": "https://www.youtube.com/watch?v=nOoxylE0LDc"
+        },
+        {
+          "performer_id": "tuup",
+          "title": "Debut performance from Tuup",
+          "yt_url": "https://www.youtube.com/watch?v=ROKhPjGNpMY"
+        },
+        {
+          "performer_id": "baden-prince",
+          "title": "Debut performance from Baden Prince",
+          "yt_url": "https://www.youtube.com/watch?v=RNRVjGBg16g"
+        }
       ]
     },
     {
@@ -5491,7 +5655,8 @@
         {
           "performer_id": "simon-heywood",
           "title": "Simon Heywood — We are what we tell",
-          "yt_url": "https://www.youtube.com/watch?v=GuyETxZb6RU"},
+          "yt_url": "https://www.youtube.com/watch?v=GuyETxZb6RU"
+        },
         {
           "performer_id": "shonaleigh",
           "title": "Shonaleigh",
@@ -5505,7 +5670,8 @@
         {
           "performer_id": "lisa-schneidau",
           "title": "Lisa Schneidau — in the Environment (Taking the Tradition On)",
-          "yt_url": "https://www.youtube.com/watch?v=t2vB3bvOXpg"},
+          "yt_url": "https://www.youtube.com/watch?v=t2vB3bvOXpg"
+        },
         {
           "performer_id": "liz-weir",
           "title": "Liz Weir (Taking the Tradition On)",
@@ -5551,7 +5717,8 @@
           "title": "Sharon Jacksties (Taking the Tradition On)",
           "yt_url": "https://www.youtube.com/watch?v=7g5Q30ViXl0"
         },
-          {"performer_id": "nick-hennessey",
+        {
+          "performer_id": "nick-hennessey",
           "title": "Nick Hennessey (Taking the Tradition On)",
           "yt_url": "https://www.youtube.com/watch?v=s2v7tGGWqPk"
         },
@@ -5662,7 +5829,8 @@
       ]
     }
   ],
-  "workshops": [{
+  "workshops": [
+    {
       "title": "24 Story Seeds",
       "leader": "Sally Pomme Clayton",
       "date": "06/12/2025",
@@ -5769,7 +5937,10 @@
       "isSpecial": true,
       "venue_id": "chapter-arts-cardiff",
       "performer_id": "cath-little-bronia-evers",
-      "performer_ids": ["cath-little", "bronia-evers"]
+      "performer_ids": [
+        "cath-little",
+        "bronia-evers"
+      ]
     },
     {
       "name": "Stories Under the Stars: Fireside Myth & Music for Grown Ups [Nick & Emily Hennessey]",
@@ -5785,7 +5956,10 @@
       "geocode_missing": true,
       "venue_id": "bowland-bridge",
       "performer_id": "nick-hennessey-emily-hennessey",
-      "performer_ids": ["nick-hennessey", "emily-hennessey"]
+      "performer_ids": [
+        "nick-hennessey",
+        "emily-hennessey"
+      ]
     },
     {
       "name": "Fen, Folk and Fable",
@@ -6079,7 +6253,10 @@
       "isSpecial": true,
       "fb_event": 781568461574252,
       "venue_id": "moor-imagination-collective-buckfastleigh",
-      "performer_ids": ["henry-everett", "hannah-sneyd"]
+      "performer_ids": [
+        "henry-everett",
+        "hannah-sneyd"
+      ]
     },
     {
       "name": "Haunting Tales and Festive Cheer [Royal Tales story club, Sutton Coldfield]",
@@ -6109,7 +6286,10 @@
       "isSpecial": true,
       "fb_event": 1504363894145970,
       "venue_id": "better-days-cafe-ventnor",
-      "performer_ids": ["merl-fluin", "holly-medland"]
+      "performer_ids": [
+        "merl-fluin",
+        "holly-medland"
+      ]
     },
     {
       "name": "Mad Sprits and Wild Gods [Henry Everett]",
@@ -6151,7 +6331,10 @@
       "isSpecial": true,
       "fb_event": 781568461574252,
       "venue_id": "the-circle-barn-beden",
-      "performer_ids": ["henry-everett", "hannah-sneyd"]
+      "performer_ids": [
+        "henry-everett",
+        "hannah-sneyd"
+      ]
     },
     {
       "name": "The Snow Queen [Vanessa Woolf]",
@@ -6549,7 +6732,6 @@
       "venue_id": "erasmus-darwin-house-lichfield",
       "performer_id": "maria-credali"
     },
-
     {
       "name": "Crazy Kings & Killer Queens [Merl Fluin & Holly Medland]",
       "showname": "Crazy Kings & Killer Queens",
@@ -6563,7 +6745,10 @@
       "isSpecial": true,
       "fb_event": 1544986679915808,
       "venue_id": "bargemans-rest-newport",
-      "performer_ids": ["merl-fluin", "holly-medland"]
+      "performer_ids": [
+        "merl-fluin",
+        "holly-medland"
+      ]
     },
     {
       "name": "Queen of Between [Lucy Lill & Sarah-Liisa Wilkinson]",
@@ -6578,7 +6763,10 @@
       "ticket_url": "https://wegottickets.com/af/671/event/680745",
       "isSpecial": true,
       "venue_id": "cygnet-theatre-exeter",
-      "performer_ids": ["lucy-lill", "sarah-liisa-wilkinson"]
+      "performer_ids": [
+        "lucy-lill",
+        "sarah-liisa-wilkinson"
+      ]
     },
     {
       "name": "Touching the Light [Sharon Jacksties]",
@@ -6607,7 +6795,10 @@
       "ticket_url": "",
       "isSpecial": true,
       "venue_id": "cambridge-junction",
-      "performer_ids": ["lucy-lill","sarah-liisa-wilkinson"]
+      "performer_ids": [
+        "lucy-lill",
+        "sarah-liisa-wilkinson"
+      ]
     },
     {
       "name": "Deliver Us From Evil [Ropetackle Storytellers]",
@@ -6706,7 +6897,10 @@
       "ticket_url": "https://www.chelseaphysicgarden.co.uk/event/queen-of-between-live-performance/",
       "isSpecial": true,
       "venue_id": "chelsea-physic-garden",
-      "performer_ids": ["lucy-lill","sarah-liisa-wilkinson"]
+      "performer_ids": [
+        "lucy-lill",
+        "sarah-liisa-wilkinson"
+      ]
     },
     {
       "name": "Stories of Morgan le Fay [Cath Little]",
@@ -7052,10 +7246,13 @@
       "showname": "The Liar King",
       "date": "",
       "time": "",
-      "datetimes": ["01/04/2026 : 7.30pm", "02/04/2026 : 7.30pm",
-      "03/04/2026 : 7.30pm",
-      "04/04/2026 : 2.00pm",
-      "04/04/2026 : 7.30pm"],
+      "datetimes": [
+        "01/04/2026 : 7.30pm",
+        "02/04/2026 : 7.30pm",
+        "03/04/2026 : 7.30pm",
+        "04/04/2026 : 2.00pm",
+        "04/04/2026 : 7.30pm"
+      ],
       "club": "",
       "price": "£14",
       "description": "Set in Syria, phenomenal Storyteller Clare Murphy weaves a witty satire on the nature of power and stupid kings.\n\n\n\nThe Liar King is an adaptation of the novel Damascus Nights by exiled Syrian writer Rafik Schami.\n\n\n\nClare blends contemporary reporting and folklore with her playful wit to unmask who has the real power in the world.In Damascus a king is desperate to keep his throne, a citizen is determined to win a life and Syria is at the mercy of a lie-obsessed king.\n\n\n\nGirls face monsters, beggars face kings, and no one knows which liar will win.",
@@ -7382,7 +7579,11 @@
       "fb_event": 1518743683216282,
       "date_added": "04/04/2026",
       "venue_id": "moor-barton-wilding",
-      "performer_ids": ["henry-everett", "lisa-schneidau", "shane-ibbs"]
+      "performer_ids": [
+        "henry-everett",
+        "lisa-schneidau",
+        "shane-ibbs"
+      ]
     },
     {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
@@ -7397,7 +7598,10 @@
       "isSpecial": true,
       "date_added": "09/04/2026",
       "venue_id": "the-poly-falmouth",
-      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+      "performer_ids": [
+        "elizabeth-dale",
+        "keith-wallis"
+      ]
     },
     {
       "name": "Beyond Nine Forests: Tales of Hidden Bulgaria [A Spell in Time",
@@ -7573,11 +7777,17 @@
       "price": "£10",
       "description": "Join local storyteller Jessie Wild as she tells a beloved Romany tale from Eastern Europe - Tropsyn. Expect adventure, jeopardy and magical transformation in the most surprising way.\n\n\n\n We are also excited to be welcoming the wonderful storyteller Cath Little from Cardiff who will be enchanting us with tales of Morgan Le Fey - In this masterful weaving together of ancient myths from Wales, Cath Little breathes the stories of Morgan Le Fay back to life.\n\n\n\n This is the first time the Tell Tales will be in the barn at The Castle Inn so Jessie thinks it is wise you bring warm clothing if it's a chilly evening and maybe a cusion for extra comfort!",
       "promoter_link": "",
-      "event_flyers": ["2026_05_28_jessie_wild_tropsyn_tell_tales.jpg", "2026_05_28_wild_little_tell_tales.jpg"],
+      "event_flyers": [
+        "2026_05_28_jessie_wild_tropsyn_tell_tales.jpg",
+        "2026_05_28_wild_little_tell_tales.jpg"
+      ],
       "ticket_url": "https://ticketlab.app/event/37887#/",
       "isSpecial": true,
       "venue_id": "castle-inn-aberteifi",
-      "performer_ids": ["jessie-wild", "cath-little"]
+      "performer_ids": [
+        "jessie-wild",
+        "cath-little"
+      ]
     },
     {
       "name": "Cunning Folk of the Forest & Other Tradtitional Tales [Tony 'Monty' Hirst]",
@@ -7635,7 +7845,13 @@
       "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-21-may-downright-rude--150796#e150796",
       "isSpecial": true,
       "venue_id": "the-cube-kingsdown",
-      "performer_ids": ["tuup", "xanthe-gresham-knight", "tim-ralphs", "nell-phoenix", "sarah-liisa-wilkinson"]
+      "performer_ids": [
+        "tuup",
+        "xanthe-gresham-knight",
+        "tim-ralphs",
+        "nell-phoenix",
+        "sarah-liisa-wilkinson"
+      ]
     },
     {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
@@ -7650,7 +7866,10 @@
       "isSpecial": true,
       "date_added": "09/04/2026",
       "venue_id": "the-acorn-penzance",
-      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+      "performer_ids": [
+        "elizabeth-dale",
+        "keith-wallis"
+      ]
     },
     {
       "name": "Another Stranger: Cressida's Tale [Stephe Harrop]",
@@ -7739,7 +7958,10 @@
       "isSpecial": true,
       "date_added": "17/06/2026",
       "venue_id": "medina-books-cowes",
-      "performer_ids":[ "amy-jeffs", "soft-lap"]
+      "performer_ids": [
+        "amy-jeffs",
+        "soft-lap"
+      ]
     },
     {
       "name": "An Evening In The Company of Amy Jeffs [Amy Jeffs, Paul Armfield]",
@@ -7754,7 +7976,7 @@
       "isSpecial": true,
       "date_added": "17/06/2026",
       "venue_id": "medina-books-cowes",
-      "performer_id":"amy-jeffs"
+      "performer_id": "amy-jeffs"
     },
     {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
@@ -7769,7 +7991,10 @@
       "isSpecial": true,
       "date_added": "09/04/2026",
       "venue_id": "cornwall-museum-art-gallery",
-      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+      "performer_ids": [
+        "elizabeth-dale",
+        "keith-wallis"
+      ]
     },
     {
       "name": "The Shahnameh [Xanthe Gresham]",
@@ -7799,7 +8024,10 @@
       "isSpecial": true,
       "date_added": "09/04/2026",
       "venue_id": "liskeard-library",
-      "performer_ids":[ "elizabeth-dale", "keith-wallis"]
+      "performer_ids": [
+        "elizabeth-dale",
+        "keith-wallis"
+      ]
     },
     {
       "name": "A Celebration of Crankies [Taletta Bierens, Wendy  and Michael Dacre, Sara Hurley, Peter Stevenson]",
@@ -7815,12 +8043,21 @@
       "isSpecial": true,
       "date_added": "18/06/2026",
       "venue_id": "cambridge-junction",
-      "performer_ids": ["taletta-bierens", "wendy-dacre", "sara-hurley","peter-stevenson"]
+      "performer_ids": [
+        "taletta-bierens",
+        "wendy-dacre",
+        "sara-hurley",
+        "peter-stevenson"
+      ]
     },
     {
       "name": "Fringe Theatrefest — Herd [Suited Storytellers]",
       "showname": "Herd",
-      "date": ["25/06/2026", "27/06/2026", "28/06/2026"],
+      "date": [
+        "25/06/2026",
+        "27/06/2026",
+        "28/06/2026"
+      ],
       "time": "Thurs: 5.45pm, Sat: 3pm, Sun: 1.15pm",
       "club": "",
       "price": "£8 / £5 / £4",
@@ -8040,7 +8277,13 @@
       "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-kddlozr?ref=montystoryteller.org",
       "isSpecial": true,
       "venue_id": "cranborne-earthouse",
-      "performer_ids": ["tuup", "xanthe-gresham-knight", "tim-ralphs", "nell-phoenix", "sarah-liisa-wilkinson"]
+      "performer_ids": [
+        "tuup",
+        "xanthe-gresham-knight",
+        "tim-ralphs",
+        "nell-phoenix",
+        "sarah-liisa-wilkinson"
+      ]
     },
     {
       "name": "Lamentable Tales, Merry Gestes and Pleasant Histories [Dave Tonge]",
@@ -8212,7 +8455,10 @@
     {
       "name": "VFringe: Faery Tale Blues, Take 2: Songs'n'Stories, Tunes'n'Tales [Monty + Sue Cain]",
       "showname": "Faery Tale Blues, Take 2: Songs'n'Stories, Tunes'n'Tales",
-      "date": ["23/07/2026", "24/07/2026"],
+      "date": [
+        "23/07/2026",
+        "24/07/2026"
+      ],
       "time": "3.30-4.30pm",
       "club": "",
       "price": "£10 (£8.50)",
@@ -8290,7 +8536,10 @@
     {
       "name": "VFringe: The Fabled Isle [Holly Medland]",
       "showname": "The Fabled Isle",
-      "date": ["25/07/2026", "26/07/2026"],
+      "date": [
+        "25/07/2026",
+        "26/07/2026"
+      ],
       "time": "6.15-7.15pm",
       "club": "",
       "price": "£12 (£10)",
@@ -8368,7 +8617,10 @@
       "date": "05/08/2026",
       "price": "£18 (£10)",
       "venue_id": "manor-pavilion-theatre-sidmouth",
-      "performer_ids": ["lisa-schneidau", "sara-hurley"],
+      "performer_ids": [
+        "lisa-schneidau",
+        "sara-hurley"
+      ],
       "date_added": "28/07/2026",
       "time": "3-5pm",
       "description": "Storytelling for adults is blended with the sounds and voices of Dartmoor to bring Devon's rich folklore vividly to life for modern audiences. Guided by storytellers Sara Hurley and Lisa Schneidau, you'll hear ancient creation myths and medieval legends, folktales, and everyday adventures in a show that blurs the boundaries between folklore and reality. Whether the moor feels like home or remains a landscape of mystery, Chasing Crockern invites you to discover its enduring magic.\n\n\n\nIncluded in All-in-One Week, All-in-One Weekend, Week Season and Wednesday Day Season tickets. Limited advance event tickets available.\n\n\n\n25 & Under tickets tickets are £10 (limited number). Children (0-11) are free.",
@@ -8597,7 +8849,10 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "alder-sheffield",
-      "performer_ids": ["taffy-thomas", "eliza-carthy"]
+      "performer_ids": [
+        "taffy-thomas",
+        "eliza-carthy"
+      ]
     },
     {
       "name": "Of Beast and Hide [Beth Guiver & Lucy Huzzard]",
@@ -8634,7 +8889,13 @@
     {
       "name": "We All Came By Boat [Clare Murphy]",
       "showname": "We All Came By Boat",
-      "date": ["15/09/2026","16/09/2026","17/09/2026","18/09/2026","19/09/2026"],
+      "date": [
+        "15/09/2026",
+        "16/09/2026",
+        "17/09/2026",
+        "18/09/2026",
+        "19/09/2026"
+      ],
       "time": "7.30pm",
       "club": "",
       "price": "£14",
@@ -8680,7 +8941,13 @@
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "18/09/2026",
-      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "15/02/2027"
+      ],
       "time": "7.30pm",
       "club": "",
       "price": "Small donation to cover room hire",
@@ -8689,7 +8956,10 @@
       "isSpecial": true,
       "date_added": "07/09/2026",
       "venue_id": "north-tawton-community-centre",
-      "performer_ids": ["michael-dacre", "wendy-dacre"]
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "Love Don't Come Easy [Dawn Ellis & Tom Morley]",
@@ -8733,7 +9003,13 @@
       "ticket_url": "https://wegottickets.com/af/671/f/20104",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_ids": ["pete-boyce", "stella-girvin", "stephen-hobbs", "terrie-howey-moore", "jane-lambourne"]
+      "performer_ids": [
+        "pete-boyce",
+        "stella-girvin",
+        "stephen-hobbs",
+        "terrie-howey-moore",
+        "jane-lambourne"
+      ]
     },
     {
       "name": "Equinox Arts: An Evening of Live Music and Storytelling [Merl Fluin]",
@@ -8999,14 +9275,23 @@
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "23/10/2026",
-      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "15/02/2027"
+      ],
       "time": "7.30pm",
       "price": "Small donation to cover room hire",
       "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
       "isSpecial": true,
       "date_added": "07/09/2026",
       "venue_id": "north-tawton-community-centre",
-      "performer_ids": ["michael-dacre", "wendy-dacre"]
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "The call of Cthulhu [Jason Buck]",
@@ -9086,7 +9371,13 @@
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "23/10/2026",
-      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "15/02/2027"
+      ],
       "time": "7.30pm",
       "club": "",
       "price": "Small donation to cover room hire",
@@ -9095,7 +9386,10 @@
       "isSpecial": true,
       "date_added": "07/09/2026",
       "venue_id": "north-tawton-community-centre",
-      "performer_ids": ["michael-dacre", "wendy-dacre"]
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "Marion Leeper & Lynette Hill [ + Tales Tattled & Told tellers]",
@@ -9110,7 +9404,10 @@
       "ticket_url": "https://wegottickets.com/af/671/f/20275",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_ids": ["marion-leeper", "lynette-hill"]
+      "performer_ids": [
+        "marion-leeper",
+        "lynette-hill"
+      ]
     },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
@@ -9245,7 +9542,13 @@
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "15/01/2027",
-      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/202"],
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "15/02/202"
+      ],
       "time": "7.30pm",
       "club": "",
       "price": "Small donation to cover room hire",
@@ -9254,7 +9557,10 @@
       "isSpecial": true,
       "date_added": "07/09/2026",
       "venue_id": "north-tawton-community-centre",
-      "performer_ids": ["michael-dacre", "wendy-dacre"]
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "Jane Lambourne [ + Tales Tattled & Told tellers]",
@@ -9304,7 +9610,13 @@
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "15/01/2027",
-      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/202"],
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "15/02/202"
+      ],
       "time": "7.30pm",
       "club": "",
       "price": "Small donation to cover room hire",
@@ -9313,7 +9625,10 @@
       "isSpecial": true,
       "date_added": "07/09/2026",
       "venue_id": "north-tawton-community-centre",
-      "performer_ids": ["michael-dacre", "wendy-dacre"]
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",
@@ -9483,7 +9798,11 @@
       "club": "",
       "price": "",
       "description": "",
-      "event_flyers": ["2026_09_25_jess_silk.jpg", "jess-silk-sept-2026.png", "jess_silk_autumn-2026.png"],
+      "event_flyers": [
+        "2026_09_25_jess_silk.jpg",
+        "jess-silk-sept-2026.png",
+        "jess_silk_autumn-2026.png"
+      ],
       "isMusic": true,
       "venue_id": "nellys-retro-vintage-stratford",
       "performer_id": "jess-silk"
@@ -9496,7 +9815,10 @@
       "club": "",
       "price": "",
       "description": "",
-      "event_flyers": ["2026_09_25_jess_silk.jpg", "jess-silk-sept-2026.png"],
+      "event_flyers": [
+        "2026_09_25_jess_silk.jpg",
+        "jess-silk-sept-2026.png"
+      ],
       "isMusic": true,
       "venue_id": "nellys-retro-vintage-stratford",
       "performer_id": "jess-silk"
@@ -10472,7 +10794,7 @@
         -2.3204812
       ]
     },
-    "peasants-tavern":  {
+    "peasants-tavern": {
       "id": "peasants-tavern",
       "name": "Peasants' Tavern",
       "city": "North Walsham",
@@ -10851,7 +11173,10 @@
       "postcode": "",
       "full_address": "Bowland Bridge, South Lakes",
       "url": "https://stealingthunder.co.uk/",
-      "latlon": [54.298,-2.8977]
+      "latlon": [
+        54.298,
+        -2.8977
+      ]
     },
     "newnham-social-club-cambridge": {
       "id": "newnham-social-club-cambridge",
@@ -10889,7 +11214,7 @@
         -4.97719
       ]
     },
-    "carriageworks-theatre-leeds":  {
+    "carriageworks-theatre-leeds": {
       "id": "carriageworks-theatre-leeds",
       "name": "Carriageworks Theatre, Leeds",
       "city": "Leeds",
@@ -11792,7 +12117,7 @@
       ]
     },
     "doncaster-brewery-tap": {
-      "id":"doncaster-brewery-tap",
+      "id": "doncaster-brewery-tap",
       "name": "Doncaster Brewery & Tap",
       "city": "Doncaster",
       "postcode": "DN1 3EL",
@@ -11804,7 +12129,7 @@
       ]
     },
     "assembly-rooms-south-molton": {
-      "id":"assembly-rooms-south-molton",
+      "id": "assembly-rooms-south-molton",
       "name": "Assembly Rooms, South Molton",
       "city": "Molton",
       "postcode": "EX36 3AB",
@@ -11816,7 +12141,7 @@
       ]
     },
     "castle-inn-aberteifi": {
-      "id":"castle-inn-aberteifi",
+      "id": "castle-inn-aberteifi",
       "name": "Castle Inn, Aberteifi",
       "city": "Cardigan",
       "postcode": "SA43 3AB",
@@ -11828,7 +12153,7 @@
       ]
     },
     "lyric-theatre-bridport": {
-      "id":"lyric-theatre-bridport",
+      "id": "lyric-theatre-bridport",
       "name": "Lyric Theatre",
       "city": "Bridport",
       "postcode": "DT6 3LX",
@@ -11840,7 +12165,7 @@
       ]
     },
     "leicester-guildhall": {
-      "id":"leicester-guildhall",
+      "id": "leicester-guildhall",
       "name": "Leicester Guildhall",
       "city": "Leicester",
       "postcode": "LE1 5FQ",
@@ -11852,7 +12177,7 @@
       ]
     },
     "barnstaple-guildhall": {
-      "id":"barnstaple-guildhall",
+      "id": "barnstaple-guildhall",
       "name": "Barnstaple Guildhall",
       "city": "Barnstaple",
       "postcode": "EX31 1BW",
@@ -12565,7 +12890,10 @@
       "description": "The aRTy Barn is a private home venue located in Nettleden, near Berkhamsted. The exact house location and parking instructions are sent to ticket holders via email after booking.",
       "full_address": "The ARTy Barn, Nettleden, nr Berkhamsted, HP4 1QZ ish",
       "url": "https://www.sofaconcerts.org/en/hosts/aRTyBarn",
-      "latlon": [51.83764,-0.56509]
+      "latlon": [
+        51.83764,
+        -0.56509
+      ]
     },
     "swiss-cottage-twyford": {
       "id": "swiss-cottage-twyford",
@@ -12603,7 +12931,7 @@
         -1.4859
       ]
     },
-    "bridport-community-orchard":{
+    "bridport-community-orchard": {
       "id": "bridport-community-orchard",
       "name": "Bridport Community Orchard",
       "city": "Bridport",
@@ -12694,7 +13022,10 @@
       "postcode": "",
       "full_address": "Dart Music Festival, Dartmouth",
       "url": "https://www.dartmusicfestival.co.uk/",
-      "latlon": [50.35139,-3.57858]
+      "latlon": [
+        50.35139,
+        -3.57858
+      ]
     },
     "aberavon-beach": {
       "id": "aberavon-beach",
@@ -12703,7 +13034,10 @@
       "postcode": "SA12 6QP",
       "full_address": "Princess Margaret Way, Port Talbot, SA12 6QP",
       "url": "",
-      "latlon": [51.58926, -3.80993]
+      "latlon": [
+        51.58926,
+        -3.80993
+      ]
     },
     "the-big-retreat-festival-lawrenny": {
       "id": "the-big-retreat-festival-lawrenny",
@@ -12755,7 +13089,7 @@
         -2.90639
       ]
     },
-    "willow-globe":{
+    "willow-globe": {
       "id": "willow-globe",
       "name": "Willow Globe, Llandrindod Wells",
       "city": "Llandrindod Wells",
@@ -12922,7 +13256,7 @@
         52.47275,
         1.45829
       ]
-     },
+    },
     "pitstone-memorial-hall": {
       "id": "pitstone-memorial-hall",
       "name": "Pitstone Memorial Hall",
@@ -12930,16 +13264,22 @@
       "postcode": "LU7 9EY",
       "full_address": "Pitstone Memorial Hall,Vicarage Rd, Pitstone, Leighton Buzzard, LU7 9EY",
       "url": "https://pitstonememorialhall.co.uk/",
-      "latlon": [51.82783,-0.63932]
-     },
-     "loppington-village-hall": {
+      "latlon": [
+        51.82783,
+        -0.63932
+      ]
+    },
+    "loppington-village-hall": {
       "id": "loppington-village-hall",
       "name": "Loppington Village Hall",
       "city": "Loppington, Shrewsbury",
       "postcode": "SY4 5NG",
       "full_address": "Loppington Village Hall, Shrewsbury, SY4 5NG",
       "url": "https://www.loppingtonvillagehall.co.uk/",
-      "latlon": [52.86149,-2.78483]
+      "latlon": [
+        52.86149,
+        -2.78483
+      ]
     },
     "nash-village-hall": {
       "id": "nash-village-hall",
@@ -12948,7 +13288,10 @@
       "postcode": "SY8 3AL",
       "full_address": "Nash Village Hall, Clee Hill Road, Nash, Ludlow, SY8 3AL",
       "url": "https://nashvillagehall.co.uk/",
-      "latlon": [52.35367,-2.58634]
+      "latlon": [
+        52.35367,
+        -2.58634
+      ]
     },
     "chartham-village-hall": {
       "id": "chartham-village-hall",
@@ -12957,7 +13300,10 @@
       "postcode": "CT4 7JA",
       "full_address": "Chartham Village Hall, Canterbury, CT4 7JA",
       "url": "https://charthamvillagehall.co.uk/",
-      "latlon": [51.2713,1.01405]
+      "latlon": [
+        51.2713,
+        1.01405
+      ]
     },
     "hassocks-adastra-hall": {
       "id": "hassocks-adastra-hall",
@@ -12966,7 +13312,10 @@
       "postcode": "BN6 8QH",
       "full_address": "Adastra Hall, Keymer, Hassocks, BN6 8QH",
       "url": "https://adastrahall.com/",
-      "latlon": [50.92544,-0.13784]
+      "latlon": [
+        50.92544,
+        -0.13784
+      ]
     },
     "rudry-parish-hall": {
       "id": "rudry-parish-hall",
@@ -12975,7 +13324,9 @@
       "postcode": "CF83 3DF",
       "full_address": "Rudry Parish Hall, Rudry, Caerphilly, CF83 3DF",
       "url": "https://rudryparishhall.org/",
-      "latlon": [51.57742,-3.16693
+      "latlon": [
+        51.57742,
+        -3.16693
       ]
     },
     "east-challow-village-hall": {
@@ -12985,7 +13336,9 @@
       "postcode": "OX12 9SR",
       "full_address": "East Challow Village Hall, Wantage, OX12 9SR",
       "url": "https://www.eastchallowpc.co.uk/village-facilities/village-hall/",
-      "latlon": [51.59194,-1.45263
+      "latlon": [
+        51.59194,
+        -1.45263
       ]
     },
     "south-petherton-david-hall": {
@@ -12995,7 +13348,9 @@
       "postcode": "TA13 5AA",
       "full_address": "The David Hall, Roundwell St, South Petherton, TA13 5AA",
       "url": "https://www.thedavidhall.com/",
-      "latlon": [50.94884,-2.8063
+      "latlon": [
+        50.94884,
+        -2.8063
       ]
     },
     "edingale-village-hall": {
@@ -13005,7 +13360,9 @@
       "postcode": "B79 9LJ",
       "full_address": "Edingale Village Hall, Edingale, Tamworth, B79 9LJ",
       "url": "https://www.edingalevillagehall.com/",
-      "latlon": [52.70641,-1.68757
+      "latlon": [
+        52.70641,
+        -1.68757
       ]
     },
     "woodmancote-village-hall": {
@@ -13015,7 +13372,9 @@
       "postcode": "GL52 9HX",
       "full_address": "Woodmancote Village Hall, Cheltenham, GL52 9HX",
       "url": "https://www.woodmancotevillagehall.org.uk/",
-      "latlon": [51.94452,-2.04301
+      "latlon": [
+        51.94452,
+        -2.04301
       ]
     },
     "bitterley-village-hall": {
@@ -13025,7 +13384,9 @@
       "postcode": "SY8 3HQ",
       "full_address": "Bitterley Village Hall, Ludlow, SY8 3HQ",
       "url": "https://sites.google.com/site/bitterleyvillagehall/",
-      "latlon": [52.39405,-2.64235
+      "latlon": [
+        52.39405,
+        -2.64235
       ]
     },
     "bramshaw-village-hall": {
@@ -13035,7 +13396,9 @@
       "postcode": "SO43 7JE",
       "full_address": "Bramshaw Village Hall, Lyndhurst, SO43 7JE",
       "url": "https://www.bramshawvillagehall.co.uk/",
-      "latlon": [50.94133,-1.61792
+      "latlon": [
+        50.94133,
+        -1.61792
       ]
     },
     "minety-village-hall": {
@@ -13045,7 +13408,10 @@
       "postcode": "SN16 9QH",
       "full_address": "Minety Village Hall, Hornbury Hill, Minety, Malmesbury, SN16 9QH",
       "url": "https://minetyvillagehall.uk/",
-      "latlon": [51.61427,-1.96722]
+      "latlon": [
+        51.61427,
+        -1.96722
+      ]
     },
     "shaw-village-hall": {
       "id": "shaw-village-hall",
@@ -13054,7 +13420,10 @@
       "postcode": "SN12 8EP",
       "full_address": "Shaw Village Hall, Melksham, SN12 8EP",
       "url": "https://hallbookingonline.com/shaw/",
-      "latlon": [51.38946, -2.16474]
+      "latlon": [
+        51.38946,
+        -2.16474
+      ]
     },
     "wellington-heath-memorial-hall": {
       "id": "wellington-heath-memorial-hall",
@@ -13063,7 +13432,10 @@
       "postcode": "HR8 1ND",
       "full_address": "Wellington Heath Memorial Hall, Ledbury, HR8 1ND",
       "url": "https://www.wellingtonheathmemorialhall.com/",
-      "latlon": [52.06162,-2.42287]
+      "latlon": [
+        52.06162,
+        -2.42287
+      ]
     },
     "tretower-village-hall": {
       "id": "tretower-village-hall",
@@ -13072,7 +13444,10 @@
       "postcode": "NP8 1RF",
       "full_address": "Tretower Village Hall, Crickhowell, NP8 1RF",
       "url": "https://tretowervillagehall.org.uk/",
-      "latlon": [51.88445,-3.1856]
+      "latlon": [
+        51.88445,
+        -3.1856
+      ]
     },
     "grafton-underwood-village-hall": {
       "id": "grafton-underwood-village-hall",
@@ -13081,7 +13456,10 @@
       "postcode": "NN14 3AA",
       "full_address": "Grafton Underwood Village Hall, Kettering, NN14 3AA",
       "url": "https://www.facebook.com/graftonunderwoodvillagehall/?locale=en_GB",
-      "latlon": [52.41267,-0.64358]
+      "latlon": [
+        52.41267,
+        -0.64358
+      ]
     },
     "condover-village-hall": {
       "id": "condover-village-hall",
@@ -13090,7 +13468,10 @@
       "postcode": "SY5 7AA",
       "full_address": "Condover Village Hall, Shrewsbury, SY5 7AA",
       "url": "https://www.condovervillagehall.co.uk/",
-      "latlon": [52.64925,-2.74988]
+      "latlon": [
+        52.64925,
+        -2.74988
+      ]
     },
     "arundells-salisbury": {
       "id": "arundells-salisbury",
@@ -13099,7 +13480,10 @@
       "postcode": "SP5 5NJ",
       "full_address": "Arundells, 59 The Close, Salisbury, SP1 2EN",
       "url": "https://arundells.org/",
-      "latlon": [51.06593,-1.79985]
+      "latlon": [
+        51.06593,
+        -1.79985
+      ]
     },
     "sixpenny-handley-village-hall": {
       "id": "sixpenny-handley-village-hall",
@@ -13108,7 +13492,10 @@
       "postcode": "SP5 5NJ",
       "full_address": "Sixpenny Handley Village Hall, Salisbury, SP5 5NJ",
       "url": "https://sixpennyhandley.info/venues/sixpenny-handley-village-hall",
-      "latlon": [50.95474,-2.01061]
+      "latlon": [
+        50.95474,
+        -2.01061
+      ]
     },
     "moor-barton-wilding": {
       "id": "moor-barton-wilding",
@@ -13117,7 +13504,10 @@
       "postcode": "TQ13 8SH",
       "full_address": "Moor Barton Wilding, Moretonhampstead, TQ13 8SH",
       "url": "https://www.moorbarton.org/",
-      "latlon": [50.6371,-3.71811]
+      "latlon": [
+        50.6371,
+        -3.71811
+      ]
     },
     "brading-roman-villa": {
       "id": "brading-roman-villa",
@@ -13126,16 +13516,22 @@
       "postcode": "PO36 0PH",
       "full_address": "Brading Roman Villa, Morton Old Road, Brading, Isle of Wight, PO36 0PH",
       "url": "https://bradingromanvilla.org.uk/",
-      "latlon": [50.67148,-1.148]
+      "latlon": [
+        50.67148,
+        -1.148
+      ]
     },
-    "pier-st-ventnor-fringe":{
+    "pier-st-ventnor-fringe": {
       "id": "pier-st-ventnor-fringe",
       "name": "Pier Street Playhouse, Ventnor Fringe",
       "city": "Ventnor",
       "postcode": "PO38 1SX",
       "full_address": "Baptist Church, Pier St, Ventnor, Isle of Wight, PO38 1SX",
       "url": "https://vfringe.co.uk/",
-      "latlon": [50.59404,-1.20474]
+      "latlon": [
+        50.59404,
+        -1.20474
+      ]
     },
     "ingrams-yard-ventnor": {
       "id": "ingrams-yard-ventnor",
@@ -13144,7 +13540,10 @@
       "postcode": "PO38 1RZ",
       "full_address": "Ingrams Yard, Dudley Road, Ventnor, Isle of Wight, PO38 1RZ",
       "url": "https://vfringe.co.uk/",
-      "latlon": [50.59277,-1.21584]
+      "latlon": [
+        50.59277,
+        -1.21584
+      ]
     },
     "bijou-ventnor-fringe": {
       "id": "bijou-ventnor-fringe",
@@ -13153,7 +13552,10 @@
       "postcode": "PO38 1LE",
       "full_address": "Bijou Tent, Ventnor Park, Park Ave, Ventnor, Isle of Wight, PO38 1LE",
       "url": "https://vfringe.co.uk/",
-      "latlon": [50.59277,-1.21584]
+      "latlon": [
+        50.59277,
+        -1.21584
+      ]
     },
     "st-lawrence-village-hall": {
       "id": "st-lawrence-village-hall",
@@ -13162,53 +13564,71 @@
       "postcode": "PO38 1UW",
       "full_address": "St Lawrence Village Hall, Seven Sisters Road, St Lawrence, Ventnor, Isle of Wight, PO38 1UW",
       "url": "https://www.stlawrencevillagehall.uk",
-      "latlon": [50.58703,-1.24373]
+      "latlon": [
+        50.58703,
+        -1.24373
+      ]
     },
     "newport-memorial-hall": {
-        "id": "newport-memorial-hall",
-        "name": "Newport Memorial Hall, Pembs",
-        "city": "Newport, Pembrokeshire",
-        "postcode": "SA42 0TF",
-        "full_address": "Newport Memorial Hall, Newport, Pembrokeshire, SA42 0TF",
-        "url": "https://newportmemorialhall.co.uk/",
-        "latlon": [52.01568,-4.83751]
-      },
+      "id": "newport-memorial-hall",
+      "name": "Newport Memorial Hall, Pembs",
+      "city": "Newport, Pembrokeshire",
+      "postcode": "SA42 0TF",
+      "full_address": "Newport Memorial Hall, Newport, Pembrokeshire, SA42 0TF",
+      "url": "https://newportmemorialhall.co.uk/",
+      "latlon": [
+        52.01568,
+        -4.83751
+      ]
+    },
     "ustinov-theatre-royal": {
-          "id": "ustinov-theatre-royal",
-          "name": "Theatre Royal Ustinov Studio, Bath",
-          "city": "Bath",
-          "postcode": "BA1 1ET",
-          "full_address": "Theatre Royal Ustinov Studio, Sawclose, Bath, BA1 1ET",
-          "url": "https://www.theatreroyal.org.uk/your-visit/ustinov/",
-          "latlon": [51.38197,-2.36276]
-        },
+      "id": "ustinov-theatre-royal",
+      "name": "Theatre Royal Ustinov Studio, Bath",
+      "city": "Bath",
+      "postcode": "BA1 1ET",
+      "full_address": "Theatre Royal Ustinov Studio, Sawclose, Bath, BA1 1ET",
+      "url": "https://www.theatreroyal.org.uk/your-visit/ustinov/",
+      "latlon": [
+        51.38197,
+        -2.36276
+      ]
+    },
     "capstone-theatre": {
-          "id": "capstone-theatre",
-          "name": "Capstone Theatre, Liverpool",
-          "city": "Liverpool",
-          "postcode": "L6 1HP",
-          "full_address": "Capstone Theatre, Liverpool Hope University Creative Campus, 17 Shaw Street, Liverpool, L6 1HP",
-          "url": "https://capstone.hope.ac.uk/",
-          "latlon": [53.41343,-2.96885]
-        },
-      "arborist-cafe-truro": {
-          "id": "arborist-cafe-truro",
-          "name": "Arborist Cafe, Truro",
-          "city": "Truro",
-          "postcode": "TR3 6AG",
-          "full_address": "Arborist Cafe, Killiow Estate, Playing Place, Truro, TR3 6AG",
-          "url": "https://thearboristcafe.co.uk/",
-          "latlon": [50.23655,-5.08412]
-        },
-      "gregson-community-arts-centre": {
-          "id": "gregson-community-arts-centre",
-          "name": "Gregson Community & Arts Centre",
-          "city": "Lancaster",
-          "postcode": "LA1 3PY",
-          "full_address": "Gregson Community & Arts Centre, 33-35 Moorgate, Lancaster, LA1 3PY",
-          "url": "https://gregson.co.uk/",
-          "latlon": [54.0484,-2.7918]
-        },
+      "id": "capstone-theatre",
+      "name": "Capstone Theatre, Liverpool",
+      "city": "Liverpool",
+      "postcode": "L6 1HP",
+      "full_address": "Capstone Theatre, Liverpool Hope University Creative Campus, 17 Shaw Street, Liverpool, L6 1HP",
+      "url": "https://capstone.hope.ac.uk/",
+      "latlon": [
+        53.41343,
+        -2.96885
+      ]
+    },
+    "arborist-cafe-truro": {
+      "id": "arborist-cafe-truro",
+      "name": "Arborist Cafe, Truro",
+      "city": "Truro",
+      "postcode": "TR3 6AG",
+      "full_address": "Arborist Cafe, Killiow Estate, Playing Place, Truro, TR3 6AG",
+      "url": "https://thearboristcafe.co.uk/",
+      "latlon": [
+        50.23655,
+        -5.08412
+      ]
+    },
+    "gregson-community-arts-centre": {
+      "id": "gregson-community-arts-centre",
+      "name": "Gregson Community & Arts Centre",
+      "city": "Lancaster",
+      "postcode": "LA1 3PY",
+      "full_address": "Gregson Community & Arts Centre, 33-35 Moorgate, Lancaster, LA1 3PY",
+      "url": "https://gregson.co.uk/",
+      "latlon": [
+        54.0484,
+        -2.7918
+      ]
+    },
     "drjohnsonshouse": {
       "id": "drjohnsonshouse",
       "name": "Dr Johnson's House",
@@ -13216,7 +13636,10 @@
       "postcode": "EC4A 3DE",
       "full_address": "Dr Johnson's House, 17 Gough Square, London, EC4A 3DE",
       "url": "https://www.drjohnsonshouse.org/",
-      "latlon": [51.51504,-0.10818]
+      "latlon": [
+        51.51504,
+        -0.10818
+      ]
     },
     "blackwood-miners-institute": {
       "id": "blackwood-miners-institute",
@@ -13225,7 +13648,10 @@
       "postcode": "NP12 1BB",
       "full_address": "Blackwood Miner's Institute, High Street, Blackwood, NP12 1BB",
       "url": "https://www.blackwoodminersinstitute.com/en/",
-      "latlon": [51.6695,-3.1957]
+      "latlon": [
+        51.6695,
+        -3.1957
+      ]
     },
     "st-marys-chapel-aberdeen": {
       "id": "st-marys-chapel-aberdeen",
@@ -13258,7 +13684,10 @@
       "postcode": "BS2 0DF",
       "full_address": "The Wardrobe Theatre, The Old Market Assembly, 25 West Street, Old Market, Bristol, BS2 0DF",
       "url": "https://thewardrobetheatre.com/",
-      "latlon": [51.45679,-2.57905]
+      "latlon": [
+        51.45679,
+        -2.57905
+      ]
     },
     "theatre-shop-clevedon": {
       "id": "theatre-shop-clevedon",
@@ -13267,7 +13696,10 @@
       "postcode": "BS21 6HX",
       "full_address": "Theatre Shop, Unit 5, Queens Square, Clevedon, BS21 6HX",
       "url": "https://www.theatreshop.org.uk/",
-      "latlon": [51.43541,-2.85237]
+      "latlon": [
+        51.43541,
+        -2.85237
+      ]
     },
     "ruskin-mill-gallery": {
       "id": "ruskin-mill-gallery",
@@ -13276,7 +13708,10 @@
       "postcode": "GL6 0LA",
       "full_address": "Ruskin Mill Gallery, Ruskin Mill Millbottom, Old Bristol Road, Nailsworth, Stroud, GL6 0LA",
       "url": "https://rmlt.org.uk/category/ruskin-mill-gallery/",
-      "latlon": [51.68997,-2.22324]
+      "latlon": [
+        51.68997,
+        -2.22324
+      ]
     },
     "alma-tavern-theatre": {
       "id": "alma-tavern-theatre",
@@ -13285,7 +13720,10 @@
       "postcode": "BS8 2HY",
       "full_address": "Alma Tavern Theatre, 18-20 Alma Vale Road, Bristol, BS8 2HY",
       "url": "https://www.almatavernandtheatre.co.uk/",
-      "latlon": [51.46189,-2.61637]
+      "latlon": [
+        51.46189,
+        -2.61637
+      ]
     },
     "pound-arts-corsham": {
       "id": "pound-arts-corsham",
@@ -13294,7 +13732,10 @@
       "postcode": "SN13 9HX",
       "full_address": "Pound Arts, The Pound, Pound Pill, Corsham, SN13 9HX",
       "url": "https://poundarts.org.uk/",
-      "latlon": [51.42864,-2.18385]
+      "latlon": [
+        51.42864,
+        -2.18385
+      ]
     },
     "cotswold-playhouse": {
       "id": "cotswold-playhouse",
@@ -13303,9 +13744,11 @@
       "postcode": "GL5 1LW",
       "full_address": "The Cotswold Playhouse, Parliament Street, Stroud, GL5 1LW",
       "url": "https://www.cotswoldplayhouse.co.uk/",
-      "latlon": [51.74517,-2.20843]
+      "latlon": [
+        51.74517,
+        -2.20843
+      ]
     },
-
     "gladstone-village-hall": {
       "id": "gladstone-village-hall",
       "name": "Gladstone Village Hall",
@@ -13313,7 +13756,10 @@
       "postcode": "CH64 5TH",
       "full_address": "Gladstone Village Hall, Burton, Chester, CH64 5TH",
       "url": "https://gladstonevillagehall.org/",
-      "latlon": [53.26164,-3.02352]
+      "latlon": [
+        53.26164,
+        -3.02352
+      ]
     },
     "reydon-village-hall": {
       "id": "reydon-village-hall",
@@ -13322,7 +13768,10 @@
       "postcode": "IP18 6RF",
       "full_address": "Reydon Village Hall, Lowestoft Road, Southwold, IP18 6RF",
       "url": "https://reydonvillage.org/about-reydon/amenities/",
-      "latlon": [52.3366,1.67266]
+      "latlon": [
+        52.3366,
+        1.67266
+      ]
     },
     "stannington-village-hall": {
       "id": "stannington-village-hall",
@@ -13331,7 +13780,9 @@
       "postcode": "NE61 6EL",
       "full_address": "Stannington Village Hall, Main Street, Stannington, Morpeth, NE61 6EL",
       "url": "https://northumberlandvillagehalls.org.uk/stannington-village-hall",
-      "latlon": [55.1092,-1.66575
+      "latlon": [
+        55.1092,
+        -1.66575
       ]
     },
     "clapham-village-hall-bedford": {
@@ -13342,7 +13793,9 @@
       "full_address": "Clapham Village Hall, 118, High Street, Clapham, Bedford, MK41 6BP",
       "url": "https://claphamvillagehall.com/",
       "email": "villagehall@clapham-pc.gov.uk",
-      "latlon": [52.16096,-0.49577
+      "latlon": [
+        52.16096,
+        -0.49577
       ]
     },
     "clarke-foley-community-centre": {
@@ -13352,7 +13805,9 @@
       "postcode": "LS29 9DZ",
       "full_address": "Clarke Foley Community Centre, Cunliffe Rd, Ilkley, LS29 9DZ",
       "url": "https://clarkefoley.org.uk/",
-      "latlon": [53.9261,-1.82667
+      "latlon": [
+        53.9261,
+        -1.82667
       ]
     },
     "hawkesbury-upton-village-hall": {
@@ -13363,10 +13818,11 @@
       "full_address": "Hawkesbury Upton Village Hall, High Street, Hawkesbury Upton, GL9 1AU",
       "url": "https://www.village-hall.org/",
       "email": "bookings@village-hall.org",
-      "latlon": [51.58147,-2.3223
+      "latlon": [
+        51.58147,
+        -2.3223
       ]
     },
-
     "wellingore-memorial-hall-lincoln": {
       "id": "wellingore-memorial-hall-lincoln",
       "name": "Wellingore Memorial Hall, Lincoln",
@@ -13374,7 +13830,9 @@
       "postcode": "LN5 0BD",
       "full_address": "Wellingore Memorial Hall, Memorial Hall Drive, Wellingore, Lincoln, LN5 0BD",
       "url": "https://www.wellingorememorialhall.com/",
-      "latlon": [53.09935,-0.53646
+      "latlon": [
+        53.09935,
+        -0.53646
       ]
     },
     "st-peters-church-horninghold": {
@@ -13384,7 +13842,9 @@
       "postcode": "LE16 8DH",
       "full_address": "St Peters Church, Hallaton Road, Horninghold, Market Harborough, LE16 8DH",
       "url": "http://www.horninghold.org.uk/",
-      "latlon": [52.56657,-0.80951
+      "latlon": [
+        52.56657,
+        -0.80951
       ]
     },
     "spencers-wood-village-hall": {
@@ -13395,7 +13855,9 @@
       "full_address": "Spencers Wood Village Hall, Basingstoke Road, Spencers Wood,Reading, RG7 1AP",
       "url": "https://spencerswoodvillagehall.co.uk/",
       "email": "admin@swvh.org.uk",
-      "latlon": [51.39992,-0.97288
+      "latlon": [
+        51.39992,
+        -0.97288
       ]
     },
     "the-alexander-centre-faversham": {
@@ -13405,7 +13867,9 @@
       "postcode": "ME13 8NZ",
       "full_address": "The Alexander Centre, 15—17 Preston St, Faversham, ME13 8NZ",
       "url": "https://thealex.org.uk/",
-      "latlon": [51.31407,0.89159
+      "latlon": [
+        51.31407,
+        0.89159
       ]
     },
     "bethersden-village-hall": {
@@ -13415,7 +13879,9 @@
       "postcode": "TN26 3AF",
       "full_address": "Bethersden Village Hall, Forge Hill, Bethersden, TN26 3AF",
       "url": "https://www.bethersdenvillagehall.com/",
-      "latlon": [51.12773,0.75828
+      "latlon": [
+        51.12773,
+        0.75828
       ]
     },
     "woodgreen-village-hall": {
@@ -13426,7 +13892,9 @@
       "full_address": "Woodgreen Village Hall, Woodgreen, Fordingbridge, SP6 2AQ",
       "url": "http://www.woodgreenvillagehall.uk/",
       "email": "info@woodgreenvillagehall.org.uk",
-      "latlon": [50.95957,-1.7583
+      "latlon": [
+        50.95957,
+        -1.7583
       ]
     },
     "llangrove-village-hall": {
@@ -13436,7 +13904,9 @@
       "postcode": "HR9 6EX",
       "full_address": "Llangrove Village Hall, Ross-on-Wye, HR9 6EX",
       "url": "http://www.llangrove.org.uk/",
-      "latlon": [51.86909,-2.68858
+      "latlon": [
+        51.86909,
+        -2.68858
       ]
     },
     "brockham-village-hall": {
@@ -13446,7 +13916,9 @@
       "postcode": "RH3 7JJ",
       "full_address": "Brockham Village Hall, Betchworth, RH3 7JJ",
       "url": "https://www.brockham.org/village-hall",
-      "latlon": [51.23222,-0.28667
+      "latlon": [
+        51.23222,
+        -0.28667
       ]
     },
     "mcgrigor-hall-frinton": {
@@ -13456,7 +13928,9 @@
       "postcode": "CO13 9EB",
       "full_address": "McGrigor Hall, 85, Fourth Avenue, Frinton-on-Sea, CO13 9EB",
       "url": "https://www.mcgrigorhallfrinton.co.uk/",
-      "latlon": [51.83348,1.24245
+      "latlon": [
+        51.83348,
+        1.24245
       ]
     },
     "the-magazine-theatre-and-exhibition-space-bembridge-fort": {
@@ -13466,7 +13940,9 @@
       "postcode": "PO36 8QY",
       "full_address": "The Magazine Theatre and Exhibition Space, Bembridge Fort, Culver Down, Bembridge, Isle of Wight, PO36 8QY",
       "url": "https://www.bembridgefort.org/",
-      "latlon": [50.67772,-1.10257
+      "latlon": [
+        50.67772,
+        -1.10257
       ]
     },
     "goathland-village-hall": {
@@ -13476,7 +13952,9 @@
       "postcode": "YO22 5JR",
       "full_address": "Goathland Village Hall, Whitby, YO22 5JR",
       "url": "https://goathlandvillagehall.org/",
-      "latlon": [54.4008,-0.7218
+      "latlon": [
+        54.4008,
+        -0.7218
       ]
     },
     "knott-memorial-hall": {
@@ -13486,7 +13964,9 @@
       "postcode": "NE15 0BH",
       "full_address": "Knott Memorial Hall, Towne Gate, Heddon on the Wall, Newcastle-upon-Tyne, NE15 0BH",
       "url": "https://northumberlandvillagehalls.org.uk/heddon-village-knott-memorial-hall",
-      "latlon": [54.99652,-1.79339
+      "latlon": [
+        54.99652,
+        -1.79339
       ]
     },
     "thornhill-community-hall": {
@@ -13496,7 +13976,9 @@
       "postcode": "FK8 3QB",
       "full_address": "Thornhill Community Hall, Back Loan, Thornhill, Stirling, FK8 3QB",
       "url": "https://www.thornhillcommunityhall.org.uk/",
-      "latlon": [56.17295, -4.15122
+      "latlon": [
+        56.17295,
+        -4.15122
       ]
     },
     "archiestown-village-hall": {
@@ -13506,7 +13988,9 @@
       "postcode": "AB38 7QX",
       "full_address": "Archiestown Village Hall, High Street, Archiestown, Aberlour, AB38 7QX",
       "url": "https://www.archiestown.com/",
-      "latlon": [57.4811,-3.28303
+      "latlon": [
+        57.4811,
+        -3.28303
       ]
     },
     "kirkhill-community-centre": {
@@ -13516,7 +14000,9 @@
       "postcode": "IV5 7NX",
       "full_address": "Kirkhill Community Centre, 1, St Mary's Road, Kirkhill, Inverness, IV5 7NX",
       "url": "https://www.kirkhillandbunchrew.org.uk/kirkhill-community-centre/",
-      "latlon": [57.47669,-4.41301
+      "latlon": [
+        57.47669,
+        -4.41301
       ]
     },
     "new-pitsligo-public-hall": {
@@ -13526,7 +14012,9 @@
       "postcode": "AB43 6NF",
       "full_address": "New Pitsligo Public Hall, 63a, High Street, Fraserburgh, AB43 6NF",
       "url": "https://www.facebook.com/NewPitsligoPublicHall/",
-      "latlon": [57.59267,-2.19797
+      "latlon": [
+        57.59267,
+        -2.19797
       ]
     },
     "three-villages-hall-arrochar": {
@@ -13537,7 +14025,9 @@
       "full_address": "Three Villages Hall, Shore Road, Arrochar, Argyll and Bute, G83 7AB",
       "url": "https://threevillageshall.scot/",
       "email": "admin@threevillageshall.scot",
-      "latlon": [56.19648,-4.74509
+      "latlon": [
+        56.19648,
+        -4.74509
       ]
     },
     "lowther-parish-hall-penrith": {
@@ -13547,7 +14037,9 @@
       "postcode": "CA10 2HT",
       "full_address": "Lowther Parish Hall, Hackthorpe, Penrith, CA10 2HT",
       "url": "https://www.lowtherparishhall.org.uk/",
-      "latlon": [54.60341,-2.71491
+      "latlon": [
+        54.60341,
+        -2.71491
       ]
     },
     "steventon-village-hall": {
@@ -13557,7 +14049,9 @@
       "postcode": "OX13 6RR",
       "full_address": "Steventon Village Hall, The Green, Steventon, Abingdon, OX13 6RR",
       "url": "https://steventonparishcouncil.gov.uk/the-village/amenities/village-hall/",
-      "latlon": [51.62549,-1.32101
+      "latlon": [
+        51.62549,
+        -1.32101
       ]
     },
     "kingsley-hall": {
@@ -13567,7 +14061,9 @@
       "postcode": "EX39 1HX",
       "full_address": "Kingsley Hall, 17 Atlantic Way,Westward Ho, Bideford, EX39 1HX",
       "url": "https://thekingsleyhall-co-uk.stackstaging.com/",
-      "latlon": [51.03941,-4.23681
+      "latlon": [
+        51.03941,
+        -4.23681
       ]
     },
     "woodbury-village-hall": {
@@ -13577,7 +14073,9 @@
       "postcode": "EX5 1LX",
       "full_address": "Woodbury Village Hall, Flower Street, Woodbury, Exeter, EX5 1LX",
       "url": "https://www.woodburyvillagehall.org/",
-      "latlon": [50.67593,-3.40038
+      "latlon": [
+        50.67593,
+        -3.40038
       ]
     },
     "barrow-gurney-village-hall": {
@@ -13587,7 +14085,9 @@
       "postcode": "BS48 3SD",
       "full_address": "Barrow Gurney Village Hall, Barrow Street, Barrow Gurney, Bristol, BS48 3SD",
       "url": "https://barrowgurneyvillagehall.com/",
-      "latlon": [51.40878,-2.67763
+      "latlon": [
+        51.40878,
+        -2.67763
       ]
     },
     "haslemere-museum": {
@@ -13597,7 +14097,9 @@
       "postcode": "GU27 2LA",
       "full_address": "Haslemere Museum, 78 High Street, Haslemere, GU27 2LA",
       "url": "https://www.haslemeremuseum.co.uk/",
-      "latlon": [51.08792,-0.70967
+      "latlon": [
+        51.08792,
+        -0.70967
       ]
     },
     "kteas-cakes-wolverhampton": {
@@ -13619,7 +14121,9 @@
       "postcode": "SK17 9UD",
       "full_address": "Taddington Village Hall (Bramwell Memorial Institute ), Main Road, Taddington, Buxton, SK17 9UD",
       "url": "https://taddington.org.uk/taddington-village-hall-about-us/",
-      "latlon": [53.2361,-1.78279
+      "latlon": [
+        53.2361,
+        -1.78279
       ]
     },
     "stamford-bridge-village-hall": {
@@ -13629,7 +14133,9 @@
       "postcode": "YO41 1DY",
       "full_address": "Stamford Bridge Village Hall, 4 Low Catton Road, Stamford Bridge, York, YO41 1DY",
       "url": "https://stamfordbridgevillagehall.weebly.com/",
-      "latlon": [53.98723,-0.91716
+      "latlon": [
+        53.98723,
+        -0.91716
       ]
     },
     "almeley-village-hall": {
@@ -13639,7 +14145,9 @@
       "postcode": "HR3 6LH",
       "full_address": "Almeley Village Hall, Hereford, HR3 6LH",
       "url": "https://almeleyparishcouncil.gov.uk/the-parish/business-directory/almeley-village-hall/",
-      "latlon": [52.15819,-2.97345
+      "latlon": [
+        52.15819,
+        -2.97345
       ]
     },
     "rampton-village-hall": {
@@ -13649,7 +14157,10 @@
       "postcode": "CB24 8QA",
       "full_address": "Rampton Village Hall, 4 Church End, Rampton, Cambridge, CB24 8QA",
       "url": "https://www.ramptonvillagehall.co.uk/",
-      "latlon": [52.29124,0.09193]
+      "latlon": [
+        52.29124,
+        0.09193
+      ]
     },
     "doddinghurst-village-hall": {
       "id": "doddinghurst-village-hall",
@@ -13658,7 +14169,10 @@
       "postcode": "CM15 0NJ",
       "full_address": "Doddinghurst Village Hall, Church Lane, Brentwood, Doddinghurst, CM15 0NJ",
       "url": "https://www.doddinghurstvillagehall.com/",
-      "latlon": [51.66668,0.29522]
+      "latlon": [
+        51.66668,
+        0.29522
+      ]
     },
     "whitbourne-village-hall": {
       "id": "whitbourne-village-hall",
@@ -13667,7 +14181,10 @@
       "postcode": "WR6 5RN",
       "full_address": "Whitbourne Village Hall, Whitbourne, WR6 5RN",
       "url": "https://www.whitbournevillagehall.co.uk/",
-      "latlon": [52.20858,-2.41266]
+      "latlon": [
+        52.20858,
+        -2.41266
+      ]
     },
     "wilstone-village-hall-tring": {
       "id": "wilstone-village-hall-tring",
@@ -13676,7 +14193,10 @@
       "postcode": "HP23 4PE",
       "full_address": "Wilstone Village Hall, 35, Tring Road, Wilstone, Tring, HP23 4PE",
       "url": "https://wilstonevillagehall.org.uk/",
-      "latlon": [51.81943,-0.69017]
+      "latlon": [
+        51.81943,
+        -0.69017
+      ]
     },
     "halstead-village-hall-sevenoaks": {
       "id": "halstead-village-hall-sevenoaks",
@@ -13685,7 +14205,10 @@
       "postcode": "TN14 7EX",
       "full_address": "Halstead Village Hall, Knockholt Road, Halstead, TN14 7EX",
       "url": "https://halsteadparishcouncil.gov.uk/local-information/hall-hire/halstead-village-hall",
-      "latlon": [51.32845,0.13288]
+      "latlon": [
+        51.32845,
+        0.13288
+      ]
     },
     "ravensden-village-hall-bedford": {
       "id": "ravensden-village-hall-bedford",
@@ -13694,7 +14217,10 @@
       "postcode": "MK44 2RL",
       "full_address": "Ravensden Village Hall, Church Hill, Ravensden, Bedford, MK44 2RL",
       "url": "https://ravensdenvillagehall.co.uk/index.html",
-      "latlon": [52.17284,-0.43007]
+      "latlon": [
+        52.17284,
+        -0.43007
+      ]
     },
     "capel-le-ferne-village-hall": {
       "id": "capel-le-ferne-village-hall",
@@ -13703,16 +14229,22 @@
       "postcode": "CT18 7LX",
       "full_address": "Capel le Ferne Village Hall, Lancaster Avenue, Capel-le-Ferne, Folkestone, CT18 7LX",
       "url": "https://www.capelvillagehall.com/",
-      "latlon": [51.10496,1.21186]
+      "latlon": [
+        51.10496,
+        1.21186
+      ]
     },
-   "ferring-village-hall": {
+    "ferring-village-hall": {
       "id": "ferring-village-hall",
       "name": "Ferring Village Hall, Worthing",
       "city": "Worthing",
       "postcode": "BN12 5JP",
       "full_address": "90, Ferring Street, Ferring, West Sussex, BN12 5JP",
       "url": "https://www.ferringvillagehall.org.uk/",
-      "latlon": [50.81561,-0.44674]
+      "latlon": [
+        50.81561,
+        -0.44674
+      ]
     },
     "caerphilly-miners-centre": {
       "id": "caerphilly-miners-centre",
@@ -13721,18 +14253,24 @@
       "postcode": "CF83 1BJ",
       "full_address": "Caerphilly Miners Centre for the Community, Watford Road, Caerphilly, CF83 1BJ",
       "url": "https://www.caerphillyminerscentre.co.uk/",
-      "latlon": [51.56918,-3.23109]
+      "latlon": [
+        51.56918,
+        -3.23109
+      ]
     },
-   "preston-village-hall-weymouth": {
+    "preston-village-hall-weymouth": {
       "id": "preston-village-hall-weymouth",
       "name": "Preston Village Hall, Weymouth",
       "city": "Weymouth",
       "postcode": "DT3 6BH",
       "full_address": "Preston Village Hall, Preston Road, Weymouth, DT3 6BH",
       "url": "https://www.prestonvillagehallweymouth.co.uk/",
-      "latlon": [50.64486,-2.42704]
+      "latlon": [
+        50.64486,
+        -2.42704
+      ]
     },
-     "the-nose": {
+    "the-nose": {
       "id": "the-nose",
       "name": "The Nose",
       "city": "Walton-on-the-Naze",
@@ -13932,7 +14470,7 @@
         0.5914
       ]
     },
-        "the-golden-hinde-london": {
+    "the-golden-hinde-london": {
       "id": "the-golden-hinde-london",
       "name": "The Golden Hinde, London",
       "city": "London",
@@ -14040,7 +14578,7 @@
         -1.20423
       ]
     },
-        "white-horse-shipston-on-stour": {
+    "white-horse-shipston-on-stour": {
       "id": "white-horse-shipston-on-stour",
       "name": "White Horse, Shipston-on-Stour",
       "city": "Shipston-on-Stour",
@@ -14388,7 +14926,7 @@
         -3.69041
       ]
     },
-        "the-master-shipwright-s-house-deptford": {
+    "the-master-shipwright-s-house-deptford": {
       "id": "the-master-shipwright-s-house-deptford",
       "name": "The Master Shipwright's House, Deptford",
       "city": "London",
@@ -14480,7 +15018,7 @@
         -2.31298
       ]
     },
-        "the-live-rooms-chester": {
+    "the-live-rooms-chester": {
       "id": "the-live-rooms-chester",
       "name": "The Live Rooms, Chester",
       "city": "Chester",
@@ -14830,15 +15368,30 @@
       "name": "Daniel Morden",
       "url": "https://danielmorden.org/",
       "bio": "Daniel Morden has been a professional storyteller since 1989. He has travelled the world, collecting and telling traditional stories. He has a huge repertoire, from timeless Greek myths and thrilling adventures to awful jokes. He has given the Opening Address at Sydney Writers Festival, won awards for his books and was recently awarded The Hay Festival Medal. ",
-      "podcast_appearances" : [{"podcast": "The Secret Life of Writers Podcast", "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/", "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3" , "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"}],
-      "podcast": ["https://www.podomatic.com/podcasts/thecraneskinbag", "https://www.podomatic.com/podcasts/thedevilsviolin"]
+      "podcast_appearances": [
+        {
+          "podcast": "The Secret Life of Writers Podcast",
+          "podcast_url": "https://the-secret-life-of-writers-by-tablo.simplecast.com/",
+          "audio_url": "https://cdn.simplecast.com/audio/30d5f5/30d5f58c-9dfe-4113-aad8-4531cf4244d1/89c32e02-edad-4da6-aec2-6b0571e3770a/200713-the-secret-life-of-writers-ep07-daniel-morden-mix-v3_tc.mp3",
+          "episode_name": "Daniel Morden on why ancient myths are still relevant today, 30 years as a traditional storyteller and the sleeping giants beneath Wales"
+        }
+      ],
+      "podcast": [
+        "https://www.podomatic.com/podcasts/thecraneskinbag",
+        "https://www.podomatic.com/podcasts/thedevilsviolin"
+      ]
     },
     "the-travelling-talesman-cliff-eastabrook": {
       "id": "the-travelling-talesman-cliff-eastabrook",
       "name": "The Travelling Talesman (Cliff Eastabrook)",
       "url": "https://thetravellingtalesman.co.uk/",
       "bio": "Cliff Eastabrook, aka 'The Travelling Talesmand', is spoken word narrative performer of myths, legends, folktales and the occasional poem, a storyteller! His energetic and engaging performance is adapted on a per gig basis for a wide variety of adult and family audiences. He has over twenty years professional experience, is a member of Equity and can provide risk assessments on request.\n\n\n\n He has toured the country from Penzance to York, for feasts, festivals and fun since the early nineties with tales of Norse Gods, Celtic mysteries, clever girls and dragon Slayers, medieval mayhem, giants, goblins and halloween horrors. He originally specialised in Northern European tales but stories are now drawn from all over the world. He is constantly expanding his repertoire, reading myths from various cultures, chasing down unusual variations on folk tales and researching, learning or creating new adventures for special theme or site specific events.",
-      "youtube_videos": [{"story_name": "The Girl With Headwear of Unspecified Colour", "yt_url": "https://www.youtube.com/watch?v=5pVShXsVYhw"}]
+      "youtube_videos": [
+        {
+          "story_name": "The Girl With Headwear of Unspecified Colour",
+          "yt_url": "https://www.youtube.com/watch?v=5pVShXsVYhw"
+        }
+      ]
     },
     "alys-torrance": {
       "id": "alys-torrance",
@@ -14851,14 +15404,32 @@
       "name": "Nell Phoenix",
       "url": "http://www.nellphoenix.co.uk/",
       "bio": "Nell has been performing professionally since graduating from Goldsmiths College. She has performed with theatre companies for 12 years touring all around the world - from the Blackpool Grand to the Sydney Opera House; all over the UK, Ireland, Eastern and Western Europe, Australia and in all sorts of spaces and places in-between.\n\n\n\nShe is Artistic Director of StoryNight at Torriano, Kentish Town's thriving performance storytelling clubs for adults. Nell is a passionate promoter of storytelling as a contemporary performance art.",
-      "youtube_videos": [{"story_name": "Storytelling with Nell Phoenix - Grimms Remix (Story Museum)", "yt_url": "https://www.youtube.com/watch?v=WNAvYzqd9oQ"}]
+      "youtube_videos": [
+        {
+          "story_name": "Storytelling with Nell Phoenix - Grimms Remix (Story Museum)",
+          "yt_url": "https://www.youtube.com/watch?v=WNAvYzqd9oQ"
+        }
+      ]
     },
     "nick-hennessey": {
       "id": "nick-hennessey",
       "name": "Nick Hennessey",
       "url": "https://nickhennessey.co.uk/",
       "bio": "Nick Hennessey is an internationally acclaimed storyteller, playwright, folk singer, song writer and musician. He has told stories for more than 20 years, performing at venues such as the South Bank Centre and Royal Albert Hall. He is particularly drawn to North European cultural traditions and has been awarded high honours in Finland for his work on their National Epic, Kalevala.\n\n\n\n He is a sought after artistic collaborator, working with top of the field musicians and storytellers. He has broadcast documentaries for BBC Radio 4 and his musical work has featured on BBC Radio 3's Late Junction. With a deep appreciation for the key role that stories play in how we learn about and express ourselves and the world, whether in businesses or schools, he works extensively in helping draw out our natural storytelling skills.",
-      "youtube_videos": [ {"story_name": "Storyteller Nick Hennessey at the urban storytelling oasis in Zurich", "yt_url": "https://www.youtube.com/watch?v=sedZvSu84Tw"}, {"story_name": "The story of Paddy McGee told by Nick Hennessey", "yt_url": "https://www.youtube.com/watch?v=s3oOyCbdcgo"},  {"story_name": "Nick Hennessey tells Robin Hood and the Old Woman", "yt_url": "https://www.youtube.com/watch?v=OBG_ImMXilc"}]
+      "youtube_videos": [
+        {
+          "story_name": "Storyteller Nick Hennessey at the urban storytelling oasis in Zurich",
+          "yt_url": "https://www.youtube.com/watch?v=sedZvSu84Tw"
+        },
+        {
+          "story_name": "The story of Paddy McGee told by Nick Hennessey",
+          "yt_url": "https://www.youtube.com/watch?v=s3oOyCbdcgo"
+        },
+        {
+          "story_name": "Nick Hennessey tells Robin Hood and the Old Woman",
+          "yt_url": "https://www.youtube.com/watch?v=OBG_ImMXilc"
+        }
+      ]
     },
     "sarah-dovey": {
       "id": "sarah-dovey",
@@ -14905,14 +15476,20 @@
     },
     "cath-little-bronia-evers": {
       "id": "cath-little-bronia-evers",
-      "performer_ids": ["cath-little", "bronia-evers"],
+      "performer_ids": [
+        "cath-little",
+        "bronia-evers"
+      ],
       "name": "Cath Little | Bronia Evers",
       "url": "",
       "bio": "Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here.\n\n\n\nBronia is a storyteller, designer, maker and puppeteer. Her practice combines spoken word storytelling with hand crafted performing objects, sets and puppets. Her current work focusses on creating moving panoramas - a pre-cinematic form of moving image (also known as crankies), and embedding these in live and digital performances."
     },
     "nick-hennessey-emily-hennessey": {
       "id": "nick-hennessey-emily-hennessey",
-      "performer_ids": ["nick-hennessey", "emily-hennessey"],
+      "performer_ids": [
+        "nick-hennessey",
+        "emily-hennessey"
+      ],
       "name": "Nick  Hennessey | Emily Hennessey",
       "url": "",
       "bio": "Husband and wife team, Nick and Emily Hennessey are both acclaimed storytellers in their own right.\n\n\n\nNick Hennessey is an internationally acclaimed storyteller, playwright, folk singer, song writer and musician. He has told stories for more than 20 years, performing at venues such as the South Bank Centre and Royal Albert Hall. He is particularly drawn to North European cultural traditions and has been awarded high honours in Finland for his work on their National Epic, Kalevala.\n\n\n\nEmily Hennessey is a playful and dynamic performance storyteller with a great love of Hindu mythology. She has travelled over 10,000 miles across India and Nepal by train, bus, rattling rickshaw and bicycle. Emily has toured in India, Iceland and Japan and performed at venues and festivals across Europe. She spent many months at the Kattaikkuttu School in Tamil Nadu, learning from the children who perform stories from the Mahabharata through music, dance and song."
@@ -14928,7 +15505,24 @@
       "name": "Riika Polonen",
       "url": "https://riikkapalonen.com/",
       "bio": "As a child Riika discovered that storybooks could transport her to other worlds of fairytale, myth and magic. To this day she still enjoys visiting those faraway places, and as a storyteller she is able to take others with her on that journey.\n\n\n\nFor over 15 years Riika has been performing as a storyteller in Finland and in recent years in venues across the UK from Oxford to Orkney, and internationally from Morocco to Lapland. \n\n\n\nRiika also works in collaberation with her husband, folk musician Richard Clarke to create their very popular song and story performances.",
-      "youtube_videos": [{"story_name": "A Hospitable Hostess", "yt_url": "https://www.youtube.com/watch?v=bsY1PI7WhWE"}, {"story_name": "Two Sisters", "yt_url": "https://www.youtube.com/watch?v=ps-EK_MKg3w"}, {"story_name": "Suometar and the suitors", "yt_url": "https://www.youtube.com/watch?v=QxU-DojiWyk"}, {"story_name": "Antti and the Old Man", "yt_url": "https://www.youtube.com/watch?v=TcvM_-uJP_g"}]
+      "youtube_videos": [
+        {
+          "story_name": "A Hospitable Hostess",
+          "yt_url": "https://www.youtube.com/watch?v=bsY1PI7WhWE"
+        },
+        {
+          "story_name": "Two Sisters",
+          "yt_url": "https://www.youtube.com/watch?v=ps-EK_MKg3w"
+        },
+        {
+          "story_name": "Suometar and the suitors",
+          "yt_url": "https://www.youtube.com/watch?v=QxU-DojiWyk"
+        },
+        {
+          "story_name": "Antti and the Old Man",
+          "yt_url": "https://www.youtube.com/watch?v=TcvM_-uJP_g"
+        }
+      ]
     },
     "niall-moorjani": {
       "id": "niall-moorjani",
@@ -15114,13 +15708,12 @@
       "facebook": "halfmanhalfmyth",
       "bio": "Since 1985, David Brown has been telling stories in theatres, art centres, libraries, city farms and schools, in woods and fields, at camp sites and festivals from Orkney to Land's End.\n\n\n\n David specialises in epics, myths and legends from the so-called “Dark Ages” or early mediaeval period including the Welsh Four Branches of the Mabinogion, the Norse mythological cycle, Beowulf, Wayland the Smith and historical tales of sixth century northern British kings, from Gwynedd to Edinburgh.\n\n\n\n He is keen to promote storytelling for the enjoyment of adults as well as children. Ghost and horror stories are his second favourite genre which he has collected from trips to Cornwall and Iceland as well as his native Cumbria.\n\n\n\nDavid first started telling stories after hearing a cassette of Robin Williamson's tales.  He learnt a couple of the stories on the cassette, commenced learning the Norse mythological cycle and has not stopped since then. To more fully recreate the voice of the bards, David's translations of appropriate poems are interspersed in the narrative of such stories, as well as his own poems composed according to the rules of Anglo-Saxon and Norse verse. The lyre — the storyteller's instrument up until the early Middle Ages —  accompanies some of these tales."
     },
-    "ben-haggarty":{
+    "ben-haggarty": {
       "id": "ben-haggarty",
       "name": "Ben Haggarty",
       "url": "https://benhaggarty.com/",
       "bio": "Ben Haggarty is Artistic Director of the Crick Crack Club and one of the UK's most popular contemporary performance storytellers. Renowned for his playful, physical and often challenging performances, his repertoire spans Indo-European fairytales for grown-ups, Greek and Irish mythology, the epic of Gilgamesh and contemporary myths of Frankenstein and The Sandman, which won him a Fringe First award for best spoken word."
     },
-
     "steph-brittain": {
       "id": "steph-brittain",
       "name": "Steph Brittain",
@@ -15152,8 +15745,29 @@
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
       "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
-      "podcast_appearances" : [{"podcast": "Talking Walking", "podcast_url": "https://www.talkingwalking.net/", "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3" , "episode_name": "Hugh Lupton talking walking"}],
-      "youtube_videos": [{"story_name": "Jack Ostler and the Hare", "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M", "format": "telling"}, {"story_name": "Who takes the most Pleasure from the Act of Love?", "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"}, {"story_name": "The Cow Tail Switch", "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"}] 
+      "podcast_appearances": [
+        {
+          "podcast": "Talking Walking",
+          "podcast_url": "https://www.talkingwalking.net/",
+          "audio_url": "https://www.talkingwalking.net/wp-content/uploads/2021/06/HLv1.mp3",
+          "episode_name": "Hugh Lupton talking walking"
+        }
+      ],
+      "youtube_videos": [
+        {
+          "story_name": "Jack Ostler and the Hare",
+          "yt_url": "https://www.youtube.com/watch?v=ofsBNYGvp8M",
+          "format": "telling"
+        },
+        {
+          "story_name": "Who takes the most Pleasure from the Act of Love?",
+          "yt_url": "https://www.youtube.com/watch?v=lfVzd9IUQVk"
+        },
+        {
+          "story_name": "The Cow Tail Switch",
+          "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"
+        }
+      ]
     },
     "suited-storytellers": {
       "id": "suited-storytellers",
@@ -15180,18 +15794,26 @@
       "url": "",
       "bio": ""
     },
-    "tis-tales-hsf":{
+    "tis-tales-hsf": {
       "id": "tis-tales-hsf",
       "troupe": "tis-tales",
-      "performer_ids": ["holly-medland", "sue-bailey", "merl-fluin"],
+      "performer_ids": [
+        "holly-medland",
+        "sue-bailey",
+        "merl-fluin"
+      ],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Merl Fluin",
       "url": "https://tistales.org.uk/",
       "bio": "'Tis Tales is a storytelling troupe telling tales to adult audience on the Isle of Wight [Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin]. \n\n\n\n Performing in various combinations, this performance features tales from Holly Medland, Sue Bailey and Merl Fluin."
     },
-    "tis-tales-hms":{
+    "tis-tales-hms": {
       "id": "tis-tales-hms",
       "troupe": "tis-tales",
-      "performer_ids": ["holly-medland", "sue-bailey", "tony-monty-hirst"],
+      "performer_ids": [
+        "holly-medland",
+        "sue-bailey",
+        "tony-monty-hirst"
+      ],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Tony 'Monty' Hirst",
       "url": "https://tistales.org.uk/",
       "bio": "'Tis Tales is a storytelling troupe telling tales to adult audience on the Isle of Wight [Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin]. \n\n\n\n Performing in various combinations, this performance features tales from Holly Medland, Sue Bailey and Tony 'Monty' Hirst."
@@ -15208,7 +15830,7 @@
       "url": "https://londondreamtime.com/",
       "bio": "Vanessa Woolf tells stories for adults and kids. Vanessa is a founder of Elephant Tales (ex Story Co Op) London's beautiful free Sunday open-mic storytelling club, and lead storyteller of Connection With Wonder, who provide storytellers, programme festivals and offer year-round training."
     },
-    "jessie-wild":{
+    "jessie-wild": {
       "id": "jessie-wild",
       "name": "Jessie Wild",
       "url": "https://www.instagram.com/jessie_wild_storyteller",
@@ -15216,7 +15838,10 @@
     },
     "ben-haggarty-steph-brittain": {
       "id": "ben-haggarty-steph-brittain",
-      "performer_ids": ["ben-haggarty", "steph-brittain"],
+      "performer_ids": [
+        "ben-haggarty",
+        "steph-brittain"
+      ],
       "name": "Ben Haggarty & Steph Brittain",
       "url": "",
       "bio": "Ben Haggarty is Artistic Director of the Crick Crack Club and one of the UK's most popular contemporary performance storytellers. Renowned for his playful, physical and often challenging performances, his repertoire spans Indo-European fairytales for grown-ups, Greek and Irish mythology, the epic of Gilgamesh and contemporary myths of Frankenstein and The Sandman, which won him a Fringe First award for best spoken word.\n\n\n\nSteph Brittain's love for storytelling developed whilst studying Kathak dance in Paris and Delhi and it continued to grow during her MA in Drama and Movement therapy. She trained in performance at Acting International in Paris and Drama Centre London and has performed at Royal Exchange Theatre Manchester, Arcola Theatre London and for the BBC. A new voice storyteller, Steph Brittain joined Pandvani108 in 2022 as part of their artist development programme"
@@ -15230,16 +15855,27 @@
     "gillian-brownson-dragon-storytellers": {
       "id": "gillian-brownson-dragon-storytellers",
       "name": "Gillian Brownson + Dragon Storytellers",
-      "performer_ids": ["gillian-brownson", "dragon-storytellers"],
+      "performer_ids": [
+        "gillian-brownson",
+        "dragon-storytellers"
+      ],
       "url": "",
       "bio": "Gillian Brownson is as story artist, multi-disciplinary practitioner blending writing, storytelling, acting, singing & illustration."
     },
     "tis-tales": {
       "id": "tis-tales",
-      "aliases": ["tis-tales-hms", "tis-tales-hsf"],
+      "aliases": [
+        "tis-tales-hms",
+        "tis-tales-hsf"
+      ],
       "name": "'Tis Tales",
       "type": "troupe",
-      "members": ["holly-medland", "tony-monty-hirst", "sue-bailey", "merl-fluin"],
+      "members": [
+        "holly-medland",
+        "tony-monty-hirst",
+        "sue-bailey",
+        "merl-fluin"
+      ],
       "url": "https://tistales.org.uk/",
       "bio": "'Tis Tales is a storytelling troupe (Holly Medland, Sue Bailey, Tony 'Monty' Hirst, Merl Fluin) telling tales, in various combinations, to adult audiences on the Isle of Wight."
     },
@@ -15248,7 +15884,6 @@
       "name": "Amy Douglas",
       "url": "https://amydouglas.com/",
       "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\n Over the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging."
-      
     },
     "jason-buck": {
       "id": "jason-buck",
@@ -15256,11 +15891,31 @@
       "url": "https://www.facebook.com/JasonBuckStoryteller/",
       "facebook": "JasonBuckStoryteller",
       "bio": "Award-winning performance storyteller, author and illustrator.",
-      "youtube_videos": [ {"story_name": "The Old Woman and The Pig", "yt_url": "https://www.youtube.com/watch?v=a0sZkDQvoqg"}, {"story_name": "The Greek myth of Orpheus and Eurydice", "yt_url": "https://www.youtube.com/watch?v=83lLX7m_8-w"}, {"story_name": "Beautiful Vasilisa and Baba Yaga", "yt_url": "https://www.youtube.com/watch?v=IvVDUADCqUU"}, {"story_name": "The Boy who had an eating competition with a troll", "yt_url": "https://www.youtube.com/watch?v=NsqVPMUr_DQ"}]
+      "youtube_videos": [
+        {
+          "story_name": "The Old Woman and The Pig",
+          "yt_url": "https://www.youtube.com/watch?v=a0sZkDQvoqg"
+        },
+        {
+          "story_name": "The Greek myth of Orpheus and Eurydice",
+          "yt_url": "https://www.youtube.com/watch?v=83lLX7m_8-w"
+        },
+        {
+          "story_name": "Beautiful Vasilisa and Baba Yaga",
+          "yt_url": "https://www.youtube.com/watch?v=IvVDUADCqUU"
+        },
+        {
+          "story_name": "The Boy who had an eating competition with a troll",
+          "yt_url": "https://www.youtube.com/watch?v=NsqVPMUr_DQ"
+        }
+      ]
     },
     "amy-douglas-jason-buck": {
       "id": "amy-douglas-jason-buck",
-      "performer_ids": ["amy-douglas", "jason-buck"],
+      "performer_ids": [
+        "amy-douglas",
+        "jason-buck"
+      ],
       "name": "Amy Douglas and Jason Buck",
       "url": "",
       "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles. Over the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging.\n\n\n\nJason Buck is an award-winning performance storyteller, author and illustrator."
@@ -15289,7 +15944,48 @@
       "url": "https://eddielenihan.weebly.com/",
       "bio": "Collector of Irish tales for over forty years.",
       "podcast": "https://shows.acast.com/tell-me-a-story-with-eddie-lenihan",
-      "youtube_videos": [ {"story_name": "'The Druid's Apprentice' Irish Story - Eddie Lenihan, 1986", "yt_url": "https://www.youtube.com/watch?v=ZuhsQLgyJbc"}, {"story_name": "Biddy Early & The Changeling - Eddie Lenihan, 1986", "yt_url": "https://www.youtube.com/watch?v=ATjJX7C6fiI"},  {"story_name": "'The Hunchback & The Fairies' - Irish Story with Eddie Lenihan, 1986", "yt_url": "https://www.youtube.com/watch?v=MQGdqWVZEfM"},{"story_name": "Irish Folklore - Eddie Lenihan", "yt_url": "https://www.youtube.com/watch?v=hogZZETmdHs"}, {"story_name": "Eddie Lenihan - Crusheen Community Centre", "yt_url": "https://www.youtube.com/watch?v=yMV-pWH5RHw"}, {"story_name": "Eddie Lenihan, Live in the Whitehouse", "yt_url": "https://www.youtube.com/watch?v=pMXn7v5wTx0"}, {"story_name": "Seanchai Sessions with Eddie Lenihan", "yt_url": "https://www.youtube.com/watch?v=HF6SVH5ATgM"}, {"story_name": "Eddie Lenihan @The United Arts Club, 15th August 2025", "yt_url": "https://www.youtube.com/watch?v=1_q1Z_CBDko"}, {"story_name": "Part 1. Eddie Lenihan United Arts Club, 5th December 2025", "yt_url": "https://www.youtube.com/watch?v=THZqGoyVWyo"}, {"story_name": "Eddie Lenihan Part 2 @ The United Arts Club, Dublin, 5th December 2025", "yt_url": "https://www.youtube.com/watch?v=2QuAkLDxhQc"}]
+      "youtube_videos": [
+        {
+          "story_name": "'The Druid's Apprentice' Irish Story - Eddie Lenihan, 1986",
+          "yt_url": "https://www.youtube.com/watch?v=ZuhsQLgyJbc"
+        },
+        {
+          "story_name": "Biddy Early & The Changeling - Eddie Lenihan, 1986",
+          "yt_url": "https://www.youtube.com/watch?v=ATjJX7C6fiI"
+        },
+        {
+          "story_name": "'The Hunchback & The Fairies' - Irish Story with Eddie Lenihan, 1986",
+          "yt_url": "https://www.youtube.com/watch?v=MQGdqWVZEfM"
+        },
+        {
+          "story_name": "Irish Folklore - Eddie Lenihan",
+          "yt_url": "https://www.youtube.com/watch?v=hogZZETmdHs"
+        },
+        {
+          "story_name": "Eddie Lenihan - Crusheen Community Centre",
+          "yt_url": "https://www.youtube.com/watch?v=yMV-pWH5RHw"
+        },
+        {
+          "story_name": "Eddie Lenihan, Live in the Whitehouse",
+          "yt_url": "https://www.youtube.com/watch?v=pMXn7v5wTx0"
+        },
+        {
+          "story_name": "Seanchai Sessions with Eddie Lenihan",
+          "yt_url": "https://www.youtube.com/watch?v=HF6SVH5ATgM"
+        },
+        {
+          "story_name": "Eddie Lenihan @The United Arts Club, 15th August 2025",
+          "yt_url": "https://www.youtube.com/watch?v=1_q1Z_CBDko"
+        },
+        {
+          "story_name": "Part 1. Eddie Lenihan United Arts Club, 5th December 2025",
+          "yt_url": "https://www.youtube.com/watch?v=THZqGoyVWyo"
+        },
+        {
+          "story_name": "Eddie Lenihan Part 2 @ The United Arts Club, Dublin, 5th December 2025",
+          "yt_url": "https://www.youtube.com/watch?v=2QuAkLDxhQc"
+        }
+      ]
     },
     "marion-leeper": {
       "id": "marion-leeper",
@@ -15314,7 +16010,16 @@
       "name": "Shane Ibbs",
       "url": "https://www.shaneibbsstoryteller.com/",
       "bio": "Shane is a modern day Oral Storyteller.\n\n\n\nShane first heard traditional stories as a child from his father and often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of  their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight.",
-      "youtube_videos": [{"story_name": "Green Children told by Shane Ibbs - 17th September 2023", "yt_url": "https://www.youtube.com/watch?v=RkagTcb_c0s"}, {"story_name": "The King, The Captain and The Wise Old Man", "yt_url": "https://www.youtube.com/watch?v=iRBe-yFAXk0"}]
+      "youtube_videos": [
+        {
+          "story_name": "Green Children told by Shane Ibbs - 17th September 2023",
+          "yt_url": "https://www.youtube.com/watch?v=RkagTcb_c0s"
+        },
+        {
+          "story_name": "The King, The Captain and The Wise Old Man",
+          "yt_url": "https://www.youtube.com/watch?v=iRBe-yFAXk0"
+        }
+      ]
     },
     "marcus-pibworth": {
       "id": "marcus-pibworth",
@@ -15344,7 +16049,11 @@
     },
     "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley": {
       "id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
-      "performer_ids": ["lynette-hill", "stephen-hobbs", "peter-boyce"],
+      "performer_ids": [
+        "lynette-hill",
+        "stephen-hobbs",
+        "peter-boyce"
+      ],
       "name": "Lynette Hill, Stephen Hobbs, Rebecca LaChance, Peter Boyce, 2026 Bard of Stony Stratford, Gill and Patrick Larley",
       "url": "",
       "bio": ""
@@ -15366,7 +16075,20 @@
       "name": "Jon Mason",
       "url": "https://jonthestoryteller.com/",
       "bio": "Storyteller based in Brighton.\n\n\n\n Jon tells stories about times gone by and the modern day, blending fact and fantasy, from all over the world, for kids and grownups. Jon has given performances and workshops at festivals, community events, schools, spoken word nights, and storytelling clubs around the country — he creates shows and sessions to suit all needs.\n\n\n\n Jon is also a folklorist and cultural historian, researching stories in the context of their time, place and social meaning. He has appeared as a guest on BBC Radio, and teach up to university level on storytelling skills, folklore and more.",
-      "youtube_videos": [ {"story_name": "The Birth of Pryderi", "yt_url": "https://www.youtube.com/watch?v=MGOJZm0Mxck"}, {"story_name": "The Birth of Llyn Tegid", "yt_url": "https://www.youtube.com/watch?v=UVlNLJEqI-c"}, {"story_name": "The Birth of the Giants", "yt_url": "https://www.youtube.com/watch?v=4V9yCkhkRd4"}]
+      "youtube_videos": [
+        {
+          "story_name": "The Birth of Pryderi",
+          "yt_url": "https://www.youtube.com/watch?v=MGOJZm0Mxck"
+        },
+        {
+          "story_name": "The Birth of Llyn Tegid",
+          "yt_url": "https://www.youtube.com/watch?v=UVlNLJEqI-c"
+        },
+        {
+          "story_name": "The Birth of the Giants",
+          "yt_url": "https://www.youtube.com/watch?v=4V9yCkhkRd4"
+        }
+      ]
     },
     "tuup": {
       "id": "tuup",
@@ -15450,7 +16172,7 @@
       "url": "https://storyfromseeds.com/",
       "bio": "Maria was the Irish Storyteller in Residence for Kerry Writers Museum from 2019 to 2022. She was the Artistic Director for the Listowel International Storytelling Festival 2020 to 2022. Maria is currently working as an archivist with Sheahan's Storytelling Cottage in Finuge — a 300 year old traditional Rambling House in Finuge, Co. Kerry.\n\n\n\nShe is a well-known popular storyteller on the storytelling circuit in Ireland and on the Cyberspace Platform. She is a well-known Bean An Tí (Irish Session Host) on the Irish Storytelling Circuit."
     },
-  "baden-prince": {
+    "baden-prince": {
       "id": "baden-prince",
       "name": "Baden Prince",
       "url": "https://worldstorytellingcafe.com/baden-prince/",
@@ -15483,9 +16205,14 @@
       "name": "Lisa Schneidau",
       "url": "https://www.lisaschneidau.co.uk/",
       "bio": "Lisa Schneidau finds and tells stories that inspire, provoke curiosity and build stronger connections between people and nature.\n\n\n\n She works with the oral storytelling tradition, where traditional and modern stories are remembered, shared and passed on to others. You'll find her telling stories at events and venues all over the South West and beyond. Lisa's repertoire includes storytelling evenings for adults, shows and collaborations, schools and museums work, story walks and workshops.\n\n\n\nLisa has written four books on traditional folk tales published by The History Press.",
-      "youtube_videos": [ {"story_name": "Lisa Schneidau tells a tale for #FolkloreThursday", "yt_url": "https://www.youtube.com/watch?v=Fx83I-X_G9A"}]
+      "youtube_videos": [
+        {
+          "story_name": "Lisa Schneidau tells a tale for #FolkloreThursday",
+          "yt_url": "https://www.youtube.com/watch?v=Fx83I-X_G9A"
+        }
+      ]
     },
-    "roving-jewel":{
+    "roving-jewel": {
       "id": "roving-jewel",
       "name": "The Roving Jewel",
       "url": "https://www.patreon.com/posts/stories-told-and-154096518",
@@ -15528,7 +16255,7 @@
       "name": "Chris Adriaanse",
       "url": "https://www.chrisadriaanse.co.uk/",
       "bio": "Chris Adriaanse is a storyteller and spoken word artist based in Berwick-Upon-Tweed, Northumberland.\n\n\n\nHe tells stories in the oral tradition, where each telling begins afresh each time."
-    }, 
+    },
     "harp-and-carp": {
       "id": "harp-and-carp",
       "name": "Harp and Carp",
@@ -15580,7 +16307,9 @@
     "soft-lap": {
       "id": "soft-lap",
       "name": "Amy Jeffs | Gwen Burns | Natalie Brice",
-      "performer_ids": ["amy-jeffs"],
+      "performer_ids": [
+        "amy-jeffs"
+      ],
       "url": "",
       "bio": "Amy Jeffs, author of Storyland and Wild, artist Gwen Burns and musician Natalie Brice."
     },
@@ -15818,8 +16547,37 @@
       "name": "Clare Murphy",
       "url": "https://claremurphy.org/",
       "bio": "Storytelling since 2006, Clare brings the ancient art of story firmly into the contemporary world where it belongs. \n\n\n\nPerforming on stages around the world, Clare has told stories to audiences as varied as the All-Blacks coaches, Mission Critical Teams, scientists, schoolchildren and Irish President Mary Robinson.\n\n\n\nClare is sought after to teach storytelling skills to communities worldwide, including asylum seekers, social entrepreneurs, climate change scientists, firefighters and limbless veterans.",
-      "podcast_appearances" : [{"podcast": "Angel Comedy Podcast", "podcast_url": "https://shows.acast.com/the-angel-comedy-podcast", "audio_url": "https://sphinx.acast.com/p/open/s/6047a650c7ffc2041ad01e47/e/604baf097e0c8c4330e34073/media.mp3" , "episode_name": "The Angel Comedy Podcast with Clare Murphy!"}, {"podcast": "Blindboy Podcast", "podcast_url": "https://shows.acast.com/blindboy", "audio_url": "https://sphinx.acast.com/p/acast/s/blindboy/e/66971fdf75bcc6ba885e091e/media.mp3" , "episode_name": "The Art of Storytelling"}],
-      "youtube_videos": [{"story_name": "Legacy Stories", "yt_url": "https://www.youtube.com/watch?v=qwuAo4iccqc", "format": "workshop"}, {"story_name": "Claire Murphy at the 2018 Ojai Storytelling Festival", "yt_url": "https://www.youtube.com/watch?v=PI0GG5Kv2ig", "format": "performance"}, {"story_name": "Claire Murphy at the 2016 National Storytelling Festival, International Storytelling Center", "yt_url": "https://www.youtube.com/watch?v=yHw2L3YTIVM", "format": "performance"} ]
+      "podcast_appearances": [
+        {
+          "podcast": "Angel Comedy Podcast",
+          "podcast_url": "https://shows.acast.com/the-angel-comedy-podcast",
+          "audio_url": "https://sphinx.acast.com/p/open/s/6047a650c7ffc2041ad01e47/e/604baf097e0c8c4330e34073/media.mp3",
+          "episode_name": "The Angel Comedy Podcast with Clare Murphy!"
+        },
+        {
+          "podcast": "Blindboy Podcast",
+          "podcast_url": "https://shows.acast.com/blindboy",
+          "audio_url": "https://sphinx.acast.com/p/acast/s/blindboy/e/66971fdf75bcc6ba885e091e/media.mp3",
+          "episode_name": "The Art of Storytelling"
+        }
+      ],
+      "youtube_videos": [
+        {
+          "story_name": "Legacy Stories",
+          "yt_url": "https://www.youtube.com/watch?v=qwuAo4iccqc",
+          "format": "workshop"
+        },
+        {
+          "story_name": "Claire Murphy at the 2018 Ojai Storytelling Festival",
+          "yt_url": "https://www.youtube.com/watch?v=PI0GG5Kv2ig",
+          "format": "performance"
+        },
+        {
+          "story_name": "Claire Murphy at the 2016 National Storytelling Festival, International Storytelling Center",
+          "yt_url": "https://www.youtube.com/watch?v=yHw2L3YTIVM",
+          "format": "performance"
+        }
+      ]
     },
     "maria-credali": {
       "id": "maria-credali",
@@ -15833,12 +16591,17 @@
       "url": "https://lucylill.com/",
       "bio": "Performance storyteller based in London, Lucy Lill tells stories to all sorts of people in all sorts of places: theatres, arts centres, festivals, museums and schools. She create a shows on her own and also as part of Story Jam, with Alys Torrance. She also runs workshops and produces events."
     },
-    "sarah-liisa-wilkinson":{
+    "sarah-liisa-wilkinson": {
       "id": "sarah-liisa-wilkinson",
-      "name":  "Sarah-Liisa Wilkinson",
+      "name": "Sarah-Liisa Wilkinson",
       "url": "https://sarahliisawilkinson.com/",
       "bio": "A renowned teller of folktales, myths and wonder tales, Sarah Liisa has been delighting audiences for years with her juicy and arresting innovations on stories both familiar and obscure, drawing material from all over the world but most especially from Finnish and Nordic folklore.\n\n\n\n Her tales bring you beasts and gods dreaming in the deep green of the Finnish forest, girls wrestling many-headed trolls in the mountains, pure-hearted fools chasing magic apples in a land of wonder, and dancing devils causing chaos and joy.\n\n\n\n She has told stories to people in the UK and internationally in theatres, festivals, clubs, pubs, churches, boats, front rooms and all-night sleepovers. She regularly works and performs with performance-storytelling pioneers, The Crick Crack Club, and is part of multi-disciplined storytelling and music group, The Embers Collective.",
-      "youtube_videos": [{"story_name": "The Golden Balls", "yt_url": "https://www.youtube.com/watch?v=xVLjtO4EkFQ"}]
+      "youtube_videos": [
+        {
+          "story_name": "The Golden Balls",
+          "yt_url": "https://www.youtube.com/watch?v=xVLjtO4EkFQ"
+        }
+      ]
     },
     "ropetackle-storytellers": {
       "id": "ropetackle-storytellers",
@@ -15854,14 +16617,20 @@
     },
     "tamar-eluned-williams-jordan-price-williams": {
       "id": "tamar-eluned-williams-jordan-price-williams",
-      "performer_ids": ["tamar-eluned-williams", "jordan-price-williams"],
+      "performer_ids": [
+        "tamar-eluned-williams",
+        "jordan-price-williams"
+      ],
       "name": "Tamar Eluned Williams & Jordan Price Williams",
       "url": "",
       "bio": ""
     },
     "laura-sampson-and-stacey-blythe": {
       "id": "laura-sampson-and-stacey-blythe",
-      "performer_ids": ["laura-sampson", "stacey-blythe"],
+      "performer_ids": [
+        "laura-sampson",
+        "stacey-blythe"
+      ],
       "name": "Laura Sampson and Stacey Blythe",
       "url": "",
       "bio": ""
@@ -15875,7 +16644,11 @@
     "daniel-morden-hugh-lupton-sarah-lianne-lewis": {
       "id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",
       "name": "Daniel Morden | Hugh Lupton | Sarah Lianne Lewis",
-      "performer_ids": ["daniel-morden", "hugh-lupton", "sarah-lianne-lewis"],
+      "performer_ids": [
+        "daniel-morden",
+        "hugh-lupton",
+        "sarah-lianne-lewis"
+      ],
       "url": "",
       "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis."
     },
@@ -15883,7 +16656,10 @@
       "id": "hugh-lupton-sarah-moody",
       "name": "Hugh Lupton | Sarah Moody",
       "url": "",
-      "performer_ids": ["hugh-lupton", "sarah-moody"],
+      "performer_ids": [
+        "hugh-lupton",
+        "sarah-moody"
+      ],
       "bio": "Master-storyteller Hugh Lupton accompanied by acclaimed cellist Sarah Moody (ex-Devil's Violin)."
     },
     "sarah-moody": {
@@ -15914,14 +16690,20 @@
     },
     "henry-everett-and-hannah-sneyd": {
       "id": "henry-everett-and-hannah-sneyd",
-      "performer_ids": ["henry-everett", "hannah-sneyd"],
+      "performer_ids": [
+        "henry-everett",
+        "hannah-sneyd"
+      ],
       "name": "Henry Everett and Hannah Sneyd",
       "url": "",
       "bio": "The days are lengthening, and green shoots are nudging their way through the soil. As winter loosens its icy grip on the world, it is time to celebrate Imbolc, the Celtic festival of early spring, whose name means 'in the belly.'\n\n\n\n Join us for Stirring Stories, a series of uplifting tales to stoke the fire within and rouse us from our winter slumber. Forget the to-do list, gather together and and allow your imagination to unfurl into the realm of myth and magic.\n\n\n\n This special event with Dartmoor storytellers Henry Everett and Hannah Sneyd promises a vivid array of stories formed through deep communion with the landscape. Blending traditional tales from around the world with original stories, games and song, we curate our events to closely match the energy of the season.\n\n\n\n Things to note: This is a family-friendly event, with a 20-minute interval and food and drink available from The Lounge Cafe - please see the MIC website for further details."
     },
     "iris-skipworth-colin-rowan": {
       "id": "iris-skipworth-colin-rowan",
-      "performer_ids": ["iris-skipworth", "colin-rowan"],
+      "performer_ids": [
+        "iris-skipworth",
+        "colin-rowan"
+      ],
       "name": "Iris Skipworth & Colin Rowan",
       "url": "",
       "bio": "A life for a story - A story for a life.\n\n\n\n This father and daughter duo bring to life a tale of thievery, giants, ghosts; and many a close brush with death. How much is a story worth? A reworking of a tale found across the British Isles in the 1800's, Colin and Iris bring a contemporary edge to these traditional tales with their unique style. "
@@ -15941,7 +16723,10 @@
     },
     "ffion-phillips-dragon-storytellers": {
       "id": "ffion-phillips-dragon-storytellers",
-      "performer_ids": ["ffion-phillips", "dragon-storytellers"],
+      "performer_ids": [
+        "ffion-phillips",
+        "dragon-storytellers"
+      ],
       "name": "Ffion Phillips + Dragon Storytellers",
       "url": "",
       "bio": "ome and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Ffion Phillips.\n\n\n\nFfion is a bilingual storyteller and folk musician with a passion for breathing new enchantment into old tales and reworking scraps of forgotten material into fresh stories. Her work often explores environmentalist themes and the natural world(s), with much of her repertoire rooted deeply in her native Eryri. As part of the 'Harebell Tellers' alongside Ailsa Dixon she has brought her collaborative shows 'Hear us and Hasten' and 5 star sell-out 'Aderyn/Bird' to the Edinburgh Fringe."
@@ -15967,7 +16752,9 @@
     },
     "gaz-brookfield-and-the-company-of-thieves": {
       "id": "gaz-brookfield-and-the-company-of-thieves",
-      "performer_ids": ["gaz-brookfield"],
+      "performer_ids": [
+        "gaz-brookfield"
+      ],
       "name": "Gaz Brookfield and The Company of Thieves",
       "url": "https://gazbrookfield.com/",
       "musician": true,
@@ -16048,7 +16835,10 @@
     },
     "jess-silk-joe-solo": {
       "id": "jess-silk-joe-solo",
-      "performer_ids": ["jess-silk", "joe-solo"],
+      "performer_ids": [
+        "jess-silk",
+        "joe-solo"
+      ],
       "name": "Jess Silk & Joe Solo",
       "musician": true,
       "url": "",
@@ -16063,7 +16853,7 @@
       "instagram": "sorrelnation",
       "bio": "Travelling troubadour Sorrel Nation brings a soulful mix of folk-rock to country and beyond and possesses one of those voices that makes you immediately stop what you're doing to give her your full attention. She engages audiences with emotive lyrics, 70s inspired style and a voice full of soul, which further increases the seductive power of her songs. Known for penning songs that can truly open the heart to grief and like all valued songwriters possess a giving presence...she heralds gorgeous ballads that could become Sorrel Nation's trademark sound."
     },
-     "3-daft-monkeys": {
+    "3-daft-monkeys": {
       "id": "3-daft-monkeys",
       "name": "3 Daft Monkeys",
       "musician": true,
@@ -16107,7 +16897,28 @@
       "name": "Taffy Thomas",
       "url": "http://taffythomas.co.uk/",
       "bio": "Taffy Thomas trained as a Literature and Drama teacher at Dudley College of Education. After teaching for several years in Wolverhampton he founded and directed the legendary folk theatre company, Magic Lantern, illustrating traditional stories and songs with shadow puppets and circus skills.\n\n\n\nHe founded and directed the community arts company, Charivari, with their popular touring unit, the Fabulous Salami Brothers, which he fronted and performed in. After a major stroke at the age of 36 Taffy turned back to story telling as self-imposed speech therapy, which turned into a new career.\n\n\n\nTaffy has a repertoire of more than 300 stories, collected mainly from traditional oral sources, which he is happy to tell in almost any situation. This repertoire was built by meeting and working with virtually all the great traditional storytellers who were alive in Britain. See 'Ancestral Voices'.\n\n\n\nHe is now the most experienced English storyteller, having performed in many countries on four continents.",
-      "youtube_videos": [{"story_name": "Truth and Story", "yt_url": "https://www.youtube.com/watch?v=v4opD0MwkJE"}, {"story_name": "The Clever Wish", "yt_url": "https://www.youtube.com/watch?v=cMXi7WEF6J0"}, {"story_name": "The Little Cobblestone Maker", "yt_url": "https://www.youtube.com/watch?v=gH_1f8lLqh8"}, {"story_name": "The Devil's Music", "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"}, {"story_name": "The Wassail Cup", "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"}]
+      "youtube_videos": [
+        {
+          "story_name": "Truth and Story",
+          "yt_url": "https://www.youtube.com/watch?v=v4opD0MwkJE"
+        },
+        {
+          "story_name": "The Clever Wish",
+          "yt_url": "https://www.youtube.com/watch?v=cMXi7WEF6J0"
+        },
+        {
+          "story_name": "The Little Cobblestone Maker",
+          "yt_url": "https://www.youtube.com/watch?v=gH_1f8lLqh8"
+        },
+        {
+          "story_name": "The Devil's Music",
+          "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"
+        },
+        {
+          "story_name": "The Wassail Cup",
+          "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"
+        }
+      ]
     },
     "jon-buckeridge": {
       "id": "jon-buckeridge",
