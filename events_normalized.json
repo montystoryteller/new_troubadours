@@ -8649,6 +8649,21 @@
       "performer_id": "jason-buck"
     },
     {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "date": "18/09/2026",
+      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "time": "7.30pm",
+      "club": "",
+      "price": "Small donation to cover room hire",
+      "event_flyer": "",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": ["michael-dacre", "wendy-dacre"]
+    },
+    {
       "name": "Love Don't Come Easy [Dawn Ellis & Tom Morley]",
       "showname": "Love Don't Come Easy",
       "date": "18/09/2026",
@@ -8924,6 +8939,19 @@
       "performer_id": "jason-buck"
     },
     {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "date": "23/10/2026",
+      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "time": "7.30pm",
+      "price": "Small donation to cover room hire",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": ["michael-dacre", "wendy-dacre"]
+    },
+    {
       "name": "The call of Cthulhu [Jason Buck]",
       "showname": "The call of Cthulhu",
       "date": "26/10/2026",
@@ -8996,6 +9024,21 @@
       "description": "The Crick Crack Club presents a Storytelling Night with Ben Haggarty, Sarah Liisa Wilkinson & Steph Brittain\n\n\n\nBaba Yaga — super-witch, ultimate hag, half-goddess, unpredictable, and more than a little cannibalistic. She lives in a hut perched at the top of a chicken's foot, guarded by a fence of human skulls.\n\n\n\nAllow extraordinary fairytale-tellers, Ben Haggarty, Sarah Liisa Wilkinson and Steph Brittain, to lure you into the enchanted realm of fairytales for grown-ups to encounter this dangerous deity of the dark woods — down there... deep beneath your feet.",
       "ticket_url": "https://www.jacksonslane.org.uk/events/baba-yaga-fairytales-for-grown-ups/",
       "isSpecial": true
+    },
+    {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "date": "23/10/2026",
+      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/2027"],
+      "time": "7.30pm",
+      "club": "",
+      "price": "Small donation to cover room hire",
+      "event_flyer": "",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": ["michael-dacre", "wendy-dacre"]
     },
     {
       "name": "Marion Leeper & Lynette Hill [ + Tales Tattled & Told tellers]",
@@ -9142,6 +9185,21 @@
       "isSpecial": true
     },
     {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "date": "15/01/2027",
+      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/202"],
+      "time": "7.30pm",
+      "club": "",
+      "price": "Small donation to cover room hire",
+      "event_flyer": "",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": ["michael-dacre", "wendy-dacre"]
+    },
+    {
       "name": "Jane Lambourne [ + Tales Tattled & Told tellers]",
       "showname": "Jane Lambourne",
       "date": "16/01/2027",
@@ -9184,6 +9242,21 @@
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
       "performer_id": "stephen-hobbs"
+    },
+    {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "date": "15/01/2027",
+      "dates": ["18/09/2026", "23/10/2026", "20/11/2026", "15/01/2027", "15/02/202"],
+      "time": "7.30pm",
+      "club": "",
+      "price": "Small donation to cover room hire",
+      "event_flyer": "",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime. \n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": ["michael-dacre", "wendy-dacre"]
     },
     {
       "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",
@@ -11323,6 +11396,18 @@
       "latlon": [
         50.9057819,
         -1.3969673
+      ]
+    },
+    "north-tawton-community-centre": {
+      "id": "north-tawton-community-centre",
+      "name": "North Tawton Community Centre",
+      "city": "North Tawton",
+      "postcode": "EX20 2HN",
+      "full_address": "North Tawton Community Centre, Barton St, North Tawton, EX20 2HN",
+      "url": "https://www.facebook.com/people/North-Tawton-Community-Centre/100069952491440/",
+      "latlon": [
+        50.79828,
+        -3.89717
       ]
     },
     "quay-arts-newport": {
