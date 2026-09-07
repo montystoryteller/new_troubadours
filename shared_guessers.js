@@ -99,38 +99,53 @@ function parseAgeRatingFromText(text) {
     // sentence's original casing/punctuation so it can be matched back
     // against the description verbatim later, for removal.
     const sentences = text.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
-    const AGE_CUE_WORDS = /suitable|recommended|appropriate|age|years|content|audience|rated|certificate/i;
+    // Wording that names an adult audience without necessarily giving a
+    // number. Doesn't include a bare "18+" — that's a number like any
+    // other and is handled by the numeric checks below, not assumed here.
+    const ADULT_WORDING = /\badults?[\s-]only\b|\baimed at adults\b|\bfor adults\b|\badult content\b|\bmature (?:content|themes|audiences)\b|\bexplicit content\b/i;
 
     for (const sentence of sentences) {
         const s = sentence;
+        const mentionsAdults = ADULT_WORDING.test(s);
 
-        // "18+", adult content, adults only, mature themes — checked first
-        // since it's the most specific/unambiguous signal.
-        if (/\b18\s*\+|\badults?[\s-]only\b|\badult content\b|\bmature (?:content|themes|audiences)\b|\bexplicit content\b/i.test(s)) {
-            return { rating: "Adult content (18+)", minAge: 18, sentence };
-        }
-
-        // "ages 8+", "age 8 and over", "aged 12 or above"
+        // Explicit numeric age, in any of several common phrasings.
+        let n = null;
         let m = s.match(/\b(?:ages?|aged)\s*(\d{1,2})\s*(?:\+|and (?:over|above|up|older)|or (?:over|above|older))/i);
-        if (m) {
-            const n = parseInt(m[1], 10);
-            return { rating: `${n}+`, minAge: n, sentence };
+        if (m) n = parseInt(m[1], 10);
+        if (n === null) {
+            m = s.match(/\b(?:suitable|recommended|appropriate)\s+for\s+(?:ages?\s*)?(\d{1,2})\s*\+/i);
+            if (m) n = parseInt(m[1], 10);
+        }
+        if (n === null) {
+            // A bare "N+" (in a plausible age-rating range) is accepted on
+            // its own, as long as there's no currency symbol nearby — "12+"
+            // or "18+" written alone overwhelmingly means an age cue in an
+            // event listing, so this doesn't need a nearby cue word or a
+            // whole standalone sentence to be confident about it.
+            m = s.match(/\b(\d{1,2})\s*\+/);
+            if (m && !/[£$€]\s*\d/.test(s)) {
+                const candidate = parseInt(m[1], 10);
+                if (candidate >= 1 && candidate <= 18) n = candidate;
+            }
         }
 
-        // "suitable/recommended/appropriate for (ages) 8+"
-        m = s.match(/\b(?:suitable|recommended|appropriate)\s+for\s+(?:ages?\s*)?(\d{1,2})\s*\+/i);
-        if (m) {
-            const n = parseInt(m[1], 10);
+        // A number AND adult wording together in the same sentence (e.g.
+        // "aimed at adults, recommended for ages 16 and over") combine into
+        // one rating rather than picking just one signal. Only combines
+        // within a single sentence — deliberately not across sentences,
+        // since the "remove this sentence from the description" action
+        // this feeds into only removes one exact sentence, and combining
+        // across two would leave it unclear which one to offer removing.
+        if (n !== null && mentionsAdults) {
+            return { rating: `aimed at adults / ${n}+`, minAge: n, sentence };
+        }
+        if (n !== null) {
             return { rating: `${n}+`, minAge: n, sentence };
         }
-
-        // A bare "N+" only counts if the sentence also has a suitability cue
-        // word, to avoid false positives on prices ("£8+ donations") or
-        // other unrelated numbers.
-        m = s.match(/\b(\d{1,2})\s*\+/);
-        if (m && AGE_CUE_WORDS.test(s) && !/[£$€]\s*\d/.test(s)) {
-            const n = parseInt(m[1], 10);
-            return { rating: `${n}+`, minAge: n, sentence };
+        if (mentionsAdults) {
+            // No number given alongside it, so no age is assumed — this
+            // used to default to 18, which wasn't necessarily accurate.
+            return { rating: "Adults only", minAge: null, sentence };
         }
 
         // Family friendly / all ages
@@ -156,7 +171,8 @@ const AGE_RATING_SUGGESTIONS = [
     "12+",
     "14+",
     "16+",
-    "Adult content (18+)",
+    "18+",
+    "Adults only",
     "Not suitable for children",
 ];
 
@@ -322,10 +338,20 @@ function parsePriceFromDescription(text) {
     if (!text) return null;
     const sentences = text.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
     const PRICE_CUE = /[£$€]\s*\d|\bfree\b|\bdonation\b|\bpay what\b|\bpwyw\b|\btickets?\b|\bentry\b|\badmission\b|\bcost\b|\bprice\b/i;
+    // "Free" on its own is too easily just an ordinary English word ("forever
+    // free", "free verse", "reclaims... and is dancing with us still, forever
+    // free") rather than a price cue — only trust a "free" result when it
+    // sits close to an entry/admission/ticket/event word in the sentence.
+    const FREE_PRICE_CONTEXT = /\bfree\b[^.!?]{0,25}\b(?:entry|admission|event|tickets?|to attend)\b|\b(?:entry|admission|tickets?|event)\b[^.!?]{0,25}\bfree\b/i;
+
     for (const sentence of sentences) {
         if (!PRICE_CUE.test(sentence)) continue;
         const entries = parsePriceEntriesFromString(sentence);
         if (!entries || !entries.length) continue;
+
+        const hasFreeType = entries.some(e => e.type === "free");
+        if (hasFreeType && !FREE_PRICE_CONTEXT.test(sentence)) continue;
+
         // A bare numeric amount with no currency symbol and no recognised
         // type (free/pwyw/donation/advance/etc) is too easily confused with
         // an unrelated number in prose ("10 stories told", a time, a

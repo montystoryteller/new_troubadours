@@ -61,6 +61,15 @@
             cursor: default;
         }
 
+        /* Keeps a long scan-results list to a fixed height (roughly 4-5
+           rows) with its own scrollbar, rather than pushing the rest of
+           the Enrich tab down indefinitely once expanded. */
+        .enrich-results-rows {
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -3967,7 +3976,12 @@
         // into resultsEl. Collapsing only hides the rows visually — it
         // doesn't remove them, so "Generate patch"/checkbox state and any
         // other code that reads .enrich-result-row elements is unaffected
-        // either way.
+        // either way. If the rows carry checkboxes (an accept/apply
+        // scanner, not a read-only report like the duplicate-venues one),
+        // this also adds Select all/Deselect all, so a long list can be
+        // opted INTO rather than only ever un-ticked one row at a time —
+        // and wraps the rows themselves in a scrollable box so a long list
+        // doesn't push the rest of the page down even while expanded.
         function addResultsCollapseToggle(resultsEl, count, noun = "result") {
             const rowsWrap = document.createElement("div");
             rowsWrap.className = "enrich-results-rows";
@@ -3984,8 +3998,30 @@
                 rowsWrap.style.display = collapsed ? "" : "none";
                 toggle.textContent = collapsed ? `▾ Hide ${label(count)}` : `▸ Show ${label(count)}`;
             });
-
             resultsEl.appendChild(toggle);
+
+            const checkboxes = rowsWrap.querySelectorAll('input[type="checkbox"]');
+            if (checkboxes.length) {
+                const selectAllBtn = document.createElement("button");
+                selectAllBtn.type = "button";
+                selectAllBtn.className = "entity-details-toggle";
+                selectAllBtn.style.marginBottom = "8px";
+                selectAllBtn.style.marginLeft = "6px";
+                selectAllBtn.textContent = "Select all";
+                selectAllBtn.addEventListener("click", () => checkboxes.forEach(cb => { cb.checked = true; }));
+
+                const deselectAllBtn = document.createElement("button");
+                deselectAllBtn.type = "button";
+                deselectAllBtn.className = "entity-details-toggle";
+                deselectAllBtn.style.marginBottom = "8px";
+                deselectAllBtn.style.marginLeft = "6px";
+                deselectAllBtn.textContent = "Deselect all";
+                deselectAllBtn.addEventListener("click", () => checkboxes.forEach(cb => { cb.checked = false; }));
+
+                resultsEl.appendChild(selectAllBtn);
+                resultsEl.appendChild(deselectAllBtn);
+            }
+
             resultsEl.appendChild(rowsWrap);
         }
 
@@ -4138,13 +4174,16 @@
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
                 row.dataset.venueId = c.id;
-                row.dataset.venueType = c.candidate;
                 const isUnknown = c.candidate === "Other / unknown";
+                const startingValue = isUnknown ? "" : c.candidate;
                 row.innerHTML = `
                     <input type="checkbox" ${isUnknown ? "" : "checked"} class="enrich-venuetype-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${c.name}</div>
-                        <div class="enrich-result-detail">Suggested type: <strong>${c.candidate}</strong></div>
+                        <div class="enrich-result-detail">
+                            <label class="subitem-field-label">Venue type — pick a suggestion, edit it, or type your own</label>
+                            <input type="text" class="enrich-venuetype-input" list="venueTypeOptions" value="${startingValue.replace(/"/g, "&quot;")}" placeholder="${isUnknown ? "No confident match — leave blank or type one" : ""}">
+                        </div>
                     </div>`;
                 resultsEl.appendChild(row);
             });
@@ -4158,9 +4197,11 @@
             rows.forEach(row => {
                 const checkbox = row.querySelector(".enrich-venuetype-check");
                 if (!checkbox.checked) return;
-                patch.venues[row.dataset.venueId] = { venue_type: row.dataset.venueType };
+                const value = row.querySelector(".enrich-venuetype-input").value.trim();
+                if (!value) return; // checked but left blank -- nothing to apply
+                patch.venues[row.dataset.venueId] = { venue_type: value };
                 if (enrichedData && enrichedData.venues && enrichedData.venues[row.dataset.venueId]) {
-                    enrichedData.venues[row.dataset.venueId].venue_type = row.dataset.venueType;
+                    enrichedData.venues[row.dataset.venueId].venue_type = value;
                 }
             });
             const output = document.getElementById("enrich-venuetype-output");
@@ -4294,13 +4335,16 @@
                 row.className = "enrich-result-row";
                 row.dataset.bucket = f.bucket;
                 row.dataset.index = f.index;
-                row.dataset.rating = f.match.rating;
-                if (f.match.minAge !== null) row.dataset.minAge = f.match.minAge;
                 row.innerHTML = `
                     <input type="checkbox" checked class="enrich-age-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
-                        <div class="enrich-result-detail">Suggested: <strong>${f.match.rating}</strong>${f.match.minAge !== null ? ` (min age ${f.match.minAge})` : ""}</div>
+                        <div class="enrich-result-detail">
+                            <label class="subitem-field-label">Age rating — pick a suggestion, edit it, or type your own</label>
+                            <input type="text" class="enrich-age-rating-input" list="ageRatingOptions" value="${f.match.rating.replace(/"/g, "&quot;")}">
+                            <label class="subitem-field-label" style="margin-top:6px;">Minimum age (optional)</label>
+                            <input type="number" min="0" max="99" class="enrich-age-minage-input" value="${f.match.minAge !== null ? f.match.minAge : ""}">
+                        </div>
                         <div class="enrich-result-reasons">Found in description: "${f.match.sentence.replace(/</g, "&lt;")}"</div>
                     </div>`;
                 resultsEl.appendChild(row);
@@ -4315,11 +4359,14 @@
             rows.forEach(row => {
                 const checkbox = row.querySelector(".enrich-age-check");
                 if (!checkbox.checked) return;
+                const rating = row.querySelector(".enrich-age-rating-input").value.trim();
+                if (!rating) return; // checked but left blank -- nothing to apply
                 const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
                 const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
                 if (!ev) return;
-                ev.age_rating = row.dataset.rating;
-                if (row.dataset.minAge !== undefined) ev.min_age = parseInt(row.dataset.minAge, 10);
+                ev.age_rating = rating;
+                const minAgeRaw = row.querySelector(".enrich-age-minage-input").value.trim();
+                if (minAgeRaw) ev.min_age = parseInt(minAgeRaw, 10);
                 applied++;
             });
             if (!applied) {
@@ -4405,7 +4452,7 @@
             rows.forEach(row => {
                 const checkbox = row.querySelector(".enrich-price-check");
                 if (!checkbox.checked) return;
-                const bucketArr = enrichedData(enata[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
                 const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
                 if (!ev) return;
                 ev.structured_price = row._entries;
@@ -4431,10 +4478,14 @@
             if (typeof text !== "string") return text;
             // Collapse runs of spaces/tabs (not newlines, to preserve this
             // site's \n\n\n\n paragraph-break convention) and trim each
-            // line's edges, then collapse doubled terminal punctuation
-            // ("Free.." -> "Free.", "Really??" -> "Really?").
+            // line's edges, then collapse doubled/stray punctuation
+            // ("Free.." -> "Free.", "Really??" -> "Really?") — except a
+            // standard three-dot ellipsis ("..."), which is legitimate
+            // punctuation and left alone; a run of 4+ dots is normalised
+            // down to a standard ellipsis rather than collapsed to one dot.
             let out = text.split("\n").map(line => line.replace(/[ \t]+/g, " ").trim()).join("\n");
-            out = out.replace(/([.,!?])\1+/g, "$1");
+            out = out.replace(/\.{2,}/g, m => (m.length === 3 ? m : (m.length >= 4 ? "..." : ".")));
+            out = out.replace(/([,!?])\1+/g, "$1");
             return out.trim();
         }
 
