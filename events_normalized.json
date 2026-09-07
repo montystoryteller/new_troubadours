@@ -5299,7 +5299,7 @@
       ]
     },
     {
-      "name": "Storytellers of Nottingham",
+      "name": "The Storytellers of Nottingham",
       "schedule": "2nd wednesday (even months) | 2nd thursday (odd months)",
       "time": "7.30-9.30pm",
       "facebook": "https://www.facebook.com/storytellersofnottingham",
@@ -7635,6 +7635,20 @@
       "performer_id": "a-spell-in-time"
     },
     {
+      "name": "Tales of Witches and Witchcraft [The Storytellers of Nottingham]",
+      "showname": "Tales of Witches and Witchcraft",
+      "date": "07/05/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "storytellersnotts",
+      "price": "Tickets only £5, only cash, and only on the door.",
+      "event_flyer": "",
+      "description": "Don't be scared. The worst that could happen is you could be turned into a frog or added to a cauldron of bubbling potions.\n\n\n\nOur many storytellers will hold you spellbound with their tales of Witches and their mysterious deeds.\n\n\n\nWe are back at the Embankment pub near Trent Bridge, tickets £5 cash on the door. If you have been before, you know the score. If you haven't been before you are welcome - just arrive in time to register your car on the screen at the bar, purchase a beverage of choice, and join us in the conservatory for an evening of stories. Simples! ",
+      "fb_event": 1443971626925496,
+      "isSpecial": true,
+      "performer_id": "storytellersnotts",
+      "venue_id": "the-embankment-nottingham"
+    },
+    {
       "name": "Stories From Between Worlds [Shane Ibbs]",
       "showname": "Stories From Between Worlds",
       "date": "09/05/2026",
@@ -7944,6 +7958,20 @@
       "fb_event": 1291951685654216,
       "date_added": "02/06/2026",
       "performer_id": "phil-okwedy"
+    },
+    {
+      "name": "Decisions, Decisions [The Storytellers of Nottingham]",
+      "showname": "Decisions, Decisions",
+      "date": "10/06/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "storytellersnotts",
+      "price": "Tickets only £5, only cash, and only on the door.",
+      "event_flyer": "",
+      "description": "In life there are always decisions to be made and so we present an evening of stories based around decisions made and the consequences of making them.\n\n\n\nHistorical, topical, imaginary, and real.\n\n\n\nThe only decision you need to make is to come along to the Malt Cross next Wednesday (June 10th 2026) and find out what was decided and what were the consequences!\n\n\n\nTickets £5 cash on the door only, bring an extra pound or two in case we have a raffle for Samaritans. We are downstairs, so buy yourself a drink at the bar and come on down.\n\n\n\nThe Malt Cross is on St James's Street, just off the Market Square.",
+      "fb_event": 1715130833240799,
+      "isSpecial": true,
+      "performer_id": "storytellersnotts",
+      "venue_id": "malt-cross-nottingham"
     },
     {
       "name": "The Forest of Chance Encounters [Ropetackle Storytellers]",
@@ -8280,6 +8308,20 @@
       "performer_id": "maria-credali"
     },
     {
+      "name": "Time for Change [The Storytellers of Nottingham]",
+      "showname": "Time for Change",
+      "date": "09/07/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "storytellersnotts",
+      "price": "Tickets only £5, only cash, and only on the door.",
+      "event_flyer": "",
+      "description": "Stories of 'CHANGES' with the Storytellers of Nottingham.\n\n\n\nCome to the Embankment pub on Thursday February 9th for a series of stories of things that change. Maybe it is shapeshifters, God's who have the power to transform, or frogs that become handsome princes. Maybe the changes are for the better, or bring disastrous consequences. Who knows? Certainly not me!\n\n\n\nSo you will just have to come along and find out!\n\n\n\n7.30pm at the Embankment Pub on Arkwright St near Trent Bridge. Free parking.\n\n\n\nTickets £5 cash on the door only.",
+      "fb_event": 1004637421975136,
+      "isSpecial": true,
+      "performer_id": "storytellersnotts",
+      "venue_id": "the-embankment-nottingham"
+    },
+    {
       "name": "Downright Rude! [TUUP, Tim Ralphs, Nell Phoenix & Sarah Liisa Wilkinson]",
       "showname": "Downright Rude!",
       "date": "11/07/2026",
@@ -8410,7 +8452,7 @@
       "time": "1-2pm",
       "club": "",
       "price": "£15 (£10.50)",
-      "description": "Marc Tuckey brings his famous Ghost Experience to Ventnor Fringe!\n\n\n\n For over 30 years, Marc has been enthralling both visitors to and residents of the Isle of Wight with haunting historical tales of grisly ghosts, ghouls and ghastly goings-on. Many have enjoyed the walks he leads with his team every summer season. If you don't feel like taking a walk though, now is your chance to settle back in your seat for some more spooky stories – this time with a family feel.\n\n\n\n Want to know what connects Shanklin to Jekyll and Hyde? And Jack the Ripper? Ever wondered why some places on the Island just have an atmosphere? What was seen in the well at Carisbrooke Castle? What happened when the French invaded? And just why was a tomb in Arreton Church defaced – and by whom? Why are there always three lighthouse keepers, never just two? Then there are the Arreton monks who can only be seen from the knees upwards…. And the Island's very own ghost ship….\n\n\n\n Whether you're interested in the Island's past; love a silly spectral tale; like a laugh or just enjoy a well-told story, you can expect a mix of little known facts from the past and some hilarious and haunting tales you won't forget.\n\n\n\n This show is produced with a family audience in mind, so you can be sure there will be fun and laughter and nothing too scary….. so come along and be entertained by the master story teller (and his companions).",
+      "description": "Marc Tuckey brings his famous Ghost Experience to Ventnor Fringe!\n\n\n\n For over 30 years, Marc has been enthralling both visitors to and residents of the Isle of Wight with haunting historical tales of grisly ghosts, ghouls and ghastly goings-on. Many have enjoyed the walks he leads with his team every summer season. If you don't feel like taking a walk though, now is your chance to settle back in your seat for some more spooky stories — this time with a family feel.\n\n\n\n Want to know what connects Shanklin to Jekyll and Hyde? And Jack the Ripper? Ever wondered why some places on the Island just have an atmosphere? What was seen in the well at Carisbrooke Castle? What happened when the French invaded? And just why was a tomb in Arreton Church defaced — and by whom? Why are there always three lighthouse keepers, never just two? Then there are the Arreton monks who can only be seen from the knees upwards…. And the Island's very own ghost ship….\n\n\n\n Whether you're interested in the Island's past; love a silly spectral tale; like a laugh or just enjoy a well-told story, you can expect a mix of little known facts from the past and some hilarious and haunting tales you won't forget.\n\n\n\n This show is produced with a family audience in mind, so you can be sure there will be fun and laughter and nothing too scary….. so come along and be entertained by the master story teller (and his companions).",
       "event_flyer": "",
       "ticket_url": "https://purchase.vfringe.co.uk/EventAvailability?EventId=49401",
       "isSpecial": true,
@@ -8675,6 +8717,20 @@
       "isSpecial": true
     },
     {
+      "name": "It Is Written In The Stars [The Storytellers of Nottingham]",
+      "showname": "It Is Written In The Stars",
+      "date": "12/08/2026",
+      "time": "7.30pm",
+      "club": "storytellersnotts",
+      "price": "Tickets only £5, only cash, and only on the door.",
+      "event_flyer": "",
+      "description": "The Storytellers of Nottingham present a stellar evening of tales entitled 'Written in the Stars'.\n\n\n\nA multitude of stories of the stars. Do you know your constellations? You may do by the end of this performance!\n\n\n\nDownstairs at the Malt Cross (St James's St, Nottingham, off the Market Square), 7.30pm start, tickets £5 cash on the door only, profits to Nottingham Samaritans.\n\n\n\nLooking forward to seeing you there!",
+      "fb_event": 1034722282652814,
+      "isSpecial": true,
+      "performer_id": "storytellersnotts",
+      "venue_id": "malt-cross-nottingham"
+    },
+    {
       "name": "Tales of the Tides",
       "showname": "Tales of the Tides",
       "date": "16/08/2026",
@@ -8755,7 +8811,7 @@
       "price": "Entry on the door. £8.  £6 hardship rate,  £10 philanthropist.",
       "link": "https://www.abitcrack.com/",
       "facebook": "https://www.facebook.com/ABitCrack",
-      "fb_event": "1610755257129366",
+      "fb_event": 1610755257129366,
       "isSpecial": true,
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
@@ -8836,6 +8892,20 @@
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
       "performer_id": "jason-buck"
+    },
+    {
+      "name": "Reasons To Be Cheerful [The Storytellers of Nottingham]",
+      "showname": "Reasons To Be Cheerful",
+      "date": "10/09/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "storytellersnotts",
+      "price": "Tickets only £5, only cash, and only on the door.",
+      "event_flyer": "",
+      "description": "September 10th is World Suicide Prevention Day so the Storytellers of Nottingham are coming together to provide you with an uplifting evening of tales which we hope will be a whole series of reasons to be Cheerful.\n\n\n\nStories of pork puddings, dragons, princesses, bees, Iron Hans, and a load of old cobblers designed to bring a glimmer to your day and a smile to your face.\n\n\n\nAll proceeds to Nottingham Samaritans, so please support the event so we can pass across as much as possible to this important cause.",
+      "fb_event": 1737677687521390,
+      "isSpecial": true,
+      "performer_id": "storytellersnotts",
+      "venue_id": "the-embankment-nottingham"
     },
     {
       "name": "Tall Tales and Storied Steps - A Story Walk at St John's Old Malden [Alastair K Daniel]",
