@@ -4732,7 +4732,7 @@
     },
     {
       "name": "Norwich Storytelling Club",
-      "schedule": "1st tuesday",
+      "schedule": "3rd tuesday",
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/1353388599609560/",
       "club": "norwichSCl",
@@ -8070,6 +8070,19 @@
       "performer_id": ""
     },
     {
+      "name": "Telling the Trees [Xanthe Gresham Knight]",
+      "showname": "Telling the Trees - Stories and Songs Celebrating our Rooted Friends",
+      "date": "09/12/2025",
+      "time": "7.30-9.30pm",
+      "club": "guesthouseST",
+      "price": "£12 / £8",
+      "description": "Telling the Trees - Stories and Songs Celebrating our Rooted Friends\n\n\n\nTrees are everyone's friend, but fairies, witches and deities lay a special claim to their magic. From Hawthorn to Oak, Yew to Birch trees have tales and songs to draw us in and enchant. An opportunity to get together and celebrate our rooted friends in story and song.",
+      "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2276147",
+      "isSpecial": true,
+      "venue_id": "hillcrest-community-centre-newhaven",
+      "performer_id": "xanthe-gresham-knight"
+    },
+    {
       "name": "Women Who Bore Through Walls [Sarah Rundle]",
       "showname": "Women Who Bore Through Walls",
       "date": "15/07/2026",
@@ -8529,6 +8542,20 @@
       "performer_id": "jason-buck"
     },
     {
+      "name": "What is storytelling? [Jamie Crawford]",
+      "showname": "What is storytelling?",
+      "date": "08/09/2025",
+      "time": "7.30-9.30pm",
+      "club": "guesthouseST",
+      "price": "£12 / £8",
+      "description": "A peek behind the magic curtain\n\n\n\nWhat makes a good story?\n\n\n\nHow do you become a storyteller?\n\n\n\nWhy is storytelling still a secret art?\n\n\n\nStories have been told in every culture since the dawn of humanity. Now a new generation of tellers is breathing fresh life into myth and folktale for modern audiences. What sustains this perennial appeal?\n\n\n\nIn this fun, interactive evening, Jamie Crawford will share glimpses into the mystery of storytelling via some of his favourite tales. We will open up the floor for discussion and even encourage you to have a tiny try-out at telling a story to the person sitting next to you.\n\n\n\nLiving a stone’s throw from the Ouse in Newhaven, Jamie Crawford writes, draws and tells stories. Known for his dynamic reworking of traditional tales, for his playful approach to the spoken word and for the warmth of his telling, Jamie has been delivering storytelling performances and workshops since the turn of the millenium.",
+      "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "hillcrest-community-centre-newhaven",
+      "performer_id": "jamie-crawford"
+    },
+    {
       "name": "Dark Norse - Shadows of the Vikings [Jason Buck]",
       "showname": "Dark Norse - Shadows of the Vikings",
       "date": "08/09/2026",
@@ -8869,9 +8896,23 @@
       "performer_id": "lynette-hill"
     },
     {
+      "name": "Promised Land [Jon Mason]",
+      "showname": "Promised Land",
+      "date": "13/10/2026",
+      "time": "7.30-9.30pm",
+      "club": "guesthouseST",
+      "price": "£15 / £10",
+      "description": "Jon Norman-Mason brings a celebration of the power of rock music through spoken-word storytelling and ancient tales.\n\n\n\nWe've all felt it. The pounding beat, the thrill of guitars, the legends we can only wonder at: rock music, in its power and promise, has been a myth for our times since it first blazed its trail across the sky.\n\n\n\nProfessional storyteller Jon Norman-Mason recasts rock legends as the timeless myths they are. Elvis, the Sun King; Patti the Warrior Poet; Tina who Went to Hell and Back; Kurt and Janis, who Flew Too High Too Fast… and always the hordes of young questers, setting out in their wake for more adventure.",
+      "ticket_url": "https://www.tickettailor.com/checkout/view-event/id/8864693/chk/94f69633a21ce14cd3b4ce297cff7a15/",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "hillcrest-community-centre-newhaven",
+      "performer_id": "jon-mason"
+    },
+    {
       "name": "Dark Stories for Dark Nights [Bea Ferguson]",
       "showname": "Dark Stories for Dark Nights",
-      "date": "13/19/2026",
+      "date": "13/10/2026",
       "time": "Doors 7pm, start 7.30pm",
       "club": "lichfieldST",
       "price": "£8 (+ £0.80)",
@@ -15747,6 +15788,12 @@
       "name": "Bea Ferguson",
       "url": "",
       "bio": "Experienced stroyteller based in Ediunburgh."
+    },
+    "jamie-crawford": {
+      "id": "jamie-crawford",
+      "name": "Jamie Crawford",
+      "url": "https://www.jamiecrawfordstorytelling.com/",
+      "bio": "Nothing is more satisfying to listen to than a story\n\n\n\nIf it's well told\n\n\n\nAnd that's what I do \n\n\n\nFace-to-face with my audience I draw them into the story \n\n\n\nAnd get them listening, engaged, inspired \n\n\n\nSo let Jamie Crawford Storytelling help you bring people together \n\n\n\nTo make your project shine. \n\n\n\nKnown for his dynamic reworking of traditional stories, for his playful approach to the spoken word and for the warmth of my telling, he has been delivering storytelling shows, workshops and walks since 2002.\n\n\n\nHe creates and delivers storytelling programmes in the arts, education, heritage, media and business sectors as well as privately. He gives performances, teaches storytelling courses and run consultancies. All his practice is based on: \n\n\n\nResearching stories from oral and written traditions \n\n\n\nShaping new versions of the stories to the needs of his clients\n\n\n\nTelling those stories to audiences of all ages face-to-face\n\n\n\nInspiring others to tell their stories"
     },
     "shonaleigh": {
       "id": "shonaleigh",
