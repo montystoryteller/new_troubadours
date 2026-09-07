@@ -1176,7 +1176,7 @@
           "items": {
             "type": "string"
           },
-          "description": "DD/MM/YYYY dates the schedule should skip."
+          "description": "Dates the schedule should skip — DD/MM/YYYY for a single date, or MM/YYYY to skip every occurrence in that month."
         },
         "time": {
           "type": "string"
@@ -1528,7 +1528,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Dates the schedule should skip — DD/MM/YYYY for a single date, or MM/YYYY to skip every occurrence in that month."
         },
         "venue_id": {
           "type": "string"
@@ -1588,7 +1589,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Dates the schedule should skip — DD/MM/YYYY for a single date, or MM/YYYY to skip every occurrence in that month."
         },
         "latlon": {
           "type": "array",

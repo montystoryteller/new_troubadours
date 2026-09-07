@@ -3,7 +3,6 @@
 // before this file); storyclub.js used to keep its own identical copies
 // under the names DAYS and MONTHS_SHORT.
 
-
 // FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
 // copies of exactly the icons already in shared_utils.js's ICON_SVG
 // (.facebook, .website, .email respectively); use those instead.
@@ -166,37 +165,47 @@ function _findNthDayInMonth(year, month, targetDay, occurrence) {
 }
 
 /**
- * Return all scheduled dates for a club in [from, to], respecting exceptions.
+ * Return every regularly scheduled occurrence for a club in [from, to],
+ * each tagged with whether an exception cancels it — callers that only
+ * want the dates that are actually happening should use
+ * scheduledDatesInRange() instead; this is for listings that need to keep
+ * showing a cancelled night (marked as cancelled) rather than hiding it.
  * @param {string}   schedule   – e.g. "2nd tuesday", "every monday", "1st and 3rd wednesday"
  * @param {Date}     from       – start of window (midnight-normalised)
  * @param {Date}     to         – end of window (midnight-normalised)
- * @param {string[]} exceptions – array of DD/MM/YYYY strings to skip
- * @returns {Date[]}
+ * @param {string[]} exceptions – array of DD/MM/YYYY dates to skip, or MM/YYYY
+ *   to skip the whole month
+ * @returns {{date: Date, isCancelled: boolean}[]}
  */
-function scheduledDatesInRange(schedule, from, to, exceptions) {
+function scheduledOccurrencesInRange(schedule, from, to, exceptions) {
   if (!schedule) return [];
 
-  // Normalise exceptions to timestamps
-  const exSet = new Set(
-    (exceptions || [])
-      .map((s) => {
-        if (!s) return null;
-        const parts = s.split("/").map(Number);
-        if (parts.length !== 3) return null;
-        const d = new Date(parts[2], parts[1] - 1, parts[0]);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime();
-      })
-      .filter(Boolean),
-  );
+  // Normalise exceptions to exact-date timestamps and whole-month keys
+  const exSet = new Set();
+  const exMonthSet = new Set(); // "YYYY-M" — cancels every date in this month
+  (exceptions || []).forEach((s) => {
+    if (!s) return;
+    const parts = s.split("/").map(Number);
+    if (parts.length === 2) {
+      const [mm, yyyy] = parts;
+      if (mm && yyyy) exMonthSet.add(`${yyyy}-${mm}`);
+      return;
+    }
+    if (parts.length !== 3) return;
+    const d = new Date(parts[2], parts[1] - 1, parts[0]);
+    d.setHours(0, 0, 0, 0);
+    exSet.add(d.getTime());
+  });
 
   const results = [];
   function addIfInRange(dt) {
     if (!dt) return;
     dt.setHours(0, 0, 0, 0);
-    if (dt >= from && dt <= to && !exSet.has(dt.getTime())) {
-      results.push(new Date(dt));
-    }
+    if (dt < from || dt > to) return;
+    const isCancelled =
+      exSet.has(dt.getTime()) ||
+      exMonthSet.has(`${dt.getFullYear()}-${dt.getMonth() + 1}`);
+    results.push({ date: new Date(dt), isCancelled });
   }
 
   // ── BRIDGE CODE: Handle Structured Schedule Objects ──
@@ -246,7 +255,7 @@ function scheduledDatesInRange(schedule, from, to, exceptions) {
       }
     }
 
-    return results.sort((a, b) => a - b);
+    return results.sort((a, b) => a.date - b.date);
   }
 
   // ── LEGACY STRING PARSING FALLBACKS ──
@@ -275,7 +284,7 @@ function scheduledDatesInRange(schedule, from, to, exceptions) {
         cur.setMonth(cur.getMonth() + 1);
       }
     }
-    return results.sort((a, b) => a - b);
+    return results.sort((a, b) => a.date - b.date);
   }
 
   // "X and Y dayname"
@@ -296,7 +305,7 @@ function scheduledDatesInRange(schedule, from, to, exceptions) {
       );
       cur.setMonth(cur.getMonth() + 1);
     }
-    return results.sort((a, b) => a - b);
+    return results.sort((a, b) => a.date - b.date);
   }
 
   // "every dayname"
@@ -325,7 +334,24 @@ function scheduledDatesInRange(schedule, from, to, exceptions) {
     );
     cur.setMonth(cur.getMonth() + 1);
   }
-  return results.sort((a, b) => a - b);
+  return results.sort((a, b) => a.date - b.date);
+}
+
+/**
+ * Return all scheduled dates for a club in [from, to] that are actually
+ * happening — i.e. scheduledOccurrencesInRange() with cancelled dates
+ * filtered out. Used wherever code needs "when does this club really meet"
+ * (next/prev meeting header, tonight/tomorrow alert).
+ * @param {string}   schedule
+ * @param {Date}     from
+ * @param {Date}     to
+ * @param {string[]} exceptions
+ * @returns {Date[]}
+ */
+function scheduledDatesInRange(schedule, from, to, exceptions) {
+  return scheduledOccurrencesInRange(schedule, from, to, exceptions)
+    .filter((o) => !o.isCancelled)
+    .map((o) => o.date);
 }
 
 /**
@@ -338,6 +364,26 @@ function nextMeetingDate(schedule, exceptions) {
   to.setMonth(to.getMonth() + 6);
   const dates = scheduledDatesInRange(schedule, from, to, exceptions || []);
   return dates.find((d) => d >= from) || null;
+}
+
+/**
+ * Return the next scheduled occurrence from today (within 6 months) whether
+ * or not it's cancelled, tagged with isCancelled — for listings that should
+ * keep showing a club even when its next date is cancelled.
+ * @returns {{date: Date, isCancelled: boolean}|null}
+ */
+function nextOccurrence(schedule, exceptions) {
+  if (!schedule) return null;
+  const from = getTodayMidnight();
+  const to = new Date(from);
+  to.setMonth(to.getMonth() + 6);
+  const occurrences = scheduledOccurrencesInRange(
+    schedule,
+    from,
+    to,
+    exceptions || [],
+  );
+  return occurrences.find((o) => o.date >= from) || null;
 }
 
 /**
@@ -1227,8 +1273,11 @@ async function renderDirectory(data) {
   let activePeriod = null; // null | 'today' | 'week' | 'weekend' | '7days'
   let searchTerm = "";
 
-  // Build search index: { c, searchText, nextMeeting }
-  // nextMeeting is pre-computed once (Date or null) for badge + period filtering
+  // Build search index: { c, searchText, nextMeeting, nextOcc }
+  // nextOcc (pre-computed once) is the next occurrence whether cancelled or
+  // not, so a club whose next date is cancelled still shows (marked
+  // cancelled) instead of silently disappearing. nextMeeting is just its
+  // date, kept for the existing sort/feature-slot lookups.
   const today = getTodayMidnight();
   const clubIndex = clubs.map((c) => {
     const venue = data.venues[c.venue_id] || {};
@@ -1239,10 +1288,12 @@ async function renderDirectory(data) {
       venue.full_address,
       c.location,
     ].filter(Boolean);
+    const nextOcc = nextOccurrence(c.schedule, c.exceptions);
     return {
       c,
       searchText: parts.join(" ").toLowerCase(),
-      nextMeeting: nextMeetingDate(c.schedule, c.exceptions),
+      nextOcc,
+      nextMeeting: nextOcc ? nextOcc.date : null,
     };
   });
 
@@ -1275,13 +1326,16 @@ async function renderDirectory(data) {
       } else if (activePeriod === "7days") {
         to.setDate(to.getDate() + 6);
       }
-      const dates = scheduledDatesInRange(
+      // Include cancelled occurrences here too — a club cancelled "today"
+      // should still show in the "Today" filter, marked as cancelled,
+      // rather than vanishing as if nothing was ever scheduled.
+      const occurrences = scheduledOccurrencesInRange(
         c.schedule,
         from,
         to,
         c.exceptions || [],
       );
-      if (dates.length === 0) return false;
+      if (occurrences.length === 0) return false;
     }
     return true;
   };
@@ -1562,10 +1616,28 @@ async function renderDirectory(data) {
   root.appendChild(listWrap);
 
   // ── Badge helpers ────────────────────────────────────────────────────
-  function nextMeetingBadge(nextDate) {
-    if (!nextDate) return null;
+  function nextMeetingBadge(occ) {
+    if (!occ) return null;
+    const { date: nextDate, isCancelled } = occ;
     const msPerDay = 86400000;
     const diffDays = Math.round((nextDate - today) / msPerDay);
+    const dateLabel =
+      DAYS_OF_WEEK[nextDate.getDay()] +
+      " " +
+      nextDate.getDate() +
+      " " +
+      MONTHS_SHORT[nextDate.getMonth()];
+
+    if (isCancelled) {
+      // Only worth flagging cancellations for near-term dates — cancelled
+      // slots further out fall through to .later (hidden), same as usual.
+      if (diffDays > 13) return null;
+      const badge = document.createElement("div");
+      badge.className = "next-meeting-badge cancelled";
+      badge.textContent = `❌ Cancelled — ${dateLabel}`;
+      return badge;
+    }
+
     let cls, label;
     if (diffDays === 0) {
       cls = "today";
@@ -1575,21 +1647,10 @@ async function renderDirectory(data) {
       label = "🟠 Tomorrow";
     } else if (diffDays <= 6) {
       cls = "thisweek";
-      label =
-        "🟢 " +
-        DAYS_OF_WEEK[nextDate.getDay()] +
-        " " +
-        nextDate.getDate() +
-        " " +
-        MONTHS_SHORT[nextDate.getMonth()];
+      label = "🟢 " + dateLabel;
     } else if (diffDays <= 13) {
       cls = "nextweek";
-      label =
-        DAYS_OF_WEEK[nextDate.getDay()] +
-        " " +
-        nextDate.getDate() +
-        " " +
-        MONTHS_SHORT[nextDate.getMonth()];
+      label = dateLabel;
     } else {
       return null; // .later is display:none, skip building element
     }
@@ -1655,7 +1716,8 @@ async function renderDirectory(data) {
         }
 
         const card = document.createElement("div");
-        card.className = "event";
+        card.className =
+          "event" + (entry.nextOcc?.isCancelled ? " event-cancelled" : "");
         card.id = "club-card-" + c.club;
         card.style.cursor = "pointer";
         card.onclick = () => (location.href = `storyclub.html?club=${c.club}`);
@@ -1665,8 +1727,9 @@ async function renderDirectory(data) {
         name.textContent = c.name;
         card.appendChild(name);
 
-        // Next-meeting badge (shown when meeting is within ~2 weeks)
-        const badge = nextMeetingBadge(entry.nextMeeting);
+        // Next-meeting badge (shown when meeting is within ~2 weeks;
+        // renders a "Cancelled" badge instead if that occurrence is cancelled)
+        const badge = nextMeetingBadge(entry.nextOcc);
         if (badge) card.appendChild(badge);
 
         if (c.schedule) {

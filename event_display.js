@@ -511,6 +511,9 @@ function resolveEventVenue(event, date) {
   return { location, latlon, venue_url, venue_id };
 }
 
+// Parses an exact DD/MM/YYYY exception date. MM/YYYY (whole-month)
+// exceptions are handled separately in processRecurringEvents() and never
+// reach this function.
 function parseExceptionDate(str) {
   let [d, m, y] = str.split("/").map(Number);
 
@@ -950,16 +953,36 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
   for (const event of events || []) {
     const exceptions = event.exceptions || [];
 
-    const exceptionDates = exceptions.map(parseExceptionDate);
+    // Exceptions are either an exact DD/MM/YYYY date, or MM/YYYY to skip
+    // every regularly scheduled date that whole month.
+    const exceptionDates = [];
+    const exceptionMonths = []; // { year, month(0-based) }
+    exceptions.forEach((s) => {
+      if (!s) return;
+      const parts = s.split("/").map(Number);
+      if (parts.length === 2) {
+        const [mm, yyyy] = parts;
+        if (mm && yyyy) exceptionMonths.push({ year: yyyy, month: mm - 1 });
+        return;
+      }
+      exceptionDates.push(parseExceptionDate(s));
+    });
 
     let expandedStart = new Date(startDate);
     let expandedEnd = new Date(endDate);
 
-    if (exceptionDates.length > 0) {
-      expandedStart = new Date(Math.min(startDate, ...exceptionDates));
+    // Representative dates (1st of month) so whole-month exceptions also
+    // widen the schedule-computation window the same way exact dates do.
+    const rangeAnchors = [
+      ...exceptionDates,
+      ...exceptionMonths.map((m) => new Date(m.year, m.month, 1)),
+    ];
+
+    if (rangeAnchors.length > 0) {
+      expandedStart = new Date(Math.min(startDate, ...rangeAnchors));
       expandedStart.setMonth(expandedStart.getMonth() - 1);
 
-      expandedEnd = new Date(Math.max(endDate, ...exceptionDates));
+      expandedEnd = new Date(Math.max(endDate, ...rangeAnchors));
       expandedEnd.setMonth(expandedEnd.getMonth() + 1);
     }
 
@@ -976,6 +999,18 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
     const cancelledDateKeys = new Set(); // keys of regular dates that are gone
     const rescheduledDates = new Map(); // regular date key → exception (replacement) date
     const cancellationDates = new Set(); // keys of dates that are straight cancellations
+
+    // Whole-month exceptions — every regular date in that month is cancelled,
+    // no rescheduling is attempted (there's no single replacement date).
+    exceptionMonths.forEach(({ year, month }) => {
+      allScheduledDates
+        .filter((sd) => sd.getFullYear() === year && sd.getMonth() === month)
+        .forEach((sd) => {
+          cancellationDates.add(
+            `${sd.getFullYear()}-${sd.getMonth()}-${sd.getDate()}`,
+          );
+        });
+    });
 
     exceptionDates.forEach((excDate) => {
       const excKey = `${excDate.getFullYear()}-${excDate.getMonth()}-${excDate.getDate()}`;

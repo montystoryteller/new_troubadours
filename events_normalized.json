@@ -5131,7 +5131,8 @@
       "email": "lichfieldstorytellers@gmail.com",
       "club": "lichfieldST",
       "venue_id": "kings-head-lichfield",
-      "feature_slots" : [ ["12/05/2026", "giles-abbott"]]
+      "exceptions": ["11/08/2026", "09/2026"],
+      "feature_slots" : [ ["12/05/2026", "giles-abbott", "13/10/2026", "bea-ferguson"]]
     },
     {
       "name": "Wirral Quirky Tales",
@@ -8866,6 +8867,21 @@
       "isSpecial": true,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "lynette-hill"
+    },
+    {
+      "name": "Dark Stories for Dark Nights [Bea Ferguson]",
+      "showname": "Dark Stories for Dark Nights",
+      "date": "13/19/2026",
+      "time": "Doors 7pm, start 7.30pm",
+      "club": "lichfieldST",
+      "price": "£8 (+ £0.80)",
+      "description": "October is the month of All Hallows Eve where the veil is the thinnest between this world and the one beyond. For this month's Lichfield Storytellers there will be a spookier element to the stories that you will hear from our guest teller, Bea Ferguson. Bea is a much respected and internationally renowned Scottish storyteller who has been at the heart of the Scottish storytelling scene since its revival nearly forty years ago. She is much travelled as a storyteller and has told to all ages from around the world - at festivals, in theatres, schools, libraries, care homes - just to name a few of the venues. This month, Bea will be bringing us some of her more spookier Scottish stories to thrill you. We are so looking forward to her visit to Lichfield Storytellers that we hope you will join us for a spooky night of scary Scottish tales from a stellar storyteller.",
+      "ticket_url": "https://wegottickets.com/f/26828",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "fb_event": 1072441665199374,
+      "venue_id": "kings-head-lichfield",
+      "performer_id": "bea-ferguson"
     },
     {
       "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
@@ -15724,6 +15740,12 @@
       "bio": "Local teller with Tales Tattled and Told.",
       "url": "https://wassledine.co.uk/storytelling-old/countryside-events/",
       "facebook": "https://www.facebook.com/wassledine.stories/"
+    },
+    "bea-ferguson": {
+      "id": "bea-ferguson",
+      "name": "Bea Ferguson",
+      "url": "",
+      "bio": "Experienced stroyteller based in Ediunburgh."
     },
     "shonaleigh": {
       "id": "shonaleigh",

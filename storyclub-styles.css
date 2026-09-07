@@ -459,6 +459,11 @@
     border: 1px solid #ddd;
 }
 
+.next-meeting-badge.cancelled {
+    background: #c62828;
+    color: white;
+}
+
 .next-meeting-badge.later {
     display: none;
 }
