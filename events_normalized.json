@@ -1765,6 +1765,34 @@
     }
   },
   "repertoire_shows": {
+    "tim-ralphs-strange-wondrous": {
+      "name": "In Strange and Wondrous Company [Tim Ralphs]",
+      "showname": "In Strange and Wondrous Company",
+      "show_dates": [
+        {
+          "date": "02/09/2026",
+          "time": "7pm",
+          "club": "feastoffools",
+          "price": "£9.05 + £1 booking fee",
+          "event_flyer": "2026_09_02_feast_fools_ralphs.jpeg",
+          "ticket_url": "https://wegottickets.com/af/671/f/24833",
+          "fb_event": 1303526428303002,
+          "venue_id": "quaker-meeting-house-northampton"
+        },
+        {
+          "date": "14/09/2026",
+          "time": "7.30pm",
+          "club": "ropetackle-storytellers",
+          "price": "£10",
+          "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-in-strange-and-wondrous-company/",
+          "fb_event": 960403510434556,
+          "venue_id": "ropetackle-arts-centre-shoreham"
+        }
+      ],
+      "description": "A Villain with a missing heart gallops on a horse he stole from the uplands of Hell. Where he rides milk turns sour, crops wither, spiders spin their webs backwards, and dreams turn to nightmares. What this land needs is a hero - a gallant noble with a dashing smile and flashing blade. Or a wise old crone with knowledge of every herb in the hedgerow. Or even some upstart, headstrong youth with pluck and good fortune. But heroes are in short supply...\n\n\n\nInstead, we've got three colourful, creaking caravans full of wandering players - minstrels of no renown and dubious talent. They're not so much here to save the day as they are trying to earn a crust fiddling while the world burns. One of them is only a mouse. We're probably doomed but sometimes life is about making the best with what you've got.\n\n\n\nJoin Tim Ralphs in an intricately interwoven tapestry of wonder tales, a dynamic jest of a storytelling show that journeys between life, death and all the realms of the imagination. It's a patchwork collection, a motley of familiar fairytale motifs, spun into an entirely new shape.",
+      "isSpecial": true,
+      "performer_id": "tim-ralphs"
+    },
     "nell-phoenix-uncanny": {
       "name": "Uncanny [Nell Phoenix]",
       "showname": "Uncanny",
@@ -4278,9 +4306,8 @@
       "tour_name": "Waiting For Wisdom tour",
       "performer_id": "gaz-brookfield-and-the-company-of-thieves",
       "club": "gazbrookfield",
-      "tour_flyer": "tour_gazbrookfield_waitingForWisdom_2025.png",
-      "tour_description": "Following the release of his tenth studio album, Waiting For Wisdom, Gaz Brookfield takes to the road once more. Folk / Punk festival favourite, Brookfield has been at this for a while now. Since winning Acoustic Magazine Singer/ Songwriter of the year way back in 2010 he has continued to tirelessly tour the length and breadth of the country, building a strong and loyal following where he goes.\n\n\n\nHis last album, Morning Walking Club, saw Gaz achieve his first top 40 record, and it even got number 1 in the UK Official Folk Charts. Not a bad result for this fiercely independent musician, with no record label, no manager, and no agent — just a guitar, a van, and a steadfastly belligerent refusal to give in.",
       "tour_flyer": "tour_gazbrookfield_2026q1-2.jpg",
+      "tour_description": "Following the release of his tenth studio album, Waiting For Wisdom, Gaz Brookfield takes to the road once more. Folk / Punk festival favourite, Brookfield has been at this for a while now. Since winning Acoustic Magazine Singer/ Songwriter of the year way back in 2010 he has continued to tirelessly tour the length and breadth of the country, building a strong and loyal following where he goes.\n\n\n\nHis last album, Morning Walking Club, saw Gaz achieve his first top 40 record, and it even got number 1 in the UK Official Folk Charts. Not a bad result for this fiercely independent musician, with no record label, no manager, and no agent — just a guitar, a van, and a steadfastly belligerent refusal to give in.",
       "time": "7.30pm",
       "price": "£15 (+£1.50)",
       "tags": [
@@ -4964,7 +4991,9 @@
       "link": "https://johnpeelcentre.com/",
       "facebook": "https://www.facebook.com/profile.php?id=61568382750023",
       "club": "ease",
-      "flyers": ["2026_09_09_EASE_sept26.jpg"],
+      "flyers": [
+        "2026_09_09_EASE_sept26.jpg"
+      ],
       "venue_id": "b-side-cafe-john-peel"
     },
     {
@@ -6238,7 +6267,8 @@
       "isSpecial": true,
       "fb_event": 1589150815593597,
       "venue_id": "brigsteer-village-hall-kendal",
-      "performer_id": "emily-hennessey"
+      "performer_id": "emily-hennessey",
+      "age_rating": "Adults only"
     },
     {
       "name": "Beowulf: Storytelling for Grown-Ups [Hugh Lupton]",
@@ -6253,7 +6283,8 @@
       "isSpecial": true,
       "fb_event": 1588963885602693,
       "venue_id": "brigsteer-village-hall-kendal",
-      "performer_id": "hugh-lupton"
+      "performer_id": "hugh-lupton",
+      "age_rating": "Adults only"
     },
     {
       "name": "At Winters Heart (Solstice Storytelling) [Henry Everett & Hannah Sneyd]",
@@ -6478,7 +6509,9 @@
       "event_flyer": "",
       "isSpecial": true,
       "venue_id": "hotel-indigo-clerkenwell-london",
-      "performer_id": "amy-douglas-jason-buck"
+      "performer_id": "amy-douglas-jason-buck",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Myth, Magic and Mischief (age 5+) [Amy Douglas and Jason Buck]",
@@ -6492,7 +6525,9 @@
       "event_flyer": "",
       "isSpecial": true,
       "venue_id": "hotel-indigo-clerkenwell-london",
-      "performer_id": "amy-douglas-jason-buck"
+      "performer_id": "amy-douglas-jason-buck",
+      "age_rating": "5+",
+      "min_age": 5
     },
     {
       "name": "Myth, Magic and Mischief (age 5+) [Amy Douglas and Jason Buck]",
@@ -6506,7 +6541,9 @@
       "event_flyer": "",
       "isSpecial": true,
       "venue_id": "hotel-indigo-clerkenwell-london",
-      "performer_id": "amy-douglas-jason-buck"
+      "performer_id": "amy-douglas-jason-buck",
+      "age_rating": "5+",
+      "min_age": 5
     },
     {
       "name": "The Fire, The Flame, and the Light [Maria Buckley Whatton]",
@@ -6532,7 +6569,9 @@
       "event_flyer": "",
       "isSpecial": true,
       "venue_id": "the-hold-fore",
-      "performer_id": "chris-richardson"
+      "performer_id": "chris-richardson",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Peronik: The Diary In The Attic [Marion Leeper]",
@@ -6607,7 +6646,9 @@
       "ticket_url": "https://app.workshop-angel.com/form.php?h=1&t=0&e=cf3b2b7b0e4197cb",
       "isSpecial": true,
       "venue_id": "the-folk-preservation-society-teignmouth",
-      "performer_id": "henry-everett"
+      "performer_id": "henry-everett",
+      "age_rating": "aimed at adults / 12+",
+      "min_age": 12
     },
     {
       "name": "Work in Progress: Berserker [Marcus Pibworth]",
@@ -6659,7 +6700,9 @@
       "ticket_url": "https://wegottickets.com/af/671/event/662417",
       "isSpecial": true,
       "venue_id": "the-stables-at-the-bull-hotel-stony",
-      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley"
+      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "An Evening of Sussex Folklore and Wine [Jon Mason]",
@@ -6763,7 +6806,9 @@
       "performer_ids": [
         "merl-fluin",
         "holly-medland"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Queen of Between [Lucy Lill & Sarah-Liisa Wilkinson]",
@@ -6781,7 +6826,9 @@
       "performer_ids": [
         "lucy-lill",
         "sarah-liisa-wilkinson"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Touching the Light [Sharon Jacksties]",
@@ -6813,7 +6860,9 @@
       "performer_ids": [
         "lucy-lill",
         "sarah-liisa-wilkinson"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Deliver Us From Evil [Ropetackle Storytellers]",
@@ -6857,7 +6906,9 @@
       "isSpecial": true,
       "fb_event": 4141128949494651,
       "venue_id": "llanover-hall-arts-center-cardiff",
-      "performer_id": "tamar-eluned-williams-jordan-price-williams"
+      "performer_id": "tamar-eluned-williams-jordan-price-williams",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Tales & Ales — Valentine special [P. D. Brown]",
@@ -6915,7 +6966,9 @@
       "performer_ids": [
         "lucy-lill",
         "sarah-liisa-wilkinson"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Stories of Morgan le Fay [Cath Little]",
@@ -6988,7 +7041,9 @@
       "ticket_url": "https://www.ticketsource.co.uk/nicholaspriory/t-aaqjdgp?ref=montystoryteller.org",
       "isSpecial": true,
       "venue_id": "st-nicholas-priory-exeter",
-      "performer_id": "nell-phoenix"
+      "performer_id": "nell-phoenix",
+      "age_rating": "18+",
+      "min_age": 18
     },
     {
       "name": "Stirring Stories: An Imbolc Storytelling at MIC [Henry Everett and Hannah Sneyd]",
@@ -7000,7 +7055,8 @@
       "description": "The days are lengthening, and green shoots are nudging their way through the soil. As winter loosens its icy grip on the world, it is time to celebrate Imbolc, the Celtic festival of early spring, whose name means 'in the belly.'\n\n\n\nJoin us for Stirring Stories, a series of uplifting tales to stoke the fire within and rouse us from our winter slumber. Forget the to-do list, gather together and and allow your imagination to unfurl into the realm of myth and magic.\n\n\n\nThis special event with Dartmoor storytellers Henry Everett and Hannah Sneyd promises a vivid array of stories formed through deep communion with the landscape. Blending traditional tales from around the world with original stories, games and song, we curate our events to closely match the energy of the season.\n\n\n\nThings to note: This is a family-friendly event, with a 20-minute interval and food and drink available from The Lounge Cafe - please see the MIC website for further details.",
       "fb_event": 1522583958999477,
       "venue_id": "moor-imagination-collective-buckfastleigh",
-      "performer_id": "henry-everett-and-hannah-sneyd"
+      "performer_id": "henry-everett-and-hannah-sneyd",
+      "age_rating": "Family friendly"
     },
     {
       "name": "The Petal Demon [Shonaleigh]",
@@ -7027,7 +7083,8 @@
       "description": "Come one, come all, for a treasure-trove of stories around an open fire, at the Snapdragons community space in Plymouth. Feast your ears on tales both old and new, told by local storyteller Hannah Sneyd.\n\n\n\nFeaturing reluctant moles, dancing rivers and sharp-witted crones, Hannah's stories inhabit the space between mythic realms and mundane modern life. She peppers her tales with insights from the natural world, and always tells with a healthy dose of humour.\n\n\n\nStories are suitable for all ages. We have seating available, but you are invited to bring something cosy to sit on (blanket, rug) and to dress warmly. A hot drink (dairy free) will be available.\n\n\n\nIf it's very wet or cold, we will use the indoor space at Snapdragons.",
       "fb_event": 1181245144186017,
       "venue_id": "snapdragons-victoria",
-      "performer_id": "hannah-sneyd"
+      "performer_id": "hannah-sneyd",
+      "age_rating": "Family friendly"
     },
     {
       "name": "Fur and Folds [James Canvin]",
@@ -7182,7 +7239,9 @@
       "isSpecial": true,
       "fb_event": 1196997405555935,
       "venue_id": "ventnor-library",
-      "performer_id": "tis-tales-hsf"
+      "performer_id": "tis-tales-hsf",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Walk By Night & Storymaking [Giles Abbott]",
@@ -7317,7 +7376,7 @@
       "ticket_url": "https://www.trybooking.com/uk/events/landing/105746",
       "isSpecial": true,
       "event_flyer": "2026-04-02-credali-loki-darwin-house.jpg",
-      "fb_event": 26809258625343223,
+      "fb_event": 26809258625343224,
       "venue_id": "erasmus-darwin-house-lichfield",
       "performer_id": "maria-credali"
     },
@@ -7377,7 +7436,9 @@
       "isSpecial": true,
       "event_flyer": "",
       "venue_id": "boston-manor-house-brentford",
-      "performer_id": "sarah-rundle"
+      "performer_id": "sarah-rundle",
+      "age_rating": "aimed at adults / 14+",
+      "min_age": 14
     },
     {
       "name": "Beguiling for Beginners: An evening of trickster tales [Dave Tonge]",
@@ -7434,7 +7495,9 @@
       "ticket_url": "https://www.eventbrite.com/e/queens-of-albion-contemporary-storytelling-from-stephe-harrop-tickets-1980395815194?aff=montystoryteller.org",
       "isSpecial": true,
       "venue_id": "rise-bluebird-bakery-york",
-      "performer_id": "stephe-harrop"
+      "performer_id": "stephe-harrop",
+      "age_rating": "14+",
+      "min_age": 14
     },
     {
       "name": "Rebel Folk Tales [Ropetackle Storytellers]",
@@ -7494,7 +7557,9 @@
       "isSpecial": true,
       "date_added": "10/04/2026",
       "venue_id": "arena-theatre-wolverhampton",
-      "performer_id": "daisy-black"
+      "performer_id": "daisy-black",
+      "age_rating": "13+",
+      "min_age": 13
     },
     {
       "name": "Welsh Whisperers: Stories of Barmouth",
@@ -7598,7 +7663,9 @@
         "henry-everett",
         "lisa-schneidau",
         "shane-ibbs"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
@@ -7707,7 +7774,9 @@
       "fb_event": 2148510572614168,
       "date_added": "07/04/2026",
       "venue_id": "mugwort-and-mistletoe",
-      "performer_id": "roving-jewel"
+      "performer_id": "roving-jewel",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Cân y Dŵr - The Song of Water [Ragged Storytelling Collective]",
@@ -7752,7 +7821,9 @@
       "isSpecial": true,
       "date_added": "11/05/2026",
       "venue_id": "falcon-hotel-bude",
-      "performer_id": "suited-storytellers"
+      "performer_id": "suited-storytellers",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Wild Gods & Mad Spirits [Henry Everett]",
@@ -8091,7 +8162,8 @@
         "wendy-dacre",
         "sara-hurley",
         "peter-stevenson"
-      ]
+      ],
+      "age_rating": "Family friendly"
     },
     {
       "name": "Fringe Theatrefest — Herd [Suited Storytellers]",
@@ -8110,7 +8182,9 @@
       "isSpecial": true,
       "date_added": "22/06/2026",
       "venue_id": "barnstaple-guildhall",
-      "performer_id": "suited-storytellers"
+      "performer_id": "suited-storytellers",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "The Fern Flower [Jane & Guy Lambourne]",
@@ -8186,7 +8260,8 @@
       "isSpecial": true,
       "date_added": "03/07/2026",
       "venue_id": "dragon-theatre-barmouth",
-      "performer_id": "dragon-storytellers"
+      "performer_id": "dragon-storytellers",
+      "age_rating": "Adults only"
     },
     {
       "name": "I Will Survive [Elizabeth Dale & Keith Wallis]",
@@ -8274,7 +8349,9 @@
       "event_flyer": "",
       "venue_id": "imperial-rooms-matlock",
       "performer_id": "lara-mcclure",
-      "date_added": "27/06/2026"
+      "date_added": "27/06/2026",
+      "age_rating": "14+",
+      "min_age": 14
     },
     {
       "name": "Under the Tree — A Storytelling Evening [Island Storytellers]",
@@ -8290,7 +8367,9 @@
       "isSpecial": true,
       "date_added": "02/06/2026",
       "venue_id": "rylstone-gardens",
-      "performer_id": "island-storytellers"
+      "performer_id": "island-storytellers",
+      "age_rating": "aimed at adults / 10+",
+      "min_age": 10
     },
     {
       "name": "Stories for Midsummer [Maria Credali]",
@@ -8410,7 +8489,9 @@
       "isSpecial": true,
       "date_added": "12/05/2026",
       "venue_id": "moor-barton-wilding",
-      "performer_id": "martin-maudsley"
+      "performer_id": "martin-maudsley",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Secrets, Stories and Songs from the North East of Scotland [Sheeha Blackhall & Pauline Cordiner]",
@@ -8428,7 +8509,8 @@
       "event_flyer": "2026_07_18_blackhall_stories_nescot.jpg",
       "ticket_url": "https://www.tickettailor.com/events/paulinecordinerascottishstoryteller/2179003",
       "fb_event": 1031088443209914,
-      "isSpecial": true
+      "isSpecial": true,
+      "age_rating": "Adults only"
     },
     {
       "name": "Beowulf Storytelling Around the Fire [Lizzie Bryant]",
@@ -8572,7 +8654,9 @@
       "price": "Pay-As-You-Feel",
       "description": "The tales in this show all have a link with Staffordshire. Some will be based on actual historical events. Local legends and myths form a significant part. There will certainly be a ghost story. The stories may be amusing, comical perhaps ridiculous.\n\nRating: 12+",
       "event_flyer": "2026_07_24_crouch_midlands_fringe.jpg",
-      "isSpecial": true
+      "isSpecial": true,
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "VFringe: Birds of a Feather [Sue Bailey]",
@@ -8637,7 +8721,9 @@
       "isSpecial": true,
       "venue_id": "willow-globe",
       "performer_id": "debs-newbold",
-      "date_added": "27/06/2026"
+      "date_added": "27/06/2026",
+      "age_rating": "18+",
+      "min_age": 18
     },
     {
       "name": "Aberavon Festival of the Sea [Owen Staton]",
@@ -8683,7 +8769,8 @@
       "description": "Storytelling for adults is blended with the sounds and voices of Dartmoor to bring Devon's rich folklore vividly to life for modern audiences. Guided by storytellers Sara Hurley and Lisa Schneidau, you'll hear ancient creation myths and medieval legends, folktales, and everyday adventures in a show that blurs the boundaries between folklore and reality. Whether the moor feels like home or remains a landscape of mystery, Chasing Crockern invites you to discover its enduring magic.\n\n\n\nIncluded in All-in-One Week, All-in-One Weekend, Week Season and Wednesday Day Season tickets. Limited advance event tickets available.\n\n\n\n25 & Under tickets tickets are £10 (limited number). Children (0-11) are free.",
       "ticket_url": "https://tickets.sidmouthfolkfestival.co.uk/events/sidmouthfolkweekproductionsltd/2263960",
       "wider_event": "sidmouth-folk-festival-2026",
-      "isSpecial": true
+      "isSpecial": true,
+      "age_rating": "Adults only"
     },
     {
       "name": "Dartmoor Folk Tales [Lisa Schneidau & Sara Hurley]",
@@ -8757,7 +8844,8 @@
       "description": "Storytelling for adults\n\n\n\nLive stand-up storytelling by Fiona Collins, accompanied by the Dragon Storytellers. Telling the folktales, myths and stories of North Wales. How places got their names, how big rocks came to be where they are, magical creatures and more!\n\n\n\nStories will be told in English with a sprinkling of Welsh mixed in.",
       "event_flyer": "2026_08_21_fiona_collins_dragon_storytellers.jpg",
       "ticket_url": "https://dragontheatre.littleboxoffice.com/events/172788",
-      "isSpecial": true
+      "isSpecial": true,
+      "age_rating": "Adults only"
     },
     {
       "name": "Agni & Amor: Tales of Love and Fire [Ben Haggarty & Steph Brittain]",
@@ -8771,21 +8859,6 @@
       "description": "Join us for captivating tales of Fire & Love, accompanied by live music performances under the canopies of the Master Shipwright's House.\n\n\n\nLet the Crick Crack Club's master storytellers Ben Haggarty and Steph Brittain lure you into the deep waters of myth, epic and fairy tale for grown-ups. Discover the love we seek; a love that transcends; a love that burns; a love that heals; a love that dies; the love that entangles sex, death, loss and rebirth.\n\n\n\nThese unflinching, evocative & beautiful tales explore initiation, power, alchemy and the darkest magic of all.\n\n\n\nThe evening will be interspersed with enchanting music from composer Narotam Horn and musicians Anjana Suta, Laurence Harrison, Nicholas Hann & Special Guests.\n\n\n\nStep into the mythopoetic furnace. This is a place where rules aren't broken lightly.\n\n\n\nAs part of the Totally Thames Festival",
       "ticket_url": "https://www.eventbrite.co.uk/e/agni-amor-storytelling-live-music-evening-tickets-1994518665018",
       "isSpecial": true
-    },
-    {
-      "name": "In Strange and Wondrous Company [Tim Ralphs]",
-      "showname": "In Strange and Wondrous Company",
-      "date": "02/09/2026",
-      "time": "7pm",
-      "club": "feastoffools",
-      "price": "£9.05 + £1 booking fee",
-      "event_flyer": "2026_09_02_feast_fools_ralphs.jpeg",
-      "description": "Storytelling at the Feast of Fools is extremely pleased to be welcoming Tim Ralphs back for a repeat visit. He's a highly talented and engaging storyteller, with a style encompassing everything from serious epic to rapid fire surreal comedy, and was one of the very first guest performers who came to us. He was good then, and he's only got better since.\n\n\n\nThis time he brings a new show, 'In Strange and Wondrous Company.'\n\n\n\nA Villain with a missing heart gallops on a horse he stole from the uplands of Hell. Where he rides milk turns sour, crops wither, spiders spin their webs backwards, and dreams turn to nightmares. What this land needs is a hero - a gallant noble with a dashing smile and flashing blade. Or a wise old crone with knowledge of every herb in the hedgerow. Or even some upstart, headstrong youth with pluck and good fortune. But heroes are in short supply...\n\n\n\nInstead, we've got three colourful, creaking caravans full of wandering players - minstrels of no renown and dubious talent. They're not so much here to save the day as they are trying to earn a crust fiddling while the world burns. One of them is only a mouse. We're probably doomed but sometimes life is about making the best with what you've got.\n\n\n\nJoin Tim Ralphs in an intricately interwoven tapestry of wonder tales, a dynamic jest of a storytelling show that journeys between life, death and all the realms of the imagination. It's a patchwork collection, a motley of familiar fairytale motifs, spun into an entirely new shape.\n\n\n\nAnd join the very friendly Feast of Fools community, where the company and the cakes are very far from sour, in the comfortable and beautiful Quaker Meeting House, for the first event in our Autumn 2026 season. The car park next door has re-opened, (just remember to pay!) and our doors will open at 7.00 for a 7.30 start.\n\n\n\nSee more at https://storyfeast.uk/",
-      "ticket_url": "https://wegottickets.com/af/671/f/24833",
-      "isSpecial": true,
-      "fb_event": 1303526428303002,
-      "venue_id": "quaker-meeting-house-northampton",
-      "performer_id": "tim-ralphs"
     },
     {
       "name": "Wayland the Smith & Other Stories [Andy Johnson]",
@@ -8891,7 +8964,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Reasons To Be Cheerful [The Storytellers of Nottingham]",
@@ -8969,7 +9044,9 @@
       "isSpecial": true,
       "date_added": "12/05/2026",
       "venue_id": "moor-barton-wilding",
-      "performer_id": "hugh-lupton"
+      "performer_id": "hugh-lupton",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "We All Came By Boat [Clare Murphy]",
@@ -9005,7 +9082,8 @@
       "isSpecial": true,
       "date_added": "26/08/2026",
       "venue_id": "lock-91-bar-manchester",
-      "performer_id": "michael-harvey"
+      "performer_id": "michael-harvey",
+      "age_rating": "Family friendly"
     },
     {
       "name": "The Epic of Sigurd, and Fafnir the Dragon [Jason Buck]",
@@ -9020,7 +9098,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "moorforge-viking-settlement-wigton",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "10+",
+      "min_age": 10
     },
     {
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
@@ -9094,7 +9174,9 @@
         "stephen-hobbs",
         "terrie-howey-moore",
         "jane-lambourne"
-      ]
+      ],
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Equinox Arts: An Evening of Live Music and Storytelling [Merl Fluin]",
@@ -9257,6 +9339,22 @@
       "performer_id": "lynette-hill"
     },
     {
+      "name": "When The Gentlemen Go By — Stories & Songs of South Coast Smuggling [Alastair K. Daniel]",
+      "showname": "When The Gentlemen Go By — Stories & Songs of South Coast Smuggling",
+      "date": "12/10/2026",
+      "time": "7.30-9.30pm",
+      "club": "ropetackle-storytellers",
+      "price": "£10",
+      "description": "Five and twenty ponies trotting through the dark.\n\n\n\nBrandy for the Parson, and 'baccy for the Clerk.\n\n\n\nLaces for a lady, letters for a spy —\n\n\n\nSo watch the wall, my darling, while the Gentlemen go by!\n\n\n\nFor periods of the seventeenth and eighteenth centuries, parts of the south east of England were almost lawless, with contraband travelling unchecked in long trains of horses and armed men from the coast towards London. In this set of smuggling tales and ballads, storyteller Alastair K Daniel contrasts the romantic mythology of smuggling with the brutal reality of a violent trade — there are gun battles, street fights, deception, betrayal, and a spectral encounter with a ghostly revenue officer along the way.",
+      "promoter_link": "",
+      "event_flyer": "",
+      "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-when-the-gentlemen-go-by-stories-songs-of-south-coast-smuggling/",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "ropetackle-arts-centre-shoreham",
+      "performer_id": "alastair-k-daniel"
+    },
+    {
       "name": "Promised Land [Jon Mason]",
       "showname": "Promised Land",
       "date": "13/10/2026",
@@ -9283,7 +9381,8 @@
       "date_added": "07/09/2026",
       "fb_event": 1072441665199374,
       "venue_id": "kings-head-lichfield",
-      "performer_id": "bea-ferguson"
+      "performer_id": "bea-ferguson",
+      "age_rating": "Family friendly"
     },
     {
       "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
@@ -9325,7 +9424,8 @@
       "ticket_url": "https://wegottickets.com/af/671/f/20274",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_id": "pete-boyce"
+      "performer_id": "pete-boyce",
+      "age_rating": "Adults only"
     },
     {
       "name": "The Luck Child & Other Strange Tales [Daniel Morden]",
@@ -9339,7 +9439,8 @@
       "price": "£10.00 - £25.00",
       "description": "The Crick Crack Club presents a Storytelling Show with Daniel Morden\n\n\n\nAs Halloween approaches and the shadows stretch, the terrific Daniel Morden tells a classic Grimms' fairytale and other tales of strange and weird happenings.\n\n\n\nEverything you could hope for is here… dark forests, shadows & surprises, mysterious strangers, talking animals, goodies, baddies, booing, cheering, and a guest appearance by Mr B.L.Z. Bub himself!\n\n\n\nDANIEL MORDEN has enchanted audiences of all ages at festivals, theatres and schools across the UK and around the world, from the South Bank and the Barbican to Australia and the Arctic. He tells long ago once-upon-a-time stories of magic, and danger. In 2017 he was awarded the Hay Festival medal for his storytelling. Daniel is also well known to Haringey schools as the resident storyteller at Pendarren. Here's a chance to see what the fuss is about!",
       "ticket_url": "https://www.jacksonslane.org.uk/events/the-luck-child-and-other-strange-tales-daniel-morden/",
-      "isSpecial": true
+      "isSpecial": true,
+      "age_rating": "Family friendly"
     },
     {
       "name": "Icelandic Ghost Stories [Jason Buck]",
@@ -9354,7 +9455,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "the-hop-sun-tap-microbrewery-haywards",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "12+",
+      "min_age": 12
     },
     {
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
@@ -9391,7 +9494,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "13+",
+      "min_age": 13
     },
     {
       "name": "The Mists of Samhain: A Halloween Story [Jason Buck]",
@@ -9406,7 +9511,8 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "merlins-cafe-bar-birmingham",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "Adults only"
     },
     {
       "name": "The Ghost Light [Owen Staton]",
@@ -9433,6 +9539,22 @@
       "fb_event": 1708196187259422,
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "baden-prince"
+    },
+    {
+      "name": "Gutted — Stories From East Anglia [Ropetackle Storytellers]",
+      "showname": "Gutted — Stories From East Anglia",
+      "date": "09/11/2026",
+      "time": "7.30-9.30pm",
+      "club": "ropetackle-storytellers",
+      "price": "£10",
+      "description": "Come all you fisher-folk and fill your guts with a hearty helping of folklore and folk music from East Anglia, descaled by award-winning storyteller Minnie Wilkinson. Prepare to be hooked by tales of ancient queens and bags of bones, hulls bursting with herring and something strange in the water — but that's another kettle of fish. One might even call it fishy. But don't worry about that for now. You're welcome here, so come in and warm your cockles. Just don't take more than your fair share — or someone will have your guts for garters.",
+      "promoter_link": "",
+      "event_flyer": "",
+      "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-gutted-stories-from-east-anglia/",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "ropetackle-arts-centre-shoreham",
+      "performer_id": "minnie-wilkinson"
     },
     {
       "name": "Fairytales for Grow-Ups: Baba Yaga [Ben Haggarty & Sarah-Liisa Wilkinson & Steph Brittain]",
@@ -9492,7 +9614,8 @@
       "performer_ids": [
         "marion-leeper",
         "lynette-hill"
-      ]
+      ],
+      "age_rating": "Adults only"
     },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
@@ -9520,7 +9643,9 @@
       "ticket_url": "https://wegottickets.com/af/671/f/20277",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_id": "janet-crouch"
+      "performer_id": "janet-crouch",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "A Christmas Carol [Jason Buck]",
@@ -9535,7 +9660,8 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "the-assembly-rooms-glastonbury",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "Adults only"
     },
     {
       "name": "The Nutcracker [Jason Buck]",
@@ -9550,7 +9676,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "the-pit-at-newstead-nottinghamshire",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "9+",
+      "min_age": 9
     },
     {
       "name": "Midwinter Mischief and Granny's Gifts [Jo Munton & Simone Gilliatt]",
@@ -9579,7 +9707,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "9+",
+      "min_age": 9
     },
     {
       "name": "The Nutcracker [Jason Buck]",
@@ -9594,7 +9724,9 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "9+",
+      "min_age": 9
     },
     {
       "name": "The Horns of Yule - A Winter Tale [Jason Buck]",
@@ -9609,7 +9741,8 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
-      "performer_id": "jason-buck"
+      "performer_id": "jason-buck",
+      "age_rating": "Family friendly"
     },
     {
       "name": "Sacred Herbs of Britain [Claire Mace]",
@@ -9660,7 +9793,8 @@
       "ticket_url": "https://wegottickets.com/af/671/f/25341",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_id": "jane-lambourne"
+      "performer_id": "jane-lambourne",
+      "age_rating": "Adults only"
     },
     {
       "name": "Feast of Fools [feat. Lisa Schneidau]",
@@ -9689,7 +9823,9 @@
       "ticket_url": "https://wegottickets.com/af/671/f/25352",
       "date_added": "05/09/2026",
       "venue_id": "rectory-cottages-bletchley",
-      "performer_id": "stephen-hobbs"
+      "performer_id": "stephen-hobbs",
+      "age_rating": "16+",
+      "min_age": 16
     },
     {
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
@@ -16561,6 +16697,12 @@
       "name": "Simon Heywood",
       "url": "https://shonaleigh.uk/about/simon-heywood/",
       "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University's National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996."
+    },
+    "minnie-wilkinson": {
+      "id": "minnie-wilkinson",
+      "name": "Minnie Wilkinson",
+      "url": "http://minniewilkinson.com/",
+      "bio": "Minnie WIlkinson's story repertoire is a wonderfully eclectic mix. Some have a gritty edge to them, but I also love to be silly and heartfelt. I retell old myths as well as writing new tales, sometimes collaborating with sound artists, musicians, visual artists, theatre makers and other storytellers, mixing everything together in a lovely Story Pie.\n\n\n\nThough sometimes her stories will break your heart, she likes to create a warm and characterful atmosphere round my campfire.\n\n\n\nMinnie regularly performs for both adult and family audiences, as well as running storytelling workshops for adults and children.\n\n\n\nMinnie is a founding member of the Whitechapel Collective, and can usually be found telling a tale at their monthly open mike night at the London Hospital Tavern."
     },
     "dave-clark": {
       "id": "dave-clark",
