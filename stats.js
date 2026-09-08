@@ -318,8 +318,18 @@ function buildRecurringSection(
     if (lower.startsWith("every")) {
       weeks.push("every");
     } else {
+      // "first"/"second"/"third"/"fourth" are valid aliases for "1st"/"2nd"/
+      // "3rd"/"4th" (see recurrence-engine.js's OCCURRENCE_MAP) but weren't
+      // recognised here — a schedule like "first wednesday" fell into the
+      // "?" unclassified bucket on this chart instead of "1st". Normalize
+      // word-forms before scanning so both spellings land in the same bucket.
+      const normalised = lower
+        .replace(/\bfirst\b/, "1st")
+        .replace(/\bsecond\b/, "2nd")
+        .replace(/\bthird\b/, "3rd")
+        .replace(/\bfourth\b/, "4th");
       ["1st", "2nd", "3rd", "4th", "last"].forEach((w) => {
-        if (lower.includes(w)) weeks.push(w);
+        if (normalised.includes(w)) weeks.push(w);
       });
     }
     return { days, weeks };

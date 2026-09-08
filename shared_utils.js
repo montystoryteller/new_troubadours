@@ -124,26 +124,24 @@ const DAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 /**
  * Lower-case day name -> Date#getDay() index. Used when parsing recurring
  * schedule strings/objects like "3rd wednesday" or {day: "wednesday"}.
- * Shared by event_display.js (as DAY_MAP) and storyclub.js (as
- * _SCHED_DAY_MAP) — previously two identical copies of this exact object.
+ * Consumed directly (as the bare global DAY_MAP) by event_display.js,
+ * storyclub.js, and flyers.js. Previously a locally-defined literal here;
+ * now aliased from recurrence-engine.js so there's exactly one copy of this
+ * object instead of two near-identical ones drifting independently.
+ * recurrence-engine.js must be loaded (as a <script>) before this file.
  */
-const DAY_MAP = {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
+const DAY_MAP = RecurrenceEngine.DAY_MAP;
 
 /**
- * "1st"/"2nd"/"3rd"/"4th"/"last" -> the value findNthDayInMonth()-style
- * helpers expect for `occurrence`. Shared by event_display.js (as
- * OCCURRENCE_MAP) and storyclub.js (as _SCHED_OCC_MAP) — previously two
- * identical copies of this exact object.
+ * "1st"/"2nd"/"3rd"/"4th"/"5th"/"last" (plus word-form aliases "first",
+ * "second", etc.) -> the value findNthDayInMonth()-style helpers expect
+ * for `occurrence`. Consumed directly (as the bare global OCCURRENCE_MAP)
+ * by event_display.js and storyclub.js. Previously a locally-defined
+ * literal missing the word-form aliases — "first wednesday" silently
+ * resolved to zero dates everywhere. Now aliased from recurrence-engine.js,
+ * which must be loaded (as a <script>) before this file.
  */
-const OCCURRENCE_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, last: "last" };
+const OCCURRENCE_MAP = RecurrenceEngine.OCCURRENCE_MAP;
 
 function formatShortDate(d) {
   if (!d) return "";

@@ -335,54 +335,26 @@ function parseDate(s) {
 // the next upcoming occurrence on/after today. Used wherever code needs
 // one sortable date to represent a recurring club (cutoff checks, sorting,
 // isTonight/isTomorrow, etc).
+//
+// Used to hand-roll weekly/fortnightly/monthly math here, including calls
+// to OCC_MAP/findNthDay for the monthly case — except OCC_MAP and findNthDay
+// were never defined anywhere near this function; every "monthly" structured
+// schedule threw a ReferenceError. Delegates to recurrence-engine.js now
+// (loaded before this file), which actually handles all three types. Kept
+// as a call into scheduledOccurrencesInRange (via today()) rather than
+// RecurrenceEngine.nextOccurrence() directly, so the ?date=YYYY-MM-DD test
+// override below still works exactly as before.
 function parseScheduleObject(schedule) {
-  if (!schedule || !schedule.start) return null;
-  const start = parseDate(schedule.start);
-  if (!start) return null;
-  const targetDay = DAY_MAP[(schedule.day || "").toLowerCase()];
-  const ref = today();
-
-  const type = (schedule.type || "").toLowerCase();
-
-  if (type === "weekly") {
-    if (targetDay === undefined) return start;
-    const d = new Date(Math.max(start, ref));
-    const diff = (targetDay - d.getDay() + 7) % 7;
-    d.setDate(d.getDate() + diff);
-    return d;
-  }
-
-  if (type === "fortnightly") {
-    // Step forward in 14-day increments from the anchor "start" date
-    // until we reach today or later.
-    let d = new Date(start);
-    if (d < ref) {
-      const daysSince = Math.floor((ref - d) / 86400000);
-      const cycles = Math.ceil(daysSince / 14);
-      d = new Date(start);
-      d.setDate(d.getDate() + cycles * 14);
-    }
-    return d;
-  }
-
-  if (type === "monthly") {
-    const occ = OCC_MAP[(schedule.occurrence || "1st").toLowerCase()];
-    if (occ === undefined || targetDay === undefined) return start;
-    let d = findNthDay(ref.getFullYear(), ref.getMonth(), targetDay, occ);
-    if (!d || d < ref) {
-      const nextMonth = ref.getMonth() + 1;
-      d = findNthDay(
-        ref.getFullYear() + Math.floor(nextMonth / 12),
-        nextMonth % 12,
-        targetDay,
-        occ,
-      );
-    }
-    return d;
-  }
-
-  // Unknown type — fall back to the anchor date itself.
-  return start;
+  const from = today();
+  const to = new Date(from);
+  to.setMonth(to.getMonth() + 6);
+  const occ = RecurrenceEngine.scheduledOccurrencesInRange(
+    schedule,
+    from,
+    to,
+    [],
+  ).find((o) => o.date >= from);
+  return occ ? occ.date : null;
 }
 
 // ── Date override (for testing) ───────────────────────────────────────
@@ -415,115 +387,25 @@ const imgLoader = createLazyImageLoader({
 
 // ── Data loading ──────────────────────────────────────────────────────────
 // ── Schedule matcher ──────────────────────────────────────────────────────
-// Lightweight check: does a recurring schedule string fire on a given date?
-// Handles: "Nth dayname", "last dayname", "every dayname", "Nth and Mth dayname",
-// "Nth dayname (even|odd months)", pipe-separated alternating patterns.
-
-const OCC_MAP = { "1st": 1, "2nd": 2, "3rd": 3, "4th": 4, last: "last" };
-
-function findNthDay(year, month, targetDay, occurrence) {
-  const lastDay = new Date(year, month + 1, 0).getDate();
-  if (occurrence === "last") {
-    for (let d = lastDay; d >= 1; d--) {
-      const t = new Date(year, month, d);
-      if (t.getDay() === targetDay) return t;
-    }
-  } else {
-    let count = 0;
-    for (let d = 1; d <= lastDay; d++) {
-      const t = new Date(year, month, d);
-      if (t.getDay() === targetDay && ++count === occurrence) return t;
-    }
-  }
-  return null;
-}
-
-function scheduleMatchesDate(schedule, date) {
+// Does a recurring schedule fire on a given date? Used for isTonight/
+// isTomorrow badges. Used to be its own ~90-line reimplementation (with its
+// own OCC_MAP/findNthDay copies) that IGNORED exceptions entirely — a
+// cancelled or rescheduled club night could still show a "Meeting tonight!"
+// badge. Now delegates to recurrence-engine.js and takes exceptions as a
+// third argument so cancellations/reschedules are respected; callers below
+// have been updated to pass event.exceptions.
+function scheduleMatchesDate(schedule, date, exceptions) {
   if (!schedule || !date) return false;
-
-  // New recurring-schedule object format
-  if (typeof schedule === "object") {
-    const targetDay = DAY_MAP[(schedule.day || "").toLowerCase()];
-    if (targetDay === undefined || date.getDay() !== targetDay) return false;
-    const start = parseDate(schedule.start);
-    if (!start) return false;
-    const type = (schedule.type || "").toLowerCase();
-    if (date < start) return false;
-    if (type === "weekly") return true;
-    if (type === "fortnightly") {
-      const daysSince = Math.round((date - start) / 86400000);
-      return daysSince % 14 === 0;
-    }
-    if (type === "monthly") {
-      const occ = OCC_MAP[(schedule.occurrence || "1st").toLowerCase()];
-      const d = findNthDay(date.getFullYear(), date.getMonth(), targetDay, occ);
-      return !!d && d.toDateString() === date.toDateString();
-    }
-    return false;
-  }
-
-  if (typeof schedule !== "string") return false;
-  const s = schedule.toLowerCase().trim();
-  const y = date.getFullYear(),
-    m = date.getMonth();
-  const ds = date.toDateString();
-
-  // Specific date DD/MM/YYYY
-  if (s.includes("/")) {
-    const [d, mo, yr] = s.split("/").map(Number);
-    return new Date(yr, mo - 1, d).toDateString() === ds;
-  }
-
-  // Pipe-separated alternating: "1st wed (even months) | 1st thu (odd months)"
-  if (s.includes("|")) {
-    return s.split("|").some((part) => scheduleMatchesDate(part.trim(), date));
-  }
-
-  // Strip parenthetical month parity constraint: "1st wednesday (even months)"
-  const parityMatch = s.match(/^(.+?)\s*\((even|odd)\s+months\)$/);
-  if (parityMatch) {
-    const monthNum = m + 1;
-    const isEven = monthNum % 2 === 0;
-    const condition = parityMatch[2];
-    if (condition === "even" && !isEven) return false;
-    if (condition === "odd" && isEven) return false;
-    return scheduleMatchesDate(parityMatch[1].trim(), date);
-  }
-
-  // "every dayname"
-  if (s.startsWith("every ")) {
-    const dayName = s.replace("every ", "").trim();
-    const targetDay = DAY_MAP[dayName];
-    return targetDay !== undefined && date.getDay() === targetDay;
-  }
-
-  // "Nth and Mth dayname"
-  if (s.includes(" and ")) {
-    const [occ1str, rest] = s.split(" and ");
-    const parts = rest.trim().split(/\s+/);
-    const occ2str = parts[0],
-      dayName = parts[1];
-    const targetDay = DAY_MAP[dayName];
-    if (targetDay === undefined) return false;
-    const occ1 = OCC_MAP[occ1str.trim()],
-      occ2 = OCC_MAP[occ2str.trim()];
-    const d1 = findNthDay(y, m, targetDay, occ1);
-    const d2 = findNthDay(y, m, targetDay, occ2);
-    return (d1 && d1.toDateString() === ds) || (d2 && d2.toDateString() === ds);
-  }
-
-  // Standard "Nth dayname" or "last dayname"
-  const parts = s.split(/\s+/);
-  if (parts.length >= 2) {
-    const occ = OCC_MAP[parts[0]],
-      targetDay = DAY_MAP[parts[1]];
-    if (occ !== undefined && targetDay !== undefined) {
-      const d = findNthDay(y, m, targetDay, occ);
-      return d && d.toDateString() === ds;
-    }
-  }
-
-  return false;
+  const occ = RecurrenceEngine.scheduledOccurrencesInRange(
+    schedule,
+    date,
+    date,
+    exceptions || [],
+  );
+  // "scheduled" = a regular night happening as normal; "moved_to" = a
+  // rescheduled replacement landing on this exact date. Cancelled/moved_from
+  // correctly do NOT match — the club isn't really meeting that day.
+  return occ.some((o) => o.status === "scheduled" || o.status === "moved_to");
 }
 
 async function loadFlyers() {
@@ -853,8 +735,8 @@ async function loadFlyers() {
     if (seen.has(key)) continue;
     seen.add(key);
     const v = ven(e.venue_id);
-    const clubTonight = scheduleMatchesDate(e.schedule, now);
-    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow);
+    const clubTonight = scheduleMatchesDate(e.schedule, now, e.exceptions);
+    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow, e.exceptions);
     items.push({
       flyer,
       flyerBase: "club",
@@ -890,8 +772,8 @@ async function loadFlyers() {
     const extraFlyers = Array.isArray(e.flyers) ? e.flyers : [];
     if (!extraFlyers.length || !e.club) continue;
     const v = ven(e.venue_id);
-    const clubTonight = scheduleMatchesDate(e.schedule, now);
-    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow);
+    const clubTonight = scheduleMatchesDate(e.schedule, now, e.exceptions);
+    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow, e.exceptions);
     for (const rawFlyer of extraFlyers) {
       const flyer = rawFlyer?.trim();
       if (!flyer) continue;

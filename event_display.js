@@ -214,259 +214,19 @@ function extractPostcodeArea(location) {
 
 // initMap() — defined in shared_utils.js
 
-function findNthDayInMonth(year, month, targetDay, occurrence) {
-  const lastDay = new Date(year, month + 1, 0);
-
-  if (occurrence === "last") {
-    // Count backwards from end of month
-    for (let d = lastDay.getDate(); d >= 1; d--) {
-      const testDate = new Date(year, month, d);
-      testDate.setHours(0, 0, 0, 0);
-      if (testDate.getDay() === targetDay) {
-        return testDate;
-      }
-    }
-  } else {
-    // Count forwards from start of month
-    let count = 0;
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-      const testDate = new Date(year, month, d);
-      testDate.setHours(0, 0, 0, 0);
-      if (testDate.getDay() === targetDay) {
-        count++;
-        if (count === occurrence) {
-          return testDate;
-        }
-      }
-    }
-  }
-  return null;
-}
-
+// findNthDayInMonth() and parseSchedule() used to be a full independent
+// recurrence-expansion implementation (~250 lines), duplicated — with a
+// crash bug on structured "weekly"/"monthly" schedule objects, and no
+// recognition of "first wednesday" as an alias for "1st wednesday" — from
+// storyclub.js's version. Both now live once in recurrence-engine.js
+// (loaded before this file). parseSchedule() here is kept only as a
+// same-signature wrapper so the many existing call sites (feature-slot
+// matching, upcoming-club highlights, etc.) don't need to change; it
+// returns raw recurring dates with NO exception handling, exactly as
+// before — exceptions are applied in processRecurringEvents() below via
+// the richer RecurrenceEngine.scheduledOccurrencesInRange().
 function parseSchedule(schedule, startDate, endDate) {
-  const results = [];
-
-  // Normalize dates to midnight for consistent comparison
-  const normalizeDate = (date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-
-  const normalizedStart = normalizeDate(startDate);
-  const normalizedEnd = normalizeDate(endDate);
-
-  if (typeof schedule === "object" && schedule.type === "fortnightly") {
-    const start = parseDateString(schedule.start);
-
-    for (
-      let d = new Date(start);
-      d <= normalizedEnd;
-      d.setDate(d.getDate() + 14)
-    ) {
-      const eventDate = normalizeDate(d);
-
-      if (eventDate >= normalizedStart && eventDate <= normalizedEnd) {
-        results.push(new Date(eventDate));
-      }
-    }
-
-    return results;
-  }
-
-  // Handle specific dates (DD/MM/YYYY)
-  if (schedule.includes("/")) {
-    const [day, month, year] = schedule
-      .split("/")
-      .map((num) => parseInt(num, 10));
-    const specificDate = normalizeDate(new Date(year, month - 1, day));
-    if (specificDate >= normalizedStart && specificDate <= normalizedEnd) {
-      results.push(specificDate);
-    }
-    return results;
-  }
-
-  // Handle "every [dayname]" schedules
-  if (schedule.toLowerCase().startsWith("every ")) {
-    const dayName = schedule.toLowerCase().replace("every ", "").trim();
-    const targetDay = DAY_MAP[dayName];
-
-    if (targetDay === undefined) {
-      console.warn(`Invalid day name in schedule: ${schedule}`);
-      return results;
-    }
-
-    const current = new Date(normalizedStart);
-
-    // Find the first occurrence of the target day on or after the start date
-    while (current.getDay() !== targetDay) {
-      current.setDate(current.getDate() + 1);
-    }
-
-    // Add all occurrences of this day within the date range
-    while (current <= normalizedEnd) {
-      const eventDate = normalizeDate(new Date(current));
-      if (eventDate >= normalizedStart && eventDate <= normalizedEnd) {
-        results.push(eventDate);
-      }
-      current.setDate(current.getDate() + 7); // Move to next week
-    }
-
-    return results;
-  }
-
-  // Handle multiple occurrences in same month (e.g., "1st and 3rd wednesday")
-  // TO DO - this only really handles a case of X, or, X and Y?
-  if (schedule.toLowerCase().includes(" and ")) {
-    const [occurrence1Str, rest] = schedule.toLowerCase().split(" and ");
-    const parts = rest.trim().split(/\s+/);
-    const occurrence2Str = parts[0];
-    const dayName = parts[1];
-
-    const targetDay = DAY_MAP[dayName];
-
-    const occurrence1 = OCCURRENCE_MAP[occurrence1Str.trim()];
-    const occurrence2 = OCCURRENCE_MAP[occurrence2Str.trim()];
-
-    const current = new Date(
-      normalizedStart.getFullYear(),
-      normalizedStart.getMonth() - 1,
-      1,
-    );
-    const extendedEnd = new Date(
-      normalizedEnd.getFullYear(),
-      normalizedEnd.getMonth() + 1,
-      0,
-    );
-
-    while (current <= extendedEnd) {
-      const year = current.getFullYear();
-      const month = current.getMonth();
-      //const lastDay = new Date(year, month + 1, 0);
-
-      // Find both occurrences
-      const occurrences = [occurrence1, occurrence2];
-
-      occurrences.forEach((occ) => {
-        const eventDate = findNthDayInMonth(year, month, targetDay, occ);
-
-        if (
-          eventDate &&
-          eventDate >= normalizedStart &&
-          eventDate <= normalizedEnd
-        ) {
-          results.push(eventDate);
-        }
-      });
-
-      current.setMonth(current.getMonth() + 1);
-    }
-
-    return results.sort((a, b) => a - b);
-  }
-
-  // Handle alternating schedules (e.g., "1st wednesday (even months) | 1st thursday (odd months)")
-  if (schedule.includes("|")) {
-    const parts = schedule.split("|").map((s) => s.trim());
-
-    parts.forEach((part) => {
-      // Extract the pattern and condition
-      const match = part.match(/^(.+?)\s*\((\w+)\s+months\)$/i);
-      if (!match) return;
-
-      const pattern = match[1].trim(); // e.g., "1st wednesday"
-      const condition = match[2].toLowerCase(); // "even" or "odd"
-
-      // Parse the base pattern
-      const [occurrence, dayName] = pattern.toLowerCase().split(/\s+/);
-      const targetDay = DAY_MAP[dayName];
-
-      const current = new Date(
-        normalizedStart.getFullYear(),
-        normalizedStart.getMonth() - 1,
-        1,
-      );
-      const extendedEnd = new Date(
-        normalizedEnd.getFullYear(),
-        normalizedEnd.getMonth() + 1,
-        0,
-      );
-
-      while (current <= extendedEnd) {
-        const year = current.getFullYear();
-        const month = current.getMonth();
-
-        // Check if this month matches the condition
-        const monthNumber = month + 1; // 1-12
-        const isEvenMonth = monthNumber % 2 === 0;
-        const matchesCondition =
-          (condition === "even" && isEvenMonth) ||
-          (condition === "odd" && !isEvenMonth);
-
-        if (!matchesCondition) {
-          current.setMonth(current.getMonth() + 1);
-          continue;
-        }
-
-        const occurrenceNum = OCCURRENCE_MAP[occurrence.trim()];
-
-        const eventDate = findNthDayInMonth(
-          year,
-          month,
-          targetDay,
-          occurrenceNum,
-        );
-
-        if (
-          eventDate &&
-          eventDate >= normalizedStart &&
-          eventDate <= normalizedEnd
-        ) {
-          results.push(eventDate);
-        }
-
-        current.setMonth(current.getMonth() + 1);
-      }
-    });
-
-    return results.sort((a, b) => a - b);
-  }
-
-  // Handle standard recurring schedules (existing code)
-  const [occurrence, dayName] = schedule.toLowerCase().split(/\s+/);
-  const targetDay = DAY_MAP[dayName];
-
-  const current = new Date(
-    normalizedStart.getFullYear(),
-    normalizedStart.getMonth() - 1,
-    1,
-  );
-  const extendedEnd = new Date(
-    normalizedEnd.getFullYear(),
-    normalizedEnd.getMonth() + 1,
-    0,
-  );
-
-  while (current <= extendedEnd) {
-    const year = current.getFullYear();
-    const month = current.getMonth();
-
-    const occurrenceNum = OCCURRENCE_MAP[occurrence.trim()];
-
-    const eventDate = findNthDayInMonth(year, month, targetDay, occurrenceNum);
-
-    if (
-      eventDate &&
-      eventDate >= normalizedStart &&
-      eventDate <= normalizedEnd
-    ) {
-      results.push(eventDate);
-    }
-
-    current.setMonth(current.getMonth() + 1);
-  }
-
-  return results;
+  return RecurrenceEngine.expandRawSchedule(schedule, startDate, endDate);
 }
 
 function getMonthParity(date) {
@@ -511,18 +271,9 @@ function resolveEventVenue(event, date) {
   return { location, latlon, venue_url, venue_id };
 }
 
-// Parses an exact DD/MM/YYYY exception date. MM/YYYY (whole-month)
-// exceptions are handled separately in processRecurringEvents() and never
-// reach this function.
-function parseExceptionDate(str) {
-  let [d, m, y] = str.split("/").map(Number);
-
-  // normalize year (assume 00–99 means 2000–2099)
-  if (y < 100) y += 2000;
-
-  // JS months are 0-based
-  return new Date(y, m - 1, d);
-}
+// parseExceptionDate() used to live here; exception parsing (including its
+// 2-digit-year leniency) now lives in recurrence-engine.js's
+// scheduledOccurrencesInRange(), called from processRecurringEvents().
 
 function createSafePopup(eventData) {
   const container = document.createElement("div");
@@ -949,104 +700,23 @@ async function processSpecialEvents(events, typ, startDate, endDate) {
   }
 }
 
+// Cancellation + reschedule detection used to be ~100 lines here,
+// independently reimplementing what storyclub.js's scheduledOccurrencesInRange
+// did — except this version could actually infer a reschedule (storyclub.js's
+// couldn't), which is exactly the behaviour gap the two versions used to have.
+// Now both draw on the same RecurrenceEngine.scheduledOccurrencesInRange(),
+// so a rescheduled club night looks the same everywhere on the site.
 async function processRecurringEvents(events, eventType, startDate, endDate) {
   for (const event of events || []) {
-    const exceptions = event.exceptions || [];
-
-    // Exceptions are either an exact DD/MM/YYYY date, or MM/YYYY to skip
-    // every regularly scheduled date that whole month.
-    const exceptionDates = [];
-    const exceptionMonths = []; // { year, month(0-based) }
-    exceptions.forEach((s) => {
-      if (!s) return;
-      const parts = s.split("/").map(Number);
-      if (parts.length === 2) {
-        const [mm, yyyy] = parts;
-        if (mm && yyyy) exceptionMonths.push({ year: yyyy, month: mm - 1 });
-        return;
-      }
-      exceptionDates.push(parseExceptionDate(s));
-    });
-
-    let expandedStart = new Date(startDate);
-    let expandedEnd = new Date(endDate);
-
-    // Representative dates (1st of month) so whole-month exceptions also
-    // widen the schedule-computation window the same way exact dates do.
-    const rangeAnchors = [
-      ...exceptionDates,
-      ...exceptionMonths.map((m) => new Date(m.year, m.month, 1)),
-    ];
-
-    if (rangeAnchors.length > 0) {
-      expandedStart = new Date(Math.min(startDate, ...rangeAnchors));
-      expandedStart.setMonth(expandedStart.getMonth() - 1);
-
-      expandedEnd = new Date(Math.max(endDate, ...rangeAnchors));
-      expandedEnd.setMonth(expandedEnd.getMonth() + 1);
-    }
-
-    const allScheduledDates = parseSchedule(
+    const occurrences = RecurrenceEngine.scheduledOccurrencesInRange(
       event.schedule,
-      expandedStart,
-      expandedEnd,
+      startDate,
+      endDate,
+      event.exceptions || [],
     );
 
-    // Classify each exception date:
-    // - If it falls ON a regularly scheduled date → cancellation
-    // - If it doesn't → it's a rescheduled replacement (the regular date
-    //   in the same month is cancelled away, this date is the new occurrence)
-    const cancelledDateKeys = new Set(); // keys of regular dates that are gone
-    const rescheduledDates = new Map(); // regular date key → exception (replacement) date
-    const cancellationDates = new Set(); // keys of dates that are straight cancellations
-
-    // Whole-month exceptions — every regular date in that month is cancelled,
-    // no rescheduling is attempted (there's no single replacement date).
-    exceptionMonths.forEach(({ year, month }) => {
-      allScheduledDates
-        .filter((sd) => sd.getFullYear() === year && sd.getMonth() === month)
-        .forEach((sd) => {
-          cancellationDates.add(
-            `${sd.getFullYear()}-${sd.getMonth()}-${sd.getDate()}`,
-          );
-        });
-    });
-
-    exceptionDates.forEach((excDate) => {
-      const excKey = `${excDate.getFullYear()}-${excDate.getMonth()}-${excDate.getDate()}`;
-
-      // Is this exception date itself a regularly scheduled date?
-      const isRegularDate = allScheduledDates.some(
-        (sd) =>
-          sd.getFullYear() === excDate.getFullYear() &&
-          sd.getMonth() === excDate.getMonth() &&
-          sd.getDate() === excDate.getDate(),
-      );
-
-      if (isRegularDate) {
-        // The club on this date is simply cancelled
-        cancellationDates.add(excKey);
-      } else {
-        // Find the regular date in the same month — that one is cancelled away
-        const regularDateInSameMonth = allScheduledDates.find(
-          (sd) =>
-            sd.getFullYear() === excDate.getFullYear() &&
-            sd.getMonth() === excDate.getMonth(),
-        );
-
-        if (regularDateInSameMonth) {
-          const regularKey = `${regularDateInSameMonth.getFullYear()}-${regularDateInSameMonth.getMonth()}-${regularDateInSameMonth.getDate()}`;
-          cancelledDateKeys.add(regularKey);
-          rescheduledDates.set(regularKey, excDate);
-        }
-      }
-    });
-
-    // Process dates in the REQUESTED range
-    const dates = parseSchedule(event.schedule, startDate, endDate);
-
-    for (const date of dates) {
-      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    for (const occ of occurrences) {
+      const date = occ.date;
       const eventData = createEventData(event, date, eventType);
 
       // Feature slots (unchanged)
@@ -1071,34 +741,23 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
         }
       }
 
-      if (cancellationDates.has(dateKey)) {
-        // Straight cancellation — show the card but mark it cancelled
+      if (occ.status === "cancelled") {
         eventData.isCancelled = true;
-      } else if (cancelledDateKeys.has(dateKey)) {
-        // Regular date cancelled because it was rescheduled to another date
-        const rescheduledTo = rescheduledDates.get(dateKey);
+      } else if (occ.status === "moved_from") {
         eventData.isRescheduledAway = true;
-        eventData.rescheduledTo = rescheduledTo;
-        eventData.rescheduledToStr = rescheduledTo.toLocaleDateString("en-GB", {
+        eventData.rescheduledTo = occ.movedTo;
+        eventData.rescheduledToStr = occ.movedTo.toLocaleDateString("en-GB", {
           weekday: "short",
           day: "numeric",
           month: "short",
           year: "numeric",
         });
+      } else if (occ.status === "moved_to") {
+        eventData.isRescheduled = true;
       }
 
       allEventsData.push(eventData);
       await addMarkerForEvent(eventData);
-    }
-
-    // Add rescheduled replacement dates that fall within the requested range
-    for (const [, excDate] of rescheduledDates) {
-      if (excDate >= startDate && excDate <= endDate) {
-        const eventData = createEventData(event, excDate, eventType);
-        eventData.isRescheduled = true;
-        allEventsData.push(eventData);
-        await addMarkerForEvent(eventData);
-      }
     }
   }
 }
