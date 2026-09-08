@@ -1238,6 +1238,15 @@ async function renderDirectory(data) {
       "dir-filter-btn" + (value === activeDay ? " active-green" : "");
     btn.addEventListener("click", () => {
       activeDay = activeDay === value ? null : value;
+      // Period and day/week filters are complementary (see the period
+      // buttons above, which already clear day/week the other way). Without
+      // this, "Next 7 days" + "Wednesday" can silently show zero results
+      // when the next Wednesday club falls on day 9 — reading as "no
+      // Wednesday clubs" rather than "not within the next 7 days".
+      if (activeDay) {
+        activePeriod = null;
+        refreshPeriodBtns();
+      }
       refreshDayBtns();
       renderList();
     });
@@ -1286,6 +1295,13 @@ async function renderDirectory(data) {
     btn.className = "dir-filter-btn";
     btn.addEventListener("click", () => {
       activeWeek = activeWeek === val ? null : val;
+      // Same reasoning as the day-of-week buttons above: clear the "What's
+      // on" period so it can't silently mask week-of-month results that
+      // fall outside a short period window.
+      if (activeWeek) {
+        activePeriod = null;
+        refreshPeriodBtns();
+      }
       refreshWeekBtns();
       renderList();
     });
