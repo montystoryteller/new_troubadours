@@ -17,6 +17,11 @@
         "$ref": "#/$defs/repertoireShow"
       }
     },
+    "story_walk_details": {
+      "type": "object",
+      "description": "RESERVED, currently unused/empty. Enrichment-only data for repertoireShow records with isStoryWalk: true — keyed by the SAME id as the corresponding entry in repertoire_shows (not a separate id space), e.g. story_walk_details[\"sally-port-history-portsmouth-pubs\"]. Intended for fields that don't fit repertoireShow's shape at all: a geojson route, an ordered list of waypoints (each with its own name/description/maybe a photo), total walk duration, food/drink availability along the route. Purely additive — nothing currently reads this object, so it can be introduced at any time without touching display code. Only relevant to a record that already exists in repertoire_shows; there is no reason to have an entry here without a matching repertoire_shows entry.",
+      "additionalProperties": true
+    },
     "tours": {
       "type": "object",
       "additionalProperties": {
@@ -814,6 +819,11 @@
         "isTouringShow": {
           "type": "boolean"
         },
+        "isStoryWalk": {
+          "type": "boolean",
+          "description": "Marks this as a promoter/guide-led story walk rather than a conventional storytelling performance — e.g. sally-port-history-portsmouth-pubs (a walking tour of pub histories, run by a promoter rather than booked club-to-club). Still a full repertoireShow record (same show_dates/venue/promoter/price shape) — this flag only changes display: excluded from \"Repertoire\" listings on the tour-guide and performer pages in favour of a separate \"Story Walks\" section there, shown with a distinct badge (but no structural change) on venue pages, and behind an off-by-default 'Show story walks' filter on the events calendar (see EVENT_TYPE_FILTERS in event_display.js). Chosen over a standalone top-level category because a story walk's core fields (dates, venue, performer, description) are identical to any other repertoire show; only its DISPLAY grouping differs. If a future story walk needs fields that don't fit repertoireShow at all, see story_walk_details below rather than adding walk-specific fields here.",
+          "examples": [true]
+        },
         "performer_id": {
           "type": "string"
         },
@@ -836,7 +846,49 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/showDate"
-          }
+          },
+          "description": "The normal way to give a repertoireShow its dates — one explicit entry per performance, each with its own venue/price/time/flyer/ticket_url. RESERVED, not yet supported: `schedule` + `exceptions` (see below) as an alternative to listing dates by hand, for a show/walk that genuinely repeats on a pattern."
+        },
+        "schedule": {
+          "description": "RESERVED — not yet read by any processing code. An alternative to manually maintaining show_dates, for a repertoireShow (in practice: an isStoryWalk one) that recurs on a fixed pattern rather than being individually booked date by date — e.g. a story walk run '1st Saturday' every month with the same meeting point, promoter, and price throughout. Same string/object format and same engine as recurringClubEvent.schedule — reuse RecurrenceEngine.scheduledOccurrencesInRange() (recurrence-engine.js) rather than building a second recurrence parser. Deliberately NOT modelled as a recurringClubEvent instead of a repertoireShow: recurringClubEvent has no price/ticket_url (storyclubs are free meetups, not ticketed), and its identity is club-centric (rotating guest performers via feature_slots) rather than performer-centric — both wrong for a ticketed, performer-authored show/walk. This field borrows only the recurrence MECHANISM from recurringClubEvent, not its shape. Once present, `schedule` (+ optional `exceptions`, identical DD/MM/YYYY-exact / MM/YYYY-whole-month format to recurringClubEvent.exceptions) would be read by processRepertoireShows()/searchAllUpcoming() (event_display.js), repertoireShowAsTourShape() (tour_display.js), and the venue-page listing (venues.js) to generate occurrences the same way show_dates entries are read today — expanded occurrences would all share this record's single venue/price/time (unlike show_dates' per-entry overrides), consistent with why a schedule-based show wouldn't need per-date variation in the first place. Not built because no live example needs it yet — see the isStoryWalk field above for the one story walk that exists today, which uses show_dates.",
+          "oneOf": [
+            {
+              "type": "string",
+              "examples": [
+                "1st saturday",
+                "every wednesday"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "weekly",
+                    "fortnightly",
+                    "monthly"
+                  ]
+                },
+                "day": {
+                  "type": "string"
+                },
+                "occurrence": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "RESERVED, paired with `schedule` above — not yet read by any processing code. Same format as recurringClubEvent.exceptions: DD/MM/YYYY to skip/reschedule one exact occurrence, or MM/YYYY to skip every occurrence that whole month."
         }
       },
       "required": [

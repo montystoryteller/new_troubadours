@@ -874,6 +874,11 @@ function renderPerformer() {
     .filter(([, ts]) => performerMatches(ts))
     .sort(upcomingFirstThenRecent(([, ts]) => representativeShowDate(ts))); // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
   // same convention as tour_dates — see expandTourDates() in shared_utils.js.
+  // Story walks are still repertoireShow records under the hood (same
+  // show_dates/venue/performer shape), but list separately from
+  // "Repertoire" here — see myRepertoireShows/myStoryWalks below.
+  const myRepertoireShows = myTouringShows.filter(([, ts]) => !ts.isStoryWalk);
+  const myStoryWalks = myTouringShows.filter(([, ts]) => ts.isStoryWalk);
   const mySpecific = expandTourDates(
     (eventsData.specificEvents || []).filter((e) => performerMatches(e)),
   );
@@ -969,13 +974,22 @@ function renderPerformer() {
     myTours.forEach(([tourId, tour]) => renderTourCard(list, tourId, tour));
   }
 
-  // Touring shows
-  if (myTouringShows.length > 0) {
+  // Touring shows (excludes story walks — see myStoryWalks below)
+  if (myRepertoireShows.length > 0) {
     document.getElementById("touringShowsSection").style.display = "";
     const list = document.getElementById("touringShowsList");
-    myTouringShows.forEach(([tsId, ts]) =>
+    myRepertoireShows.forEach(([tsId, ts]) =>
       renderTouringShowCard(list, tsId, ts),
     );
+  }
+
+  // Story walks — same card renderer as Repertoire above (a story walk is
+  // still a repertoireShow record; only which section it lists under
+  // differs), just a separate section/heading.
+  if (myStoryWalks.length > 0) {
+    document.getElementById("storyWalksSection").style.display = "";
+    const list = document.getElementById("storyWalksList");
+    myStoryWalks.forEach(([tsId, ts]) => renderTouringShowCard(list, tsId, ts));
   }
 
   // Specific + music + poetry events

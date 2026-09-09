@@ -1316,10 +1316,17 @@ function renderEventRow(container, entry, isPast, options = {}) {
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
-    const b = document.createElement("span");
-    b.className = "badge badge-special";
-    b.textContent = "Touring show";
-    badges.appendChild(b);
+    if (ts.isStoryWalk) {
+      const b = document.createElement("span");
+      b.className = "badge badge-walk";
+      b.textContent = "🚶 Story walk";
+      badges.appendChild(b);
+    } else {
+      const b = document.createElement("span");
+      b.className = "badge badge-special";
+      b.textContent = "Touring show";
+      badges.appendChild(b);
+    }
     if (showDate.ticket_url && !isPast) {
       const a = document.createElement("a");
       a.href = sanitizeUrl(showDate.ticket_url) || "#";

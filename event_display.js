@@ -21,6 +21,11 @@ const EVENT_TYPES = {
   SPECIAL: "special",
   STORYCLUB: "storyclub",
   FESTIVAL: "festival",
+  // Value MUST be exactly "storywalk" — it has to match
+  // eventTypeFilterClass("isStoryWalk") (flag.replace(/^is/,"").toLowerCase())
+  // so the CSS class addEventTypeClasses() adds and the class filterEvents()
+  // later looks for when reconstructing flags from a rendered card agree.
+  STORY_WALK: "storywalk",
 };
 
 // ---------------------------------------------------------------------------
@@ -107,6 +112,19 @@ const EVENT_TYPE_FILTERS = [
     param: "sessions",
     default: false,
     noneSelectedFallback: true,
+  },
+  {
+    // Off by default with no bare-URL fallback (matches music/poetry, not
+    // folk/sessions) — a story walk should only appear when explicitly
+    // requested, not for a first-time visitor or an existing shared link.
+    // See shouldShowEvent()'s isStoryWalk guard above for why this entry
+    // alone (not the Special/Storyclub checkboxes) governs a walk's
+    // visibility despite a walk also carrying isSpecial/isStoryclub.
+    id: "showStoryWalks",
+    flag: "isStoryWalk",
+    param: "walks",
+    default: false,
+    noneSelectedFallback: false,
   },
 ];
 
@@ -342,6 +360,7 @@ function createEventData(baseEvent, date, eventType) {
     isFolk: eventType === "folk",
     isSession: eventType === "session",
     isRepertoireShow: !!baseEvent.isRepertoireShow,
+    isStoryWalk: !!baseEvent.isStoryWalk,
     isCancelled: !!baseEvent.isCancelled,
     isSoldOut: !!baseEvent.isSoldOut,
     video_trailer: baseEvent.video_trailer || null,
@@ -519,6 +538,7 @@ function buildShowMergedEvent(show, showKey, showDate) {
     fb_event: showDate.fb_event || null,
     ticket_url: showDate.ticket_url || null,
     isRepertoireShow: true,
+    isStoryWalk: !!show.isStoryWalk,
     isCancelled: !!showDate.isCancelled,
     isSoldOut: !!showDate.isSoldOut,
   };
@@ -960,6 +980,7 @@ const EVENT_COLORS = {
   special: "#4CAF50",
   storyclub: "#808080",
   festival: "#1b5e20",
+  storywalk: "#6b7280",
   default: "#808080",
 };
 
@@ -971,12 +992,19 @@ const EVENT_MARKER_CONFIG = {
   special: { radius: 8, fillOpacity: 0.8 },
   storyclub: { radius: 8, fillOpacity: 0.7 },
   festival: { radius: 11, fillOpacity: 0.9 },
+  storywalk: { radius: 8, fillOpacity: 0.8 },
   default: { radius: 5, fillOpacity: 0.8 },
 };
 
 // Helper function to get event type
 function getEventType(eventData) {
   if (eventData.isFestival) return EVENT_TYPES.FESTIVAL;
+  // Checked before isSpecial/isStoryclub: a story walk's eventData also has
+  // one of those set (see buildShowMergedEvent()/processRepertoireShows() —
+  // a repertoireShow's isSpecial flag decides its underlying eventType
+  // string independently of isStoryWalk), so this must win the race, not
+  // fall through to "special"/"storyclub".
+  if (eventData.isStoryWalk) return EVENT_TYPES.STORY_WALK;
   if (eventData.isSession) return EVENT_TYPES.SESSION;
   if (eventData.isFolk) return EVENT_TYPES.FOLK;
   if (eventData.isMusic) return EVENT_TYPES.MUSIC;
@@ -1231,7 +1259,10 @@ function createEventHeader(event) {
     header.appendChild(createBadge("By Invitation"));
   }
 
-  if (event.isRepertoireShow) {
+  if (event.isStoryWalk) {
+    header.appendChild(document.createTextNode(" "));
+    header.appendChild(createBadge("🚶 Story Walk"));
+  } else if (event.isRepertoireShow) {
     header.appendChild(document.createTextNode(" "));
     header.appendChild(createBadge("🎭 Repertoire Show"));
   }
@@ -1938,6 +1969,19 @@ function highlightEvent(eventData) {
 
 function shouldShowEvent(eventData, filters) {
   const { storyclubsOn, specialOn } = filters;
+
+  // Story walks are excluded from the legacy storyclub/special shortcuts
+  // below — isSpecial/isStoryclub are still set on a walk's eventData
+  // (createEventData() sets them from the underlying eventType string
+  // independently of isStoryWalk), so without this guard a walk would
+  // incorrectly show up whenever "Special"/"Storyclub" is toggled on,
+  // regardless of the dedicated story-walk filter. A walk's visibility is
+  // governed ONLY by EVENT_TYPE_FILTERS below (see the isStoryWalk entry).
+  if (eventData.isStoryWalk) {
+    return EVENT_TYPE_FILTERS.some(
+      ({ flag, param }) => filters[param] && eventData[flag],
+    );
+  }
 
   if (eventData.isFestival && specialOn) return true;
   if (storyclubsOn && eventData.isStoryclub) return true;

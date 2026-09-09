@@ -39,6 +39,7 @@ function repertoireShowAsTourShape(showId, show) {
     performer_id: show.performer_id || null,
     performer_ids: Array.isArray(show.performer_ids) ? show.performer_ids : [],
     isSpecial: !!show.isSpecial,
+    isStoryWalk: !!show.isStoryWalk,
     isMusic: false,
     isPoetry: false,
     repertoire_id: null,
@@ -356,7 +357,10 @@ function buildRepertoireBrowseRow(repId, tour) {
  * show, flat, regardless of whether any tour links to it (a
  * complementary entry point to the main Performer → Touring show flow
  * below, for when you know the show but not which performer to look
- * under first).
+ * under first). Story walks are excluded here — see
+ * renderStoryWalksBrowseList() below — even though they're still
+ * repertoireShow records under the hood; this list is specifically
+ * "shows", not "shows and walks".
  */
 function renderRepertoireBrowseList() {
   const body = document.getElementById("repertoireBrowseBody");
@@ -364,7 +368,7 @@ function renderRepertoireBrowseList() {
   body.innerHTML = "";
 
   const entries = Object.entries(toursLookup)
-    .filter(([, t]) => t.__repertoireShowId)
+    .filter(([, t]) => t.__repertoireShowId && !t.isStoryWalk)
     .sort((a, b) =>
       (a[1].showname || a[1].name).localeCompare(b[1].showname || b[1].name),
     );
@@ -377,6 +381,45 @@ function renderRepertoireBrowseList() {
     body.innerHTML = '<p class="loading-state">No repertoire shows yet.</p>';
     return;
   }
+
+  entries.forEach(([repId, tour]) =>
+    body.appendChild(buildRepertoireBrowseRow(repId, tour)),
+  );
+}
+
+/**
+ * Populates the "Browse Story Walks" collapsible — the isStoryWalk
+ * counterpart to renderRepertoireBrowseList() above. Reuses
+ * buildRepertoireBrowseRow() unchanged (it works generically off any
+ * tour-shaped object, story walk or not) and the same click-through into
+ * displayTour(), since a story walk still has dates/venue/map exactly
+ * like a repertoire show — only which LIST it appears in differs. If
+ * repertoireBrowsePanel/storyWalksBrowsePanel markup isn't present on a
+ * given page (only tour_guide.html has it), this is a silent no-op.
+ */
+function renderStoryWalksBrowseList() {
+  const body = document.getElementById("storyWalksBrowseBody");
+  if (!body) return;
+  body.innerHTML = "";
+
+  const entries = Object.entries(toursLookup)
+    .filter(([, t]) => t.__repertoireShowId && t.isStoryWalk)
+    .sort((a, b) =>
+      (a[1].showname || a[1].name).localeCompare(b[1].showname || b[1].name),
+    );
+
+  const wrapper = document.getElementById("storyWalksBrowsePanel");
+  const label = document.getElementById("storyWalksBrowseSummaryLabel");
+  if (label) label.textContent = `🚶 Story Walks (${entries.length})`;
+
+  if (entries.length === 0) {
+    // No walks yet — hide the whole panel rather than show an empty
+    // collapsible (matches how the touring panels hide via hideClass
+    // when empty, e.g. no-now-touring).
+    if (wrapper) wrapper.style.display = "none";
+    return;
+  }
+  if (wrapper) wrapper.style.display = "";
 
   entries.forEach(([repId, tour]) =>
     body.appendChild(buildRepertoireBrowseRow(repId, tour)),
@@ -1424,8 +1467,13 @@ function renderTouringPanel(status, bodyId, wrapperId, hideClass, badgeFn) {
   const wrapper = document.getElementById(wrapperId);
   if (!container || !wrapper) return;
 
+  // Story walks are excluded from the Now Touring / Upcoming / Previous
+  // panels — they're not "touring shows" for display purposes (see the
+  // dedicated Story Walks panel below), even though they still live in
+  // toursLookup so displayTour()/the map/dates-list keep working when
+  // reached via that panel or a direct link.
   const tours = Object.entries(toursLookup).filter(
-    ([_, tour]) => getTourStatus(tour) === status,
+    ([_, tour]) => getTourStatus(tour) === status && !tour.isStoryWalk,
   );
 
   if (tours.length === 0) {
@@ -1565,6 +1613,7 @@ function refreshEventsData() {
   setTimeout(() => {
     populatePerformerDropdown();
     renderRepertoireBrowseList();
+    renderStoryWalksBrowseList();
     console.log("Performer dropdown populated");
 
     renderNowTouringPanel();

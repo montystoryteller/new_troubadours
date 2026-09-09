@@ -99,6 +99,21 @@
         </details>
     </div>
 
+    <div id="storyWalksBrowsePanel" style="display:none;">
+        <details class="repertoire-browse-details">
+            <summary class="upcoming-tours-summary">
+                <span class="upcoming-tours-summary-label" id="storyWalksBrowseSummaryLabel">🚶 Story Walks</span>
+                <span class="upcoming-tours-summary-hint">click to expand</span>
+            </summary>
+            <div class="upcoming-tours-body" id="storyWalksBrowseBody">
+                <p class="loading-state">Loading story walks…</p>
+                <!-- Populated by renderStoryWalksBrowseList() in tour_display.js.
+                     Starts hidden (inline style above) and is only revealed once
+                     there's at least one story walk to show; see that function. -->
+            </div>
+        </details>
+    </div>
+
     <a href="event_guide.html" class="back-link">View Complete Events Calendar Map</a>
 
     <div class="tour-controls">
