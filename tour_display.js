@@ -147,7 +147,13 @@ function getTourStatus(tour) {
     .filter(Boolean); // exclude entries with missing/malformed dates
   if (dates.length === 0) return "unknown";
   const allPast = dates.every((d) => d < today);
-  const allFuture = dates.every((d) => d >= today);
+
+  // We'll consider a tour as in the future if the first date
+  // is at least seven days in the future.
+  const sevenDaysFromToday = new Date(today);
+  sevenDaysFromToday.setDate(sevenDaysFromToday.getDate() + 7);
+  const allFuture = dates.every((d) => d >= sevenDaysFromToday);
+  //const allFuture = dates.every((d) => d >= today);
   if (allPast) return "past";
   if (allFuture) return "future";
   return "current"; // straddles today
