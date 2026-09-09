@@ -4562,7 +4562,16 @@
                     const after = normalizeUkPostcode(v.postcode);
                     addIfChanged(`venues.${id}.postcode`, v.postcode, after, () => { v.postcode = after; });
                 }
-                ["url", "tickets_url", "facebook", "instagram"].forEach(field => {
+                // Only fields that are always meant to be a full URL — NOT
+                // facebook/facebook_group/instagram, which this site's own
+                // normaliseFacebookUrl() (shared_utils.js) and its Instagram
+                // equivalent both explicitly treat as "a bare handle OR a
+                // full URL", expanding a handle to a full URL only at
+                // render time. Blindly prepending https:// to a bare handle
+                // like "sef.townsend" produced "https://sef.townsend" —
+                // nonsense, and not a formatting problem to begin with,
+                // since a bare handle there is the correct, intended shape.
+                ["url", "tickets_url"].forEach(field => {
                     if (v[field]) {
                         const after = fixMissingUrlScheme(v[field]);
                         addIfChanged(`venues.${id}.${field}`, v[field], after, () => { v[field] = after; });
@@ -4577,7 +4586,9 @@
                         addIfChanged(`performers.${id}.${field}`, p[field], after, () => { p[field] = after; });
                     }
                 });
-                ["url", "facebook", "facebook_group", "instagram", "tickets_url"].forEach(field => {
+                // Same reasoning as venues above — facebook/facebook_group/
+                // instagram excluded deliberately, not an oversight.
+                ["url", "tickets_url"].forEach(field => {
                     if (p[field]) {
                         const after = fixMissingUrlScheme(p[field]);
                         addIfChanged(`performers.${id}.${field}`, p[field], after, () => { p[field] = after; });
