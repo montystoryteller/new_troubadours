@@ -948,8 +948,11 @@
                 <p class="field-hint">
                     Scans venues with no <code>venue_type</code> set, and suggests one using the same
                     name-based heuristic the Stats page uses to categorise venues (see
-                    <code>shared_guessers.js</code>). A guess of "Other / unknown" is left unchecked by
-                    default, since it's not really telling you anything — review the rest before applying.
+                    <code>shared_guessers.js</code>). A guess of "Other / unknown" is left unchecked and
+                    blank by default, since it's not really telling you anything — pick a type from the
+                    dropdown or type your own for any venue you'd like to set. <strong>To apply changes:</strong>
+                    tick the venues you want updated (ticking happens automatically once you pick or type a
+                    type for a row that started blank), then click "Generate patch from checked rows" below.
                 </p>
                 <button class="btn-add-batch" id="enrich-venuetype-scan-btn" disabled>Scan for suggested venue
                     types</button>
@@ -982,7 +985,9 @@
                     Scans event/music/poetry descriptions with no <code>age_rating</code> set for common
                     age-suitability phrasing (e.g. "suitable for ages 8+", "18+", "family friendly"), using
                     the same heuristic as the event form's "Suggest age rating from description" button.
-                    Unlike venues, individual events have no stable id in
+                    Every row here already found a genuine match, so all start ticked — untick any you don't
+                    want, adjust the wording if you'd rather, then click "Apply checked rows to loaded data"
+                    below. Unlike venues, individual events have no stable id in
                     <code>events_normalized.json</code>, so accepting a row here writes straight into this
                     loaded copy of the data (by its position in the array) rather than producing a separate
                     small patch file — use "Download full enriched JSON" above once you're done to get the
@@ -4177,15 +4182,35 @@
                 row.dataset.venueId = c.id;
                 const isUnknown = c.candidate === "Other / unknown";
                 const startingValue = isUnknown ? "" : c.candidate;
+                const selectOptions = VENUE_TYPE_SUGGESTIONS.map(t =>
+                    `<option value="${t.replace(/"/g, "&quot;")}"${t === startingValue ? " selected" : ""}>${t}</option>`
+                ).join("");
                 row.innerHTML = `
                     <input type="checkbox" ${isUnknown ? "" : "checked"} class="enrich-venuetype-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${c.name}</div>
                         <div class="enrich-result-detail">
-                            <label class="subitem-field-label">Venue type — pick a suggestion, edit it, or type your own</label>
-                            <input type="text" class="enrich-venuetype-input" list="venueTypeOptions" value="${startingValue.replace(/"/g, "&quot;")}" placeholder="${isUnknown ? "No confident match — leave blank or type one" : ""}">
+                            <label class="subitem-field-label">Venue type — pick a common option, or type your own below</label>
+                            <select class="enrich-venuetype-select" style="margin-bottom:4px;">
+                                <option value="">— choose a common type —</option>
+                                ${selectOptions}
+                                <option value="__custom__">Custom / other (type below)</option>
+                            </select>
+                            <input type="text" class="enrich-venuetype-input" value="${startingValue.replace(/"/g, "&quot;")}" placeholder="${isUnknown ? "No confident guess — pick or type one to include this venue" : ""}">
                         </div>
                     </div>`;
+                const checkbox = row.querySelector(".enrich-venuetype-check");
+                const select = row.querySelector(".enrich-venuetype-select");
+                const input = row.querySelector(".enrich-venuetype-input");
+                if (!startingValue) select.value = "__custom__";
+                select.addEventListener("change", () => {
+                    if (select.value && select.value !== "__custom__") input.value = select.value;
+                    if (select.value) checkbox.checked = true;
+                });
+                input.addEventListener("input", () => {
+                    select.value = VENUE_TYPE_SUGGESTIONS.includes(input.value) ? input.value : "__custom__";
+                    if (input.value.trim()) checkbox.checked = true;
+                });
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, candidates.length, "venue");
@@ -4336,18 +4361,35 @@
                 row.className = "enrich-result-row";
                 row.dataset.bucket = f.bucket;
                 row.dataset.index = f.index;
+                const selectOptions = AGE_RATING_SUGGESTIONS.map(t =>
+                    `<option value="${t.replace(/"/g, "&quot;")}"${t === f.match.rating ? " selected" : ""}>${t}</option>`
+                ).join("");
                 row.innerHTML = `
                     <input type="checkbox" checked class="enrich-age-check">
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
                         <div class="enrich-result-detail">
-                            <label class="subitem-field-label">Age rating — pick a suggestion, edit it, or type your own</label>
-                            <input type="text" class="enrich-age-rating-input" list="ageRatingOptions" value="${f.match.rating.replace(/"/g, "&quot;")}">
+                            <label class="subitem-field-label">Age rating — pick a common option, or type your own below</label>
+                            <select class="enrich-age-rating-select" style="margin-bottom:4px;">
+                                <option value="">— choose a common rating —</option>
+                                ${selectOptions}
+                                <option value="__custom__">Custom / other (type below)</option>
+                            </select>
+                            <input type="text" class="enrich-age-rating-input" value="${f.match.rating.replace(/"/g, "&quot;")}">
                             <label class="subitem-field-label" style="margin-top:6px;">Minimum age (optional)</label>
                             <input type="number" min="0" max="99" class="enrich-age-minage-input" value="${f.match.minAge !== null ? f.match.minAge : ""}">
                         </div>
                         <div class="enrich-result-reasons">Found in description: "${f.match.sentence.replace(/</g, "&lt;")}"</div>
                     </div>`;
+                const select = row.querySelector(".enrich-age-rating-select");
+                const input = row.querySelector(".enrich-age-rating-input");
+                if (!AGE_RATING_SUGGESTIONS.includes(f.match.rating)) select.value = "__custom__";
+                select.addEventListener("change", () => {
+                    if (select.value && select.value !== "__custom__") input.value = select.value;
+                });
+                input.addEventListener("input", () => {
+                    select.value = AGE_RATING_SUGGESTIONS.includes(input.value) ? input.value : "__custom__";
+                });
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "event");
