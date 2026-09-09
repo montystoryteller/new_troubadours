@@ -90,11 +90,7 @@ function normaliseFacebook(fb) {
 // club with `alternate_locations` rotates venues by calendar-month parity
 // (e.g. even months at one venue, odd months at another). Resolves to the
 // club's own `venue_id` when there's no override for that date's parity.
-function resolveClubVenueId(c, date) {
-  if (!date || !c.alternate_locations) return c.venue_id || null;
-  const parity = (date.getMonth() + 1) % 2 === 0 ? "even" : "odd";
-  return c.alternate_locations[parity]?.venue_id || c.venue_id || null;
-}
+// resolveClubVenueId() — defined in shared_utils.js
 
 // ── Shared schedule engine (used by both single-club view and directory) ──
 // Was ~200 lines of _SCHED_DAY_MAP/_SCHED_OCC_MAP/_findNthDayInMonth/

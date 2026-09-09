@@ -1331,6 +1331,43 @@ function renderEventRow(container, entry, isPast, options = {}) {
       badges.appendChild(a);
     }
     detail.appendChild(badges);
+  } else if (entry.type === "club") {
+    const { club } = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = club.name;
+    detail.appendChild(title);
+
+    if (club.time) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = club.time;
+      detail.appendChild(t);
+    }
+
+    if (club.club) {
+      const p = document.createElement("div");
+      p.className = "event-row-performer";
+      const a = document.createElement("a");
+      a.href = `storyclub.html?club=${encodeURIComponent(club.club)}`;
+      a.textContent = "View club details";
+      p.appendChild(a);
+      detail.appendChild(p);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    const b = document.createElement("span");
+    b.className = "badge badge-club";
+    b.textContent = "📖 Storyclub";
+    badges.appendChild(b);
+    if (club.price) {
+      const priceBadge = document.createElement("span");
+      priceBadge.className = "badge badge-price";
+      priceBadge.textContent = club.price;
+      badges.appendChild(priceBadge);
+    }
+    detail.appendChild(badges);
   } else if (entry.type === "festival") {
     const { fid, festival } = entry.data;
     const title = document.createElement("div");
@@ -1568,6 +1605,57 @@ function renderNearbyEvents(today) {
   renderNearbyEventsList(Number(horizonSelect.value));
 }
 
+/**
+ * Recurring club-night occurrences at a venue within [from, to] — the
+ * "nearby events" counterpart to collectDatedEventsForVenue()'s one-off
+ * dated collections, which never expand events[] (recurring club
+ * schedules) at all. Kept separate rather than folded into
+ * collectDatedEventsForVenue() itself: that function is unbounded (the
+ * current venue's own page wants its full past+upcoming history), while
+ * a recurring schedule has no natural end and needs an explicit window
+ * to expand against.
+ *
+ * Uses resolveClubVenueId() rather than a plain venue_id match, since a
+ * club alternating between two venues by month parity isn't reliably at
+ * its base venue_id for every occurrence.
+ * @param {string} vid
+ * @param {Date} from
+ * @param {Date} to
+ * @returns {{type: "club", date: Date, data: {club: object}}[]}
+ */
+function collectClubDatesForVenue(vid, from, to) {
+  const out = [];
+  (eventsData.events || []).forEach((club) => {
+    // Cheap pre-filter before bothering to expand a schedule at all: is
+    // this venue even possibly one this club ever meets at?
+    const possibleVenueIds = new Set(
+      [
+        club.venue_id,
+        club.alternate_locations?.even?.venue_id,
+        club.alternate_locations?.odd?.venue_id,
+      ].filter(Boolean),
+    );
+    if (!possibleVenueIds.has(vid)) return;
+
+    RecurrenceEngine.scheduledOccurrencesInRange(
+      club.schedule,
+      from,
+      to,
+      club.exceptions || [],
+    ).forEach((occ) => {
+      // "cancelled" isn't happening at all; "moved_from" is this club's
+      // ORIGINAL date before a reschedule — showing it here would list a
+      // night nothing is actually happening on. Only "scheduled" and
+      // "moved_to" (the rescheduled replacement date) represent a real
+      // occurrence on occ.date.
+      if (occ.status === "cancelled" || occ.status === "moved_from") return;
+      if (resolveClubVenueId(club, occ.date) !== vid) return;
+      out.push({ type: "club", date: occ.date, data: { club } });
+    });
+  });
+  return out;
+}
+
 function renderNearbyEventsList(days) {
   const list = document.getElementById("nearbyEventsList");
   list.innerHTML = "";
@@ -1578,11 +1666,16 @@ function renderNearbyEventsList(days) {
 
   const MAX_EVENTS = 15;
   const upcomingNearby = getNearbyVenues()
-    .flatMap(({ vid, v }) =>
-      collectDatedEventsForVenue(vid)
+    .flatMap(({ vid, v }) => [
+      ...collectDatedEventsForVenue(vid)
         .filter((e) => e.date >= today && e.date < horizon)
         .map((e) => ({ ...e, venueId: vid, venue: v })),
-    )
+      ...collectClubDatesForVenue(vid, today, horizon).map((e) => ({
+        ...e,
+        venueId: vid,
+        venue: v,
+      })),
+    ])
     .sort((a, b) => a.date - b.date)
     .slice(0, MAX_EVENTS);
 

@@ -427,6 +427,25 @@ function findNearbyByLatLon(
 }
 
 /**
+ * A recurringClubEvent's actual venue for a given date — some clubs
+ * alternate between two venues by month parity (`alternate_locations`),
+ * so the base `venue_id` alone isn't always where a specific occurrence
+ * is really happening. Previously local to storyclub.js only; moved here
+ * as venues.js's nearby-events computation needs the same resolution
+ * (matching a club occurrence to the correct nearby venue by date), not
+ * just the club's own page.
+ * @param {object} c - a recurringClubEvent record
+ * @param {Date} [date] - the occurrence's date; without one, falls back
+ *   to the base venue_id (can't resolve parity with no date)
+ * @returns {string|null}
+ */
+function resolveClubVenueId(c, date) {
+  if (!date || !c.alternate_locations) return c.venue_id || null;
+  const parity = (date.getMonth() + 1) % 2 === 0 ? "even" : "odd";
+  return c.alternate_locations[parity]?.venue_id || c.venue_id || null;
+}
+
+/**
  * Sanitize a flyer filename, stripping any characters that are not
  * alphanumeric, dots, underscores, or hyphens.
  * @param {string} filename
