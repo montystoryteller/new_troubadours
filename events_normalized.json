@@ -2188,6 +2188,73 @@
     }
   },
   "tours": {
+    "paul-armfield-paul-armfield-autumn-tour-2026": {
+      "tour_name": "Paul Armfield Autumn Tour 2026",
+      "tour_dates": [
+        {
+          "date": "10/09/2026",
+          "venue_id": "platform-tavern-southampton",
+          "time": "8.30-10.30pm",
+          "price": "Free",
+          "isSpecial": true
+        },
+        {
+          "date": "25/10/2026",
+          "venue_id": "department-ryde",
+          "price": "£15",
+          "ticket_url": "https://department.byretail.net/menu/Big-Dish-Harvest-Moon",
+          "isSpecial": true
+        },
+        {
+          "date": "01/10/2026",
+          "venue_id": "the-cove-hastings",
+          "isSpecial": true
+        },
+        {
+          "date": "02/10/2026",
+          "venue_id": "jenny-lind-hastings",
+          "time": "5-7pm",
+          "isSpecial": true
+        },
+        {
+          "date": "03/10/2026",
+          "venue_id": "wilton-baptist-church-wiltshire",
+          "time": "7-9pm",
+          "ticket_url": "https://www.eventbrite.co.uk/e/paul-armfield-concert-between-the-covers-and-other-songs-tickets-1996439277622",
+          "isSpecial": true
+        },
+        {
+          "date": "25/10/2026",
+          "venue_id": "knowle-constitutional-club-bristol",
+          "time": "3-6pm",
+          "price": "Free",
+          "ticket_url": "https://www.facebook.com/events/1472990477638287?locale=en_GB",
+          "isSpecial": true
+        },
+        {
+          "date": "30/20/2026",
+          "venue_id": "northwich-folk-club",
+          "time": "8pm",
+          "price": "£10 / £8",
+          "isSpecial": true
+        },
+        {
+          "date": "31/10/2026",
+          "venue_id": "upco-otley",
+          "isSpecial": true
+        },
+        {
+          "date": "01/11/2026",
+          "venue_id": "cafe-9-sheffield",
+          "ticket_url": "https://wegottickets.com/Cafe9/",
+          "isSpecial": true
+        }
+      ],
+      "name": "Paul Armfield Autumn Tour 2026",
+      "performer_id": "paul-armfield",
+      "touring_event_flyer": "tour_paul_armfield_autumn_2026.jpg",
+      "isMusic": true
+    },
     "gaz-brookfield-autumn-2026": {
       "tour_name": "Gaz Brookfield Autumn 2026 Tour",
       "name": "Gaz Brookfield Autumn 2026 Tour",
@@ -15577,6 +15644,78 @@
       "postcode": "NG1 5JT",
       "full_address": "Rescue Rooms,",
       "url": "https://www.rescuerooms.com/"
+    },
+    "platform-tavern-southampton": {
+      "id": "platform-tavern-southampton",
+      "name": "Platform Tavern, Southampton",
+      "city": "Southampton",
+      "postcode": "SO14 2NY",
+      "full_address": "Platform Tavern, Town Quay, Southampton, SO14 2NY",
+      "url": "https://www.platformtavern.com/",
+      "latlon": [
+        50.89636,
+        -1.4035
+      ]
+    },
+    "the-cove-hastings": {
+      "id": "the-cove-hastings",
+      "name": "The Cove, Hastings",
+      "city": "Fairlight",
+      "postcode": "TN35 4AX",
+      "full_address": "The Cove, 53 Waites Lane, Fairlight, TN35 4AX",
+      "url": "https://thecovefairlight.co.uk/",
+      "latlon": [
+        50.87711,
+        0.66327
+      ]
+    },
+    "wilton-baptist-church-wiltshire": {
+      "id": "wilton-baptist-church-wiltshire",
+      "name": "WIlton Baptist Church, Wiltshire",
+      "city": "Salisbury",
+      "postcode": "SP2 0HT",
+      "full_address": "WIlton Baptist Church, Market Place, Wilton, Salisbury, SP2 0HT",
+      "url": "https://www.wiltonbaptist.org.uk/",
+      "latlon": [
+        51.0798,
+        -1.86326
+      ]
+    },
+    "knowle-constitutional-club-bristol": {
+      "id": "knowle-constitutional-club-bristol",
+      "name": "Knowle Constitutional Club, Bristol",
+      "city": "Bristol",
+      "postcode": "BS4 2AG",
+      "full_address": "Knowle Constitutional Club, 162, Wells Rd, Bristol, BS4 2AG",
+      "url": "https://www.facebook.com/KnowleConstitutionalClub/",
+      "latlon": [
+        51.44091,
+        -2.57495
+      ]
+    },
+    "northwich-folk-club": {
+      "id": "northwich-folk-club",
+      "name": "Northwich Folk Club",
+      "city": "Northwich",
+      "postcode": "CW9 8JB",
+      "full_address": "The Royal British Legion (Social) Club, Firth Fields, Davenham, Northwich, CW9 8JB",
+      "url": "https://northwichfolk.co.uk/",
+      "latlon": [
+        53.23457,
+        -2.51333
+      ]
+    },
+    "upco-otley": {
+      "id": "upco-otley",
+      "name": "UPCO, Otley",
+      "city": "Otley",
+      "postcode": "LS21 3AN",
+      "full_address": "UPCO, 7 Courthouse Street, Otley, LS21 3AN",
+      "url": "https://whatsupco.uk/",
+      "latlon": [
+        53.9063,
+        -1.69304
+      ]
     }
   },
   "performers": {
@@ -17075,6 +17214,14 @@
       "facebook": "SorrelNation",
       "instagram": "sorrelnation",
       "bio": "Travelling troubadour Sorrel Nation brings a soulful mix of folk-rock to country and beyond and possesses one of those voices that makes you immediately stop what you're doing to give her your full attention. She engages audiences with emotive lyrics, 70s inspired style and a voice full of soul, which further increases the seductive power of her songs. Known for penning songs that can truly open the heart to grief and like all valued songwriters possess a giving presence...she heralds gorgeous ballads that could become Sorrel Nation's trademark sound."
+    },
+    "paul-armfield": {
+      "id": "paul-armfield",
+      "name": "Paul Armfield",
+      "url": "https://paularmfield.com/",
+      "bio": "After a few years in revolutionary eastern Europe, Paul Armfield returned to his beloved Isle of Wight in the early 90's to get married, have children, sell books and write songs. His first album Songs Without Words was released in 2003 to wide critical acclaim, his voice being compared to the likes of Cat Stevens, Tim Hardin and Nick Drake and the music being described as Folk Noir. A big fan of Scott Walker Paul was likewise applauded for his renditions of Jacques Brel chansons as well as his own lovelorn, poetic songs.\n\n\n\nNow in his mid 50s Paul is a veteran performer with a warm, relaxed stage presence. A songwriter's songwriter, he has picked up plaudits from the likes of Guy Garvey and Chris Difford. Still selling books by day he is also an occasional funeral celebrant, a lino-cut artist, and a double bassist whose playing can be heard on the best-selling Michael Kiwanuka single 'I'm Getting Ready' as well as collaborations with jazz pianist Greg Foat. An accomplished musical-saw player, he has a busking alter-ego called the Stranger On The Saw.\n\n\n\nPaul currently runs a small bookshop in his home town of Cowes on the Isle Of Wight. In May of 2025 his literary and musical worlds collided with a new album 'Between The Covers: 9 Songs for Bibliophiles', which he promoted with a two month solo tour around the UK and Europe, playing book shops and literary festivals.",
+      "musician": true,
+      "facebook": "paulscottarmfield"
     },
     "3-daft-monkeys": {
       "id": "3-daft-monkeys",
