@@ -1953,7 +1953,13 @@ function zoomToEvent(lat, lon) {
 }
 
 function highlightEvent(eventData) {
-  const eventId = `${eventData.name}-${eventData.date.getTime()}`;
+  // Must match the escaping used when the id was written onto the DOM
+  // element (see the eventDiv.setAttribute("data-event-id", ...) call
+  // above) — using the raw, unescaped name here meant this lookup
+  // silently failed for any event name containing &, ", or ' (83 current
+  // records do), since escapeHtml("&") !== "&". Map-marker clicks for
+  // those events looked like nothing happened.
+  const eventId = `${escapeHtml(eventData.name)}-${eventData.date.getTime()}`;
   document
     .querySelectorAll(".event")
     .forEach((el) => el.classList.remove("highlighted"));
