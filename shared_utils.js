@@ -367,6 +367,66 @@ function normaliseInstagramUrl(ig) {
 }
 
 /**
+ * Does this record have a usable [lat, lon] pair? Used to filter out
+ * venues/records with no known location before any distance math.
+ * @param {object} v - anything with an optional .latlon field
+ * @returns {boolean}
+ */
+function hasLatlon(v) {
+  return Array.isArray(v?.latlon) && v.latlon.length === 2;
+}
+
+/**
+ * Haversine great-circle distance between two lat/lon points, in km.
+ */
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Find nearby lat/lon-bearing records within a radius, sorted closest
+ * first, capped to a limit. Originally a venues.js-only helper
+ * (getNearbyVenues()); generalised here as the first non-venues.js
+ * consumer (a storyclub.js "nearby clubs" feature) was being planned —
+ * pulled out before that second copy got written, rather than after.
+ * @param {number} lat - reference latitude
+ * @param {number} lon - reference longitude
+ * @param {Array<[string, object]>} entries - [key, record] pairs; each
+ *   record should have an optional .latlon = [lat, lon]
+ * @param {object} [options]
+ * @param {string} [options.excludeKey] - key to exclude (e.g. the
+ *   current venue/club itself, so it doesn't appear in its own "nearby" list)
+ * @param {number} [options.radiusKm=20]
+ * @param {number} [options.limit=8]
+ * @returns {{key: string, item: object, dist: number}[]}
+ */
+function findNearbyByLatLon(
+  lat,
+  lon,
+  entries,
+  { excludeKey, radiusKm = 20, limit = 8 } = {},
+) {
+  return entries
+    .filter(([key, item]) => key !== excludeKey && hasLatlon(item))
+    .map(([key, item]) => ({
+      key,
+      item,
+      dist: haversineKm(lat, lon, item.latlon[0], item.latlon[1]),
+    }))
+    .filter((x) => x.dist <= radiusKm)
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, limit);
+}
+
+/**
  * Sanitize a flyer filename, stripping any characters that are not
  * alphanumeric, dots, underscores, or hyphens.
  * @param {string} filename

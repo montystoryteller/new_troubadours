@@ -54,9 +54,7 @@ function preloadLeafletWhenIdle() {
 // it set to an empty array [] rather than being missing outright, and []
 // is truthy in JS, so a plain `if (v.latlon)` check lets those through
 // and crashes downstream Leaflet calls that expect a real [lat, lon] pair.
-function hasLatlon(v) {
-  return Array.isArray(v?.latlon) && v.latlon.length === 2;
-}
+// hasLatlon(), haversineKm() — defined in shared_utils.js
 
 // ---------------------------------------------------------------------------
 // Bootstrap
@@ -1499,17 +1497,15 @@ function renderVenueFlyers(regularClubs, allDated, today) {
 function getNearbyVenues() {
   if (!hasLatlon(venue)) return [];
   const [lat, lon] = venue.latlon;
-  const RADIUS_KM = 20;
-
-  return Object.entries(venuesLookup)
-    .filter(([vid, v]) => vid !== venueId && hasLatlon(v))
-    .map(([vid, v]) => {
-      const dist = haversineKm(lat, lon, v.latlon[0], v.latlon[1]);
-      return { vid, v, dist };
-    })
-    .filter((x) => x.dist <= RADIUS_KM)
-    .sort((a, b) => a.dist - b.dist)
-    .slice(0, 8);
+  const nearby = findNearbyByLatLon(lat, lon, Object.entries(venuesLookup), {
+    excludeKey: venueId,
+    radiusKm: 20,
+    limit: 8,
+  });
+  // Local callers expect {vid, v, dist}, not the generic {key, item, dist}
+  // shape shared_utils.js's version returns — keep this shim rather than
+  // renaming every call site below.
+  return nearby.map(({ key, item, dist }) => ({ vid: key, v: item, dist }));
 }
 
 function renderNearbyVenues() {
@@ -1546,17 +1542,7 @@ function renderNearbyVenues() {
   });
 }
 
-function haversineKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
+// haversineKm() — defined in shared_utils.js
 
 // ---------------------------------------------------------------------------
 // Nearby events (one-off dated events at nearby venues, selectable horizon)
