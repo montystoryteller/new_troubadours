@@ -343,6 +343,30 @@ function normaliseFacebookUrl(fb) {
 }
 
 /**
+ * Normalise an Instagram handle or URL to a full, sanitized
+ * https://www.instagram.com/... URL — so data entry can just be a bare
+ * username (with or without a leading @) instead of a full URL.
+ *
+ * Deliberately goes through sanitizeUrl() before returning, unlike
+ * normaliseFacebookUrl() above (a known, currently-unfixed gap — every
+ * Facebook link on the site skips protocol validation; this one doesn't).
+ * Was previously two separately hand-rolled, byte-for-byte identical
+ * copies of this exact logic in venues.js and performers.js.
+ * @param {string} ig - Either a full URL or a bare handle (with or without @).
+ * @returns {string} A sanitized instagram.com URL, or "#" if `ig` was a
+ *   malformed/dangerous full URL (mirrors sanitizeUrl()'s own fallback
+ *   convention rather than returning null, since every call site here
+ *   sets this straight onto an <a href> and wants a safe href regardless).
+ */
+function normaliseInstagramUrl(ig) {
+  if (!ig) return "#";
+  const url = /^https?:\/\//i.test(ig)
+    ? ig
+    : `https://www.instagram.com/${ig.replace(/^@/, "")}`;
+  return sanitizeUrl(url) || "#";
+}
+
+/**
  * Sanitize a flyer filename, stripping any characters that are not
  * alphanumeric, dots, underscores, or hyphens.
  * @param {string} filename

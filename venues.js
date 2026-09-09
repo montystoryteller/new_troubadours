@@ -801,10 +801,7 @@ function renderVenue() {
     if (linksDiv.children.length > 0)
       linksDiv.appendChild(document.createTextNode(" · "));
     const a = document.createElement("a");
-    const igUrl = /^https?:\/\//i.test(venue.instagram)
-      ? venue.instagram
-      : `https://www.instagram.com/${venue.instagram.replace(/^@/, "")}`;
-    a.href = sanitizeUrl(igUrl) || "#";
+    a.href = normaliseInstagramUrl(venue.instagram);
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = "Instagram";

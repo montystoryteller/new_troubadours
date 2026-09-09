@@ -781,10 +781,7 @@ function renderPerformer() {
     if (kind === "facebook") {
       href = normaliseFacebookUrl(url);
     } else if (kind === "instagram") {
-      const igUrl = /^https?:\/\//i.test(url)
-        ? url
-        : `https://www.instagram.com/${url.replace(/^@/, "")}`;
-      href = sanitizeUrl(igUrl) || "#";
+      href = normaliseInstagramUrl(url);
     } else {
       href = sanitizeUrl(url);
       if (!href) return;
