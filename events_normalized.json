@@ -2093,6 +2093,34 @@
         }
       ]
     },
+    "blabbermouth-storytelling-the-dead-moon-other-dark-tales-retold": {
+      "name": "The Dead Moon & Other Dark Tales Retold",
+      "showname": "The Dead Moon & Other Dark Tales Retold",
+      "show_dates": [
+        {
+          "date": "31/10/2026",
+          "venue_id": "the-backyard-theatre-watchet",
+          "price": "£12.50",
+          "date_added": "10/09/2026",
+          "event_flyer": "2026_10_31_blabbermouth_dead_moon.avif"
+        },
+        {
+          "date": "11/02/2027",
+          "venue_id": "the-front-room-theatre-weston"
+        },
+        {
+          "date": "12/02/2027",
+          "venue_id": "crediton-arts-centre"
+        },
+        {
+          "date": "13/02/2027",
+          "venue_id": "field-system-ashburton"
+        }
+      ],
+      "performer_id": "blabbermouth-storytelling",
+      "description": "An atmospheric retelling of a classic English folk tale, The Dead Moon tells of the time when the moon descended from the sky, to illuminate the marshes where local people live in fear of the horrors lurking in the darkness.\n\n\n\nThis brand new telling of a strange and eerie tale expands on the original to explore the life of the woman who first recorded the The Dead Moon, the uncanny circumstances of its origins  and the claims that within the tale is the folk memory of an ancient ritual.",
+      "isSpecial": true
+    },
     "sarah-liisa-wilkinson-how-not-die-finland": {
       "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
       "showname": "HOW (NOT) TO DIE long ago in Finland",
@@ -2188,6 +2216,52 @@
     }
   },
   "tours": {
+    "blabbermouth-storytelling-midwinter-a-ghost-story": {
+      "tour_name": "Midwinter — A Ghost Story (Winter 2026)",
+      "tour_dates": [
+        {
+          "date": "10/12/2026",
+          "venue_id": "the-assembly-rooms-glastonbury",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        },
+        {
+          "date": "11/12/2026",
+          "venue_id": "rise-frome",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        },
+        {
+          "date": "13/12/2026",
+          "venue_id": "exeter-guildhall",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        },
+        {
+          "date": "17/12/2026",
+          "venue_id": "town-hall-chard",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        },
+        {
+          "date": "18/12/2026",
+          "venue_id": "axbridge-town-hall",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        },
+        {
+          "date": "21/12/2026",
+          "venue_id": "victoria-rooms-milverton",
+          "price": "£14 advance, £15 OTD",
+          "isSpecial": true
+        }
+      ],
+      "name": "Midwinter — A Ghost Story",
+      "performer_id": "blabbermouth-storytelling",
+      "tour_description": "An evening of spine-tingling story-telling inspired by the folklore of the WInder Solstice.",
+      "touring_event_flyer": "tour_blabbermouth_midwinter_ghost_winter_2026.avif",
+      "isSpecial": true
+    },
     "paul-armfield-paul-armfield-autumn-tour-2026": {
       "tour_name": "Paul Armfield Autumn Tour 2026",
       "tour_dates": [
@@ -15716,6 +15790,86 @@
         53.9063,
         -1.69304
       ]
+    },
+    "crediton-arts-centre": {
+      "id": "crediton-arts-centre",
+      "name": "Crediton Arts Centre",
+      "city": "Crediton",
+      "postcode": "EX17 3AX",
+      "full_address": "Crediton Arts Centre, East Street, Credito, EX17 3AX",
+      "url": "https://www.creditonartscentre.org/",
+      "latlon": [
+        50.78873,
+        -3.65151
+      ]
+    },
+    "field-system-ashburton": {
+      "id": "field-system-ashburton",
+      "name": "Field System, Ashburton",
+      "city": "Ashburton",
+      "postcode": "TQ13 7DT",
+      "full_address": "Field System, 13 West Street, Ashburton, TQ13 7DT",
+      "url": "https://fieldsystem.co.uk/",
+      "latlon": [
+        50.51501,
+        -3.75669
+      ]
+    },
+    "rise-frome": {
+      "id": "rise-frome",
+      "name": "Rise, Frome",
+      "city": "Frome",
+      "postcode": "BA11 3BY",
+      "full_address": "Rise, Whittox Lane. Frome, BA11 3BY",
+      "url": "https://risefrome.com/",
+      "latlon": [
+        51.23174,
+        -2.32394
+      ]
+    },
+    "exeter-guildhall": {
+      "id": "exeter-guildhall",
+      "name": "Exeter Guildhall",
+      "city": "Exeter",
+      "postcode": "EX4 3EB",
+      "full_address": "Guildhall, High Street, Exeter, Devon, EX4 3EB",
+      "url": "https://exeter.gov.uk/leisure-and-culture/exeter-historic-guildhall/guildhall-overview/",
+      "latlon": [
+        50.72341,
+        -3.53187
+      ]
+    },
+    "town-hall-chard": {
+      "id": "town-hall-chard",
+      "name": "Town Hall, Chard",
+      "city": "Chard",
+      "postcode": "TA20 1PP",
+      "full_address": "Guildhall, Fore Street, Chard, TA20 1PP",
+      "url": "https://chard-guildhall.co.uk/",
+      "latlon": [
+        50.87245,
+        -2.9646
+      ]
+    },
+    "axbridge-town-hall": {
+      "id": "axbridge-town-hall",
+      "name": "Axbridge Town Hall",
+      "city": "Axbridge",
+      "postcode": "BS26 2AR",
+      "full_address": "Axbridge Town Hall, The Square, Axbridge, BS26 2AR",
+      "url": "https://www.axbridgetownhall.co.uk/town-hall/"
+    },
+    "victoria-rooms-milverton": {
+      "id": "victoria-rooms-milverton",
+      "name": "Victoria Rooms, Milverton",
+      "city": "Taunton",
+      "postcode": "TA4 1JU",
+      "full_address": "Victoria Rooms, Fore Street, Milverton, Taunton, TA4 1JU",
+      "url": "http://milvertonvictoriarooms.org.uk/home",
+      "latlon": [
+        51.02433,
+        -3.25248
+      ]
     }
   },
   "performers": {
@@ -16885,6 +17039,12 @@
       "name": "Jamie Crawford",
       "url": "https://www.jamiecrawfordstorytelling.com/",
       "bio": "Nothing is more satisfying to listen to than a story\n\n\n\nIf it's well told\n\n\n\nAnd that's what I do\n\n\n\nFace-to-face with my audience I draw them into the story\n\n\n\nAnd get them listening, engaged, inspired\n\n\n\nSo let Jamie Crawford Storytelling help you bring people together\n\n\n\nTo make your project shine.\n\n\n\nKnown for his dynamic reworking of traditional stories, for his playful approach to the spoken word and for the warmth of my telling, he has been delivering storytelling shows, workshops and walks since 2002.\n\n\n\nHe creates and delivers storytelling programmes in the arts, education, heritage, media and business sectors as well as privately. He gives performances, teaches storytelling courses and run consultancies. All his practice is based on:\n\n\n\nResearching stories from oral and written traditions\n\n\n\nShaping new versions of the stories to the needs of his clients\n\n\n\nTelling those stories to audiences of all ages face-to-face\n\n\n\nInspiring others to tell their stories"
+    },
+    "blabbermouth-storytelling": {
+      "id": "blabbermouth-storytelling",
+      "name": "Blabbermouth Storytelling",
+      "url": "https://www.blabbermouthstorytelling.co.uk",
+      "bio": "With a professional background in archaeology and heritage management, post-graduate work as an independent field archaeologist, and then a member of the management team at the county Museum of Somerset in Taunton and on to the Quantock Hills National Landscape in the role of Historic Heritage Officer, storytelling proved to be the continuous thread that led to Blabbermouth."
     },
     "shonaleigh": {
       "id": "shonaleigh",
