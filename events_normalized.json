@@ -2315,7 +2315,8 @@
         {
           "date": "31/10/2026",
           "venue_id": "upco-otley",
-          "isSpecial": true
+          "isSpecial": true,
+          "event_flyer": "2026_10_31_paul_armfield_otley_upco.jpg"
         },
         {
           "date": "01/11/2026",
