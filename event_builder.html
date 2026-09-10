@@ -2241,6 +2241,10 @@
             toggle.textContent = "+ Add podcast appearance";
 
             const innerContainer = document.createElement("div");
+            innerContainer.style.display = "none";
+            innerContainer.style.marginTop = "8px";
+
+            const field = buildSubitemList(innerContainer, {
                 addLabel: "Add another podcast appearance",
                 buildRowFields: (wrap) => {
                     wrap.className = "subitem-row-fields";
@@ -2267,11 +2271,26 @@
                         </div>`;
                 },
             });
+
+            function expand() {
+                innerContainer.style.display = "";
+                toggle.style.display = "none";
+            }
+            toggle.addEventListener("click", expand);
+
+            container.appendChild(toggle);
+            container.appendChild(innerContainer);
+
+            return { rows: field.rows, addRow: field.addRow, expand };
         }
         // Populates from the performer's existing (inline-only) podcast_appearances
         // — matched appearances never get stored back onto the performer, so an
         // existing record's array here is already exactly the one-off ones.
+        // Expands the (otherwise collapsed) field first if there's anything
+        // to show, so editing an existing performer with real appearances
+        // doesn't leave them hidden behind the "+ Add" toggle.
         function populatePodcastAppearancesField(field, appearances) {
+            if (appearances && appearances.length) field.expand();
             populateRowsBySelector(field, appearances || [], [
                 [".pa-podcast", a => a.podcast],
                 [".pa-podcast-url", a => a.podcast_url],
