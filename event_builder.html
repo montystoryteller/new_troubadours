@@ -2226,8 +2226,21 @@
         // the schema now prefers. See readPodcastAppearancesField below for
         // how a match against an already-existing (vs. newly-batched) podcast
         // is handled differently.
+        // Collapsed by default behind a toggle — it's a rare addition, and
+        // each row has five fields, so left permanently expanded it took up
+        // a lot of vertical space on the Performer form for something most
+        // performers don't have. populatePodcastAppearancesField() below
+        // auto-expands this when loading an existing performer who does
+        // have some, via edit(), so editing still works correctly against
+        // rows that start hidden.
         function buildPodcastAppearancesField(container) {
-            return buildSubitemList(container, {
+            container.innerHTML = "";
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "add-subitem-btn";
+            toggle.textContent = "+ Add podcast appearance";
+
+            const innerContainer = document.createElement("div");
                 addLabel: "Add another podcast appearance",
                 buildRowFields: (wrap) => {
                     wrap.className = "subitem-row-fields";
