@@ -9404,6 +9404,21 @@
       "date_added": "27/06/2026"
     },
     {
+      "name": "Island of Love [Polis Loizou]",
+      "showname": "Island of Love",
+      "date": "25/09/2026",
+      "time": "7.30pm",
+      "club": "threeheadsinawell",
+      "price": "",
+      "description": "'Island of Love' is a blend of mythology, folklore, history and biographical storytelling that explores my identity, family and our complex motherland of Cyprus. Beginning with the birth of the country’s infamous goddess, Aphrodite, the show takes the audience on a journey of love, desire, sexuality… and war. From tales of intercommunal romance and bridal kidnappings to fatness and French nutriotionists, Byzantine heroes and conversion therapy to nationalism and division, the various facets of Cyprus and its people are revealed.",
+      "event_flyer": "",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": "polis-loizou",
+      "date_added": "11/09/2026"
+    },
+    {
       "name": "Gather Round: Monmouth Festival of Stories: Stories Under the Stars [Alim Kamara]",
       "showname": "Stories Under the Stars",
       "date": "02/10/2026",
@@ -17179,6 +17194,12 @@
       "name": "Sally Tonge",
       "url": "https://www.saltonge.co.uk/",
       "bio": "Sally Tonge is popular Shropshire based storyteller, musician and community artist. She works across the UK and beyond with listeners of all ages. She tells stories combined with music, and is especially skilled at working with young children, children with special and additional needs."
+    },
+    "polis-loizou": {
+      "id": "polis-loizou",
+      "name": "Polis Loizou",
+      "url": "https://polisloizou.com/",
+      "bio": "Award-winning Cypriot writer and performer, working across various disciplines. I tend to draw on history, social politics, folklore and ‘queerness’ in all its forms. Polis also one makes up one third of the award-winning fringe theatre troupe The Off-Off-Off-Broadway Company, and is a teller of folk tales from around the world."
     },
     "shonaleigh": {
       "id": "shonaleigh",
