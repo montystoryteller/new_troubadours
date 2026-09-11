@@ -5277,7 +5277,7 @@
       "venue_id": ""
     },
     {
-      "name": "B.L.A.S.T! (Beautiful Lies And Startling Truths), Shropshire",
+      "name": "B.L.A.S.T! / Blast (Beautiful Lies And Startling Truths), Shropshire",
       "schedule": "3rd friday",
       "time": "7.30pm for an 8pm start. £10 per person",
       "link": "https://www.b-l-a-s-t.co.uk/",
@@ -9708,6 +9708,7 @@
       "date_added": "11/09/2026",
       "time": "7-9.30pm",
       "price": "£10",
+      "fb_event": 935386626300731,
       "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what’s behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
       "isSpecial": true
     },
@@ -16466,6 +16467,12 @@
       "name": "'Tis Tales",
       "type": "troupe",
       "members": [
+        "holly-medland",
+        "tony-monty-hirst",
+        "sue-bailey",
+        "merl-fluin"
+      ],
+      "performer_ids": [
         "holly-medland",
         "tony-monty-hirst",
         "sue-bailey",
