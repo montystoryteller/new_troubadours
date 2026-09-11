@@ -4932,7 +4932,7 @@
       "schedule": "1st wednesday",
       "link": "https://wordofmouthstorytelling.blogspot.com/",
       "facebook": "https://www.facebook.com/groups/391825947545400/",
-      "club": "wordofmouthSCl",
+      "club": "wordofmouth-story-club",
       "venue_id": "the-britons-protection-great"
     },
     {
@@ -4981,7 +4981,7 @@
       "schedule": "3rd tuesday",
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/1353388599609560/",
-      "club": "norwichSCl",
+      "club": "norwich-story-club",
       "venue_id": "gibraltar-gardens-norwich"
     },
     {
@@ -4990,7 +4990,7 @@
       "time": "7.30pm",
       "link": "https://www.thedukewilliammatlock.com/",
       "facebook": "https://www.facebook.com/MatlockStorytellingCafe",
-      "club": "matlockSCl",
+      "club": "matlock-story-club",
       "venue_id": "the-duke-william-matlock"
     },
     {
@@ -5102,7 +5102,7 @@
       "schedule": "2nd monday",
       "facebook": "",
       "time": "7pm?",
-      "club": "huddersfieldSCi",
+      "club": "huddersfield-story-circle",
       "venue_id": "rat-and-ratchet-pub-huddersfield"
     },
     {
@@ -5392,7 +5392,7 @@
       "time": "5-7pm",
       "schedule": "4th sunday",
       "facebook": "https://www.facebook.com/profile.php?id=61580047292990",
-      "club": "plymouthSCi",
+      "club": "plymouth-story-circle",
       "venue_id": "snapdragons-victoria",
       "flyers": [
         "2026_06_28_plymouth_storytelling_circle.jpg"
@@ -5405,7 +5405,7 @@
       "link": "https://www.theploughartscentre.org.uk/",
       "facebook": "https://www.facebook.com/ploughstorytelling",
       "email": "storytelling.plough@gmail.com",
-      "club": "ploughSCi",
+      "club": "plough-story-circle",
       "venue_id": "st-annes-arts-community-centre-barnstaple"
     },
     {
@@ -10369,7 +10369,7 @@
       "venue_id": "the-grove-huddersfield"
     }
   ],
-  "spokenword": [
+  "poetryEvents": [
     {
       "name": "Burwell Spoken Word",
       "schedule": "3rd thursday",
