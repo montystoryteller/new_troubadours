@@ -9666,6 +9666,21 @@
       "isSpecial": true
     },
     {
+      "name": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books [Holly Medland & Merl Fluin]",
+      "showname": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books",
+      "date": "29/10/2026",
+      "venue_id": "babushka-books-shanklin",
+      "performer_ids": [
+        "holly-medland",
+        "merl-fluin"
+      ],
+      "date_added": "11/09/2026",
+      "time": "7-9.30pm",
+      "price": "£10",
+      "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what’s behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
+      "isSpecial": true
+    },
+    {
       "name": "What a Woman [Baden Prince]",
       "showname": "What a Woman",
       "date": "04/11/2026",
@@ -15710,6 +15725,18 @@
       "latlon": [
         51.90323,
         -2.07914
+      ]
+    },
+    "babushka-books-shanklin": {
+      "id": "babushka-books-shanklin",
+      "name": "Babushka Books, Shanklin",
+      "city": "Shanklin, Isle of Wight",
+      "postcode": "PO37 7AE",
+      "full_address": "Babushka Books, 67 Regent Street, Shanklin, PO37 7AE",
+      "url": "https://www.abebooks.co.uk/babushka-books-framers-isle-of-wight/52512508/sf",
+      "latlon": [
+        50.63181,
+        -1.1784
       ]
     },
     "rescue-rooms-nottingham": {
