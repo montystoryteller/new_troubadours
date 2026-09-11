@@ -5,11 +5,14 @@
    ============================================================= */
 
 :root {
-    /* Primary Green Theme Variables */
-    --theme-green: #4CAF50;
-    --theme-green-border: #a5d6a7;
+    /* --theme-green/--theme-green-border/--theme-green-border-alt removed —
+       duplicates of shared-styles.css's :root. These three are genuinely
+       new here (not defined anywhere else) and are kept.
+       Note: --theme-green-bg-alt's value (rgb(8, 10, 8), near-black) looks
+       out of step with the other --theme-green-bg-* values here (all pale
+       greens) — worth double-checking this wasn't a data-entry mistake,
+       left as-is since that's a content question, not a duplication one. */
     --theme-green-bg-alt: rgb(8, 10, 8);
-    --theme-green-border-alt: #c8e6c9;
     --theme-green-bg-hover: #dcedc8;
     --theme-green-bg-light: #f9fdf9;
 }

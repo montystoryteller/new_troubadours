@@ -1,38 +1,18 @@
 // ── Constants ─────────────────────────────────────────────────────────────
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+// DAYS/MONTHS, escapeHtml(), formatDate() used to be duplicated here,
+// byte-for-byte identical to DAYS_OF_WEEK/MONTHS_SHORT/escapeHtml()/
+// formatDate() in shared_utils.js (already loaded before this file —
+// flyers.js already relied on its DAY_MAP). formatShortDateWithYear() (day + short
+// month + year) was a real, distinct format, not a duplicate — moved to
+// shared_utils.js as formatShortDateWithYear() and renamed there, since
+// its old name was one letter-order away from shared_utils.js's own
+// formatShortDate() (day + short month, NO year) despite the two
+// returning different things — an easy function to grab the wrong one of
+// by pattern-matching the name alone.
 const BASE_EVENT = "./storyclub_assets/event_flyers/";
 const BASE_CLUB = "./storyclub_assets/club_flyers/";
 
 const CALENDAR = "event_guide.html";
-
-function escapeHtml(text) {
-  if (!text) return "";
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
-}
 
 // ── Calendar link builder ─────────────────────────────────────────────────
 // Constructs a URL back to the events calendar, pre-filtered to the event's
@@ -257,7 +237,7 @@ function readUrlParams() {
       _todayOverride = parsed;
       const banner = document.getElementById("date-override-banner");
       const label = document.getElementById("date-override-label");
-      label.textContent = `${DAYS[parsed.getDay()]} ${parsed.getDate()} ${MONTHS[parsed.getMonth()]} ${parsed.getFullYear()}`;
+      label.textContent = `${DAYS_OF_WEEK[parsed.getDay()]} ${parsed.getDate()} ${MONTHS_SHORT[parsed.getMonth()]} ${parsed.getFullYear()}`;
       // Preserve other params on the "back to real today" link
       const back = new URLSearchParams(p);
       back.delete("date");
@@ -368,13 +348,9 @@ function today() {
   return d;
 }
 
-function formatDate(dt) {
-  return `${DAYS[dt.getDay()]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
-}
-
-function formatDateShort(dt) {
-  return `${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
-}
+// formatDate() — defined in shared_utils.js
+// The old local formatDateShort() (day + short month + year) is now
+// formatShortDateWithYear() in shared_utils.js — callers below updated.
 
 // ── Lazy image loading — see createLazyImageLoader() in shared_utils.js
 // for the shared implementation (also used by the tour and performer
@@ -582,7 +558,7 @@ async function loadFlyers() {
       tourKey: tourKey,
       tourDateRange:
         datesInWindow.length > 1
-          ? `${formatDateShort(datesInWindow[0]._dt)} – ${formatDateShort(last._dt)}`
+          ? `${formatShortDateWithYear(datesInWindow[0]._dt)} – ${formatShortDateWithYear(last._dt)}`
           : null,
       tourDateCount: datesInWindow.length,
       fbEvent: rep.fb_event
@@ -869,7 +845,7 @@ async function loadFlyers() {
       performer: perf(performerId),
       performerUrl: perfUrl(performerId),
       venue: v.name || "",
-      dateStr: rep ? formatDateShort(rep._dt) : "",
+      dateStr: rep ? formatShortDateWithYear(rep._dt) : "",
       status,
       sortDate: rep
         ? rep._dt

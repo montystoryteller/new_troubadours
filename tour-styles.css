@@ -1,9 +1,7 @@
-:root {
-    /* Primary Green Theme Variables */
-    --theme-green: #4CAF50;
-    --theme-green-dark: #2e7d32;
-    --theme-green-bg: #e8f5e9;
-}
+/* :root theme-green variables removed — all three were duplicates of
+   shared-styles.css's :root (which now also carries --theme-green-bg,
+   promoted here since this file and venue-styles.css both independently
+   defined the identical value). */
 
 
 /* =============================================================

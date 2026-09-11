@@ -4,13 +4,9 @@
    Depends on shared-styles.css being loaded first.
    ============================================================= */
 
-:root {
-    /* Primary Green Theme Variables */
-    --theme-green: #4CAF50;
-    --theme-green-dark: #2e7d32;
-    --theme-green-border: #a5d6a7;
-    --theme-green-border-alt: #c8e6c9;
-}
+/* :root theme-green variables removed — all four were byte-for-byte
+   duplicates of shared-styles.css's own :root block, which loads first
+   on every page and already provides them. */
 
 /* ── Page layout ─────────────────────────────────────── */
 

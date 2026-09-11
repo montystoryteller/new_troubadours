@@ -150,6 +150,19 @@ function formatShortDate(d) {
   return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
 }
 
+/**
+ * Day + short month + year, no weekday — e.g. "9 May 2026". Distinct from
+ * formatShortDate() above (which omits the year); previously duplicated
+ * in flyers.js as formatDateShort(), a name one letter-order away from
+ * this file's formatShortDate() despite returning something different —
+ * renamed on the move here to make that distinction explicit.
+ * @param {Date} dt
+ * @returns {string}
+ */
+function formatShortDateWithYear(dt) {
+  return `${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]} ${dt.getFullYear()}`;
+}
+
 function formatMediumDate(d) {
   if (!d) return "";
   return `${DAYS_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
@@ -448,6 +461,25 @@ function resolveClubVenueId(c, date) {
 }
 
 /**
+ * Could this recurring club/folk-night/session record ever be found at
+ * this venue — checking its base venue_id AND both alternate_locations
+ * entries, not just the base field. A cheap "is it possible" pre-check
+ * (e.g. for filtering "what's regularly on at this venue" before
+ * bothering to expand a schedule); resolveClubVenueId() above resolves
+ * which ONE of them actually applies for a specific date.
+ * @param {object} rec
+ * @param {string} vid
+ * @returns {boolean}
+ */
+function couldBeAtVenue(rec, vid) {
+  return (
+    rec.venue_id === vid ||
+    rec.alternate_locations?.even?.venue_id === vid ||
+    rec.alternate_locations?.odd?.venue_id === vid
+  );
+}
+
+/**
  * Renders one dated-event row for a venue/nearby-events/nearby-clubs
  * listing — moved here from venues.js as storyclub.js's nearby-events
  * feature is a second consumer (same row shapes: specific/music/poetry,
@@ -509,26 +541,14 @@ function renderEventRow(container, entry, isPast, options = {}) {
     const badges = document.createElement("div");
     badges.className = "badge-row";
     if (e.isMusic) {
-      const b = document.createElement("span");
-      b.className = "badge badge-music";
-      b.textContent = "Music";
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-music", "Music"));
     } else if (e.isPoetry) {
-      const b = document.createElement("span");
-      b.className = "badge badge-poetry";
-      b.textContent = "Poetry";
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-poetry", "Poetry"));
     } else {
-      const b = document.createElement("span");
-      b.className = "badge badge-special";
-      b.textContent = "Story show";
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-special", "Story show"));
     }
     if (e.price) {
-      const b = document.createElement("span");
-      b.className = "badge badge-price";
-      b.textContent = e.price;
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-price", e.price));
     }
     if (e.ticket_url && !isPast) {
       const a = document.createElement("a");
@@ -566,15 +586,9 @@ function renderEventRow(container, entry, isPast, options = {}) {
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
-    const b = document.createElement("span");
-    b.className = "badge badge-special";
-    b.textContent = "Tour date";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-special", "Tour date"));
     if (tourDate.price) {
-      const bp = document.createElement("span");
-      bp.className = "badge badge-price";
-      bp.textContent = tourDate.price;
-      badges.appendChild(bp);
+      badges.appendChild(makeBadge("badge-price", tourDate.price));
     }
     if (tourDate.ticket_url && !isPast) {
       const a = document.createElement("a");
@@ -618,15 +632,9 @@ function renderEventRow(container, entry, isPast, options = {}) {
     const badges = document.createElement("div");
     badges.className = "badge-row";
     if (ts.isStoryWalk) {
-      const b = document.createElement("span");
-      b.className = "badge badge-walk";
-      b.textContent = "Story walk";
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-walk", "🚶 Story walk"));
     } else {
-      const b = document.createElement("span");
-      b.className = "badge badge-special";
-      b.textContent = "Touring show";
-      badges.appendChild(b);
+      badges.appendChild(makeBadge("badge-special", "Touring show"));
     }
     if (showDate.ticket_url && !isPast) {
       const a = document.createElement("a");
@@ -670,21 +678,16 @@ function renderEventRow(container, entry, isPast, options = {}) {
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
-    const b = document.createElement("span");
-    b.className =
-      entry.type === "club" ? "badge badge-club" : "badge badge-folk";
-    b.textContent =
+    badges.appendChild(
       entry.type === "club"
-        ? "📖 Storyclub"
-        : entry.type === "folk"
-          ? "🎻 Folk night"
-          : "🎻 Irish session";
-    badges.appendChild(b);
+        ? makeBadge("badge-club", "Storyclub")
+        : makeBadge(
+            "badge-folk",
+            entry.type === "folk" ? "Folk night" : "Irish session",
+          ),
+    );
     if (club.price) {
-      const priceBadge = document.createElement("span");
-      priceBadge.className = "badge badge-price";
-      priceBadge.textContent = club.price;
-      badges.appendChild(priceBadge);
+      badges.appendChild(makeBadge("badge-price", club.price));
     }
     detail.appendChild(badges);
   } else if (entry.type === "festival") {
@@ -704,10 +707,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
-    const b = document.createElement("span");
-    b.className = "badge badge-special";
-    b.textContent = "Festival";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-special", "Festival"));
     if (festival.ticket_url && !isPast) {
       const a = document.createElement("a");
       a.href = sanitizeUrl(festival.ticket_url) || "#";
@@ -871,16 +871,8 @@ function collectRecurringEventsForVenue(vid, from, to) {
 
   sources.forEach(({ list, type, category }) => {
     list.forEach((rec) => {
-      // Cheap pre-filter before bothering to expand a schedule at all: is
-      // this venue even possibly one this record ever meets at?
-      const possibleVenueIds = new Set(
-        [
-          rec.venue_id,
-          rec.alternate_locations?.even?.venue_id,
-          rec.alternate_locations?.odd?.venue_id,
-        ].filter(Boolean),
-      );
-      if (!possibleVenueIds.has(vid)) return;
+      // Cheap pre-filter before bothering to expand a schedule at all.
+      if (!couldBeAtVenue(rec, vid)) return;
 
       RecurrenceEngine.scheduledOccurrencesInRange(
         rec.schedule,
@@ -1906,6 +1898,26 @@ function createBadge(text) {
   badge.className = "event-badge";
   badge.textContent = text;
   return badge;
+}
+
+/**
+ * Build one "badge badge-<variant>" <span> — the "create element, set
+ * class, set text" pattern repeated ~25 times across renderEventRow()
+ * and performers.js. Distinct from createBadge() above, which always
+ * uses the single fixed "event-badge" class (the calendar card-header
+ * badge) rather than a variant + the shared .badge/.badge-row styling
+ * used everywhere else. Caller appends the result wherever needed
+ * (usually to a .badge-row container).
+ * @param {string} variantClass - e.g. "badge-music", "badge-price" (the
+ *   base "badge" class is added automatically, don't include it)
+ * @param {string} text
+ * @returns {HTMLSpanElement}
+ */
+function makeBadge(variantClass, text) {
+  const b = document.createElement("span");
+  b.className = `badge ${variantClass}`;
+  b.textContent = text;
+  return b;
 }
 
 /**

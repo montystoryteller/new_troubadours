@@ -4,12 +4,9 @@
    Depends on shared-styles.css being loaded first.
    ============================================================= */
 
-:root {
-    /* Primary Green Theme Variables */
-    --theme-green: #4CAF50;
-    --theme-green-dark: #2e7d32;
-    --theme-green-bg: #e8f5e9;
-}
+/* --theme-green/--theme-green-dark removed (byte-for-byte duplicates of
+   shared-styles.css's :root); --theme-green-bg promoted there too, since
+   tour-styles.css independently defined the identical value. */
 
 
 /* =============================================================
@@ -235,6 +232,11 @@
     font-size: 13px;
     color: #555;
     margin-bottom: 6px;
+}
+
+.regular-club-parity-note {
+    font-style: italic;
+    color: #888;
 }
 
 .regular-club-desc {

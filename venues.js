@@ -842,15 +842,19 @@ function renderVenue() {
     document.getElementById("venueContent").appendChild(warning);
   }
 
-  // Gather all events at this venue
-  const regularClubs = (eventsData.events || []).filter(
-    (e) => e.venue_id === venueId,
+  // Gather all events at this venue — includes a club/folk-night/session
+  // whose alternate_locations puts it here on some months even though its
+  // base venue_id points elsewhere (and correctly excludes one whose base
+  // venue_id is here but which actually alternates away half the time —
+  // see the parity note rendered by renderRegularClub() below).
+  const regularClubs = (eventsData.events || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
   );
-  const folkNights = (eventsData.folkNights || []).filter(
-    (e) => e.venue_id === venueId,
+  const folkNights = (eventsData.folkNights || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
   );
-  const irishSessions = (eventsData.irishSessions || []).filter(
-    (e) => e.venue_id === venueId,
+  const irishSessions = (eventsData.irishSessions || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
   );
 
   // Regular clubs
@@ -861,6 +865,7 @@ function renderVenue() {
         document.getElementById("regularClubsList"),
         e,
         "storyclub",
+        venueId,
       ),
     );
   }
@@ -868,7 +873,12 @@ function renderVenue() {
   if (folkNights.length > 0) {
     document.getElementById("folkNightsSection").style.display = "";
     folkNights.forEach((e) =>
-      renderRegularClub(document.getElementById("folkNightsList"), e, "folk"),
+      renderRegularClub(
+        document.getElementById("folkNightsList"),
+        e,
+        "folk",
+        venueId,
+      ),
     );
   }
 
@@ -879,6 +889,7 @@ function renderVenue() {
         document.getElementById("irishSessionsList"),
         e,
         "session",
+        venueId,
       ),
     );
   }
@@ -975,7 +986,7 @@ function initVenueMap() {
 // Regular club card
 // ---------------------------------------------------------------------------
 
-function renderRegularClub(container, event, type) {
+function renderRegularClub(container, event, type, forVenueId) {
   const typeClass =
     { storyclub: "club-story", folk: "club-folk", session: "club-session" }[
       type
@@ -1003,6 +1014,29 @@ function renderRegularClub(container, event, type) {
   }
   if (event.price) {
     metaRow.appendChild(document.createTextNode(" · " + event.price));
+  }
+  // If this record alternates between two venues, say which months apply
+  // to the venue THIS card is being shown on — without this, a club
+  // meeting here only every other month would look like it's always here.
+  // Only handles the case where the current venue matches one of the two
+  // explicit alternate_locations entries; a venue matching neither (the
+  // base venue_id used as an implicit fallback for whichever parity has
+  // no explicit override) doesn't get a note — rare in practice (the one
+  // real example in the data sets both "even" and "odd" explicitly) but
+  // worth knowing this isn't fully general.
+  if (forVenueId && event.alternate_locations) {
+    let parityNote = null;
+    if (event.alternate_locations.even?.venue_id === forVenueId) {
+      parityNote = "even months only";
+    } else if (event.alternate_locations.odd?.venue_id === forVenueId) {
+      parityNote = "odd months only";
+    }
+    if (parityNote) {
+      const note = document.createElement("span");
+      note.className = "regular-club-parity-note";
+      note.textContent = ` (${parityNote})`;
+      metaRow.appendChild(note);
+    }
   }
   if (metaRow.childNodes.length > 0) card.appendChild(metaRow);
 
@@ -1053,16 +1087,10 @@ function renderRegularClub(container, event, type) {
     card.appendChild(exc);
   }
   if (event.storiesWelcome) {
-    const sw = document.createElement("span");
-    sw.className = "badge badge-stories-welcome";
-    sw.textContent = "Stories welcome";
-    card.appendChild(sw);
+    card.appendChild(makeBadge("badge-stories-welcome", "Stories welcome"));
   }
   if (event.byInvitation) {
-    const bi = document.createElement("span");
-    bi.className = "badge badge-by-invite";
-    bi.textContent = "By invitation";
-    card.appendChild(bi);
+    card.appendChild(makeBadge("badge-by-invite", "By invitation"));
   }
 
   container.appendChild(card);

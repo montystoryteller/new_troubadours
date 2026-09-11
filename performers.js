@@ -2683,28 +2683,16 @@ function renderEventRow(container, event) {
   const badges = document.createElement("div");
   badges.className = "badge-row";
   if (event.isMusic) {
-    const b = document.createElement("span");
-    b.className = "badge badge-music";
-    b.textContent = "Music";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-music", "Music"));
   }
   if (event.isPoetry) {
-    const b = document.createElement("span");
-    b.className = "badge badge-poetry";
-    b.textContent = "Poetry";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-poetry", "Poetry"));
   }
   if (event.isSpecial && !event.isMusic && !event.isPoetry) {
-    const b = document.createElement("span");
-    b.className = "badge badge-special";
-    b.textContent = "Story show";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-special", "Story show"));
   }
   if (isPast) {
-    const b = document.createElement("span");
-    b.className = "badge badge-past";
-    b.textContent = "Past";
-    badges.appendChild(b);
+    badges.appendChild(makeBadge("badge-past", "Past"));
   }
   if (event.ticket_url && !isPast) {
     const a = document.createElement("a");
@@ -2814,15 +2802,9 @@ function renderFestivalRow(container, fid, festival) {
 
   const badges = document.createElement("div");
   badges.className = "badge-row";
-  const b = document.createElement("span");
-  b.className = "badge badge-special";
-  b.textContent = "Festival";
-  badges.appendChild(b);
+  badges.appendChild(makeBadge("badge-special", "Festival"));
   if (isPast) {
-    const bp = document.createElement("span");
-    bp.className = "badge badge-past";
-    bp.textContent = "Past";
-    badges.appendChild(bp);
+    badges.appendChild(makeBadge("badge-past", "Past"));
   }
   if (festival.ticket_url && !isPast) {
     const a = document.createElement("a");

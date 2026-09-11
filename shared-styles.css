@@ -20,6 +20,9 @@
     --theme-green-dark: #2e7d32;
     --theme-green-border: #a5d6a7;
     --theme-green-border-alt: #c8e6c9;
+    /* Promoted here from venue-styles.css and tour-styles.css, which both
+       independently defined this exact value in their own :root blocks. */
+    --theme-green-bg: #e8f5e9;
 }
 
 /* =============================================================
