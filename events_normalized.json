@@ -3,6 +3,7 @@
     "crickcrack": {
       "promoter_id": "crickcrack",
       "name": "Crick Crack Club",
+      "ticketing_url": "",
       "promoter_link": "https://crickcrackclub.com/",
       "promoter_venues": [
         "the-cube-kingsdown",
@@ -5599,8 +5600,7 @@
         "start": "25/05/2026"
       },
       "time": "7-9pm",
-      "facebook": "https://www.facebook.com/brightontelltales",
-      "club": "bridportthreeapples",
+      "club": "bridport-three-apples",
       "club_flyer": "three_apples_bridport.jpg",
       "venue_id": "bridport-community-orchard"
     },
@@ -8268,6 +8268,22 @@
       "performer_id": "xanthe-gresham-knight"
     },
     {
+          "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
+          "showname": "Water Holds Memory",
+          "date": "18/06/2026",
+          "venue_id": "poetry-lab-bishops-castle",
+          "performer_ids": [
+            "amy-douglas",
+            "martin-daws"
+          ],
+          "description": "Rivers are the life blood of the land. They carry trade, travel, gossip and news... but now they struggle to breath. These are the songs of the spirits of our rivers - the Goddesses and Monsters. This is an ode and lament for the rivers of Shropshire and Herefordshire, the rivers that run from Pumlumon to the wide ocean beyond.\n\n\n\nTwo internationally acclaimed performers, Amy Douglas and Martin Daws, come together to combine traditional oral storytelling with contemporary spoken word, song and kalimba.\n\n\n\nDonations on the door\n\n\n\nLight refreshments available",
+          "time": "7.30pm for 8pm",
+          "event_flyer": "2026_06_18_amy_douglas_water.jpg",
+          "club": "blast",
+          "price": "Donations",
+          "isSpecial": true
+        },
+    {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
       "showname": "Legends of the Cornish Landscape",
       "date": "20/06/2026",
@@ -9228,6 +9244,19 @@
       "age_rating": "Family friendly"
     },
     {
+      "name": "The Life & Laughs of a 21st Century Balladeer [Sally Tonge]",
+      "showname": "The Life & Laughs of a 21st Century Balladeer",
+      "date": "17/09/2026",
+      "venue_id": "church-stretton-library",
+      "performer_id": "sally-tonge",
+      "date_added": "11/09/2026",
+      "time": "7.30pm",
+      "price": "£5 on the door",
+      "description": "How does a twaddlemonger make a living in this brave new world?\n\n\n\nWhat is the role of the oral tradition in this hyper visual era?\n\n\n\nAn evening with Sal will reveal that words, spoken, sung and shared are very much alive in hidden places around Shropshire and beoynd.",
+      "event_flyer": "2026_09_17_tonge_balladeer.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "The Epic of Sigurd, and Fafnir the Dragon [Jason Buck]",
       "showname": "The Epic of Sigurd, and Fafnir the Dragon",
       "date": "18/09/2026",
@@ -9280,6 +9309,7 @@
         "tom-morley"
       ],
       "date_added": "15/07/2026",
+      "ticket_url": "https://www.ticketsource.com/booking/select/ojngpnkdxeed",
       "club": "blast",
       "isSpecial": true
     },
@@ -9538,6 +9568,7 @@
       "time": "7.30pm for 8pm",
       "club": "blast",
       "price": "£10",
+      "ticket_url": "https://www.ticketsource.com/booking/select/oagxkznmqwra",
       "isSpecial": true
     },
     {
@@ -11379,9 +11410,34 @@
       "postcode": "SY9 5B",
       "full_address": "Town Hall, Bishops Castle, SY9 5B",
       "url": "https://bishopscastletownhall.co.uk/",
+      "ticketing_url": "https://www.ticketsource.com/bcth",
       "latlon": [
         52.49381,
         -2.99812
+      ]
+    },
+    "poetry-lab-bishops-castle": {
+      "id": "poetry-lab-bishops-castle",
+      "name": "Poetry Lab, Bishops Castle",
+      "city": "Bishops Castle",
+      "postcode": "SY9 5BQ",
+      "full_address": "Poetry Pharmacy, 36 High Street, Bishop's Castle, SY9 5BQ",
+      "url": "https://poetrypharmacy.co.uk/pages/events-in-bishops-castle",
+      "latlon": [
+        52.49437,
+        -2.99764
+      ]
+    },
+    "church-stretton-library": {
+      "id": "church-stretton-library",
+      "name": "Church Stretton Library",
+      "city": "Church Stretton",
+      "postcode": "SY6 6DQ",
+      "full_address": "Church Stretton Library, Church Street, Church Stretton, SY6 6DQ",
+      "url": "https://next.shropshire.gov.uk/libraries/find-a-library/church-stretton-library/",
+      "latlon": [
+        52.53756,
+        -2.80965
       ]
     },
     "lock-91-bar-manchester": {
@@ -17074,6 +17130,12 @@
       "name": "Blabbermouth Storytelling",
       "url": "https://www.blabbermouthstorytelling.co.uk",
       "bio": "With a professional background in archaeology and heritage management, post-graduate work as an independent field archaeologist, and then a member of the management team at the county Museum of Somerset in Taunton and on to the Quantock Hills National Landscape in the role of Historic Heritage Officer, storytelling proved to be the continuous thread that led to Blabbermouth."
+    },
+    "sally-tonge": {
+      "id": "sally-tonge",
+      "name": "Sally Tonge",
+      "url": "https://www.saltonge.co.uk/",
+      "bio": "Sally Tonge is popular Shropshire based storyteller, musician and community artist. She works across the UK and beyond with listeners of all ages. She tells stories combined with music, and is especially skilled at working with young children, children with special and additional needs."
     },
     "shonaleigh": {
       "id": "shonaleigh",
