@@ -23,6 +23,14 @@
       "promoter_link": "https://www.sallyporttours.co.uk/",
       "promoter_venues": [],
       "facebook": "https://www.facebook.com/profile.php?id=61565881770644"
+    },
+    "snake-stone-stories": {
+      "promoter_id": "snake-stone-stories",
+      "name": "Snake Stone Stories",
+      "description": "Snake Stone Stories are a collective of storytellers based in Plymouth, Devon. They organise the monthly Plymouth Storytelling Circle at Snapdragons CIC in Victoria Park. They are available for bookings, events and other storytelling enquiries:snakestonestories@gmail.com",
+      "email": "snakestonestories@gmail.com",
+      "promoter_venues": [],
+      "ticketing_url": "https://www.eventbrite.co.uk/o/snake-stone-stories-116437117061"
     }
   },
   "festivals": {
@@ -9244,6 +9252,22 @@
       "age_rating": "Family friendly"
     },
     {
+      "name": "Story Walk - Royal William Yard - (Read-Write-Yap festival) [snake-stone-stories]",
+      "showname": "Story Walk - Royal William Yard - (Read-Write-Yap festival)",
+      "date": "20/09/2026",
+      "venue_id": "royal-william-yard-plymouth",
+      "performer_id": "snake-stone-stories",
+      "date_added": "11/09/2026",
+      "time": "11-12.30",
+      "club": "snake-stone-stories",
+      "price": "£5 (+ £1.13)",
+      "description": "A guided walk around the beautiful and historic Royal William Yard with story and song from history and folklore\n\n\n\nSnake Stone Stories present a story walk around the historic Royal William Yard as part of their READ-WRITE-YAP festival.\n\n\n\nThe walk takes us around the beautiful site with stories from history and folklore dotted around the route.\n\n\n\nThere will be tales of magic and mystery, sea creatures and silliness, dogs and devils. Something for everyone!\n\n\n\nSnake Stone Stories is led by professional storytellers and theatre makers Daisy Higman, Jon Nash and Fynn Roberts.",
+      "event_flyer": "2026_09_20_snakestone_william_yard.jpg",
+      "ticket_url": "https://www.eventbrite.co.uk/e/story-walk-royal-william-yard-read-write-yap-festival-tickets-1998537219623",
+      "isSpecial": true,
+      "isStoryWalk": true
+    },
+    {
       "name": "The Life & Laughs of a 21st Century Balladeer [Sally Tonge]",
       "showname": "The Life & Laughs of a 21st Century Balladeer",
       "date": "17/09/2026",
@@ -15261,6 +15285,18 @@
         -4.13517
       ]
     },
+    "royal-william-yard-plymouth": {
+      "id": "royal-william-yard-plymouth",
+      "name": "Royal William Yard, Plymouth",
+      "city": "Plymouth",
+      "postcode": "PL1 3RP",
+      "full_address": "Royal William Yard, Stonehouse, Plymouth, PL1 3RP",
+      "url": "https://royalwilliamyard.com/",
+      "latlon": [
+        50.36155,
+        -4.16452
+      ]
+    },
     "savoy-theatre-monmouth": {
       "id": "savoy-theatre-monmouth",
       "name": "Savoy Theatre, Monmouth",
@@ -17625,6 +17661,10 @@
       "name": "Ailsa Dixon",
       "url": "https://www.ailsadixonstoryteller.com/",
       "bio": ""
+    },
+    "snake-stone-stories": {
+      "id": "snake-stone-stories",
+      "name": "snake-stone-stories"
     }
   }
 }
