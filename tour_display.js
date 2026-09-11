@@ -416,7 +416,7 @@ function renderStoryWalksBrowseList() {
 
   const wrapper = document.getElementById("storyWalksBrowsePanel");
   const label = document.getElementById("storyWalksBrowseSummaryLabel");
-  if (label) label.textContent = `🚶 Story Walks (${entries.length})`;
+  if (label) label.textContent = `Story Walks (${entries.length})`;
 
   if (entries.length === 0) {
     // No walks yet — hide the whole panel rather than show an empty

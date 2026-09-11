@@ -1261,10 +1261,10 @@ function createEventHeader(event) {
 
   if (event.isStoryWalk) {
     header.appendChild(document.createTextNode(" "));
-    header.appendChild(createBadge("🚶 Story Walk"));
+    header.appendChild(createBadge("Story Walk"));
   } else if (event.isRepertoireShow) {
     header.appendChild(document.createTextNode(" "));
-    header.appendChild(createBadge("🎭 Repertoire Show"));
+    header.appendChild(createBadge("Repertoire Show"));
   }
 
   if (event.wider_event) {

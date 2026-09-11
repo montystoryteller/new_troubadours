@@ -620,7 +620,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
     if (ts.isStoryWalk) {
       const b = document.createElement("span");
       b.className = "badge badge-walk";
-      b.textContent = "🚶 Story walk";
+      b.textContent = "Story walk";
       badges.appendChild(b);
     } else {
       const b = document.createElement("span");
