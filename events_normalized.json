@@ -9160,7 +9160,8 @@
       "isSpecial": true,
       "date_added": "03/09/2026",
       "venue_id": "st-johns-church-hall-worcester-park",
-      "performer_id": "alastair-k-daniel"
+      "performer_id": "alastair-k-daniel",
+      "isStoryWalk": true
     },
     {
       "name": "Taffy Thomas/Eliza Carthy",
