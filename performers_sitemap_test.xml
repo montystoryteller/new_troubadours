@@ -30,64 +30,637 @@
   <url>
     <loc>https://newtroubadours.org/stats.html</loc>
   </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=daniel-morden</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=the-travelling-talesman-cliff-eastabrook</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=alys-torrance</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=nell-phoenix</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=nick-hennessey</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=sarah-dovey</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=island-storytellers</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=james-canvin</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=cath-little</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=lizzie-bryant</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=sef-townsend</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=bronia-evers</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=cath-little-bronia-evers</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=nick-hennessey-emily-hennessey</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=am-hellberg-moberg</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=riika-polonen</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=niall-moorjani</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=sarah-rundle</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=janet-crouch</loc>
-  </url>
-  <url>
-    <loc>https://newtroubadours.org/performers.html?performer=sarah-mooney</loc>
-  </url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=daniel-morden</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=the-travelling-talesman-cliff-eastabrook</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=alys-torrance</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=nell-phoenix</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=nick-hennessey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-dovey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=island-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=james-canvin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=cath-little</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lizzie-bryant</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sef-townsend</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=bronia-evers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=cath-little-bronia-evers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=nick-hennessey-emily-hennessey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=am-hellberg-moberg</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=riika-polonen</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=niall-moorjani</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-rundle</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=janet-crouch</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-mooney</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=peter-chand</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=caravan-of-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dave-tonge</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sharon-jacksties</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=aaron-oliver</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=trevor-valentine</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sally-pomme-clayton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=monty-the-anywhens</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tim-ralphs</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=welsh-whisperers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=red-phoenix-the-prize-old-mummers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=katy-cawkwell</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=kersti-stabi</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lichfield-storytellers-christmas-get-together</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=cath-edwards</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=fiona-collins</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=matt-vaughan</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=cath-edwards-matt-vaughan</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=attila-the-stockbroker</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tony-monty-hirst</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=amelia-ace-armande</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=carmel-page</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=p-d-brown</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ben-haggarty</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=steph-brittain</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=mark-fraser</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sheema-mukherjee</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=emily-hennessey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=hugh-lupton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=suited-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=henry-everett</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=hannah-sneyd</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=royal-tales-story-club-sutton-coldfield</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tis-tales-hsf</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tis-tales-hms</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ronnie-conboy</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=vanessa-woolf</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jessie-wild</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ben-haggarty-steph-brittain</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gillian-brownson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gillian-brownson-dragon-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tis-tales</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=amy-douglas</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jason-buck</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=amy-douglas-jason-buck</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ian-douglas</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=maria-whatton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=chris-richardson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=eddie-lenihan</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=marion-leeper</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=mike-payton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=mike-oconnor</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=shane-ibbs</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=marcus-pibworth</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=merl-fluin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=holly-medland</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sue-bailey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=debs-newbold</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=giles-abbott</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jon-mason</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tuup</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=xanthe-gresham-knight</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=phil-okwedy</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ceri-phillips</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=michael-harvey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=colin-rowan</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=iris-skipworth</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=stacey-blythe</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=laura-sampson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jordan-price-williams</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tamar-eluned-williams</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=matt-johnson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=maria-gillen</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=baden-prince</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lynette-hil</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=liz-weir</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lisa-schneidau</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=roving-jewel</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=keith-wallis</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=elizabeth-dale</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=daisy-black</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=a-spell-in-time</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=pyn-stockman</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=chris-adriaanse</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=harp-and-carp</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dan-broadbent</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=catherine-chadwick</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=martin-maudsley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ragged-storytelling-collective</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=hari-berrow</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=marc-tuckey</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=amy-jeffs</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=soft-lap</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=michael-dacre</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=hannah-brailsford</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dan-sedgwick</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=peter-stevenson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jane-and-guy-lambourne</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=taletta-bierens</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=wendy-dacre</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sara-hurley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=harriet-grindley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lara-mcclure</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dragon-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=inez-aponte</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=rebecca-bletcher</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sheeha-blackhall</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=pauline-cordiner</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gerry-donlon-bards-aloud</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gemma-garwood</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dawn-ellis</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tom-morley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jo-munton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=simone-gilliatt</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gauri-raje</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=joshua-crisp</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=kirsty-hartsiotis</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=martin-shaw</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=alim-kamara</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=alastair-k-daniel</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=simon-heywood</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=minnie-wilkinson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dave-clark</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=pete-boyce</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=stella-girvin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=stephen-hobbs</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=terrie-howey-moore</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jane-lambourne</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=bea-ferguson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jamie-crawford</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=blabbermouth-storytelling</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=shonaleigh</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=david-heathfield</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=colin-urwin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=clare-murphy</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=maria-credali</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lucy-lill</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-liisa-wilkinson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ropetackle-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=storytelling-ambassadors</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tamar-eluned-williams-jordan-price-williams</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=laura-sampson-and-stacey-blythe</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-lianne-lewis</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=daniel-morden-hugh-lupton-sarah-lianne-lewis</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=hugh-lupton-sarah-moody</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sarah-moody</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=corinne-harragin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=stephe-harrop</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=owen-staton</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=henry-everett-and-hannah-sneyd</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=iris-skipworth-colin-rowan</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=claire-mace</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=greg-chapman</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ffion-phillips-dragon-storytellers</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=bernadette-russell</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=beth-guiver</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lucy-huzzard</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gaz-brookfield-and-the-company-of-thieves</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gaz-brookfield</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=eliza-carthy</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jess-silk</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=joe-solo</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=undercover-hippy-solo</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=bassie-gracie</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=nick-parker</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jess-silk-matt-johnson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=tony-wright</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jess-silk-joe-solo</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=sorrel-nation</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=paul-armfield</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=3-daft-monkeys</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=martin-daws</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dominic-kelly</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=john-tams</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=dave-oliver</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jan-blake</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=taffy-thomas</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jon-buckeridge</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=gabriela-la-foley</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=halo-quin</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=bunty-gotts</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=jenny-moon</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=lucy-wells</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=pip-waller</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ffion-phillips</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=melrose-quartet</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=suzanne-and-jake-thomas</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=andy-harrop-smith</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=andy-johnson</loc>
+</url>
+<url>
+  <loc>https://newtroubadours.org/performers.html?performer=ailsa-dixon</loc>
+</url>
 </urlset>
