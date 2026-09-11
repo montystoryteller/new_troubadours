@@ -76,10 +76,10 @@
         "$ref": "#/$defs/irishSession"
       }
     },
-    "spokenword": {
+    "poetryEvents": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/spokenWordNight"
+        "$ref": "#/$defs/poetryEvent"
       }
     },
     "venues": {
@@ -1615,7 +1615,7 @@
       ],
       "additionalProperties": true
     },
-    "spokenWordNight": {
+    "poetryEvent": {
       "description": "Unlike most other recurring-event types, this one carries its own free-text location/coordinates rather than a venue_id — handy for venues not otherwise in the `venues` table.",
       "type": "object",
       "properties": {

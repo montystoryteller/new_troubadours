@@ -127,17 +127,10 @@
     font-style: normal;
 }
 
-.nearby-events-horizon {
-    text-transform: none;
-    letter-spacing: normal;
-    font-weight: normal;
-    font-size: 12px;
-    margin-left: 8px;
-    padding: 2px 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #333;
-}
+/* .nearby-events-horizon moved to shared-styles.css — used by both this
+   page's own nearby-events feature and storyclub.js's nearby-story
+   feature now that renderEventRow() lives in shared_utils.js. */
+
 
 
 /* =============================================================
@@ -278,44 +271,13 @@
    7. EVENT ROWS
    ============================================================= */
 
-/* Venue-specific event row sub-classes */
+/* .event-row-performer, .event-row-venue, .badge-price, and
+   .nearby-events-horizon moved to shared-styles.css — renderEventRow()
+   (which uses them) moved to shared_utils.js so storyclub.js's
+   nearby-story feature could use it too, not just this page. */
 
-.event-row-performer {
-    font-size: 13px;
-    color: #555;
-    font-style: italic;
-    margin-top: 2px;
-}
-
-.event-row-venue {
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--theme-green-dark);
-    text-decoration: none;
-    margin-bottom: 3px;
-}
-
-.event-row-venue:hover {
-    text-decoration: underline;
-}
-
-.event-row-performer a {
-    color: var(--theme-green-dark);
-    text-decoration: none;
-}
-
-.event-row-performer a:hover {
-    text-decoration: underline;
-}
-
-/* Venue-specific badge variants */
-
-.badge-price {
-    background: #fff8e1;
-    color: #f57f17;
-    border: 1px solid #ffe082;
-}
+/* Venue-specific badge variants (genuinely venue-only, not used by
+   renderEventRow — left here) */
 
 .badge-stories-welcome {
     background: var(--theme-green-bg);

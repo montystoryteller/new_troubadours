@@ -446,6 +446,459 @@ function resolveClubVenueId(c, date) {
 }
 
 /**
+ * Renders one dated-event row for a venue/nearby-events/nearby-clubs
+ * listing — moved here from venues.js as storyclub.js's nearby-events
+ * feature is a second consumer (same row shapes: specific/music/poetry,
+ * tour, show, club/folk/session, festival). Depends on performersLookup
+ * being populated as a global by the calling page (see loadEventsData()),
+ * same convention as eventsData/toursLookup.
+ */
+function renderEventRow(container, entry, isPast, options = {}) {
+  const row = document.createElement("div");
+  row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+  const dateCol = document.createElement("div");
+  dateCol.className = "event-row-date";
+  dateCol.textContent = entry.date ? formatMediumDate(entry.date) : "TBC";
+  row.appendChild(dateCol);
+
+  const detail = document.createElement("div");
+  detail.className = "event-row-detail";
+
+  if (options.showVenue && entry.venue) {
+    const venueLine = document.createElement("a");
+    venueLine.className = "event-row-venue";
+    venueLine.href = `venues.html?venue=${encodeURIComponent(entry.venueId)}`;
+    venueLine.textContent =
+      entry.venue.name + (entry.venue.city ? `, ${entry.venue.city}` : "");
+    detail.appendChild(venueLine);
+  }
+
+  if (
+    entry.type === "specific" ||
+    entry.type === "music" ||
+    entry.type === "poetry"
+  ) {
+    const e = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = e.showname || e.name;
+    detail.appendChild(title);
+
+    if (e.time) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = e.time;
+      detail.appendChild(t);
+    }
+
+    // Performer link
+    if (e.performer_id && performersLookup[e.performer_id]) {
+      const perf = performersLookup[e.performer_id];
+      const p = document.createElement("div");
+      p.className = "event-row-performer";
+      const a = document.createElement("a");
+      a.href = `performers.html?performer=${encodeURIComponent(e.performer_id)}`;
+      a.textContent = perf.name;
+      p.appendChild(a);
+      detail.appendChild(p);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    if (e.isMusic) {
+      const b = document.createElement("span");
+      b.className = "badge badge-music";
+      b.textContent = "Music";
+      badges.appendChild(b);
+    } else if (e.isPoetry) {
+      const b = document.createElement("span");
+      b.className = "badge badge-poetry";
+      b.textContent = "Poetry";
+      badges.appendChild(b);
+    } else {
+      const b = document.createElement("span");
+      b.className = "badge badge-special";
+      b.textContent = "Story show";
+      badges.appendChild(b);
+    }
+    if (e.price) {
+      const b = document.createElement("span");
+      b.className = "badge badge-price";
+      b.textContent = e.price;
+      badges.appendChild(b);
+    }
+    if (e.ticket_url && !isPast) {
+      const a = document.createElement("a");
+      a.href = sanitizeUrl(e.ticket_url) || "#";
+      a.target = "_blank";
+      a.className = "ticket-link";
+      a.textContent = "Tickets";
+      badges.appendChild(a);
+    }
+    detail.appendChild(badges);
+  } else if (entry.type === "tour") {
+    const { tour, tourId, tourDate } = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = tour.tour_name || tour.name;
+    detail.appendChild(title);
+
+    if (tourDate.time) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = tourDate.time;
+      detail.appendChild(t);
+    }
+
+    if (tour.performer_id && performersLookup[tour.performer_id]) {
+      const perf = performersLookup[tour.performer_id];
+      const p = document.createElement("div");
+      p.className = "event-row-performer";
+      const a = document.createElement("a");
+      a.href = `performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
+      a.textContent = perf.name;
+      p.appendChild(a);
+      detail.appendChild(p);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    const b = document.createElement("span");
+    b.className = "badge badge-special";
+    b.textContent = "Tour date";
+    badges.appendChild(b);
+    if (tourDate.price) {
+      const bp = document.createElement("span");
+      bp.className = "badge badge-price";
+      bp.textContent = tourDate.price;
+      badges.appendChild(bp);
+    }
+    if (tourDate.ticket_url && !isPast) {
+      const a = document.createElement("a");
+      a.href = sanitizeUrl(tourDate.ticket_url) || "#";
+      a.target = "_blank";
+      a.className = "ticket-link";
+      a.textContent = "Tickets";
+      badges.appendChild(a);
+    }
+    const viewLink = document.createElement("a");
+    viewLink.href = `tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+    viewLink.className = "ticket-link";
+    viewLink.textContent = "View tour";
+    badges.appendChild(viewLink);
+    detail.appendChild(badges);
+  } else if (entry.type === "show") {
+    const { ts, tsId, showDate } = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = ts.showname || ts.name;
+    detail.appendChild(title);
+
+    if (showDate.time) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = showDate.time;
+      detail.appendChild(t);
+    }
+
+    if (ts.performer_id && performersLookup[ts.performer_id]) {
+      const perf = performersLookup[ts.performer_id];
+      const p = document.createElement("div");
+      p.className = "event-row-performer";
+      const a = document.createElement("a");
+      a.href = `performers.html?performer=${encodeURIComponent(ts.performer_id)}`;
+      a.textContent = perf.name;
+      p.appendChild(a);
+      detail.appendChild(p);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    if (ts.isStoryWalk) {
+      const b = document.createElement("span");
+      b.className = "badge badge-walk";
+      b.textContent = "🚶 Story walk";
+      badges.appendChild(b);
+    } else {
+      const b = document.createElement("span");
+      b.className = "badge badge-special";
+      b.textContent = "Touring show";
+      badges.appendChild(b);
+    }
+    if (showDate.ticket_url && !isPast) {
+      const a = document.createElement("a");
+      a.href = sanitizeUrl(showDate.ticket_url) || "#";
+      a.target = "_blank";
+      a.className = "ticket-link";
+      a.textContent = "Tickets";
+      badges.appendChild(a);
+    }
+    detail.appendChild(badges);
+  } else if (
+    entry.type === "club" ||
+    entry.type === "folk" ||
+    entry.type === "session"
+  ) {
+    const { club } = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = club.name;
+    detail.appendChild(title);
+
+    if (club.time) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = club.time;
+      detail.appendChild(t);
+    }
+
+    // Only recurringClubEvent records have a storyclub.html detail page
+    // (via their .club slug) — folk nights/Irish sessions have no
+    // equivalent page to link to today.
+    if (entry.type === "club" && club.club) {
+      const p = document.createElement("div");
+      p.className = "event-row-performer";
+      const a = document.createElement("a");
+      a.href = `storyclub.html?club=${encodeURIComponent(club.club)}`;
+      a.textContent = "View club details";
+      p.appendChild(a);
+      detail.appendChild(p);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    const b = document.createElement("span");
+    b.className =
+      entry.type === "club" ? "badge badge-club" : "badge badge-folk";
+    b.textContent =
+      entry.type === "club"
+        ? "📖 Storyclub"
+        : entry.type === "folk"
+          ? "🎻 Folk night"
+          : "🎻 Irish session";
+    badges.appendChild(b);
+    if (club.price) {
+      const priceBadge = document.createElement("span");
+      priceBadge.className = "badge badge-price";
+      priceBadge.textContent = club.price;
+      badges.appendChild(priceBadge);
+    }
+    detail.appendChild(badges);
+  } else if (entry.type === "festival") {
+    const { fid, festival } = entry.data;
+    const title = document.createElement("div");
+    title.className = "event-row-title";
+    title.textContent = festival.name;
+    detail.appendChild(title);
+
+    const endDate = parseDateString(festival.end_date);
+    if (endDate && endDate.toDateString() !== entry.date.toDateString()) {
+      const t = document.createElement("span");
+      t.className = "event-row-time";
+      t.textContent = `until ${formatShortDate(endDate)}`;
+      detail.appendChild(t);
+    }
+
+    const badges = document.createElement("div");
+    badges.className = "badge-row";
+    const b = document.createElement("span");
+    b.className = "badge badge-special";
+    b.textContent = "Festival";
+    badges.appendChild(b);
+    if (festival.ticket_url && !isPast) {
+      const a = document.createElement("a");
+      a.href = sanitizeUrl(festival.ticket_url) || "#";
+      a.target = "_blank";
+      a.className = "ticket-link";
+      a.textContent = "Tickets";
+      badges.appendChild(a);
+    }
+    detail.appendChild(badges);
+  }
+
+  row.appendChild(detail);
+  container.appendChild(row);
+  return row;
+}
+
+
+/**
+ * Category used for "story-first, opt-in music/poetry/folk" filtering on
+ * nearby/upcoming event listings (venues.js's own-venue and nearby-venue
+ * lists; storyclub.js's nearby-clubs-and-events feature). "story" is the
+ * always-on default bucket (storyclub nights, story walks, special/
+ * repertoire storytelling shows, festivals); "music"/"poetry"/"folk" are
+ * what an opt-in checkbox widens into. Irish sessions are bundled under
+ * "folk" rather than given their own bucket, matching how the venue
+ * page's own regular-club styling already groups them.
+ */
+
+function collectTourDatesForVenue(vid) {
+  const tourDatesHere = [];
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      if (td.venue_id === vid) {
+        tourDatesHere.push({ tour, tourId, tourDate: td });
+      }
+    });
+  });
+  return tourDatesHere;
+}
+
+function collectShowDatesForVenue(vid) {
+  const showDatesHere = [];
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      if (sd.venue_id === vid) {
+        showDatesHere.push({ ts, tsId, showDate: sd });
+      }
+    });
+  });
+  return showDatesHere;
+}
+
+/**
+ * One-off DATED events (a single explicit date each) at a venue — tours,
+ * repertoire shows/walks, specificEvents, musicEvents, poetryEvents,
+ * festivals. Recurring club/folk/session nights have no single date of
+ * their own and are NOT included here — see
+ * collectRecurringEventsForVenue() below for those. Originally
+ * venues.js-only; moved here (along with collectTourDatesForVenue()/
+ * collectShowDatesForVenue() above, which this calls) as storyclub.js's
+ * nearby-events feature is a second consumer.
+ * @param {string} vid
+ * @returns {{type: string, date: Date, data: object, category: string}[]}
+ */
+function collectDatedEventsForVenue(vid) {
+  const specificEvents = (eventsData.specificEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const musicEvents = (eventsData.musicEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const poetryEvents = (eventsData.poetryEvents || []).filter(
+    (e) => e.venue_id === vid,
+  );
+  const tourDatesHere = collectTourDatesForVenue(vid);
+  const showDatesHere = collectShowDatesForVenue(vid);
+  const festivalsHere = Object.entries(eventsData.festivals || {}).filter(
+    ([, f]) => f.venue_id === vid,
+  );
+
+  return [
+    ...specificEvents.map((e) => ({
+      type: "specific",
+      date: parseDateString(e.date),
+      data: e,
+      category: "story",
+    })),
+    ...musicEvents.map((e) => ({
+      type: "music",
+      date: parseDateString(e.date),
+      data: e,
+      category: "music",
+    })),
+    ...poetryEvents.map((e) => ({
+      type: "poetry",
+      date: parseDateString(e.date),
+      data: e,
+      category: "poetry",
+    })),
+    ...tourDatesHere.map((t) => ({
+      type: "tour",
+      date: parseDateString(t.tourDate.date),
+      data: t,
+      // Repertoire-derived synthetic tours set isMusic/isPoetry: false, so
+      // this correctly falls through to "story" for those, same as a
+      // genuine storytelling tour.
+      category: t.tour.isMusic
+        ? "music"
+        : t.tour.isPoetry
+          ? "poetry"
+          : "story",
+    })),
+    ...showDatesHere.map((s) => ({
+      type: "show",
+      date: parseDateString(s.showDate.date),
+      data: s,
+      // Story walks stay in the "story" scope (not a separate opt-in
+      // category) — entry.data.ts.isStoryWalk drives the badge, not this.
+      category: "story",
+    })),
+    ...festivalsHere.map(([fid, f]) => ({
+      type: "festival",
+      date: parseDateString(f.start_date),
+      data: { fid, festival: f },
+      // Always in-scope regardless of the story/music/poetry/folk opt-ins —
+      // mirrors event_display.js's getEventType(), which checks isFestival
+      // before any other type and shows festivals unconditionally.
+      category: "story",
+    })),
+  ]
+    .filter((e) => e.date)
+    .sort((a, b) => a.date - b.date);
+}
+
+/**
+ * Recurring club/folk/session-night occurrences at a venue within
+ * [from, to] — the recurring-schedule counterpart to
+ * collectDatedEventsForVenue() above. Kept separate because a recurring
+ * schedule has no natural end and needs an explicit window to expand
+ * against, whereas the one-off collections above are naturally finite.
+ *
+ * Uses resolveClubVenueId() rather than a plain venue_id match, since a
+ * club/folk-night/session alternating between two venues by month parity
+ * isn't reliably at its base venue_id for every occurrence.
+ * @param {string} vid
+ * @param {Date} from
+ * @param {Date} to
+ * @returns {{type: string, date: Date, data: {club: object}, category: string}[]}
+ */
+function collectRecurringEventsForVenue(vid, from, to) {
+  const out = [];
+  const sources = [
+    { list: eventsData.events || [], type: "club", category: "story" },
+    { list: eventsData.folkNights || [], type: "folk", category: "folk" },
+    {
+      list: eventsData.irishSessions || [],
+      type: "session",
+      category: "folk",
+    },
+  ];
+
+  sources.forEach(({ list, type, category }) => {
+    list.forEach((rec) => {
+      // Cheap pre-filter before bothering to expand a schedule at all: is
+      // this venue even possibly one this record ever meets at?
+      const possibleVenueIds = new Set(
+        [
+          rec.venue_id,
+          rec.alternate_locations?.even?.venue_id,
+          rec.alternate_locations?.odd?.venue_id,
+        ].filter(Boolean),
+      );
+      if (!possibleVenueIds.has(vid)) return;
+
+      RecurrenceEngine.scheduledOccurrencesInRange(
+        rec.schedule,
+        from,
+        to,
+        rec.exceptions || [],
+      ).forEach((occ) => {
+        // "cancelled" isn't happening at all; "moved_from" is the
+        // ORIGINAL date before a reschedule — only "scheduled" and
+        // "moved_to" represent something really happening on occ.date.
+        if (occ.status === "cancelled" || occ.status === "moved_from") return;
+        if (resolveClubVenueId(rec, occ.date) !== vid) return;
+        out.push({ type, date: occ.date, data: { club: rec }, category });
+      });
+    });
+  });
+  return out;
+}
+
+/**
  * Sanitize a flyer filename, stripping any characters that are not
  * alphanumeric, dots, underscores, or hyphens.
  * @param {string} filename

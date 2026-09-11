@@ -3,6 +3,19 @@
 // before this file); storyclub.js used to keep its own identical copies
 // under the names DAYS and MONTHS_SHORT.
 
+// Global holder for the loaded events data, matching the convention
+// already used in venues.js/tour_display.js/event_display.js/performers.js
+// (storyclub.js previously kept this only as a local `data` variable
+// inside the init IIFE below, passed explicitly to render functions as
+// a parameter — that still works and is unchanged; this global exists
+// so shared_utils.js functions written against `eventsData`, like
+// collectDatedEventsForVenue()/collectRecurringEventsForVenue(), also
+// work when called from this page).
+let eventsData = null;
+let toursLookup = {}; // needed by collectDatedEventsForVenue()'s call to
+// collectTourDatesForVenue() (shared_utils.js) — same convention as venues.js.
+let performersLookup = {}; // needed by renderEventRow() (shared_utils.js)
+
 // FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
 // copies of exactly the icons already in shared_utils.js's ICON_SVG
 // (.facebook, .website, .email respectively); use those instead.
@@ -119,6 +132,9 @@ const prevMeetingDate = RecurrenceEngine.prevMeetingDate;
     return;
   }
   const data = result.eventsData;
+  eventsData = data; // populate the global too — see declaration above
+  toursLookup = result.toursLookup || {};
+  performersLookup = result.performersLookup || {};
 
   // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
@@ -882,6 +898,194 @@ async function renderPage(data, clubId) {
       .reverse()
       .forEach((e) => root.appendChild(renderSpecificEvent(e, true)));
   }
+
+  renderNearbyStoryEventsSection(root, clubRecord);
+}
+
+// ── Nearby story events ─────────────────────────────────────────────────
+// "Story-first, opt-in music/poetry/folk" — mirrors venues.js's own
+// nearby-events feature (same shared collectDatedEventsForVenue()/
+// collectRecurringEventsForVenue()/renderEventRow(), see shared_utils.js),
+// but centred on THIS club's own venue(s) rather than a single fixed
+// venue, and defaulting to the "story" category only (storyclub nights,
+// story walks, special/repertoire storytelling shows, festivals).
+
+const NEARBY_RADIUS_KM = 20; // matches venues.js's own nearby-venues radius
+const NEARBY_MAX_EVENTS = 15; // matches venues.js's own nearby-events cap
+
+/**
+ * Resolve a club's own venue(s) into one or more {lat, lon} search
+ * centers. A club with alternate_locations has up to two possible
+ * venues; if they're within NEARBY_RADIUS_KM of each other, search from
+ * their midpoint (one combined neighbourhood, avoiding the need to pick
+ * "which date resolves to which venue" just to decide what's nearby);
+ * if they're far apart (expected to be rare), search from each
+ * separately and the caller unions the results.
+ * @param {object} clubRecord
+ * @returns {{lat: number, lon: number}[]}
+ */
+function resolveClubNearbyCenters(clubRecord) {
+  const ids = [
+    ...new Set(
+      [
+        clubRecord.venue_id,
+        clubRecord.alternate_locations?.even?.venue_id,
+        clubRecord.alternate_locations?.odd?.venue_id,
+      ].filter(Boolean),
+    ),
+  ];
+  const withLatLon = ids
+    .map((vid) => eventsData.venues[vid])
+    .filter((v) => v && hasLatlon(v));
+
+  if (withLatLon.length === 0) return [];
+  if (withLatLon.length === 1) {
+    const [lat, lon] = withLatLon[0].latlon;
+    return [{ lat, lon }];
+  }
+
+  const allClose = withLatLon.every((a, i) =>
+    withLatLon
+      .slice(i + 1)
+      .every(
+        (b) =>
+          haversineKm(a.latlon[0], a.latlon[1], b.latlon[0], b.latlon[1]) <=
+          NEARBY_RADIUS_KM,
+      ),
+  );
+
+  if (allClose) {
+    const lat =
+      withLatLon.reduce((s, v) => s + v.latlon[0], 0) / withLatLon.length;
+    const lon =
+      withLatLon.reduce((s, v) => s + v.latlon[1], 0) / withLatLon.length;
+    return [{ lat, lon }];
+  }
+  // Far apart: search each separately; collectNearbyStoryEvents() unions
+  // (and de-dupes, via the Set below) the resulting nearby-venue sets.
+  return withLatLon.map((v) => ({ lat: v.latlon[0], lon: v.latlon[1] }));
+}
+
+/**
+ * Gather nearby story-first (+opt-in music/poetry/folk) events/clubs
+ * around a club's venue(s), within [today, today+days]. Excludes this
+ * club's own recurring instances so it doesn't list itself.
+ * @param {object} clubRecord
+ * @param {number} days
+ * @param {Set<string>} categories - always includes "story"; may also
+ *   include "music"/"poetry"/"folk" per the opt-in checkboxes
+ * @returns {object[]} same entry shape renderEventRow() expects
+ */
+function collectNearbyStoryEvents(clubRecord, days, categories) {
+  const centers = resolveClubNearbyCenters(clubRecord);
+  if (centers.length === 0) return [];
+
+  const today = getTodayMidnight();
+  const horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + days);
+
+  const venueEntries = Object.entries(eventsData.venues || {});
+  const nearbyVenueIds = new Set();
+  centers.forEach(({ lat, lon }) => {
+    findNearbyByLatLon(lat, lon, venueEntries, {
+      radiusKm: NEARBY_RADIUS_KM,
+      limit: 20, // generous here; the final list is capped below post-filter
+    }).forEach(({ key }) => nearbyVenueIds.add(key));
+  });
+
+  const results = [];
+  nearbyVenueIds.forEach((vid) => {
+    const venue = eventsData.venues[vid];
+    [
+      ...collectDatedEventsForVenue(vid).filter(
+        (e) => e.date >= today && e.date < horizon,
+      ),
+      ...collectRecurringEventsForVenue(vid, today, horizon),
+    ].forEach((entry) => {
+      if (!categories.has(entry.category)) return;
+      if (entry.type === "club" && entry.data.club.club === clubRecord.club) {
+        return; // don't list this club among its own "nearby" results
+      }
+      results.push({ ...entry, venueId: vid, venue });
+    });
+  });
+
+  return results.sort((a, b) => a.date - b.date).slice(0, NEARBY_MAX_EVENTS);
+}
+
+/**
+ * Builds and appends the "Nearby story events" section to a club's page:
+ * a horizon selector (default 7 days, widenable to 35 — chosen so
+ * widening fully reliably includes even a monthly club's own next date),
+ * opt-in checkboxes for music/poetry/folk (story is always included,
+ * unconditionally), and the resulting list.
+ * @param {HTMLElement} root
+ * @param {object} clubRecord
+ */
+function renderNearbyStoryEventsSection(root, clubRecord) {
+  const section = document.createElement("div");
+  section.className = "nearby-story-section";
+
+  const heading = document.createElement("h3");
+  heading.className = "section-heading upcoming";
+  heading.textContent = "Nearby story events ";
+
+  const horizonSelect = document.createElement("select");
+  horizonSelect.className = "nearby-events-horizon";
+  [7, 14, 21, 35].forEach((d) => {
+    const opt = document.createElement("option");
+    opt.value = String(d);
+    opt.textContent = `next ${d} days`;
+    horizonSelect.appendChild(opt);
+  });
+  heading.appendChild(horizonSelect);
+  section.appendChild(heading);
+
+  const optInRow = document.createElement("div");
+  optInRow.className = "nearby-category-optins";
+  const checkboxes = {};
+  [
+    { key: "music", label: "🎵 Music" },
+    { key: "poetry", label: "✒️ Poetry" },
+    { key: "folk", label: "🎻 Folk & sessions" },
+  ].forEach(({ key, label }) => {
+    const lbl = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.addEventListener("change", refresh);
+    checkboxes[key] = cb;
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(" " + label));
+    optInRow.appendChild(lbl);
+  });
+  section.appendChild(optInRow);
+
+  const listEl = document.createElement("div");
+  section.appendChild(listEl);
+
+  function refresh() {
+    const days = Number(horizonSelect.value);
+    const categories = new Set(["story"]);
+    Object.entries(checkboxes).forEach(([key, cb]) => {
+      if (cb.checked) categories.add(key);
+    });
+    listEl.innerHTML = "";
+    const nearby = collectNearbyStoryEvents(clubRecord, days, categories);
+    if (nearby.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "no-events";
+      empty.textContent = `No nearby story events found in the next ${days} days.`;
+      listEl.appendChild(empty);
+      return;
+    }
+    nearby.forEach((entry) =>
+      renderEventRow(listEl, entry, false, { showVenue: true }),
+    );
+  }
+
+  horizonSelect.addEventListener("change", refresh);
+  root.appendChild(section);
+  refresh(); // default view: today, 7-day window, story only
 }
 
 // ── Directory (no club= param) ────────────────────────────────────────────

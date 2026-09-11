@@ -1403,6 +1403,81 @@ a.festival-programme-link:hover {
     border: 1px solid #f5a8ce;
 }
 
+/* Added for renderEventRow() (moved here from venues.js so storyclub.js
+   can use it too — see shared_utils.js) and the badges it can produce
+   that shared-styles.css didn't have rules for yet. */
+.badge-walk {
+    background: #eceff1;
+    color: #37474f;
+    border: 1px solid #b0bec5;
+}
+
+.badge-club {
+    background: #e8f5e9;
+    color: #1b5e20;
+    border: 1px solid #a5d6a7;
+}
+
+.badge-folk {
+    background: #fdf8f4;
+    color: #8b4513;
+    border: 1px solid #d7ccc8;
+}
+
+/* Also moved here from venue-styles.css (was venue-page-only) — needed by
+   renderEventRow()'s "specific"/"tour"/"club"/"folk"/"session" branches,
+   and by the venue-link line those rows can show, on any page that calls
+   it, not just venues.html. */
+.event-row-performer {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.event-row-performer a {
+    color: var(--theme-green-dark, #2e7d32);
+    text-decoration: none;
+}
+
+.event-row-performer a:hover {
+    text-decoration: underline;
+}
+
+.event-row-venue {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--theme-green-dark, #2e7d32);
+    text-decoration: none;
+    margin-bottom: 3px;
+}
+
+.event-row-venue:hover {
+    text-decoration: underline;
+}
+
+.badge-price {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+}
+
+/* Horizon <select> in a "Nearby ..." section heading — used by both
+   venues.js's own nearby-events feature and storyclub.js's nearby-story
+   feature, previously only defined in venue-styles.css. */
+.nearby-events-horizon {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 2px 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+}
+
 .badge-past {
     background: #f5f5f5;
     color: #888;

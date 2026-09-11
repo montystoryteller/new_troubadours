@@ -15717,8 +15717,9 @@
       "name": "Rescue Rooms, Nottingham",
       "city": "Nottingham",
       "postcode": "NG1 5JT",
-      "full_address": "Rescue Rooms,",
-      "url": "https://www.rescuerooms.com/"
+      "full_address": "Rescue Rooms, Masonic Place, Goldsmith Street, Nottingham, NG1 5JT",
+      "url": "https://www.rescuerooms.com/",
+      "latlon": "52.95621,-1.15301"
     },
     "platform-tavern-southampton": {
       "id": "platform-tavern-southampton",

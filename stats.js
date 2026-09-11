@@ -566,7 +566,7 @@ function renderAllStats(data, venues, performers, tours) {
     }
     return e;
   }); // recurring story clubs
-  const spokenword = data.spokenword || [];
+  const spokenword = data.poetryEvents || [];
   const festivals = data.festivals || {};
 
   // ---- all tour dates flat ----
@@ -2025,7 +2025,6 @@ function renderAllStats(data, venues, performers, tours) {
     // Flat one-off events — groupKey is showname (or name) for deduplication
     [
       ["specificEvents", "storytelling"],
-      ["spokenword", "storytelling"],
       ["musicEvents", "music"],
       ["poetryEvents", "poetry"],
       ["folkNights", "music"],

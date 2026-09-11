@@ -488,6 +488,28 @@
     }
 }
 
+/* ── Nearby story events section ─────────────────────────── */
+.nearby-story-section {
+    margin-top: 24px;
+}
+
+.nearby-category-optins {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #555;
+}
+
+.nearby-category-optins label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
 /* ── Status messages (loading, error) ────────────────── */
 .status-message {
     text-align: center;
