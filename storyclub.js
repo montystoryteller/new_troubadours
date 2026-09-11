@@ -1754,6 +1754,18 @@ async function renderDirectory(data) {
           a.onclick = (e) => e.stopPropagation();
           meta.appendChild(a);
         }
+
+        if (true) {
+          const a = icon(
+            ICON_SVG.link,
+            `storyclub.html?club=${c.club}`,
+            "event-link",
+            "Link",
+          );
+          a.onclick = (e) => e.stopPropagation();
+          meta.appendChild(a);
+        }
+
         if (meta.childNodes.length) card.appendChild(meta);
 
         /*
