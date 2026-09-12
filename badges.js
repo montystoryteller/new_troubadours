@@ -1,57 +1,59 @@
 const params = new URLSearchParams(window.location.search);
 
-const badge_performer = params.get("performer");
-const badge_venue = params.get("venue");
-const badge_storyclub = params.get("club");
+const performer_badge = params.get("performer");
+const venue_badge = params.get("venue");
+const storyclub_badge = params.get("club");
 
 let badgeText = "";
+let badgeImage = "";
 
-// Decide which type of page this is
-if (badge_performer) {
+if (performer_badge) {
   badgeText = "Find me on";
-} else if (badge_venue || badge_storyclub) {
+  badgeImage = "findmeon.png";
+} else if (venue_badge || storyclub_badge) {
   badgeText = "Find us on";
+  badgeImage = "finduson.png";
 }
 
-// Only create the badge if we have a valid page type
 if (badgeText) {
   const pageUrl = window.location.href;
 
   const badgeCode =
     `<a href="${pageUrl}" target="_blank" rel="noopener">` +
-    `<img src="https://newtroubadours.com/badges/findmeon.png" ` +
+    `<img src="https://newtroubadours.com/badges/${badgeImage}" ` +
     `alt="${badgeText} New Troubadours">` +
     `</a>`;
 
-  // Show the badge section
+  // Show the badge container
   document.getElementById("badge-container").style.display = "block";
 
-  // Display the HTML
-  document.getElementById("badge-code").value = badgeCode;
-
-  // Display a preview
+  // Show the actual badge
   document.getElementById("badge-preview").innerHTML = badgeCode;
 
-  // Copy button
-  document.getElementById("copy-badge").addEventListener("click", async () => {
-    const message = document.getElementById("copy-message");
+  // Copy HTML link
+  document
+    .getElementById("copy-badge")
+    .addEventListener("click", async (event) => {
+      event.preventDefault();
 
-    try {
-      await navigator.clipboard.writeText(badgeCode);
+      const message = document.getElementById("copy-message");
 
-      message.textContent = "Copied!";
+      try {
+        await navigator.clipboard.writeText(badgeCode);
 
-      setTimeout(() => {
-        message.textContent = "";
-      }, 2000);
-    } catch (error) {
-      console.error("Could not copy badge HTML:", error);
+        message.textContent = "Copied!";
 
-      message.textContent = "Copy failed — please copy the HTML manually.";
+        setTimeout(() => {
+          message.textContent = "";
+        }, 2000);
+      } catch (error) {
+        console.error("Could not copy badge HTML:", error);
 
-      setTimeout(() => {
-        message.textContent = "";
-      }, 3000);
-    }
-  });
+        message.textContent = "Copy failed";
+
+        setTimeout(() => {
+          message.textContent = "";
+        }, 3000);
+      }
+    });
 }
