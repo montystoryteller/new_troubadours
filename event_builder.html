@@ -985,17 +985,22 @@
             <div class="enrich-section">
                 <h3>🔞 Possible age ratings</h3>
                 <p class="field-hint">
-                    Scans event/music/poetry descriptions with no <code>age_rating</code> set for common
-                    age-suitability phrasing (e.g. "suitable for ages 8+", "18+", "family friendly"), using
-                    the same heuristic as the event form's "Suggest age rating from description" button.
-                    Every row here already found a genuine match, so all start ticked — untick any you don't
-                    want, adjust the wording if you'd rather, then click "Apply checked rows to loaded data"
-                    below. Unlike venues, individual events have no stable id in
-                    <code>events_normalized.json</code>, so accepting a row here writes straight into this
-                    loaded copy of the data (by its position in the array) rather than producing a separate
-                    small patch file — use "Download full enriched JSON" above once you're done to get the
-                    whole updated file. It's necessarily a rough guess over free-form prose — a blank result
-                    doesn't mean there's no age guidance, just that nothing recognisable was found.
+                    Scans event/music/poetry descriptions, plus tour and repertoire show descriptions, with
+                    no <code>age_rating</code> set for common age-suitability phrasing (e.g. "suitable for
+                    ages 8+", "18+", "family friendly"), using the same heuristic as the event form's
+                    "Suggest age rating from description" button. Every row here already found a genuine
+                    match, so all start ticked — untick any you don't want, adjust the wording if you'd
+                    rather, then click "Apply checked rows to loaded data" below. Individual events have no
+                    stable id in <code>events_normalized.json</code>, so accepting one of those writes
+                    straight into this loaded copy (by its position in the array) and is listed in the batch
+                    below by that position — not as reliable as a real key, so double-check it against the
+                    name/date before merging if the file's moved on since. A tour or repertoire show date has
+                    no description of its own — the cue always comes from the tour's/show's own description —
+                    so accepting one of those updates the <strong>whole</strong> tour/show record, keyed by
+                    its real key, same as "Edit this record" elsewhere. Either way, "Download full enriched
+                    JSON" above gets you the whole updated file if you'd rather not merge by hand. It's
+                    necessarily a rough guess over free-form prose — a blank result doesn't mean there's no
+                    age guidance, just that nothing recognisable was found.
                 </p>
                 <button class="btn-add-batch" id="enrich-age-scan-btn" disabled>Scan for age rating cues</button>
                 <div id="enrich-age-results"></div>
@@ -1026,6 +1031,21 @@
                 <code>festivals</code> / <code>podcasts</code> with it wholesale (any field you didn't touch
                 is carried over unchanged from what was loaded, but any field you cleared out will be gone
                 from the replacement — check before overwriting if that matters).
+                <br><br>
+                <code>updatedEvents</code> is different again: it comes from the Enrich tab's checkers (e.g.
+                age ratings) and events have no id to key it by, so each key is just
+                "<code>bucket#index</code>" from the file you had loaded there — not safe to trust if that
+                file's changed since. Use it to locate the event instead: match by name/date against the
+                corresponding array (<code>specificEvents</code> / <code>musicEvents</code> /
+                <code>poetryEvents</code>) and replace that whole object, same as the other
+                <code>updated*</code> entries.
+                <br><br>
+                <code>updatedTours</code> and <code>updatedRepertoireShows</code> also come from the age
+                rating checker, but tours and repertoire shows <strong>do</strong> have a real key — a date
+                within their <code>tour_dates</code>/<code>show_dates</code> has no description of its own,
+                so a found age cue always belongs to the whole tour/show, not one date in its list. These
+                behave like <code>updatedFestivals</code>/<code>updatedPodcasts</code>: replace the matching
+                entry in <code>tours</code>/<code>repertoire_shows</code> wholesale, by that same key.
             </div>
             <div class="output-actions">
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
@@ -1072,6 +1092,21 @@
         const updatedVenues = {};
         const updatedFestivals = {};
         const updatedPodcasts = {};
+        // Events have no stable id in events_normalized.json (unlike
+        // performers/venues/festivals/podcasts), so there's no natural key
+        // to patch by. Keyed here as "<bucket>#<original array index>" —
+        // stable only against the exact file loaded into the Enrich tab, so
+        // the merge note tells the person to locate each one by name/date
+        // rather than trust the index if the file's moved on since.
+        const updatedEvents = {};
+        // Tours and repertoire shows *do* have a stable key (their own
+        // property key in enrichedData.tours / .repertoire_shows) — a date
+        // within tour_dates/show_dates carries no description of its own,
+        // so an age-rating cue found there is really a property of the
+        // whole tour/show. Keyed by that real key, same convention as
+        // updatedFestivals/updatedPodcasts (a complete replacement record).
+        const updatedTours = {};
+        const updatedRepertoireShows = {};
         // Populated once these fields exist at script-load time (see the
         // bottom of the file) with the attachOpenLinkButton() update
         // function for each ticket URL field — so that populatePerformerForm/
@@ -3940,6 +3975,24 @@
                     edit: () => { switchToTab("podcast"); podcastMatcher.edit({ id, ...updatedPodcasts[id] }, "lookup"); },
                 })),
                 ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1), previewData: a })),
+                ...Object.keys(updatedEvents).map(key => ({
+                    tag: "event-edit",
+                    label: `${updatedEvents[key].showname || updatedEvents[key].name || "(untitled)"} (editing existing event: ${key})`,
+                    remove: () => delete updatedEvents[key],
+                    previewData: updatedEvents[key],
+                })),
+                ...Object.keys(updatedTours).map(key => ({
+                    tag: "tour-edit",
+                    label: `${updatedTours[key].tour_name || updatedTours[key].name || "(untitled)"} (editing existing tour: ${key})`,
+                    remove: () => delete updatedTours[key],
+                    previewData: updatedTours[key],
+                })),
+                ...Object.keys(updatedRepertoireShows).map(key => ({
+                    tag: "show-edit",
+                    label: `${updatedRepertoireShows[key].showname || updatedRepertoireShows[key].name || "(untitled)"} (editing existing repertoire show: ${key})`,
+                    remove: () => delete updatedRepertoireShows[key],
+                    previewData: updatedRepertoireShows[key],
+                })),
             ];
             emptyMsg.style.display = allItems.length ? "none" : "";
             allItems.forEach(item => {
@@ -4023,6 +4076,9 @@
             if (batch.podcasts.length) out.podcasts = batch.podcasts;
             if (Object.keys(updatedPodcasts).length) out.updatedPodcasts = updatedPodcasts;
             if (batch.podcastEpisodeAdditions.length) out.podcastEpisodeAdditions = batch.podcastEpisodeAdditions;
+            if (Object.keys(updatedEvents).length) out.updatedEvents = updatedEvents;
+            if (Object.keys(updatedTours).length) out.updatedTours = updatedTours;
+            if (Object.keys(updatedRepertoireShows).length) out.updatedRepertoireShows = updatedRepertoireShows;
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
         }
 
@@ -4225,6 +4281,14 @@
                 enrichedData = JSON.parse(text);
                 const venueCount = Object.keys(enrichedData.venues || {}).length;
                 statusEl.textContent = `Loaded ${venueCount} venues from "${file.name}".`;
+                // updatedEvents/updatedTours/updatedRepertoireShows are all
+                // derived from *this* loaded file (updatedEvents by array
+                // position, the other two by key) — stale against whatever
+                // was loaded before.
+                Object.keys(updatedEvents).forEach(k => delete updatedEvents[k]);
+                Object.keys(updatedTours).forEach(k => delete updatedTours[k]);
+                Object.keys(updatedRepertoireShows).forEach(k => delete updatedRepertoireShows[k]);
+                refreshBatchSummary();
                 document.getElementById("enrich-postcode-scan-btn").disabled = false;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-latlon-scan-btn").disabled = false;
@@ -4625,31 +4689,68 @@
                     const match = parseAgeRatingFromText(ev.description);
                     if (!match) return;
                     found.push({
+                        kind: "event",
                         bucket: bucketName,
                         index,
                         name: ev.showname || ev.name || "(untitled)",
+                        sourceLabel: bucketName,
                         date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
                         match,
                     });
                 });
             });
+            // A date within tour_dates/show_dates carries no description of
+            // its own (see readDateRows) — any age cue lives on the parent
+            // tour/show's own description, so it's the whole record that's
+            // unrated, not any one date in its list.
+            Object.entries(enrichedData.tours || {}).forEach(([key, tour]) => {
+                if (tour.age_rating || !tour.tour_description) return;
+                const match = parseAgeRatingFromText(tour.tour_description);
+                if (!match) return;
+                found.push({
+                    kind: "tour",
+                    key,
+                    name: tour.tour_name || tour.name || "(untitled tour)",
+                    sourceLabel: "tour",
+                    date: tour.tour_dates?.length ? `${tour.tour_dates.length} date(s)` : "",
+                    match,
+                });
+            });
+            Object.entries(enrichedData.repertoire_shows || {}).forEach(([key, show]) => {
+                if (show.age_rating || !show.description) return;
+                const match = parseAgeRatingFromText(show.description);
+                if (!match) return;
+                found.push({
+                    kind: "show",
+                    key,
+                    name: show.showname || show.name || "(untitled show)",
+                    sourceLabel: "repertoire show",
+                    date: show.show_dates?.length ? `${show.show_dates.length} date(s)` : "",
+                    match,
+                });
+            });
             if (!found.length) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No unrated events with a recognisable age cue in their description.</div>';
+                resultsEl.innerHTML = '<div class="enrich-empty">No unrated events, tours, or repertoire shows with a recognisable age cue in their description.</div>';
                 actionsEl.style.display = "none";
                 return;
             }
             found.forEach(f => {
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
-                row.dataset.bucket = f.bucket;
-                row.dataset.index = f.index;
+                row.dataset.kind = f.kind;
+                if (f.kind === "event") {
+                    row.dataset.bucket = f.bucket;
+                    row.dataset.index = f.index;
+                } else {
+                    row.dataset.key = f.key;
+                }
                 const selectOptions = AGE_RATING_SUGGESTIONS.map(t =>
                     `<option value="${t.replace(/"/g, "&quot;")}"${t === f.match.rating ? " selected" : ""}>${t}</option>`
                 ).join("");
                 row.innerHTML = `
                     <input type="checkbox" checked class="enrich-age-check">
                     <div class="enrich-result-main">
-                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.sourceLabel}${f.date ? `, ${f.date}` : ""})</span></div>
                         <div class="enrich-result-detail">
                             <label class="subitem-field-label">Age rating — pick a common option, or type your own below</label>
                             <select class="enrich-age-rating-select" style="margin-bottom:4px;">
@@ -4682,7 +4783,7 @@
                 });
                 resultsEl.appendChild(row);
             });
-            addResultsCollapseToggle(resultsEl, found.length, "event");
+            addResultsCollapseToggle(resultsEl, found.length, "result");
             actionsEl.style.display = "";
         });
 
@@ -4694,20 +4795,48 @@
                 if (!checkbox.checked) return;
                 const rating = row.querySelector(".enrich-age-rating-input").value.trim();
                 if (!rating) return; // checked but left blank -- nothing to apply
-                const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
-                const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
-                if (!ev) return;
-                ev.age_rating = rating;
                 const minAgeRaw = row.querySelector(".enrich-age-minage-input").value.trim();
-                if (minAgeRaw) ev.min_age = parseInt(minAgeRaw, 10);
+                const minAge = minAgeRaw ? parseInt(minAgeRaw, 10) : null;
+
+                if (row.dataset.kind === "tour") {
+                    const tour = enrichedData?.tours?.[row.dataset.key];
+                    if (!tour) return;
+                    tour.age_rating = rating;
+                    if (minAge !== null) tour.min_age = minAge;
+                    delete updatedTours[row.dataset.key];
+                    updatedTours[row.dataset.key] = JSON.parse(JSON.stringify(tour));
+                } else if (row.dataset.kind === "show") {
+                    const show = enrichedData?.repertoire_shows?.[row.dataset.key];
+                    if (!show) return;
+                    show.age_rating = rating;
+                    if (minAge !== null) show.min_age = minAge;
+                    delete updatedRepertoireShows[row.dataset.key];
+                    updatedRepertoireShows[row.dataset.key] = JSON.parse(JSON.stringify(show));
+                } else {
+                    const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                    const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
+                    if (!ev) return;
+                    ev.age_rating = rating;
+                    if (minAge !== null) ev.min_age = minAge;
+
+                    // Also list it as an updated event in the batch, keyed
+                    // by bucket + its position in the array we scanned
+                    // (events have no id to key by — see the updatedEvents
+                    // comment above). The stored value is a full
+                    // replacement copy.
+                    const key = `${row.dataset.bucket}#${row.dataset.index}`;
+                    delete updatedEvents[key];
+                    updatedEvents[key] = JSON.parse(JSON.stringify(ev));
+                }
                 applied++;
             });
             if (!applied) {
                 alert("No rows checked.");
                 return;
             }
-            alert(`Applied ${applied} age rating suggestion(s) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            alert(`Applied ${applied} age rating suggestion(s) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
             markEnrichedDataDirty();
+            refreshBatchSummary();
         });
 
         // -- Possible structured pricing (writes into loaded data directly — --
