@@ -1054,6 +1054,13 @@
         const updatedVenues = {};
         const updatedFestivals = {};
         const updatedPodcasts = {};
+        // Populated once these fields exist at script-load time (see the
+        // bottom of the file) with the attachOpenLinkButton() update
+        // function for each ticket URL field — so that populatePerformerForm/
+        // populateVenueForm/populateFestivalForm can refresh the open-link
+        // button's enabled state after setting .value programmatically
+        // (which doesn't fire an "input" event on its own).
+        const ticketUrlLinkUpdaters = {};
         // "Edit this record" matcher handles for each single-record panel
         // (Performer/Venue/Festival/Podcast Series) — declared up here rather
         // than down by each panel's functions, since the Venue tab's static
@@ -1126,6 +1133,40 @@
             });
         }
 
+        // Wraps a URL <input> (wherever it already lives in the DOM) with a
+        // small icon button that opens its current value in a new tab —
+        // disabled while the field is empty or fails sanitizeUrl(). Used for
+        // every "paste a link, then go check it" URL field in the builder:
+        // the performer/venue entity picker's website field, and every
+        // Ticket URL field (single event, festival, performer, venue,
+        // per-date rows) — pasting one in is exactly the moment you want to
+        // preview the page without leaving the form.
+        function attachOpenLinkButton(urlInput) {
+            const wrap = document.createElement("div");
+            wrap.className = "entity-url-row";
+            urlInput.parentNode.insertBefore(wrap, urlInput);
+            wrap.appendChild(urlInput);
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn-open-link";
+            btn.title = "Open in new tab";
+            btn.disabled = true;
+            btn.innerHTML = ICON_SVG.link;
+            wrap.appendChild(btn);
+
+            function update() {
+                btn.disabled = !sanitizeUrl(urlInput.value.trim());
+            }
+            urlInput.addEventListener("input", update);
+            btn.addEventListener("click", () => {
+                const safeUrl = sanitizeUrl(urlInput.value.trim());
+                if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
+            });
+            update();
+            return update; // callers that set .value programmatically (no "input" event) can re-run this
+        }
+
         // ── Entity picker (performer / venue) ───────────────────────────────
         // Builds a small widget: search input (with datalist suggestions) +
         // a "+ details" toggle revealing optional extra fields for a new
@@ -1175,20 +1216,14 @@
 
             if (kind === "performer") {
                 detailsPanel.innerHTML = `
-                    <div class="entity-url-row">
-                        <input data-field="url" type="url" placeholder="Website URL">
-                        <button type="button" class="btn-open-link entity-open-link" title="Open in new tab" disabled>${ICON_SVG.link}</button>
-                    </div>
+                    <input data-field="url" type="url" placeholder="Website URL">
                     <textarea data-field="bio" placeholder="Short bio"></textarea>`;
             } else {
                 detailsPanel.innerHTML = `
                     <input data-field="city" type="text" placeholder="City">
                     <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="full_address" type="text" placeholder="Full address">
-                    <div class="entity-url-row">
-                        <input data-field="url" type="url" placeholder="Venue website URL">
-                        <button type="button" class="btn-open-link entity-open-link" title="Open in new tab" disabled>${ICON_SVG.link}</button>
-                    </div>
+                    <input data-field="url" type="url" placeholder="Venue website URL">
                     <div class="latlon-row">
                         <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">
                         <button type="button" class="btn-geocode entity-geocode-btn">📍 Geocode</button>
@@ -1200,18 +1235,8 @@
 
             // Link icon next to the URL field — opens the current URL in a
             // new tab so a matched record's website can be checked without
-            // leaving the form. Disabled whenever the field is empty or
-            // fails sanitizeUrl() (e.g. mid-typing, or a bare "javascript:").
-            const urlField = detailsPanel.querySelector('[data-field="url"]');
-            const openLinkBtn = detailsPanel.querySelector(".entity-open-link");
-            function updateOpenLinkState() {
-                openLinkBtn.disabled = !sanitizeUrl(urlField.value.trim());
-            }
-            urlField.addEventListener("input", updateOpenLinkState);
-            openLinkBtn.addEventListener("click", () => {
-                const safeUrl = sanitizeUrl(urlField.value.trim());
-                if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
-            });
+            // leaving the form.
+            const updateOpenLinkState = attachOpenLinkButton(detailsPanel.querySelector('[data-field="url"]'));
 
             if (kind === "venue") {
                 wireGeocodeButton({
@@ -2900,6 +2925,7 @@
             row._structuredTimeField = buildStructuredTimeField(grid.querySelector(".dr-structured-time-field"), grid.querySelector(".dr-time"));
             row._structuredPriceField = buildStructuredPriceField(grid.querySelector(".dr-structured-price-field"), grid.querySelector(".dr-price"));
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
+            attachOpenLinkButton(grid.querySelector(".dr-ticket-url"));
 
             if (kind === "tour") {
                 const flyerRowsContainer = grid.querySelector(".dr-flyer-rows");
@@ -3306,6 +3332,7 @@
             document.getElementById("festival-end-date").value = match.end_date || "";
             document.getElementById("festival-primary-type").value = match.primary_type || "";
             document.getElementById("festival-ticket-url").value = match.ticket_url || "";
+            ticketUrlLinkUpdaters["festival-ticket-url"]?.();
             document.getElementById("festival-website").value = match.website || "";
             document.getElementById("festival-facebook").value = match.facebook || "";
             document.getElementById("festival-price").value = match.price || "";
@@ -3552,6 +3579,7 @@
             document.getElementById("perf-facebook-group").value = record.facebook_group || "";
             document.getElementById("perf-instagram").value = record.instagram || "";
             document.getElementById("perf-tickets-url").value = record.tickets_url || "";
+            ticketUrlLinkUpdaters["perf-tickets-url"]?.();
             document.getElementById("perf-aliases").value = (record.aliases || []).join(", ");
             document.getElementById("perf-musician").checked = !!record.musician;
             document.getElementById("perf-poet").checked = !!record.poet;
@@ -3662,6 +3690,7 @@
             document.getElementById("venue-full-address").value = record.full_address || "";
             document.getElementById("venue-url").value = record.url || "";
             document.getElementById("venue-tickets-url").value = record.tickets_url || "";
+            ticketUrlLinkUpdaters["venue-tickets-url"]?.();
             document.getElementById("venue-email").value = record.email || "";
             document.getElementById("venue-facebook").value = record.facebook || "";
             document.getElementById("venue-instagram").value = record.instagram || "";
@@ -4849,6 +4878,16 @@
             initPerformerForm();
             initPodcastForm();
             initFestivalForm();
+
+            // Ticket URL fields aren't built dynamically like the date-row
+            // ones (see dateRowTemplate), so they're wired individually here
+            // rather than inline in HTML — same open-in-new-tab icon button
+            // as everywhere else, for previewing a pasted link. The update
+            // function is kept so populate*Form() can refresh it after
+            // setting .value programmatically (see ticketUrlLinkUpdaters).
+            ["ev-ticket-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url"].forEach(id => {
+                ticketUrlLinkUpdaters[id] = attachOpenLinkButton(document.getElementById(id));
+            });
 
             document.getElementById("tour-name").addEventListener("input", suggestTourKey);
             document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);
