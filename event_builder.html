@@ -954,6 +954,24 @@
             </div>
 
             <div class="enrich-section">
+                <h3>📍 Missing or malformed coordinates</h3>
+                <p class="field-hint">
+                    Scans venues for a missing <code>latlon</code>, a value that isn't a
+                    <code>[latitude, longitude]</code> pair of numbers, one outside the possible ±90°/±180°
+                    range, or one that falls outside the UK &amp; Ireland area — usually a sign the two
+                    numbers have been swapped or mistyped, since a venue that's genuinely overseas wouldn't
+                    be in this dataset. This is also why the "Possible duplicate venues" check below can
+                    miss things: it silently skips any pair it can't compare coordinates for. Each row has
+                    its own "Geocode" button (same lookup as the venue form) to fill in fresh coordinates —
+                    accepting one updates this loaded copy directly; use "Download full enriched JSON" above
+                    once you're done.
+                </p>
+                <button class="btn-add-batch" id="enrich-latlon-scan-btn" disabled>Scan for missing/malformed
+                    coordinates</button>
+                <div id="enrich-latlon-results"></div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>🔁 Possible duplicate venues</h3>
                 <p class="field-hint">
                     Flags venue pairs with similar names, a matching postcode, or coordinates within about
@@ -4209,6 +4227,7 @@
                 statusEl.textContent = `Loaded ${venueCount} venues from "${file.name}".`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = false;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
+                document.getElementById("enrich-latlon-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
@@ -4219,6 +4238,7 @@
                 statusEl.textContent = `Couldn't read that file as JSON: ${err.message}`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = true;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
+                document.getElementById("enrich-latlon-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
@@ -4432,6 +4452,83 @@
         });
 
         // -- Possible duplicate venues ------------------------------------------
+        // Flags a venue's latlon as missing, structurally malformed, or (as a
+        // best-effort heuristic) outside the UK & Ireland area — the last
+        // case usually means the two numbers have been swapped or mistyped,
+        // since a venue genuinely overseas wouldn't be in this dataset.
+        // Returns an array of human-readable reasons, or null if it's fine.
+        function checkVenueLatlon(v) {
+            const latlon = v.latlon;
+            if (latlon === undefined || latlon === null || (Array.isArray(latlon) && latlon.length === 0)) {
+                return ["No latlon set"];
+            }
+            if (!Array.isArray(latlon) || latlon.length !== 2) {
+                return [`Not a [latitude, longitude] pair — got ${JSON.stringify(latlon)}`];
+            }
+            const [lat, lon] = latlon;
+            if (typeof lat !== "number" || typeof lon !== "number" || isNaN(lat) || isNaN(lon)) {
+                return [`Contains a non-numeric value — got ${JSON.stringify(latlon)}`];
+            }
+            if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+                return [`Out of the possible range for latitude/longitude (${lat}, ${lon})`];
+            }
+            if (UK_IRELAND_BOUNDS && !UK_IRELAND_BOUNDS.contains([lat, lon])) {
+                if (UK_IRELAND_BOUNDS.contains([lon, lat])) {
+                    return [`Looks swapped — (${lon}, ${lat}) falls in the UK & Ireland area but (${lat}, ${lon}) doesn't`];
+                }
+                return [`Outside the UK & Ireland area (${lat}, ${lon}) — check for a typo or a lat/lon swap`];
+            }
+            return null;
+        }
+
+        document.getElementById("enrich-latlon-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-latlon-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData || !enrichedData.venues) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No venues to scan.</div>';
+                return;
+            }
+            const found = Object.entries(enrichedData.venues)
+                .map(([id, v]) => ({ id, v, reasons: checkVenueLatlon(v) }))
+                .filter(f => f.reasons);
+
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Every venue has a plausible latlon.</div>';
+                return;
+            }
+
+            found.forEach(({ id, v, reasons }) => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.venueId = id;
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${v.name || id} <span style="font-weight:normal;color:#999;">(${id})</span></div>
+                        <div class="enrich-result-detail">${v.full_address || v.postcode || v.city || "(no address on record)"}</div>
+                        <div class="enrich-result-reasons">${reasons.join("; ")}</div>
+                        <button type="button" class="btn-geocode enrich-latlon-geocode-btn" style="margin-top:6px;">📍 Geocode</button>
+                        <div class="geocode-status enrich-latlon-geocode-status"></div>
+                        <div class="geocode-preview-map enrich-latlon-geocode-map" style="display:none;"></div>
+                    </div>`;
+                wireGeocodeButton({
+                    button: row.querySelector(".enrich-latlon-geocode-btn"),
+                    statusEl: row.querySelector(".enrich-latlon-geocode-status"),
+                    mapEl: row.querySelector(".enrich-latlon-geocode-map"),
+                    getCandidates: () => buildVenueGeocodeCandidates({
+                        name: v.name, fullAddress: v.full_address, postcode: v.postcode, city: v.city,
+                    }),
+                    onResult: (r) => {
+                        enrichedData.venues[id].latlon = [r.lat, r.lon];
+                        markEnrichedDataDirty();
+                        row.querySelector(".enrich-result-reasons").textContent =
+                            `Updated to ${r.lat.toFixed(5)}, ${r.lon.toFixed(5)} — re-scan to confirm it now checks out, or just download when ready.`;
+                    },
+                });
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "venue with a coordinate issue");
+        });
+
         document.getElementById("enrich-dupe-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-dupe-results");
             resultsEl.innerHTML = "";
