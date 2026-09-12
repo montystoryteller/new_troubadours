@@ -76,10 +76,10 @@
         "$ref": "#/$defs/irishSession"
       }
     },
-    "poetryEvents": {
+    "poetryNights": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/poetryEvent"
+        "$ref": "#/$defs/poetryNight"
       }
     },
     "venues": {
@@ -1615,8 +1615,8 @@
       ],
       "additionalProperties": true
     },
-    "poetryEvent": {
-      "description": "Unlike most other recurring-event types, this one carries its own free-text location/coordinates rather than a venue_id — handy for venues not otherwise in the `venues` table.",
+    "poetryNight": {
+      "description": "A recurring poetry night (poetryNights[] array) — sibling of folkNight/irishSession. Unlike most other recurring-event types, this one carries its own free-text location/coordinates rather than a venue_id — handy for venues not otherwise in the `venues` table. Not to be confused with poetryEvent (poetryEvents[] array), which is a one-off spoken-word event with the specificEvent/musicEvent shape; this previously collided with that def under the same 'poetryEvent' key before being split out and renamed.",
       "type": "object",
       "properties": {
         "name": {
