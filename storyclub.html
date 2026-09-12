@@ -39,14 +39,32 @@
         <p class="status-message status-message--loading">Loading…</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="recurrence-engine.js"></script>
-    <script src="shared_utils.js"></script>
-    <script src="storyclub.js"></script>
+    <div id="badge-container" style="display: none;">
+        <details>
+            <summary><strong>Get a badge pointing to this page</strong></summary>
+            <div style="margin-top: 15px;">
+                <p>Copy the HTML below and paste it into your website:</p>
+                <textarea id="badge-code" rows="4" style="width: 100%; max-width: 700px;" readonly></textarea>
+                <br><br>
+                <button type="button" id="copy-badge">
+                    Copy HTML
+                </button>
+                <span id="copy-message" style="margin-left: 10px;"></span>
+                <p><strong>Preview:</strong></p>
+                <div id="badge-preview"></div>
+            </div>
+        </details>
+    </div>
 
     <div class="about" id="colophon">
         <p id="dataLastUpdated"><em></em></p>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="recurrence-engine.js"></script>
+    <script src="shared_utils.js"></script>
+    <script src="storyclub.js"></script>
+    <script src="badges.js"></script>
 </body>
 
 </html>
