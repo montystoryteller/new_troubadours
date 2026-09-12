@@ -476,6 +476,25 @@
     margin-top: 8px;
 }
 
+.enrich-age-desc-preview {
+    white-space: pre-wrap;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-top: 6px;
+    font-size: 0.9em;
+    color: #333;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.enrich-age-desc-preview mark {
+    background: #fff59d;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
 
 /* ── Multi-performer list ─────────────────────────────── */
 .multi-performer-list {

@@ -4695,6 +4695,7 @@
                         name: ev.showname || ev.name || "(untitled)",
                         sourceLabel: bucketName,
                         date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
+                        description: ev.description,
                         match,
                     });
                 });
@@ -4713,6 +4714,7 @@
                     name: tour.tour_name || tour.name || "(untitled tour)",
                     sourceLabel: "tour",
                     date: tour.tour_dates?.length ? `${tour.tour_dates.length} date(s)` : "",
+                    description: tour.tour_description,
                     match,
                 });
             });
@@ -4726,6 +4728,7 @@
                     name: show.showname || show.name || "(untitled show)",
                     sourceLabel: "repertoire show",
                     date: show.show_dates?.length ? `${show.show_dates.length} date(s)` : "",
+                    description: show.description,
                     match,
                 });
             });
@@ -4763,7 +4766,25 @@
                             <input type="number" min="0" max="99" class="enrich-age-minage-input" value="${f.match.minAge !== null ? f.match.minAge : ""}">
                         </div>
                         <div class="enrich-result-reasons">Found in description: "${f.match.sentence.replace(/</g, "&lt;")}"</div>
+                        <button type="button" class="entity-details-toggle enrich-age-desc-toggle" style="margin-top:6px;">Show full description</button>
+                        <div class="enrich-age-desc-preview" style="display:none;"></div>
                     </div>`;
+                // The matched sentence is highlighted within the full text
+                // so a misleading guess (cue found in an unrelated sentence,
+                // wrong context, etc.) is easy to spot at a glance.
+                const descToggle = row.querySelector(".enrich-age-desc-toggle");
+                const descPreview = row.querySelector(".enrich-age-desc-preview");
+                const fullDescription = decodeParagraphBreaksForEdit(f.description);
+                const escapedSentence = escapeHtml(f.match.sentence);
+                const escapedFull = escapeHtml(fullDescription);
+                descPreview.innerHTML = escapedSentence
+                    ? escapedFull.replace(escapedSentence, `<mark>${escapedSentence}</mark>`)
+                    : escapedFull;
+                descToggle.addEventListener("click", () => {
+                    const shown = descPreview.style.display !== "none";
+                    descPreview.style.display = shown ? "none" : "block";
+                    descToggle.textContent = shown ? "Show full description" : "Hide full description";
+                });
                 const checkbox = row.querySelector(".enrich-age-check");
                 const select = row.querySelector(".enrich-age-rating-select");
                 const input = row.querySelector(".enrich-age-rating-input");
