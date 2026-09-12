@@ -4518,10 +4518,23 @@
                         name: v.name, fullAddress: v.full_address, postcode: v.postcode, city: v.city,
                     }),
                     onResult: (r) => {
-                        enrichedData.venues[id].latlon = [r.lat, r.lon];
+                        v.latlon = [r.lat, r.lon]; // v is enrichedData.venues[id] by reference
                         markEnrichedDataDirty();
+
+                        // Also add/refresh an entry in updatedVenues so this
+                        // fix flows through the normal batch/output path
+                        // ("Generate from batch" + Batch summary above),
+                        // not just the whole-file "Download full enriched
+                        // JSON" export. This assumes venuesLookup came from
+                        // the same events_normalized.json as enrichedData
+                        // (the id needs to match), which is the setup this
+                        // tab expects.
+                        delete updatedVenues[id];
+                        updatedVenues[id] = JSON.parse(JSON.stringify(v));
+                        refreshBatchSummary();
+
                         row.querySelector(".enrich-result-reasons").textContent =
-                            `Updated to ${r.lat.toFixed(5)}, ${r.lon.toFixed(5)} — re-scan to confirm it now checks out, or just download when ready.`;
+                            `Updated to ${r.lat.toFixed(5)}, ${r.lon.toFixed(5)} — added to the batch above, and re-scan here to confirm it now checks out.`;
                     },
                 });
                 resultsEl.appendChild(row);
