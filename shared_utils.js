@@ -905,7 +905,7 @@ function sanitizeFlyerPath(filename) {
 /**
  * Regex matching a club flyer filename prefixed with an explicit date —
  * YYYY_MM_DD, e.g. "2026_07_26_loveshack-birds.jpg". Such a filename in a
- * recurring club's `flyers[]` list is a one-off/legacy flyer for that
+ * recurring club's `club_flyers[]` list is a one-off/legacy flyer for that
  * specific date, rather than generic ongoing club artwork.
  */
 const DATED_CLUB_FLYER_RE = /^(\d{4})_(\d{2})_(\d{2})(?:[_.-]|$)/;

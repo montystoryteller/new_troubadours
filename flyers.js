@@ -745,7 +745,7 @@ async function loadFlyers() {
   // see datedClubFlyerDateStr() above. Anything else is generic club
   // artwork, always shown, same as club_flyer's fallback.
   for (const e of data.events || []) {
-    const extraFlyers = Array.isArray(e.flyers) ? e.flyers : [];
+    const extraFlyers = Array.isArray(e.club_flyers) ? e.club_flyers : [];
     if (!extraFlyers.length || !e.club) continue;
     const v = ven(e.venue_id);
     const clubTonight = scheduleMatchesDate(e.schedule, now, e.exceptions);

@@ -547,6 +547,10 @@
           ],
           "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
+        "event_warning": {
+          "type": "string",
+          "description": "Optional general-purpose content note, e.g. 'Contains strong language', 'Discusses bereavement', 'Strobe lighting used'. Distinct from age_rating/min_age, which are about audience suitability rather than describing content — kept deliberately general (not a strict enum) rather than a narrower 'content_warning' name, so it can also cover non-content-related heads-up notes (e.g. accessibility/venue caveats) without renaming later."
+        },
         "city": {
           "type": "string",
           "description": "Rare free-text city override (normally derived from venue_id instead)."
@@ -809,9 +813,17 @@
           ],
           "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
+        "event_warning": {
+          "type": "string",
+          "description": "Optional general-purpose content note, e.g. 'Contains strong language', 'Discusses bereavement', 'Strobe lighting used'. Distinct from age_rating/min_age, which are about audience suitability rather than describing content — kept deliberately general (not a strict enum) rather than a narrower 'content_warning' name, so it can also cover non-content-related heads-up notes (e.g. accessibility/venue caveats) without renaming later."
+        },
         "touring_event_flyer": {
           "type": "string",
           "description": "Headline flyer image filename for the whole show (one card, not repeated per date)."
+        },
+        "touring_event_flyers": {
+          "$ref": "#/$defs/eventFlyersList",
+          "description": "Preferred way to give a repertoire show MORE THAN ONE headline flyer (e.g. separate artwork for different tour legs, or a redesigned poster partway through the run) — same idea as tour.touring_event_flyers. Schema-only for now: unlike tour.touring_event_flyers (merged by getTourLevelFlyers() in shared_utils.js), nothing currently reads this field on a repertoireShow record — display code, the builder form, and getTourLevelFlyers()/getEventLevelFlyers() would all need updating to actually merge it in alongside touring_event_flyer before this has any visible effect."
         },
         "isSpecial": {
           "type": "boolean"
@@ -945,6 +957,10 @@
             "null"
           ],
           "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
+        },
+        "event_warning": {
+          "type": "string",
+          "description": "Optional general-purpose content note, e.g. 'Contains strong language', 'Discusses bereavement', 'Strobe lighting used'. Distinct from age_rating/min_age, which are about audience suitability rather than describing content — kept deliberately general (not a strict enum) rather than a narrower 'content_warning' name, so it can also cover non-content-related heads-up notes (e.g. accessibility/venue caveats) without renaming later."
         },
         "event_flyer": {
           "type": "string"
@@ -1082,6 +1098,10 @@
           ],
           "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
         },
+        "event_warning": {
+          "type": "string",
+          "description": "Optional general-purpose content note, e.g. 'Contains strong language', 'Discusses bereavement', 'Strobe lighting used'. Distinct from age_rating/min_age, which are about audience suitability rather than describing content — kept deliberately general (not a strict enum) rather than a narrower 'content_warning' name, so it can also cover non-content-related heads-up notes (e.g. accessibility/venue caveats) without renaming later."
+        },
         "event_flyer": {
           "type": "string"
         },
@@ -1163,6 +1183,10 @@
             "null"
           ],
           "description": "Optional minimum recommended age as a plain number (e.g. 8, 12, 18), kept separate from age_rating so there's something reliably sortable/filterable for stats even though age_rating itself is free text. Left null/unset when no specific minimum is implied (e.g. 'Family friendly' doesn't imply one)."
+        },
+        "event_warning": {
+          "type": "string",
+          "description": "Optional general-purpose content note, e.g. 'Contains strong language', 'Discusses bereavement', 'Strobe lighting used'. Distinct from age_rating/min_age, which are about audience suitability rather than describing content — kept deliberately general (not a strict enum) rather than a narrower 'content_warning' name, so it can also cover non-content-related heads-up notes (e.g. accessibility/venue caveats) without renaming later."
         },
         "event_flyer": {
           "type": "string"
@@ -1256,11 +1280,12 @@
           "type": "string",
           "description": "Generic flyer shown when there's no upcoming specific-event flyer for this club."
         },
-        "flyers": {
+        "club_flyers": {
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Additional flyer artwork for this club, distinct from the single club_flyer above. A filename prefixed YYYY_MM_DD (e.g. '2026_03_15_special_guest.jpg') is treated as a one-off/legacy flyer for that specific date's occurrence rather than generic ongoing club artwork — see parseDatedClubFlyer() in shared_utils.js. Renamed from the previous generic `flyers` name for consistency with club_flyer and the rest of the site's _flyer/_flyers naming convention; flyers.js, storyclub.js, venues.js, and event_display.js all read this field by name."
         },
         "feature_slots": {
           "type": "string"

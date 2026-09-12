@@ -494,7 +494,7 @@ async function renderPage(data, clubId) {
     header.appendChild(img);
   }
 
-  // Additional flyers (clubRecord.flyers) — extra artwork for the club,
+  // Additional flyers (clubRecord.club_flyers) — extra artwork for the club,
   // separate from the single club_flyer above. Sourced from
   // storyclub_assets/event_flyers/ per the schema. A filename prefixed
   // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is a flyer for
@@ -503,10 +503,10 @@ async function renderPage(data, clubId) {
   // parseDatedClubFlyer() (shared_utils.js) is the single implementation
   // of that YYYY_MM_DD detection, shared with the event guide/flyers/
   // venues pages.
-  if (Array.isArray(clubRecord.flyers) && clubRecord.flyers.length) {
+  if (Array.isArray(clubRecord.club_flyers) && clubRecord.club_flyers.length) {
     const gallery = document.createElement("div");
     gallery.className = "club-flyer-gallery";
-    clubRecord.flyers.forEach((filename) => {
+    clubRecord.club_flyers.forEach((filename) => {
       const clean = filename?.trim();
       if (!clean) return;
       const item = document.createElement("div");
@@ -1769,11 +1769,11 @@ async function renderDirectory(data) {
         if (meta.childNodes.length) card.appendChild(meta);
 
         /*
-        // If a dated flyer (clubRecord.flyers[], "YYYY_MM_DD_..." prefix)
+        // If a dated flyer (clubRecord.club_flyers[], "YYYY_MM_DD_..." prefix)
         // matches the next occurrence shown on this card, show it as a
         // thumbnail — same detection used on the club's own page.
-        if (Array.isArray(c.flyers) && entry.nextMeeting) {
-          const matchingFlyer = c.flyers.find((f) => {
+        if (Array.isArray(c.club_flyers) && entry.nextMeeting) {
+          const matchingFlyer = c.club_flyers.find((f) => {
             const d = parseDatedClubFlyer(f);
             return (
               d &&

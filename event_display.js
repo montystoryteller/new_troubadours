@@ -322,7 +322,7 @@ function createSafePopup(eventData) {
   return container;
 }
 
-// A filename in a recurring club's `flyers[]` list that starts with
+// A filename in a recurring club's `club_flyers[]` list that starts with
 // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is treated as a flyer
 // for that specific date's occurrence, rather than generic club artwork.
 // parseDatedClubFlyer() (shared_utils.js) is the single implementation of
@@ -380,7 +380,7 @@ function createEventData(baseEvent, date, eventType) {
     eventData.alternate_locations = baseEvent.alternate_locations || null;
     eventData.exceptions = baseEvent.exceptions || null;
     eventData.club_flyer = baseEvent.club_flyer || null;
-    eventData.club_dated_flyers = findDatedClubFlyers(baseEvent.flyers, date);
+    eventData.club_dated_flyers = findDatedClubFlyers(baseEvent.club_flyers, date);
     eventData.feature_slots = baseEvent.feature_slots || null;
 
     if (eventType === "folk") {

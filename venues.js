@@ -1153,7 +1153,7 @@ function extractFlyersForEntry(entry) {
 }
 
 // Build the venue's flyer gallery from: regular club nights (club_flyer
-// + flyers[], generic ones always "current", YYYY_MM_DD-prefixed ones
+// + club_flyers[], generic ones always "current", YYYY_MM_DD-prefixed ones
 // dated) plus every dated event happening at this venue. Deduplicated
 // by file so a flyer reused across several dates (e.g. a tour headline
 // flyer) only appears once, coloured by its most relevant occurrence.
@@ -1183,7 +1183,7 @@ function renderVenueFlyers(regularClubs, allDated, today) {
     if (club.club_flyer?.trim()) {
       addFlyer(club.club_flyer.trim(), "./storyclub_assets/club_flyers/", null);
     }
-    (Array.isArray(club.flyers) ? club.flyers : []).forEach((raw) => {
+    (Array.isArray(club.club_flyers) ? club.club_flyers : []).forEach((raw) => {
       const clean = raw?.trim();
       if (!clean) return;
       const date = parseDatedClubFlyer(clean);
