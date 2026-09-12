@@ -161,6 +161,48 @@
     gap: 6px;
 }
 
+.entity-url-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.entity-url-row input {
+    flex: 1;
+}
+
+.btn-open-link {
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: white;
+    color: var(--theme-green-dark);
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-open-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-open-link:hover:not(:disabled) {
+    background: var(--theme-green-bg);
+    border-color: var(--theme-green);
+}
+
+.btn-open-link:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 .entity-details-panel input,
 .entity-details-panel textarea {
     padding: 6px;

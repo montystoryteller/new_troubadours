@@ -1132,6 +1132,16 @@
         // entity. Resolution to an id happens lazily, at generate-time, via
         // resolveEntityField() — not here — so the same widget works whether
         // the typed name turns out to match an existing record or not.
+        //
+        // When the typed name matches a known record, this reuses the same
+        // makeRecordMatcher() flow as the standalone Performer/Venue panels:
+        // an explicit "Edit this record" click (never as-you-type, so a
+        // transient mid-typing match can't clobber fields) loads that
+        // record's details into the panel so it can be inspected, and opens
+        // the panel automatically. If those loaded fields are then changed,
+        // resolveEntityField() detects the diff at commit time and records
+        // it as an update to the existing performer/venue rather than
+        // silently discarding the edit.
         function buildEntityField(container, kind) {
             container.innerHTML = "";
             const wrap = document.createElement("div");
@@ -1165,14 +1175,20 @@
 
             if (kind === "performer") {
                 detailsPanel.innerHTML = `
-                    <input data-field="url" type="url" placeholder="Website URL">
+                    <div class="entity-url-row">
+                        <input data-field="url" type="url" placeholder="Website URL">
+                        <button type="button" class="btn-open-link entity-open-link" title="Open in new tab" disabled>${ICON_SVG.link}</button>
+                    </div>
                     <textarea data-field="bio" placeholder="Short bio"></textarea>`;
             } else {
                 detailsPanel.innerHTML = `
                     <input data-field="city" type="text" placeholder="City">
                     <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="full_address" type="text" placeholder="Full address">
-                    <input data-field="url" type="url" placeholder="Venue website URL">
+                    <div class="entity-url-row">
+                        <input data-field="url" type="url" placeholder="Venue website URL">
+                        <button type="button" class="btn-open-link entity-open-link" title="Open in new tab" disabled>${ICON_SVG.link}</button>
+                    </div>
                     <div class="latlon-row">
                         <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">
                         <button type="button" class="btn-geocode entity-geocode-btn">📍 Geocode</button>
@@ -1181,6 +1197,21 @@
                     <div class="geocode-preview-map entity-geocode-map" style="display:none;"></div>`;
             }
             wrap.appendChild(detailsPanel);
+
+            // Link icon next to the URL field — opens the current URL in a
+            // new tab so a matched record's website can be checked without
+            // leaving the form. Disabled whenever the field is empty or
+            // fails sanitizeUrl() (e.g. mid-typing, or a bare "javascript:").
+            const urlField = detailsPanel.querySelector('[data-field="url"]');
+            const openLinkBtn = detailsPanel.querySelector(".entity-open-link");
+            function updateOpenLinkState() {
+                openLinkBtn.disabled = !sanitizeUrl(urlField.value.trim());
+            }
+            urlField.addEventListener("input", updateOpenLinkState);
+            openLinkBtn.addEventListener("click", () => {
+                const safeUrl = sanitizeUrl(urlField.value.trim());
+                if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
+            });
 
             if (kind === "venue") {
                 wireGeocodeButton({
@@ -1204,32 +1235,122 @@
             });
 
             const lookup = kind === "performer" ? performersLookup : venuesLookup;
-            function updateStatus() {
-                const name = input.value.trim();
-                if (!name) { status.textContent = ""; return; }
-                const match = Object.values(lookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase());
-                if (match) {
-                    status.textContent = `Matches existing ${kind} — id: ${match.id}`;
-                    status.className = "entity-status match";
+            const newLookup = kind === "performer" ? newPerformers : newVenues;
+
+            // Populates the (necessarily smaller) subset of fields this
+            // widget exposes for the given record, then opens the details
+            // panel so they're visible for inspection right away — matching
+            // is only useful here if the user can actually see what it
+            // found. Fields this widget doesn't expose (e.g. a venue's
+            // description or social links) are left alone and preserved
+            // untouched by resolveEntityField()'s merge on commit.
+            function populate(record) {
+                input.value = record.name || "";
+                if (kind === "performer") {
+                    detailsPanel.querySelector('[data-field="url"]').value = record.url || "";
+                    detailsPanel.querySelector('[data-field="bio"]').value = decodeParagraphBreaksForEdit(record.bio);
                 } else {
-                    status.textContent = `Will be created as a new ${kind}`;
-                    status.className = "entity-status new";
+                    detailsPanel.querySelector('[data-field="city"]').value = record.city || "";
+                    detailsPanel.querySelector('[data-field="postcode"]').value = record.postcode || "";
+                    detailsPanel.querySelector('[data-field="full_address"]').value = record.full_address || "";
+                    detailsPanel.querySelector('[data-field="url"]').value = record.url || "";
+                    detailsPanel.querySelector('[data-field="latlon"]').value =
+                        (record.latlon && record.latlon.length === 2) ? record.latlon.join(", ") : "";
                 }
+                detailsPanel.style.display = "grid";
+                updateOpenLinkState();
             }
-            input.addEventListener("input", updateStatus);
+
+            const matcher = makeRecordMatcher({
+                statusEl: status,
+                findExisting: name => Object.values(lookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                findBatch: name => Object.values(newLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
+                populate,
+                entityLabel: kind,
+            });
+            input.addEventListener("input", () => matcher.updateStatus(input.value.trim()));
 
             container.appendChild(wrap);
-            return { input, detailsPanel, kind };
+            return { input, detailsPanel, kind, matcher };
+        }
+
+        // Reads this widget's exposed detail fields into a plain object, for
+        // diffing against a matched record and for merging into it on edit.
+        function readEntityDetailPanel(kind, detailsPanel) {
+            if (kind === "performer") {
+                return {
+                    url: detailsPanel.querySelector('[data-field="url"]').value.trim(),
+                    bio: detailsPanel.querySelector('[data-field="bio"]').value.trim(),
+                };
+            }
+            const latlonRaw = detailsPanel.querySelector('[data-field="latlon"]').value.trim();
+            let latlon = null;
+            if (latlonRaw) {
+                const parts = latlonRaw.split(",").map(s => parseFloat(s.trim()));
+                if (parts.length === 2 && parts.every(n => !isNaN(n))) latlon = parts;
+            }
+            return {
+                city: detailsPanel.querySelector('[data-field="city"]').value.trim(),
+                postcode: detailsPanel.querySelector('[data-field="postcode"]').value.trim(),
+                full_address: detailsPanel.querySelector('[data-field="full_address"]').value.trim(),
+                url: detailsPanel.querySelector('[data-field="url"]').value.trim(),
+                latlon,
+            };
+        }
+
+        // Merges this widget's editable fields (plus a possibly-changed
+        // name) into a clone of the original matched record. Fields the
+        // widget doesn't expose (social links, description, etc. for a
+        // venue) come through untouched from the clone.
+        function mergeEntityRecord(kind, original, name, panelValues) {
+            const merged = JSON.parse(JSON.stringify(original));
+            merged.id = original.id;
+            merged.name = name;
+            if (kind === "performer") {
+                if (panelValues.url) merged.url = panelValues.url; else delete merged.url;
+                if (panelValues.bio) merged.bio = encodeParagraphBreaks(panelValues.bio); else delete merged.bio;
+            } else {
+                ["city", "postcode", "full_address", "url"].forEach(f => {
+                    if (panelValues[f]) merged[f] = panelValues[f]; else delete merged[f];
+                });
+                if (panelValues.latlon) merged.latlon = panelValues.latlon; else delete merged.latlon;
+            }
+            return merged;
         }
 
         // Resolves an entity field built by buildEntityField() to an id,
         // creating a new performer/venue record (added to newPerformers /
         // newVenues) if the typed name doesn't match an existing one.
+        //
+        // If the field is mid-edit of a matched record (the user clicked
+        // "Edit this record" and this is being resolved with that banner
+        // still showing), any change to the loaded fields is written back:
+        // to newPerformers/newVenues if the matched record was itself only
+        // pending in this session's batch, or to updatedPerformers/
+        // updatedVenues if it was an existing on-disk record. If nothing
+        // was actually changed, this is a no-op and just returns the id,
+        // same as a plain match.
         function resolveEntityField(field) {
             const name = field.input.value.trim();
             if (!name) return null;
             const lookup = field.kind === "performer" ? performersLookup : venuesLookup;
             const newLookup = field.kind === "performer" ? newPerformers : newVenues;
+            const updatedLookup = field.kind === "performer" ? updatedPerformers : updatedVenues;
+
+            const editing = field.matcher && field.matcher.getEditing();
+            if (editing) {
+                const panelValues = readEntityDetailPanel(field.kind, field.detailsPanel);
+                const merged = mergeEntityRecord(field.kind, editing.original, name, panelValues);
+                if (JSON.stringify(merged) !== JSON.stringify(editing.original)) {
+                    if (editing.source === "batch") {
+                        newLookup[editing.id] = merged;
+                    } else {
+                        delete updatedLookup[editing.id];
+                        updatedLookup[editing.id] = merged;
+                    }
+                }
+                return editing.id;
+            }
 
             const existing = Object.entries(lookup).find(([, r]) => (r.name || "").toLowerCase() === name.toLowerCase());
             if (existing) return existing[0];
