@@ -3521,8 +3521,11 @@
       "name": "Lilith",
       "tour_description": "An uplifting one-woman storytelling show.\n\n\n\nAn exploration and celebration of female power through the mythological character of Lilith. Shocking, seductive and entertaining.\n\n\n\nLilith, the first wife of Adam, was not prepared to lie down and accept what was given to her. Thrown out of Eden, she slithered back in to take her revenge and wake Eve up to what her body could do.\n\n\n\nViewed as a demon, worshipped as a goddess, adored as the Queen of Sheba, Lilith slips out of the Bible, reclaims the narrative and is dancing with us still, forever free.\n\n\n\nKaty Cawkwell mixes myth from Arabia, Ethiopia, Mesopotamia and Jewish tradition, with a dash of feminist flavouring and a large dollop of her own wild dreaming.",
       "video_trailer": "https://www.youtube.com/watch?v=rnCjVTiy0aE",
-      "touring_event_flyer": "tour_katy_cawkwell_lilith_2026_2027.jpeg",
-      "tour_flyer": "tour_dates_cawkwell_lilith_2026.png",
+      "tour_flyer": "tour_katy_cawkwell_lilith_2026_2027.jpeg",
+      "tour_flyers": [
+        "tour_katy_cawkwell_lilith_2026_2027.jpeg",
+        "tour_dates_cawkwell_lilith_2026.png"
+      ],
       "isSpecial": true,
       "performer_id": "katy-cawkwell",
       "tour_dates": [
@@ -4285,7 +4288,6 @@
           "time": "7.30pm",
           "price": "£12 (+£0.84)",
           "event_flyer": "2026_05_01_sorrel_nation_lantern_sheffield.jpg",
-          "tour_flyer": "tour_sorrel_nation_spring_26.jpg",
           "ticket_url": "https://www.ticketsource.co.uk/thelanternsheff/sorrel-nation/e-bglzjd?ref=montystoryteller.org",
           "venue_id": "the-lantern-theatre-sheffield"
         },
@@ -8276,21 +8278,21 @@
       "performer_id": "xanthe-gresham-knight"
     },
     {
-          "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
-          "showname": "Water Holds Memory",
-          "date": "18/06/2026",
-          "venue_id": "poetry-lab-bishops-castle",
-          "performer_ids": [
-            "amy-douglas",
-            "martin-daws"
-          ],
-          "description": "Rivers are the life blood of the land. They carry trade, travel, gossip and news... but now they struggle to breath. These are the songs of the spirits of our rivers - the Goddesses and Monsters. This is an ode and lament for the rivers of Shropshire and Herefordshire, the rivers that run from Pumlumon to the wide ocean beyond.\n\n\n\nTwo internationally acclaimed performers, Amy Douglas and Martin Daws, come together to combine traditional oral storytelling with contemporary spoken word, song and kalimba.\n\n\n\nDonations on the door\n\n\n\nLight refreshments available",
-          "time": "7.30pm for 8pm",
-          "event_flyer": "2026_06_18_amy_douglas_water.jpg",
-          "club": "blast",
-          "price": "Donations",
-          "isSpecial": true
-        },
+      "name": "Water Holds Memory [Amy Douglas & Martin Daws]",
+      "showname": "Water Holds Memory",
+      "date": "18/06/2026",
+      "venue_id": "poetry-lab-bishops-castle",
+      "performer_ids": [
+        "amy-douglas",
+        "martin-daws"
+      ],
+      "description": "Rivers are the life blood of the land. They carry trade, travel, gossip and news... but now they struggle to breath. These are the songs of the spirits of our rivers - the Goddesses and Monsters. This is an ode and lament for the rivers of Shropshire and Herefordshire, the rivers that run from Pumlumon to the wide ocean beyond.\n\n\n\nTwo internationally acclaimed performers, Amy Douglas and Martin Daws, come together to combine traditional oral storytelling with contemporary spoken word, song and kalimba.\n\n\n\nDonations on the door\n\n\n\nLight refreshments available",
+      "time": "7.30pm for 8pm",
+      "event_flyer": "2026_06_18_amy_douglas_water.jpg",
+      "club": "blast",
+      "price": "Donations",
+      "isSpecial": true
+    },
     {
       "name": "Legends of the Cornish Landscape [Elizabeth Dale & Keith Wallis]",
       "showname": "Legends of the Cornish Landscape",
