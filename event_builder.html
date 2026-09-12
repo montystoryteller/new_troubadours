@@ -1891,6 +1891,34 @@
         //   behaviour as the old single-performer field)
         // - 2+ performers: performer_ids = [...]; performer_id is also set
         //   if a combined name was given (creating/reusing a troupe record)
+        // Peek at whether an entity/date-row field has anything typed,
+        // *without* resolving it — resolveEntityField() has the side effect
+        // of creating a new performer/venue record the moment it's called
+        // (see below), so form-level required-field validation needs to
+        // check "was something typed" this way first and bail out before
+        // ever calling resolve — otherwise a submission that's about to be
+        // rejected for a *different* missing field (e.g. no tour name)
+        // still leaves behind a newly-created performer/venue nobody asked
+        // for, because that side effect already happened before the check.
+        function hasEntityFieldTyped(field) {
+            return !!(field && field.input.value.trim());
+        }
+
+        function hasAnyPerformerTyped(multi) {
+            return multi.getRows().some(f => hasEntityFieldTyped(f)) || !!multi.getCombinedInput().value.trim();
+        }
+
+        // Same idea for a container of date-rows (tour/show dates): true if
+        // at least one row has both a date and a venue name typed — i.e.
+        // one that readDateRows() would actually keep, without triggering
+        // any of its venue resolution yet.
+        function hasCompleteDateRowTyped(container) {
+            return Array.from(container.children).some(row => {
+                const dateRaw = row.querySelector(".dr-date").value.trim();
+                return !!(dateRaw && hasEntityFieldTyped(row._venueField));
+            });
+        }
+
         function resolveMultiPerformerField(multi) {
             const resolved = multi.getRows().map(field => {
                 const id = resolveEntityField(field);
@@ -3008,7 +3036,11 @@
                 const dates = dateRaw.split(",").map(s => s.trim()).filter(Boolean);
                 const entry = {
                     date: dates.length > 1 ? dates : (dates[0] || ""),
-                    venue_id: resolveEntityField(row._venueField),
+                    // Only resolve (which can create a new venue record) once
+                    // we know this row has a date too — a row with a venue
+                    // typed but no date gets filtered out below anyway, and
+                    // shouldn't still leave behind a venue nobody asked for.
+                    venue_id: dates.length ? resolveEntityField(row._venueField) : null,
                 };
                 const time = row.querySelector(".dr-time").value.trim();
                 const price = row.querySelector(".dr-price").value.trim();
@@ -3081,6 +3113,19 @@
 
         function addEventToBatch() {
             const showname = document.getElementById("ev-showname").value.trim();
+
+            // Check what's missing before resolving anything — resolving a
+            // typed performer/venue name creates a new record right away
+            // (see hasEntityFieldTyped above), and we don't want that to
+            // happen for a submission that's about to be rejected anyway.
+            const missing = [];
+            if (!showname) missing.push("show name");
+            if (!hasEntityFieldTyped(evVenueField)) missing.push("venue");
+            if (missing.length) {
+                alert(`Please fill in: ${missing.join(", ")}.`);
+                return;
+            }
+
             const perf = resolveMultiPerformerField(evPerformerMulti);
             const venueId = resolveEntityField(evVenueField);
             if (!showname || !venueId) {
@@ -3265,9 +3310,24 @@
         function addTourToBatch() {
             const tourName = document.getElementById("tour-tourname").value.trim();
             const name = document.getElementById("tour-name").value.trim();
-            const perf = resolveMultiPerformerField(tourPerformerMulti);
-            const dateRows = readDateRows(document.getElementById("tour-date-rows"), "tour");
             const repertoireId = document.getElementById("tour-repertoire-show-select").value;
+            const dateRowsContainer = document.getElementById("tour-date-rows");
+
+            // As with addEventToBatch: check what's missing before
+            // resolving anything, since resolving a typed performer/venue
+            // name creates a new record right away.
+            const missing = [];
+            if (!tourName) missing.push("tour name");
+            if (!name && !repertoireId) missing.push("show name (or a linked repertoire show)");
+            if (!hasAnyPerformerTyped(tourPerformerMulti) && !repertoireId) missing.push("a performer (or a linked repertoire show)");
+            if (!hasCompleteDateRowTyped(dateRowsContainer)) missing.push("at least one tour date with both a date and a venue");
+            if (missing.length) {
+                alert(`Please fill in: ${missing.join(", ")}.`);
+                return;
+            }
+
+            const perf = resolveMultiPerformerField(tourPerformerMulti);
+            const dateRows = readDateRows(dateRowsContainer, "tour");
             const hasPerformer = !!(perf.performer_id || perf.performer_ids);
             if (!tourName || (!name && !repertoireId) || (!hasPerformer && !repertoireId) || !dateRows.length) {
                 alert("Please fill in tour name, and either a show name + performer or a linked repertoire show, plus at least one valid tour date (with venue).");
@@ -3336,8 +3396,20 @@
         function addShowToBatch() {
             const fullname = document.getElementById("show-fullname").value.trim();
             const showname = document.getElementById("show-showname").value.trim();
+            const dateRowsContainer = document.getElementById("show-date-rows");
+
+            const missing = [];
+            if (!fullname) missing.push("name");
+            if (!showname) missing.push("show name");
+            if (!hasAnyPerformerTyped(showPerformerMulti)) missing.push("at least one performer");
+            if (!hasCompleteDateRowTyped(dateRowsContainer)) missing.push("at least one show date with both a date and a venue");
+            if (missing.length) {
+                alert(`Please fill in: ${missing.join(", ")}.`);
+                return;
+            }
+
             const perf = resolveMultiPerformerField(showPerformerMulti);
-            const dateRows = readDateRows(document.getElementById("show-date-rows"), "show");
+            const dateRows = readDateRows(dateRowsContainer, "show");
             if (!fullname || !showname || !perf.performer_id && !perf.performer_ids || !dateRows.length) {
                 alert("Please fill in name, show name, at least one performer, and at least one valid show date (with venue).");
                 return;
@@ -3472,6 +3544,17 @@
             const name = document.getElementById("festival-name").value.trim();
             const startDate = document.getElementById("festival-start-date").value.trim();
             const endDate = document.getElementById("festival-end-date").value.trim();
+
+            const missing = [];
+            if (!name) missing.push("name");
+            if (!startDate) missing.push("start date");
+            if (!endDate) missing.push("end date");
+            if (!hasEntityFieldTyped(festivalVenueField)) missing.push("venue");
+            if (missing.length) {
+                alert(`Please fill in: ${missing.join(", ")}.`);
+                return;
+            }
+
             const venueId = resolveEntityField(festivalVenueField);
             if (!name || !startDate || !endDate || !venueId) {
                 alert("Please fill in at least a name, start date, end date, and venue.");
