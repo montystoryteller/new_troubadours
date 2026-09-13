@@ -1881,6 +1881,7 @@
             return {
                 getRows: () => Array.from(list.children).map(row => row._field),
                 getCombinedInput: () => combinedWrap.querySelector(".combined-performer-input"),
+                addRow,
             };
         }
 
@@ -3287,6 +3288,73 @@
             return performersLookup[id]?.name || newPerformers[id]?.name || id;
         }
 
+        function venueLabel(id) {
+            if (!id) return "";
+            return venuesLookup[id]?.name || newVenues[id]?.name || id;
+        }
+
+        // Fills a buildMultiPerformerField() widget with a set of performer
+        // ids — used when converting/copying an existing record's
+        // performers into a fresh form. Adds rows as needed (its addRow
+        // isn't otherwise exposed beyond the "Add another performer"
+        // button), then sets each row's name and fires "input" so the
+        // matcher status ("Matches existing performer") updates too.
+        function populateMultiPerformerField(multi, ids) {
+            const wanted = ids && ids.length ? ids : [""];
+            while (multi.getRows().length < wanted.length) multi.addRow();
+            multi.getRows().forEach((field, i) => {
+                field.input.value = wanted[i] ? repertoirePerformerLabel(wanted[i]) : "";
+                field.input.dispatchEvent(new Event("input"));
+            });
+        }
+
+        // Rebuilds a date-rows container (tour or show) from existing
+        // date-row-shaped data — used when converting an event to a show
+        // (one synthetic row from the event's own fields) or copying a
+        // show's dates into a new one (verbatim). Goes through
+        // dateRowTemplate() for each row so it gets the same wiring
+        // (venue matcher, structured time/price, ticket link button, past-
+        // date warning) as a row added by hand — .dr-video here is a
+        // per-date override (see its placeholder), separate from a show's
+        // top-level video field, which callers set themselves.
+        function populateDateRowsContainer(container, kind, dateRowsData) {
+            container.innerHTML = "";
+            const rows = dateRowsData.length ? dateRowsData : [{}];
+            rows.forEach(d => {
+                const row = dateRowTemplate(kind);
+                container.appendChild(row);
+                const dateInput = row.querySelector(".dr-date");
+                dateInput.value = Array.isArray(d.date) ? d.date.join(", ") : (d.date || "");
+                dateInput.dispatchEvent(new Event("input"));
+                row._venueField.input.value = venueLabel(d.venue_id);
+                row._venueField.input.dispatchEvent(new Event("input"));
+                row.querySelector(".dr-time").value = d.time || "";
+                if (d.structured_time) row._structuredTimeField.populate(d.structured_time);
+                row.querySelector(".dr-price").value = d.price || "";
+                if (d.structured_price) row._structuredPriceField.populate(d.structured_price);
+                const ticketInput = row.querySelector(".dr-ticket-url");
+                ticketInput.value = d.ticket_url || "";
+                ticketInput.dispatchEvent(new Event("input"));
+                row.querySelector(".dr-video").value = d.video_trailer || "";
+                row.querySelector(".dr-date-added").value = d.date_added || "";
+                if (kind === "tour") {
+                    if (d.club_event) row.querySelector(".dr-club-event").value = d.club_event;
+                    row.querySelector(".dr-special").checked = d.isSpecial !== false;
+                    // event_flyer(s) for a tour date are intentionally left
+                    // for the person to re-add — flyerRowTemplate's format
+                    // varies (single vs several, with/without captions)
+                    // enough that copying it isn't worth the complexity here.
+                } else {
+                    row.querySelector(".dr-club").value = d.club || "";
+                    row.querySelector(".dr-online").value = d.online || "";
+                    row.querySelector(".dr-fb-event").value = d.fb_event || "";
+                    row.querySelector(".dr-flyer").value = d.event_flyer || "";
+                }
+                row.querySelector(".dr-cancelled").checked = !!d.isCancelled;
+                row.querySelector(".dr-soldout").checked = !!d.isSoldOut;
+            });
+        }
+
         // Populates the performer-filter dropdown from whichever performers
         // are actually attached to a repertoire show, then refreshes the
         // dependent show dropdown. Filtering by performer first keeps the
@@ -3509,6 +3577,123 @@
             document.getElementById("show-touring").checked = false;
             showKeyAutoValue = "";
             initShowForm();
+        }
+
+        // Moves a batch event (single/music/poetry) into the Repertoire Show
+        // form for review — removes it from its current array immediately
+        // (rather than waiting for the person to click "Add to batch" on
+        // the show), since leaving it in both places at once would double
+        // it up in the generated output. Everything mappable is filled in;
+        // fields with no home in the show schema (age_rating/min_age,
+        // wider_event, facebook) are called out in the closing alert rather
+        // than silently dropped.
+        function convertEventToShow(sourceKey, index) {
+            const arr = batch[sourceKey];
+            const ev = arr && arr[index];
+            if (!ev) return;
+            if (!confirm(`Convert "${ev.name || ev.showname}" to a Repertoire Show? It'll be removed from here, and the Repertoire Show form will be filled in from it for you to review before adding it back.`)) {
+                return;
+            }
+            arr.splice(index, 1);
+
+            clearShowForm();
+            document.getElementById("show-fullname").value = ev.name || "";
+            document.getElementById("show-showname").value = ev.showname || "";
+            document.getElementById("show-description").value = decodeParagraphBreaksForEdit(ev.description);
+            document.getElementById("show-video").value = ev.video_trailer || "";
+            document.getElementById("show-special").checked = !!ev.isSpecial;
+
+            const performerIds = [ev.performer_id, ...(ev.performer_ids || [])].filter(Boolean);
+            populateMultiPerformerField(showPerformerMulti, performerIds);
+
+            populateDateRowsContainer(document.getElementById("show-date-rows"), "show", [{
+                date: ev.date, venue_id: ev.venue_id, time: ev.time, structured_time: ev.structured_time,
+                price: ev.price, structured_price: ev.structured_price, ticket_url: ev.ticket_url,
+                date_added: ev.date_added, club: ev.club, fb_event: ev.fb_event,
+                event_flyer: ev.event_flyer, isCancelled: ev.isCancelled, isSoldOut: ev.isSoldOut,
+            }]);
+
+            refreshBatchSummary();
+            switchToTab("show");
+            document.getElementById("panel-show").scrollIntoView({ behavior: "smooth", block: "start" });
+
+            const dropped = [];
+            if (ev.age_rating || ev.min_age) dropped.push("age rating");
+            if (ev.wider_event) dropped.push("wider_event");
+            if (ev.facebook) dropped.push("facebook");
+            let msg = 'Converted — review the form (venue/performer matches, dates, etc.), then click "Add to batch" to confirm.';
+            if (dropped.length) msg += ` Note: ${dropped.join(", ")} had no equivalent field here, so wasn't carried over.`;
+            alert(msg);
+        }
+
+        // A lightweight, dismissable panel inserted at the top of the Show
+        // tab (this app has no modal dialog component) letting the person
+        // choose which parts of an existing batched show to carry into a
+        // fresh one — useful when two shows share most of their detail
+        // (bio, description, media) but differ in, say, date and venue.
+        // Dates/venue default unchecked since those are usually exactly
+        // what's different about the new one; everything else defaults on.
+        function openCopyShowDialog(index) {
+            const source = batch.shows[index];
+            if (!source) return;
+            const existing = document.getElementById("show-copy-dialog");
+            if (existing) existing.remove();
+
+            const panelEl = document.getElementById("panel-show");
+            const dialog = document.createElement("div");
+            dialog.id = "show-copy-dialog";
+            dialog.className = "panel merge-note";
+            dialog.innerHTML = `
+                <h3 style="margin-top:0;">Copy "${(source.record.showname || source.record.name || "").replace(/</g, "&lt;")}"</h3>
+                <p class="field-hint">Choose what to carry into a new show — anything unchecked starts blank
+                    so you can fill it in fresh. The original stays in the batch untouched.</p>
+                <div class="checkbox-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                    <label><input type="checkbox" class="copy-field-group" value="name" checked> Name &amp; show name</label>
+                    <label><input type="checkbox" class="copy-field-group" value="performers" checked> Performers</label>
+                    <label><input type="checkbox" class="copy-field-group" value="description" checked> Description</label>
+                    <label><input type="checkbox" class="copy-field-group" value="media" checked> Media (flyer, video trailer)</label>
+                    <label><input type="checkbox" class="copy-field-group" value="flags" checked> Flags (special / touring show)</label>
+                    <label><input type="checkbox" class="copy-field-group" value="dates"> Dates (venue, time, price, tickets — per date)</label>
+                </div>
+                <div class="btn-row">
+                    <button type="button" class="btn-add-batch" id="show-copy-apply-btn">Copy into a new show</button>
+                    <button type="button" class="btn-clear-form" id="show-copy-cancel-btn">Cancel</button>
+                </div>`;
+            panelEl.insertBefore(dialog, panelEl.querySelector("h2").nextSibling);
+
+            document.getElementById("show-copy-cancel-btn").addEventListener("click", () => dialog.remove());
+            document.getElementById("show-copy-apply-btn").addEventListener("click", () => {
+                const checked = new Set(Array.from(dialog.querySelectorAll(".copy-field-group:checked")).map(c => c.value));
+                const record = source.record;
+                clearShowForm();
+                if (checked.has("name")) {
+                    document.getElementById("show-fullname").value = record.name || "";
+                    document.getElementById("show-showname").value = record.showname || "";
+                }
+                if (checked.has("performers")) {
+                    const ids = [record.performer_id, ...(record.performer_ids || [])].filter(Boolean);
+                    populateMultiPerformerField(showPerformerMulti, ids);
+                }
+                if (checked.has("description")) {
+                    document.getElementById("show-description").value = decodeParagraphBreaksForEdit(record.description);
+                }
+                if (checked.has("media")) {
+                    document.getElementById("show-flyer").value = record.touring_event_flyer || "";
+                    document.getElementById("show-video").value = record.video_trailer || "";
+                }
+                if (checked.has("flags")) {
+                    document.getElementById("show-special").checked = !!record.isSpecial;
+                    document.getElementById("show-touring").checked = !!record.isTouringShow;
+                }
+                if (checked.has("dates") && record.show_dates && record.show_dates.length) {
+                    populateDateRowsContainer(document.getElementById("show-date-rows"), "show", record.show_dates);
+                }
+                dialog.remove();
+                document.getElementById("panel-show").scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+
+            switchToTab("show");
+            dialog.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         // ── Festival form ────────────────────────────────────────────────────
@@ -4107,11 +4292,11 @@
                     remove: () => delete updatedVenues[id], previewData: updatedVenues[id],
                     edit: () => { switchToTab("venue"); venueMatcher.edit(updatedVenues[id], "lookup"); },
                 })),
-                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1), previewData: r })),
-                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r })),
-                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r })),
+                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("events", i) }] })),
+                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("musicEvents", i) }] })),
+                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("poetryEvents", i) }] })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1), previewData: t.record })),
-                ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1), previewData: s.record })),
+                ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1), previewData: s.record, extraActions: [{ label: "Copy…", onClick: () => openCopyShowDialog(i) }] })),
                 ...batch.festivals.map((f, i) => ({
                     tag: "festival", label: `${f.record.name} (${f.key})`,
                     remove: () => batch.festivals.splice(i, 1), previewData: f.record,
@@ -4203,6 +4388,17 @@
                         }
                     });
                     actions.appendChild(editBtn);
+                }
+
+                if (item.extraActions) {
+                    item.extraActions.forEach(action => {
+                        const btn = document.createElement("button");
+                        btn.type = "button";
+                        btn.className = "batch-edit-btn";
+                        btn.textContent = action.label;
+                        btn.addEventListener("click", action.onClick);
+                        actions.appendChild(btn);
+                    });
                 }
 
                 const removeBtn = document.createElement("button");
