@@ -881,12 +881,17 @@
                 <h3>🧹 Formatting cleanup</h3>
                 <p class="field-hint">
                     Safe, mechanical tidying only — trimming stray whitespace, collapsing doubled punctuation
-                    ("Free.." → "Free."), normalising UK postcode casing/spacing, and adding a missing
-                    <code>https://</code> to a URL-shaped field that's missing one entirely. Nothing here
-                    second-guesses what was actually written (that's what the scanners below do, each as its
-                    own judgement call) — this is deliberately not a content linter, and it doesn't check for
-                    structural problems like a venue_id that doesn't match any real venue; it just cleans up
-                    formatting.
+                    ("Free.." → "Free."), normalising UK postcode casing/spacing, adding a missing
+                    <code>https://</code> to a URL-shaped field that's missing one entirely, and putting a
+                    list of dates back into date order when it's out of order (each event list, each tour's
+                    <code>tour_dates</code>, each repertoire show's <code>show_dates</code> — skipped
+                    individually if any date in that particular list doesn't parse, rather than guessing
+                    where an undated one belongs). Nothing here second-guesses what was actually written
+                    (that's what the scanners below do, each as its own judgement call) — this is
+                    deliberately not a content linter, and it doesn't check for structural problems like a
+                    venue_id that doesn't match any real venue; it just cleans up formatting. Each row below
+                    is its own checkbox, so a date-order fix can be accepted or skipped independently of
+                    everything else found.
                 </p>
                 <button class="btn-add-batch" id="enrich-format-scan-btn" disabled>Scan for formatting issues</button>
                 <div id="enrich-format-results"></div>
@@ -5248,6 +5253,43 @@
             return `https://${trimmed}`;
         }
 
+        // Dates are entered as free-text "DD/MM/YYYY" (see the .dr-date /
+        // #ev-date placeholders), not ISO — plain string comparison would
+        // sort "03/01/2027" before "25/12/2026", which is backwards. This
+        // converts one date string to a lexically-sortable "YYYY-MM-DD", or
+        // null if it doesn't parse.
+        function ddMmYyyySortKey(dateStr) {
+            if (!dateStr || typeof dateStr !== "string") return null;
+            const m = dateStr.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (!m) return null;
+            const [, dd, mm, yyyy] = m;
+            return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+        }
+
+        // A record's own "date" field can be one string or (for a
+        // multi-night run stored as a single record) an array of them —
+        // sort position is judged by the earliest of whichever it has.
+        function earliestSortKey(dateField) {
+            const values = Array.isArray(dateField) ? dateField : [dateField];
+            const keys = values.map(ddMmYyyySortKey).filter(Boolean);
+            return keys.length ? keys.sort()[0] : null;
+        }
+
+        // Deliberately all-or-nothing: if *any* item's date doesn't parse,
+        // this reports "not sortable" rather than guessing where an undated
+        // item belongs relative to the dated ones — consistent with the
+        // rest of this scanner never inferring beyond what's clearly right.
+        function getListSortInfo(items, getSortKey) {
+            const keys = items.map(getSortKey);
+            if (!items.length || keys.some(k => k == null)) return { sortable: false };
+            const sorted = items
+                .map((item, i) => ({ item, key: keys[i] }))
+                .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+                .map(x => x.item);
+            const isOrdered = items.every((item, i) => item === sorted[i]);
+            return { sortable: true, isOrdered, sorted };
+        }
+
         function scanForFormattingFixes(data) {
             const suggestions = [];
             const addIfChanged = (label, before, after, apply) => {
@@ -5317,6 +5359,56 @@
                         addIfChanged(`${bucketName}[${index}] "${label}".ticket_url`, ev.ticket_url, after, () => { ev.ticket_url = after; });
                     }
                 });
+                // A resort here shifts every position in the array, which
+                // invalidates any "bucket#index" key already sitting in
+                // updatedEvents (see the comment on that const) — there's
+                // no small patch that makes sense for "this whole array got
+                // reordered", so accepting this clears updatedEvents rather
+                // than leave stale entries pointing at the wrong event.
+                const info = getListSortInfo(arr, ev => earliestSortKey(ev.date));
+                if (info.sortable && !info.isOrdered) {
+                    const label = e => e.showname || e.name || "?";
+                    suggestions.push({
+                        label: `${bucketName} order (${arr.length} events, currently out of date order)`,
+                        before: arr.map(label).join(" → "),
+                        after: info.sorted.map(label).join(" → "),
+                        apply: () => { arr.length = 0; arr.push(...info.sorted); },
+                        clearsUpdatedEvents: true,
+                    });
+                }
+            });
+
+            // Tours/repertoire shows have a real key, so a resorted
+            // tour_dates/show_dates list can be (and is) surfaced as a
+            // proper updatedTours/updatedRepertoireShows batch entry too —
+            // see the reorderTarget handling in the apply handler below.
+            Object.entries(data.tours || {}).forEach(([key, tour]) => {
+                const dates = tour.tour_dates || [];
+                const info = getListSortInfo(dates, d => earliestSortKey(d.date));
+                if (info.sortable && !info.isOrdered) {
+                    const label = d => Array.isArray(d.date) ? d.date.join("/") : d.date;
+                    suggestions.push({
+                        label: `tours.${key}.tour_dates order (${dates.length} dates, currently out of date order)`,
+                        before: dates.map(label).join(" → "),
+                        after: info.sorted.map(label).join(" → "),
+                        apply: () => { tour.tour_dates.length = 0; tour.tour_dates.push(...info.sorted); },
+                        reorderTarget: { kind: "tour", key, record: tour },
+                    });
+                }
+            });
+            Object.entries(data.repertoire_shows || {}).forEach(([key, show]) => {
+                const dates = show.show_dates || [];
+                const info = getListSortInfo(dates, d => earliestSortKey(d.date));
+                if (info.sortable && !info.isOrdered) {
+                    const label = d => Array.isArray(d.date) ? d.date.join("/") : d.date;
+                    suggestions.push({
+                        label: `repertoire_shows.${key}.show_dates order (${dates.length} dates, currently out of date order)`,
+                        before: dates.map(label).join(" → "),
+                        after: info.sorted.map(label).join(" → "),
+                        apply: () => { show.show_dates.length = 0; show.show_dates.push(...info.sorted); },
+                        reorderTarget: { kind: "show", key, record: show },
+                    });
+                }
             });
 
             return suggestions;
@@ -5340,7 +5432,7 @@
             suggestions.forEach(s => {
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
-                row._apply = s.apply;
+                row._suggestion = s;
                 row.innerHTML = `
                     <input type="checkbox" checked class="enrich-format-check">
                     <div class="enrich-result-main">
@@ -5359,16 +5451,39 @@
         document.getElementById("enrich-format-apply-btn").addEventListener("click", () => {
             const rows = document.querySelectorAll("#enrich-format-results .enrich-result-row");
             let applied = 0;
+            let clearedUpdatedEvents = false;
+            let batchTouched = false;
             rows.forEach(row => {
                 if (!row.querySelector(".enrich-format-check").checked) return;
-                row._apply();
+                const s = row._suggestion;
+                s.apply();
                 applied++;
+                if (s.reorderTarget) {
+                    // Same convention as the age-rating checker: a real key
+                    // means this can be a full replacement record in the
+                    // batch, not just a mutation buried in enrichedData.
+                    const { kind, key, record } = s.reorderTarget;
+                    const target = kind === "tour" ? updatedTours : updatedRepertoireShows;
+                    delete target[key];
+                    target[key] = JSON.parse(JSON.stringify(record));
+                    batchTouched = true;
+                }
+                if (s.clearsUpdatedEvents && Object.keys(updatedEvents).length) {
+                    Object.keys(updatedEvents).forEach(k => delete updatedEvents[k]);
+                    clearedUpdatedEvents = true;
+                    batchTouched = true;
+                }
             });
             if (!applied) {
                 alert("No rows checked.");
                 return;
             }
-            alert(`Applied ${applied} formatting fix(es) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`);
+            if (batchTouched) refreshBatchSummary();
+            let message = `Applied ${applied} formatting fix(es) to the loaded data. Use "Download full enriched JSON" above to get the updated file.`;
+            if (clearedUpdatedEvents) {
+                message += ` Note: reordering a flat event list invalidated the position-based updatedEvents entries from an earlier fix (e.g. an accepted age rating), so those were cleared from the batch — reapply them from their scanner if still needed.`;
+            }
+            alert(message);
             markEnrichedDataDirty();
         });
 
