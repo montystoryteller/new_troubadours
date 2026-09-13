@@ -136,10 +136,6 @@
                     <input type="checkbox" checked id="hideCancelled" onchange="filterEvents()">
                     Hide cancelled
                 </label>
-                <label>
-                    <input type="checkbox" id="hidePastEvents" onchange="filterEvents()">
-                    Hide past events
-                </label>
             </div>
         </div>
     </div>
@@ -167,8 +163,16 @@
                 <p class="loading-state">Loading map…</p>
             </div>
         </div>
-        <div class="events-list" id="eventsList">
-            <p class="loading-state">Loading events…</p>
+        <div class="events-list">
+            <div class="events-list-header">
+                <label class="hide-past-label" id="hidePastEventsLabel">
+                    <input type="checkbox" id="hidePastEvents" onchange="filterEvents()">
+                    Hide past events
+                </label>
+            </div>
+            <div id="eventsList">
+                <p class="loading-state">Loading events…</p>
+            </div>
         </div>
     </div>
 

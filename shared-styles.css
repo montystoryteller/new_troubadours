@@ -441,6 +441,43 @@ select {
     color: #555;
 }
 
+/* Past event styling (mirrors the tour page's .date-past treatment).
+   Applied to every .event unconditionally so past events are visibly
+   dimmed even when the "Hide past events" checkbox is left unchecked.
+   Cancelled/rescheduled events already have their own faded striped
+   look, so they only get the dimming filter, not the colour override —
+   avoids fighting their !important background/border rule above. */
+.event.date-past {
+    opacity: 0.55;
+    filter: grayscale(40%);
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) {
+    border-left-color: #aaa !important;
+    background: #f0f0f0 !important;
+    color: #888 !important;
+}
+
+.event.special.date-past,
+.event.music.date-past,
+.event.folk.date-past,
+.event.poetry.date-past,
+.event.session.date-past {
+    background: linear-gradient(135deg, #777 0%, #aaa 100%) !important;
+    border-color: #999 !important;
+    color: #ddd !important;
+    opacity: 0.6;
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-name::after {
+    content: " — past";
+    font-size: 0.8em;
+    color: inherit;
+    font-weight: normal;
+    font-style: italic;
+    opacity: 0.85;
+}
+
 
 /* =============================================================
    6. EVENT CARD CONTENT

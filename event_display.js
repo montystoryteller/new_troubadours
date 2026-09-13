@@ -1131,6 +1131,15 @@ function createEventElement(event) {
     eventDiv.classList.add("event-rescheduled");
   }
 
+  // Grey out past events (mirrors the tour page's "date-past" treatment).
+  // This is applied unconditionally, independent of the "Hide past events"
+  // checkbox — that checkbox only controls whether past events are
+  // filtered out of the list entirely (see filterEvents()); when it's left
+  // unchecked, past events still show, just visibly dimmed.
+  if (event.date instanceof Date && event.date < getTodayMidnight()) {
+    eventDiv.classList.add("date-past");
+  }
+
   // Add click handler
   if (event.coords?.lat && event.coords?.lon) {
     eventDiv.onclick = () => zoomToEvent(event.coords.lat, event.coords.lon);
@@ -2055,7 +2064,9 @@ function filterEvents() {
       visible = false;
     }
 
-    if (visible && hidePast && marker.eventData.date < today) {
+    const isPastMarker = marker.eventData.date < today;
+
+    if (visible && hidePast && isPastMarker) {
       visible = false;
     }
 
@@ -2066,7 +2077,13 @@ function filterEvents() {
     }
 
     if (visible) {
-      marker.setStyle({ opacity: 1, fillOpacity: 0.8 });
+      // Past events that aren't hidden are shown dimmed on the map too,
+      // matching the greyed-out treatment their list card gets.
+      if (isPastMarker) {
+        marker.setStyle({ opacity: 0.5, fillOpacity: 0.35 });
+      } else {
+        marker.setStyle({ opacity: 1, fillOpacity: 0.8 });
+      }
     } else {
       marker.setStyle({ opacity: 0, fillOpacity: 0 });
     }

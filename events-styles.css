@@ -93,6 +93,26 @@
     overflow-y: auto;
 }
 
+/* Small bar above the actual list of event cards, holding the
+   "Hide past events" toggle. Lives outside the #eventsList div that
+   renderEventsList() clears and rebuilds on every filter change, so it
+   stays put at the top of the panel instead of disappearing on redraw. */
+.events-list-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.hide-past-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+}
+
 
 /* =============================================================
    4. INFO BANNER TABS
