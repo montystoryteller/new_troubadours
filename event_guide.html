@@ -75,11 +75,12 @@
                 <button class="new-events-btn" id="newEventsMonthBtn" onclick="showNewEvents('month', this)">Added over
                     last month</button>
                 <label class="new-events-upcoming-toggle">
-                    <input type="checkbox" id="newEventsUpcomingOnly" onchange="showNewEvents(newEventsPeriod)">
-                    Hide past event dates
+                    <input type="checkbox" id="newEventsUpcomingOnly" onchange="showNewEvents(newEventsPeriod)"
+                        aria-controls="newEventsList">
+                    Hide previous events (for selected period)
                 </label>
             </div>
-            <div id="newEventsList" class="new-events-list">
+            <div id="newEventsList" class="new-events-list" aria-live="polite">
                 <div class="new-events-placeholder">Open to see recently added events</div>
             </div>
         </div>

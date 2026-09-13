@@ -3125,9 +3125,19 @@ function showNewEvents(period, activeBtn) {
   if (visibleRecords.length === 0) {
     const msg = document.createElement("div");
     msg.className = "new-events-placeholder";
-    msg.textContent = upcomingOnly
-      ? "No upcoming events found for this period."
-      : "No events with a date_added field found for this period.";
+    if (records.length === 0) {
+      msg.textContent = "No events with a date_added field found for this period.";
+    } else if (upcomingOnly) {
+      const hasDatedRecords = records.some((info) => !!info._eventDate);
+      if (hasDatedRecords) {
+        msg.textContent = "No upcoming events found for this period.";
+      } else {
+        msg.textContent =
+          "No dated events found for this period; unable to apply upcoming-only filter.";
+      }
+    } else {
+      msg.textContent = "No events found for this period.";
+    }
     listEl.appendChild(msg);
     return;
   }
