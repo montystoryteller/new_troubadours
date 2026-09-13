@@ -713,18 +713,26 @@
             </div>
 
             <div class="field-row">
+                <label>Full address</label>
+                <div>
+                    <input type="text" id="venue-full-address">
+                    <div class="field-hint">If the last comma-separated part looks like a postcode, City and
+                        Postcode below get filled in automatically (only while they're still blank) — edit
+                        them freely afterwards, they're what actually gets used, not this text.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>City</label>
-                <input type="text" id="venue-city">
+                <div>
+                    <input type="text" id="venue-city">
+                    <div class="field-hint" id="venue-address-guess-hint" style="display:none;"></div>
+                </div>
             </div>
 
             <div class="field-row">
                 <label>Postcode</label>
                 <input type="text" id="venue-postcode">
-            </div>
-
-            <div class="field-row">
-                <label>Full address</label>
-                <input type="text" id="venue-full-address">
             </div>
 
             <div class="field-row">
@@ -913,10 +921,14 @@
 
             <div class="enrich-section">
                 <h3>📮 Missing postcodes</h3>
-                <p class="field-hint">Scans venues that have a full address but no postcode, and tries to extract one
-                    from the address text.</p>
+                <p class="field-hint">Scans venues with no postcode set and tries to extract one from their full
+                    address (or name) text. A venue can end up in one of two lists below: one where a postcode was
+                    found and is ready to accept, and — since "nothing extracted" isn't the same as "nothing
+                    missing" — a separate one for venues that are still missing a postcode but whose address text
+                    didn't yield one, which will need filling in by hand.</p>
                 <button class="btn-add-batch" id="enrich-postcode-scan-btn" disabled>Scan for missing postcodes</button>
                 <div id="enrich-postcode-results"></div>
+                <div id="enrich-postcode-unresolved"></div>
                 <div class="btn-row" id="enrich-postcode-actions" style="display:none;">
                     <button class="btn-secondary-action" id="enrich-postcode-generate-btn">Generate patch from checked
                         rows</button>
@@ -1273,9 +1285,10 @@
                     <textarea data-field="bio" placeholder="Short bio"></textarea>`;
             } else {
                 detailsPanel.innerHTML = `
-                    <input data-field="city" type="text" placeholder="City">
-                    <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="full_address" type="text" placeholder="Full address">
+                    <input data-field="city" type="text" placeholder="City">
+                    <div class="field-hint entity-address-guess-hint" style="display:none;"></div>
+                    <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="url" type="url" placeholder="Venue website URL">
                     <div class="latlon-row">
                         <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">
@@ -1290,6 +1303,16 @@
             // new tab so a matched record's website can be checked without
             // leaving the form.
             const updateOpenLinkState = attachOpenLinkButton(detailsPanel.querySelector('[data-field="url"]'));
+
+            // Same address → town/postcode prepopulation as the standalone
+            // Venue form, for venue fields embedded in event/tour/show/
+            // festival forms too — see wireAddressAutofill.
+            const addressAutofill = kind === "venue" ? wireAddressAutofill({
+                addressInput: detailsPanel.querySelector('[data-field="full_address"]'),
+                cityInput: detailsPanel.querySelector('[data-field="city"]'),
+                postcodeInput: detailsPanel.querySelector('[data-field="postcode"]'),
+                warnEl: detailsPanel.querySelector(".entity-address-guess-hint"),
+            }) : null;
 
             if (kind === "venue") {
                 wireGeocodeButton({
@@ -1337,6 +1360,7 @@
                 }
                 detailsPanel.style.display = "grid";
                 updateOpenLinkState();
+                if (addressAutofill) addressAutofill.afterLoad();
             }
 
             const matcher = makeRecordMatcher({
@@ -3832,7 +3856,18 @@
             document.getElementById("venue-instagram").value = record.instagram || "";
             document.getElementById("venue-description").value = decodeParagraphBreaksForEdit(record.description);
             document.getElementById("venue-latlon").value = (record.latlon && record.latlon.length === 2) ? record.latlon.join(", ") : "";
+            venueAddressAutofill.afterLoad();
         }
+
+        // Set up once — used both by the "input" listener below (typing/
+        // pasting a new address) and by populateVenueForm() above (loading
+        // an existing record for editing).
+        const venueAddressAutofill = wireAddressAutofill({
+            addressInput: document.getElementById("venue-full-address"),
+            cityInput: document.getElementById("venue-city"),
+            postcodeInput: document.getElementById("venue-postcode"),
+            warnEl: document.getElementById("venue-address-guess-hint"),
+        });
 
         function initVenueMatcher() {
             venueMatcher = makeRecordMatcher({
@@ -4221,6 +4256,84 @@
             return `${m[1].toUpperCase()} ${m[2].toUpperCase()}`;
         }
 
+        // Parses a comma-separated full address for a trailing postcode and
+        // the town/locality just before it — e.g.
+        // "16 High Street, Ryde, Isle of Wight, PO33 2NA" →
+        // { town: "Ryde, Isle of Wight", postcode: "PO33 2NA" }. Only
+        // matches when the *last* comma-segment is essentially just a
+        // postcode (not merely a segment that happens to contain one
+        // somewhere in a longer chunk of text) — deliberately conservative,
+        // since a wrong guess here is worse than no guess. "Wales" and
+        // "Isle of Wight" are common as their own segment ahead of the
+        // postcode but aren't themselves a town, so in that case the real
+        // town is the segment before that instead, kept together with it.
+        const ADDRESS_REGION_WORDS = ["wales", "isle of wight"];
+        function parseTownPostcodeFromAddress(address) {
+            if (!address) return null;
+            const parts = address.split(",").map(s => s.trim()).filter(Boolean);
+            if (parts.length < 2) return null;
+            const last = parts[parts.length - 1];
+            const postcode = extractUKPostcode(last);
+            if (!postcode) return null;
+            // Whitespace-insensitive comparison so an unspaced postcode
+            // ("PO332NA") still counts as "the whole segment", not just
+            // "found somewhere in a longer chunk of text".
+            if (last.toUpperCase().replace(/\s+/g, "") !== postcode.replace(/\s+/g, "")) return null;
+
+            let townIndex = parts.length - 2;
+            let town = parts[townIndex];
+            if (ADDRESS_REGION_WORDS.includes(town.toLowerCase()) && townIndex - 1 >= 0) {
+                town = `${parts[townIndex - 1]}, ${town}`;
+            }
+            return { town, postcode };
+        }
+
+        // Wires a full-address input to prepopulate town/postcode inputs —
+        // but only into whichever of the two is still blank, so it never
+        // fights an edit the person's already made (see
+        // parseTownPostcodeFromAddress above for what "prepopulate" means
+        // here). Also exposes checkAgainstLoadedRecord(), for when a
+        // record's just been loaded for editing: it never overwrites a
+        // populated field, but flags a mismatch if the address text
+        // suggests something different from what's on record, since that's
+        // worth a human glancing at even though it isn't auto-corrected.
+        function wireAddressAutofill({ addressInput, cityInput, postcodeInput, warnEl }) {
+            function autofillBlankFields() {
+                const guess = parseTownPostcodeFromAddress(addressInput.value);
+                if (!guess) return;
+                if (!cityInput.value.trim()) cityInput.value = guess.town;
+                if (!postcodeInput.value.trim()) postcodeInput.value = guess.postcode;
+            }
+            addressInput.addEventListener("input", autofillBlankFields);
+
+            function checkAgainstLoadedRecord() {
+                if (!warnEl) return;
+                const guess = parseTownPostcodeFromAddress(addressInput.value);
+                warnEl.textContent = "";
+                warnEl.style.display = "none";
+                if (!guess) return;
+                const cityVal = cityInput.value.trim();
+                const postcodeVal = postcodeInput.value.trim();
+                const cityMismatch = cityVal && guess.town && cityVal.toLowerCase() !== guess.town.toLowerCase();
+                const postcodeMismatch = postcodeVal && guess.postcode && postcodeVal.toUpperCase() !== guess.postcode.toUpperCase();
+                if (!cityMismatch && !postcodeMismatch) return;
+                const bits = [];
+                if (cityMismatch) bits.push(`town "${guess.town}" vs stored "${cityVal}"`);
+                if (postcodeMismatch) bits.push(`postcode "${guess.postcode}" vs stored "${postcodeVal}"`);
+                warnEl.textContent = `⚠ The address text suggests ${bits.join(" and ")} — worth checking which is right.`;
+                warnEl.style.display = "";
+            }
+            // Call once right after populating a form from a loaded record:
+            // fills in whichever of town/postcode the record didn't have at
+            // all, and warns (without touching anything) about the ones it
+            // did have if the address text disagrees.
+            function afterLoad() {
+                autofillBlankFields();
+                checkAgainstLoadedRecord();
+            }
+            return { autofillBlankFields, checkAgainstLoadedRecord, afterLoad };
+        }
+
         function levenshtein(a, b) {
             const m = a.length, n = b.length;
             const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
@@ -4410,40 +4523,76 @@
         // -- Missing postcodes -------------------------------------------------
         document.getElementById("enrich-postcode-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-postcode-results");
+            const unresolvedEl = document.getElementById("enrich-postcode-unresolved");
             const actionsEl = document.getElementById("enrich-postcode-actions");
             resultsEl.innerHTML = "";
+            unresolvedEl.innerHTML = "";
             if (!enrichedData || !enrichedData.venues) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No venues to scan.</div>';
                 actionsEl.style.display = "none";
                 return;
             }
+            // Kept separate rather than folded into one "nothing found"
+            // case: a venue missing a postcode with no extractable address
+            // still needs attention, it just can't be offered as a
+            // one-click fix the way the candidates below can.
             const candidates = [];
+            const unresolved = [];
             Object.entries(enrichedData.venues).forEach(([id, v]) => {
                 if (v.postcode) return;
                 const candidate = extractUKPostcode(v.full_address) || extractUKPostcode(v.name);
-                if (candidate) candidates.push({ id, name: v.name || id, address: v.full_address || "", candidate });
+                if (candidate) {
+                    candidates.push({ id, name: v.name || id, address: v.full_address || "", candidate });
+                } else {
+                    unresolved.push({ id, name: v.name || id, address: v.full_address || "" });
+                }
             });
-            if (!candidates.length) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No missing postcodes found (or none could be extracted from the address text).</div>';
+            if (!candidates.length && !unresolved.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Every venue already has a postcode.</div>';
                 actionsEl.style.display = "none";
                 return;
             }
-            candidates.forEach(c => {
-                const row = document.createElement("div");
-                row.className = "enrich-result-row";
-                row.dataset.venueId = c.id;
-                row.dataset.postcode = c.candidate;
-                row.innerHTML = `
-                    <input type="checkbox" checked class="enrich-postcode-check">
-                    <div class="enrich-result-main">
-                        <div class="enrich-result-name">${c.name}</div>
-                        <div class="enrich-result-detail">${c.address || "(no full address on record)"}</div>
-                        <div class="enrich-result-detail">Suggested postcode: <strong>${c.candidate}</strong></div>
-                    </div>`;
-                resultsEl.appendChild(row);
-            });
-            addResultsCollapseToggle(resultsEl, candidates.length, "venue");
-            actionsEl.style.display = "";
+            if (!candidates.length) {
+                actionsEl.style.display = "none";
+                resultsEl.innerHTML = '<div class="enrich-empty">No auto-extractable postcode suggestions — see below for venues that need one added by hand.</div>';
+            } else {
+                candidates.forEach(c => {
+                    const row = document.createElement("div");
+                    row.className = "enrich-result-row";
+                    row.dataset.venueId = c.id;
+                    row.dataset.postcode = c.candidate;
+                    row.innerHTML = `
+                        <input type="checkbox" checked class="enrich-postcode-check">
+                        <div class="enrich-result-main">
+                            <div class="enrich-result-name">${c.name}</div>
+                            <div class="enrich-result-detail">${c.address || "(no full address on record)"}</div>
+                            <div class="enrich-result-detail">Suggested postcode: <strong>${c.candidate}</strong></div>
+                        </div>`;
+                    resultsEl.appendChild(row);
+                });
+                addResultsCollapseToggle(resultsEl, candidates.length, "venue");
+                actionsEl.style.display = "";
+            }
+
+            if (unresolved.length) {
+                const heading = document.createElement("div");
+                heading.className = "field-hint";
+                heading.style.marginTop = "12px";
+                heading.innerHTML = `<strong>${unresolved.length}</strong> venue(s) are missing a postcode but
+                    nothing could be extracted from their address/name — these need one added by hand:`;
+                unresolvedEl.appendChild(heading);
+                unresolved.forEach(u => {
+                    const row = document.createElement("div");
+                    row.className = "enrich-result-row";
+                    row.innerHTML = `
+                        <div class="enrich-result-main">
+                            <div class="enrich-result-name">${u.name}</div>
+                            <div class="enrich-result-detail">${u.address || "(no full address on record)"}</div>
+                        </div>`;
+                    unresolvedEl.appendChild(row);
+                });
+                addResultsCollapseToggle(unresolvedEl, unresolved.length, "venue");
+            }
         });
 
         document.getElementById("enrich-postcode-generate-btn").addEventListener("click", () => {
@@ -4469,6 +4618,7 @@
             output.style.display = "";
             outputActions.style.display = "";
             markEnrichedDataDirty();
+            alert(`Applied ${Object.keys(patch.venues).length} postcode(s) to the loaded data. The patch JSON is below this button — copy or download it, or use "Download full enriched JSON" above for the whole file.`);
         });
 
         document.getElementById("enrich-postcode-copy-btn").addEventListener("click", () => {
@@ -4581,6 +4731,7 @@
             output.style.display = "";
             outputActions.style.display = "";
             markEnrichedDataDirty();
+            alert(`Applied ${Object.keys(patch.venues).length} venue type(s) to the loaded data. The patch JSON is below this button — copy or download it, or use "Download full enriched JSON" above for the whole file.`);
         });
 
         document.getElementById("enrich-venuetype-copy-btn").addEventListener("click", () => {
@@ -4985,6 +5136,12 @@
                         name: ev.showname || ev.name || "(untitled)",
                         date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
                         entries, source, sentence,
+                        // Only meaningfully different from `sentence` when
+                        // source is "description" (a single matched
+                        // sentence out of possibly many) — when source is
+                        // "price field", sentence already *is* the whole
+                        // field, so there's nothing more to reveal.
+                        description: source === "description" ? ev.description : null,
                     });
                 });
             });
@@ -5005,7 +5162,28 @@
                         <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
                         <div class="enrich-result-detail">Suggested structured_price: <strong>${renderStructuredPrice(f.entries)}</strong></div>
                         <div class="enrich-result-reasons">Found in ${f.source}: "${f.sentence.replace(/</g, "&lt;")}"</div>
+                        ${f.description ? `
+                        <button type="button" class="entity-details-toggle enrich-price-desc-toggle" style="margin-top:6px;">Show full description</button>
+                        <div class="enrich-age-desc-preview enrich-price-desc-preview" style="display:none;"></div>` : ""}
                     </div>`;
+                if (f.description) {
+                    // Same "don't just trust the one matched sentence" fix
+                    // as the age rating checker — highlight it within the
+                    // full text so a misleading guess is easy to spot.
+                    const descToggle = row.querySelector(".enrich-price-desc-toggle");
+                    const descPreview = row.querySelector(".enrich-price-desc-preview");
+                    const fullDescription = decodeParagraphBreaksForEdit(f.description);
+                    const escapedSentence = escapeHtml(f.sentence);
+                    const escapedFull = escapeHtml(fullDescription);
+                    descPreview.innerHTML = escapedSentence
+                        ? escapedFull.replace(escapedSentence, `<mark>${escapedSentence}</mark>`)
+                        : escapedFull;
+                    descToggle.addEventListener("click", () => {
+                        const shown = descPreview.style.display !== "none";
+                        descPreview.style.display = shown ? "none" : "block";
+                        descToggle.textContent = shown ? "Show full description" : "Hide full description";
+                    });
+                }
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "event");
