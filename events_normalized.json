@@ -1774,6 +1774,91 @@
     }
   },
   "repertoire_shows": {
+    "charlotte-mooney-comb": {
+      "name": "Comb [Charlotte Mooney]",
+      "showname": "Comb",
+      "show_dates": [
+        {
+          "date": "01/05/2026",
+          "venue_id": "lime-tree-matlock",
+          "performer_id": "charlotte-mooney",
+          "club": "matlock-story-club",
+          "time": "7.30-10pm",
+          "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2117607",
+          "price": "£8 live and £6.50 for zoom"
+        },
+        {
+          "date": "12/09/2026",
+          "venue_id": "corn-exchange-newbury"
+        },
+        {
+          "date": "02/10/2026",
+          "venue_id": "oxford-playhouse",
+          "time": "7.30pm",
+          "price": "£14 / £12",
+          "ticket_url": "https://www.oxfordplayhouse.com/events/comb"
+        },
+        {
+          "date": "22/10/2026",
+          "venue_id": "proteus-creation-space-basingstoke",
+          "time": "Doors open 7pm, show starts at 7.30pm",
+          "price": "£12.50 / £10",
+          "ticket_url": "https://www.proteustheatre.com/events/comb/"
+        },
+        {
+          "date": "10/11/2026",
+          "venue_id": "beam-hertford",
+          "time": "7.45pm",
+          "price": "Pay What You Feel £14.00 - £25.00",
+          "ticket_url": "https://beamhertford.co.uk/whats-on/Z8b-comb/"
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "brigsteer-village-hall-kendal",
+          "performer_id": "charlotte-mooney",
+          "club": "stealingthunder",
+          "date_added": "13/09/2026",
+          "time": "7.30pm (Bar & Bookshop from 7pm)",
+          "price": "£10 on the door"
+        },
+        {
+          "date": "18/11/2026",
+          "venue_id": "lock-91-bar-manchester",
+          "time": "7pm",
+          "club": "stinginthetale"
+        },
+        {
+          "date": "04/02/2027",
+          "venue_id": "kensington-central-library"
+        },
+        {
+          "date": "10/02/2027",
+          "venue_id": "farnham-maltings"
+        },
+        {
+          "date": "18/02/2027",
+          "venue_id": "theatre-by-the-lake-keswick",
+          "time": "7.30pm",
+          "ticket_url": "https://www.theatrebythelake.com/event/comb/"
+        },
+        {
+          "date": "06/03/2027",
+          "venue_id": "salisbury-arts-centre"
+        },
+        {
+          "date": "21/03/2027",
+          "venue_id": "lowry-salford"
+        },
+        {
+          "date": "17/04/2027",
+          "venue_id": "lighthouse-poole"
+        }
+      ],
+      "touring_event_flyer": "banner_mooney_comb.webp",
+      "description": "A Storytelling Performance by Charlotte Mooney\n\n\n\n“I saw a banshee once, just outside of Galway…”\n\n\n\nWhen Charlotte was 8 her Grandad told her the beginning of a story but refused to tell the full tale. Years later a chance encounter led her to find the rest of his story buried deep within an archive gathered from families in Ireland. Not only did she discover this unbelievable link to her past but also a far more startling realisation.\n\n\n\nAt times chilling, hilarious and moving Comb is a lament for the stories and people we have lost. A tangled ride through Celtic, Slavic and Siberian folklore – featuring sentient puddles, gods, mermaids and a healthy respect for nits, it is a clarion call for understanding just how interwoven we all are.",
+      "video_trailer": "https://www.youtube.com/watch?v=qalni2GSq3g",
+      "isSpecial": true
+    },
     "tim-ralphs-strange-wondrous": {
       "name": "In Strange and Wondrous Company [Tim Ralphs]",
       "showname": "In Strange and Wondrous Company",
@@ -4950,7 +5035,7 @@
     {
       "name": "Stealing Thunder",
       "schedule": "2nd saturday",
-      "time": "7.30pm",
+      "time": "7.30pm (Bar & Bookshop from 7pm)",
       "link": "https://stealingthunder.co.uk/storynights",
       "club": "stealingthunder",
       "facebook": "https://www.facebook.com/thunderstealing",
@@ -9860,6 +9945,31 @@
       "performer_id": ""
     },
     {
+      "name": "TBC [Dominic Kelly]",
+      "showname": "TBC",
+      "date": "12/12/2026",
+      "time": "Bar/bookshop 7pm, 7.30pm start",
+      "venue_id": "brigsteer-village-hall-kendal",
+      "performer_id": "dominic-kelly",
+      "date_added": "13/09/2026",
+      "club": "stealingthunder",
+      "isSpecial": true
+    },
+    {
+      "name": "Midwinter Mischief and Granny's Gifts [Jo Munton & Simone Gilliatt]",
+      "showname": "Midwinter Mischief and Granny's Gifts",
+      "date": "18/12/2026",
+      "venue_id": "town-hall-bishops-castle",
+      "performer_ids": [
+        "jo-munton",
+        "simone-gilliatt"
+      ],
+      "date_added": "15/07/2026",
+      "time": "7.30pm for 8pm start",
+      "price": "£10",
+      "isSpecial": true
+    },
+    {
       "name": "Janet Crouch [ + Tales Tattled & Told tellers]",
       "showname": "Janet Crouch",
       "date": "19/12/2026",
@@ -9892,37 +10002,6 @@
       "performer_id": "jason-buck"
     },
     {
-      "name": "The Nutcracker [Jason Buck]",
-      "showname": "The Nutcracker",
-      "date": "22/12/2026",
-      "time": "7pm for 7.30pm start",
-      "club": "",
-      "price": "£12.50 (£9.50 concs)",
-      "event_flyer": "",
-      "description": "Hear the tale of the story of a magical and dreamy Christmas, that inspired music, ballet and films, presented live for the festive season.\n\n\n\nAward-winning storyteller, Jason Buck Storyteller, brings this favourite to life, with humour, wonder and an immersive experience for young and old - traditional storytelling for a modern audience, in Sheffield's cosiest cafe.\n\n\n\nAge recommendation: Adult and families (9+)",
-      "ticket_url": "https://www.eventbrite.co.uk/e/the-nutcracker-story-tickets-1986635106081",
-      "isSpecial": true,
-      "date_added": "15/08/2026",
-      "venue_id": "the-pit-at-newstead-nottinghamshire",
-      "performer_id": "jason-buck",
-      "age_rating": "9+",
-      "min_age": 9
-    },
-    {
-      "name": "Midwinter Mischief and Granny's Gifts [Jo Munton & Simone Gilliatt]",
-      "showname": "Midwinter Mischief and Granny's Gifts",
-      "date": "18/12/2026",
-      "venue_id": "town-hall-bishops-castle",
-      "performer_ids": [
-        "jo-munton",
-        "simone-gilliatt"
-      ],
-      "date_added": "15/07/2026",
-      "time": "7.30pm for 8pm start",
-      "price": "£10",
-      "isSpecial": true
-    },
-    {
       "name": "A Christmas Carol [Jason Buck]",
       "showname": "A Christmas Carol",
       "date": "21/12/2026",
@@ -9935,6 +10014,23 @@
       "isSpecial": true,
       "date_added": "15/08/2026",
       "venue_id": "cafe-9-sheffield",
+      "performer_id": "jason-buck",
+      "age_rating": "9+",
+      "min_age": 9
+    },
+    {
+      "name": "The Nutcracker [Jason Buck]",
+      "showname": "The Nutcracker",
+      "date": "22/12/2026",
+      "time": "7pm for 7.30pm start",
+      "club": "",
+      "price": "£12.50 (£9.50 concs)",
+      "event_flyer": "",
+      "description": "Hear the tale of the story of a magical and dreamy Christmas, that inspired music, ballet and films, presented live for the festive season.\n\n\n\nAward-winning storyteller, Jason Buck Storyteller, brings this favourite to life, with humour, wonder and an immersive experience for young and old - traditional storytelling for a modern audience, in Sheffield's cosiest cafe.\n\n\n\nAge recommendation: Adult and families (9+)",
+      "ticket_url": "https://www.eventbrite.co.uk/e/the-nutcracker-story-tickets-1986635106081",
+      "isSpecial": true,
+      "date_added": "15/08/2026",
+      "venue_id": "the-pit-at-newstead-nottinghamshire",
       "performer_id": "jason-buck",
       "age_rating": "9+",
       "min_age": 9
@@ -12074,6 +12170,126 @@
         -3.08328
       ]
     },
+    "corn-exchange-newbury": {
+      "id": "corn-exchange-newbury",
+      "name": "Corn Exchange, Newbury",
+      "full_address": "Corn Exchange Newbury, Market Place,  Newbury, Berkshire, RG14 5BD",
+      "city": "Berkshire",
+      "postcode": "RG14 5BD",
+      "url": "https://cornexchangenew.com/",
+      "latlon": [
+        51.40068,
+        -1.32264
+      ]
+    },
+    "oxford-playhouse": {
+      "id": "oxford-playhouse",
+      "name": "Oxford Playhouse",
+      "full_address": "Oxford Playhouse, Beaumont Street, Oxford, OX1 2LW",
+      "city": "Oxford",
+      "postcode": "OX1 2LW",
+      "url": "https://www.oxfordplayhouse.com/events/comb",
+      "latlon": [
+        51.75477,
+        -1.26083
+      ]
+    },
+    "proteus-creation-space-basingstoke": {
+      "id": "proteus-creation-space-basingstoke",
+      "name": "Proteus Creation Space, Basingstoke",
+      "full_address": "Proteus Creation Space, Council Road, Basingstoke, RG21 3DH",
+      "city": "Basingstoke",
+      "postcode": "RG21 3DH",
+      "url": "https://www.proteustheatre.com/",
+      "latlon": [
+        51.26028,
+        -1.08829
+      ]
+    },
+    "beam-hertford": {
+      "id": "beam-hertford",
+      "name": "Beam, Hertford",
+      "full_address": "BEAM, The Wash, Hertford, SG14 1PS",
+      "city": "Hertford",
+      "postcode": "SG14 1PS",
+      "url": "https://beamhertford.co.uk/",
+      "latlon": [
+        51.79625,
+        -0.07973
+      ]
+    },
+    "kensington-central-library": {
+      "id": "kensington-central-library",
+      "name": "Kensington Central Library",
+      "full_address": "Kensington Central Library, 12 Phillimore Walk, Kensington, W8 7RX",
+      "city": "Kensington",
+      "postcode": "W8 7RX",
+      "url": "https://www.rbkc.gov.uk/libraries-0/find-your-library/kensington-central-library",
+      "latlon": [
+        51.50144,
+        -0.19426
+      ]
+    },
+    "farnham-maltings": {
+      "id": "farnham-maltings",
+      "name": "Farnham Maltings",
+      "full_address": "Farnham Maltings Bridge Square, Farnham, GU9 7QR",
+      "city": "Farnham",
+      "postcode": "GU9 7QR",
+      "url": "https://farnhammaltings.com/whats-on",
+      "latlon": [
+        51.21187,
+        -0.79666
+      ]
+    },
+    "theatre-by-the-lake-keswick": {
+      "id": "theatre-by-the-lake-keswick",
+      "name": "Theatre By The Lake, Keswick",
+      "full_address": "Theatre by the Lake, Lakeside, Keswick, CA12 5DJ",
+      "city": "Keswick",
+      "postcode": "CA12 5DJ",
+      "url": "https://www.theatrebythelake.com/",
+      "latlon": [
+        54.59608,
+        -3.13905
+      ]
+    },
+    "salisbury-arts-centre": {
+      "id": "salisbury-arts-centre",
+      "name": "Salisbury Arts Centre",
+      "full_address": "Salisbury Arts Centre, Bedwin Street, Salisbury, SP1 3UT",
+      "city": "Salisbury",
+      "postcode": "SP1 3UT",
+      "url": "https://www.wiltshirecreative.co.uk/visit/salisbury-arts-centre",
+      "latlon": [
+        51.07229,
+        -1.79172
+      ]
+    },
+    "lowry-salford": {
+      "id": "lowry-salford",
+      "name": "Lowry, Salford",
+      "full_address": "Lowry, Pier 8, The Quays, Salford, M50 3AZ",
+      "city": "Salford",
+      "postcode": "M50 3AZ",
+      "url": "https://www.thelowry.com",
+      "latlon": [
+        53.47082,
+        -2.2961
+      ]
+    },
+    "lighthouse-poole": {
+      "id": "lighthouse-poole",
+      "name": "Lighthouse, Poole",
+      "full_address": "Lighthouse Arts and Entertainment, 21 Kingland Road, Poole, BH15 1UG",
+      "city": "Poole",
+      "postcode": "BH15 1UG",
+      "url": "https://www.lighthousepoole.co.uk/",
+      "latlon": [
+        50.71857,
+        -1.97752
+      ]
+    },
     "plot-9-maze-hill-greenwich": {
       "id": "plot-9-maze-hill-greenwich",
       "name": "Plot 9 Maze Hill",
@@ -12660,6 +12876,20 @@
       "latlon": [
         51.08039,
         -4.05907
+      ]
+    },
+    "lime-tree-matlock": {
+      "id": "lime-tree-matlock",
+      "name": "Lime Tree, Matlock",
+      "venue_type": "Other / unknown",
+      "city": "Matlock",
+      "postcode": "DE4 3EJ",
+      "full_address": "The Lime Tree, Lime Tree Business Park, Lime Tree Road, Matlock, DE4 3EJ",
+      "url": "https://www.churchinthepeak.org/the-lime-tree",
+      "description": "Situated in Matlock, fully equipped conference facilities, meeting rooms, office spaces  and event hosting.\n\n\n\nClose to the the town centre, Matlock train station and the M1.",
+      "latlon": [
+        53.13627,
+        -1.54804
       ]
     },
     "bureau-centre-for-the-arts-blackburn": {
@@ -17204,6 +17434,13 @@
       "name": "Polis Loizou",
       "url": "https://polisloizou.com/",
       "bio": "Award-winning Cypriot writer and performer, working across various disciplines. I tend to draw on history, social politics, folklore and ‘queerness’ in all its forms. Polis also one makes up one third of the award-winning fringe theatre troupe The Off-Off-Off-Broadway Company, and is a teller of folk tales from around the world."
+    },
+    "charlotte-mooney": {
+      "id": "charlotte-mooney",
+      "name": "Charlotte Mooney",
+      "url": "https://www.charlottemooneystories.com/",
+      "instagram": "https://www.instagram.com/charlottemooneystories/",
+      "bio": "Since 2015 Charlotte has been telling stories in theatres, clubs, and around campfires. She disentangles tales of power and transformation and asks how we make sense of the stories we have. She is drawn to the place where mythology, folklore, history and the every day meet."
     },
     "shonaleigh": {
       "id": "shonaleigh",
