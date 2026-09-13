@@ -11,6 +11,13 @@ let toursLookup = {};
 let mapViewPinned = false;
 let pinnedMapView = null;
 
+// True only while checkboxes are being set programmatically from a
+// shared/bookmarked URL's own filter params. A link someone shares
+// deliberately encodes a specific view — it shouldn't silently overwrite
+// the visitor's own remembered filter preferences below just because it
+// happened to be opened once. See writeStoredFilterPrefs()/filterEvents().
+let suppressFilterPrefsSave = false;
+
 // UK_IRELAND_BOUNDS — defined in shared_utils.js
 
 const EVENT_TYPES = {
@@ -130,6 +137,79 @@ const EVENT_TYPE_FILTERS = [
 
 function eventTypeFilterClass(flag) {
   return flag.replace(/^is/, "").toLowerCase();
+}
+
+// ---------------------------------------------------------------------
+// Persisted filter preferences (localStorage)
+// ---------------------------------------------------------------------
+// Remembers which category/display checkboxes a visitor last chose, so
+// they don't start from scratch every visit. This is deliberately
+// localStorage, not a cookie: it never leaves the browser, which keeps
+// it consistent with this site's "no cookies or tracking" footer note.
+//
+// Precedence on load (see the init IIFE below):
+//   1. URL filter params, if present — a shared/bookmarked link always
+//      wins, and does NOT get saved over the visitor's own preferences.
+//   2. Stored preferences from a previous visit.
+//   3. The hardcoded defaults below (first-ever visit, or storage
+//      blocked/unavailable).
+const FILTER_PREFS_STORAGE_KEY = "ntEventFilterPrefs";
+
+// One entry per checkbox we remember. Reuses each EVENT_TYPE_FILTERS
+// entry's own `default`, so adding/changing a category there doesn't
+// require a second edit here.
+const PERSISTABLE_FILTER_DEFAULTS = {
+  storyclubsOn: true,
+  specialOn: true,
+  hideCancelled: true,
+  hidePastEvents: false,
+  ...Object.fromEntries(
+    EVENT_TYPE_FILTERS.map(({ id, default: fallback }) => [id, fallback]),
+  ),
+};
+
+function readStoredFilterPrefs() {
+  try {
+    const raw = localStorage.getItem(FILTER_PREFS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (err) {
+    // Storage disabled/unavailable (private browsing, locked-down
+    // browser settings, corrupted value, etc.) — treat as "nothing
+    // stored" rather than breaking the page.
+    return null;
+  }
+}
+
+// Saves the checkboxes' current state. Called from filterEvents(), i.e.
+// on every user-driven change — except while suppressFilterPrefsSave is
+// set (applying a shared link's own params during page load).
+function writeStoredFilterPrefs() {
+  const prefs = {};
+  Object.keys(PERSISTABLE_FILTER_DEFAULTS).forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) prefs[id] = el.checked;
+  });
+  try {
+    localStorage.setItem(FILTER_PREFS_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (err) {
+    // No usable storage — the page still works, the choice just won't
+    // carry over to next time.
+  }
+}
+
+// Applies stored preferences (falling back to the hardcoded default for
+// any checkbox missing from what was stored — e.g. a category added
+// since the visitor's last visit) to the checkboxes. Only called when
+// there are no URL filter params to apply instead.
+function applyStoredOrDefaultFilterPrefs() {
+  const stored = readStoredFilterPrefs() || {};
+  Object.entries(PERSISTABLE_FILTER_DEFAULTS).forEach(([id, fallback]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = typeof stored[id] === "boolean" ? stored[id] : fallback;
+  });
 }
 
 // DAYS_OF_WEEK, MONTHS_SHORT, DAY_MAP, OCCURRENCE_MAP — defined once in
@@ -2008,6 +2088,8 @@ function shouldShowEvent(eventData, filters) {
 }
 
 function filterEvents() {
+  if (!suppressFilterPrefsSave) writeStoredFilterPrefs();
+
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const hideCancelled = document.getElementById("hideCancelled").checked;
   const hidePastEl = document.getElementById("hidePastEvents");
@@ -2755,6 +2837,11 @@ function refreshEventsData() {
     // Check for URL parameters to determine which events to display
     const urlParams = getEventURLParams();
     if (urlParams) {
+      // A shared/bookmarked link encodes its own deliberate filter
+      // choices — apply them, but don't let doing so overwrite the
+      // visitor's own remembered preferences for next time.
+      suppressFilterPrefsSave = true;
+
       const startDate = urlParams.startDate || getWeekStart(getTodayMidnight());
       const endDate = urlParams.endDate || getWeekEnd(getWeekStart(startDate));
 
@@ -2794,7 +2881,13 @@ function refreshEventsData() {
       } else {
         await displayEvents(startDate, endDate);
       }
+
+      suppressFilterPrefsSave = false;
     } else {
+      // No URL filter params — restore the visitor's own remembered
+      // preferences (or the hardcoded defaults, on a first-ever visit)
+      // before the first render.
+      applyStoredOrDefaultFilterPrefs();
       showThisWeek();
     }
 
