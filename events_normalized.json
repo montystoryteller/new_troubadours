@@ -2315,7 +2315,7 @@
           "isSpecial": true
         },
         {
-          "date": "30/20/2026",
+          "date": "30/10/2026",
           "venue_id": "northwich-folk-club",
           "time": "8pm",
           "price": "£10 / £8",
@@ -2793,7 +2793,7 @@
           "isSpecial": true
         },
         {
-          "date": "20/10/2026",
+          "date": "30/10/2026",
           "venue_id": "the-art-house-southampton",
           "ticket_url": "https://thearthousesouthampton.org/moving-voices/",
           "isSpecial": true
@@ -3596,7 +3596,7 @@
           "ticket_url": "https://frontroomwsm.com/event/lilith-the-other-side-of-the-story-storytelling-with-katy-cawkwell"
         },
         {
-          "date": "30/12/2026",
+          "date": "20/11/2026",
           "venue_id": "town-hall-bishops-castle",
           "ticket_url": "",
           "club_event": "blast",
