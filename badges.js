@@ -20,7 +20,7 @@ if (badgeText) {
 
   const badgeCode =
     `<a href="${pageUrl}" target="_blank" rel="noopener">` +
-    `<img src="https://newtroubadours.com/badges/${badgeImage}" ` +
+    `<img src="https://newtroubadours.org/badges/${badgeImage}" ` +
     `alt="${badgeText} New Troubadours">` +
     `</a>`;
 
