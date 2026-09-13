@@ -186,6 +186,7 @@
                     <input type="text" id="ev-date"
                         placeholder="DD/MM/YYYY, or several comma-separated for a multi-night run">
                     <div class="field-hint">e.g. <code>15/10/2025</code> or <code>15/10/2025, 16/10/2025</code></div>
+                    <div class="field-hint" id="ev-date-past-warning" style="display:none;"></div>
                 </div>
             </div>
 
@@ -480,12 +481,18 @@
 
             <div class="field-row">
                 <label>Start date</label>
-                <input type="text" id="festival-start-date" placeholder="DD/MM/YYYY">
+                <div>
+                    <input type="text" id="festival-start-date" placeholder="DD/MM/YYYY">
+                    <div class="field-hint" id="festival-start-date-past-warning" style="display:none;"></div>
+                </div>
             </div>
 
             <div class="field-row">
                 <label>End date</label>
-                <input type="text" id="festival-end-date" placeholder="DD/MM/YYYY">
+                <div>
+                    <input type="text" id="festival-end-date" placeholder="DD/MM/YYYY">
+                    <div class="field-hint" id="festival-end-date-past-warning" style="display:none;"></div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -997,6 +1004,30 @@
                 </p>
                 <button class="btn-add-batch" id="enrich-dupe-scan-btn" disabled>Scan for possible duplicates</button>
                 <div id="enrich-dupe-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>📅 Unparseable or implausible dates</h3>
+                <p class="field-hint">
+                    Checks every date string against events, tours, and repertoire shows — each event's own
+                    <code>date</code> (single value or the array a multi-night run uses), each tour's
+                    <code>tour_dates</code>, each repertoire show's <code>show_dates</code> — for one that
+                    isn't <code>DD/MM/YYYY</code> at all, or one that parses fine but looks like a mistake:
+                    before 2000, or more than 2 years from now. Neither threshold can tell a genuine case from
+                    a typo, so nothing is auto-corrected — each row shows the exact record and lets you edit
+                    the date directly before accepting it. Same batch behaviour as elsewhere: a fix to a tour
+                    or repertoire show (a real key) becomes a full replacement record in
+                    <code>updatedTours</code>/<code>updatedRepertoireShows</code>; a fix to a plain event (no
+                    stable id) writes into the loaded copy and <code>updatedEvents</code>, keyed by its
+                    position — re-scan first if you're not sure that's still accurate.
+                </p>
+                <button class="btn-add-batch" id="enrich-datequality-scan-btn" disabled>Scan for date
+                    issues</button>
+                <div id="enrich-datequality-results"></div>
+                <div class="btn-row" id="enrich-datequality-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-datequality-apply-btn">Apply checked rows to
+                        loaded data</button>
+                </div>
             </div>
 
             <div class="enrich-section">
@@ -2949,7 +2980,10 @@
             grid.innerHTML = `
                 <div class="field-row">
                     <label>Date(s)</label>
-                    <input type="text" class="dr-date" placeholder="DD/MM/YYYY, or comma-separated for a multi-night run">
+                    <div>
+                        <input type="text" class="dr-date" placeholder="DD/MM/YYYY, or comma-separated for a multi-night run">
+                        <div class="field-hint dr-date-past-warning" style="display:none;"></div>
+                    </div>
                 </div>
                 <div class="field-row">
                     <label>Venue</label>
@@ -3036,6 +3070,7 @@
             row._structuredPriceField = buildStructuredPriceField(grid.querySelector(".dr-structured-price-field"), grid.querySelector(".dr-price"));
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
             attachOpenLinkButton(grid.querySelector(".dr-ticket-url"));
+            wirePastDateWarning(grid.querySelector(".dr-date"), grid.querySelector(".dr-date-past-warning"));
 
             if (kind === "tour") {
                 const flyerRowsContainer = grid.querySelector(".dr-flyer-rows");
@@ -4494,6 +4529,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-latlon-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
+                document.getElementById("enrich-datequality-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-format-scan-btn").disabled = false;
@@ -4505,6 +4541,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-latlon-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
+                document.getElementById("enrich-datequality-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-format-scan-btn").disabled = true;
@@ -4906,6 +4943,152 @@
             addResultsCollapseToggle(resultsEl, found.length, "possible duplicate");
         });
 
+        // -- Unparseable or implausible dates --------------------------------
+        // A single date field's value may be one "DD/MM/YYYY" string or (for
+        // a multi-night run) an array of them — checks every entry and
+        // reports each bad one individually, since a multi-night run could
+        // have just one mistyped date among otherwise-fine ones.
+        function checkDateString(dateStr) {
+            if (typeof dateStr !== "string" || !dateStr.trim()) return "empty";
+            const key = ddMmYyyySortKey(dateStr);
+            if (!key) return "not in DD/MM/YYYY format";
+            const year = parseInt(key.slice(0, 4), 10);
+            if (year < 2000) return "before 2000 — likely a typo";
+            if (year > new Date().getFullYear() + 2) return "more than 2 years from now — likely a typo";
+            return null;
+        }
+        function findDateIssues(dateField) {
+            const isArray = Array.isArray(dateField);
+            const values = isArray ? dateField : [dateField];
+            const issues = [];
+            values.forEach((v, i) => {
+                const issue = checkDateString(v);
+                if (issue) issues.push({ arrayIndex: isArray ? i : null, value: v, issue });
+            });
+            return issues;
+        }
+
+        document.getElementById("enrich-datequality-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-datequality-results");
+            const actionsEl = document.getElementById("enrich-datequality-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const found = [];
+            [
+                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["musicEvents", enrichedData.musicEvents || []],
+                ["poetryEvents", enrichedData.poetryEvents || []],
+            ].forEach(([bucketName, list]) => {
+                (list || []).forEach((ev, index) => {
+                    findDateIssues(ev.date).forEach(issue => {
+                        found.push({
+                            kind: "event", bucket: bucketName, index,
+                            name: ev.showname || ev.name || "(untitled)",
+                            sourceLabel: bucketName,
+                            ...issue,
+                        });
+                    });
+                });
+            });
+            Object.entries(enrichedData.tours || {}).forEach(([key, tour]) => {
+                (tour.tour_dates || []).forEach((d, dateRowIndex) => {
+                    findDateIssues(d.date).forEach(issue => {
+                        found.push({
+                            kind: "tour", key, dateRowIndex,
+                            name: tour.tour_name || tour.name || "(untitled tour)",
+                            sourceLabel: "tour",
+                            ...issue,
+                        });
+                    });
+                });
+            });
+            Object.entries(enrichedData.repertoire_shows || {}).forEach(([key, show]) => {
+                (show.show_dates || []).forEach((d, dateRowIndex) => {
+                    findDateIssues(d.date).forEach(issue => {
+                        found.push({
+                            kind: "show", key, dateRowIndex,
+                            name: show.showname || show.name || "(untitled show)",
+                            sourceLabel: "repertoire show",
+                            ...issue,
+                        });
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No unparseable or implausible dates found.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.kind = f.kind;
+                if (f.kind === "event") { row.dataset.bucket = f.bucket; row.dataset.index = f.index; }
+                else { row.dataset.key = f.key; row.dataset.dateRowIndex = f.dateRowIndex; }
+                if (f.arrayIndex !== null) row.dataset.arrayIndex = f.arrayIndex;
+                row.innerHTML = `
+                    <input type="checkbox" checked class="enrich-datequality-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.sourceLabel})</span></div>
+                        <div class="enrich-result-reasons">${f.issue}${f.arrayIndex !== null ? ` (date ${f.arrayIndex + 1} of a multi-date entry)` : ""}</div>
+                        <input type="text" class="enrich-datequality-input" placeholder="DD/MM/YYYY" value="${(f.value || "").replace(/"/g, "&quot;")}">
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "date issue");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-datequality-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-datequality-results .enrich-result-row");
+            let applied = 0;
+            let batchTouched = false;
+            rows.forEach(row => {
+                if (!row.querySelector(".enrich-datequality-check").checked) return;
+                const newValue = row.querySelector(".enrich-datequality-input").value.trim();
+                if (!newValue) return; // checked but left blank -- nothing to apply
+                const arrayIndex = row.dataset.arrayIndex !== undefined ? parseInt(row.dataset.arrayIndex, 10) : null;
+
+                let target = null; // the object whose .date field we're editing
+                if (row.dataset.kind === "event") {
+                    const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                    target = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
+                } else if (row.dataset.kind === "tour") {
+                    const tour = enrichedData?.tours?.[row.dataset.key];
+                    target = tour?.tour_dates?.[parseInt(row.dataset.dateRowIndex, 10)];
+                } else if (row.dataset.kind === "show") {
+                    const show = enrichedData?.repertoire_shows?.[row.dataset.key];
+                    target = show?.show_dates?.[parseInt(row.dataset.dateRowIndex, 10)];
+                }
+                if (!target) return;
+                if (arrayIndex !== null) target.date[arrayIndex] = newValue; else target.date = newValue;
+                applied++;
+
+                if (row.dataset.kind === "event") {
+                    const key = `${row.dataset.bucket}#${row.dataset.index}`;
+                    delete updatedEvents[key];
+                    updatedEvents[key] = JSON.parse(JSON.stringify(target));
+                } else {
+                    const record = row.dataset.kind === "tour" ? enrichedData.tours[row.dataset.key] : enrichedData.repertoire_shows[row.dataset.key];
+                    const store = row.dataset.kind === "tour" ? updatedTours : updatedRepertoireShows;
+                    delete store[row.dataset.key];
+                    store[row.dataset.key] = JSON.parse(JSON.stringify(record));
+                }
+                batchTouched = true;
+            });
+            if (!applied) {
+                alert("No rows checked.");
+                return;
+            }
+            if (batchTouched) refreshBatchSummary();
+            alert(`Applied ${applied} date fix(es) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
+            markEnrichedDataDirty();
+        });
+
         // -- Possible age ratings (report only — events have no stable id) ------
         document.getElementById("enrich-age-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-age-results");
@@ -5266,6 +5449,34 @@
             return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
         }
 
+        function todaySortKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        // Non-blocking — retrofitting a past event is a legitimate reason
+        // to enter one, so this only informs, never prevents submission.
+        // Handles the same comma-separated multi-date format as #ev-date/
+        // .dr-date; a plain single-date field (festival start/end) just
+        // happens to always have one part.
+        function wirePastDateWarning(input, warnEl) {
+            function check() {
+                const todayKey = todaySortKey();
+                const pastOnes = input.value.split(",").map(s => s.trim()).filter(Boolean)
+                    .filter(p => { const k = ddMmYyyySortKey(p); return k && k < todayKey; });
+                if (pastOnes.length) {
+                    warnEl.textContent = `⚠ ${pastOnes.length > 1 ? "These dates are" : "This date is"} in the past (${pastOnes.join(", ")}) — that's fine if you're backdating a past event, just flagging it in case it's a typo.`;
+                    warnEl.style.display = "";
+                } else {
+                    warnEl.textContent = "";
+                    warnEl.style.display = "none";
+                }
+            }
+            input.addEventListener("input", check);
+            check();
+            return check;
+        }
+
         // A record's own "date" field can be one string or (for a
         // multi-night run stored as a single record) an array of them —
         // sort position is judged by the earliest of whichever it has.
@@ -5367,7 +5578,11 @@
                 // than leave stale entries pointing at the wrong event.
                 const info = getListSortInfo(arr, ev => earliestSortKey(ev.date));
                 if (info.sortable && !info.isOrdered) {
-                    const label = e => e.showname || e.name || "?";
+                    const label = e => {
+                        const name = e.showname || e.name || "?";
+                        const dateStr = Array.isArray(e.date) ? e.date.join(", ") : (e.date || "no date");
+                        return `${name} (${dateStr})`;
+                    };
                     suggestions.push({
                         label: `${bucketName} order (${arr.length} events, currently out of date order)`,
                         before: arr.map(label).join(" → "),
@@ -5524,6 +5739,13 @@
             ["ev-ticket-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url"].forEach(id => {
                 ticketUrlLinkUpdaters[id] = attachOpenLinkButton(document.getElementById(id));
             });
+
+            // Same non-blocking past-date flag as dateRowTemplate's .dr-date
+            // (see wirePastDateWarning) for the date fields that aren't
+            // built dynamically per-row.
+            wirePastDateWarning(document.getElementById("ev-date"), document.getElementById("ev-date-past-warning"));
+            wirePastDateWarning(document.getElementById("festival-start-date"), document.getElementById("festival-start-date-past-warning"));
+            wirePastDateWarning(document.getElementById("festival-end-date"), document.getElementById("festival-end-date-past-warning"));
 
             document.getElementById("tour-name").addEventListener("input", suggestTourKey);
             document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);
