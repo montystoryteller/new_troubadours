@@ -1443,17 +1443,17 @@ function buildTouringRow(tours, label, labelClass, container, badgeFn) {
 const TOUR_PANEL_GROUPS = [
   {
     test: (t) => !t.isMusic && !t.isPoetry,
-    label: "📖 Stories & Spoken Word",
+    label: "Stories & Spoken Word",
     labelClass: "label-stories",
   },
   {
     test: (t) => !!t.isPoetry,
-    label: "✒️ Poetry",
+    label: "Poetry",
     labelClass: "label-poetry",
   },
   {
     test: (t) => !!t.isMusic,
-    label: "🎵 Music",
+    label: "Music",
     labelClass: "label-music",
   },
 ];

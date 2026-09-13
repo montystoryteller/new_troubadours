@@ -175,10 +175,10 @@ function renderAllPerformers() {
 
   // ── Type filters ──────────────────────────────────────────────────
   const TYPE_DEFS = [
-    { key: "story", label: "📖 Storytellers" },
-    { key: "music", label: "🎵 Musicians" },
-    { key: "poetry", label: "✒️ Poets" },
-    { key: "troupe", label: "🎭 Story Troupes" },
+    { key: "story", label: "Storytellers" },
+    { key: "music", label: "Musicians" },
+    { key: "poetry", label: "Poets" },
+    { key: "troupe", label: "Story Troupes" },
   ];
   const activeTypes = new Set(TYPE_DEFS.map((t) => t.key));
   let currentSearchTerm = "";
@@ -743,13 +743,13 @@ function renderPerformer() {
   if (isMusicianPerformer) {
     const badge = document.createElement("span");
     badge.className = "performer-badge performer-badge-musician";
-    badge.textContent = "🎵 Musician";
+    badge.textContent = "Musician";
     badgesDiv.appendChild(badge);
   }
   if (isPoetPerformer) {
     const badge = document.createElement("span");
     badge.className = "performer-badge performer-badge-poet";
-    badge.textContent = "✒️ Poet";
+    badge.textContent = "Poet";
     badgesDiv.appendChild(badge);
   }
 
@@ -1901,13 +1901,13 @@ function renderCollaboratorsSection(collaborators) {
     if (isMusicianCollab) {
       const badge = document.createElement("span");
       badge.className = "performer-badge performer-badge-musician";
-      badge.textContent = "🎵 Musician";
+      badge.textContent = "Musician";
       nameLine.appendChild(badge);
     }
     if (isPoetCollab) {
       const badge = document.createElement("span");
       badge.className = "performer-badge performer-badge-poet";
-      badge.textContent = "✒️ Poet";
+      badge.textContent = "Poet";
       nameLine.appendChild(badge);
     }
     row.appendChild(nameLine);

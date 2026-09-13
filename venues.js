@@ -68,9 +68,9 @@ function preloadLeafletWhenIdle() {
 // since they're live-music events, even though they're their own
 // event types internally.
 const PTYPE_DEFS = [
-  { key: "story", label: "📖 Story", colour: "#2e7d32" },
-  { key: "music", label: "🎵 Music", colour: "#443cd7" },
-  { key: "poetry", label: "✒️ Poetry", colour: "#d6006e" },
+  { key: "story", label: "Story", colour: "#2e7d32" },
+  { key: "music", label: "Music", colour: "#443cd7" },
+  { key: "poetry", label: "Poetry", colour: "#d6006e" },
 ];
 const PTYPE_COLOUR = Object.fromEntries(
   PTYPE_DEFS.map((p) => [p.key, p.colour]),

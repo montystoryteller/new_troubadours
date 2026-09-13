@@ -1045,9 +1045,9 @@ function renderNearbyStoryEventsSection(root, clubRecord) {
   optInRow.className = "nearby-category-optins";
   const checkboxes = {};
   [
-    { key: "music", label: "🎵 Music" },
-    { key: "poetry", label: "✒️ Poetry" },
-    { key: "folk", label: "🎻 Folk & sessions" },
+    { key: "music", label: "Music" },
+    { key: "poetry", label: "Poetry" },
+    { key: "folk", label: "Folk & sessions" },
   ].forEach(({ key, label }) => {
     const lbl = document.createElement("label");
     const cb = document.createElement("input");
