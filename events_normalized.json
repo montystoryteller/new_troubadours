@@ -1859,6 +1859,34 @@
       "video_trailer": "https://www.youtube.com/watch?v=qalni2GSq3g",
       "isSpecial": true
     },
+    "spell-in-time-beyond-noine-forests": {
+      "name": "Beyond Nine Forests: Tales of Hidden Bulgaria [A Spell in Time",
+      "showname": "Beyond Nine Forests: Tales of Hidden Bulgaria",
+      "show_dates": [
+        {
+          "date": "06/05/2026",
+          "time": "7.30pm",
+          "price": "£15 / £12",
+          "event_flyer": "2026_05_06_spell_in_time_9_forests.jpg",
+          "ticket_url": "https://www.efdss.org/choose-seats?EventInstanceId=158801",
+          "date_added": "16/04/2026",
+          "fb_event": 973373088378981,
+          "venue_id": "cecil-sharp-house-london"
+        },
+        {
+          "date": "25/09/2026",
+          "time": "7pm doors, 7.30pm start",
+          "price": "£10",
+          "ticket_url": "https://allgoodbookshop.co.uk/order-items/ols/products/ticket-for-storytelling-beyond-nine-forests-by-a-spell-in-time-fri-25th-sept",
+          "date_added": "13/09/2026",
+          "fb_event": 2973225573010078,
+          "venue_id": "all-good-bookshop-wood-green"
+        }
+      ],
+      "description": "An evening of spine-tingling songs from the glorious London Bulgarian Choir led by Dessislava Stefanova, and heart-stirring stories from A Spell In Time, to celebrate the launch of Moni Georgieva Sheehan's ground-breaking book, Beyond Nine Forests: Tales of Hidden Bulgaria. This stunning collection of Bulgarian traditional tales explores the hidden world of Bulgarian myth and folklore, a world of seductive dragons, magical women, giant-hearted heroes, vampires and demons of the night.\n\n\n\nTranslated and retold from authentic sources, these tales are little known in the West and cross the boundaries of time and space to speak to the heart, mind and soul. With a foreword by Professor Ronald Hutton, the book features full-colour artwork from some of Bulgaria's finest artists.\n\n\n\nWe invite you on a journey through song, storytelling and evocative music, into Bulgaria's rich oral heritage and ancestral past. Come and be spirited away!\n\n\n\n'Beyond Nine Forests, Tales of Hidden Bulgaria' will be on sale. Books purchased at this event will be signed by the author.",
+      "isSpecial": true,
+      "performer_id": "a-spell-in-time"
+    },
     "tim-ralphs-strange-wondrous": {
       "name": "In Strange and Wondrous Company [Tim Ralphs]",
       "showname": "In Strange and Wondrous Company",
@@ -5382,6 +5410,16 @@
       "venue_id": "town-hall-bishops-castle"
     },
     {
+      "name": "Oh Crumbs",
+      "club": "oh-crumbs",
+      "schedule": "2nd monday",
+      "time": "7pm for 7.30pm",
+      "venue_id": "parkend-club",
+      "price": "Donations £6 to cover guest acts",
+      "facebook": "OhCrumbsSpokenword",
+      "description": "The Forest of Dean's monthly open mic spokenword cabaret."
+    },
+    {
       "name": "Island Storytellers, Isle of Wight",
       "schedule": "2nd thursday",
       "time": "7-9pm",
@@ -7924,22 +7962,6 @@
       ]
     },
     {
-      "name": "Beyond Nine Forests: Tales of Hidden Bulgaria [A Spell in Time",
-      "showname": "Beyond Nine Forests: Tales of Hidden Bulgaria",
-      "date": "06/05/2026",
-      "time": "7.30pm",
-      "club": "",
-      "price": "£15 / £12",
-      "description": "An evening of spine-tingling songs from the glorious London Bulgarian Choir led by Dessislava Stefanova, and heart-stirring stories from A Spell In Time, to celebrate the launch of Moni Georgieva Sheehan's ground-breaking book, Beyond Nine Forests: Tales of Hidden Bulgaria. This stunning collection of Bulgarian traditional tales explores the hidden world of Bulgarian myth and folklore, a world of seductive dragons, magical women, giant-hearted heroes, vampires and demons of the night.\n\n\n\nTranslated and retold from authentic sources, these tales are little known in the West and cross the boundaries of time and space to speak to the heart, mind and soul. With a foreword by Professor Ronald Hutton, the book features full-colour artwork from some of Bulgaria's finest artists.\n\n\n\nWe invite you on a journey through song, storytelling and evocative music, into Bulgaria's rich oral heritage and ancestral past. Come and be spirited away!\n\n\n\n'Beyond Nine Forests, Tales of Hidden Bulgaria' will be on sale. Books purchased at this event will be signed by the author.",
-      "event_flyer": "2026_05_06_spell_in_time_9_forests.jpg",
-      "ticket_url": "https://www.efdss.org/choose-seats?EventInstanceId=158801",
-      "date_added": "16/04/2026",
-      "isSpecial": true,
-      "fb_event": 973373088378981,
-      "venue_id": "cecil-sharp-house-london",
-      "performer_id": "a-spell-in-time"
-    },
-    {
       "name": "Tales of Witches and Witchcraft [The Storytellers of Nottingham]",
       "showname": "Tales of Witches and Witchcraft",
       "date": "07/05/2026",
@@ -9462,6 +9484,21 @@
       ],
       "age_rating": "16+",
       "min_age": 16
+    },
+    {
+      "name": "𝐀𝐝𝐞𝐫𝐲𝐧 / 𝐁𝐢𝐫𝐝",
+      "showname": "𝐀𝐝𝐞𝐫𝐲𝐧 / 𝐁𝐢𝐫𝐝",
+      "date": "19/09/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "date_added": "13/09/2026",
+      "time": "7-9pm",
+      "price": "£10  (children £8)",
+      "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man – stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i’r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o’r byd hon a’r byd arall. Trwy gydblethu’r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
+      "age_rating": "12+",
+      "min_age": 12,
+      "event_flyer": "2026_09_19_harebell_tellers.jpg",
+      "ticket_url": "https://dragontheatre.littleboxoffice.com/events/172295",
+      "isSpecial": true
     },
     {
       "name": "Equinox Arts: An Evening of Live Music and Storytelling [Merl Fluin]",
@@ -15071,6 +15108,19 @@
         -4.18553
       ]
     },
+    "parkend-club": {
+      "id": "parkend-club",
+      "name": "Parken Club, Forest of Dean",
+      "city": "Forest of Dean",
+      "postcode": "GL15 4JZ",
+      "full_address": "Parkend WMC, Lion Row, West Dean, GL15 4JZ",
+      "url": "https://www.50rpm.co.uk/",
+      "facebook": "https://www.facebook.com/p/Parkend-Club-61560684567300/",
+      "latlon": [
+        51.76919,
+        -2.55631
+      ]
+    },
     "50rpm-coatbridge": {
       "id": "50rpm-coatbridge",
       "name": "50rpm, Coatbridge",
@@ -16068,6 +16118,18 @@
       "latlon": [
         51.90323,
         -2.07914
+      ]
+    },
+    "all-good-bookshop-wood-green": {
+      "id": "all-good-bookshop-wood-green",
+      "name": "All Good Bookshop, Wood Green",
+      "city": "Wood Green, London",
+      "postcode": " N8 0EP",
+      "full_address": "All Good Bookshop, 35 Turnpike Lane, Wood Green, London, N8 0EP",
+      "url": "https://allgoodbookshop.co.uk/",
+      "latlon": [
+        51.58961,
+        -0.10592
       ]
     },
     "babushka-books-shanklin": {
