@@ -1007,6 +1007,25 @@
             </div>
 
             <div class="enrich-section">
+                <h3>Promoter venue/performer references</h3>
+                <p class="field-hint">
+                    Checks that every promoter has a venue-id list and a performer-id list, and that every id
+                    in each list points at a real venue/performer in the loaded data. This tool doesn't
+                    otherwise manage promoters — nothing here builds or edits one, and this check only runs if
+                    the loaded file actually has a top-level <code>promoters</code> or <code>clubs</code>
+                    collection (whichever name is present) with <code>venue_ids</code>/<code>performer_ids</code>
+                    (or <code>venues</code>/<code>performers</code>) arrays on each entry; if your data uses
+                    different names for these, this won't find them — say so and it can be adjusted. Report
+                    only, like the duplicate-venues check above: there's no safe way to guess which ids a
+                    promoter should actually be associated with, so fixing a flagged one means editing the
+                    loaded file directly.
+                </p>
+                <button class="btn-add-batch" id="enrich-promoter-scan-btn" disabled>Scan promoter
+                    references</button>
+                <div id="enrich-promoter-results"></div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>📅 Unparseable or implausible dates</h3>
                 <p class="field-hint">
                     Checks every date string against events, tours, and repertoire shows — each event's own
@@ -4725,6 +4744,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
                 document.getElementById("enrich-latlon-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
+                document.getElementById("enrich-promoter-scan-btn").disabled = false;
                 document.getElementById("enrich-datequality-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
@@ -4737,6 +4757,7 @@
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-latlon-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
+                document.getElementById("enrich-promoter-scan-btn").disabled = true;
                 document.getElementById("enrich-datequality-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
@@ -5137,6 +5158,72 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "possible duplicate");
+        });
+
+        // -- Promoter venue/performer references ---------------------------------
+        // This tool has no promoter/club concept of its own to build against
+        // (see the .club/.club_event fields on events, which just reference
+        // an id by free text) — this only checks whatever the loaded file
+        // itself already has, under either common name, with either common
+        // field-name variant. If your actual schema names these differently,
+        // this scanner simply won't find the collection; it's not attempting
+        // to guess further than that.
+        function getPromotersCollection(data) {
+            if (data.promoters) return { collectionName: "promoters", data: data.promoters };
+            if (data.clubs) return { collectionName: "clubs", data: data.clubs };
+            return null;
+        }
+        function getIdListField(record, ...fieldNames) {
+            for (const f of fieldNames) {
+                if (Array.isArray(record[f])) return { field: f, ids: record[f] };
+            }
+            return null;
+        }
+
+        document.getElementById("enrich-promoter-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-promoter-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const coll = getPromotersCollection(enrichedData);
+            if (!coll) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No top-level "promoters" or "clubs" collection found in the loaded data — nothing to check.</div>';
+                return;
+            }
+            const found = [];
+            Object.entries(coll.data).forEach(([id, promoter]) => {
+                const venues = getIdListField(promoter, "venue_ids", "venues");
+                const performers = getIdListField(promoter, "performer_ids", "performers");
+                const reasons = [];
+                if (!venues || !venues.ids.length) reasons.push("no venue ids listed");
+                if (!performers || !performers.ids.length) reasons.push("no performer ids listed");
+                if (venues) {
+                    const bad = venues.ids.filter(vid => !enrichedData.venues || !enrichedData.venues[vid]);
+                    if (bad.length) reasons.push(`references unknown venue id(s): ${bad.join(", ")}`);
+                }
+                if (performers) {
+                    const bad = performers.ids.filter(pid => !enrichedData.performers || !enrichedData.performers[pid]);
+                    if (bad.length) reasons.push(`references unknown performer id(s): ${bad.join(", ")}`);
+                }
+                if (reasons.length) found.push({ id, name: promoter.name || id, reasons });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = `<div class="enrich-empty">Every promoter in "${coll.collectionName}" has both a venue-id list and a performer-id list, all pointing at real records.</div>`;
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.id})</span></div>
+                        <div class="enrich-result-reasons">${f.reasons.join("; ")}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "promoter");
         });
 
         // -- Unparseable or implausible dates --------------------------------
