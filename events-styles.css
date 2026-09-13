@@ -439,6 +439,15 @@
     border-color: #0d47a1;
 }
 
+.new-events-upcoming-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #333;
+    margin-left: auto;
+}
+
 /* Results list */
 .new-events-list {
     display: flex;
@@ -537,6 +546,10 @@
     .new-events-controls {
         flex-direction: column;
         gap: 8px;
+    }
+
+    .new-events-upcoming-toggle {
+        margin-left: 0;
     }
 
     .new-event-card {

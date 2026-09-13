@@ -2903,6 +2903,12 @@ function formatNewEventDate(d) {
   return `${DAYS_OF_WEEK[d.getDay()]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+function getNewEventsPeriodButton(period) {
+  if (period === "twoweeks") return document.getElementById("newEventsTwoWeeksBtn");
+  if (period === "month") return document.getElementById("newEventsMonthBtn");
+  return document.getElementById("newEventsThisWeekBtn");
+}
+
 /**
  * Collect all records newly added within `cutoff`, across every source in
  * eventsData, and return an array of { eventData, isFestival, dateAdded,
@@ -3094,6 +3100,7 @@ function showNewEvents(period, activeBtn) {
   document
     .querySelectorAll(".new-events-btn")
     .forEach((b) => b.classList.remove("active"));
+  if (!activeBtn) activeBtn = getNewEventsPeriodButton(period);
   if (activeBtn) activeBtn.classList.add("active");
 
   const listEl = document.getElementById("newEventsList");
@@ -3106,19 +3113,28 @@ function showNewEvents(period, activeBtn) {
 
   const cutoff = newEventsCutoff(period);
   const records = collectNewlyAddedEvents(cutoff);
+  const upcomingOnly =
+    document.getElementById("newEventsUpcomingOnly")?.checked || false;
+  const today = getTodayMidnight();
+  const visibleRecords = upcomingOnly
+    ? records.filter((info) => info._eventDate && info._eventDate >= today)
+    : records;
 
   listEl.innerHTML = "";
 
-  if (records.length === 0) {
+  if (visibleRecords.length === 0) {
     const msg = document.createElement("div");
     msg.className = "new-events-placeholder";
-    msg.textContent =
-      "No events with a date_added field found for this period.";
+    msg.textContent = upcomingOnly
+      ? "No upcoming events found for this period."
+      : "No events with a date_added field found for this period.";
     listEl.appendChild(msg);
     return;
   }
 
-  records.forEach((info) => listEl.appendChild(buildNewEventCard(info)));
+  visibleRecords.forEach((info) =>
+    listEl.appendChild(buildNewEventCard(info)),
+  );
 }
 
 /**
@@ -3193,7 +3209,7 @@ document
       }
       showNewEvents(
         newEventsPeriod,
-        document.getElementById("newEventsThisWeekBtn"),
+        getNewEventsPeriodButton(newEventsPeriod),
       );
     }
   });

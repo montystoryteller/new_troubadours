@@ -74,6 +74,10 @@
                     over last 2 weeks</button>
                 <button class="new-events-btn" id="newEventsMonthBtn" onclick="showNewEvents('month', this)">Added over
                     last month</button>
+                <label class="new-events-upcoming-toggle">
+                    <input type="checkbox" id="newEventsUpcomingOnly" onchange="showNewEvents(newEventsPeriod)">
+                    Hide past event dates
+                </label>
             </div>
             <div id="newEventsList" class="new-events-list">
                 <div class="new-events-placeholder">Open to see recently added events</div>
