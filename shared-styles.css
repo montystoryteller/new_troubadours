@@ -325,7 +325,7 @@ select {
     margin-top: 8px;
 }
 
-/* Status LED next to the "Data last refreshed" line — reflects whether the
+/* Status LED next to the "Data last updated" line — reflects whether the
    events_normalized.json feed loaded normally (green), failed but fell
    back to a stale cached copy (orange), or failed with no cache at all
    to fall back on (red). See loadEventsData() / displayDataLastUpdated()
@@ -352,6 +352,28 @@ select {
 .data-health-error {
     background: #e53935;
     box-shadow: 0 0 4px #e53935;
+}
+
+/* Added only while the LED reflects a problem (stale-cache/error) — see
+   wireDataHealthLedClick() in shared_utils.js. Clicking, or pressing
+   Enter/Space when focused, toggles .data-health-message next to it.
+   The title/aria-label tooltip alone isn't reachable on a touch device,
+   so this gives the same explanation a visible, tappable home. */
+.data-health-led-clickable {
+    cursor: pointer;
+}
+
+.data-health-led-clickable:hover,
+.data-health-led-clickable:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.data-health-message {
+    display: none;
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #555;
 }
 
 .data-refresh-link {

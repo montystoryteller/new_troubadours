@@ -1406,9 +1406,13 @@ function wireDataHealthLedClick(ledEl, container, status, detailMessage) {
     container.appendChild(panel);
   }
 
+  // Hidden via an inline style, not just a CSS class — this way it stays
+  // hidden by default even if the .data-health-message CSS rule (in
+  // shared-styles.css) hasn't loaded/updated on the page for whatever
+  // reason, rather than silently falling back to a plain visible <span>.
   // New status/message (or the first time this LED has had a problem) —
   // start collapsed rather than carry over a stale open/closed state.
-  panel.classList.remove("visible");
+  panel.style.display = "none";
   panel.textContent = detailMessage;
 
   // Short, generic — see the note above on why this replaces whatever
@@ -1425,7 +1429,8 @@ function wireDataHealthLedClick(ledEl, container, status, detailMessage) {
   ledEl.setAttribute("role", "button");
   ledEl.setAttribute("aria-expanded", "false");
   ledEl.onclick = () => {
-    const nowVisible = panel.classList.toggle("visible");
+    const nowVisible = panel.style.display === "none";
+    panel.style.display = nowVisible ? "block" : "none";
     ledEl.setAttribute("aria-expanded", String(nowVisible));
   };
   ledEl.onkeydown = (e) => {
