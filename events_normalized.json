@@ -2853,7 +2853,7 @@
         },
         {
           "date": "07/10/2026",
-          "venue_id": "chater-s-saffron-walden",
+          "venue_id": "chaters-saffron-walden",
           "ticket_url": "https://www.tinyfruitpress.co.uk/",
           "isSpecial": true
         },
@@ -15174,7 +15174,11 @@
       "city": "Inverness",
       "postcode": "IV1 1HD",
       "full_address": "Gellions Bar, 14 Bridge St, Inverness, IV1 1HD",
-      "url": "https://www.gellions.com/"
+      "url": "https://www.gellions.com/",
+      "latlon": [
+        57.4773097,
+        -4.2265656
+      ]
     },
     "the-aurrie-mor-lower-largo": {
       "id": "the-aurrie-mor-lower-largo",
@@ -15338,7 +15342,11 @@
       "city": "Shipston-on-Stour",
       "postcode": "CV36 4AS",
       "full_address": "The White Horse, Church St, Shipston-on-Stour, CV36 4AS",
-      "url": "https://whitehorsepub.uk/"
+      "url": "https://whitehorsepub.uk/",
+      "latlon": [
+        52.06469,
+        -1.62374
+      ]
     },
     "the-standard-bedford": {
       "id": "the-standard-bedford",
@@ -15364,13 +15372,17 @@
         0.28082
       ]
     },
-    "chater-s-saffron-walden": {
-      "id": "chater-s-saffron-walden",
+    "chaters-saffron-walden": {
+      "id": "chaters-saffron-walden",
       "name": "Chater's, Saffron Walden",
       "city": "Saffron Walden",
       "postcode": "CB10 1JW",
       "full_address": "17 Church Street, Saffron Walden, CB10 1JW",
-      "url": "https://chaters.uk/"
+      "url": "https://chaters.uk/",
+      "latlon": [
+        52.024415,
+        0.2404241
+      ]
     },
     "free-range-canterbury": {
       "id": "free-range-canterbury",
@@ -15450,7 +15462,11 @@
       "city": "Sheffield",
       "postcode": "S1 2FB",
       "full_address": "31-33 Orchard Square, Sheffield, S1 2FB",
-      "url": "https://www.sheffieldplate.co.uk/home"
+      "url": "https://www.sheffieldplate.co.uk/home",
+      "latlon": [
+        53.3817535,
+        -1.4704999
+      ]
     },
     "hyde-park-book-club-leeds": {
       "id": "hyde-park-book-club-leeds",
@@ -15734,7 +15750,11 @@
       "city": "Sheffield",
       "postcode": "S11 7BS",
       "full_address": "The Greystones, Greystones Road, Sheffield, S11 7BS",
-      "url": "https://www.mygreystones.co.uk"
+      "url": "https://www.mygreystones.co.uk",
+      "latlon": [
+        53.3642659,
+        -1.5161435
+      ]
     },
     "trades-club-hebden-bridge": {
       "id": "trades-club-hebden-bridge",
@@ -16150,7 +16170,10 @@
       "postcode": "NG1 5JT",
       "full_address": "Rescue Rooms, Masonic Place, Goldsmith Street, Nottingham, NG1 5JT",
       "url": "https://www.rescuerooms.com/",
-      "latlon": "52.95621,-1.15301"
+      "latlon": [
+        52.9560797,
+        -1.1534678
+      ]
     },
     "platform-tavern-southampton": {
       "id": "platform-tavern-southampton",
@@ -16290,7 +16313,11 @@
       "city": "Axbridge",
       "postcode": "BS26 2AR",
       "full_address": "Axbridge Town Hall, The Square, Axbridge, BS26 2AR",
-      "url": "https://www.axbridgetownhall.co.uk/town-hall/"
+      "url": "https://www.axbridgetownhall.co.uk/town-hall/",
+      "latlon": [
+        51.2870213,
+        -2.8173782
+      ]
     },
     "victoria-rooms-milverton": {
       "id": "victoria-rooms-milverton",
