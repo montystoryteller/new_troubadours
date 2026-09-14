@@ -278,6 +278,45 @@ function populatePerformerDropdown() {
 }
 
 /**
+ * Collects every performer name associated with a repertoire show, for
+ * the "Browse Repertoire Shows"/"Browse Story Walks" lists. A repertoire
+ * show's own tour-shaped record (see repertoireShowAsTourShape() above)
+ * often has no performer_id of its own — different performers can each
+ * independently tour the same show — so most of the real performer
+ * links actually live on the individual tours that point back at this
+ * show via repertoire_id, not on the show record itself. This combines:
+ *   - the show's own performer_id/performer_ids, if it happens to set
+ *     them, and
+ *   - every real tour with repertoire_id === this show's id.
+ * Each id is run through the same troupe/combined-billing expansion
+ * used for the tour page's own performer links (getTourLinkPerformerIds()),
+ * resolved to a display name, and deduplicated.
+ * @param {string} repId - the "rep:<showId>" key from toursLookup
+ * @param {object} tour - the repertoire show's tour-shaped object
+ * @returns {string[]} deduplicated, alphabetically sorted performer names
+ */
+function getRepertoireShowPerformerNames(repId, tour) {
+  const showId = repId.startsWith(REPERTOIRE_ID_PREFIX)
+    ? repId.slice(REPERTOIRE_ID_PREFIX.length)
+    : repId;
+
+  const ids = getTourLinkPerformerIds(tour);
+  Object.values(toursLookup).forEach((t) => {
+    if (t.repertoire_id === showId) {
+      getTourLinkPerformerIds(t).forEach((id) => ids.add(id));
+    }
+  });
+
+  const names = new Set();
+  ids.forEach((id) => {
+    const { record } = resolvePerformerDisplay(id, performersLookup);
+    if (record && record.name) names.add(record.name);
+  });
+
+  return Array.from(names).sort((a, b) => a.localeCompare(b));
+}
+
+/**
  * Builds one clickable row for the "Browse Repertoire Shows" collapsible
  * — reuses the same click-through behaviour as buildTouringCard() in the
  * Now Touring/Upcoming/Previous panels (fill in Performer + Touring show
@@ -287,10 +326,7 @@ function populatePerformerDropdown() {
  * assumes a non-empty date range, which doesn't hold here.
  */
 function buildRepertoireBrowseRow(repId, tour) {
-  const { record: performer } = resolvePerformerDisplay(
-    tour.performer_id,
-    performersLookup,
-  );
+  const performerNames = getRepertoireShowPerformerNames(repId, tour);
 
   const dates = expandTourDates(tour.tour_dates || [])
     .map((d) => parseDateString(d.date))
@@ -321,10 +357,10 @@ function buildRepertoireBrowseRow(repId, tour) {
   name.textContent = tour.showname || tour.name;
   body.appendChild(name);
 
-  if (performer) {
+  if (performerNames.length > 0) {
     const perfName = document.createElement("div");
     perfName.className = "now-touring-performer";
-    perfName.textContent = performer.name;
+    perfName.textContent = performerNames.join(", ");
     body.appendChild(perfName);
   }
 
@@ -1443,7 +1479,7 @@ function buildTouringRow(tours, label, labelClass, container, badgeFn) {
 const TOUR_PANEL_GROUPS = [
   {
     test: (t) => !t.isMusic && !t.isPoetry,
-    label: "Stories & Spoken Word",
+    label: "📖 Stories & Spoken Word",
     labelClass: "label-stories",
   },
   {
@@ -1601,7 +1637,7 @@ function refreshEventsData() {
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
 
-  // Display when data was last refreshed
+  // Display when data was last updated
   displayDataLastUpdated(result.lastUpdateTime);
 
   // Initialize navigation feedback
