@@ -10411,16 +10411,6 @@
       "venue_id": "katie-fitzgeralds-stourbridge"
     },
     {
-      "name": "Jess Silk",
-      "date": "27/09/2026",
-      "time": "4pm",
-      "ticket_url": "https://www.bandsintown.com/e/107889447",
-      "isMusic": true,
-      "event_flyer": "jess-silk-sept-2026.png",
-      "isSpecial": true,
-      "venue_id": "foxtails-chorley"
-    },
-    {
       "name": "3 Daft Monkeys",
       "performer_id": "3-daft-monkeys",
       "date": "26/09/2026",
@@ -10430,6 +10420,16 @@
       "event_flyer": "2026_09_26_3daftmonkeys_pewsey.webp",
       "date_added": "25/08/2026",
       "isMusic": true
+    },
+    {
+      "name": "Jess Silk",
+      "date": "27/09/2026",
+      "time": "4pm",
+      "ticket_url": "https://www.bandsintown.com/e/107889447",
+      "isMusic": true,
+      "event_flyer": "jess-silk-sept-2026.png",
+      "isSpecial": true,
+      "venue_id": "foxtails-chorley"
     },
     {
       "name": "Jess Silk",
