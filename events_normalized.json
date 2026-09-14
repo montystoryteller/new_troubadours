@@ -1929,6 +1929,14 @@
           "venue_id": "hillcrest-community-centre-newhaven"
         },
         {
+          "date": "25/02/2026",
+          "time": "7-9pm",
+          "club": "pembrokeshirestorytelling",
+          "price": "£7.50/6.00",
+          "event_flyer": "2026_02_25-pembrokeshire-nell-phoenix-uncanny.jpg",
+          "venue_id": "peppers-hub-fishguard"
+        },
+        {
           "date": "19/03/2026",
           "time": "7.30pm",
           "club": "crickcrack",
@@ -1944,14 +1952,6 @@
           "price": "£13.50",
           "ticket_url": "https://dice.fm/event/v39r5v-fairytales-for-grown-ups-uncanny-22nd-apr-folklore-hoxton-london-tickets",
           "venue_id": "folklore-hoxton"
-        },
-        {
-          "date": "25/02/2026",
-          "time": "7-9pm",
-          "club": "pembrokeshirestorytelling",
-          "price": "£7.50/6.00",
-          "event_flyer": "2026_02_25-pembrokeshire-nell-phoenix-uncanny.jpg",
-          "venue_id": "peppers-hub-fishguard"
         }
       ],
       "description": "Nell Phoenix paces a path from dusty Mesopotamia, to Ancient Egypt, through London's Bloomsbury, along a dingy road in Guatemala at dawn, and back to her own kitchen table — gathering up disturbing, unsettling, baffling, bewildering, sinister, UNCANNY stories.",
@@ -2395,7 +2395,7 @@
           "isSpecial": true
         },
         {
-          "date": "25/10/2026",
+          "date": "25/09/2026",
           "venue_id": "department-ryde",
           "price": "£15",
           "ticket_url": "https://department.byretail.net/menu/Big-Dish-Harvest-Moon",
@@ -9492,7 +9492,7 @@
       "venue_id": "dragon-theatre-barmouth",
       "date_added": "13/09/2026",
       "time": "7-9pm",
-      "price": "£10  (children £8)",
+      "price": "£10 (children £8)",
       "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man – stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i’r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o’r byd hon a’r byd arall. Trwy gydblethu’r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
       "age_rating": "12+",
       "min_age": 12,
@@ -10374,21 +10374,12 @@
       "performer_id": "gaz-brookfield"
     },
     {
-      "name": "Jess Silk",
-      "showname": "",
-      "date": "25/09/2026",
-      "time": "7.30pm",
-      "club": "",
-      "price": "",
-      "description": "",
-      "event_flyers": [
-        "2026_09_25_jess_silk.jpg",
-        "jess-silk-sept-2026.png",
-        "jess_silk_autumn-2026.png"
-      ],
-      "isMusic": true,
-      "venue_id": "nellys-retro-vintage-stratford",
-      "performer_id": "jess-silk"
+      "name": "3 Daft Monkeys",
+      "performer_id": "3-daft-monkeys",
+      "date": "24/09/2026",
+      "venue_id": "brit-bar-weston-super-mare",
+      "date_added": "25/08/2026",
+      "isMusic": true
     },
     {
       "name": "Jess Silk",
@@ -10400,7 +10391,8 @@
       "description": "",
       "event_flyers": [
         "2026_09_25_jess_silk.jpg",
-        "jess-silk-sept-2026.png"
+        "jess-silk-sept-2026.png",
+        "jess_silk_autumn-2026.png"
       ],
       "isMusic": true,
       "venue_id": "nellys-retro-vintage-stratford",
@@ -10429,28 +10421,6 @@
       "venue_id": "foxtails-chorley"
     },
     {
-      "name": "Jess Silk",
-      "showname": "",
-      "date": "29/01/2026",
-      "time": "7.30pm",
-      "club": "",
-      "price": "£12.47",
-      "event_flyer": "2026_10_03_jess_silk_peacock.jpg",
-      "description": "",
-      "ticket_url": "https://dice.fm/event/92rb6n-jess-silk-3rd-oct-the-peacock-sunderland-tickets?pid=530cb286",
-      "isMusic": true,
-      "venue_id": "peacock-sunderland",
-      "performer_id": "jess-silk"
-    },
-    {
-      "name": "3 Daft Monkeys",
-      "performer_id": "3-daft-monkeys",
-      "date": "24/09/2026",
-      "venue_id": "brit-bar-weston-super-mare",
-      "date_added": "25/08/2026",
-      "isMusic": true
-    },
-    {
       "name": "3 Daft Monkeys",
       "performer_id": "3-daft-monkeys",
       "date": "26/09/2026",
@@ -10460,6 +10430,20 @@
       "event_flyer": "2026_09_26_3daftmonkeys_pewsey.webp",
       "date_added": "25/08/2026",
       "isMusic": true
+    },
+    {
+      "name": "Jess Silk",
+      "showname": "",
+      "date": "03/10/2026",
+      "time": "7.30pm",
+      "club": "",
+      "price": "£12.47",
+      "event_flyer": "2026_10_03_jess_silk_peacock.jpg",
+      "description": "",
+      "ticket_url": "https://dice.fm/event/92rb6n-jess-silk-3rd-oct-the-peacock-sunderland-tickets?pid=530cb286",
+      "isMusic": true,
+      "venue_id": "peacock-sunderland",
+      "performer_id": "jess-silk"
     },
     {
       "name": "3 Daft Monkeys",
@@ -12211,8 +12195,8 @@
     "corn-exchange-newbury": {
       "id": "corn-exchange-newbury",
       "name": "Corn Exchange, Newbury",
-      "full_address": "Corn Exchange Newbury, Market Place,  Newbury, Berkshire, RG14 5BD",
-      "city": "Berkshire",
+      "full_address": "Corn Exchange Newbury, Market Place, Newbury, RG14 5BD",
+      "city": "Newbury",
       "postcode": "RG14 5BD",
       "url": "https://cornexchangenew.com/",
       "latlon": [
@@ -12924,7 +12908,7 @@
       "postcode": "DE4 3EJ",
       "full_address": "The Lime Tree, Lime Tree Business Park, Lime Tree Road, Matlock, DE4 3EJ",
       "url": "https://www.churchinthepeak.org/the-lime-tree",
-      "description": "Situated in Matlock, fully equipped conference facilities, meeting rooms, office spaces  and event hosting.\n\n\n\nClose to the the town centre, Matlock train station and the M1.",
+      "description": "Situated in Matlock, fully equipped conference facilities, meeting rooms, office spaces and event hosting.\n\n\n\nClose to the the town centre, Matlock train station and the M1.",
       "latlon": [
         53.13627,
         -1.54804
@@ -16143,7 +16127,7 @@
       "id": "all-good-bookshop-wood-green",
       "name": "All Good Bookshop, Wood Green",
       "city": "Wood Green, London",
-      "postcode": " N8 0EP",
+      "postcode": "N8 0EP",
       "full_address": "All Good Bookshop, 35 Turnpike Lane, Wood Green, London, N8 0EP",
       "url": "https://allgoodbookshop.co.uk/",
       "latlon": [
