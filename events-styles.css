@@ -93,17 +93,23 @@
     overflow-y: auto;
 }
 
-/* Small bar above the actual list of event cards, holding the
-   "Hide past events" toggle. Lives outside the #eventsList div that
+/* Small bar above the actual list of event cards, holding the event
+   status toggles (past/cancelled/sold out — as opposed to the category
+   checkboxes like "Story clubs" or "Music events", which stay up in the
+   main filter row). Lives outside the #eventsList div that
    renderEventsList() clears and rebuilds on every filter change, so it
    stays put at the top of the panel instead of disappearing on redraw. */
 .events-list-header {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px 16px;
     margin-bottom: 12px;
 }
 
-.hide-past-label {
+.hide-past-label,
+.hide-cancelled-label,
+.hide-soldout-label {
     display: flex;
     align-items: center;
     gap: 6px;

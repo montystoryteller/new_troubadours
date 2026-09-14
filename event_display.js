@@ -163,6 +163,7 @@ const PERSISTABLE_FILTER_DEFAULTS = {
   specialOn: true,
   hideCancelled: true,
   hidePastEvents: false,
+  hideSoldOutEvents: false,
   ...Object.fromEntries(
     EVENT_TYPE_FILTERS.map(({ id, default: fallback }) => [id, fallback]),
   ),
@@ -1207,6 +1208,10 @@ function createEventElement(event) {
     eventDiv.classList.add("event-cancelled");
   }
 
+  if (event.isSoldOut) {
+    eventDiv.classList.add("event-soldout");
+  }
+
   if (event.isRescheduledAway) {
     eventDiv.classList.add("event-rescheduled");
   }
@@ -2092,6 +2097,7 @@ function filterEvents() {
 
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const hideCancelled = document.getElementById("hideCancelled").checked;
+  const hideSoldOut = document.getElementById("hideSoldOutEvents").checked;
   const hidePastEl = document.getElementById("hidePastEvents");
   const hidePast = hidePastEl ? hidePastEl.checked : false;
   const today = getTodayMidnight();
@@ -2109,6 +2115,7 @@ function filterEvents() {
     const isSpecial = event.classList.contains("special");
     const isFestival = event.classList.contains("festival");
     const isCancelled = event.classList.contains("event-cancelled");
+    const isSoldOut = event.classList.contains("event-soldout");
 
     const eventData = { isStoryclub, isSpecial, isFestival };
     EVENT_TYPE_FILTERS.forEach(({ flag }) => {
@@ -2117,6 +2124,10 @@ function filterEvents() {
     let visible = shouldShowEvent(eventData, filters);
 
     if (visible && hideCancelled && isCancelled) {
+      visible = false;
+    }
+
+    if (visible && hideSoldOut && isSoldOut) {
       visible = false;
     }
 
@@ -2143,6 +2154,10 @@ function filterEvents() {
     let visible = shouldShowEvent(marker.eventData, filters);
 
     if (visible && hideCancelled && marker.eventData.isCancelled) {
+      visible = false;
+    }
+
+    if (visible && hideSoldOut && marker.eventData.isSoldOut) {
       visible = false;
     }
 
@@ -2567,6 +2582,7 @@ const EVENT_FILTER_DEFAULTS = {
   special: true,
   hidecancelled: true,
   hidepast: false,
+  hidesoldout: false,
 };
 EVENT_TYPE_FILTERS.forEach(({ param, default: def }) => {
   EVENT_FILTER_DEFAULTS[param] = def;
@@ -2597,6 +2613,7 @@ function generateShareableURL(startDate, endDate) {
     special: document.getElementById("specialOn").checked,
     hidecancelled: document.getElementById("hideCancelled").checked,
     hidepast: !!(hidePastEl && hidePastEl.checked),
+    hidesoldout: document.getElementById("hideSoldOutEvents").checked,
   };
   EVENT_TYPE_FILTERS.forEach(({ id, param }) => {
     currentFilters[param] = document.getElementById(id).checked;
@@ -2677,6 +2694,7 @@ function getEventURLParams() {
     hidecancelledParam === null ? true : hidecancelledParam === "1";
   const hidepastParam = params.get("hidepast");
   const hidepast = hidepastParam === "1";
+  const hidesoldout = params.get("hidesoldout") === "1";
   const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
   const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
   const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
@@ -2698,6 +2716,7 @@ function getEventURLParams() {
     pinmap: pinmap,
     hidecancelled: hidecancelled,
     hidepast: hidepast,
+    hidesoldout: hidesoldout,
     lat: lat,
     lng: lng,
     zoom: zoom,
@@ -2858,6 +2877,8 @@ function refreshEventsData() {
         urlParams.hidecancelled;
       const hidePastEl = document.getElementById("hidePastEvents");
       if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
+      document.getElementById("hideSoldOutEvents").checked =
+        urlParams.hidesoldout || false;
       console.log("pinmap", urlParams, urlParams.pinmap);
       mapViewPinned = urlParams.pinmap;
 

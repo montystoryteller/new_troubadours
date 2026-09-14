@@ -132,10 +132,6 @@
                     <input type="checkbox" id="showPoetry" onchange="filterEvents()">
                     Poetry events
                 </label>
-                <label>
-                    <input type="checkbox" checked id="hideCancelled" onchange="filterEvents()">
-                    Hide cancelled
-                </label>
             </div>
         </div>
     </div>
@@ -168,6 +164,14 @@
                 <label class="hide-past-label" id="hidePastEventsLabel">
                     <input type="checkbox" id="hidePastEvents" onchange="filterEvents()">
                     Hide past events
+                </label>
+                <label class="hide-cancelled-label" id="hideCancelledLabel">
+                    <input type="checkbox" checked id="hideCancelled" onchange="filterEvents()">
+                    Hide cancelled
+                </label>
+                <label class="hide-soldout-label" id="hideSoldOutLabel">
+                    <input type="checkbox" id="hideSoldOutEvents" onchange="filterEvents()">
+                    Hide sold out
                 </label>
             </div>
             <div id="eventsList">
