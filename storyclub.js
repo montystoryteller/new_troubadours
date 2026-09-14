@@ -16,6 +16,30 @@ let toursLookup = {}; // needed by collectDatedEventsForVenue()'s call to
 // collectTourDatesForVenue() (shared_utils.js) — same convention as venues.js.
 let performersLookup = {}; // needed by renderEventRow() (shared_utils.js)
 
+
+// Canonical link handling for performers, venues, storyclubs
+function setCanonical(param = null) {
+  const url = new URL(window.location.pathname, window.location.origin);
+
+  if (param) {
+    const value = new URLSearchParams(window.location.search).get(param);
+
+    if (value) {
+      url.searchParams.set(param, value);
+    }
+  }
+
+  let canonical = document.querySelector('link[rel="canonical"]');
+
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+
+  canonical.href = url.href;
+}
+
 // FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
 // copies of exactly the icons already in shared_utils.js's ICON_SVG
 // (.facebook, .website, .email respectively); use those instead.

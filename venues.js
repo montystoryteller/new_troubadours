@@ -49,6 +49,30 @@ function preloadLeafletWhenIdle() {
   }
 }
 
+
+// Canonical link handling for performers, venues, storyclubs
+function setCanonical(param = null) {
+  const url = new URL(window.location.pathname, window.location.origin);
+
+  if (param) {
+    const value = new URLSearchParams(window.location.search).get(param);
+
+    if (value) {
+      url.searchParams.set(param, value);
+    }
+  }
+
+  let canonical = document.querySelector('link[rel="canonical"]');
+
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+
+  canonical.href = url.href;
+}
+
 // Single source of truth for "does this venue have usable coordinates".
 // `venue.latlon` being present isn't enough on its own — some venues have
 // it set to an empty array [] rather than being missing outright, and []
