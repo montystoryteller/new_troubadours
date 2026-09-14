@@ -15107,7 +15107,7 @@
         54.88149,
         -4.18553
       ]
-    }
+    },
     "parkend-club": {
       "id": "parkend-club",
       "name": "Parkend Club, Forest of Dean",
@@ -17581,6 +17581,14 @@
           "story_name": "The Golden Balls",
           "yt_url": "https://www.youtube.com/watch?v=xVLjtO4EkFQ"
         }
+      ],
+      "podcast_appearances": [
+        {
+          "podcast": "The Embers Collective",
+          "podcast_url": "https://podtail.com/podcast/the-embers-podcast/episode-24-the-devil-s-violin/",
+          "audio_url": "https://feeds.soundcloud.com/stream/702831547-user-571633720-episode-24-the-devils-violin.mp3",
+          "episode_name": "Sara Liisa Wilkinson tells 'The Devil's Violin', followed by a discussion of the tale."
+        }
       ]
     },
     "ropetackle-storytellers": {
@@ -17676,7 +17684,7 @@
       ],
       "name": "Henry Everett and Hannah Sneyd",
       "url": "",
-      "bio": "The days are lengthening, and green shoots are nudging their way through the soil. As winter loosens its icy grip on the world, it is time to celebrate Imbolc, the Celtic festival of early spring, whose name means 'in the belly.'\n\n\n\nJoin us for Stirring Stories, a series of uplifting tales to stoke the fire within and rouse us from our winter slumber. Forget the to-do list, gather together and and allow your imagination to unfurl into the realm of myth and magic.\n\n\n\nThis special event with Dartmoor storytellers Henry Everett and Hannah Sneyd promises a vivid array of stories formed through deep communion with the landscape. Blending traditional tales from around the world with original stories, games and song, we curate our events to closely match the energy of the season.\n\n\n\nThings to note: This is a family-friendly event, with a 20-minute interval and food and drink available from The Lounge Cafe - please see the MIC website for further details."
+      "bio": ""
     },
     "iris-skipworth-colin-rowan": {
       "id": "iris-skipworth-colin-rowan",
