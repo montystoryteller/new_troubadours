@@ -325,7 +325,7 @@ select {
     margin-top: 8px;
 }
 
-/* Status LED next to the "Data last updated" line — reflects whether the
+/* Status LED next to the "Data last refreshed" line — reflects whether the
    events_normalized.json feed loaded normally (green), failed but fell
    back to a stale cached copy (orange), or failed with no cache at all
    to fall back on (red). See loadEventsData() / displayDataLastUpdated()

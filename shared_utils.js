@@ -1341,7 +1341,7 @@ let dataHealthStatus = { status: "ok", timestamp: null };
 
 /**
  * Build the small "LED" status dot shown in the colophon next to the
- * "Data last updated" line. Just constructs the element — callers decide
+ * "Data last refreshed" line. Just constructs the element — callers decide
  * where it goes.
  * @param {"ok"|"stale-cache"|"error"} status
  * @param {string} title - tooltip / accessible label text
@@ -2667,7 +2667,7 @@ function displayDataLastUpdated(lastUpdateTime) {
   textSpan.textContent =
     status === "stale-cache"
       ? `Showing cached data from: ${formatted} (live feed unavailable)`
-      : `Data last updated: ${formatted}`;
+      : `Data last refreshed: ${formatted}`;
   el.appendChild(textSpan);
 
   const refreshLink = document.createElement("a");
@@ -2688,7 +2688,7 @@ function displayDataLastUpdated(lastUpdateTime) {
     window.addEventListener("eventsDataUpdated", (e) => {
       const newFormatted = formatLastUpdateTime(e.detail.timestamp);
       dataHealthStatus = { status: "ok", timestamp: e.detail.timestamp };
-      textSpan.textContent = `Data last updated: ${newFormatted}`;
+      textSpan.textContent = `Data last refreshed: ${newFormatted}`;
 
       // The background refresh succeeded, so the feed is healthy again —
       // reflect that even if the LED had been orange/red up to now.
