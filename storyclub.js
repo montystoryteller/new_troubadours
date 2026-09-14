@@ -136,7 +136,7 @@ const prevMeetingDate = RecurrenceEngine.prevMeetingDate;
   toursLookup = result.toursLookup || {};
   performersLookup = result.performersLookup || {};
 
-  // Display when data was last updated
+  // Display when data was last refreshed
   displayDataLastUpdated(result.lastUpdateTime);
   initNavFeedback();
 

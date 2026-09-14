@@ -1357,6 +1357,86 @@ function buildDataHealthLed(status, title) {
 }
 
 /**
+ * Makes the status LED clickable whenever it reflects a problem
+ * ("stale-cache" — orange, or "error" — red), toggling a plain-text
+ * panel next to it that reveals `detailMessage`.
+ *
+ * Deliberately overrides the LED's title/aria-label to a short, generic
+ * prompt ("click for details") whenever there's a problem, rather than
+ * leaving the detailed reason in them: `detailMessage` can contain raw
+ * technical detail (an HTTP status, or a JSON parse position/snippet),
+ * and a browser shows `title` to anyone who merely hovers — that would
+ * put the detail in front of every visitor, not just whoever explicitly
+ * clicks the LED to ask for it.
+ *
+ * Safe to call repeatedly on the same LED as its status changes over
+ * time (initial paint, a background check downgrading it, a later
+ * background refresh recovering it) — each call re-wires the handler
+ * for the current status/message and collapses the panel rather than
+ * leaving a stale message open from a previous state.
+ *
+ * @param {HTMLElement} ledEl - the ".data-health-led" element
+ * @param {HTMLElement} container - element the message panel should live in (a sibling of ledEl)
+ * @param {"ok"|"stale-cache"|"error"} status
+ * @param {string} detailMessage - the underlying reason, only ever shown after a click
+ */
+function wireDataHealthLedClick(ledEl, container, status, detailMessage) {
+  if (!ledEl || !container) return;
+
+  let panel = container.querySelector(".data-health-message");
+  const isProblem = status !== "ok";
+
+  if (!isProblem) {
+    // Healthy again — not clickable, and don't leave an old error
+    // message sitting around for a problem that's now resolved.
+    ledEl.classList.remove("data-health-led-clickable");
+    ledEl.removeAttribute("tabindex");
+    ledEl.setAttribute("role", "img");
+    ledEl.removeAttribute("aria-expanded");
+    ledEl.onclick = null;
+    ledEl.onkeydown = null;
+    if (panel) panel.remove();
+    return;
+  }
+
+  if (!panel) {
+    panel = document.createElement("span");
+    panel.className = "data-health-message";
+    panel.setAttribute("aria-live", "polite");
+    container.appendChild(panel);
+  }
+
+  // New status/message (or the first time this LED has had a problem) —
+  // start collapsed rather than carry over a stale open/closed state.
+  panel.classList.remove("visible");
+  panel.textContent = detailMessage;
+
+  // Short, generic — see the note above on why this replaces whatever
+  // title/aria-label the caller set before calling this function.
+  const promptText =
+    status === "error"
+      ? "Event data unavailable — click for details"
+      : "Event data feed issue — click for details";
+  ledEl.title = promptText;
+  ledEl.setAttribute("aria-label", promptText);
+
+  ledEl.classList.add("data-health-led-clickable");
+  ledEl.setAttribute("tabindex", "0");
+  ledEl.setAttribute("role", "button");
+  ledEl.setAttribute("aria-expanded", "false");
+  ledEl.onclick = () => {
+    const nowVisible = panel.classList.toggle("visible");
+    ledEl.setAttribute("aria-expanded", String(nowVisible));
+  };
+  ledEl.onkeydown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      ledEl.onclick();
+    }
+  };
+}
+
+/**
  * Cache duration for computed schedules (24 hours in milliseconds).
  * Schedules are deterministic based on the raw data, so they only need to
  * be recalculated if the data changes or 24 hours have passed.
@@ -1466,18 +1546,18 @@ async function loadEventsData(cacheBuster) {
     const version = cacheBuster || getAutoCacheVersion();
     const response = await fetch(`events_normalized.json?v=${version}`);
     if (!response.ok) {
-      console.error("Failed to load events_normalized.json");
-      return handleEventsLoadFailure();
+      const reason = `Live feed returned HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`;
+      console.error(reason);
+      return handleEventsLoadFailure(reason);
     }
     const responseText = await response.text();
     let eventsData;
     try {
       eventsData = JSON.parse(responseText);
     } catch (parseError) {
-      console.error(
-        `events_normalized.json is corrupted: ${describeJsonParseError(responseText, parseError)}`,
-      );
-      return handleEventsLoadFailure();
+      const reason = describeJsonParseError(responseText, parseError);
+      console.error(`events_normalized.json is corrupted: ${reason}`);
+      return handleEventsLoadFailure(reason);
     }
     applyRepertoireInheritance(eventsData);
     const toursLookup = eventsData.tours || {};
@@ -1524,7 +1604,7 @@ async function loadEventsData(cacheBuster) {
     };
   } catch (error) {
     console.error("Error loading events:", error);
-    return handleEventsLoadFailure();
+    return handleEventsLoadFailure(error.message);
   }
 }
 
@@ -1537,10 +1617,14 @@ async function loadEventsData(cacheBuster) {
  * called by a page when loadEventsData() returns null — paints the
  * colophon's status LED directly for the no-cache-available case, as
  * that's the only place it would otherwise get shown.
+ * @param {string} [reason] - what actually went wrong (HTTP status, or a
+ *   describeJsonParseError() diagnostic with line/column/snippet), so it
+ *   can be shown in the LED's click-to-reveal message rather than only
+ *   ever reaching the console.
  * @returns {object|null} same shape loadEventsData() normally returns, or
  *   null if there was no cache to fall back on either.
  */
-function handleEventsLoadFailure() {
+function handleEventsLoadFailure(reason) {
   try {
     const cached = localStorage.getItem(CACHE_KEYS.DATA);
     if (cached) {
@@ -1549,9 +1633,9 @@ function handleEventsLoadFailure() {
       applyRepertoireInheritance(eventsData);
       const podcastsLookup = buildPodcastsLookup(eventsData);
       console.warn(
-        "⚠ Live events feed failed — falling back to stale cached data",
+        `⚠ Live events feed failed — falling back to stale cached data${reason ? `: ${reason}` : ""}`,
       );
-      dataHealthStatus = { status: "stale-cache", timestamp };
+      dataHealthStatus = { status: "stale-cache", timestamp, reason };
       return {
         eventsData,
         venuesLookup,
@@ -1565,7 +1649,7 @@ function handleEventsLoadFailure() {
     console.warn("Stale-cache fallback also failed:", e);
   }
 
-  dataHealthStatus = { status: "error", timestamp: null };
+  dataHealthStatus = { status: "error", timestamp: null, reason };
   renderDataHealthIndicatorNow();
   return null;
 }
@@ -1580,16 +1664,17 @@ function renderDataHealthIndicatorNow() {
   const el = document.getElementById("dataLastUpdated");
   if (!el) return;
   el.innerHTML = "";
-  el.appendChild(
-    buildDataHealthLed(
-      "error",
-      "Event data feed failed to load and no cached copy is available",
-    ),
-  );
+  const { reason } = dataHealthStatus;
+  const message = reason
+    ? `Event data feed failed to load and no cached copy is available: ${reason}`
+    : "Event data feed failed to load and no cached copy is available";
+  const ledEl = buildDataHealthLed("error", message);
+  el.appendChild(ledEl);
   const textSpan = document.createElement("span");
   textSpan.className = "data-updated-text";
   textSpan.textContent = "Event data unavailable";
   el.appendChild(textSpan);
+  wireDataHealthLedClick(ledEl, el, "error", message);
 }
 
 /**
@@ -1776,11 +1861,12 @@ async function checkForNewerEventsDataBackground() {
       try {
         eventsData = JSON.parse(responseText);
       } catch (parseError) {
+        const detail = describeJsonParseError(responseText, parseError);
         console.error(
-          `DATA LOADING ERROR: fetched events data was corrupted, keeping existing cached data: ${describeJsonParseError(responseText, parseError)}`,
+          `DATA LOADING ERROR: fetched events data was corrupted, keeping existing cached data: ${detail}`,
         );
         flagBackgroundFeedDegraded(
-          "Live feed is currently returning corrupted data",
+          `Live feed is currently returning corrupted data: ${detail}`,
         );
         return;
       }
@@ -1822,7 +1908,9 @@ async function checkForNewerEventsDataBackground() {
     // Network-level failure reaching the feed at all (offline, DNS, CORS,
     // etc). The page is still working fine from cache, so flag it as
     // orange rather than leaving the LED silently green.
-    flagBackgroundFeedDegraded("Could not reach the live events feed");
+    flagBackgroundFeedDegraded(
+      `Could not reach the live events feed${e.message ? `: ${e.message}` : ""}`,
+    );
     console.debug(
       "Background events data check failed (this is fine):",
       e.message,
@@ -2596,7 +2684,7 @@ function initNavFeedback() {
 // ---------------------------------------------------------------------------
 
 /**
- * Format a timestamp into a human-readable "last updated" string.
+ * Format a timestamp into a human-readable "last refreshed" string.
  * Examples: "Today at 2:30 PM", "Yesterday at 11:15 AM", "Jan 15 at 3:45 PM"
  * @param {number} timestamp - Unix timestamp in milliseconds
  * @returns {string}
@@ -2637,7 +2725,7 @@ function formatLastUpdateTime(timestamp) {
 }
 
 /**
- * Update the colophon to show when data was last updated.
+ * Update the colophon to show when data was last refreshed.
  * Creates an interactive display with timestamp and manual refresh link.
  * Looks for an element with id "dataLastUpdated" and populates it.
  * @param {number} lastUpdateTime - Unix timestamp in milliseconds
@@ -2653,14 +2741,14 @@ function displayDataLastUpdated(lastUpdateTime) {
   // Build the display with a status LED, timestamp, and refresh link
   el.innerHTML = "";
 
-  const { status } = dataHealthStatus;
+  const { status, reason } = dataHealthStatus;
   const LED_TITLES = {
     ok: "Event data feed loaded successfully",
-    "stale-cache": `Event data feed failed to load — showing cached data from ${formatted}`,
+    "stale-cache": `Event data feed failed to load — showing cached data from ${formatted}${reason ? `: ${reason}` : ""}`,
   };
-  el.appendChild(
-    buildDataHealthLed(status, LED_TITLES[status] || LED_TITLES.ok),
-  );
+  const initialMessage = LED_TITLES[status] || LED_TITLES.ok;
+  const ledEl = buildDataHealthLed(status, initialMessage);
+  el.appendChild(ledEl);
 
   const textSpan = document.createElement("span");
   textSpan.className = "data-updated-text";
@@ -2682,6 +2770,10 @@ function displayDataLastUpdated(lastUpdateTime) {
   el.appendChild(document.createTextNode(" "));
   el.appendChild(refreshLink);
 
+  // Wired last so the (initially collapsed) message panel it may create
+  // lands after the timestamp/refresh-link line, not in between them.
+  wireDataHealthLedClick(ledEl, el, status, initialMessage);
+
   // Listen for background data updates
   if (!el._eventsDataUpdatedListenerAttached) {
     el._eventsDataUpdatedListenerAttached = true;
@@ -2697,6 +2789,7 @@ function displayDataLastUpdated(lastUpdateTime) {
         ledEl.className = "data-health-led data-health-ok";
         ledEl.title = LED_TITLES.ok;
         ledEl.setAttribute("aria-label", LED_TITLES.ok);
+        wireDataHealthLedClick(ledEl, el, "ok", LED_TITLES.ok);
       }
 
       // Show "just refreshed" status
@@ -2729,6 +2822,7 @@ function displayDataLastUpdated(lastUpdateTime) {
         ledEl.className = `data-health-led data-health-${status}`;
         ledEl.title = title;
         ledEl.setAttribute("aria-label", title);
+        wireDataHealthLedClick(ledEl, el, status, title);
       }
       textSpan.textContent = `Showing cached data from: ${formatted} (live feed unavailable)`;
     });
@@ -2825,7 +2919,7 @@ function setSchedulesCache(schedules) {
 
 /**
  * Clear the schedule cache without clearing data.
- * Called when background refresh detects updated data.
+ * Called when background refresh detects refreshed data.
  */
 function clearSchedulesCache() {
   try {

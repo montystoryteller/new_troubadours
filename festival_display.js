@@ -1695,7 +1695,7 @@ function refreshEventsData() {
   venuesLookup = result.venuesLookup;
   performersLookup = result.performersLookup;
 
-  // Display when data was last updated
+  // Display when data was last refreshed
   displayDataLastUpdated(result.lastUpdateTime);
 
   // Initialize navigation feedback

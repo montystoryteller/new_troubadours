@@ -389,7 +389,7 @@ async function loadFlyers() {
   if (!result) return;
   const data = result.eventsData;
 
-  // Display when data was last updated
+  // Display when data was last refreshed
   displayDataLastUpdated(result.lastUpdateTime);
   initNavFeedback();
 

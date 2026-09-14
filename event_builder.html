@@ -1007,18 +1007,19 @@
             </div>
 
             <div class="enrich-section">
-                <h3>Promoter venue/performer references</h3>
+                <h3>🎤 Promoter venue/performer references</h3>
                 <p class="field-hint">
-                    Checks that every promoter has a venue-id list and a performer-id list, and that every id
-                    in each list points at a real venue/performer in the loaded data. This tool doesn't
-                    otherwise manage promoters — nothing here builds or edits one, and this check only runs if
-                    the loaded file actually has a top-level <code>promoters</code> or <code>clubs</code>
-                    collection (whichever name is present) with <code>venue_ids</code>/<code>performer_ids</code>
-                    (or <code>venues</code>/<code>performers</code>) arrays on each entry; if your data uses
-                    different names for these, this won't find them — say so and it can be adjusted. Report
-                    only, like the duplicate-venues check above: there's no safe way to guess which ids a
-                    promoter should actually be associated with, so fixing a flagged one means editing the
-                    loaded file directly.
+                    Checks every entry in the top-level <code>promoters</code> registry: that it has a
+                    non-empty <code>promoter_venues</code> list and a non-empty <code>promoter_artists</code>
+                    list, and that every id in each actually points at a real venue/performer. Also flags a
+                    promoter whose id doesn't turn up as a <code>club</code> value anywhere (<code>events</code>,
+                    <code>specificEvents</code>/<code>musicEvents</code>/<code>poetryEvents</code>, tours, or
+                    repertoire show dates) — registering a promoter is optional enrichment layered onto a club
+                    id already used elsewhere, so this is usually a typo between the two rather than an actual
+                    error, but worth a look either way. This tool doesn't otherwise manage promoters — nothing
+                    here builds or edits one — and it's report only, like the duplicate-venues check above:
+                    there's no safe way to guess which ids a promoter should actually be associated with, so
+                    fixing a flagged one means editing the loaded file directly.
                 </p>
                 <button class="btn-add-batch" id="enrich-promoter-scan-btn" disabled>Scan promoter
                     references</button>
@@ -5161,23 +5162,28 @@
         });
 
         // -- Promoter venue/performer references ---------------------------------
-        // This tool has no promoter/club concept of its own to build against
-        // (see the .club/.club_event fields on events, which just reference
-        // an id by free text) — this only checks whatever the loaded file
-        // itself already has, under either common name, with either common
-        // field-name variant. If your actual schema names these differently,
-        // this scanner simply won't find the collection; it's not attempting
-        // to guess further than that.
-        function getPromotersCollection(data) {
-            if (data.promoters) return { collectionName: "promoters", data: data.promoters };
-            if (data.clubs) return { collectionName: "clubs", data: data.clubs };
-            return null;
-        }
-        function getIdListField(record, ...fieldNames) {
-            for (const f of fieldNames) {
-                if (Array.isArray(record[f])) return { field: f, ids: record[f] };
-            }
-            return null;
+        // Schema (see events-schema.json, $defs.promoter): promoter_venues
+        // and promoter_artists are the real field names — keys into the
+        // top-level venues/performers objects. A promoter_id is "frequently
+        // (but not necessarily)" the same id used as a bare `club` string
+        // elsewhere, since the promoter registry is optional enrichment
+        // layered onto a club id that may already be in use — collected
+        // here from every place the schema defines a `club` field.
+        function collectUsedClubIds(data) {
+            const ids = new Set();
+            const add = v => { if (typeof v === "string" && v.trim()) ids.add(v.trim()); };
+            (data.events || []).forEach(e => add(e.club));
+            (data.specificEvents || []).forEach(e => add(e.club));
+            (data.musicEvents || []).forEach(e => add(e.club));
+            (data.poetryEvents || []).forEach(e => add(e.club));
+            Object.values(data.tours || {}).forEach(tour => {
+                add(tour.club);
+                (tour.tour_dates || []).forEach(d => { add(d.club); add(d.club_event); });
+            });
+            Object.values(data.repertoire_shows || {}).forEach(show => {
+                (show.show_dates || []).forEach(d => add(d.club));
+            });
+            return ids;
         }
 
         document.getElementById("enrich-promoter-scan-btn").addEventListener("click", () => {
@@ -5187,30 +5193,29 @@
                 resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
                 return;
             }
-            const coll = getPromotersCollection(enrichedData);
-            if (!coll) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No top-level "promoters" or "clubs" collection found in the loaded data — nothing to check.</div>';
+            if (!enrichedData.promoters || !Object.keys(enrichedData.promoters).length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No promoters registered in the loaded data — nothing to check.</div>';
                 return;
             }
+            const usedClubIds = collectUsedClubIds(enrichedData);
             const found = [];
-            Object.entries(coll.data).forEach(([id, promoter]) => {
-                const venues = getIdListField(promoter, "venue_ids", "venues");
-                const performers = getIdListField(promoter, "performer_ids", "performers");
+            Object.entries(enrichedData.promoters).forEach(([id, promoter]) => {
+                const venueIds = Array.isArray(promoter.promoter_venues) ? promoter.promoter_venues : [];
+                const artistIds = Array.isArray(promoter.promoter_artists) ? promoter.promoter_artists : [];
                 const reasons = [];
-                if (!venues || !venues.ids.length) reasons.push("no venue ids listed");
-                if (!performers || !performers.ids.length) reasons.push("no performer ids listed");
-                if (venues) {
-                    const bad = venues.ids.filter(vid => !enrichedData.venues || !enrichedData.venues[vid]);
-                    if (bad.length) reasons.push(`references unknown venue id(s): ${bad.join(", ")}`);
-                }
-                if (performers) {
-                    const bad = performers.ids.filter(pid => !enrichedData.performers || !enrichedData.performers[pid]);
-                    if (bad.length) reasons.push(`references unknown performer id(s): ${bad.join(", ")}`);
+                if (!venueIds.length) reasons.push("no promoter_venues listed");
+                if (!artistIds.length) reasons.push("no promoter_artists listed");
+                const badVenues = venueIds.filter(vid => !enrichedData.venues || !enrichedData.venues[vid]);
+                if (badVenues.length) reasons.push(`promoter_venues references unknown venue id(s): ${badVenues.join(", ")}`);
+                const badArtists = artistIds.filter(pid => !enrichedData.performers || !enrichedData.performers[pid]);
+                if (badArtists.length) reasons.push(`promoter_artists references unknown performer id(s): ${badArtists.join(", ")}`);
+                if (!usedClubIds.has(promoter.promoter_id || id)) {
+                    reasons.push("not used as a club id anywhere (events/specificEvents/musicEvents/poetryEvents/tours/repertoire shows) — check for a typo, or it may just not be linked yet");
                 }
                 if (reasons.length) found.push({ id, name: promoter.name || id, reasons });
             });
             if (!found.length) {
-                resultsEl.innerHTML = `<div class="enrich-empty">Every promoter in "${coll.collectionName}" has both a venue-id list and a performer-id list, all pointing at real records.</div>`;
+                resultsEl.innerHTML = '<div class="enrich-empty">Every promoter has both lists populated, pointing at real records, and is linked to at least one club id.</div>';
                 return;
             }
             found.forEach(f => {
@@ -5262,7 +5267,7 @@
             }
             const found = [];
             [
-                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["specificEvents", enrichedData.specificEvents || []],
                 ["musicEvents", enrichedData.musicEvents || []],
                 ["poetryEvents", enrichedData.poetryEvents || []],
             ].forEach(([bucketName, list]) => {
@@ -5338,7 +5343,7 @@
 
                 let target = null; // the object whose .date field we're editing
                 if (row.dataset.kind === "event") {
-                    const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                    const bucketArr = enrichedData && enrichedData[row.dataset.bucket];
                     target = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
                 } else if (row.dataset.kind === "tour") {
                     const tour = enrichedData?.tours?.[row.dataset.key];
@@ -5383,7 +5388,7 @@
                 return;
             }
             const buckets = [
-                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["specificEvents", enrichedData.specificEvents || []],
                 ["musicEvents", enrichedData.musicEvents || []],
                 ["poetryEvents", enrichedData.poetryEvents || []],
             ];
@@ -5539,7 +5544,7 @@
                     delete updatedRepertoireShows[row.dataset.key];
                     updatedRepertoireShows[row.dataset.key] = JSON.parse(JSON.stringify(show));
                 } else {
-                    const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                    const bucketArr = enrichedData && enrichedData[row.dataset.bucket];
                     const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
                     if (!ev) return;
                     ev.age_rating = rating;
@@ -5577,7 +5582,7 @@
                 return;
             }
             const buckets = [
-                ["specificEvents", enrichedData.specificEvents || enrichedData.events || []],
+                ["specificEvents", enrichedData.specificEvents || []],
                 ["musicEvents", enrichedData.musicEvents || []],
                 ["poetryEvents", enrichedData.poetryEvents || []],
             ];
@@ -5667,7 +5672,7 @@
             rows.forEach(row => {
                 const checkbox = row.querySelector(".enrich-price-check");
                 if (!checkbox.checked) return;
-                const bucketArr = enrichedData && (enrichedData[row.dataset.bucket] || (row.dataset.bucket === "specificEvents" && enrichedData.events));
+                const bucketArr = enrichedData && enrichedData[row.dataset.bucket];
                 const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
                 if (!ev) return;
                 ev.structured_price = row._entries;
@@ -5836,7 +5841,7 @@
             });
 
             [
-                ["specificEvents", data.specificEvents || data.events || []],
+                ["specificEvents", data.specificEvents || []],
                 ["musicEvents", data.musicEvents || []],
                 ["poetryEvents", data.poetryEvents || []],
             ].forEach(([bucketName, arr]) => {

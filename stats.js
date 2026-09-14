@@ -536,7 +536,7 @@ async function loadAndRender() {
   const performers = result.performersLookup;
   const tours = result.toursLookup;
 
-  // Display when data was last updated
+  // Display when data was last refreshed
   displayDataLastUpdated(result.lastUpdateTime);
   initNavFeedback();
 
