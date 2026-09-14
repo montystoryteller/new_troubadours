@@ -940,7 +940,7 @@ select {
     align-items: flex-start;
     gap: 12px;
     padding: 12px 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #ccc;
     cursor: pointer;
 }
 
