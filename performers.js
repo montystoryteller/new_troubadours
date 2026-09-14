@@ -94,6 +94,7 @@ function hasAnyMedia(performer, ids) {
 function renderAllPerformers() {
   const container = document.getElementById("performerContent");
   container.innerHTML = "";
+  applyDirectoryHeadingMode();
 
   // ── Build search index ─────────────────────────────────────────────
   // Each entry covers performer name + bio + tour/show/event names
@@ -619,8 +620,72 @@ function representativeShowDate(show) {
   );
 }
 
+// A page with no ?performer= arg shows the directory (renderAllPerformers()),
+// whose #pageHeading — "The New Troubadours — Performers" — is correctly
+// the page's one and only H1 there. Once a specific performer is loaded
+// (renderPerformer()), that performer's own name (in the static
+// #performerName element) becomes the more page-specific, SEO-relevant H1
+// instead, so #pageHeading is demoted to H2 and the directory-only
+// #pageSubheading ("Directory of UK based...") — which would otherwise sit
+// above that performer's name describing the directory, not them — is
+// hidden. Both apply* functions are idempotent, so it's safe to call the
+// "wrong" one first and correct it, or to call the same one twice.
+//
+// Both are also re-applied on `pageshow`, not just from the two render
+// functions — this page doesn't use pushState/History-API routing, so
+// switching between the directory and a specific performer is always a
+// full navigation to a different document, but the browser's
+// back/forward cache (bfcache) can still restore either document's exact
+// prior DOM state without re-running this script from scratch. Since
+// each document's own state is only ever mutated by its own render pass,
+// a bfcache restore alone can't actually mix up the two modes — but
+// re-applying on pageshow (keyed off the already-parsed `performerId`,
+// not off which render function happened to run) is a cheap, defensive
+// guarantee that Back/Forward between the two always shows the correct
+// heading level, rather than relying on that reasoning holding forever.
+function promoteHeadingToH1(el) {
+  if (!el || el.tagName === "H1") return el;
+  const h1 = document.createElement("h1");
+  h1.id = el.id;
+  h1.className = el.className;
+  h1.innerHTML = el.innerHTML;
+  el.replaceWith(h1);
+  return h1;
+}
+
+function demoteHeadingToH2(el) {
+  if (!el || el.tagName === "H2") return el;
+  const h2 = document.createElement("h2");
+  h2.id = el.id;
+  h2.className = el.className;
+  h2.innerHTML = el.innerHTML;
+  el.replaceWith(h2);
+  return h2;
+}
+
+function applyDirectoryHeadingMode() {
+  promoteHeadingToH1(document.getElementById("pageHeading"));
+  const subheading = document.getElementById("pageSubheading");
+  if (subheading) subheading.style.display = "";
+}
+
+function applyPerformerHeadingMode() {
+  demoteHeadingToH2(document.getElementById("pageHeading"));
+  const subheading = document.getElementById("pageSubheading");
+  if (subheading) subheading.style.display = "none";
+}
+
+window.addEventListener("pageshow", () => {
+  if (performerId) {
+    applyPerformerHeadingMode();
+  } else {
+    applyDirectoryHeadingMode();
+  }
+});
+
 function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
+  applyPerformerHeadingMode();
 
   // Avatar initials
   const initials = performer.name
