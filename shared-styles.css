@@ -1300,7 +1300,7 @@ a.festival-programme-link:hover {
 .dir-search-dropdown-item {
     padding: 9px 12px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #d0d0d0;
     font-size: 13px;
 }
  
@@ -1390,7 +1390,7 @@ a.festival-programme-link:hover {
     display: flex;
     gap: 16px;
     padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #d0d0d0;
     align-items: flex-start;
 }
 
