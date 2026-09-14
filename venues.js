@@ -694,6 +694,7 @@ function renderAllVenues() {
 (async () => {
   const params = new URLSearchParams(window.location.search);
   venueId = params.get("venue");
+  setCanonical("venue");
 
   if (!venueId) {
     const loaded = await loadEventsData();

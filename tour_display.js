@@ -1599,6 +1599,7 @@ function refreshEventsData() {
 // on the page), so the JSON fetch starts as early as possible.
 (async () => {
   console.log("Page loaded, initializing...");
+  setCanonical("tour");
 
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");

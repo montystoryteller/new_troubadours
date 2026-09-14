@@ -423,6 +423,7 @@ function renderAllPerformers() {
 (async () => {
   const params = new URLSearchParams(window.location.search);
   performerId = params.get("performer");
+  setCanonical("performer");
 
   // Lazy-image loader for performer-page flyer thumbnails — see
   // createLazyImageLoader() in shared_utils.js for the shared

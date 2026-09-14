@@ -1672,6 +1672,7 @@ function refreshEventsData() {
   });
 
   const { festivalId, cacheBuster } = getFestivalURLParams();
+  setCanonical("festival");
 
   const result = await loadEventsData(
     cacheBuster || (forcedRefresh ? Date.now() : null),

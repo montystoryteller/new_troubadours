@@ -123,6 +123,7 @@ const prevMeetingDate = RecurrenceEngine.prevMeetingDate;
 (async function () {
   const params = new URLSearchParams(location.search);
   const clubId = params.get("club");
+  setCanonical("club");
 
   // Load data (should be cached, so this is fast)
   const result = await loadEventsData();
