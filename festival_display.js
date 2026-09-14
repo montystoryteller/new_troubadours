@@ -62,30 +62,6 @@ function loadSelectedFestival() {
   updateURL(id);
 }
 
-
-// Canonical link handling for performers, venues, storyclubs
-function setCanonical(param = null) {
-  const url = new URL(window.location.pathname, window.location.origin);
-
-  if (param) {
-    const value = new URLSearchParams(window.location.search).get(param);
-
-    if (value) {
-      url.searchParams.set(param, value);
-    }
-  }
-
-  let canonical = document.querySelector('link[rel="canonical"]');
-
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    document.head.appendChild(canonical);
-  }
-
-  canonical.href = url.href;
-}
-
 // ---------------------------------------------------------------------------
 // Festival status
 // ---------------------------------------------------------------------------
@@ -1680,6 +1656,8 @@ function refreshEventsData() {
 // Runs as soon as this script executes rather than waiting for the "load"
 // event (which would also wait on the Leaflet CDN CSS/JS and anything else
 // on the page), so the JSON fetch starts as early as possible.
+setCanonical("festival");
+
 (async () => {
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
@@ -1696,7 +1674,6 @@ function refreshEventsData() {
   });
 
   const { festivalId, cacheBuster } = getFestivalURLParams();
-  setCanonical("festival");
 
   const result = await loadEventsData(
     cacheBuster || (forcedRefresh ? Date.now() : null),

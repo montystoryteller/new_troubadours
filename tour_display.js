@@ -57,30 +57,6 @@ function buildCombinedToursLookup(realTours, repertoireShows) {
   return combined;
 }
 
-
-// Canonical link handling for performers, venues, storyclubs
-function setCanonical(param = null) {
-  const url = new URL(window.location.pathname, window.location.origin);
-
-  if (param) {
-    const value = new URLSearchParams(window.location.search).get(param);
-
-    if (value) {
-      url.searchParams.set(param, value);
-    }
-  }
-
-  let canonical = document.querySelector('link[rel="canonical"]');
-
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    document.head.appendChild(canonical);
-  }
-
-  canonical.href = url.href;
-}
-
 /**
  * Builds the grouped dropdown entries for one performer: each repertoire
  * show they're in (with any tours that repertoire_id-link to it nested
@@ -1621,9 +1597,10 @@ function refreshEventsData() {
 // Runs as soon as this script executes rather than waiting for the "load"
 // event (which would also wait on the Leaflet CDN CSS/JS and anything else
 // on the page), so the JSON fetch starts as early as possible.
+setCanonical("tour");
+
 (async () => {
   console.log("Page loaded, initializing...");
-  setCanonical("tour");
 
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
