@@ -929,17 +929,23 @@
           "type": "string"
         },
         "time": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time. Set here to override the club's usual time for this one date even when inheriting."
         },
         "structured_time": {
           "$ref": "#/$defs/structuredTimeList"
         },
         "club": {
           "type": "string",
-          "description": "Key into `events[].club`, if this is happening at an existing club night."
+          "description": "Key into `events[].club`, if this is happening at an existing club night. By itself this only associates the record with that club (e.g. so it appears on storyclub.js's club-page listing) — it does NOT by itself default any fields. Pair with `inheritClubData: true` to also have venue_id/time/price/facebook fall back to that club record wherever this record leaves them blank — see recurringClubEvent's matching fields and `inheritClubData` below."
+        },
+        "inheritClubData": {
+          "type": "boolean",
+          "description": "When true, and `club` resolves to an existing recurringClubEvent, applyClubInheritance() (shared_utils.js) fills in this record's venue_id/time/price/facebook from that club record for any of those left blank here. Deliberately opt-in rather than automatic whenever `club` is set: a record can reference a club purely for cross-referencing/listing purposes while staying fully self-contained, and a record that's missing venue_id by oversight shouldn't silently look complete. Omit or set false for a fully standalone record. No effect if `club` is unset or doesn't resolve to a known club (a console warning is logged in that case)."
         },
         "price": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `price` in at load time. Set here to override (e.g. a guest night with a different door price) even when inheriting."
         },
         "structured_price": {
           "$ref": "#/$defs/structuredPriceList"
@@ -981,7 +987,8 @@
           ]
         },
         "facebook": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `facebook` in at load time."
         },
         "link": {
           "type": "string"
@@ -1028,7 +1035,8 @@
           "type": "boolean"
         },
         "venue_id": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent with its own venue_id — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's venue_id in at load time. Set here to override (e.g. a one-off relocation) even when inheriting."
         },
         "geocode_missing": {
           "type": "boolean"
@@ -1051,8 +1059,7 @@
       },
       "required": [
         "name",
-        "date",
-        "venue_id"
+        "date"
       ],
       "additionalProperties": true
     },
@@ -1070,16 +1077,23 @@
           "$ref": "#/$defs/dateOrDates"
         },
         "time": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time."
         },
         "structured_time": {
           "$ref": "#/$defs/structuredTimeList"
         },
         "club": {
-          "type": "string"
+          "type": "string",
+          "description": "Key into `events[].club`, if this is happening at an existing club night. By itself this only associates the record with that club — it does NOT by itself default any fields. Pair with `inheritClubData: true` to also have venue_id/time/price/facebook fall back to that club record wherever this record leaves them blank."
+        },
+        "inheritClubData": {
+          "type": "boolean",
+          "description": "When true, and `club` resolves to an existing recurringClubEvent, applyClubInheritance() (shared_utils.js) fills in this record's venue_id/time/price/facebook from that club record for any of those left blank here. Deliberately opt-in rather than automatic whenever `club` is set — see specificEvent.inheritClubData for the full rationale. Omit or set false for a fully standalone record."
         },
         "price": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `price` in at load time."
         },
         "structured_price": {
           "$ref": "#/$defs/structuredPriceList"
@@ -1121,6 +1135,10 @@
             "integer"
           ]
         },
+        "facebook": {
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `facebook` in at load time. Not commonly set directly on musicEvents today, but supported the same way as specificEvent/poetryEvent since applyClubInheritance() treats all three the same."
+        },
         "isMusic": {
           "type": "boolean",
           "default": true
@@ -1132,13 +1150,13 @@
           "type": "string"
         },
         "venue_id": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent with its own venue_id — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's venue_id in at load time."
         }
       },
       "required": [
         "name",
-        "date",
-        "venue_id"
+        "date"
       ],
       "additionalProperties": true
     },
@@ -1156,16 +1174,23 @@
           "$ref": "#/$defs/dateOrDates"
         },
         "time": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time."
         },
         "structured_time": {
           "$ref": "#/$defs/structuredTimeList"
         },
         "club": {
-          "type": "string"
+          "type": "string",
+          "description": "Key into `events[].club`, if this is happening at an existing club night. By itself this only associates the record with that club — it does NOT by itself default any fields. Pair with `inheritClubData: true` to also have venue_id/time/price/facebook fall back to that club record wherever this record leaves them blank."
+        },
+        "inheritClubData": {
+          "type": "boolean",
+          "description": "When true, and `club` resolves to an existing recurringClubEvent, applyClubInheritance() (shared_utils.js) fills in this record's venue_id/time/price/facebook from that club record for any of those left blank here. Deliberately opt-in rather than automatic whenever `club` is set — see specificEvent.inheritClubData for the full rationale. Omit or set false for a fully standalone record."
         },
         "price": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `price` in at load time."
         },
         "structured_price": {
           "$ref": "#/$defs/structuredPriceList"
@@ -1207,6 +1232,10 @@
             "integer"
           ]
         },
+        "facebook": {
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `facebook` in at load time."
+        },
         "isPoetry": {
           "type": "boolean",
           "default": true
@@ -1218,13 +1247,13 @@
           "type": "string"
         },
         "venue_id": {
-          "type": "string"
+          "type": "string",
+          "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent with its own venue_id — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's venue_id in at load time."
         }
       },
       "required": [
         "name",
-        "date",
-        "venue_id"
+        "date"
       ],
       "additionalProperties": true
     },
@@ -1255,13 +1284,16 @@
           "description": "Dates the schedule should skip — DD/MM/YYYY for a single date, or MM/YYYY to skip every occurrence in that month."
         },
         "time": {
-          "type": "string"
+          "type": "string",
+          "description": "Also serves as the default `time` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `time` blank — see applyClubInheritance() in shared_utils.js."
         },
         "price": {
-          "type": "string"
+          "type": "string",
+          "description": "Also serves as the default `price` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `price` blank — see applyClubInheritance() in shared_utils.js."
         },
         "venue_id": {
-          "type": "string"
+          "type": "string",
+          "description": "Also serves as the default `venue_id` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `venue_id` blank — see applyClubInheritance() in shared_utils.js."
         },
         "location": {
           "type": "string",
@@ -1308,7 +1340,8 @@
           }
         },
         "facebook": {
-          "type": "string"
+          "type": "string",
+          "description": "Also serves as the default `facebook` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `facebook` blank — see applyClubInheritance() in shared_utils.js."
         },
         "instagram": {
           "type": "string"
@@ -1317,7 +1350,8 @@
           "type": "string"
         },
         "tickets_url": {
-          "type": "string"
+          "type": "string",
+          "description": "Note the plural name — distinct from specificEvent/musicEvent/poetryEvent's singular `ticket_url`. Deliberately NOT one of the fields applyClubInheritance() (shared_utils.js) copies onto events at this club: a guest night's booking page/capacity is often different from the club's own, so it's left for each event to set explicitly rather than defaulted."
         },
         "email": {
           "type": "string"

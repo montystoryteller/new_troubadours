@@ -1522,6 +1522,7 @@ async function loadEventsData(cacheBuster) {
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
           applyRepertoireInheritance(eventsData);
+          applyClubInheritance(eventsData);
           const podcastsLookup = buildPodcastsLookup(eventsData);
           console.log(`✓ Loaded events data from cache`);
           console.log(`  - ${Object.keys(venuesLookup).length} venues`);
@@ -1565,6 +1566,7 @@ async function loadEventsData(cacheBuster) {
       return handleEventsLoadFailure(reason);
     }
     applyRepertoireInheritance(eventsData);
+    applyClubInheritance(eventsData);
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
     const performersLookup = eventsData.performers || {};
@@ -1636,6 +1638,7 @@ function handleEventsLoadFailure(reason) {
       const { timestamp, data } = JSON.parse(cached);
       const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
+      applyClubInheritance(eventsData);
       const podcastsLookup = buildPodcastsLookup(eventsData);
       console.warn(
         `⚠ Live events feed failed — falling back to stale cached data${reason ? `: ${reason}` : ""}`,
@@ -1768,6 +1771,88 @@ function applyRepertoireInheritance(eventsData) {
   });
 }
 
+// Fields copied from a recurringClubEvent onto a specificEvent/musicEvent/
+// poetryEvent that references it via `club`, when the event doesn't set
+// its own value. ticket_url is deliberately NOT included: the club's own
+// booking link is `tickets_url` (plural — a different field on
+// recurringClubEvent, not just an unset one), and a guest night frequently
+// has its own distinct booking page/capacity, so defaulting it silently is
+// more likely to be wrong than right. Add it explicitly per-record if a
+// guest night really does just reuse the club's booking link.
+const CLUB_INHERITABLE_FIELDS = ["venue_id", "time", "price", "facebook"];
+
+// Top-level arrays whose entries can reference a club via `.club` and so
+// are eligible for this inheritance (once they also opt in with
+// `inheritClubData: true` — see applyClubInheritance() below).
+// musicEvents/poetryEvents share specificEvent's shape (see
+// events-schema.json) and can equally be "a guest slot at an existing
+// club night", so they're included alongside specificEvents.
+const CLUB_REFERENCING_EVENT_KEYS = [
+  "specificEvents",
+  "musicEvents",
+  "poetryEvents",
+];
+
+/**
+ * A specificEvent/musicEvent/poetryEvent that carries a `club` id pointing
+ * at an existing recurringClubEvent (an events[] entry) — e.g. a guest
+ * performer's one-off night at a club's usual venue/time/price — CAN
+ * inherit that club's venue_id/time/price/facebook rather than repeating
+ * them on every record, but only when it also sets `inheritClubData: true`.
+ * `club` by itself just associates the record with that club (e.g. so it
+ * shows up on storyclub.js's club-page listing) — it deliberately does NOT
+ * by itself imply "default my blank fields from it", so a record that sets
+ * `club` purely for that cross-reference but is otherwise fully
+ * self-contained is left alone, and a genuinely incomplete record (say,
+ * venue_id missing by oversight) doesn't silently start looking complete.
+ * `inheritClubData: true` is the explicit "yes, use the club's defaults"
+ * signal; only once that's set does a blank field get copied in, and only
+ * where the event's own value is blank — set any field directly to
+ * override it for that one occasion. Mirrors applyRepertoireInheritance()
+ * above (same isBlankValue() copy-if-blank approach), just for "event at
+ * an existing club" instead of "tour of an existing repertoire show".
+ * Mutates eventsData in place, so this only needs to run once when the
+ * data loads; every downstream consumer (storyclub.js's club page,
+ * event_display.js's calendar/search merges, stats, etc.) then just reads
+ * the event's own fields as normal. Existing records are unaffected either
+ * way unless they explicitly opt in with `inheritClubData: true`. Safe to
+ * call more than once, for the same reason applyRepertoireInheritance() is.
+ * @param {object} eventsData
+ */
+function applyClubInheritance(eventsData) {
+  const clubs = eventsData?.events || [];
+  if (!clubs.length) return;
+
+  const clubsById = {};
+  clubs.forEach((c) => {
+    if (c?.club) clubsById[c.club] = c;
+  });
+
+  CLUB_REFERENCING_EVENT_KEYS.forEach((key) => {
+    (eventsData?.[key] || []).forEach((ev) => {
+      if (!ev?.club) return;
+      const club = clubsById[ev.club];
+      if (!club) {
+        console.warn(
+          `${key} entry "${ev.name || ev.showname || "(unnamed)"}" references unknown club: ${ev.club}`,
+        );
+        return;
+      }
+
+      // `club` alone only associates the record with the club — inheriting
+      // its venue/time/price/facebook is opt-in, not automatic. See the
+      // function doc above for why this is deliberately a separate flag.
+      if (!ev.inheritClubData) return;
+
+      CLUB_INHERITABLE_FIELDS.forEach((field) => {
+        if (isBlankValue(ev[field]) && !isBlankValue(club[field])) {
+          ev[field] = club[field];
+        }
+      });
+    });
+  });
+}
+
 /**
  * Combine a per-date `description_prefix` (see events-schema.json →
  * $defs.tourDate.description_prefix / $defs.showDate.description_prefix)
@@ -1876,6 +1961,7 @@ async function checkForNewerEventsDataBackground() {
         return;
       }
       applyRepertoireInheritance(eventsData);
+      applyClubInheritance(eventsData);
       const toursLookup = eventsData.tours || {};
       const venuesLookup = eventsData.venues || {};
       const performersLookup = eventsData.performers || {};
