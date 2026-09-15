@@ -1897,6 +1897,14 @@
       "showname": "In Strange and Wondrous Company",
       "show_dates": [
         {
+          "date": "19/08/2026",
+          "time": "7-10pm",
+          "club": "stinginthetale",
+          "event_flyer": "2026_08_19_ralphs_strangewondrous_sting.jpg",
+          "fb_event": 996154676578391,
+          "venue_id": "lock-91-bar-manchester"
+        },
+        {
           "date": "02/09/2026",
           "time": "7pm",
           "club": "feastoffools",
