@@ -31,6 +31,11 @@
       "email": "snakestonestories@gmail.com",
       "promoter_venues": [],
       "ticketing_url": "https://www.eventbrite.co.uk/o/snake-stone-stories-116437117061"
+    },
+    "woolly-tellers": {
+      "promoter_id": "woolly-tellers",
+      "name": "Woolly Tellers",
+      "url": "https://www.thewoollytellers.co.uk/"
     }
   },
   "festivals": {
@@ -9519,6 +9524,20 @@
       "performer_id": "merl-fluin"
     },
     {
+      "name": "Tales From the Vale [Dave Brookes]",
+      "showname": "Tales From the Vale",
+      "date": "24/09/2026",
+      "venue_id": "horse-and-plough-bingham",
+      "performer_id": "dave-brookes",
+      "date_added": "15/09/2026",
+      "time": "Doos 6.30pm, tales from 7.30pmn",
+      "price": "£8",
+      "description": "Dave Brookes has a collection of tales from South of the County and in to the Vale of Belvoir.",
+      "event_flyer": "2026_09_24_brookes_vale.jpg",
+      "ticket_url": "https://gifts.castlerockbrewery.co.uk/shop/tales-from-the-vale-with-the-woolly-tellers",
+      "isSpecial": true
+    },
+    {
       "name": "The Saga of the Ring [Jon Mason]",
       "showname": "The Saga of the Ring",
       "date": "25/09/2026",
@@ -9548,6 +9567,19 @@
       "performer_id": "polis-loizou",
       "date_added": "11/09/2026"
     },
+    {
+      "name": "Body Snatchers of Nottingham [Dave Brookes]",
+      "showname": "Body Snatchers of Nottingham",
+      "date": "27/09/2026",
+      "venue_id": "fox-grapes-nottingham",
+      "performer_id": "dave-brookes",
+      "date_added": "15/09/2026",
+      "time": "Doors 5pm for 6pm start",
+      "club": "woolly-tellers",
+      "price": "£10 advance, £12 OTD",
+      "ticket_url": "https://www.castlerockbrewery.co.uk/events/story-telling-woolly-tellers-fox-grape/",
+      "isSpecial": true
+    },  
     {
       "name": "Gather Round: Monmouth Festival of Stories: Stories Under the Stars [Alim Kamara]",
       "showname": "Stories Under the Stars",
@@ -9783,6 +9815,19 @@
       "isSpecial": true
     },
     {
+      "name": "Halloween Tales [Dave Brookes]",
+      "showname": "Halloween Tales",
+      "date": "18/10/2026",
+      "venue_id": "fox-grapes-nottingham",
+      "performer_id": "dave-brookes",
+      "date_added": "15/09/2026",
+      "time": "Doors 5pm for 6pm start",
+      "club": "woolly-tellers",
+      "price": "£10 advance, £12 OTD",
+      "ticket_url": "https://gifts.castlerockbrewery.co.uk/shop/halloween-tales-with-the-woolly-tellers",
+      "isSpecial": true
+    },
+    {
       "name": "Icelandic Ghost Stories [Jason Buck]",
       "showname": "Icelandic Ghost Stories",
       "date": "19/10/2026",
@@ -9798,6 +9843,21 @@
       "performer_id": "jason-buck",
       "age_rating": "12+",
       "min_age": 12
+    },
+    {
+      "name": "Icelandic Ghost Stories [Jason Buck]",
+      "showname": "Icelandic Ghost Stories",
+      "date": "21/10/2026",
+      "venue_id": "the-old-cold-store-nottingham",
+      "performer_id": "jason-buck",
+      "date_added": "15/09/2026",
+      "time": "7.30-9.30pm",
+      "price": "£16.50 / £10.50 / £5.50",
+      "description": "Traditional ghost stories for modern audiences\n\n\n\nIceland - the country of ice and fire - has a rich history of stories of ghosts and magic, love, death and adventure. Join professional storyteller Jason Buck for an evening of tales for the spooky season, in Nottingham's best live venue and brewery.",
+      "age_rating": "18+",
+      "min_age": 14,
+      "ticket_url": "https://www.eventbrite.co.uk/e/icelandic-ghost-stories-nottingham-tickets-1993470313370?msockid=0242e2ab5e9f62982ea8f4b75f546345",
+      "isSpecial": true
     },
     {
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
@@ -9863,6 +9923,19 @@
       "time": "7pm",
       "description": "When every audience has gone home, one light remains burning on the stage.\nThe Ghost Light...\n\n\n\nFor generations it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light—an evening of live storytelling in one of the most atmospheric places imaginable: Pontardawe Arts Centre.",
       "ticket_url": "https://pontardaweartscentre.com/shows/the-ghost-light-with-owen-staton/",
+      "isSpecial": true
+    },
+    {
+      "name": "Halloween Tales [Dave Brookes]",
+      "showname": "Halloween Tales",
+      "date": "29/10/2026",
+      "club": "woolly-tellers",
+      "venue_id": "horse-and-plough-bingham",
+      "performer_id": "dave-brookes",
+      "date_added": "15/09/2026",
+      "time": "Doors 6.30pm starts 8.30pm",
+      "price": "£8 advance, £10 OTD",
+      "ticket_url": "https://www.castlerockbrewery.co.uk/events/story-telling-woolly-tellers-horse-plough-halloween/",
       "isSpecial": true
     },
     {
@@ -12206,6 +12279,18 @@
       "latlon": [
         51.40068,
         -1.32264
+      ]
+    },
+    "horse-and-plough-bingham": {
+      "id": "horse-and-plough-bingham",
+      "name": "Horse and Plough, Bingham",
+      "full_address": "25 Long Acre, Bingham, NG13 8AF",
+      "city": "Bingham",
+      "postcode": "NG13 8AF",
+      "url": "https://www.castlerockbrewery.co.uk/pubs/horse-and-plough/",
+      "latlon": [
+        52.9514,
+        -0.95438
       ]
     },
     "oxford-playhouse": {
@@ -15840,6 +15925,18 @@
         -0.12266
       ]
     },
+    "fox-grapes-nottingham": {
+      "id": "fox-grapes-nottingham",
+      "name": "Fox & Grapes, Nottingham",
+      "full_address": "Fox & Grapes, 21 Southwell Road, Nottingham, NG1 1DL",
+      "city": "Nottingham",
+      "postcode": "NG1 1DL",
+      "url": "https://www.castlerockbrewery.co.uk/pubs/fox-grapes/",
+      "latlon": [
+        52.95367,
+        -1.13771
+      ]
+    },
     "crauford-arms-milton-keynes": {
       "id": "crauford-arms-milton-keynes",
       "name": "Crauford Arms, Milton Keynes",
@@ -17518,6 +17615,12 @@
       "url": "https://www.charlottemooneystories.com/",
       "instagram": "https://www.instagram.com/charlottemooneystories/",
       "bio": "Since 2015 Charlotte has been telling stories in theatres, clubs, and around campfires. She disentangles tales of power and transformation and asks how we make sense of the stories we have. She is drawn to the place where mythology, folklore, history and the every day meet."
+    },
+    "dave-brookes": {
+      "id": "dave-brookes",
+      "name": "Dave Brookes",
+      "url": "https://www.thewoollytellers.co.uk/",
+      "bio": "A member of the Society for Storytelling with an aim to promote the ancient art of stroytelling.\n\n\n\nDavie's priority is entertainmaint. Whether you are a believer, a sceptic, or simply love a good story, his desire is to intrigue, delight and perhaps unsettle."
     },
     "shonaleigh": {
       "id": "shonaleigh",
