@@ -1288,7 +1288,24 @@
           "description": "Additional flyer artwork for this club, distinct from the single club_flyer above. A filename prefixed YYYY_MM_DD (e.g. '2026_03_15_special_guest.jpg') is treated as a one-off/legacy flyer for that specific date's occurrence rather than generic ongoing club artwork — see parseDatedClubFlyer() in shared_utils.js. Renamed from the previous generic `flyers` name for consistency with club_flyer and the rest of the site's _flyer/_flyers naming convention; flyers.js, storyclub.js, venues.js, and event_display.js all read this field by name."
         },
         "feature_slots": {
-          "type": "string"
+          "type": "array",
+          "description": "Rotating guest-performer bookings for specific future occurrences of this club night, keyed by date rather than stored as separate records. Each entry is a 2-element [date, performer_id] tuple: date is a DD/MM/YYYY string matched against the occurrence being rendered, performer_id is a key into the top-level `performers` object. Read by featuredGuestForDate() in storyclub.js and the feature-slot matching in processRecurringEvents()/the equivalent block further down event_display.js, both of which do `slots.find(s => s[0] === dateStr)` and then look up `s[1]` in the performers table.",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+                "description": "DD/MM/YYYY date of the occurrence this feature slot applies to."
+              },
+              {
+                "type": "string",
+                "description": "Key into the top-level `performers` object for the featured guest on that date."
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
         },
         "facebook": {
           "type": "string"
