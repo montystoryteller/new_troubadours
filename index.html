@@ -239,6 +239,33 @@
 
     </div>
 
+    <div class="about" id="colophon">
+        <div id="dataLastUpdated"></div>
+        <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
+                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
+                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
+                Saturday, November 29th, 2025.</em></p>
+        <p><strong>All data
+                is manually sourced and manually added to the site, primarily sourced from primary (performer,
+                ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code> / web:
+                <a href="https://montystoryteller.org/"><code>montystoryteller.org</code></a> / fb: <a
+                    href="https://www.facebook.com/montystoryteller/"><code>montystoryteller</code></a> / insta: <a
+                    href="https://www.instagram.com/montystoryteller/"><code>montystoryteller</code></a>.</em></p>
+        <p><em>Show your appreciation by booking me for a gig, or by buying a little something for yourself: <a
+                    href="https://www.amazon.co.uk/dp/B0FVYBY4V8">Island Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FY3TZW81">Protest Tales</a>; <a
+                    href="https://www.amazon.co.uk/dp/B0FW286JLD">Dark Tales</a>.</em></p>
+        <p><code>If you're looking for a ticketing service, how about <a
+                    href="https://get.tickettailor.com/z0iazwduw3fe"><strong>TicketTailor</strong> <em>[affiliate
+                        link]</em></a>?</code></p>
+        <p>Generate new event / tour / repertoire show / performer / venue data record using the <em><a
+                    href="event_builder.html">New Troubadours Event Builder</a></em> tool.</p>
+        <p><em><code>This website does not collect cookies or tracking information. The only externally loaded resources
+                    are ones required to render the map or support audio/video media embedding and playback.</code></em>
+        </p>
+    </div>
+
     <script>
         (function () {
             // ── Schedule helpers (ported from storyclub.html) ──────
@@ -357,7 +384,11 @@
             function countClubsInWindow(clubs, from, to) {
                 let count = 0;
                 for (const club of clubs) {
-                    if (!club.schedule) continue;
+                    // Some records use a richer, non-string schedule shape
+                    // (handled elsewhere by RecurrenceEngine) that this
+                    // simplified parser doesn't understand — skip those
+                    // rather than crash on them.
+                    if (!club.schedule || typeof club.schedule !== 'string') continue;
                     const dates = scheduledDatesInRange(club.schedule, from, to, club.exceptions || []);
                     if (dates.length > 0) count++;
                 }
@@ -394,10 +425,86 @@
                 }
             }
 
+            // ── Tiny standalone data-health LED ─────────────────────
+            // Deliberately not shared_utils.js's buildDataHealthLed() /
+            // displayDataLastUpdated() — this page doesn't load that
+            // script. Reuses the same CSS classes already defined in
+            // shared-styles.css (.data-health-led, .data-health-ok,
+            // .data-health-error, .data-updated-text, .data-health-message)
+            // so it looks and behaves the same, but only knows two states:
+            // ok / error. There's no localStorage cache on this page to
+            // fall back on, so there's no "stale-cache" (orange) state to
+            // show — a failed fetch here just means the feed is down,
+            // full stop.
+            function renderDataHealth(ok, detail) {
+                const el = document.getElementById('dataLastUpdated');
+                if (!el) return;
+                el.innerHTML = '';
+
+                const led = document.createElement('span');
+                led.className = 'data-health-led ' + (ok ? 'data-health-ok' : 'data-health-error');
+                el.appendChild(led);
+
+                const text = document.createElement('span');
+                text.className = 'data-updated-text';
+                text.textContent = ok
+                    ? `Data last refreshed: ${formatNow()}`
+                    : 'Event data unavailable';
+                el.appendChild(text);
+
+                if (ok) {
+                    const title = 'Event data feed loaded successfully';
+                    led.title = title;
+                    led.setAttribute('role', 'img');
+                    led.setAttribute('aria-label', title);
+                    return;
+                }
+
+                // Error state: title/aria-label alone isn't reachable on a
+                // touch device, so make the LED a click/keyboard-toggleable
+                // button that reveals the detail message next to it —
+                // same pattern as wireDataHealthLedClick() in
+                // shared_utils.js, just inlined here rather than shared.
+                const promptText = 'Event data unavailable — click for details';
+                led.title = promptText;
+                led.setAttribute('aria-label', promptText);
+                led.classList.add('data-health-led-clickable');
+                led.setAttribute('tabindex', '0');
+                led.setAttribute('role', 'button');
+                led.setAttribute('aria-expanded', 'false');
+
+                const panel = document.createElement('span');
+                panel.className = 'data-health-message';
+                panel.setAttribute('aria-live', 'polite');
+                panel.style.display = 'none';
+                panel.textContent = detail || 'No further detail available.';
+                el.appendChild(panel);
+
+                const toggle = () => {
+                    const nowVisible = panel.style.display === 'none';
+                    panel.style.display = nowVisible ? 'block' : 'none';
+                    led.setAttribute('aria-expanded', String(nowVisible));
+                };
+                led.onclick = toggle;
+                led.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggle();
+                    }
+                };
+            }
+
+            function formatNow() {
+                return new Date().toLocaleString('en-GB', {
+                    hour: 'numeric', minute: '2-digit', hour12: true,
+                    day: 'numeric', month: 'short'
+                });
+            }
+
             async function loadClubCounts() {
                 try {
                     const resp = await fetch('events_normalized.json');
-                    if (!resp.ok) throw new Error('fetch failed');
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                     const data = await resp.json();
                     const clubs = data.events || [];
 
@@ -413,42 +520,22 @@
                     const weekCount = countClubsInWindow(clubs, today, weekEnd);
 
                     updateCounter(todayCount, weekCount);
+                    renderDataHealth(true);
                 } catch (e) {
-                    // On error, silently remove the spinner
+                    // Remove the counter spinner and paint the LED red —
+                    // no more silent failure now that there's a visible
+                    // indicator to reflect it. Logged to console too, since
+                    // the LED's tooltip alone isn't always easy to trigger.
+                    console.error('loadClubCounts failed:', e);
                     const counter = document.getElementById('club-counter');
                     if (counter) counter.innerHTML = '';
+                    renderDataHealth(false, e && e.message);
                 }
             }
 
             loadClubCounts();
         })();
     </script>
-
-    <div class="about" id="colophon">
-        <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
-                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
-                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
-                Saturday, November 29th, 2025.</em></p>
-        <p><strong>All data
-                is manually sourced and manually added to the site, primarily sourced from primary (performer,
-                ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
-        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code> / web:
-                <a href="https://montystoryteller.org/"><code>montystoryteller.org</code></a> / fb: <a
-                    href="https://www.facebook.com/montystoryteller/"><code>montystoryteller</code></a> / insta: <a
-                    href="https://www.instagram.com/montystoryteller/"><code>montystoryteller</code></a>.</em></p>
-        <p><em>Show your appreciation by booking me for a gig, or by buying a little something for yourself: <a
-                    href="https://www.amazon.co.uk/dp/B0FVYBY4V8">Island Tales</a>; <a
-                    href="https://www.amazon.co.uk/dp/B0FY3TZW81">Protest Tales</a>; <a
-                    href="https://www.amazon.co.uk/dp/B0FW286JLD">Dark Tales</a>.</em></p>
-        <p><code>If you're looking for a ticketing service, how about <a
-                    href="https://get.tickettailor.com/z0iazwduw3fe"><strong>TicketTailor</strong> <em>[affiliate
-                        link]</em></a>?</code></p>
-        <p>Generate new event / tour / repertoire show / performer / venue data record using the <em><a
-                    href="event_builder.html">New Troubadours Event Builder</a></em> tool.</p>
-        <p><em><code>This website does not collect cookies or tracking information. The only externally loaded resources
-                    are ones required to render the map or support audio/video media embedding and playback.</code></em>
-        </p>
-    </div>
 </body>
 
 </html>
