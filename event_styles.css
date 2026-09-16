@@ -122,19 +122,63 @@
     margin: 0 6px;
 }
 
-/* ── Flyer images shown inside the "Tickets & more" expandable ──
-   Scoped to this page rather than reusing storyclub's .club-flyer
-   sizing, since event.html doesn't load storyclub's stylesheet. */
-.event-flyer-img {
-    display: block;
-    max-width: 100%;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    margin-top: 10px;
+/* ── Flyer(s), top of the right-hand sidebar ─────────────────────
+   Full sidebar width (not a small thumbnail, not full page width) so
+   the flyer is actually readable — scoped to this page rather than
+   reusing storyclub's .club-flyer sizing, since event.html doesn't
+   load storyclub's stylesheet. */
+.event-flyer-thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.event-flyer-img.event-flyer-subsequent {
-    margin-top: 14px;
+.event-flyer-thumb-link {
+    display: block;
+}
+
+.event-flyer-thumb {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ── "Events today" type filter checkboxes ───────────────────────── */
+.today-events-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #444;
+}
+
+.today-events-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.today-events-empty {
+    font-size: 14px;
+    color: #777;
+}
+
+/* ── Linked event-row titles (performer-upcoming / today's-events
+   panels, added via event.js's addEventPageLink()) — styled as an
+   actual link (not color:inherit) so it's visibly clickable. */
+.event-row-title a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.event-row-title a:hover {
+    text-decoration: underline;
 }
 
 /* ── Performer panel ──────────────────────────────────────────── */

@@ -45,6 +45,23 @@
         <p>Event not found. <a href="event_guide.html">Return to events calendar.</a></p>
     </div>
 
+    <!-- Shown instead of a single event's detail view when the page is
+         opened with no ?event_id= (or one that doesn't resolve) — populated
+         by event.js's showTodayEvents(). One-off dated events only (specific/
+         music/poetry events, tour dates, touring-show dates, festivals in
+         progress); recurring club/folk/session nights aren't matched against
+         today's date yet, since that needs the recurrence engine wired in
+         here too — a natural next step. -->
+    <div id="todayEventsState" style="display:none;">
+        <div class="content-section">
+            <h3 class="section-heading">Events today — <span id="todayEventsDate"></span></h3>
+            <!-- Populated by event.js's initTodayEventsFilters() — one
+                 checkbox per event-type group, all checked by default. -->
+            <div id="todayEventsFilters" class="today-events-filters"></div>
+            <div id="todayEventsList"></div>
+        </div>
+    </div>
+
     <div id="eventContent" style="display:none;">
         <div class="page-header">
             <a href="event_guide.html" class="back-link">← All Events</a>
@@ -59,14 +76,15 @@
 
         <div class="two-col-layout">
             <div class="left-col">
-                <!-- Tickets link / Facebook event, flyer(s), and video trailer for
-                     this occurrence — populated by event.js's renderTicketsFlyersVideo(),
-                     mirroring storyclub.js's per-event tickets/flyer/video treatment.
-                     Hidden entirely when the event has none of these. -->
+                <!-- Tickets link / Facebook event and video trailer for this
+                     occurrence — populated by event.js's renderTicketsFlyersVideo(),
+                     mirroring storyclub.js's per-event tickets/video treatment.
+                     Hidden entirely when the event has neither. Flyer(s) are
+                     shown at the top of the right column instead (see
+                     #eventFlyersSection) rather than behind an expand button here. -->
                 <div id="aboutSection" class="content-section" style="display:none;">
                     <h3 class="section-heading">Tickets &amp; more</h3>
                     <div id="eventTickets" class="event-tickets" style="display:none;"></div>
-                    <div id="flyerControls" style="display:none;"></div>
                     <div id="videoControls" style="display:none;"></div>
                 </div>
 
@@ -89,6 +107,17 @@
             </div>
 
             <div class="right-col">
+                <!-- Populated by event.js's renderEventFlyers() — flyer
+                     image(s) for this event, sized to the sidebar's width
+                     (event_flyer/event_flyer2/event_flyers, resolved via
+                     shared_utils.js's getEventLevelFlyers()). Each links to
+                     the full-size image in a new tab. Hidden when there's no
+                     flyer. -->
+                <div id="eventFlyersSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Flyer</h3>
+                    <div id="eventFlyersList" class="event-flyer-thumbs"></div>
+                </div>
+
                 <!-- Populated by event.js's renderPerformerUpcomingEvents() —
                      other upcoming dates by this event's performer, across
                      tours, touring shows, and specific/music/poetry events.
