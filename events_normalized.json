@@ -5489,11 +5489,10 @@
       "name": "Surrey Storytellers: Three Heads In A Well storytelling circle",
       "schedule": "4th friday",
       "time": "7.30pm",
-      "location": "st-johns-church-hall-worcester-park",
+      "venue_id": "st-johns-church-hall-worcester-park",
       "link": "https://www.surreystorytellers.co.uk",
       "facebook": "https://www.facebook.com/groups/366190587003",
       "club": "threeheadsinawell",
-      "geocode_missing": true
     },
     {
       "name": "Bletchley: Tales Tattled and Told",
