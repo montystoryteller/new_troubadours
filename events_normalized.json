@@ -5842,6 +5842,7 @@
     {
       "name": "Heads & Tales Storytelling Club, Ringwood",
       "schedule": "3rd thursday",
+      "club": "heads-and-tales",
       "facebook": "https://www.facebook.com/HeadsAndTalesCafe",
       "venue_id": "the-elm-tree-ringwood"
     },
@@ -11268,7 +11269,7 @@
       "name": "Rectory Cottages",
       "city": "Bletchley",
       "postcode": "MK3 6BJ",
-      "full_address": "Rectory Cottages, Bletchley, MK3 6BJ",
+      "full_address": "Rectory Cottages, Church Green Road, Bletchley, MK3 6BJ",
       "url": "https://www.mkheritage.co.uk/rct/",
       "latlon": [
         51.9958309,
