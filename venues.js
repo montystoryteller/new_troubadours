@@ -62,7 +62,7 @@ function preloadLeafletWhenIdle() {
 // ---------------------------------------------------------------------------
 
 // Performance-type classification (what kinds of events happen at a
-// venue — distinct from classifyVenueType()/VTYPE_* in shared_utils.js,
+// venue — distinct from classifyVenueType()/VTYPE_* in shared_guessers.js,
 // which classify the *building* itself from its name). Story/Music/
 // Poetry mirror the same three buckets used on the performers listing
 // page; folk nights and Irish sessions are treated as "music" here
@@ -131,26 +131,44 @@ function renderAllVenues() {
 
   // Build search index — pre-classify venue type so it's available for
   // both the listing cards and the shared type filter.
-  const venueIndex = venueList.map(([vid, v]) => ({
-    vid,
-    v,
-    vtype: classifyVenueType(v.name),
-    ptypes: classifyVenuePerformanceTypes(vid),
-    searchText: [v.name, v.city, v.full_address, v.postcode]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase(),
-  }));
+  //
+  // resolveVenueTypesForVenue() (shared_guessers.js) prefers an explicit
+  // venue.venue_type (single value or array) over the name-based guess —
+  // this used to just be classifyVenueType(v.name), which meant a manually
+  // set venue_type override had no visible effect anywhere on this page.
+  // `vtypes` holds every resolved type (for badges / multi-type filter
+  // matching); `vtype` is the first/primary one, kept as its own field
+  // because it's what map-marker colour, legend bucketing, and the
+  // single-select type filter still key off.
+  const venueIndex = venueList.map(([vid, v]) => {
+    const vtypes = resolveVenueTypesForVenue(v);
+    return {
+      vid,
+      v,
+      vtypes,
+      vtype: vtypes[0].label,
+      ptypes: classifyVenuePerformanceTypes(vid),
+      searchText: [v.name, v.city, v.full_address, v.postcode]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase(),
+    };
+  });
 
-  // Collect the types that actually appear (in canonical order).
+  // Collect the types that actually appear (in canonical order). Checks
+  // ALL of a venue's types, not just the primary one, so a venue tagged
+  // ["pub-bar-cafe", "live-music-venue"] makes both filter buttons appear.
   const presentTypes = VTYPE_ORDER.filter((t) =>
-    venueIndex.some((e) => e.vtype === t),
+    venueIndex.some((e) => e.vtypes.some((vt) => vt.label === t)),
   );
 
   // ── Filter state ─────────────────────────────────────────────────────
   let activeCity = null;
   let searchTerm = "";
-  let activeVenueType = null; // null = show all types
+  // Venue-type filter: which types are selected — a toggleable OR/union
+  // set, same convention as activePTypes below. Starts with every type
+  // that actually appears selected, i.e. no restriction.
+  const activeVenueTypes = new Set(presentTypes);
   let mapBounds = null; // null = no bounds filter (map closed / never panned)
   // Performance-type filter: which of story/music/poetry are
   // selected, and whether a venue must match ANY (union) or ALL
@@ -175,8 +193,16 @@ function renderAllVenues() {
     return [...entry.ptypes].some((t) => activePTypes.has(t));
   }
 
+  function venueTypeMatches(entry) {
+    if (activeVenueTypes.size === 0) return false; // nothing selected → show nothing
+    // Selecting every type that appears is equivalent to no restriction —
+    // same convention as performanceTypeVisible() below.
+    if (activeVenueTypes.size === presentTypes.length) return true;
+    return entry.vtypes.some((vt) => activeVenueTypes.has(vt.label));
+  }
+
   function isVisible(entry) {
-    if (activeVenueType && entry.vtype !== activeVenueType) return false;
+    if (!venueTypeMatches(entry)) return false;
     if (!performanceTypeVisible(entry)) return false;
     if (activeCity && entry.v.city !== activeCity) return false;
     if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase()))
@@ -192,8 +218,7 @@ function renderAllVenues() {
   // only the toggle-style filters (venue type / performance type /
   // city) show or hide markers directly.
   function markerVisible(entry) {
-    if (activeVenueType !== null && entry.vtype !== activeVenueType)
-      return false;
+    if (!venueTypeMatches(entry)) return false;
     if (!performanceTypeVisible(entry)) return false;
     if (activeCity !== null && entry.v.city !== activeCity) return false;
     return true;
@@ -283,7 +308,9 @@ function renderAllVenues() {
     },
   });
 
-  // ── Venue-type filter buttons ────────────────────────────────────────
+  // ── Venue-type filter buttons — independent toggles (OR/union), same
+  // interaction as the performance-type buttons below: click a type to
+  // add/remove it from the selection; "All" resets to every type shown.
   {
     const typeLabel = document.createElement("div");
     typeLabel.className = "dir-filter-label";
@@ -298,12 +325,17 @@ function renderAllVenues() {
     allTypeBtn.className = "dir-filter-btn active-teal";
     typeBtnsWrap.appendChild(allTypeBtn);
 
-    const typeBtnEls = [{ btn: allTypeBtn, vtype: null }];
+    const noneTypeBtn = document.createElement("button");
+    noneTypeBtn.textContent = "None";
+    noneTypeBtn.className = "dir-filter-btn";
+    typeBtnsWrap.appendChild(noneTypeBtn);
+
+    const typeBtnEls = [];
 
     presentTypes.forEach((vtype) => {
       const colour = VTYPE_COLOURS[vtype] || "#999";
       const btn = document.createElement("button");
-      btn.className = "dir-filter-btn";
+      btn.className = "dir-filter-btn active-teal";
       btn.style.borderLeftColor = colour;
       btn.style.borderLeftWidth = "4px";
 
@@ -316,26 +348,41 @@ function renderAllVenues() {
       typeBtnsWrap.appendChild(btn);
     });
 
-    function applyTypeFilter(selected) {
-      activeVenueType = selected;
+    function refreshTypeBtns() {
+      typeBtnEls.forEach(({ btn, vtype }) =>
+        btn.classList.toggle("active-teal", activeVenueTypes.has(vtype)),
+      );
+      // "All" reads as active only when every present type is selected —
+      // i.e. genuinely "no restriction" — matching the ptype "All" button.
+      allTypeBtn.classList.toggle(
+        "active-teal",
+        activeVenueTypes.size === presentTypes.length,
+      );
+      // "None" mirrors it at the other end — active only when nothing's
+      // selected (which shows zero venues; see venueTypeMatches()).
+      noneTypeBtn.classList.toggle("active-teal", activeVenueTypes.size === 0);
+    }
 
-      // Update button active states
-      typeBtnEls.forEach(({ btn, vtype }) => {
-        btn.classList.toggle("active-teal", selected === vtype);
-      });
-
-      // Re-render listing
+    function refreshAndApply() {
+      refreshTypeBtns();
       renderList();
-
-      // If the map is already open, update marker visibility respecting all filters
       syncMarkerVisibility();
       fitMapToVisibleVenues();
     }
 
-    allTypeBtn.addEventListener("click", () => applyTypeFilter(null));
-    typeBtnEls.slice(1).forEach(({ btn, vtype }) => {
+    allTypeBtn.addEventListener("click", () => {
+      presentTypes.forEach((t) => activeVenueTypes.add(t));
+      refreshAndApply();
+    });
+    noneTypeBtn.addEventListener("click", () => {
+      activeVenueTypes.clear();
+      refreshAndApply();
+    });
+    typeBtnEls.forEach(({ btn, vtype }) => {
       btn.addEventListener("click", () => {
-        applyTypeFilter(activeVenueType === vtype ? null : vtype);
+        if (activeVenueTypes.has(vtype)) activeVenueTypes.delete(vtype);
+        else activeVenueTypes.add(vtype);
+        refreshAndApply();
       });
     });
 
@@ -366,6 +413,18 @@ function renderAllVenues() {
     });
     ptypeBtnsWrap.appendChild(allPtypeBtn);
 
+    const nonePtypeBtn = document.createElement("button");
+    nonePtypeBtn.textContent = "None";
+    nonePtypeBtn.className = "dir-filter-btn";
+    nonePtypeBtn.addEventListener("click", () => {
+      activePTypes.clear();
+      refreshPtypeBtns();
+      renderList();
+      syncMarkerVisibility();
+      fitMapToVisibleVenues();
+    });
+    ptypeBtnsWrap.appendChild(nonePtypeBtn);
+
     const ptypeBtnEls = [];
     PTYPE_DEFS.forEach(({ key, label }) => {
       const btn = document.createElement("button");
@@ -394,6 +453,9 @@ function renderAllVenues() {
         "active-teal",
         activePTypes.size === PTYPE_DEFS.length && ptypeMode === "union",
       );
+      // "None" mirrors it at the other end — active only when nothing's
+      // selected (which shows zero venues; see performanceTypeVisible()).
+      nonePtypeBtn.classList.toggle("active-teal", activePTypes.size === 0);
     }
 
     controls.appendChild(ptypeBtnsWrap);
@@ -542,11 +604,9 @@ function renderAllVenues() {
       // Apply any filters already active before the map was opened
       const ptypeFilterActive =
         activePTypes.size !== PTYPE_DEFS.length || ptypeMode !== "union";
-      if (
-        activeVenueType !== null ||
-        activeCity !== null ||
-        ptypeFilterActive
-      ) {
+      const venueTypeFilterActive =
+        activeVenueTypes.size !== presentTypes.length;
+      if (venueTypeFilterActive || activeCity !== null || ptypeFilterActive) {
         venueIndex.forEach((entry) => {
           const marker = markerByVid[entry.vid];
           if (!marker) return;
@@ -623,7 +683,7 @@ function renderAllVenues() {
       return;
     }
 
-    visible.forEach(({ vid, v, vtype, ptypes }) => {
+    visible.forEach(({ vid, v, vtype, vtypes, ptypes }) => {
       const colour = VTYPE_COLOURS[vtype] || "#999";
 
       const row = document.createElement("div");
@@ -648,12 +708,16 @@ function renderAllVenues() {
         row.appendChild(locEl);
       }
 
-      // Venue-type badge (building type)
-      const typeBadge = document.createElement("span");
-      typeBadge.className = "venue-type-badge";
-      typeBadge.style.cssText = `background:${colour}22;color:${colour};border:1px solid ${colour}55;`;
-      typeBadge.textContent = vtype;
-      row.appendChild(typeBadge);
+      // Venue-type badge(s) (building type) — one badge per resolved
+      // type, so a venue with venue_type: ["pub-bar-cafe",
+      // "live-music-venue"] shows both rather than only the primary one.
+      vtypes.forEach((vt) => {
+        const typeBadge = document.createElement("span");
+        typeBadge.className = "venue-type-badge";
+        typeBadge.style.cssText = `background:${vt.colour}22;color:${vt.colour};border:1px solid ${vt.colour}55;`;
+        typeBadge.textContent = vt.label;
+        row.appendChild(typeBadge);
+      });
 
       // Performance-type badges (story/music/poetry) — the
       // "highlighting" for what kinds of events happen here

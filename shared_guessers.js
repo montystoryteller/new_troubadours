@@ -1,9 +1,25 @@
 // ---------------------------------------------------------------------------
-// Shared guessers — heuristics reused by both stats.js (venue-type charts)
-// and the event builder (venue_type suggestions, form + enrichment). Load
-// this script BEFORE either of those.
+// Shared guessers — heuristics reused by venues.js, stats.js (venue-type
+// charts), and the event builder (venue_type suggestions, form +
+// enrichment). Load this script BEFORE any of those.
 //
-// classifyVenueType() below was moved here verbatim from stats.js — same
+// VENUE_TYPES is the single canonical source for a venue type's slug,
+// display label, and marker/badge colour. VTYPE_ORDER, VTYPE_COLOURS and
+// VENUE_TYPE_SUGGESTIONS below are all *derived* from it and kept only so
+// existing code that already reads those exact names doesn't need to
+// change.
+//
+// A venue's `venue_type` (see events-schema.json) can be: one of the slugs
+// below (preferred for new data); the full label text of one of them
+// (legacy data — every venue set before this dict existed stores the label
+// directly, e.g. "Pub / bar / café" — resolveVenueType() matches those too,
+// so nothing needs to be migrated); or free text that matches neither,
+// which is displayed verbatim rather than collapsed into "Other / unknown"
+// so nothing typed by hand is ever silently discarded. It may also be an
+// ARRAY of any mix of the above, for a venue that's genuinely more than one
+// thing, e.g. ["pub-bar-cafe", "live-music-venue"].
+//
+// classifyVenueType() itself was moved here verbatim from stats.js — same
 // function body, same regexes, byte-for-byte — so its behaviour on the
 // stats page is unchanged. Note: a few of its regex alternatives (e.g. the
 // \binstitute\b / \bnewstead\b word-boundary checks) contain what appear to
@@ -13,6 +29,79 @@
 // refactor; it's flagged here rather than "fixed" so this move doesn't
 // change existing behaviour. Worth a follow-up if it's ever worth chasing.
 // ---------------------------------------------------------------------------
+
+const VENUE_TYPES = {
+  "pub-bar-cafe": { label: "Pub / bar / café", colour: "#795548" },
+  "village-hall": { label: "Village / community hall", colour: "#00796b" },
+  "arts-centre": { label: "Arts centre / venue", colour: "#443cd7" },
+  theatre: { label: "Theatre", colour: "#c62828" },
+  church: { label: "Church / faith venue", colour: "#e8a020" },
+  "museum-historic": { label: "Museum / historic", colour: "#546e7a" },
+  "barn-rural-outdoor": { label: "Barn / rural / outdoor", colour: "#2e7d32" },
+  online: { label: "Online", colour: "#888888" },
+  bookshop: { label: "Bookshop", colour: "#6a4c93" },
+  "social-club": { label: "Social club", colour: "#ef6c00" },
+  "live-music-venue": { label: "Live music venue", colour: "#1565c0" },
+  other: { label: "Other / unknown", colour: "#bbbbbb" },
+};
+
+// Derived — kept as separate names because venues.js/stats.js/the event
+// builder already read these exact identifiers.
+const VTYPE_ORDER = Object.values(VENUE_TYPES).map((t) => t.label);
+const VTYPE_COLOURS = Object.fromEntries(
+  Object.values(VENUE_TYPES).map((t) => [t.label, t.colour]),
+);
+const VENUE_TYPE_SUGGESTIONS = VTYPE_ORDER.slice();
+
+// Reverse lookup so legacy data (which stores the label text directly,
+// rather than a slug) can still be resolved back to a slug/colour.
+const VENUE_TYPE_LABEL_TO_SLUG = Object.fromEntries(
+  Object.entries(VENUE_TYPES).map(([slug, t]) => [t.label, slug]),
+);
+
+/**
+ * Resolve one venue_type value — a slug, a legacy label, or arbitrary free
+ * text — to its slug/label/colour. Unmatched text is returned verbatim as
+ * the label (with the "unknown" colour) rather than coerced into
+ * "Other / unknown", so nothing typed by hand is ever silently discarded.
+ * @param {string} value
+ * @returns {{slug: string|null, label: string, colour: string}|null}
+ */
+function resolveVenueType(value) {
+  if (!value) return null;
+  if (VENUE_TYPES[value]) return { slug: value, ...VENUE_TYPES[value] };
+  const bySlug = VENUE_TYPE_LABEL_TO_SLUG[value];
+  if (bySlug) return { slug: bySlug, ...VENUE_TYPES[bySlug] };
+  return { slug: null, label: value, colour: VENUE_TYPES.other.colour };
+}
+
+/**
+ * Resolve the venue type(s) that should actually be DISPLAYED for a venue
+ * record: prefers an explicit venue.venue_type (string or array) over the
+ * name-based guess, falling back to classifyVenueType(venue.name) only
+ * when venue_type is unset. Previously, venues.js and stats.js called
+ * classifyVenueType(v.name) directly and ignored venue_type entirely, so
+ * a manually-set override had no visible effect anywhere — this is the
+ * function that should be called instead, wherever a venue's type needs
+ * to be shown or grouped by.
+ *
+ * Always returns an array of resolved entries (usually length 1) so
+ * callers can render one badge per type; the first entry is the "primary"
+ * type for anywhere only a single value makes sense (map marker colour,
+ * single-column stats grouping, etc).
+ * @param {object} venue
+ * @returns {{slug: string|null, label: string, colour: string}[]}
+ */
+function resolveVenueTypesForVenue(venue) {
+  const raw = venue && venue.venue_type;
+  const values = raw
+    ? (Array.isArray(raw) ? raw : [raw]).filter(Boolean)
+    : [classifyVenueType(venue && venue.name)];
+  const resolved = values.map(resolveVenueType).filter(Boolean);
+  return resolved.length
+    ? resolved
+    : [resolveVenueType(VENUE_TYPES.other.label)];
+}
 
 function classifyVenueType(name) {
   if (!name) return "Other / unknown";
@@ -42,7 +131,7 @@ function classifyVenueType(name) {
   )
     return "Arts centre / venue";
   if (
-    /\bpub\b|tavern|\binn\b|\barms\b|\btap\b|brewery|\bbar\b|\bale house\b|the fleece|brunswick|britons|half moon|station pub|black swan|fountain inn|dove st|locks inn|three swans|stubbing|dairyman|portland arms|porter club|rat and ratchet|duke william|embankment|castle tap|castle inn|bodega|star coffee|temperance|chillingham|the hoops|the grove|the victoria|waverley|hop sun|ropemakers|bear club|hop inn|foxtails|bargeman|alder\b|hearth\b|the fold|the elm tree|katie fitzgerald|chagford inn|ship inn|the acorn|joiners|love shack|\byes\b|department\b|lock 91|cafe|coffee|kitchen garden|merlin|carvel lane|foremans|travellers joy|fat cat|nelly|angels cut|ltb showroom|stables at the bull|snapdragons|avalon|calverts|hotel indigo|swiss cottage|micklethwait|better days|b side|cwrw|\bsocial club\b|crown.*sceptre/.test(
+    /\bpub\b|tavern|\binn\b|\barms\b|\btap\b|brewery|\bbar\b|\bale house\b|the fleece|brunswick|britons|half moon|station pub|black swan|fountain inn|dove st|locks inn|three swans|stubbing|dairyman|portland arms|porter club|rat and ratchet|duke william|embankment|castle tap|castle inn|bodega|star coffee|temperance|chillingham|the hoops|the grove|the victoria|waverley|hop sun|ropemakers|bear club|hop inn|foxtails|bargeman|alder\b|hearth\b|the fold|the elm tree|katie fitzgerald|chagford inn|ship inn|the acorn|joiners|love shack|\byes\b|department\b|lock 91|cafe|coffee|kitchen garden|merlin|carvel lane|foremans|travellers joy|fat cat|nelly|angels cut|ltb showroom|stables at the bull|snapdragons|avalon|calverts|hotel indigo|swiss cottage|micklethwait|better days|b side|cwrw|crown.*sceptre/.test(
       n,
     )
   )
@@ -60,26 +149,26 @@ function classifyVenueType(name) {
   )
     return "Barn / rural / outdoor";
   if (/online/.test(n)) return "Online";
+  // The following three categories are checked LAST, after every bucket
+  // above, so a venue that already had an established classification
+  // (e.g. a specific "...British Legion" hall already matched under
+  // Village / community hall above) keeps it — these only catch venues
+  // that would otherwise have fallen through to "Other / unknown".
+  // \bsocial club\b was previously matched inside the pub/bar bucket
+  // above; it's been moved down here now that "Social club" is its own
+  // category, which does change the result for names matching ONLY that
+  // phrase (nothing else already returned "Pub / bar / café" for them).
+  if (/bookshop|book shop|bookstore/.test(n)) return "Bookshop";
+  if (
+    /\bsocial club\b|working men.s club|\bwmc\b|conservative club|labour club|constitutional club|british legion/.test(
+      n,
+    )
+  )
+    return "Social club";
+  if (/\blive music venue\b|\bmusic venue\b|\blive lounge\b/.test(n))
+    return "Live music venue";
   return "Other / unknown";
 }
-
-// Canonical list of the categories classifyVenueType() can return, for
-// anywhere a UI wants to offer them as suggestions/options (e.g. a
-// datalist). Kept in the same order stats.js displays them in
-// (its own VTYPE_ORDER, in stats.js, is the source of truth for that
-// display order — this list mirrors it for convenience elsewhere, but
-// isn't read by stats.js itself, so editing one doesn't affect the other).
-const VENUE_TYPE_SUGGESTIONS = [
-    "Pub / bar / café",
-    "Village / community hall",
-    "Arts centre / venue",
-    "Theatre",
-    "Church / faith venue",
-    "Museum / historic",
-    "Barn / rural / outdoor",
-    "Online",
-    "Other / unknown",
-];
 
 // ---------------------------------------------------------------------------
 // Age-rating parser — a best-effort scan of event description text for

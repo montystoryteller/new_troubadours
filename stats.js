@@ -1891,9 +1891,15 @@ function renderAllStats(data, venues, performers, tours) {
     "Sunday",
   ];
 
-  // classifyVenueType() moved to shared_guessers.js (loaded before this
-  // script) — kept as a bare global-scope call below so this still resolves
-  // to it via the normal scope chain, unchanged from when it was local.
+  // classifyVenueType() lives in shared_guessers.js (loaded before this
+  // script). The two vtype: lines below call resolveVenueTypesForVenue()
+  // (also in shared_guessers.js) rather than classifyVenueType() directly
+  // — that function prefers an explicit venue.venue_type override (single
+  // value or array) over the name-based guess, falling back to
+  // classifyVenueType() only when venue_type is unset. Previously this
+  // called classifyVenueType(name) straight, so a manually-set venue_type
+  // had no effect on these charts; [0].label takes the primary type when
+  // a venue has more than one, since these charts group by a single type.
 
   // This text-parsing heuristic is left exactly as it was — both call sites
   // now check for a structured_price first (via getPriceFaceValue(), also
@@ -2037,7 +2043,7 @@ function renderAllStats(data, venues, performers, tours) {
             : parseEventPrice(e.price);
         rows.push({
           cat,
-          vtype: classifyVenueType(venues[e.venue_id]?.name || ""),
+          vtype: resolveVenueTypesForVenue(venues[e.venue_id] || {})[0].label,
           face: p && !p.isFree && !p.isPwyw ? p.face : null,
           isFree: !!(p && p.isFree),
           isPwyw: !!(p && p.isPwyw),
@@ -2062,7 +2068,7 @@ function renderAllStats(data, venues, performers, tours) {
         const cat = perfType === "story" ? "storytelling" : perfType;
         rows.push({
           cat,
-          vtype: classifyVenueType(venues[td.venue_id]?.name || ""),
+          vtype: resolveVenueTypesForVenue(venues[td.venue_id] || {})[0].label,
           face: p && !p.isFree && !p.isPwyw ? p.face : null,
           isFree: !!(p && p.isFree),
           isPwyw: !!(p && p.isPwyw),

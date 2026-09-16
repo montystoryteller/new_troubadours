@@ -245,8 +245,27 @@
           "type": "string"
         },
         "venue_type": {
-          "type": "string",
-          "description": "Optional free-text category for the venue (e.g. \"Pub / bar / café\", \"Village / community hall\", \"Arts centre / venue\", \"Theatre\", \"Church / faith venue\", \"Museum / historic\", \"Barn / rural / outdoor\", \"Online\", \"Other / unknown\"). These are suggestions, not an enum — the event builder's Venue form offers them via a datalist and can auto-suggest one from the venue name using the same heuristic classifyVenueType() in shared_guessers.js applies for the Stats page's venue-type breakdown, but any string is valid, including ones outside this list, and the field can be left unset. If unset, venue_type is effectively re-derived on the fly by that same heuristic wherever the Stats page needs it — setting it explicitly here just lets a person override or confirm that guess."
+          "description": "Venue type category, resolved against the VENUE_TYPES dict in shared_guessers.js: a slug (e.g. \"pub-bar-cafe\", \"live-music-venue\"), the full label text of one (legacy data — every venue set before that dict existed stores the label directly, e.g. \"Pub / bar / café\", and resolveVenueType() in shared_guessers.js still matches those, so nothing needs to be migrated), or free text that matches neither. An unmatched value is displayed verbatim rather than collapsed into \"Other / unknown\", so nothing typed by hand is silently discarded. Current VENUE_TYPES slugs: pub-bar-cafe, village-hall, arts-centre, theatre, church, museum-historic, barn-rural-outdoor, online, bookshop, social-club, live-music-venue, other. A single value OR an array of values for a venue that's genuinely more than one thing, e.g. [\"pub-bar-cafe\", \"live-music-venue\"] — code reading this should normalize via Array.isArray(), same as dateOrDates/podcastUrls; see resolveVenueTypesForVenue() in shared_guessers.js, which always returns an array (of resolved {slug, label, colour} entries) and is what venues.js/stats.js call rather than reading this field raw. The event builder's Venue form offers the known labels via a datalist and can auto-suggest one from the venue name using classifyVenueType() in shared_guessers.js (the same heuristic the Stats page falls back to), but any string, or comma-separated list of strings, is valid, including ones outside VENUE_TYPES, and the field can be left unset. If unset, venue_type is effectively re-derived on the fly by that same heuristic wherever it's needed — setting it explicitly here just lets a person override or confirm that guess, and (as of this revision) that override is actually honoured by venues.js/stats.js rather than silently ignored.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          ],
+          "examples": [
+            "bookshop",
+            "Pub / bar / café",
+            [
+              "pub-bar-cafe",
+              "live-music-venue"
+            ]
+          ]
         },
         "city": {
           "type": "string"
@@ -834,7 +853,9 @@
         "isStoryWalk": {
           "type": "boolean",
           "description": "Marks this as a promoter/guide-led story walk rather than a conventional storytelling performance — e.g. sally-port-history-portsmouth-pubs (a walking tour of pub histories, run by a promoter rather than booked club-to-club). Still a full repertoireShow record (same show_dates/venue/promoter/price shape) — this flag only changes display: excluded from \"Repertoire\" listings on the tour-guide and performer pages in favour of a separate \"Story Walks\" section there, shown with a distinct badge (but no structural change) on venue pages, and behind an off-by-default 'Show story walks' filter on the events calendar (see EVENT_TYPE_FILTERS in event_display.js). Chosen over a standalone top-level category because a story walk's core fields (dates, venue, performer, description) are identical to any other repertoire show; only its DISPLAY grouping differs. If a future story walk needs fields that don't fit repertoireShow at all, see story_walk_details below rather than adding walk-specific fields here.",
-          "examples": [true]
+          "examples": [
+            true
+          ]
         },
         "performer_id": {
           "type": "string"

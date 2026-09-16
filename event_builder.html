@@ -715,6 +715,7 @@
                 <div>
                     <input type="text" id="venue-type" list="venueTypeOptions"
                         placeholder="e.g. Pub / bar / café — pick a suggestion, type your own, or leave blank">
+                    <div class="field-hint">More than one type? Separate with commas, e.g. "Pub / bar / café, Live music venue".</div>
                     <div class="field-hint" id="venue-type-hint"></div>
                 </div>
             </div>
@@ -4088,7 +4089,8 @@
         // ── Standalone new venue ──────────────────────────────────────────────
         function populateVenueForm(record) {
             document.getElementById("venue-name").value = record.name || "";
-            document.getElementById("venue-type").value = record.venue_type || "";
+            document.getElementById("venue-type").value =
+                Array.isArray(record.venue_type) ? record.venue_type.join(", ") : (record.venue_type || "");
             document.getElementById("venue-type-hint").textContent = "";
             document.getElementById("venue-city").value = record.city || "";
             document.getElementById("venue-postcode").value = record.postcode || "";
@@ -4152,7 +4154,14 @@
             const instagram = document.getElementById("venue-instagram").value.trim();
             const description = encodeParagraphBreaks(document.getElementById("venue-description").value);
             const latlonRaw = document.getElementById("venue-latlon").value.trim();
-            if (venueType) record.venue_type = venueType;
+            if (venueType) {
+                // Comma-separated input becomes an array (see
+                // events-schema.json venue.venue_type — a single string OR
+                // an array of strings); a single value stays a plain
+                // string, unchanged from before.
+                const venueTypes = venueType.split(",").map(t => t.trim()).filter(Boolean);
+                record.venue_type = venueTypes.length > 1 ? venueTypes : venueTypes[0];
+            }
             if (city) record.city = city;
             if (postcode) record.postcode = postcode;
             if (fullAddress) record.full_address = fullAddress;
@@ -4913,7 +4922,21 @@
             Object.entries(enrichedData.venues).forEach(([id, v]) => {
                 if (v.venue_type) return;
                 const candidate = classifyVenueType(v.name);
-                candidates.push({ id, name: v.name || id, candidate });
+                candidates.push({
+                    id,
+                    name: v.name || id,
+                    candidate,
+                    // Prefer the venue's own website; fall back to a search
+                    // built from name + address so there's always something
+                    // to click through to check the designation against,
+                    // even for venues with no url on record yet.
+                    lookupUrl: sanitizeUrl(v.url) ||
+                        (() => {
+                            const q = [v.name, v.full_address || v.city, v.postcode].filter(Boolean).join(" ");
+                            return q ? `https://www.google.com/search?q=${encodeURIComponent(q)}` : null;
+                        })(),
+                    hasOwnUrl: !!sanitizeUrl(v.url),
+                });
             });
             if (!candidates.length) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No venues missing a venue_type.</div>';
@@ -4929,10 +4952,15 @@
                 const selectOptions = VENUE_TYPE_SUGGESTIONS.map(t =>
                     `<option value="${t.replace(/"/g, "&quot;")}"${t === startingValue ? " selected" : ""}>${t}</option>`
                 ).join("");
+                const linkBtn = c.lookupUrl
+                    ? `<a href="${c.lookupUrl}" target="_blank" rel="noopener noreferrer" class="btn-open-link"
+                         style="display:inline-flex;vertical-align:middle;margin-left:6px;"
+                         title="${c.hasOwnUrl ? "Open the venue's website" : "Search the web for this venue"}">${ICON_SVG.link}</a>`
+                    : "";
                 row.innerHTML = `
                     <input type="checkbox" ${isUnknown ? "" : "checked"} class="enrich-venuetype-check">
                     <div class="enrich-result-main">
-                        <div class="enrich-result-name">${c.name}</div>
+                        <div class="enrich-result-name">${c.name}${linkBtn}</div>
                         <div class="enrich-result-detail">
                             <label class="subitem-field-label">Venue type — pick a common option, or type your own below</label>
                             <select class="enrich-venuetype-select" style="margin-bottom:4px;">
