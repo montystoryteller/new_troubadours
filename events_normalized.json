@@ -5308,22 +5308,20 @@
     {
       "name": "Settle Stories",
       "schedule": "",
-      "location": "",
+      "description": "Settle Stories is a rural arts charity based in Settle, North Yorkshire. Since 2010, we have used storytelling to build empathy, strengthen communities, and inspire curiosity. Founded by Sita Brand with the Storytelling Festival in the rural Yorkshire Dales, Settle Stories has scaled from 16 events in year one to engaging over 200,000 people worldwide to date. Operating from The Joinery in the Yorkshire Dales, we exemplify what the Hodge Review calls for: professional excellence originating from an underserved rural area, using digital infrastructure to extend access nationally and internationally while maintaining a strong local presence. This growth was accelerated by pioneering digital storytelling during the COVID-19 pandemic, demonstrating that world-class arts infrastructure extends beyond city limits. Our rural base is a strategic advantage, not a constraint; it positions us to solve the 'touring crisis' identified in the Hodge Review through hybrid delivery from unusual cultural locations. We are an Arts Council England National Portfolio",
       "link": "https://settlestories.org.uk/",
       "facebook": "https://www.facebook.com/SettleStories",
       "time": "",
       "club": "settle-stories",
-      "tickets_url": "https://www.ticketsource.com/settle-stories/",
-      "geocode_missing": true
+      "tickets_url": "https://www.ticketsource.com/settle-stories/"
     },
     {
       "name": "Haworth storytelling circle",
       "schedule": "1st thursday",
-      "location": "",
+      "venue_id": "fleece-inn-haworth",
       "facebook": "https://www.facebook.com/HaworthStorytellingCircle",
       "time": "8pm",
-      "club": "HaworthStorytellingCircle",
-      "geocode_missing": true
+      "club": "HaworthStorytellingCircle"
     },
     {
       "name": "Story night at Torriano",
@@ -5492,7 +5490,7 @@
       "venue_id": "st-johns-church-hall-worcester-park",
       "link": "https://www.surreystorytellers.co.uk",
       "facebook": "https://www.facebook.com/groups/366190587003",
-      "club": "threeheadsinawell",
+      "club": "threeheadsinawell"
     },
     {
       "name": "Bletchley: Tales Tattled and Told",
@@ -5866,10 +5864,9 @@
       "name": "Aberystwyth Fables Storytelling Circle",
       "schedule": "first wednesday",
       "time": "7-8.30pm",
-      "location": "",
+      "venue_id": "climate-shop-cafe-aberystwyth",
       "facebook": "https://www.facebook.com/groups/aberfables",
-      "club": "aberystwythfables",
-      "geocode_missing": true
+      "club": "aberystwythfables"
     },
     {
       "name": "Winchester Wykeham Tales [Lapsed?]",
@@ -11915,6 +11912,18 @@
         -4.97719
       ]
     },
+    "fleece-inn-haworth": {
+      "id": "fleece-inn-haworth",
+      "name": "Fleece Inn, Haworth",
+      "city": "Haworth",
+      "postcode": "BD22 8DA",
+      "full_address": "Fleece Inn, 67 Main Street, Haworth, BD22 8DA",
+      "url": "https://fleeceinnhaworth.com/",
+      "latlon": [
+        53.8297,
+        -1.95461
+      ]
+    },
     "carriageworks-theatre-leeds": {
       "id": "carriageworks-theatre-leeds",
       "name": "Carriageworks Theatre, Leeds",
@@ -12911,6 +12920,18 @@
       "latlon": [
         53.1792422,
         -3.1368143
+      ]
+    },
+    "climate-shop-cafe-aberystwyth": {
+      "id": "climate-shop-cafe-aberystwyth",
+      "name": "Climate Shop Cafe, Aberystwyth",
+      "city": "Aberystwyth",
+      "postcode": "SY23 1DL",
+      "full_address": "Climate Shop Cafe, 10, Market St, Aberystwyth, SY23 1DL",
+      "url": "https://www.climateshop.org/",
+      "latlon": [
+        52.41485,
+        -4.08564
       ]
     },
     "aberystwyth-arts-centre": {
