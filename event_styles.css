@@ -1,0 +1,227 @@
+/* =============================================================
+   event_styles.css
+   Styles for event.html
+   Depends on shared-styles.css AND venue-styles.css being loaded
+   first — this page deliberately reuses venue-styles.css's
+   .two-col-layout / .left-col / .right-col / .content-section /
+   .section-heading / #map-container / .venue-info-table /
+   .nearby-row (+ friends) wholesale (venue details / nearby venues /
+   nearby events all still live in the right column), rather than
+   duplicating any of that here.
+   This file adds: the hero block, the top search bar, the left-col
+   Performer/Map split (.left-col-split — the map itself still uses
+   venue-styles.css's #map-container), tickets/flyer/video display,
+   and the venue-description block shown under the map.
+   ============================================================= */
+
+/* ── Top search bar ──────────────────────────────────────────
+   #eventSearchBox itself is populated by event.js's initSearchBox()
+   via shared_utils.js's createSearchBox(), which supplies its own
+   .dir-search-wrap/.dir-search-input/.dir-search-dropdown classes
+   (see shared-styles.css) — this rule is just the spacing around it. */
+.event-search-bar {
+    margin-bottom: 20px;
+}
+
+/* ── Event hero ──────────────────────────────────────────────
+   Same shape as venue-styles.css's .venue-hero, just with
+   event-specific field names (name/date/venue rather than
+   name/address/links). */
+.event-hero {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.event-hero h1 {
+    text-align: left;
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    color: #333;
+    font-style: normal;
+}
+
+.event-hero-meta {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+
+.event-hero-venue a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.event-hero-venue a:hover {
+    text-decoration: underline;
+}
+
+.event-hero-description {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+}
+
+.event-hero-description p {
+    margin: 0 0 10px 0;
+}
+
+@media (max-width: 600px) {
+    .event-hero {
+        padding: 16px;
+    }
+}
+
+/* ── Left column: performer + map side by side ────────────────
+   Below the tickets/flyer/video card, the left column splits into
+   two panels — Performer and Map — so the map sits right next to
+   performer info rather than living in the sidebar. Each child is
+   already a .content-section, so this is just the row/stack
+   wrapper around them. */
+.left-col-split {
+    display: flex;
+    gap: 20px;
+}
+
+.left-col-split .content-section {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .left-col-split {
+        flex-direction: column;
+    }
+}
+
+/* ── Tickets / Facebook event link ───────────────────────────── */
+.event-tickets {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.event-tickets a {
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.event-tickets a:hover {
+    text-decoration: underline;
+}
+
+.event-tickets .separator {
+    color: #999;
+    margin: 0 6px;
+}
+
+/* ── Flyer images shown inside the "Tickets & more" expandable ──
+   Scoped to this page rather than reusing storyclub's .club-flyer
+   sizing, since event.html doesn't load storyclub's stylesheet. */
+.event-flyer-img {
+    display: block;
+    max-width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    margin-top: 10px;
+}
+
+.event-flyer-img.event-flyer-subsequent {
+    margin-top: 14px;
+}
+
+/* ── Performer panel ──────────────────────────────────────────── */
+.event-performer-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.event-performer-avatar {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--theme-green-dark);
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-performer-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    display: inline-block;
+}
+
+a.event-performer-name:hover {
+    text-decoration: underline;
+}
+
+.event-performer-badges {
+    margin-top: 4px;
+}
+
+.event-performer-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #555;
+    background: #f0f0f0;
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin-right: 6px;
+}
+
+.event-performer-bio {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.event-performer-bio p {
+    margin: 0 0 10px 0;
+}
+
+.event-performer-website,
+.event-performer-profile-link {
+    display: block;
+    font-size: 13px;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    margin-top: 6px;
+}
+
+.event-performer-website:hover,
+.event-performer-profile-link:hover {
+    text-decoration: underline;
+}
+
+/* ── Venue description, under the map ────────────────────────── */
+.event-venue-description {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.event-venue-description p {
+    margin: 0 0 10px 0;
+}

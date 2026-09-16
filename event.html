@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Details of a single storytelling, punk poetry, or acoustic music event in the UK, part of the New Troubadours events calendar.">
+    <meta name="keywords" content="storytelling event, story club, acoustic music event, folk night, UK live events">
+    <title>Event — New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="venue-styles.css">
+    <link rel="stylesheet" href="event_styles.css">
+</head>
+
+<body class="page-event">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Touring Shows</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1>The New Troubadours — Event</h1>
+    <h2>Details for a single storytelling, folk, or acoustic music event.</h2>
+
+    <!-- Populated by event.js's initSearchBox() via shared_utils.js's
+         createSearchBox() once event data has loaded. Searches event
+         name, performer, venue, town, and address; selecting a result
+         navigates to that event's page. -->
+    <div class="event-search-bar">
+        <div id="eventSearchBox"></div>
+    </div>
+
+    <div id="loadingState" class="loading-state">Loading event…</div>
+    <div id="notFoundState" class="not-found-state" style="display:none;">
+        <p>Event not found. <a href="event_guide.html">Return to events calendar.</a></p>
+    </div>
+
+    <div id="eventContent" style="display:none;">
+        <div class="page-header">
+            <a href="event_guide.html" class="back-link">← All Events</a>
+        </div>
+
+        <div class="event-hero">
+            <h1 id="eventName"></h1>
+            <div id="eventMeta" class="event-hero-meta"></div>
+            <div id="eventVenue" class="event-hero-meta event-hero-venue"></div>
+            <div id="eventDescription" class="event-hero-description" style="display:none;"></div>
+        </div>
+
+        <div class="two-col-layout">
+            <div class="left-col">
+                <!-- Tickets link / Facebook event, flyer(s), and video trailer for
+                     this occurrence — populated by event.js's renderTicketsFlyersVideo(),
+                     mirroring storyclub.js's per-event tickets/flyer/video treatment.
+                     Hidden entirely when the event has none of these. -->
+                <div id="aboutSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Tickets &amp; more</h3>
+                    <div id="eventTickets" class="event-tickets" style="display:none;"></div>
+                    <div id="flyerControls" style="display:none;"></div>
+                    <div id="videoControls" style="display:none;"></div>
+                </div>
+
+                <div class="left-col-split">
+                    <div id="performerSection" class="content-section" style="display:none;">
+                        <h3 class="section-heading">Performer</h3>
+                        <div id="performerInfo"></div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3 class="section-heading">Map</h3>
+                        <div id="map-container">
+                            <div id="map"></div>
+                        </div>
+                        <!-- Populated by event.js's renderVenueDescription() when the
+                             host venue record has its own description text. -->
+                        <div id="venueDescription" class="event-venue-description" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <!-- Populated by event.js's renderPerformerUpcomingEvents() —
+                     other upcoming dates by this event's performer, across
+                     tours, touring shows, and specific/music/poetry events.
+                     Hidden when the event has no linkable performer_id, or
+                     when that performer has no other upcoming dates. -->
+                <div id="performerUpcomingSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">More by this performer</h3>
+                    <div id="performerUpcomingList"></div>
+                </div>
+
+                <div class="content-section">
+                    <h3 class="section-heading">Venue details</h3>
+                    <div id="venueInfoTable" class="venue-info-table"></div>
+                </div>
+
+                <div id="nearbyEventsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">
+                        Nearby events
+                        <select id="nearbyEventsHorizon" class="nearby-events-horizon">
+                            <option value="7">next 7 days</option>
+                            <option value="14">next 14 days</option>
+                            <option value="30">next 30 days</option>
+                        </select>
+                    </h3>
+                    <div id="nearbyEventsList"></div>
+                </div>
+
+                <div id="nearbySection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Nearby venues</h3>
+                    <div id="nearbyList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
+                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
+                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
+                Saturday, November 29th, 2025.</em></p>
+        <p><strong>All data
+                is manually sourced and manually added to the site, primarily sourced from primary (performer,
+                ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
+        </p>
+        <p id="dataLastUpdated"><em></em></p>
+    </div>
+
+    <script src="recurrence-engine.js"></script>
+    <script src="shared_utils.js"></script>
+    <script src="event.js"></script>
+</body>
+
+</html>
