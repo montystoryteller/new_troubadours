@@ -217,13 +217,66 @@ async function renderPage(data, clubId) {
   // Find all specific events for this club
   const today = getTodayMidnight();
 
+  // Per-event flyer resolution for the "Flyer"/"Flyers" button on each
+  // event card: combines any flyer(s) attached directly to this
+  // occurrence (event_flyer/event_flyer2/event_flyers —
+  // getEventLevelFlyers(), shared_utils.js) with any of this club's own
+  // club_flyers[] that are dated (YYYY_MM_DD prefix, parseDatedClubFlyer()
+  // — shared_utils.js) matching this occurrence's date, plus — for tour/
+  // repertoire dates — the tour/show's own flyer(s) passed in via
+  // otherFlyers. Mirrors getExpandableContent()'s flyer list on the
+  // events page (event_display.js), so a flyer added there also shows up
+  // here.
+  function collectEventFlyers(baseEvent, date, otherFlyers) {
+    const flyers = [];
+
+    getEventLevelFlyers(baseEvent).forEach((f) => {
+      flyers.push({
+        path: f.filename,
+        basePath: "./storyclub_assets/event_flyers/",
+        altSuffix: f.label || "event flyer",
+      });
+    });
+
+    if (date && Array.isArray(clubRecord.club_flyers)) {
+      clubRecord.club_flyers
+        .filter((f) => typeof f === "string" && f.trim())
+        .map((f) => f.trim())
+        .filter((f) => {
+          const flyerDate = parseDatedClubFlyer(f);
+          return flyerDate && flyerDate.toDateString() === date.toDateString();
+        })
+        .forEach((filename) => {
+          flyers.push({
+            path: filename,
+            basePath: "./storyclub_assets/event_flyers/",
+            altSuffix: "flyer",
+          });
+        });
+    }
+
+    (otherFlyers || []).forEach((f) => {
+      flyers.push({
+        path: f.filename,
+        basePath: "./storyclub_assets/event_flyers/",
+        altSuffix: f.label || "tour flyer",
+      });
+    });
+
+    return flyers;
+  }
+
   const clubSpecificEvents = data.specificEvents
     .filter((e) => e.club === clubId)
-    .map((e) => ({
-      ...e,
-      _date: parseDateString(e.date),
-      video_trailer: e.video_trailer || null,
-    }))
+    .map((e) => {
+      const _date = parseDateString(e.date);
+      return {
+        ...e,
+        _date,
+        video_trailer: e.video_trailer || null,
+        flyers: collectEventFlyers(e, _date),
+      };
+    })
     .filter((e) => e._date);
 
   // Tour dates can opt into a club's event list via a "club_event"
@@ -262,6 +315,7 @@ async function renderPage(data, clubId) {
           isSpecial: !!tourDate.isSpecial || !!tour.isSpecial,
           isCancelled: !!tourDate.isCancelled,
           isSoldOut: !!tourDate.isSoldOut,
+          flyers: collectEventFlyers(tourDate, _date, getTourLevelFlyers(tour)),
           _date,
         });
       });
@@ -299,6 +353,11 @@ async function renderPage(data, clubId) {
           isSpecial: !!showDate.isSpecial || !!show.isSpecial,
           isCancelled: !!showDate.isCancelled,
           isSoldOut: !!showDate.isSoldOut,
+          // getTourLevelFlyers() is written against tour.tour_flyer /
+          // .touring_event_flyer / .touring_event_flyers — a repertoire
+          // show record uses those same field names for its own
+          // whole-run artwork, so the same resolver works unmodified.
+          flyers: collectEventFlyers(showDate, _date, getTourLevelFlyers(show)),
           _date,
         });
       });
@@ -727,6 +786,44 @@ async function renderPage(data, clubId) {
 
       card.appendChild(btn);
       card.appendChild(expandable);
+    }
+
+    // Flyer(s) for this specific occurrence — event-level flyers, any of
+    // this club's own dated club_flyers[] matching this date, and (for
+    // tour/repertoire dates) the tour/show's own flyer(s), all resolved
+    // up front onto ev.flyers by collectEventFlyers() above.
+    const flyers = ev.flyers || [];
+    if (flyers.length) {
+      const flyerBtn = document.createElement("button");
+      flyerBtn.className = "expand-btn";
+      flyerBtn.textContent = flyers.length > 1 ? "Flyers" : "Flyer";
+
+      const flyerExpandable = document.createElement("div");
+      flyerExpandable.className = "expandable";
+
+      flyers.forEach((flyer, index) => {
+        if (!flyer.path) return;
+        const img = document.createElement("img");
+        img.alt = `${ev.showname || ev.name} ${flyer.altSuffix}`;
+        img.src = `${flyer.basePath}${sanitizeFlyerPath(flyer.path)}`;
+        img.className = "club-flyer";
+        if (index > 0) img.classList.add("event-flyer-subsequent");
+        flyerExpandable.appendChild(img);
+      });
+
+      flyerBtn.addEventListener("click", () => {
+        const open = flyerExpandable.classList.toggle("open");
+        flyerBtn.textContent = open
+          ? flyers.length > 1
+            ? "Hide flyers"
+            : "Hide flyer"
+          : flyers.length > 1
+            ? "Flyers"
+            : "Flyer";
+      });
+
+      card.appendChild(flyerBtn);
+      card.appendChild(flyerExpandable);
     }
 
     // Video trailer preview, if a valid YouTube URL is available

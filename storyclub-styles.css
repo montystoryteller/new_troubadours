@@ -336,6 +336,12 @@
     margin-top: 10px;
 }
 
+/* Extra top margin on the 2nd, 3rd… flyer image inside a specific
+   event's "Flyer(s)" expandable (.club-flyer reused for sizing there) */
+.event-flyer-subsequent {
+    margin-top: 15px;
+}
+
 /* ── Additional flyers gallery ───────────────────────── */
 .club-flyer-gallery {
     display: flex;
