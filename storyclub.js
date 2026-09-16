@@ -146,7 +146,7 @@ setCanonical("club");
   const cachedSchedules = getSchedulesCache();
   if (!cachedSchedules) {
     document.getElementById("page-content").innerHTML =
-      '<p class="status-message status-message--loading">⏳ Loading clubs…</p>';
+      '<p class="status-message status-message--loading">Loading clubs…</p>';
   }
 
   // Defer heavy computation (schedule calculations, filtering, sorting) to background
@@ -1194,7 +1194,7 @@ async function renderDirectory(data) {
 
   // Show loading state while we do heavy computation (sorting, filtering, indexing)
   root.innerHTML =
-    '<p class="status-message status-message--loading">⏳ Building directory…</p>';
+    '<p class="status-message status-message--loading">Building directory…</p>';
 
   // Yield to browser so loading message renders before heavy work begins
   await new Promise((resolve) => setTimeout(resolve, 50));

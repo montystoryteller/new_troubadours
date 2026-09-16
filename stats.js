@@ -543,7 +543,7 @@ async function loadAndRender() {
   // Check for cached schedule analysis; show spinner only if missing
   if (!getSchedulesCache()) {
     document.getElementById("loadingState").innerHTML =
-      '<p class="status-message status-message--loading">⏳ Computing statistics…</p>';
+      '<p class="status-message status-message--loading">Computing statistics…</p>';
   }
 
   // Defer heavy analysis to background (computing chart data, filters, DOM generation)

@@ -2758,7 +2758,7 @@ function refreshEventsData() {
   const btn = document.getElementById("refreshDataBtn");
   if (btn) {
     btn.disabled = true;
-    btn.textContent = "⏳ Refreshing…";
+    btn.textContent = "Refreshing…";
   }
   // Simplest reliable way to re-run the full init sequence (map, filters,
   // new-events panel, URL params, etc.) against fresh data: reload the page,
@@ -2780,7 +2780,7 @@ function refreshEventsData() {
   const eventsListEl = document.getElementById("eventsList");
   if (eventsListEl) {
     eventsListEl.innerHTML =
-      '<div class="new-events-placeholder">⏳ Loading events…</div>';
+      '<div class="new-events-placeholder">Loading events…</div>';
   }
 
   const result = await loadEventsData(forcedRefresh ? Date.now() : null);
@@ -2849,7 +2849,7 @@ function refreshEventsData() {
       spinner.style.cssText =
         "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;";
       spinner.innerHTML =
-        '<p style="font-size: 18px; color: #666;">⏳ Computing events…</p>';
+        '<p style="font-size: 18px; color: #666;">Computing events…</p>';
       document.body.appendChild(spinner);
     }, 1000);
 

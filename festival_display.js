@@ -1646,7 +1646,7 @@ function refreshEventsData() {
   const btn = document.getElementById("refreshDataBtn");
   if (btn) {
     btn.disabled = true;
-    btn.textContent = "⏳ Refreshing…";
+    btn.textContent = "Refreshing…";
   }
   sessionStorage.setItem("forceFreshEventsData", "1");
   window.location.reload();
@@ -1663,7 +1663,7 @@ setCanonical("festival");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
 
   const loadingHTML =
-    '<p class="festival-panel-placeholder">⏳ Loading festivals…</p>';
+    '<p class="festival-panel-placeholder">Loading festivals…</p>';
   [
     "currentFestivalsBody",
     "upcomingFestivalsBody",

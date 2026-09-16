@@ -1526,7 +1526,7 @@ function renderAll() {
   // Show spinner only if no cache exists
   if (!getSchedulesCache()) {
     document.getElementById("page-content").innerHTML =
-      '<p class="status-message status-message--loading">⏳ Loading flyers…</p>';
+      '<p class="status-message status-message--loading">Loading flyers…</p>';
   }
 
   try {

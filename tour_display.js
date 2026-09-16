@@ -1587,7 +1587,7 @@ function refreshEventsData() {
   const btn = document.getElementById("refreshDataBtn");
   if (btn) {
     btn.disabled = true;
-    btn.textContent = "⏳ Refreshing…";
+    btn.textContent = "Refreshing…";
   }
   sessionStorage.setItem("forceFreshEventsData", "1");
   window.location.reload();
@@ -1606,7 +1606,7 @@ setCanonical("tour");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
 
   const loadingHTML =
-    '<div class="upcoming-tours-placeholder">⏳ Loading tours…</div>';
+    '<div class="upcoming-tours-placeholder">Loading tours…</div>';
   ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = loadingHTML;
