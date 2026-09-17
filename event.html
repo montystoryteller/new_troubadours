@@ -38,6 +38,10 @@
          navigates to that event's page. -->
     <div class="event-search-bar">
         <div id="eventSearchBox"></div>
+        <!-- Populated by event.js's initSearchFilters() — Upcoming (default) /
+             Previous / All radio filter, narrowing which events the search
+             box above can match. -->
+        <div id="eventSearchFilters" class="event-search-filters"></div>
     </div>
 
     <div id="loadingState" class="loading-state">Loading event…</div>

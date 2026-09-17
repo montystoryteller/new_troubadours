@@ -121,6 +121,20 @@ function findEventById(eventId) {
 // Search box
 // ---------------------------------------------------------------------------
 
+// Upcoming (default) / previous / all — narrows which events the search box
+// below can match, independent of the typed search term. "Upcoming" means
+// today or later, matching the >= comparisons used elsewhere on this page
+// (e.g. collectUpcomingEventsForPerformer's today cutoff).
+let eventSearchTimeFilter = "upcoming";
+let eventSearchInputEl = null; // set once createSearchBox() returns, so
+// changing the time filter can re-run whatever search term is already typed
+
+function matchesEventSearchTimeFilter(eventDate, today) {
+  if (eventSearchTimeFilter === "all") return true;
+  if (eventSearchTimeFilter === "previous") return eventDate < today;
+  return eventDate >= today; // "upcoming"
+}
+
 // Same Step 1 scope note as findEventById(): only eventsData.specificEvents
 // is indexed for now.
 function buildSearchIndex() {
@@ -154,11 +168,15 @@ function initSearchBox() {
   if (!container) return;
 
   const index = buildSearchIndex();
+  const today = getTodayMidnight();
 
-  createSearchBox(container, {
+  const { input } = createSearchBox(container, {
     placeholder: "Search events by name, performer, venue, town\u2026",
     search: (term) =>
-      index.filter((e) => e.searchText.includes(term)).slice(0, 8),
+      index
+        .filter((e) => matchesEventSearchTimeFilter(e.ev._date, today))
+        .filter((e) => e.searchText.includes(term))
+        .slice(0, 8),
     renderItem: ({ ev, hostVenue, performerName }) => {
       const item = document.createElement("div");
       const strong = document.createElement("strong");
@@ -184,6 +202,49 @@ function initSearchBox() {
       // Nothing to re-filter on this page — event.html shows one event,
       // not a list — so this is deliberately a no-op.
     },
+  });
+
+  eventSearchInputEl = input;
+  initSearchFilters();
+}
+
+// Upcoming (default) / Previous / All radio group, shown under the search
+// box. Changing it doesn't re-search by itself (createSearchBox has no
+// "re-run" hook) — instead, if there's already a typed term, re-dispatch an
+// "input" event on the search box's own input element, which re-invokes the
+// search() callback above (now reading the newly-changed time filter).
+function initSearchFilters() {
+  const container = document.getElementById("eventSearchFilters");
+  if (!container || container.dataset.wired) return;
+  container.dataset.wired = "true";
+
+  const EVENT_SEARCH_TIME_FILTERS = [
+    ["upcoming", "Upcoming"],
+    ["previous", "Previous"],
+    ["all", "All"],
+  ];
+
+  EVENT_SEARCH_TIME_FILTERS.forEach(([value, label]) => {
+    const id = `eventSearchFilter-${value}`;
+    const wrap = document.createElement("label");
+    wrap.className = "event-search-filter";
+
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "eventSearchFilter";
+    radio.id = id;
+    radio.value = value;
+    radio.checked = value === eventSearchTimeFilter;
+    radio.addEventListener("change", () => {
+      eventSearchTimeFilter = value;
+      if (eventSearchInputEl && eventSearchInputEl.value.trim().length >= 1) {
+        eventSearchInputEl.dispatchEvent(new Event("input"));
+      }
+    });
+
+    wrap.appendChild(radio);
+    wrap.appendChild(document.createTextNode(` ${label}`));
+    container.appendChild(wrap);
   });
 }
 
