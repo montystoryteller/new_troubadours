@@ -19,9 +19,9 @@
 // not pulled in here.
 //
 // NOT yet wired up in this pass:
-//   - the search box still only indexes eventsData.specificEvents (not
-//     tour dates / repertoire show dates / music / poetry events) — though
-//     event_id permalinks now resolve music/poetry events too, via
+//   - the search box indexes specificEvents, tour dates, and repertoire
+//     show dates, but not musicEvents/poetryEvents/festivals yet — though
+//     event_id permalinks already resolve music/poetry events, via
 //     findEventById()
 //   - today's-events / more-by-performer panels don't include recurring
 //     club/folk/session nights, since matching those against a specific
@@ -84,11 +84,21 @@ function buildEventId(name, date) {
   return `${name}-${date.getTime()}`;
 }
 
-// Step 1: eventsData.specificEvents (one-off dated club events) is the only
-// thing indexed for the search box for now. Extending it to tour dates /
-// repertoire show dates is a further step.
+// One-off dated club events (eventsData.specificEvents), expanded and
+// filtered down to ones the search box / findEventById() can actually
+// resolve. musicEvents/poetryEvents/festivals aren't included here — a
+// further step (see findEventById() below for the wider set it resolves).
+//
+// expandTourDates() (shared_utils.js) is reused here even though it's named
+// for tour_dates — it's a generic "date may be a string or string[]"
+// flattener (same normalisation forEachDateInRange() does inline), and
+// specificEvents/musicEvents/poetryEvents can carry the same
+// `"date": ["21/01/2026", "22/01/2026"]` shorthand as tour_dates. Without
+// this, a multi-date entry's raw array `.date` fails parseDateString()
+// (which warns and returns null for arrays), so the whole entry was
+// silently dropped by the `e._date` filter below.
 function resolvableSpecificEvents() {
-  return (eventsData.specificEvents || [])
+  return expandTourDates(eventsData.specificEvents || [])
     .map((e) => ({ ...e, _date: parseDateString(e.date) }))
     .filter((e) => e._date && e.name);
 }
@@ -108,7 +118,11 @@ function findEventById(eventId) {
     eventsData.poetryEvents,
   ];
   for (const list of pools) {
-    const found = (list || [])
+    // expandTourDates() here for the same reason as resolvableSpecificEvents()
+    // above — a multi-date entry needs to be split into one single-date
+    // occurrence per date before buildEventId() can match it, since a
+    // permalink's event_id is always built from one resolved date.
+    const found = expandTourDates(list || [])
       .map((e) => ({ ...e, _date: parseDateString(e.date) }))
       .filter((e) => e._date && e.name)
       .find((e) => buildEventId(e.name, e._date) === target);
@@ -135,34 +149,125 @@ function matchesEventSearchTimeFilter(eventDate, today) {
   return eventDate >= today; // "upcoming"
 }
 
-// Same Step 1 scope note as findEventById(): only eventsData.specificEvents
-// is indexed for now.
+// performer_id/performer_ids normalisation, shared by every search-index
+// builder below — mirrors collectPerformerAppearances()/
+// collectPerformerVideoAppearances() in shared_utils.js. A co-headlined
+// entry carries performer_ids (plural) instead of a single performer_id.
+function performerNamesOf(entity) {
+  const ids = Array.isArray(entity.performer_ids)
+    ? entity.performer_ids
+    : entity.performer_id
+      ? [entity.performer_id]
+      : [];
+  return ids.map((id) => performersLookup[id]?.name).filter(Boolean);
+}
+
+// A repertoire show is browsed on tour_guide.html by merging it into that
+// page's own toursLookup under a synthetic "rep:<id>" key — see
+// tour_display.js's buildCombinedToursLookup()/REPERTOIRE_ID_PREFIX. There's
+// no separate repertoire-show page, so a search result for one of its dates
+// links here with the same prefixed id, exactly as tour_guide.html expects.
+const TOUR_GUIDE_REPERTOIRE_ID_PREFIX = "rep:";
+
+// Builds one search-index entry with a common shape, regardless of which
+// record type it came from — buildSearchIndex()'s three sections below each
+// just gather their own fields and hand them here.
+function searchIndexEntry({
+  displayName,
+  altName,
+  performerNames,
+  hostVenue,
+  date,
+  href,
+  kindLabel,
+}) {
+  const performerName = performerNames.join(", ") || null;
+  const searchText = [
+    displayName,
+    // altName is indexed alongside displayName, not instead of it — some
+    // records only credit performers in a free-text name (e.g. "... [Holly
+    // Medland & Merl Fluin]") rather than performer_id(s), so dropping it
+    // whenever a showname exists could hide that credit from search
+    // entirely.
+    altName,
+    performerName,
+    hostVenue?.name,
+    hostVenue?.city,
+    hostVenue?.full_address,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return { displayName, performerName, hostVenue, date, href, kindLabel, searchText };
+}
+
+// Indexes one-off specificEvents, tour dates, and repertoire show dates —
+// each dated occurrence becomes its own entry, with its own venue and its
+// own navigation target (an event.html permalink for a specificEvent; the
+// shared tour_guide.html?tour= page, real or synthetic "rep:" id, for a
+// tour/repertoire date, matching how those are already browsed there).
+// musicEvents/poetryEvents/festivals aren't indexed yet — a further step.
 function buildSearchIndex() {
-  return resolvableSpecificEvents().map((e) => {
-    const hostVenue = venuesLookup[e.venue_id] || null;
-    const performerName =
-      (e.performer_id && performersLookup[e.performer_id]?.name) ||
-      e.performer ||
-      null;
-    const searchText = [
-      e.showname || e.name,
-      performerName,
-      hostVenue?.name,
-      hostVenue?.city,
-      hostVenue?.full_address,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    return { ev: e, hostVenue, performerName, searchText };
+  const entries = [];
+
+  resolvableSpecificEvents().forEach((e) => {
+    entries.push(
+      searchIndexEntry({
+        displayName: e.showname || e.name,
+        altName: e.name,
+        performerNames: performerNamesOf(e),
+        hostVenue: venuesLookup[e.venue_id] || null,
+        date: e._date,
+        href: `event.html?event_id=${encodeURIComponent(buildEventId(e.name, e._date))}`,
+      }),
+    );
   });
+
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    expandTourDates(tour.tour_dates || []).forEach((td) => {
+      const date = parseDateString(td.date);
+      if (!date) return;
+      entries.push(
+        searchIndexEntry({
+          displayName: tour.tour_name || tour.name,
+          altName: tour.showname,
+          performerNames: performerNamesOf(tour),
+          hostVenue: venuesLookup[td.venue_id] || null,
+          date,
+          href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+          kindLabel: "Tour date",
+        }),
+      );
+    });
+  });
+
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    expandTourDates(ts.show_dates || []).forEach((sd) => {
+      const date = parseDateString(sd.date);
+      if (!date) return;
+      entries.push(
+        searchIndexEntry({
+          displayName: ts.showname || ts.name,
+          altName: ts.name,
+          performerNames: performerNamesOf(ts),
+          hostVenue: venuesLookup[sd.venue_id] || null,
+          date,
+          href: `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_ID_PREFIX + tsId)}`,
+          kindLabel: ts.isStoryWalk ? "Story walk" : "Touring show",
+        }),
+      );
+    });
+  });
+
+  return entries;
 }
 
 // Wires the #eventSearchBox container up with createSearchBox()
 // (shared_utils.js) — same component venues.js/performers.js use for
-// their own directory search. Searches event name, performer, venue,
-// town, and address (per the search index above); selecting a result
-// navigates to that event's own page.
+// their own directory search. Searches event/tour/show name, performer,
+// venue, town, and address (per the search index above); selecting a
+// result navigates to its own permalink (event.html for a specificEvent,
+// tour_guide.html for a tour or repertoire show date).
 function initSearchBox() {
   const container = document.getElementById("eventSearchBox");
   if (!container) return;
@@ -174,16 +279,22 @@ function initSearchBox() {
     placeholder: "Search events by name, performer, venue, town\u2026",
     search: (term) =>
       index
-        .filter((e) => matchesEventSearchTimeFilter(e.ev._date, today))
+        .filter((e) => matchesEventSearchTimeFilter(e.date, today))
         .filter((e) => e.searchText.includes(term))
         .slice(0, 8),
-    renderItem: ({ ev, hostVenue, performerName }) => {
+    renderItem: (entry) => {
       const item = document.createElement("div");
       const strong = document.createElement("strong");
-      strong.textContent = ev.showname || ev.name;
+      strong.textContent = entry.displayName;
       item.appendChild(strong);
 
-      const metaParts = [performerName, hostVenue?.name, hostVenue?.city]
+      const metaParts = [
+        entry.kindLabel,
+        formatShortDateWithYear(entry.date),
+        entry.performerName,
+        entry.hostVenue?.name,
+        entry.hostVenue?.city,
+      ]
         .filter(Boolean)
         .join(" \u2022 ");
       if (metaParts) {
@@ -194,9 +305,8 @@ function initSearchBox() {
       }
       return item;
     },
-    onSelect: ({ ev }) => {
-      const eventId = buildEventId(ev.name, ev._date);
-      window.location.href = `event.html?event_id=${encodeURIComponent(eventId)}`;
+    onSelect: (entry) => {
+      window.location.href = entry.href;
     },
     onChange: () => {
       // Nothing to re-filter on this page — event.html shows one event,
