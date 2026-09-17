@@ -512,6 +512,31 @@ async function renderPage(data, clubId) {
     }
   }
 
+  // Dropdown listing every recurring scheduled date over the next 12 months
+  // (comma-separated), collapsed by default via <details>/<summary>.
+  if (clubRecord.schedule) {
+    const rangeTo = new Date(today);
+    rangeTo.setFullYear(rangeTo.getFullYear() + 1);
+    const upcomingDates = scheduledDatesInRange(
+      clubRecord.schedule,
+      today,
+      rangeTo,
+      clubRecord.exceptions || [],
+    );
+    if (upcomingDates.length) {
+      const details = document.createElement("details");
+      details.className = "club-upcoming-dates";
+      const summary = document.createElement("summary");
+      summary.textContent = `Scheduled dates in the next 12 months (${upcomingDates.length})`;
+      details.appendChild(summary);
+      const list = document.createElement("div");
+      list.className = "club-upcoming-dates-list";
+      list.textContent = upcomingDates.map((d) => formatDate(d)).join("; ");
+      details.appendChild(list);
+      header.appendChild(details);
+    }
+  }
+
   // Icons row
   const iconsRow = document.createElement("div");
   iconsRow.className = "club-icons";

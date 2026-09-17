@@ -118,6 +118,49 @@
     margin-top: 2px;
 }
 
+/* ── Upcoming recurring dates dropdown (next 12 months) ──────────── */
+.club-upcoming-dates {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.club-upcoming-dates summary {
+    cursor: pointer;
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    list-style: none;
+}
+
+.club-upcoming-dates summary::-webkit-details-marker {
+    display: none;
+}
+
+.club-upcoming-dates summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+.club-upcoming-dates[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.club-upcoming-dates summary:hover {
+    text-decoration: underline;
+}
+
+.club-upcoming-dates-list {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #f7fbf7;
+    border: 1px solid var(--theme-green-border-alt);
+    border-radius: 6px;
+    color: #444;
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 .club-icons {
     margin-top: 8px;
     display: flex;
