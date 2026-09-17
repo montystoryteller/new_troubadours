@@ -42,6 +42,11 @@
              Previous / All radio filter, narrowing which events the search
              box above can match. -->
         <div id="eventSearchFilters" class="event-search-filters"></div>
+        <!-- Populated by event.js's initSearchTypeFilters() — Story (default
+             on) / Music / Poetry checkboxes, narrowing the search box the
+             same way. Remembered across visits via localStorage, same
+             pattern as event_display.js's calendar filter checkboxes. -->
+        <div id="eventSearchTypeFilters" class="event-search-type-filters"></div>
     </div>
 
     <div id="loadingState" class="loading-state">Loading event…</div>

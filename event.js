@@ -19,10 +19,10 @@
 // not pulled in here.
 //
 // NOT yet wired up in this pass:
-//   - the search box indexes specificEvents, tour dates, and repertoire
-//     show dates, but not musicEvents/poetryEvents/festivals yet — though
-//     event_id permalinks already resolve music/poetry events, via
-//     findEventById()
+//   - the search box indexes specificEvents, musicEvents, poetryEvents,
+//     tour dates, and repertoire show dates (with Story/Music/Poetry
+//     checkboxes and an Upcoming/Previous/All filter) — festivals aren't
+//     indexed yet
 //   - today's-events / more-by-performer panels don't include recurring
 //     club/folk/session nights, since matching those against a specific
 //     date needs the recurrence engine wired in here too
@@ -84,10 +84,10 @@ function buildEventId(name, date) {
   return `${name}-${date.getTime()}`;
 }
 
-// One-off dated club events (eventsData.specificEvents), expanded and
-// filtered down to ones the search box / findEventById() can actually
-// resolve. musicEvents/poetryEvents/festivals aren't included here — a
-// further step (see findEventById() below for the wider set it resolves).
+// One-off dated flat events — specificEvents, musicEvents, and poetryEvents
+// all share this exact shape (flat array, single/array .date, .venue_id) —
+// expanded and filtered down to ones the search box / findEventById() can
+// actually resolve.
 //
 // expandTourDates() (shared_utils.js) is reused here even though it's named
 // for tour_dates — it's a generic "date may be a string or string[]"
@@ -97,19 +97,18 @@ function buildEventId(name, date) {
 // this, a multi-date entry's raw array `.date` fails parseDateString()
 // (which warns and returns null for arrays), so the whole entry was
 // silently dropped by the `e._date` filter below.
-function resolvableSpecificEvents() {
-  return expandTourDates(eventsData.specificEvents || [])
+function resolvableFlatEvents(list) {
+  return expandTourDates(list || [])
     .map((e) => ({ ...e, _date: parseDateString(e.date) }))
     .filter((e) => e._date && e.name);
 }
 
 // Resolves an event_id against any one-off dated event that uses the plain
-// name+date id scheme (specific/music/poetry events) — broader than
-// resolvableSpecificEvents() above, since this is also used to build
-// permalinks out from the "More by this performer" and "Events today"
-// panels, which surface music/poetry events too. Tour dates and touring-show
-// dates use a different identity (tourId/tsId + date) and don't have a
-// standalone event.html permalink yet.
+// name+date id scheme (specific/music/poetry events) — this is also used to
+// build permalinks out from the "More by this performer" and "Events today"
+// panels. Tour dates and touring-show dates use a different identity
+// (tourId/tsId + date) and don't have a standalone event.html permalink —
+// see buildSearchIndex() below, which links those to tour_guide.html instead.
 function findEventById(eventId) {
   const target = decodeURIComponent(eventId);
   const pools = [
@@ -118,14 +117,9 @@ function findEventById(eventId) {
     eventsData.poetryEvents,
   ];
   for (const list of pools) {
-    // expandTourDates() here for the same reason as resolvableSpecificEvents()
-    // above — a multi-date entry needs to be split into one single-date
-    // occurrence per date before buildEventId() can match it, since a
-    // permalink's event_id is always built from one resolved date.
-    const found = expandTourDates(list || [])
-      .map((e) => ({ ...e, _date: parseDateString(e.date) }))
-      .filter((e) => e._date && e.name)
-      .find((e) => buildEventId(e.name, e._date) === target);
+    const found = resolvableFlatEvents(list).find(
+      (e) => buildEventId(e.name, e._date) === target,
+    );
     if (found) return found;
   }
   return null;
@@ -170,8 +164,11 @@ function performerNamesOf(entity) {
 const TOUR_GUIDE_REPERTOIRE_ID_PREFIX = "rep:";
 
 // Builds one search-index entry with a common shape, regardless of which
-// record type it came from — buildSearchIndex()'s three sections below each
-// just gather their own fields and hand them here.
+// record type it came from — buildSearchIndex()'s sections below each just
+// gather their own fields and hand them here. `category` is "story" /
+// "music" / "poetry", the same story-first/opt-in split
+// collectEventsOnDate() already uses for the "Events today" panel — reused
+// here to drive the search box's own Story/Music/Poetry checkboxes.
 function searchIndexEntry({
   displayName,
   altName,
@@ -180,6 +177,7 @@ function searchIndexEntry({
   date,
   href,
   kindLabel,
+  category,
 }) {
   const performerName = performerNames.join(", ") || null;
   const searchText = [
@@ -198,32 +196,59 @@ function searchIndexEntry({
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
-  return { displayName, performerName, hostVenue, date, href, kindLabel, searchText };
+  return {
+    displayName,
+    performerName,
+    hostVenue,
+    date,
+    href,
+    kindLabel,
+    category,
+    searchText,
+  };
 }
 
-// Indexes one-off specificEvents, tour dates, and repertoire show dates —
-// each dated occurrence becomes its own entry, with its own venue and its
-// own navigation target (an event.html permalink for a specificEvent; the
-// shared tour_guide.html?tour= page, real or synthetic "rep:" id, for a
-// tour/repertoire date, matching how those are already browsed there).
-// musicEvents/poetryEvents/festivals aren't indexed yet — a further step.
+// Indexes one-off specificEvents/musicEvents/poetryEvents, tour dates, and
+// repertoire show dates — each dated occurrence becomes its own entry, with
+// its own venue, its own navigation target (an event.html permalink for a
+// flat event; the shared tour_guide.html?tour= page, real or synthetic
+// "rep:" id, for a tour/repertoire date, matching how those are already
+// browsed there), and its own story/music/poetry category for the Story/
+// Music/Poetry checkboxes. Festivals aren't indexed yet — a further step.
+const FLAT_SEARCH_SOURCES = [
+  { key: "specificEvents", category: "story" },
+  { key: "musicEvents", category: "music" },
+  { key: "poetryEvents", category: "poetry" },
+];
+
 function buildSearchIndex() {
   const entries = [];
 
-  resolvableSpecificEvents().forEach((e) => {
-    entries.push(
-      searchIndexEntry({
-        displayName: e.showname || e.name,
-        altName: e.name,
-        performerNames: performerNamesOf(e),
-        hostVenue: venuesLookup[e.venue_id] || null,
-        date: e._date,
-        href: `event.html?event_id=${encodeURIComponent(buildEventId(e.name, e._date))}`,
-      }),
-    );
+  FLAT_SEARCH_SOURCES.forEach(({ key, category }) => {
+    resolvableFlatEvents(eventsData[key]).forEach((e) => {
+      entries.push(
+        searchIndexEntry({
+          displayName: e.showname || e.name,
+          altName: e.name,
+          performerNames: performerNamesOf(e),
+          hostVenue: venuesLookup[e.venue_id] || null,
+          date: e._date,
+          href: `event.html?event_id=${encodeURIComponent(buildEventId(e.name, e._date))}`,
+          // "story" is the always-on default bucket, so it needs no badge
+          // of its own — same reasoning as TODAY_EVENTS_TYPE_LABELS not
+          // badging specificEvents rows either.
+          kindLabel: category === "story" ? undefined : category === "music" ? "Music" : "Poetry",
+          category,
+        }),
+      );
+    });
   });
 
   Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    // Same isMusic/isPoetry precedence as collectEventsOnDate()'s tour
+    // mapping below and TOUR_PANEL_GROUPS in tour_display.js — a tour with
+    // neither flag set defaults to "story".
+    const category = tour.isMusic ? "music" : tour.isPoetry ? "poetry" : "story";
     expandTourDates(tour.tour_dates || []).forEach((td) => {
       const date = parseDateString(td.date);
       if (!date) return;
@@ -236,6 +261,7 @@ function buildSearchIndex() {
           date,
           href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
           kindLabel: "Tour date",
+          category,
         }),
       );
     });
@@ -254,12 +280,113 @@ function buildSearchIndex() {
           date,
           href: `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_ID_PREFIX + tsId)}`,
           kindLabel: ts.isStoryWalk ? "Story walk" : "Touring show",
+          // Repertoire shows are always "story", same as collectEventsOnDate()'s
+          // showDatesHere mapping — story walks stay in this scope too, not a
+          // separate opt-in category (matching renderEventRow's comment on
+          // the same point).
+          category: "story",
         }),
       );
     });
   });
 
   return entries;
+}
+
+// ---------------------------------------------------------------------------
+// Persisted search-type filter preferences (localStorage)
+// ---------------------------------------------------------------------------
+// Same pattern as event_display.js's FILTER_PREFS_STORAGE_KEY for the
+// calendar page's own checkboxes — localStorage, not a cookie, so it never
+// leaves the browser. Stored under its own key rather than folded into
+// event_display.js's prefs object: this is a search-scope filter local to
+// this page, not one of the calendar's category/display filters.
+const SEARCH_TYPE_FILTER_STORAGE_KEY = "ntEventSearchTypePrefs";
+
+// Story-first, opt-in music/poetry — Story on by default, Music/Poetry off,
+// matching EVENT_TYPE_FILTERS' music/poetry entries in event_display.js
+// (and TODAY_EVENTS_TYPE_LABELS' all-on default further down, which is a
+// deliberately different bias for that panel).
+const SEARCH_TYPE_FILTER_DEFAULTS = { story: true, music: false, poetry: false };
+
+function readStoredSearchTypeFilters() {
+  try {
+    const raw = localStorage.getItem(SEARCH_TYPE_FILTER_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (err) {
+    // Storage disabled/unavailable (private browsing, locked-down browser
+    // settings, corrupted value, etc.) — treat as "nothing stored" rather
+    // than breaking the page.
+    return null;
+  }
+}
+
+function writeStoredSearchTypeFilters() {
+  const prefs = {};
+  Object.keys(SEARCH_TYPE_FILTER_DEFAULTS).forEach((category) => {
+    const el = document.getElementById(`eventSearchTypeFilter-${category}`);
+    if (el) prefs[category] = el.checked;
+  });
+  try {
+    localStorage.setItem(SEARCH_TYPE_FILTER_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (err) {
+    // No usable storage — the page still works, the choice just won't
+    // carry over to next time.
+  }
+}
+
+function activeSearchTypeCategories() {
+  return new Set(
+    Object.keys(SEARCH_TYPE_FILTER_DEFAULTS).filter((category) => {
+      const el = document.getElementById(`eventSearchTypeFilter-${category}`);
+      return el ? el.checked : SEARCH_TYPE_FILTER_DEFAULTS[category];
+    }),
+  );
+}
+
+// Story/Music/Poetry checkboxes, shown under the search box. Initial state
+// comes from localStorage (falling back to SEARCH_TYPE_FILTER_DEFAULTS for
+// a first-ever visit or a category added since); every change both saves
+// the new state and — same re-dispatch trick as initSearchFilters() below —
+// re-runs whatever search term is already typed.
+function initSearchTypeFilters() {
+  const container = document.getElementById("eventSearchTypeFilters");
+  if (!container || container.dataset.wired) return;
+  container.dataset.wired = "true";
+
+  const stored = readStoredSearchTypeFilters() || {};
+  const SEARCH_TYPE_FILTER_LABELS = [
+    ["story", "Storytelling"],
+    ["music", "Music"],
+    ["poetry", "Poetry"],
+  ];
+
+  SEARCH_TYPE_FILTER_LABELS.forEach(([category, label]) => {
+    const id = `eventSearchTypeFilter-${category}`;
+    const wrap = document.createElement("label");
+    wrap.className = "event-search-type-filter";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = id;
+    checkbox.value = category;
+    checkbox.checked =
+      typeof stored[category] === "boolean"
+        ? stored[category]
+        : SEARCH_TYPE_FILTER_DEFAULTS[category];
+    checkbox.addEventListener("change", () => {
+      writeStoredSearchTypeFilters();
+      if (eventSearchInputEl && eventSearchInputEl.value.trim().length >= 1) {
+        eventSearchInputEl.dispatchEvent(new Event("input"));
+      }
+    });
+
+    wrap.appendChild(checkbox);
+    wrap.appendChild(document.createTextNode(` ${label}`));
+    container.appendChild(wrap);
+  });
 }
 
 // Wires the #eventSearchBox container up with createSearchBox()
@@ -277,11 +404,14 @@ function initSearchBox() {
 
   const { input } = createSearchBox(container, {
     placeholder: "Search events by name, performer, venue, town\u2026",
-    search: (term) =>
-      index
+    search: (term) => {
+      const activeCategories = activeSearchTypeCategories();
+      return index
         .filter((e) => matchesEventSearchTimeFilter(e.date, today))
+        .filter((e) => activeCategories.has(e.category))
         .filter((e) => e.searchText.includes(term))
-        .slice(0, 8),
+        .slice(0, 8);
+    },
     renderItem: (entry) => {
       const item = document.createElement("div");
       const strong = document.createElement("strong");
@@ -316,6 +446,7 @@ function initSearchBox() {
 
   eventSearchInputEl = input;
   initSearchFilters();
+  initSearchTypeFilters();
 }
 
 // Upcoming (default) / Previous / All radio group, shown under the search

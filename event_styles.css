@@ -40,6 +40,22 @@
     cursor: pointer;
 }
 
+.event-search-type-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.event-search-type-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
 /* ── Event hero ──────────────────────────────────────────────
    Same shape as venue-styles.css's .venue-hero, just with
    event-specific field names (name/date/venue rather than
