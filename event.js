@@ -76,13 +76,10 @@ function loadLeaflet() {
 // Event identity
 // ---------------------------------------------------------------------------
 
-// Mirrors the data-event-id scheme event_display.js already uses for
-// same-page anchor matching (`${name}-${date.getTime()}`) — reusing the
-// same formula here means an id copied from that page's DOM will already
-// resolve correctly on this one, with no separate id scheme to invent.
-function buildEventId(name, date) {
-  return `${name}-${date.getTime()}`;
-}
+// buildEventId() now lives in shared_utils.js (venues.js and performers.js
+// link to this page's permalinks from their own listings too, via that
+// file's linkEventRowTitle()) — kept out of this file to avoid a second,
+// easy-to-drift copy of the id formula.
 
 // One-off dated flat events — specificEvents, musicEvents, and poetryEvents
 // all share this exact shape (flat array, single/array .date, .venue_id) —
@@ -713,8 +710,7 @@ function renderTodayEventsList() {
   }
 
   filtered.forEach((entry) => {
-    const row = renderEventRow(list, entry, false, { showVenue: true });
-    addEventPageLink(row, entry);
+    renderEventRow(list, entry, false, { showVenue: true });
   });
 }
 
@@ -1137,25 +1133,10 @@ function collectUpcomingEventsForPerformer(performerId, today) {
 
 const PERFORMER_UPCOMING_MAX = 6;
 
-// Wraps a renderEventRow() row's title in a link to this event's own
-// event.html permalink, when it's a type findEventById() can resolve
-// (specific/music/poetry events all share the plain name+date id scheme —
-// see findEventById()). Tour dates and touring-show dates aren't linked,
-// since they don't have a standalone event.html permalink yet.
-function addEventPageLink(row, entry) {
-  if (!["specific", "music", "poetry"].includes(entry.type) || !entry.date) {
-    return;
-  }
-  const titleEl = row.querySelector(".event-row-title");
-  if (!titleEl) return;
-
-  const eventId = buildEventId(entry.data.name, entry.date);
-  const a = document.createElement("a");
-  a.href = `event.html?event_id=${encodeURIComponent(eventId)}`;
-  a.textContent = titleEl.textContent;
-  titleEl.textContent = "";
-  titleEl.appendChild(a);
-}
+// Note: renderEventRow() (shared_utils.js) already links each row's title
+// to its event.html permalink itself now (via linkEventRowTitle()), for
+// every specific/music/poetry entry it renders — including these — so
+// there's no separate wrapping step needed here any more.
 
 function renderPerformerUpcomingEvents(ev) {
   const section = document.getElementById("performerUpcomingSection");
@@ -1181,8 +1162,7 @@ function renderPerformerUpcomingEvents(ev) {
   const list = document.getElementById("performerUpcomingList");
   list.innerHTML = "";
   upcoming.forEach((entry) => {
-    const row = renderEventRow(list, entry, false, { showVenue: true });
-    addEventPageLink(row, entry);
+    renderEventRow(list, entry, false, { showVenue: true });
   });
 
   section.style.display = "";

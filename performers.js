@@ -2700,6 +2700,18 @@ function renderEventRow(container, event) {
   title.className = "event-row-title";
   title.textContent = event.showname || event.name;
   detail.appendChild(title);
+  // Only events with their own plain .date field have an event.html
+  // permalink — matches resolvableFlatEvents()/findEventById() in
+  // event.js, which key off event.name + parseDateString(event.date)
+  // directly and don't know about the .datetimes fallback above, so a
+  // permalink built from a .datetimes-derived date wouldn't resolve there.
+  // linkEventRowTitle() (shared_utils.js) is a no-op if the date is null,
+  // so this is safe to call unconditionally.
+  linkEventRowTitle(
+    title,
+    event.name,
+    event.date ? parseDateString(event.date) : null,
+  );
 
   if (timeStr) {
     const t = document.createElement("span");

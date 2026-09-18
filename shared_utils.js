@@ -480,6 +480,46 @@ function couldBeAtVenue(rec, vid) {
 }
 
 /**
+ * Builds the event.html permalink id for a one-off dated event
+ * (specificEvents/musicEvents/poetryEvents only — tour dates, show dates,
+ * club nights, and festivals don't have a standalone event.html page, see
+ * event.js's findEventById()). Moved here from event.js so venues.js and
+ * performers.js can link to the same permalink from their own listings —
+ * mirrors the data-event-id scheme event_display.js already uses for
+ * same-page anchor matching (`${name}-${date.getTime()}`), so an id
+ * copied from that page's DOM still resolves correctly here.
+ * @param {string} name
+ * @param {Date} date
+ * @returns {string}
+ */
+function buildEventId(name, date) {
+  return `${name}-${date.getTime()}`;
+}
+
+/**
+ * Wraps an event-row-title element's text in a link to that event's
+ * event.html permalink, in place. Does nothing if there's no resolvable
+ * name/date (e.g. a date-TBC or multi-date-array entry that
+ * findEventById() couldn't resolve either — see resolvableFlatEvents() in
+ * event.js). Shared by shared_utils.js's own renderEventRow() below and
+ * by performers.js's separate renderEventRow(), so every specific/music/
+ * poetry listing across the site links to the same permalink the same way.
+ * @param {HTMLElement} titleEl - an .event-row-title element, already
+ *   holding the event's display text
+ * @param {string} name - the event's raw .name (not .showname — must
+ *   match what buildEventId()/findEventById() key off)
+ * @param {Date|null|undefined} date
+ */
+function linkEventRowTitle(titleEl, name, date) {
+  if (!name || !date) return;
+  const a = document.createElement("a");
+  a.href = `event.html?event_id=${encodeURIComponent(buildEventId(name, date))}`;
+  a.textContent = titleEl.textContent;
+  titleEl.textContent = "";
+  titleEl.appendChild(a);
+}
+
+/**
  * Renders one dated-event row for a venue/nearby-events/nearby-clubs
  * listing — moved here from venues.js as storyclub.js's nearby-events
  * feature is a second consumer (same row shapes: specific/music/poetry,
@@ -518,6 +558,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
     title.className = "event-row-title";
     title.textContent = e.showname || e.name;
     detail.appendChild(title);
+    linkEventRowTitle(title, e.name, entry.date);
 
     if (e.time) {
       const t = document.createElement("span");
