@@ -825,6 +825,7 @@ setCanonical("venue");
 
 function renderVenue() {
   document.title = `${venue.name} — New Troubadours`;
+  updateMetaDescription(venue.name);
 
   document.getElementById("venueName").textContent = venue.name;
 

@@ -685,6 +685,7 @@ window.addEventListener("pageshow", () => {
 
 function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
+  updateMetaDescription(performer.name);
   applyPerformerHeadingMode();
 
   // Avatar initials

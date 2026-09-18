@@ -747,10 +747,13 @@ function renderPage() {
     (ev.performer_id && performersLookup[ev.performer_id]?.name) ||
     ev.performer ||
     null;
-  document.title = performerForTitle
+  const perfName = performerForTitle
     ? `${name} — ${performerForTitle} — New Troubadours`
     : `${name} — New Troubadours`;
+  document.title = perfName;
   document.getElementById("eventName").textContent = name;
+
+  updateMetaDescription(perfName);
 
   const metaParts = [formatDate(ev._date), ev.time || null, ev.price || null]
     .filter(Boolean)

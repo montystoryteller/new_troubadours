@@ -2568,6 +2568,24 @@ function createCollapsibleMap(
   return handle;
 }
 
+// Update meta description
+function updateMetaDescription(extraContent) {
+  let metaDescription = document.querySelector('meta[name="description"]');
+
+  if (!metaDescription) {
+    metaDescription = document.createElement("meta");
+    metaDescription.name = "description";
+    document.head.appendChild(metaDescription);
+  }
+
+  const originalDescription = metaDescription.getAttribute("content") || "";
+
+  metaDescription.setAttribute(
+    "content",
+    `${extraContent} — ${originalDescription}`,
+  );
+}
+
 // Canonical link handling for performers, venues, storyclubs
 function setCanonical(param = null) {
   const url = new URL(window.location.pathname, window.location.origin);
