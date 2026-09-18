@@ -632,6 +632,20 @@ function resolvePerformerName(performer_id) {
   return record?.name || "";
 }
 
+/**
+ * Same as resolvePerformerName(), but for every performer credited on a
+ * record — performerIdsOf() (shared_utils.js) normalises performer_id
+ * (singular) / performer_ids (plural), so a co-headlined tour/show/event
+ * resolves every name instead of just the first-declared field.
+ * @returns {string} Space-joined names, or "" if none resolve.
+ */
+function resolvePerformerNames(entity) {
+  return performerIdsOf(entity)
+    .map((id) => resolvePerformerName(id))
+    .filter(Boolean)
+    .join(" ");
+}
+
 /** @returns {{venueName: string, venueLocation: string}} */
 function resolveVenue(venue_id) {
   const venue = venue_id && venuesLookup[venue_id];
@@ -643,21 +657,21 @@ function resolveVenue(venue_id) {
 
 /** Search text for a tour date. Used only by searchAllUpcoming(). */
 function buildTourSearchText(tour, tourDate) {
-  const performerName = resolvePerformerName(tour.performer_id);
+  const performerName = resolvePerformerNames(tour);
   const { venueName, venueLocation } = resolveVenue(tourDate.venue_id);
   return `${tour.name} ${tour.tour_name || ""} ${performerName} ${tour.tour_description || ""} ${venueName} ${venueLocation} ${tourDate.time || ""} ${tourDate.price || ""}`.toLowerCase();
 }
 
 /** Search text for a touring show date. Used only by searchAllUpcoming(). */
 function buildShowSearchText(show, showDate) {
-  const performerName = resolvePerformerName(show.performer_id);
+  const performerName = resolvePerformerNames(show);
   const { venueName, venueLocation } = resolveVenue(showDate.venue_id);
   return `${show.name} ${show.showname || ""} ${performerName} ${show.description || ""} ${venueName} ${venueLocation} ${showDate.time || ""} ${showDate.price || ""}`.toLowerCase();
 }
 
 /** Search text for a flat specificEvent or musicEvent. Used only by searchAllUpcoming(). */
 function buildEventSearchText(event) {
-  const performerName = resolvePerformerName(event.performer_id);
+  const performerName = resolvePerformerNames(event);
   const { venueName, venueLocation } = resolveVenue(event.venue_id);
   return `${event.name} ${performerName} ${venueName} ${venueLocation} ${event.time || ""} ${event.price || ""}`.toLowerCase();
 }

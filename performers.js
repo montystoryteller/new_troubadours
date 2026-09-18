@@ -498,13 +498,13 @@ setCanonical("performer");
         const aliasIds = new Set([pid, ...(p.aliases || [])]);
         const showNames = [];
         Object.values(toursLookup).forEach((t) => {
-          if (aliasIds.has(t.performer_id)) {
+          if (performerIdsOf(t).some((id) => aliasIds.has(id))) {
             const n = t.tour_name || t.name;
             if (n) showNames.push(n);
           }
         });
         Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
-          if (ts.performer_id === pid) {
+          if (performerIdsOf(ts).includes(pid)) {
             const n = ts.showname || ts.name;
             if (n) showNames.push(n);
           }

@@ -591,6 +591,7 @@ function renderAllStats(data, venues, performers, tours) {
         ...sd,
         show_id: tsid,
         performer_id: ts.performer_id,
+        performer_ids: ts.performer_ids,
         perfType,
       }),
     );
@@ -715,20 +716,27 @@ function renderAllStats(data, venues, performers, tours) {
     // Also credit each individual member of a compound act
     (compoundMembers[pid] || []).forEach(credit);
   }
-  specific.forEach((e) => addPerf(e.performer_id, !!e.ticket_url, "story"));
-  music.forEach((e) => addPerf(e.performer_id, !!e.ticket_url, "music"));
-  poetry.forEach((e) => addPerf(e.performer_id, !!e.ticket_url, "poetry"));
-  allTourDates.forEach((td) => {
-    const pids = td.performer_ids
-      ? td.performer_ids
-      : td.performer_id
-        ? [td.performer_id]
-        : [];
-    pids.forEach((pid) => addPerf(pid, !!td.ticket_url, td.perfType));
-  });
-  allShowDates.forEach((sd) =>
-    addPerf(sd.performer_id, !!sd.ticket_url, sd.perfType),
+  specific.forEach((e) =>
+    performerIdsOf(e).forEach((pid) => addPerf(pid, !!e.ticket_url, "story")),
   );
+  music.forEach((e) =>
+    performerIdsOf(e).forEach((pid) => addPerf(pid, !!e.ticket_url, "music")),
+  );
+  poetry.forEach((e) =>
+    performerIdsOf(e).forEach((pid) =>
+      addPerf(pid, !!e.ticket_url, "poetry"),
+    ),
+  );
+  allTourDates.forEach((td) => {
+    performerIdsOf(td).forEach((pid) =>
+      addPerf(pid, !!td.ticket_url, td.perfType),
+    );
+  });
+  allShowDates.forEach((sd) => {
+    performerIdsOf(sd).forEach((pid) =>
+      addPerf(pid, !!sd.ticket_url, sd.perfType),
+    );
+  });
 
   const topPerfByDates = Object.entries(perfEvents)
     .filter(([pid]) => !isTroupeConfig(performers[pid]))

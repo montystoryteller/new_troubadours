@@ -2031,6 +2031,30 @@ function isTroupe(performer) {
 }
 
 /**
+ * Normalises performer_id (singular) / performer_ids (plural array) on any
+ * record into a single id array. A co-headlined or multi-performer record
+ * carries performer_ids instead of performer_id, and treating performer_id
+ * as the only source silently drops every other credited performer from
+ * anything built off it — search text, appearance/ticket stats, "shows
+ * featuring this performer" lookups, etc.
+ *
+ * This exact fallback (performer_ids if present, else wrap performer_id,
+ * else empty) was already being reimplemented independently at several call
+ * sites — correctly in some (e.g. the tour-dates branch of stats.js's own
+ * performer-stats builder), not in others sitting right next to it (that
+ * file's flat-event and repertoire-show-date branches) — which is exactly
+ * the kind of drift a single shared helper is for.
+ *
+ * @param {object} entity - Any record that may carry performer_id/performer_ids.
+ * @returns {string[]}
+ */
+function performerIdsOf(entity) {
+  if (!entity) return [];
+  if (Array.isArray(entity.performer_ids)) return entity.performer_ids;
+  return entity.performer_id ? [entity.performer_id] : [];
+}
+
+/**
  * Resolve a performer ID to its display record.
  * If the ID belongs to a troupe configuration (has a "troupe" field),
  * return the parent troupe record instead, so names and URLs are shown
