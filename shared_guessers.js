@@ -158,7 +158,7 @@ function classifyVenueType(name) {
   // above; it's been moved down here now that "Social club" is its own
   // category, which does change the result for names matching ONLY that
   // phrase (nothing else already returned "Pub / bar / café" for them).
-  if (/bookshop|book shop|bookstore/.test(n)) return "Bookshop";
+  if (/bookshop|book shop|books|bookstore/.test(n)) return "Bookshop";
   if (
     /\bsocial club\b|working men.s club|\bwmc\b|conservative club|labour club|constitutional club|british legion/.test(
       n,
