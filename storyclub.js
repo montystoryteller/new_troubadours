@@ -113,7 +113,8 @@ function normaliseFacebook(fb) {
 // (loaded before this file) — see that file for full docs, and for the
 // regression tests covering leap years, year boundaries, 4-vs-5-occurrence
 // months, reschedule detection, etc.
-const scheduledOccurrencesInRange = RecurrenceEngine.scheduledOccurrencesInRange;
+const scheduledOccurrencesInRange =
+  RecurrenceEngine.scheduledOccurrencesInRange;
 const scheduledDatesInRange = RecurrenceEngine.scheduledDatesInRange;
 const nextMeetingDate = RecurrenceEngine.nextMeetingDate;
 const nextOccurrence = RecurrenceEngine.nextOccurrence;
@@ -571,6 +572,36 @@ async function renderPage(data, clubId) {
     );
   }
   if (iconsRow.children.length) header.appendChild(iconsRow);
+
+  const hasGroupDesc = clubRecord.description && clubRecord.description.trim();
+
+  if (hasGroupDesc) {
+    const about = document.createElement("div");
+    const btn = document.createElement("button");
+    btn.className = "expand-btn";
+    btn.textContent = "About...";
+
+    const expandable = document.createElement("div");
+    expandable.className = "expandable";
+
+    const groupDesc = document.createElement("div");
+    groupDesc.className = "group-description";
+    groupDesc.innerHTML = clubRecord.description
+      .split("\n\n\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
+    expandable.appendChild(groupDesc);
+    btn.addEventListener("click", () => {
+      const open = expandable.classList.toggle("open");
+      btn.textContent = open ? "Hide About" : "About...";
+    });
+    about.appendChild(btn);
+    about.appendChild(expandable);
+    header.appendChild(about);
+  }
 
   if (clubRecord.club_flyer) {
     const img = document.createElement("img");
@@ -1446,7 +1477,9 @@ async function renderDirectory(data) {
     const pts = clubIndex
       .map(
         ({ c, nextOcc }) =>
-          data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)],
+          data.venues[
+            resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)
+          ],
       )
       .filter((v) => v && v.latlon && v.latlon.length)
       .map((v) => v.latlon);
@@ -1644,8 +1677,9 @@ async function renderDirectory(data) {
       clubIndex.filter((e) => e.searchText.includes(term)).slice(0, 8),
     renderItem: ({ c, nextOcc }) => {
       const venue =
-        data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)] ||
-        {};
+        data.venues[
+          resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)
+        ] || {};
       const item = document.createElement("div");
       const strong = document.createElement("strong");
       strong.textContent = c.name;
@@ -1776,7 +1810,10 @@ async function renderDirectory(data) {
         const { c } = entry;
         const venue =
           data.venues[
-            resolveClubVenueId(c, (entry.nextOcc && entry.nextOcc.date) || today)
+            resolveClubVenueId(
+              c,
+              (entry.nextOcc && entry.nextOcc.date) || today,
+            )
           ];
         const day = clubDay(c);
 
