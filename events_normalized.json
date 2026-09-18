@@ -9965,7 +9965,7 @@
       "name": "The Ghost Light [Owen Staton]",
       "showname": "The Ghost Light",
       "date": "28/10/2026",
-      "venue_id": "pontardawe-arts-centre",
+      "venue_id": "the-welfare-ystradgynlais",
       "performer_id": "owen-staton",
       "date_added": "27/07/2026",
       "time": "7pm",
@@ -15830,6 +15830,18 @@
       "latlon": [
         51.3505,
         -2.97884
+      ]
+    },
+    "the-welfare-ystradgynlais": {
+      "id": "the-welfare-ystradgynlais",
+      "name": "The Welfare, Ystradgynlais",
+      "city": "Ystradgynlais, Swansea",
+      "postcode": "SA9 1JJ",
+      "full_address": "The Welfare, Brecon Road, Ystradgynlais, Swansea, SA9 1JJ",
+      "url": "https://thebargeinnhoneystreet.uk/",
+      "latlon": [
+        51.77797,
+        -3.7568
       ]
     },
     "barge-inn-pewsey": {
