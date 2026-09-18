@@ -2132,15 +2132,15 @@ function renderTroupeConfigs(troupe) {
     );
     const configShows = Object.entries(
       eventsData.repertoire_shows || {},
-    ).filter(([, ts]) => ts.performer_id === configId);
-    const configSpecific = (eventsData.specificEvents || []).filter(
-      (e) => e.performer_id === configId,
+    ).filter(([, ts]) => performerIdsOf(ts).includes(configId));
+    const configSpecific = (eventsData.specificEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
     );
-    const configMusic = (eventsData.musicEvents || []).filter(
-      (e) => e.performer_id === configId,
+    const configMusic = (eventsData.musicEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
     );
-    const configPoetry = (eventsData.poetryEvents || []).filter(
-      (e) => e.performer_id === configId,
+    const configPoetry = (eventsData.poetryEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
     );
 
     const totalDates =
