@@ -74,6 +74,11 @@ function buildTourDropdownGroups(performerId) {
     aliasIds.has(show.performer_id) ||
     (Array.isArray(show.performer_ids) &&
       show.performer_ids.some((id) => aliasIds.has(id)));
+  // Same idea as showMatches() above, via the shared performerIdsOf()
+  // (shared_utils.js) — without this, a co-headlined tour (performer_ids
+  // set, no singular performer_id) was invisible in every performer's own
+  // tour dropdown, nested-under-a-show or "Other Tours" alike.
+  const tourMatches = (t) => performerIdsOf(t).some((id) => aliasIds.has(id));
 
   const myShowIds = Object.entries(repertoireShowsLookup)
     .filter(([, show]) => showMatches(show))
@@ -99,7 +104,7 @@ function buildTourDropdownGroups(performerId) {
     ];
     Object.entries(toursLookup)
       .filter(
-        ([, t]) => t.repertoire_id === showId && aliasIds.has(t.performer_id),
+        ([, t]) => t.repertoire_id === showId && tourMatches(t),
       )
       .sort((a, b) =>
         (a[1].tour_name || a[1].name).localeCompare(
@@ -118,7 +123,7 @@ function buildTourDropdownGroups(performerId) {
       ([id, t]) =>
         !t.__repertoireShowId &&
         !usedTourIds.has(id) &&
-        aliasIds.has(t.performer_id),
+        tourMatches(t),
     )
     .sort((a, b) =>
       (a[1].tour_name || a[1].name).localeCompare(b[1].tour_name || b[1].name),

@@ -114,7 +114,7 @@ function renderAllPerformers() {
 
       // Tours
       Object.values(toursLookup).forEach((t) => {
-        if (aliasIds.has(t.performer_id)) {
+        if (performerIdsOf(t).some((id) => aliasIds.has(id))) {
           const n = t.tour_name || t.name;
           if (n) showNames.push(n);
           types.add(classifyPerformanceType(t));
@@ -122,7 +122,7 @@ function renderAllPerformers() {
       });
       // Touring shows — always story
       Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
-        if (aliasIds.has(ts.performer_id)) {
+        if (performerIdsOf(ts).some((id) => aliasIds.has(id))) {
           const n = ts.showname || ts.name;
           if (n) showNames.push(n);
           types.add("story");
@@ -134,7 +134,7 @@ function renderAllPerformers() {
         ...(eventsData.musicEvents || []),
         ...(eventsData.poetryEvents || []),
       ].forEach((e) => {
-        if (aliasIds.has(e.performer_id)) {
+        if (performerIdsOf(e).some((id) => aliasIds.has(id))) {
           const n = e.showname || e.name;
           if (n && !showNames.includes(n)) showNames.push(n);
           types.add(classifyPerformanceType(e));
