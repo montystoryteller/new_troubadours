@@ -16104,6 +16104,7 @@
       "postcode": "PO30 1RR",
       "full_address": "Strings Bar & Venue, 9 Bowling Green Lane, Newport, Isle of Wight, PO30 1RR",
       "url": "https://www.stringsbarandvenue.com/",
+      "description": "Opening in 2017, the award winning Strings Bar & Venue is a 300 capacity live music and performing arts venue situated in Newport, at the heart of the Isle of Wight, an iconic geographical location within popular music history. \n\n\n\n\n\n\n\nFounded and run by musicians for music lovers, Strings has established itself as the Island's premier live venue, hosting a wide variety of bands, DJ's and comedians. \n\n\n\n\n\n\n\nAs well as programming a wealth of our own live shows, we love working with outside promoters and anyone who is as passionate about live music as we are.",
       "latlon": [
         50.69774,
         -1.29475
@@ -16318,6 +16319,7 @@
       "city": "Leighton Buzzard",
       "postcode": "LU7 1DH",
       "full_address": "Crooked Crow Bar, 27 Waterborne Walk, Leighton Buzzard, LU7 1DH",
+      "description": "Leighton Buzzard's home of live music, comedy, and unforgettable nights out! Closed Mondays & Tuesdays. Comedy club last wedensday of the month. Candlelight sessions (acoustic) 2nd Thursday of the month.",
       "url": "https://www.crookedcrowbar.com/",
       "latlon": [
         51.91681,
@@ -16343,6 +16345,7 @@
       "postcode": "N8 0EP",
       "full_address": "All Good Bookshop, 35 Turnpike Lane, Wood Green, London, N8 0EP",
       "url": "https://allgoodbookshop.co.uk/",
+      "description": "Volunteer-led bookshop and arts space in Turnpike Lane/Wood Green.",
       "latlon": [
         51.58961,
         -0.10592
@@ -16355,6 +16358,7 @@
       "postcode": "PO37 7AE",
       "full_address": "Babushka Books, 67 Regent Street, Shanklin, PO37 7AE",
       "url": "https://www.abebooks.co.uk/babushka-books-framers-isle-of-wight/52512508/sf",
+      "description": "Well stocked new and second hand bookshop with a feature poetry (new) poetry section, providing an intimate (capacity 24) stoytelling and acoustic music venue.",
       "latlon": [
         50.63181,
         -1.1784
@@ -16367,6 +16371,7 @@
       "postcode": "NG1 5JT",
       "full_address": "Rescue Rooms, Masonic Place, Goldsmith Street, Nottingham, NG1 5JT",
       "url": "https://www.rescuerooms.com/",
+      "description": "The beloved Rescue Rooms was born in 2003 from the ashes of the RKO Sports & Media Bar, with a mission to create a relaxed and welcoming bar & patio for socialising, and an incredible, intimate live music venue space to accomodate upcoming live acts.",
       "latlon": [
         52.9560797,
         -1.1534678
@@ -16379,6 +16384,7 @@
       "postcode": "SO14 2NY",
       "full_address": "Platform Tavern, Town Quay, Southampton, SO14 2NY",
       "url": "https://www.platformtavern.com/",
+      "description": "Known as Southampton's best-kept secret, the Platform has a reputation for being a live music hub for live blues, R&B, rock, soul, rockabilly, Americana and jazz!\n\n\n\n\n\n\n\nQuiet & cozy during the week for that pint of craft beer or that intimate meal. But livens up at the weekend with the best free live music in town from Thursday to Saturday. Plus a mellow acoustic set on a Sunday afternoon to accompany our famous roasts!",
       "latlon": [
         50.89636,
         -1.4035
@@ -16391,6 +16397,7 @@
       "postcode": "TN35 4AX",
       "full_address": "The Cove, 53 Waites Lane, Fairlight, TN35 4AX",
       "url": "https://thecovefairlight.co.uk/",
+      "description": "The Cove opened in April 2022. We are an independent freehouse, serving quality food and drink.",
       "latlon": [
         50.87711,
         0.66327
@@ -16475,6 +16482,7 @@
       "postcode": "BA11 3BY",
       "full_address": "Rise, Whittox Lane. Frome, BA11 3BY",
       "url": "https://risefrome.com/",
+      "description": "Built in the early 1800s, RISE — formerly known as The HUBnub Centre — is a lovingly restored former church located in the heart of Frome. Within the building there are two venue hire spaces catering for a wide variety of classes and events, a contemporary art gallery, shop, a cafe and garden for families to enjoy and offices and work space.",
       "latlon": [
         51.23174,
         -2.32394
@@ -16522,7 +16530,8 @@
       "city": "Taunton",
       "postcode": "TA4 1JU",
       "full_address": "Victoria Rooms, Fore Street, Milverton, Taunton, TA4 1JU",
-      "url": "http://milvertonvictoriarooms.org.uk/home",
+      "url": "https://www.milvertonvictoriarooms.org.uk/home",
+      "description": "The Milverton Victoria Rooms were built in 1887 by Public Subscription and have been the centre of village and parish life ever since.\n\n\n\n\n\n\n\nThe building, consisting of a main hall, reading room, kitchen, toilets and storerooms, is operated as a village hall by a Management Committee who are Charity Trustees governed by a scheme approved by the Charity Commission. Registered Charity No 293948.\n\n\n\n\n\n\n\nThe building is available for hire for educational purposes, private parties, weddings, dances and concerts. It is regularly used by many of the village clubs, societies and educational organisations. The building is also available for hire for commercial purposes.",
       "latlon": [
         51.02433,
         -3.25248
