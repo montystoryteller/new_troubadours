@@ -921,7 +921,10 @@ function displayFestival(festivalId) {
   document.getElementById("festivalNotFound").style.display = "none";
   document.getElementById("festivalContent").style.display = "block";
   document.title = `${fest.name} — New Troubadours`;
-  updateMetaDescription(fest.name);
+
+  updateMeta("description", fest.name, " — ");
+  updateMeta("keywords", fest.name, ", ");
+
   if (map) map.invalidateSize();
 
   // Reset day selector for new festival

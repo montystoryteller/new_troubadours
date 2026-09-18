@@ -2568,23 +2568,18 @@ function createCollapsibleMap(
   return handle;
 }
 
-// Update meta description
-function updateMetaDescription(extraContent) {
-  let metaDescription = document.querySelector('meta[name="description"]');
-
-  if (!metaDescription) {
-    metaDescription = document.createElement("meta");
-    metaDescription.name = "description";
-    document.head.appendChild(metaDescription);
+// Update meta
+function updateMeta(metaName, extraContent, separator = " — ") {
+  let meta = document.querySelector(`meta[name="${metaName}"]`);
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = metaName;
+    document.head.appendChild(meta);
   }
-
-  const originalDescription = metaDescription.getAttribute("content") || "";
-
-  metaDescription.setAttribute(
-    "content",
-    `${extraContent} — ${originalDescription}`,
-  );
+  const originalContent = meta.getAttribute("content") || "";
+  meta.setAttribute("content", `${extraContent}${separator}${originalContent}`);
 }
+
 
 // Canonical link handling for performers, venues, storyclubs
 function setCanonical(param = null) {

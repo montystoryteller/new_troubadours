@@ -237,7 +237,12 @@ function buildSearchIndex() {
           // "story" is the always-on default bucket, so it needs no badge
           // of its own — same reasoning as TODAY_EVENTS_TYPE_LABELS not
           // badging specificEvents rows either.
-          kindLabel: category === "story" ? undefined : category === "music" ? "Music" : "Poetry",
+          kindLabel:
+            category === "story"
+              ? undefined
+              : category === "music"
+                ? "Music"
+                : "Poetry",
           category,
         }),
       );
@@ -248,7 +253,11 @@ function buildSearchIndex() {
     // Same isMusic/isPoetry precedence as collectEventsOnDate()'s tour
     // mapping below and TOUR_PANEL_GROUPS in tour_display.js — a tour with
     // neither flag set defaults to "story".
-    const category = tour.isMusic ? "music" : tour.isPoetry ? "poetry" : "story";
+    const category = tour.isMusic
+      ? "music"
+      : tour.isPoetry
+        ? "poetry"
+        : "story";
     expandTourDates(tour.tour_dates || []).forEach((td) => {
       const date = parseDateString(td.date);
       if (!date) return;
@@ -307,7 +316,11 @@ const SEARCH_TYPE_FILTER_STORAGE_KEY = "ntEventSearchTypePrefs";
 // matching EVENT_TYPE_FILTERS' music/poetry entries in event_display.js
 // (and TODAY_EVENTS_TYPE_LABELS' all-on default further down, which is a
 // deliberately different bias for that panel).
-const SEARCH_TYPE_FILTER_DEFAULTS = { story: true, music: false, poetry: false };
+const SEARCH_TYPE_FILTER_DEFAULTS = {
+  story: true,
+  music: false,
+  poetry: false,
+};
 
 function readStoredSearchTypeFilters() {
   try {
@@ -752,8 +765,8 @@ function renderPage() {
     : `${name} — New Troubadours`;
   document.title = perfName;
   document.getElementById("eventName").textContent = name;
-
-  updateMetaDescription(perfName);
+  updateMeta("description", perfName, " — ");
+  updateMeta("keywords", perfName, ", ");
 
   const metaParts = [formatDate(ev._date), ev.time || null, ev.price || null]
     .filter(Boolean)
@@ -926,9 +939,7 @@ function renderPerformerSection(ev) {
   const container = document.getElementById("performerInfo");
   container.innerHTML = "";
 
-  const performer = ev.performer_id
-    ? performersLookup[ev.performer_id]
-    : null;
+  const performer = ev.performer_id ? performersLookup[ev.performer_id] : null;
   const name = (performer && performer.name) || ev.performer || null;
   if (!name) {
     section.style.display = "none";
@@ -1069,59 +1080,59 @@ function collectUpcomingEventsForPerformer(performerId, today) {
   });
 
   const showDatesHere = [];
-  Object.entries(eventsData.repertoire_shows || {}).forEach(
-    ([tsId, ts]) => {
-      if (!matches(ts)) return;
-      expandTourDates(ts.show_dates).forEach((showDate) => {
-        showDatesHere.push({ ts, tsId, showDate });
-      });
-    },
-  );
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    if (!matches(ts)) return;
+    expandTourDates(ts.show_dates).forEach((showDate) => {
+      showDatesHere.push({ ts, tsId, showDate });
+    });
+  });
 
-  return [
-    ...specificEvents.map((e) => ({
-      type: "specific",
-      date: parseDateString(e.date),
-      data: e,
-      venueId: e.venue_id,
-    })),
-    ...musicEvents.map((e) => ({
-      type: "music",
-      date: parseDateString(e.date),
-      data: e,
-      venueId: e.venue_id,
-    })),
-    ...poetryEvents.map((e) => ({
-      type: "poetry",
-      date: parseDateString(e.date),
-      data: e,
-      venueId: e.venue_id,
-    })),
-    ...tourDatesHere.map((t) => ({
-      type: "tour",
-      date: parseDateString(t.tourDate.date),
-      data: t,
-      venueId: t.tourDate.venue_id,
-    })),
-    ...showDatesHere.map((s) => ({
-      type: "show",
-      date: parseDateString(s.showDate.date),
-      data: s,
-      venueId: s.showDate.venue_id,
-    })),
-  ]
-    .filter((e) => e.date && e.date >= today)
-    // Drop this page's own event out of its performer's "more dates" list.
-    .filter(
-      (e) =>
-        !(
-          e.type === "specific" &&
-          e.data.name === eventRecord.name &&
-          e.data.date === eventRecord.date
-        ),
-    )
-    .map((e) => ({ ...e, venue: venuesLookup[e.venueId] || null }))
-    .sort((a, b) => a.date - b.date);
+  return (
+    [
+      ...specificEvents.map((e) => ({
+        type: "specific",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...musicEvents.map((e) => ({
+        type: "music",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...poetryEvents.map((e) => ({
+        type: "poetry",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...tourDatesHere.map((t) => ({
+        type: "tour",
+        date: parseDateString(t.tourDate.date),
+        data: t,
+        venueId: t.tourDate.venue_id,
+      })),
+      ...showDatesHere.map((s) => ({
+        type: "show",
+        date: parseDateString(s.showDate.date),
+        data: s,
+        venueId: s.showDate.venue_id,
+      })),
+    ]
+      .filter((e) => e.date && e.date >= today)
+      // Drop this page's own event out of its performer's "more dates" list.
+      .filter(
+        (e) =>
+          !(
+            e.type === "specific" &&
+            e.data.name === eventRecord.name &&
+            e.data.date === eventRecord.date
+          ),
+      )
+      .map((e) => ({ ...e, venue: venuesLookup[e.venueId] || null }))
+      .sort((a, b) => a.date - b.date)
+  );
 }
 
 const PERFORMER_UPCOMING_MAX = 6;
@@ -1202,7 +1213,7 @@ function renderInfoTable(hostVenue) {
     hostVenue.name && ["Name", hostVenue.name],
     hostVenue.full_address && [
       "Address",
-      hostVenue.full_address.replace(/^[^,]*,\s*/, '')
+      hostVenue.full_address.replace(/^[^,]*,\s*/, ""),
     ],
     hostVenue.city && ["Town", hostVenue.city],
     hostVenue.postcode && ["Postcode", hostVenue.postcode],

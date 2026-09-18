@@ -49,7 +49,6 @@ function preloadLeafletWhenIdle() {
   }
 }
 
-
 // Single source of truth for "does this venue have usable coordinates".
 // `venue.latlon` being present isn't enough on its own — some venues have
 // it set to an empty array [] rather than being missing outright, and []
@@ -825,7 +824,9 @@ setCanonical("venue");
 
 function renderVenue() {
   document.title = `${venue.name} — New Troubadours`;
-  updateMetaDescription(venue.name);
+
+  updateMeta("description", venue.name, " — ");
+  updateMeta("keywords", venue.name, ", ");
 
   document.getElementById("venueName").textContent = venue.name;
 
@@ -1428,4 +1429,3 @@ function renderNearbyEventsList(days) {
     renderEventRow(list, entry, false, { showVenue: true }),
   );
 }
-
