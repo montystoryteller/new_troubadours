@@ -504,7 +504,7 @@ setCanonical("performer");
           }
         });
         Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
-          if (performerIdsOf(ts).includes(pid)) {
+          if (performerIdsOf(ts).some((id) => aliasIds.has(id))) {
             const n = ts.showname || ts.name;
             if (n) showNames.push(n);
           }
