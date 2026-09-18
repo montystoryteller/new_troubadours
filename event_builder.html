@@ -31,10 +31,12 @@
             color: #757575;
             margin-bottom: 2px;
         }
+
         .subitem-field-group {
             display: flex;
             flex-direction: column;
         }
+
         /* event_builder-styles.css only styles inputs inside .subitem-row-fields;
            the podcast-episode description field is a textarea, so give it the
            same treatment for visual consistency. */
@@ -49,6 +51,7 @@
             min-height: 50px;
             resize: vertical;
         }
+
         /* event_builder-styles.css's .btn-add-batch has no :disabled rule, so
            a disabled scan button (before a feed is loaded) rendered fully
            green/clickable-looking despite being functionally inert. */
@@ -57,6 +60,7 @@
             color: #888;
             cursor: default;
         }
+
         /* Keeps a long scan-results list to a fixed height (roughly 4-5
            rows) with its own scrollbar, rather than pushing the rest of
            the Enrich tab down indefinitely once expanded. */
@@ -65,6 +69,7 @@
             overflow-y: auto;
             padding-right: 4px;
         }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -72,6 +77,7 @@
             gap: 6px;
             flex-shrink: 0;
         }
+
         .batch-edit-btn,
         .batch-preview-btn {
             background: white;
@@ -82,10 +88,12 @@
             font-size: 0.85em;
             cursor: pointer;
         }
+
         .batch-edit-btn:hover,
         .batch-preview-btn:hover {
             background: var(--theme-green-bg);
         }
+
         .batch-list li.batch-preview-row {
             display: block;
             background: #fafafa;
@@ -94,6 +102,7 @@
             padding: 8px 10px;
             margin-top: -2px;
         }
+
         .batch-preview-row pre {
             margin: 0;
             white-space: pre-wrap;
@@ -113,6 +122,7 @@
         <a href="performers.html">🎤 Performers</a>
         <a href="venues.html">📍 Venues</a>
         <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
         <a href="flyers.html">📋 Flyers</a>
         <a href="stats.html">📊 Stats</a>
     </nav>
@@ -232,7 +242,8 @@
                 <label>Description</label>
                 <div>
                     <textarea id="ev-description" placeholder="Show description"></textarea>
-                    <button type="button" class="add-subitem-btn" id="ev-suggest-age-btn" style="margin-top:6px;">Suggest
+                    <button type="button" class="add-subitem-btn" id="ev-suggest-age-btn"
+                        style="margin-top:6px;">Suggest
                         age rating from description</button>
                     <div id="ev-age-suggestion" style="display:none;"></div>
                 </div>
@@ -288,7 +299,8 @@
 
             <div class="field-row">
                 <label>Facebook</label>
-                <input type="url" id="ev-facebook" placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
+                <input type="url" id="ev-facebook"
+                    placeholder="(optional) facebook page/post URL — distinct from the numeric event ID above">
             </div>
 
             <div class="field-row">
@@ -344,7 +356,8 @@
 
             <div class="field-row">
                 <label>Show name</label>
-                <input type="text" id="tour-name" placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
+                <input type="text" id="tour-name"
+                    placeholder="e.g. Dauntless (leave blank to inherit from a linked repertoire show)">
             </div>
 
             <div class="field-row">
@@ -469,7 +482,8 @@
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="festival-name" list="festivalOptions" placeholder="e.g. Bristol Storytelling Festival 2026">
+                    <input type="text" id="festival-name" list="festivalOptions"
+                        placeholder="e.g. Bristol Storytelling Festival 2026">
                     <div id="festival-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -527,7 +541,8 @@
 
             <div class="field-row">
                 <label>Age bands</label>
-                <input type="text" id="festival-age-bands" placeholder="comma-separated, e.g. Family friendly, Adults only">
+                <input type="text" id="festival-age-bands"
+                    placeholder="comma-separated, e.g. Family friendly, Adults only">
             </div>
 
             <div class="field-row">
@@ -539,7 +554,8 @@
                 <label>Flyer(s)</label>
                 <div>
                     <div class="date-rows" id="festival-flyer-rows"></div>
-                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()" style="margin-top:6px;">Add
+                    <button type="button" class="add-date-btn" onclick="addFestivalFlyerRow()"
+                        style="margin-top:6px;">Add
                         another flyer</button>
                     <div class="field-hint">One flyer saves as event_flyer; add more, or give one a caption, to save
                         as event_flyers.</div>
@@ -715,7 +731,8 @@
                 <div>
                     <input type="text" id="venue-type" list="venueTypeOptions"
                         placeholder="e.g. Pub / bar / café — pick a suggestion, type your own, or leave blank">
-                    <div class="field-hint">More than one type? Separate with commas, e.g. "Pub / bar / café, Live music venue".</div>
+                    <div class="field-hint">More than one type? Separate with commas, e.g. "Pub / bar / café, Live music
+                        venue".</div>
                     <div class="field-hint" id="venue-type-hint"></div>
                 </div>
             </div>
