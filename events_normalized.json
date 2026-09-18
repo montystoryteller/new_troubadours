@@ -2084,7 +2084,7 @@
           "ticket_url": "https://www.eventbrite.co.uk/e/history-of-the-hostelries-of-old-portsmouth-tickets-1998543641832"
         }
       ],
-      "description": "Dive into the stories and secrets of Old Portsmouth’s oldest pubs in this fun, in-person tour!\n\n\n\nHistory of the Hostelries of Old Portsmouth\n\n\n\nJoin us in person for a fascinating dive into the oldest hostelries of Portsmouth! Discover the stories, legends, and secrets behind these historic pubs and inns that shaped the city's past. Whether you're a history buff or just curious, this event promises an informative and lively exploration (you buy your own drinks, the group supplies the fun and laughter). Don't miss out on this chance to step back in time and experience the charm of Old Portsmouth's hospitality! Starting and finishing at the historic Sally Port Inn, we aim to visit The Dolphin, The Bridge Tavern, Spice Island Inn, Still & West and the Wellington. Food can be taken at any of these famous hostelries once the tour has finished.",
+      "description": "Dive into the stories and secrets of Old Portsmouth's oldest pubs in this fun, in-person tour!\n\n\n\nHistory of the Hostelries of Old Portsmouth\n\n\n\nJoin us in person for a fascinating dive into the oldest hostelries of Portsmouth! Discover the stories, legends, and secrets behind these historic pubs and inns that shaped the city's past. Whether you're a history buff or just curious, this event promises an informative and lively exploration (you buy your own drinks, the group supplies the fun and laughter). Don't miss out on this chance to step back in time and experience the charm of Old Portsmouth's hospitality! Starting and finishing at the historic Sally Port Inn, we aim to visit The Dolphin, The Bridge Tavern, Spice Island Inn, Still & West and the Wellington. Food can be taken at any of these famous hostelries once the tour has finished.",
       "isSpecial": true,
       "isStoryWalk": true,
       "performer_id": "dave-clark"
@@ -5547,7 +5547,10 @@
       "email": "southdevonstorytellers@gmail.com",
       "club": "southdevonstorytellers",
       "club_flyer": "mic_weird_britain.jpg",
-      "venue_id": "moor-imagination-collective-buckfastleigh"
+      "themes": [["23/09/2026", "Fruits"],["28/20/2026","Ancestors"],["25/11/2026", "Water"],["23rd/12/2026","Yule"],["27/01/2027","Quiet"],["24/02/2027","Earth"],["24/03/2027","Seeds"],["28/04/2027","Fools"],["26/05/2027","Air"],["23/06/2027","Mead"],["28/07/2027","Fire"]],
+      "time": "7.30-9.30pm",
+      "venue_id": "moor-imagination-collective-buckfastleigh",
+      "description": "South Devon Storytellers are back this autumn to continue our exploration into the traditional tales of Weird Britain!\n\n\n\nWe are an informal group of story lovers who tell tales in the oral storytelling tradition (no notes or prompts). We champion outspoken stand-up storytelling.\n\n\n\nDates for the year ahead:\n\n\n\n23rd September 2026 - theme: Fruits\n\n\n\n28th October 2026 - theme: Ancestors\n\n\n\n25th November 2026 - theme: Water\n\n\n\n23rd December 2026 - theme: Yule\n\n\n\n27th January2027 - theme: Quiet\n\n\n\n24th February 2027 - theme: Earth\n\n\n\n24th March 2027 - theme: Seeds\n\n\n\n28th April 2027 - theme: Fools\n\n\n\n26th May 2027 - theme: Air\n\n\n\n23rd June 2027 - theme: Mead\n\n\n\n28th July 2027 - theme: Fire\n\n\n\nMeeting 7:30-9:30pm on the fourth Wednesday of every month, in the MIC Cafe, Buckfastleigh, we will be travelling through time and place into weird and wonderful tales that are held by the land and brought to life by its people!\n\n\n\nFor the longer story this September, Henry Everett will be telling juicy, fruity tales of the fae, from orchards beneath the unknown stars of Britains Faerie otherland's.\n\n\n\nGlimpse at the evening's format:\n\n\n\nUp to 5 ten minute 'open mic' spaces - Bring a tale, a story, a poem or a song to share, or simply to listen! The optional theme for September's shorter stories is 'FRUITS'\n\n\n\nAfter a break we have a dedicated story inspired by the theme 'Weird Britain'.\n\n\n\nDonations to cover room hire welcome!\n\n\n\nBring the tales that excite you!\n\n\n\nMeet you in the wonder!"
     },
     {
       "name": "Plymouth Storytelling Circle",
@@ -5660,6 +5663,16 @@
       "venue_id": "guide-dog-pub-southampton"
     },
     {
+      "name": "Abergavenny and Beyond Zooming Storytelling Circle",
+      "schedule": "4th monday",
+      "time": "Link open at 6.45pm, stories from 7pm",
+      "facebook": "https://www.facebook.com/groups/southamptonstories",
+      "club": "southamptonSC",
+      "venue_id": "",
+      "description": "A storytelling gathering, with a warm welcome to all with tales to tell, songs to sing, or simply coming to listen. Every 4th Monday of the month, with the link open from 18:45 and stories starting at 19:00 UK. If you aren't on the mailing list, message https://www.facebook.com/anne.lister.3 to join or for the zoom link (before Monday evening!)",
+      "online": true
+    },
+    {
       "name": "Sarum Story club [online?]",
       "schedule": "3rd tuesday",
       "location": "",
@@ -5738,10 +5751,12 @@
     },
     {
       "name": "Frome storytelling circle",
-      "schedule": "last monday",
+      "schedule": "last sunday",
       "time": "7-9pm",
-      "facebook": "https://www.facebook.com/laralavender6",
+      "facebook": "https://www.facebook.com/events/1564444148251065/",
       "club": "fromeSC",
+      "club_flyer": "flyer_frome_storytelling_circle.jpg",
+      "description": "Live storytelling, out of the head, through the mouth, into the ear, myths, folktales, funny stories, things that have happened to you...",
       "venue_id": "three-swans-pub-frome"
     },
     {
@@ -9247,7 +9262,7 @@
       "time": "7.30-9.30pm",
       "club": "guesthouseST",
       "price": "£12 / £8",
-      "description": "A peek behind the magic curtain\n\n\n\nWhat makes a good story?\n\n\n\nHow do you become a storyteller?\n\n\n\nWhy is storytelling still a secret art?\n\n\n\nStories have been told in every culture since the dawn of humanity. Now a new generation of tellers is breathing fresh life into myth and folktale for modern audiences. What sustains this perennial appeal?\n\n\n\nIn this fun, interactive evening, Jamie Crawford will share glimpses into the mystery of storytelling via some of his favourite tales. We will open up the floor for discussion and even encourage you to have a tiny try-out at telling a story to the person sitting next to you.\n\n\n\nLiving a stone’s throw from the Ouse in Newhaven, Jamie Crawford writes, draws and tells stories. Known for his dynamic reworking of traditional tales, for his playful approach to the spoken word and for the warmth of his telling, Jamie has been delivering storytelling performances and workshops since the turn of the millenium.",
+      "description": "A peek behind the magic curtain\n\n\n\nWhat makes a good story?\n\n\n\nHow do you become a storyteller?\n\n\n\nWhy is storytelling still a secret art?\n\n\n\nStories have been told in every culture since the dawn of humanity. Now a new generation of tellers is breathing fresh life into myth and folktale for modern audiences. What sustains this perennial appeal?\n\n\n\nIn this fun, interactive evening, Jamie Crawford will share glimpses into the mystery of storytelling via some of his favourite tales. We will open up the floor for discussion and even encourage you to have a tiny try-out at telling a story to the person sitting next to you.\n\n\n\nLiving a stone's throw from the Ouse in Newhaven, Jamie Crawford writes, draws and tells stories. Known for his dynamic reworking of traditional tales, for his playful approach to the spoken word and for the warmth of his telling, Jamie has been delivering storytelling performances and workshops since the turn of the millenium.",
       "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/",
       "isSpecial": true,
       "date_added": "07/09/2026",
@@ -9496,7 +9511,7 @@
       "time": "7pm",
       "club": "talestattledtold",
       "price": "",
-      "description": "Join Tales Tattled & Told in this joyous celebration of Bletchley’s history.\n\n\n\nTales Tattled & Told is proud to kick off it's eighth season of storytelling by and for grown-ups by taking part in this year's Heritage Open Days (find more HOD events here).\n\n\n\nLocal storytellers Pete Boyce, Stella Girvin, Stephen Hobbs, Terrie Howey-Moore and Jane Lambourne bring tales of times past in Bletchley, Milton Keynes and wider Buckinghamshire.\n\n\n\nPlus the joyous music of Fraser Winterbottom!\n\n\n\nWhose faces are those, that look down from the ceiling of the Rectory Cottages in Bletchley? Come on in and find out.\n\n\n\nDo you know all of the secrets of Bletchley Park? Are you sure?\n\n\n\nWhat happened on the day that a suffragette challenged Prime Minister H.H. Asquith at Bletchley Manor? Was that in 1909 or 1911?\n\n\n\nThis event is intended for ages 16 and older.",
+      "description": "Join Tales Tattled & Told in this joyous celebration of Bletchley's history.\n\n\n\nTales Tattled & Told is proud to kick off it's eighth season of storytelling by and for grown-ups by taking part in this year's Heritage Open Days (find more HOD events here).\n\n\n\nLocal storytellers Pete Boyce, Stella Girvin, Stephen Hobbs, Terrie Howey-Moore and Jane Lambourne bring tales of times past in Bletchley, Milton Keynes and wider Buckinghamshire.\n\n\n\nPlus the joyous music of Fraser Winterbottom!\n\n\n\nWhose faces are those, that look down from the ceiling of the Rectory Cottages in Bletchley? Come on in and find out.\n\n\n\nDo you know all of the secrets of Bletchley Park? Are you sure?\n\n\n\nWhat happened on the day that a suffragette challenged Prime Minister H.H. Asquith at Bletchley Manor? Was that in 1909 or 1911?\n\n\n\nThis event is intended for ages 16 and older.",
       "isSpecial": true,
       "event_flyer": "",
       "ticket_url": "https://wegottickets.com/af/671/f/20104",
@@ -9520,7 +9535,7 @@
       "date_added": "13/09/2026",
       "time": "7-9pm",
       "price": "£10 (children £8)",
-      "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man – stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i’r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o’r byd hon a’r byd arall. Trwy gydblethu’r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
+      "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man – stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i'r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o'r byd hon a'r byd arall. Trwy gydblethu'r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
       "age_rating": "12+",
       "min_age": 12,
       "event_flyer": "2026_09_19_harebell_tellers.jpg",
@@ -9972,6 +9987,19 @@
       "isSpecial": true
     },
     {
+      "name": "The Ghost Light [Owen Staton]",
+      "showname": "The Ghost Light ",
+      "date": "29/10/2026",
+      "venue_id": "horse-and-plough-bingham",
+      "performer_id": "owen-staton",
+      "date_added": "18/09/2026",
+      "time": "7.30pm",
+      "price": "Pay What You Can: £8, £10*, £12",
+      "description": "When everyone has gone home, one light remains burning on the stage.\n\n\n\n\n\n\n\nThe Ghost Light.\n\n\n\n\n\n\n\nFor generations, it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\n\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light – an evening of live storytelling.\n\n\n\n\n\n\n\nOver the course of the evening, he'll share a collection of haunting tales rooted in the place we're gathered.\n\n\n\n\n\n\n\nEvery performance is unique, drawing on local ghost stories, forgotten folklore and strange true accounts from the surrounding area. From lonely roads and abandoned houses to ancient churches, quiet woodlands and restless spirits that refuse to leave the places they once called home, these are the stories that have shaped the landscape around us for generations.\n\n\n\n\n\n\n\nA storyteller. An audience. A theatre wrapped in darkness, save for the ghost light burning on the stage.\n\n\n\n\n\n\n\nAs the evening unfolds, you'll laugh, you'll wonder and, perhaps, you'll find yourself looking a little more carefully into the shadows as you leave. The stories will carry you through encounters with uncanny visitors, ancient curses, mysterious disappearances, spectral figures and moments when the ordinary world gives way to something altogether stranger. Each tale is told in the rich oral tradition that has made Time Between Times Storytelling one of Britain's most-loved folklore podcasts. These are stories shaped not by special effects, but by voice, imagination and the shared experience of sitting together – exactly as our ancestors have done for centuries.\n\n\n\n\n\n\n\nNo two performances are the same, because every town has its own ghosts.\n\n\n\nEvery theatre has its own silence.\n\n\n\nAnd every audience brings something different to the telling.\n\n\n\n\n\n\n\nSo when the house lights fade and the ghost light begins to glow, take your seat and listen carefully…\n\n\n\nThe stories are here.",
+      "ticket_url": "https://thewelfare.co.uk/Shows/the-ghost-light-with-owen-staton/",
+      "isSpecial": true
+    },
+    {
       "name": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books [Holly Medland & Merl Fluin]",
       "showname": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books",
       "date": "29/10/2026",
@@ -9985,7 +10013,7 @@
       "price": "£10",
       "event_flyer": "2026_10_29_medland-fluin-haunted-babushka.jpg",
       "fb_event": 935386626300731,
-      "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what’s behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
+      "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what's behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
       "isSpecial": true
     },
     {
@@ -12658,6 +12686,7 @@
       "postcode": "PO30 5BD",
       "full_address": "Quay Arts, Newport, Isle of Wight, PO30 5BD",
       "url": "https://www.quayarts.org/",
+      "description": "The Isle of Wight's leading art gallery and venue for live arts events.\n\n\n\nThe Quay Arts Centre is situated in a converted 19th-Century brewery warehouse complex at the head of the River Medina in the centre of Newport, Isle of Wight.\n\n\n\nRefurbished in 1997, facilities include two galleries, a 134-seat theatre, a unique gift shop, a popular Café Bar which can also be used as a venue. The Rope Store Gallery can also be repurposed to an intimate acoustic venue.",
       "latlon": [
         50.70172,
         -1.29177
@@ -17618,7 +17647,7 @@
       "id": "dave-clark",
       "name": "Dave Clark",
       "url": "https://www.sallyporttours.co.uk/team/",
-      "bio": "Dave brings a wealth of experience and knowledge to our team, with over 40 years of service in the UK Civil Service. His career took him across the globe, working on diverse and impactful projects. As a qualified learning and development professional with diplomas in Archaeology, The Romans in Britain, and Genealogy, Dave has a passion for uncovering and sharing history.\n\n\n\nIn recent years, Dave has captivated audiences with engaging presentations on topics such as Pompeii and Herculaneum, the fascinating history of Fishbourne Roman Palace, and the intricate world of drug smuggling into the UK.\n\n\n\nDave's commitment to heritage and education extends to his time as a volunteer in visitor services at Fishbourne Roman Palace, where he delivered guided tours of the Collection’s Discovery Centre and the Palace itself. He also led historical walks through Fishbourne Village and Chichester City, bringing local history to life for visitors.\n\n\n\nDave's expertise and storytelling skills make him a valued guide and presenter, offering unique insights and unforgettable experiences."
+      "bio": "Dave brings a wealth of experience and knowledge to our team, with over 40 years of service in the UK Civil Service. His career took him across the globe, working on diverse and impactful projects. As a qualified learning and development professional with diplomas in Archaeology, The Romans in Britain, and Genealogy, Dave has a passion for uncovering and sharing history.\n\n\n\nIn recent years, Dave has captivated audiences with engaging presentations on topics such as Pompeii and Herculaneum, the fascinating history of Fishbourne Roman Palace, and the intricate world of drug smuggling into the UK.\n\n\n\nDave's commitment to heritage and education extends to his time as a volunteer in visitor services at Fishbourne Roman Palace, where he delivered guided tours of the Collection's Discovery Centre and the Palace itself. He also led historical walks through Fishbourne Village and Chichester City, bringing local history to life for visitors.\n\n\n\nDave's expertise and storytelling skills make him a valued guide and presenter, offering unique insights and unforgettable experiences."
     },
     "pete-boyce": {
       "id": "pete-boyce",
@@ -17677,7 +17706,7 @@
       "id": "polis-loizou",
       "name": "Polis Loizou",
       "url": "https://polisloizou.com/",
-      "bio": "Award-winning Cypriot writer and performer, working across various disciplines. I tend to draw on history, social politics, folklore and ‘queerness’ in all its forms. Polis also one makes up one third of the award-winning fringe theatre troupe The Off-Off-Off-Broadway Company, and is a teller of folk tales from around the world."
+      "bio": "Award-winning Cypriot writer and performer, working across various disciplines. I tend to draw on history, social politics, folklore and 'queerness' in all its forms. Polis also one makes up one third of the award-winning fringe theatre troupe The Off-Off-Off-Broadway Company, and is a teller of folk tales from around the world."
     },
     "charlotte-mooney": {
       "id": "charlotte-mooney",
