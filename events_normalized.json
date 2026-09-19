@@ -9638,7 +9638,7 @@
       "date_added": "24/08/2026",
       "time": "6pm",
       "price": "£10.00 (+ £0.84) / £5.00 (+ £0.42)",
-      "event_flyer": "2026_10_02_alim_kamara_stories_under_stars.jpg",
+      "event_flyers": ["2026_10_02_alim_kamara_stories_under_stars.jpg", "2026_10_02_stories_under_stars_monmouth.jpg"],
       "description": "Come and spend an evening under the open sky with the extraordinary storyteller Alim Kamara.\n\n\n\nAs the sun sets over Priory Gardens, gather close, share a picnic and let yourself be carried away by stories — tales of wonder, wisdom, laughter and imagination.\n\n\n\nBring a blanket. Bring a chair. Bring your people.\n\n\n\nThen look up, listen closely, and let the stories begin.",
       "ticket_url": "https://www.ticketsource.com/booking/select/mqzxqabjjakl",
       "wider_event": "monmouth-festival-stories-2026",
@@ -16863,7 +16863,7 @@
       "id": "tony-monty-hirst",
       "name": "Tony \"Monty\" Hirst",
       "url": "https://montystoryteller.org/",
-      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in teas tents at music festivals around the country. A keen collaborator, he peforms with folk and blues duo The AnyWhens, and folk punk fiddle player Sophie Kate."
+      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in teas tents at music festivals around the country. A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate."
     },
     "amelia-ace-armande": {
       "id": "amelia-ace-armande",
