@@ -107,7 +107,7 @@ function resolvableFlatEvents(list) {
 // (tourId/tsId + date) and don't have a standalone event.html permalink —
 // see buildSearchIndex() below, which links those to tour_guide.html instead.
 function findEventById(eventId) {
-  const target = decodeURIComponent(eventId);
+  const target = eventId;   // params.get() already decoded it — don't decode again (i.e. avoid decodeURIComponent(eventId) here)
   const pools = [
     eventsData.specificEvents,
     eventsData.musicEvents,
