@@ -201,6 +201,23 @@
             </div>
 
             <div class="field-row">
+                <label>Event ID</label>
+                <div>
+                    <input type="text" id="ev-event-id"
+                        placeholder="(optional — leave blank to auto-generate yyyymmdd-performerId-venueId)">
+                    <div class="field-hint">
+                        Only needed if you want a stable id other pages/permalinks can rely on, or to avoid a
+                        collision with another record — see the schema's <code>eventId</code> note. Leave blank
+                        and one is generated automatically as <code>yyyymmdd-performerId-venueId</code> from the
+                        date/performer/venue above; that generated form isn't guaranteed unique (e.g. the same
+                        performer at the same venue twice in one day), so set this by hand if that could apply
+                        here. The Enrich tab's "Missing event IDs" checker can also backfill this for existing
+                        records and will flag likely collisions for you to resolve.
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Date added</label>
                 <div>
                     <input type="text" id="ev-date-added" placeholder="DD/MM/YYYY">
@@ -1095,6 +1112,36 @@
                         data</button>
                 </div>
             </div>
+
+            <div class="enrich-section">
+                <h3>🆔 Missing event IDs</h3>
+                <p class="field-hint">
+                    Scans event/music/poetry records with no <code>eventId</code> set and suggests one using
+                    the new <code>yyyymmdd-performerId-venueId</code> generator (<code>buildStructuredEventId()</code>
+                    in shared_utils.js) — e.g. <code>20260315-daniel-morden-kings-arms</code>. That generated
+                    form isn't guaranteed unique: two different records for the same performer at the same
+                    venue on the same day (a matinee and an evening show, say) generate the same id. Every
+                    suggested id is checked against every other suggestion <strong>and</strong> against every
+                    <code>eventId</code> already set elsewhere in the loaded file — a row involved in a clash
+                    is marked <strong>⚠ possible collision</strong>, left <em>unticked</em>, and needs a
+                    hand-edited id (typed into its box below) before you tick and accept it; that's
+                    deliberate; nothing here resolves a collision for you. Every id shown is editable, so
+                    you can always override a clash-free suggestion too, e.g. to make it match a house
+                    convention. Individual events have no stable id of their own in
+                    <code>events_normalized.json</code> to key a patch against, so — same as the age-rating
+                    and pricing checkers above — accepting a row writes the new <code>eventId</code> straight
+                    into this loaded copy (by its position in the array) and lists it in the batch below by
+                    that position; use "Download full enriched JSON" above once you're done rather than
+                    relying on that position-based batch entry if the file might move on before you merge.
+                </p>
+                <button class="btn-add-batch" id="enrich-eventid-scan-btn" disabled>Scan for missing event
+                    IDs</button>
+                <div id="enrich-eventid-results"></div>
+                <div class="btn-row" id="enrich-eventid-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-eventid-apply-btn">Apply checked rows to
+                        loaded data</button>
+                </div>
+            </div>
         </div>
 
         <!-- ── Output ──────────────────────────────────────────── -->
@@ -1119,7 +1166,7 @@
                 from the replacement — check before overwriting if that matters).
                 <br><br>
                 <code>updatedEvents</code> is different again: it comes from the Enrich tab's checkers (e.g.
-                age ratings) and events have no id to key it by, so each key is just
+                age ratings, missing event IDs) and events have no id to key it by, so each key is just
                 "<code>bucket#index</code>" from the file you had loaded there — not safe to trust if that
                 file's changed since. Use it to locate the event instead: match by name/date against the
                 corresponding array (<code>specificEvents</code> / <code>musicEvents</code> /
@@ -3250,6 +3297,8 @@
             };
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            const eventId = document.getElementById("ev-event-id").value.trim();
+            if (eventId) record.eventId = eventId;
             const time = document.getElementById("ev-time").value.trim();
             const club = document.getElementById("ev-club").value.trim();
             const widerEvent = document.getElementById("ev-wider-event").value.trim();
@@ -3299,7 +3348,7 @@
         }
 
         function clearEventForm() {
-            ["ev-showname", "ev-name", "ev-date", "ev-date-added", "ev-time", "ev-club", "ev-wider-event", "ev-price",
+            ["ev-showname", "ev-name", "ev-date", "ev-event-id", "ev-date-added", "ev-time", "ev-club", "ev-wider-event", "ev-price",
                 "ev-description", "ev-age-rating", "ev-min-age", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("ev-age-suggestion").style.display = "none";
@@ -4776,6 +4825,7 @@
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-format-scan-btn").disabled = false;
+                document.getElementById("enrich-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -4789,6 +4839,7 @@
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-format-scan-btn").disabled = true;
+                document.getElementById("enrich-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -5613,6 +5664,155 @@
             alert(`Applied ${applied} age rating suggestion(s) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
             markEnrichedDataDirty();
             refreshBatchSummary();
+        });
+
+        // -- Missing event IDs (writes into loaded data directly — events ------
+        // -- have no stable id to key a separate small patch by) ---------------
+        document.getElementById("enrich-eventid-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-eventid-results");
+            const actionsEl = document.getElementById("enrich-eventid-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const buckets = [
+                ["specificEvents", enrichedData.specificEvents || []],
+                ["musicEvents", enrichedData.musicEvents || []],
+                ["poetryEvents", enrichedData.poetryEvents || []],
+            ];
+
+            // Every eventId already sitting in the file, across all three
+            // buckets — a fresh suggestion that happens to match one of
+            // these is just as much a collision as two fresh suggestions
+            // matching each other.
+            const existingIds = new Set();
+            buckets.forEach(([, list]) => {
+                (list || []).forEach(ev => { if (ev.eventId) existingIds.add(ev.eventId); });
+            });
+
+            const found = [];
+            buckets.forEach(([bucketName, list]) => {
+                (list || []).forEach((ev, index) => {
+                    if (ev.eventId) return;
+                    const dateStr = Array.isArray(ev.date) ? ev.date[0] : ev.date;
+                    const date = parseDateString(dateStr);
+                    if (!date) return; // unparsable date — the date-quality checker above is the place to fix that first
+                    const usedFallbackPerformer = !ev.performer_id && !(Array.isArray(ev.performer_ids) && ev.performer_ids[0]);
+                    const usedFallbackVenue = !ev.venue_id;
+                    found.push({
+                        bucket: bucketName,
+                        index,
+                        name: ev.showname || ev.name || "(untitled)",
+                        date: Array.isArray(ev.date) ? ev.date.join(", ") : ev.date,
+                        suggestedId: buildStructuredEventId(ev, date),
+                        usedFallbackPerformer,
+                        usedFallbackVenue,
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No specific/music/poetry events missing an eventId (with a resolvable date).</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+
+            // Collision check across this batch of suggestions, plus
+            // against every eventId already set elsewhere in the file.
+            const idCounts = {};
+            found.forEach(f => { idCounts[f.suggestedId] = (idCounts[f.suggestedId] || 0) + 1; });
+            found.forEach(f => {
+                f.collision = idCounts[f.suggestedId] > 1 || existingIds.has(f.suggestedId);
+            });
+
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.bucket = f.bucket;
+                row.dataset.index = f.index;
+                const fallbackNote = [
+                    f.usedFallbackPerformer ? "no performer_id/performer_ids set" : null,
+                    f.usedFallbackVenue ? "no venue_id set" : null,
+                ].filter(Boolean).join("; ");
+                row.innerHTML = `
+                    <input type="checkbox" ${f.collision ? "" : "checked"} class="enrich-eventid-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.bucket}${f.date ? `, ${f.date}` : ""})</span></div>
+                        <div class="enrich-result-detail">
+                            <label class="subitem-field-label">Suggested eventId — edit if needed</label>
+                            <input type="text" class="enrich-eventid-input" value="${f.suggestedId.replace(/"/g, "&quot;")}">
+                        </div>
+                        ${fallbackNote ? `<div class="enrich-result-reasons">⚠ Generated using a fallback (${fallbackNote}) — double-check this id, or set eventId by hand on the record instead.</div>` : ""}
+                        ${f.collision ? `<div class="enrich-result-reasons" style="color:#c62828;">⚠ Possible collision — this id matches another suggestion below and/or an eventId already set elsewhere in the file. Left unchecked; edit the id above to something unique before ticking and accepting it.</div>` : ""}
+                    </div>`;
+                const checkbox = row.querySelector(".enrich-eventid-check");
+                const input = row.querySelector(".enrich-eventid-input");
+                // Editing the id is treated as "I've reviewed this row and
+                // chosen a value" — same convention as the age-rating and
+                // venue-type checkers above, which auto-tick on edit too.
+                input.addEventListener("input", () => { checkbox.checked = true; });
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "event");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-eventid-apply-btn").addEventListener("click", () => {
+            const rows = [...document.querySelectorAll("#enrich-eventid-results .enrich-result-row")];
+
+            // Guard against applying two checked rows with the identical
+            // id in one go, even if the id was hand-edited after the scan
+            // (so it no longer matches whatever was flagged at scan time).
+            // Rows sharing a value are skipped rather than applied, so a
+            // maintainer who ignored a collision warning — or introduced a
+            // fresh one while editing — can't silently write duplicate
+            // eventIds in a single click.
+            const valueCounts = {};
+            rows.forEach(row => {
+                if (!row.querySelector(".enrich-eventid-check").checked) return;
+                const value = row.querySelector(".enrich-eventid-input").value.trim();
+                if (!value) return;
+                valueCounts[value] = (valueCounts[value] || 0) + 1;
+            });
+
+            let applied = 0;
+            let skippedCollision = 0;
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-eventid-check");
+                if (!checkbox.checked) return;
+                const value = row.querySelector(".enrich-eventid-input").value.trim();
+                if (!value) return; // checked but left blank -- nothing to apply
+                if (valueCounts[value] > 1) { skippedCollision++; return; }
+
+                const bucketArr = enrichedData && enrichedData[row.dataset.bucket];
+                const ev = bucketArr && bucketArr[parseInt(row.dataset.index, 10)];
+                if (!ev) return;
+                ev.eventId = value;
+
+                // Same convention as the age-rating/pricing checkers —
+                // events have no id to key a patch by, so the batch entry
+                // is keyed by bucket + array position instead.
+                const key = `${row.dataset.bucket}#${row.dataset.index}`;
+                delete updatedEvents[key];
+                updatedEvents[key] = JSON.parse(JSON.stringify(ev));
+                applied++;
+            });
+            if (!applied && !skippedCollision) {
+                alert("No rows checked.");
+                return;
+            }
+            let message = applied
+                ? `Applied ${applied} event ID(s) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`
+                : "";
+            if (skippedCollision) {
+                message += `${message ? " " : ""}Skipped ${skippedCollision} row(s) because their id matched another checked row — edit those ids to something unique and apply again.`;
+            }
+            alert(message);
+            if (applied) {
+                markEnrichedDataDirty();
+                refreshBatchSummary();
+            }
         });
 
         // -- Possible structured pricing (writes into loaded data directly — --

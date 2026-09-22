@@ -192,6 +192,14 @@
       },
       "description": "Optional structured alternative/companion to the free-text `price` field on the same record — mirrors how `structured_time` relates to `time`. When present, the event builder auto-generates `price` by rendering and joining these entries with ' / ' (e.g. a single {amount:10} becomes '£10'; {amount:10, fee:1.5} becomes '£10 (+ £1.50)'; {type:'advance', amount:8} plus {type:'door', amount:10} becomes '£8 advance / £10 door'). `price` remains the field everything else reads (including parseEventPrice() in stats.js, which only ever looks at the text); `structured_price` is only ever a convenience for producing/editing it, stays fully hand-editable afterwards, and is intentionally kept simple for now — deliberately not attempting to model every real-world pricing scheme (e.g. multi-day festival passes with deposits) as structured data, just the common shapes (standard/concession/advance/door/tiers/donation/pwyw/free, each with an optional fee)."
     },
+    "eventId": {
+      "type": "string",
+      "description": "Optional stable, explicit identifier for a specificEvent/musicEvent/poetryEvent record, used as its event.html permalink (?event_id=) whenever set — see resolveEventId() in shared_utils.js. When a record has no eventId, resolveEventId() generates one instead, in the form `yyyymmdd-performerId-venueId` (the event's own date + its performer_id, or the first entry of performer_ids if there's no single performer_id, + its venue_id) via buildStructuredEventId() — replacing the older `${name}-${date.getTime()}` scheme buildEventId() produced (that function is kept, marked @deprecated, only because other pages/older permalinks out in the wild may still rely on its exact output; new code should prefer resolveEventId()). The generated yyyymmdd-performerId-venueId form isn't guaranteed unique — e.g. the same performer doing two different shows at the same venue on the same day would generate the same id for both — and nothing generates or resolves eventId automatically checks for that. Where a collision is possible or has happened, set eventId here by hand to a value that disambiguates the records; the event builder's Enrich tab includes a checker that suggests a generated id for any record missing one and flags likely collisions among its own suggestions, but leaves it to the maintainer to actually resolve them.",
+      "examples": [
+        "20260315-daniel-morden-kings-arms",
+        "20260315-daniel-morden-kings-arms-matinee"
+      ]
+    },
     "youtubeUrl": {
       "description": "Optional YouTube trailer URL (watch/youtu.be/shorts/embed form). Rendered via getYouTubeEmbedUrl() in shared_utils.js, which validates the host and converts it to a safe youtube-nocookie.com /embed/ URL; anything else is silently ignored by the front end.",
       "type": "string"
@@ -946,6 +954,9 @@
         "date": {
           "$ref": "#/$defs/dateOrDates"
         },
+        "eventId": {
+          "$ref": "#/$defs/eventId"
+        },
         "date_added": {
           "type": "string"
         },
@@ -1097,6 +1108,9 @@
         "date": {
           "$ref": "#/$defs/dateOrDates"
         },
+        "eventId": {
+          "$ref": "#/$defs/eventId"
+        },
         "time": {
           "type": "string",
           "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time."
@@ -1193,6 +1207,9 @@
         },
         "date": {
           "$ref": "#/$defs/dateOrDates"
+        },
+        "eventId": {
+          "$ref": "#/$defs/eventId"
         },
         "time": {
           "type": "string",

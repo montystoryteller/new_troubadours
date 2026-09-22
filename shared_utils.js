@@ -488,12 +488,71 @@ function couldBeAtVenue(rec, vid) {
  * mirrors the data-event-id scheme event_display.js already uses for
  * same-page anchor matching (`${name}-${date.getTime()}`), so an id
  * copied from that page's DOM still resolves correctly here.
+ *
+ * @deprecated Superseded by resolveEventId()/buildStructuredEventId()
+ * below, which honour an explicit `eventId` on the record and otherwise
+ * generate a more stable `yyyymmdd-performerId-venueId` id instead of this
+ * function's `${name}-${date.getTime()}` scheme (a stray edit to `name`,
+ * or the exact millisecond a Date was constructed with, is enough to
+ * change this function's output and break an existing permalink). Left in
+ * place, unchanged, purely so any page/old link that already depends on
+ * this exact formula keeps working — new code should call resolveEventId()
+ * instead. event.js's own findEventById() still checks both, so links
+ * built either way keep resolving.
  * @param {string} name
  * @param {Date} date
  * @returns {string}
  */
 function buildEventId(name, date) {
   return `${name}-${date.getTime()}`;
+}
+
+/**
+ * New-scheme event id generator for a specificEvent/musicEvent/poetryEvent
+ * record — `yyyymmdd-performerId-venueId`, e.g.
+ * "20260315-daniel-morden-kings-arms". Used by resolveEventId() below as
+ * the fallback whenever a record has no explicit `eventId` of its own.
+ *
+ * Not guaranteed collision-free: two different records for the same
+ * performer at the same venue on the same day (e.g. a matinee and an
+ * evening show) generate the same id. Nothing here detects or resolves
+ * that automatically — where a collision is possible, set `eventId`
+ * explicitly on the record instead (the event builder's Enrich tab has a
+ * checker that suggests one for any record missing it, and flags likely
+ * collisions among its own suggestions, but leaves resolving them to the
+ * maintainer).
+ * @param {object} record - a specificEvent/musicEvent/poetryEvent record
+ * @param {Date} date - the single resolved date for this occurrence (for
+ *   a multi-date record, the specific date being linked to — same
+ *   contract as buildEventId()'s `date` param)
+ * @returns {string}
+ */
+function buildStructuredEventId(record, date) {
+  const yyyymmdd = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
+  const performerId =
+    record.performer_id ||
+    (Array.isArray(record.performer_ids) && record.performer_ids[0]) ||
+    "unknown-performer";
+  const venueId = record.venue_id || "unknown-venue";
+  return `${yyyymmdd}-${performerId}-${venueId}`;
+}
+
+/**
+ * Resolves the id to use for a specificEvent/musicEvent/poetryEvent
+ * record's event.html permalink: the record's own explicit `eventId` if
+ * it has one, otherwise a generated `yyyymmdd-performerId-venueId` id via
+ * buildStructuredEventId() above. This is the id scheme event.js's own
+ * permalink-building code uses; see that function's docstring for its
+ * collision caveat. Does NOT fall back to the older buildEventId() scheme
+ * — that one is only still consulted by event.js's findEventById() when
+ * resolving an incoming id, for backward compatibility with links built
+ * elsewhere before this function existed.
+ * @param {object} record - a specificEvent/musicEvent/poetryEvent record
+ * @param {Date} date - the single resolved date for this occurrence
+ * @returns {string}
+ */
+function resolveEventId(record, date) {
+  return record.eventId || buildStructuredEventId(record, date);
 }
 
 /**
