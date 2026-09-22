@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""
+updatejs — bump the cache-busting ?v= query string on every <script src="...">
+reference to a given JS file, across all HTML files under a directory.
+
+Usage:
+    updatejs --refers-to shared_utils.js
+    updatejs -r shared_utils.js --dir ./site --dry-run
+    updatejs -r shared_utils.js --scheme increment
+
+Examples:
+    # Bump every <script src="...shared_utils.js..."> in the current tree
+    # to a fresh timestamp version (default scheme).
+    updatejs -r shared_utils.js
+
+    # Preview what would change without writing anything.
+    updatejs -r shared_utils.js --dry-run
+
+    # Increment the existing ?v= number by 1 instead of using a timestamp.
+    updatejs -r shared_utils.js --scheme increment
+"""
+
+import argparse
+import datetime
+import re
+import sys
+from pathlib import Path
+
+# Matches: src="...basename.js" or src="...basename.js?anything"
+# Captures: (1) everything before and including the filename,
+#           (2) the existing "?...query" if present (optional),
+#           (3) the closing quote character.
+def build_pattern(basename: str) -> re.Pattern:
+    escaped = re.escape(basename)
+    return re.compile(
+        r'(src=(["\'])[^"\']*' + escaped + r')(\?[^"\']*)?(\2)'
+    )
+
+
+def next_version(existing_query: str | None, scheme: str) -> str:
+    if scheme == "timestamp":
+        return datetime.datetime.now().strftime("%Y%m%d%H%M")
+
+    # scheme == "increment"
+    if existing_query:
+        m = re.search(r"[?&]v=(\d+)", existing_query)
+        if m:
+            return str(int(m.group(1)) + 1)
+    return "1"
+
+
+def process_file(path: Path, pattern: re.Pattern, scheme: str, dry_run: bool) -> int:
+    text = path.read_text(encoding="utf-8")
+    changes = 0
+
+    def replace(m: re.Match) -> str:
+        nonlocal changes
+        changes += 1
+        prefix, quote, existing_query, _closing_quote = m.groups()
+        version = next_version(existing_query, scheme)
+        return f"{prefix}?v={version}{quote}"
+
+    new_text = pattern.sub(replace, text)
+
+    if changes and not dry_run:
+        path.write_text(new_text, encoding="utf-8")
+
+    return changes
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        prog="updatejs",
+        description="Bump the ?v= cache-busting query string on <script src> "
+        "references to a given JS file, across all HTML files in a tree.",
+    )
+    parser.add_argument(
+        "-r", "--refers-to",
+        required=True,
+        metavar="FILE",
+        help="Basename of the JS file to bump references to, e.g. shared_utils.js",
+    )
+    parser.add_argument(
+        "-d", "--dir",
+        default=".",
+        metavar="DIR",
+        help="Root directory to scan for .html files (default: current directory)",
+    )
+    parser.add_argument(
+        "--scheme",
+        choices=["timestamp", "increment"],
+        default="timestamp",
+        help="How to generate the new version value (default: timestamp, "
+        "format YYYYMMDDHHMM)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would change without writing any files",
+    )
+    args = parser.parse_args()
+
+    root = Path(args.dir)
+    if not root.is_dir():
+        print(f"error: '{root}' is not a directory", file=sys.stderr)
+        return 1
+
+    pattern = build_pattern(args.refers_to)
+    html_files = sorted(root.rglob("*.html"))
+
+    if not html_files:
+        print(f"No .html files found under {root}")
+        return 0
+
+    touched = 0
+    total_refs = 0
+
+    for path in html_files:
+        changes = process_file(path, pattern, args.scheme, args.dry_run)
+        if changes:
+            touched += 1
+            total_refs += changes
+            verb = "would update" if args.dry_run else "updated"
+            rel = path.relative_to(root)
+            print(f"  {verb}: {rel} ({changes} reference{'s' if changes != 1 else ''})")
+
+    if total_refs == 0:
+        print(f"No references to '{args.refers_to}' found under {root}")
+        return 0
+
+    action = "Would touch" if args.dry_run else "Touched"
+    print(f"\n{action} {touched} file(s), {total_refs} reference(s) total.")
+    if args.dry_run:
+        print("(dry run — nothing was written)")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
