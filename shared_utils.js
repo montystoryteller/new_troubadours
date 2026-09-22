@@ -558,21 +558,32 @@ function resolveEventId(record, date) {
 /**
  * Wraps an event-row-title element's text in a link to that event's
  * event.html permalink, in place. Does nothing if there's no resolvable
- * name/date (e.g. a date-TBC or multi-date-array entry that
+ * record/date (e.g. a date-TBC or multi-date-array entry that
  * findEventById() couldn't resolve either — see resolvableFlatEvents() in
  * event.js). Shared by shared_utils.js's own renderEventRow() below and
  * by performers.js's separate renderEventRow(), so every specific/music/
  * poetry listing across the site links to the same permalink the same way.
+ *
+ * Builds the href via resolveEventId() (the current scheme) rather than
+ * the deprecated buildEventId() — this way a record's explicit `eventId`
+ * (set to disambiguate an otherwise-colliding same-name/same-day pair,
+ * e.g. a matinee and an evening show) is honoured here too, instead of
+ * being silently ignored in favour of a plain name+date hash that can't
+ * tell the two apart. buildEventId()/findEventById()'s fallback to it are
+ * left in place for old links already out in the wild — see this file's
+ * buildEventId() docstring — but new links are only ever built the new
+ * way.
  * @param {HTMLElement} titleEl - an .event-row-title element, already
  *   holding the event's display text
- * @param {string} name - the event's raw .name (not .showname — must
- *   match what buildEventId()/findEventById() key off)
+ * @param {object} record - a specificEvent/musicEvent/poetryEvent record
+ *   (or null/undefined) — passed to resolveEventId(), which reads
+ *   record.eventId / performer_id / performer_ids / venue_id
  * @param {Date|null|undefined} date
  */
-function linkEventRowTitle(titleEl, name, date) {
-  if (!name || !date) return;
+function linkEventRowTitle(titleEl, record, date) {
+  if (!record || !record.name || !date) return;
   const a = document.createElement("a");
-  a.href = `event.html?event_id=${encodeURIComponent(buildEventId(name, date))}`;
+  a.href = `event.html?event_id=${encodeURIComponent(resolveEventId(record, date))}`;
   a.textContent = titleEl.textContent;
   titleEl.textContent = "";
   titleEl.appendChild(a);
@@ -617,7 +628,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
     title.className = "event-row-title";
     title.textContent = e.showname || e.name;
     detail.appendChild(title);
-    linkEventRowTitle(title, e.name, entry.date);
+    linkEventRowTitle(title, e, entry.date);
 
     if (e.time) {
       const t = document.createElement("span");

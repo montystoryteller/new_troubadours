@@ -2709,7 +2709,7 @@ function renderEventRow(container, event) {
   // so this is safe to call unconditionally.
   linkEventRowTitle(
     title,
-    event.name,
+    event,
     event.date ? parseDateString(event.date) : null,
   );
 

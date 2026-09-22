@@ -206,13 +206,18 @@
                     <input type="text" id="ev-event-id"
                         placeholder="(optional — leave blank to auto-generate yyyymmdd-performerId-venueId)">
                     <div class="field-hint">
-                        Only needed if you want a stable id other pages/permalinks can rely on, or to avoid a
-                        collision with another record — see the schema's <code>eventId</code> note. Leave blank
-                        and one is generated automatically as <code>yyyymmdd-performerId-venueId</code> from the
-                        date/performer/venue above; that generated form isn't guaranteed unique (e.g. the same
-                        performer at the same venue twice in one day), so set this by hand if that could apply
-                        here. The Enrich tab's "Missing event IDs" checker can also backfill this for existing
-                        records and will flag likely collisions for you to resolve.
+                        Leave this blank for a single-date event and one is generated for you when you click
+                        "Add to batch", using <code>buildStructuredEventId()</code>
+                        (<code>yyyymmdd-performerId-venueId</code>, from the date/performer/venue above) —
+                        it'll be saved on the record as a real <code>eventId</code>, not left for the page to
+                        work out later. That generated form isn't guaranteed unique (e.g. the same performer
+                        at the same venue twice in one day), so type your own here instead if that could
+                        apply. For a <strong>multi-date</strong> event (several dates above), leave this
+                        blank too — a shared id here would apply to every one of those dates at once, so each
+                        night instead gets its own id worked out individually when the page loads; only fill
+                        this in by hand for a multi-date event if you specifically need to pin one id across
+                        all its nights. The Enrich tab's "Missing event IDs" checker can backfill this for
+                        existing records, and "Clashing event IDs" reports any that collide.
                     </div>
                 </div>
             </div>
@@ -1141,6 +1146,28 @@
                     <button class="btn-secondary-action" id="enrich-eventid-apply-btn">Apply checked rows to
                         loaded data</button>
                 </div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>⚠️ Clashing event IDs</h3>
+                <p class="field-hint">
+                    Report only — this doesn't fix anything, it just tells you where to look. Works out the
+                    id each event/music/poetry record would actually resolve to on event.html (its own
+                    <code>eventId</code> if it has one, otherwise the generated <code>yyyymmdd-performerId-venueId</code>
+                    id — same <code>resolveEventId()</code> call shared_utils.js makes; a multi-night record
+                    is checked one night at a time, since an explicit <code>eventId</code> is shared across
+                    every night but a generated one isn't), then lists any id shared by more than one
+                    record/night. A clash where at least one side has an explicit <code>eventId</code> is a
+                    real, already-saved collision — those two records are indistinguishable by permalink
+                    right now and one needs a hand-edited, unique <code>eventId</code>. A clash where
+                    <em>every</em> side is only a generated fallback (no explicit <code>eventId</code> set on
+                    either) is the same case the "Missing event IDs" checker above already flags and can
+                    suggest a starting id for — this scanner just gives you the same picture as a standalone
+                    check, e.g. after hand-editing the file outside the event builder.
+                </p>
+                <button class="btn-add-batch" id="enrich-eventid-clash-scan-btn" disabled>Scan for clashing
+                    event IDs</button>
+                <div id="enrich-eventid-clash-results"></div>
             </div>
         </div>
 
@@ -3297,8 +3324,21 @@
             };
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
-            const eventId = document.getElementById("ev-event-id").value.trim();
-            if (eventId) record.eventId = eventId;
+            const eventIdInput = document.getElementById("ev-event-id").value.trim();
+            if (eventIdInput) {
+                record.eventId = eventIdInput;
+            } else if (dates.length === 1) {
+                // Single date — safe to generate and store a real,
+                // explicit eventId right now. A multi-date record is
+                // deliberately left without one here instead: an explicit
+                // eventId is shared across every night of the record, but
+                // buildStructuredEventId() bakes in the date, so each
+                // night needs its own id — that happens automatically,
+                // per night, via resolveEventId() when the page loads
+                // (see that function's docstring in shared_utils.js).
+                const firstDate = parseDateString(dates[0]);
+                if (firstDate) record.eventId = buildStructuredEventId(record, firstDate);
+            }
             const time = document.getElementById("ev-time").value.trim();
             const club = document.getElementById("ev-club").value.trim();
             const widerEvent = document.getElementById("ev-wider-event").value.trim();
@@ -4826,6 +4866,7 @@
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-format-scan-btn").disabled = false;
                 document.getElementById("enrich-eventid-scan-btn").disabled = false;
+                document.getElementById("enrich-eventid-clash-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -4840,6 +4881,7 @@
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-format-scan-btn").disabled = true;
                 document.getElementById("enrich-eventid-scan-btn").disabled = true;
+                document.getElementById("enrich-eventid-clash-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -5813,6 +5855,85 @@
                 markEnrichedDataDirty();
                 refreshBatchSummary();
             }
+        });
+
+        // -- Clashing event IDs (report only) -----------------------------------
+        document.getElementById("enrich-eventid-clash-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-eventid-clash-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const buckets = [
+                ["specificEvents", enrichedData.specificEvents || []],
+                ["musicEvents", enrichedData.musicEvents || []],
+                ["poetryEvents", enrichedData.poetryEvents || []],
+            ];
+
+            // One entry per dated occurrence — a multi-night record's
+            // .date array is expanded first, since an explicit eventId is
+            // shared across every night of a multi-night record but a
+            // generated one is specific to each individual night (see
+            // resolveEventId()'s docstring in shared_utils.js).
+            const occurrences = [];
+            buckets.forEach(([bucketName, list]) => {
+                (list || []).forEach((ev, index) => {
+                    const dates = Array.isArray(ev.date) ? ev.date : [ev.date];
+                    dates.forEach(dateStr => {
+                        const date = parseDateString(dateStr);
+                        if (!date) return; // unparsable date — the date-quality checker above is the place to fix that first
+                        occurrences.push({
+                            bucket: bucketName,
+                            index,
+                            name: ev.showname || ev.name || "(untitled)",
+                            dateStr,
+                            explicit: !!ev.eventId,
+                            id: resolveEventId(ev, date),
+                        });
+                    });
+                });
+            });
+
+            const groups = {};
+            occurrences.forEach(occ => { (groups[occ.id] = groups[occ.id] || []).push(occ); });
+            const clashes = Object.entries(groups).filter(([, occs]) => occs.length > 1);
+            if (!clashes.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No clashing event IDs found.</div>';
+                return;
+            }
+
+            // Worst first: a clash where at least one side has an explicit
+            // eventId is a real, already-saved collision; one where every
+            // side is still only a generated fallback is the same thing
+            // the "Missing event IDs" checker above already offers to fix.
+            clashes.sort(([idA, a], [idB, b]) => {
+                const explicitA = a.some(o => o.explicit) ? 1 : 0;
+                const explicitB = b.some(o => o.explicit) ? 1 : 0;
+                if (explicitA !== explicitB) return explicitB - explicitA;
+                return idA.localeCompare(idB);
+            });
+
+            clashes.forEach(([id, occs]) => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                const anyExplicit = occs.some(o => o.explicit);
+                const list = occs
+                    .map(o => `${o.name} <span style="font-weight:normal;color:#999;">(${o.bucket}[${o.index}], ${o.dateStr}${o.explicit ? ", explicit eventId" : ", generated"})</span>`)
+                    .join(" &nbsp;↔&nbsp; ");
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name"><code>${id}</code></div>
+                        <div class="enrich-result-detail">${list}</div>
+                        <div class="enrich-result-reasons" style="color:#c62828;">
+                            ${anyExplicit
+                        ? "⚠ At least one of these has this eventId set explicitly — these records/nights are indistinguishable by permalink until you edit one to a unique eventId."
+                        : "⚠ These would all generate this same id — set an explicit eventId on at least one of them (the \"Missing event IDs\" checker above can suggest a starting point)."}
+                        </div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, clashes.length, "clash");
         });
 
         // -- Possible structured pricing (writes into loaded data directly — --

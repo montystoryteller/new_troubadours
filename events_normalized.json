@@ -1,5 +1,18 @@
 {
   "promoters": {
+    "beaford": {
+      "promoter_id": "beaford",
+      "name": "Beaford",
+      "description": "We connect artists and communities with North Devon finding entertaining and extraordinary ways to explore our land, lives and future.",
+      "ticketing_url": "",
+      "promoter_link": "https://beaford.org/events",
+      "promoter_venues": [
+       
+      ],
+      "promoter_artists": [
+
+      ]
+    },
     "crickcrack": {
       "promoter_id": "crickcrack",
       "name": "Crick Crack Club",
@@ -10783,6 +10796,19 @@
       "eventId": "20250919-nick-parker-reeth-memorial-hall-richmond"
     },
     {
+      "name": "Sound of the Sirens [Sound of the Sirens]",
+      "showname": "Sound of the Sirens",
+      "date": "20/09/2026",
+      "venue_id": "dolton-village-hall",
+      "performer_id": "sound-of-the-sirens",
+      "eventId": "20260920-sound-of-the-sirens-dolton-village-hall",
+      "promoter_id": "beaford",
+      "time": "7.30-9pm",
+      "description": "Sound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood. Honing their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as “one of the UK’s finest folk acts” not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.\n\n\n\nThe pairs’ musical and vocal dexterity dovetail beautifully on the co-written songs, which range from beautiful, emotive ballads, to up-beat, foot stomping, hands in the air, sing-along anthems. The dynamic duo and their musical creations translate very well onto recorded media, but it is in the live arena where the pair truly excel. There is a certain majesty about their live performances that simply cannot be put into words. It is this “je ne sais quoi” that keeps their loyal fans returning from far and wide to see these two perform. The onstage chemistry, camaraderie, and banter is worth the ticket price alone.",
+      "ticket_url": "https://beaford.org/events/sirensdolton",
+      "isMusic": true
+    },
+    {
       "name": "Nick Parker",
       "date": "10/10/2025",
       "time": "",
@@ -11284,6 +11310,18 @@
       "latlon": [
         50.82702,
         -4.54795
+      ]
+    },
+    "dolton-village-hall": {
+      "id": "dolton-village-hall",
+      "name": "Dolton Village Hall",
+      "full_address": "The Village Hall, Dolton",
+      "city": "Barnstaple / Okehampton",
+      "postcode": "EX19 8QS",
+      "url": "https://dolton.org.uk/page400.html",
+      "latlon": [
+        50.89064,
+        -4.03269
       ]
     },
     "brigsteer-village-hall-kendal": {
@@ -18298,6 +18336,12 @@
       "name": "Sarah Lianne Lewis",
       "url": "https://www.sarahliannelewis.com/",
       "bio": "Sarah Lianne Lewis is a Welsh composer crafting vivid and inventive music that bridges tradition and innovation. Working in both concert hall and stage, her music weaves unexpected sonorities - acoustic and electronic - into bold soundscapes that captivate and challenge in equal measure."
+    },
+    "sound-of-the-sirens": {
+      "id": "sound-of-the-sirens",
+      "name": "Sound of the Sirens",
+      "url": "https://www.soundofthesirens.uk/",
+      "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too."
     },
     "daniel-morden-hugh-lupton-sarah-lianne-lewis": {
       "id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",

@@ -6,7 +6,7 @@
 // thumbnail(s) at the top of the right-hand sidebar, and reuses venues.js's
 // map/nearby-venues/nearby-events pattern for the rest of the right column
 // (map itself sits in the left column next to performer info — see
-// event_styles.css's .left-col-split). Also wires up the top search box.
+// event-styles.css's .left-col-split). Also wires up the top search box.
 //
 // With no ?event_id= (or one that doesn't resolve): shows a filterable
 // list of today's one-off dated events instead (see showTodayEvents()).
@@ -77,11 +77,11 @@ function loadLeaflet() {
 // ---------------------------------------------------------------------------
 
 // buildEventId()/buildStructuredEventId()/resolveEventId() all live in
-// shared_utils.js (venues.js and performers.js link to this page's
-// permalinks from their own listings too, via that file's
-// linkEventRowTitle(), which still uses the older buildEventId() scheme)
-// — kept out of this file to avoid a second, easy-to-drift copy of the id
-// formula(s).
+// shared_utils.js (venues.js, storyclub.js, and performers.js link to
+// this page's permalinks from their own listings too, via that file's
+// linkEventRowTitle(), which now builds those links with resolveEventId()
+// as well — kept out of this file to avoid a second, easy-to-drift copy
+// of the id formula(s)).
 //
 // This page builds its own permalinks (buildSearchIndex() below) using
 // resolveEventId() — an explicit `eventId` on the record if it has one,
