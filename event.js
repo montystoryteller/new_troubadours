@@ -524,6 +524,13 @@ setCanonical("event_id");
   initSearchBox();
 
   eventRecord = eventIdParam ? findEventById(eventIdParam) : null;
+  
+  const debugComment = document.createComment(
+    `eventIdParam: ${eventIdParam}\neventRecord: ${JSON.stringify(eventRecord)}`,
+  );
+
+  document.body.appendChild(debugComment);
+
   if (!eventRecord) {
     if (eventIdParam) {
       console.warn(
