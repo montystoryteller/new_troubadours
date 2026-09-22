@@ -510,6 +510,7 @@ setCanonical("event_id");
 (async () => {
   const params = new URLSearchParams(window.location.search);
   const eventIdParam = params.get("event_id");
+  prependMetaKeyword(`> ${eventIdParam} <`);
 
   const loaded = await loadEventsData();
   if (!loaded) return showNotFound();
