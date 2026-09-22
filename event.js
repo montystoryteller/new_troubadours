@@ -76,10 +76,19 @@ function loadLeaflet() {
 // Event identity
 // ---------------------------------------------------------------------------
 
-// buildEventId() now lives in shared_utils.js (venues.js and performers.js
-// link to this page's permalinks from their own listings too, via that
-// file's linkEventRowTitle()) — kept out of this file to avoid a second,
-// easy-to-drift copy of the id formula.
+// buildEventId()/buildStructuredEventId()/resolveEventId() all live in
+// shared_utils.js (venues.js and performers.js link to this page's
+// permalinks from their own listings too, via that file's
+// linkEventRowTitle(), which still uses the older buildEventId() scheme)
+// — kept out of this file to avoid a second, easy-to-drift copy of the id
+// formula(s).
+//
+// This page builds its own permalinks (buildSearchIndex() below) using
+// resolveEventId() — an explicit `eventId` on the record if it has one,
+// else the newer `yyyymmdd-performerId-venueId` scheme. findEventById()
+// checks an incoming id against resolveEventId() AND the older
+// buildEventId() formula, so a permalink built elsewhere on the site with
+// the older scheme still resolves here.
 
 // One-off dated flat events — specificEvents, musicEvents, and poetryEvents
 // all share this exact shape (flat array, single/array .date, .venue_id) —
@@ -114,8 +123,15 @@ function findEventById(eventId) {
     eventsData.poetryEvents,
   ];
   for (const list of pools) {
+    // Checks the current scheme first (explicit eventId, or the new
+    // yyyymmdd-performerId-venueId generator), then falls back to the
+    // older buildEventId() formula — so an incoming id built either way
+    // (an old permalink out in the wild, or one from a page that still
+    // calls buildEventId()/linkEventRowTitle() directly) still resolves.
     const found = resolvableFlatEvents(list).find(
-      (e) => buildEventId(e.name, e._date) === target,
+      (e) =>
+        resolveEventId(e, e._date) === target ||
+        buildEventId(e.name, e._date) === target,
     );
     if (found) return found;
   }
@@ -230,7 +246,7 @@ function buildSearchIndex() {
           performerNames: performerNamesOf(e),
           hostVenue: venuesLookup[e.venue_id] || null,
           date: e._date,
-          href: `event.html?event_id=${encodeURIComponent(buildEventId(e.name, e._date))}`,
+          href: `event.html?event_id=${encodeURIComponent(resolveEventId(e, e._date))}`,
           // "story" is the always-on default bucket, so it needs no badge
           // of its own — same reasoning as TODAY_EVENTS_TYPE_LABELS not
           // badging specificEvents rows either.
@@ -510,7 +526,7 @@ setCanonical("event_id");
 (async () => {
   const params = new URLSearchParams(window.location.search);
   const eventIdParam = params.get("event_id");
-  prependMetaKeyword(`> ${eventIdParam} <`);
+  prependMetaKeyword(`${eventIdParam}`);
 
   const loaded = await loadEventsData();
   if (!loaded) return showNotFound();
@@ -523,18 +539,12 @@ setCanonical("event_id");
   initNavFeedback();
   initSearchBox();
 
-  const debugComment = document.createComment(
-     `eventIdParam: ${eventIdParam}\n}`,
-   );
-  document.body.appendChild(debugComment);
+  //const debugComment = document.createComment(
+  //   `eventIdParam: ${eventIdParam}\n}`,
+  // );
+  //document.body.appendChild(debugComment);
 
   eventRecord = eventIdParam ? findEventById(eventIdParam) : null;
-
-  debugComment = document.createComment(
-    `eventIdParam: ${eventIdParam}\neventRecord: ${JSON.stringify(eventRecord)}`,
-  );
-
-  document.body.appendChild(debugComment);
 
   if (!eventRecord) {
     if (eventIdParam) {
