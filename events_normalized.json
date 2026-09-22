@@ -9675,7 +9675,7 @@
       "price": "£10",
       "description": "The Folk Bus presents Grimm Tales for Oktoberfest\n\n\n\nAs the seasons turn and autumn draws in, settle down with a nice pint of beer and an evening of dark fairy tales from the Brothers Grimm.\n\n\n\nHear of six brothers, turned to swans. Hear of kings who wander into the woods. Hear of witches, gnomes and dragons that dwell deep beneath the earth while a princess combs their golden hair.\n\n\n\nThese are tales of enchantment and transformation, of journeys into the underworld and the long road home.\n\n\n\nCome and gather round for an evening of old European wonder tales, collected by the Brothers Grimm, and retold by storyteller Oliver Lavery and folk musician Tamsin Quin.\n\n\n\nTogether, they are the Folk Bus.",
       "age_rating": "16+",
-      "event_flyer": "folk_bus_autumn_2026.jpg",
+      "event_flyers": ["folk_bus_autumn_2026.jpg", "2026_09_29_folk_bus_grimm0.jpg", "2026_09_27_folk_bus_grimm.jpg"],
       "ticket_url": "https://wegottickets.com/f/26819",
       "isSpecial": true
     },
