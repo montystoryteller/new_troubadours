@@ -523,9 +523,14 @@ setCanonical("event_id");
   initNavFeedback();
   initSearchBox();
 
-  eventRecord = eventIdParam ? findEventById(eventIdParam) : null;
-  
   const debugComment = document.createComment(
+     `eventIdParam: ${eventIdParam}\n}`,
+   );
+  document.body.appendChild(debugComment);
+
+  eventRecord = eventIdParam ? findEventById(eventIdParam) : null;
+
+  debugComment = document.createComment(
     `eventIdParam: ${eventIdParam}\neventRecord: ${JSON.stringify(eventRecord)}`,
   );
 
