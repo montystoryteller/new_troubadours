@@ -5547,9 +5547,57 @@
       "email": "southdevonstorytellers@gmail.com",
       "club": "southdevonstorytellers",
       "club_flyer": "mic_weird_britain.jpg",
-      "themes": [["23/09/2026", "Fruits"],["28/20/2026","Ancestors"],["25/11/2026", "Water"],["23rd/12/2026","Yule"],["27/01/2027","Quiet"],["24/02/2027","Earth"],["24/03/2027","Seeds"],["28/04/2027","Fools"],["26/05/2027","Air"],["23/06/2027","Mead"],["28/07/2027","Fire"]],
+      "themes": [
+        [
+          "23/09/2026",
+          "Fruits"
+        ],
+        [
+          "28/20/2026",
+          "Ancestors"
+        ],
+        [
+          "25/11/2026",
+          "Water"
+        ],
+        [
+          "23rd/12/2026",
+          "Yule"
+        ],
+        [
+          "27/01/2027",
+          "Quiet"
+        ],
+        [
+          "24/02/2027",
+          "Earth"
+        ],
+        [
+          "24/03/2027",
+          "Seeds"
+        ],
+        [
+          "28/04/2027",
+          "Fools"
+        ],
+        [
+          "26/05/2027",
+          "Air"
+        ],
+        [
+          "23/06/2027",
+          "Mead"
+        ],
+        [
+          "28/07/2027",
+          "Fire"
+        ]
+      ],
       "time": "7.30-9.30pm",
-      "exceptions": ["08/2026", "08/2027"],
+      "exceptions": [
+        "08/2026",
+        "08/2027"
+      ],
       "venue_id": "moor-imagination-collective-buckfastleigh",
       "description": "South Devon Storytellers are back this autumn to continue our exploration into the traditional tales of Weird Britain!\n\n\n\nWe are an informal group of story lovers who tell tales in the oral storytelling tradition (no notes or prompts). We champion outspoken stand-up storytelling.\n\n\n\nDates for the year ahead:\n\n\n\n23rd September 2026 - theme: Fruits\n\n\n\n28th October 2026 - theme: Ancestors\n\n\n\n25th November 2026 - theme: Water\n\n\n\n23rd December 2026 - theme: Yule\n\n\n\n27th January2027 - theme: Quiet\n\n\n\n24th February 2027 - theme: Earth\n\n\n\n24th March 2027 - theme: Seeds\n\n\n\n28th April 2027 - theme: Fools\n\n\n\n26th May 2027 - theme: Air\n\n\n\n23rd June 2027 - theme: Mead\n\n\n\n28th July 2027 - theme: Fire\n\n\n\nMeeting 7:30-9:30pm on the fourth Wednesday of every month, in the MIC Cafe, Buckfastleigh, we will be travelling through time and place into weird and wonderful tales that are held by the land and brought to life by its people!\n\n\n\nFor the longer story this September, Henry Everett will be telling juicy, fruity tales of the fae, from orchards beneath the unknown stars of Britains Faerie otherland's.\n\n\n\nGlimpse at the evening's format:\n\n\n\nUp to 5 ten minute 'open mic' spaces - Bring a tale, a story, a poem or a song to share, or simply to listen! The optional theme for September's shorter stories is 'FRUITS'\n\n\n\nAfter a break we have a dedicated story inspired by the theme 'Weird Britain'.\n\n\n\nDonations to cover room hire welcome!\n\n\n\nBring the tales that excite you!\n\n\n\nMeet you in the wonder!"
     },
@@ -9617,6 +9665,21 @@
       "date_added": "11/09/2026"
     },
     {
+      "name": "Grimm Tales at Stroud Brewery [the-folk-bus]",
+      "showname": "Grimm Tales at Stroud Brewery",
+      "date": "27/09/2026",
+      "venue_id": "stroud-brewery-taproom",
+      "performer_id": "the-folk-bus",
+      "date_added": "22/09/2026",
+      "time": "7:30pm, start time: 8:00pm",
+      "price": "£10",
+      "description": "The Folk Bus presents Grimm Tales for Oktoberfest\n\n\n\nAs the seasons turn and autumn draws in, settle down with a nice pint of beer and an evening of dark fairy tales from the Brothers Grimm.\n\n\n\nHear of six brothers, turned to swans. Hear of kings who wander into the woods. Hear of witches, gnomes and dragons that dwell deep beneath the earth while a princess combs their golden hair.\n\n\n\nThese are tales of enchantment and transformation, of journeys into the underworld and the long road home.\n\n\n\nCome and gather round for an evening of old European wonder tales, collected by the Brothers Grimm, and retold by storyteller Oliver Lavery and folk musician Tamsin Quin.\n\n\n\nTogether, they are the Folk Bus.",
+      "age_rating": "16+",
+      "event_flyer": "folk_bus_autumn_2026.jpg",
+      "ticket_url": "https://wegottickets.com/f/26819",
+      "isSpecial": true
+    },
+    {
       "name": "Body Snatchers of Nottingham [Dave Brookes]",
       "showname": "Body Snatchers of Nottingham",
       "date": "27/09/2026",
@@ -9638,7 +9701,10 @@
       "date_added": "24/08/2026",
       "time": "6pm",
       "price": "£10.00 (+ £0.84) / £5.00 (+ £0.42)",
-      "event_flyers": ["2026_10_02_alim_kamara_stories_under_stars.jpg", "2026_10_02_stories_under_stars_monmouth.jpg"],
+      "event_flyers": [
+        "2026_10_02_alim_kamara_stories_under_stars.jpg",
+        "2026_10_02_stories_under_stars_monmouth.jpg"
+      ],
       "description": "Come and spend an evening under the open sky with the extraordinary storyteller Alim Kamara.\n\n\n\nAs the sun sets over Priory Gardens, gather close, share a picnic and let yourself be carried away by stories — tales of wonder, wisdom, laughter and imagination.\n\n\n\nBring a blanket. Bring a chair. Bring your people.\n\n\n\nThen look up, listen closely, and let the stories begin.",
       "ticket_url": "https://www.ticketsource.com/booking/select/mqzxqabjjakl",
       "wider_event": "monmouth-festival-stories-2026",
@@ -9946,6 +10012,20 @@
       "performer_id": "jason-buck",
       "age_rating": "13+",
       "min_age": 13
+    },
+    {
+      "name": "Strange Tales for Halloween [the-folk-bus]",
+      "showname": "Strange Tales for Halloween",
+      "date": "28/10/2026",
+      "venue_id": "parabola-arts-centre",
+      "performer_id": "the-folk-bus",
+      "date_added": "22/09/2026",
+      "time": "7.30-10pm",
+      "price": "£17.50",
+      "event_flyer": "folk_bus_autumn_2026.jpg",
+      "description": "he nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver’s storytelling draws on the oral traditions of Britain and Ireland, while Tamsin’s music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
+      "ticket_url": "https://boxoffice.cheltladiescollege.org/events/175765",
+      "isSpecial": true
     },
     {
       "name": "The Mists of Samhain: A Halloween Story [Jason Buck]",
@@ -13064,6 +13144,32 @@
         50.73378,
         -2.75479
       ]
+    },
+    "stroud-brewery-taproom": {
+      "id": "stroud-brewery-taproom",
+      "name": "Stroud Brewery Taproom",
+      "full_address": "Stroud Brewery Taproom, Kingfisher Business Park, Stroud, GL5 2BY",
+      "city": "Stroud",
+      "postcode": "GL5 2BY",
+      "url": "https://stroudbrewery.com/pages/the-bar",
+      "latlon": [
+        51.72432,
+        -2.20131
+      ],
+      "description": "Here in the taproom, everything’s designed for lingering: long tables, lively chatter, kids colouring in the corner, friends catching up over pints brewed just metres away. Whether you’re rolling in for a morning flat white, a shared pizza with the family, or a post-work pint, this is your space to slow down, connect and enjoy the good stuff."
+    },
+    "parabola-arts-centre": {
+      "id": "parabola-arts-centre",
+      "name": "Parabola Arts Centre",
+      "full_address": "Parabola Arts Centre, Parabola Road, Cheltenham, GL50 3AA",
+      "city": "Cheltenham",
+      "postcode": "GL50 3AA",
+      "url": "https://venues.cheltladiescollege.org/venue-hire/featured-venues/parabola-arts-centre",
+      "latlon": [
+        38.02663,
+        -84.50472
+      ],
+      "description": "Built with minimalist contemporary detail, the state-of-the-art theatre has a capacity of 311 (+wheelchair spaces) across two levels, meaning the Parabola Arts Centre is a beautifully proportioned space with resonant acoustics.\n\n\n\nThis is a beautiful arena for your next live performance, conference, festival or presentation. Not to mention that being situated in the centre of Cheltenham, means there is easy to access transport links for your guests to reach the Grade II* listed building.\n\n\n\nIf you are in need of rehearsal and/or extra spaces, the Parabola Arts Centre has a variety of rooms available for use including five breakout rooms, a dance studio, three dressing rooms and a foyer space which houses the box office and bar whilst also doubling as an art gallery."
     },
     "leicester-guildhall": {
       "id": "leicester-guildhall",
@@ -17011,6 +17117,32 @@
       "name": "Jessie Wild",
       "url": "https://www.instagram.com/jessie_wild_storyteller",
       "bio": "Jessie Wild is a performance Storyteller/ Creative Educator. Runs The Tell Tales Club, Cardigan / Aberteifi."
+    },
+    "oliver-lavery": {
+      "id": "oliver-lavery",
+      "name": "Oliver Lavery",
+      "url": "https://www.facebook.com/olivermurgatroydlavery/",
+      "bio": "Actor, Writer, Storyteller & Artist. Storyteller with The Folk Bus.",
+      "youtube": "http://www.youtube.com/@TheStoryCrow",
+      "troupe": "the-folk-bus"
+    },
+    "tamsin-quin": {
+      "id": "tamsin-quin",
+      "name": "Tamsin Quin",
+      "url": "https://open.spotify.com/artist/0CKUgtTgPbRB521brn9eDE",
+      "bio": "Musician with The Folk Bus.",
+      "troupe": "the-folk-bus"
+    },
+    "the-folk-bus": {
+      "id": "the-folk-bus",
+      "performer_ids": [
+        "oliver-lavery",
+        "tamsin-quin"
+      ],
+      "name": "Folk Bus / Olivery Lavery & Tamsin Quin",
+      "url": "https://linktr.ee/thefolkbus?",
+      "instagram": "https://www.instagram.com/the_folk_bus/",
+      "bio": "A flying ship of Myth, song and story. Myths & melodies on a big green bus! Join us for folklore tales of myth and magic!"
     },
     "ben-haggarty-steph-brittain": {
       "id": "ben-haggarty-steph-brittain",
