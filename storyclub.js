@@ -431,7 +431,7 @@ async function renderPage(data, clubId) {
   document.title = `${clubRecord.name} — New Troubadours`;
 
   updateMeta("description", clubRecord.name, " — ");
-  updateMeta("keywords", clubRecord.name, ", ");
+  prependMetaKeyword(clubRecord.name);
 
   const root = document.getElementById("page-content");
   root.innerHTML = "";

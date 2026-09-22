@@ -923,7 +923,7 @@ function displayFestival(festivalId) {
   document.title = `${fest.name} — New Troubadours`;
 
   updateMeta("description", fest.name, " — ");
-  updateMeta("keywords", fest.name, ", ");
+  prependMetaKeyword(fest.name);
 
   if (map) map.invalidateSize();
 

@@ -687,7 +687,7 @@ function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
 
   updateMeta("description", performer.name, " — ");
-  updateMeta("keywords", performer.name, ", ");
+  prependMetaKeyword(performer.name);
 
   applyPerformerHeadingMode();
 

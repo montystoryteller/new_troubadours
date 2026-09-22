@@ -826,7 +826,7 @@ function renderVenue() {
   document.title = `${venue.name} — New Troubadours`;
 
   updateMeta("description", venue.name, " — ");
-  updateMeta("keywords", venue.name, ", ");
+  prependMetaKeyword(venue.name);
 
   document.getElementById("venueName").textContent = venue.name;
 

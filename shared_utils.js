@@ -2622,6 +2622,49 @@ function updateMeta(metaName, extraContent, separator = " — ") {
 }
 
 
+/**
+ * Replace <meta name="description"> content outright (creating the tag if
+ * missing). Unlike updateMeta() above, this does not prepend/append —
+ * a description tag should say one clear thing about the page, not
+ * accumulate fragments across multiple calls.
+ * @param {string} content
+ */
+function setMetaDescription(content) {
+  let meta = document.querySelector('meta[name="description"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "description";
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", content);
+}
+
+/**
+ * Prepend a keyphrase to <meta name="keywords"> (creating the tag if
+ * missing), comma-separated. If the keyphrase is already present further
+ * back in the list, it's moved to the front rather than duplicated.
+ * @param {string} keyphrase
+ */
+function prependMetaKeyword(keyphrase) {
+  let meta = document.querySelector('meta[name="keywords"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "keywords";
+    document.head.appendChild(meta);
+  }
+  const existing = (meta.getAttribute("content") || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const normalized = keyphrase.trim();
+  const updated = existing.filter(
+    (kw) => kw.toLowerCase() !== normalized.toLowerCase(),
+  );
+
+  meta.setAttribute("content", [normalized, ...updated].join(", "));
+}
+
 // Canonical link handling for performers, venues, storyclubs
 function setCanonical(param = null) {
   const url = new URL(window.location.pathname, window.location.origin);

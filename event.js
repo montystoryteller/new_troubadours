@@ -752,17 +752,24 @@ function showTodayEvents() {
 function renderPage() {
   const ev = eventRecord;
   const name = ev.showname || ev.name;
+  
+  const performerIds = performerIdsOf(ev);
+  const performerNames = performerIds
+    .map((id) => performersLookup[id]?.name)
+    .filter(Boolean);
+
   const performerForTitle =
-    (ev.performer_id && performersLookup[ev.performer_id]?.name) ||
+    (performerNames.length && performerNames.join(" & ")) ||
     ev.performer ||
     null;
+
   const perfName = performerForTitle
     ? `${name} — ${performerForTitle} — New Troubadours`
     : `${name} — New Troubadours`;
   document.title = perfName;
   document.getElementById("eventName").textContent = name;
   updateMeta("description", perfName, " — ");
-  updateMeta("keywords", perfName, ", ");
+  prependMetaKeyword(perfName);
 
   const metaParts = [formatDate(ev._date), ev.time || null, ev.price || null]
     .filter(Boolean)
