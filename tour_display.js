@@ -571,6 +571,10 @@ function displayTour(tourId) {
     return;
   }
 
+  document.title = `${tour.name}${tour.tour_name ? ` — ${tour.tour_name}` : ""} — New Troubadours`;
+  updateMeta("description", tour.tour_name || tour.name, " — ");
+  prependMetaKeyword(tour.tour_name || tour.name);
+
   // Store current tour for map filtering
   currentTour = tour;
 
@@ -614,6 +618,8 @@ function displayTour(tourId) {
   performerIds.forEach((id) => {
     const perf = performersLookup[id];
     if (!perf) return;
+
+    prependMetaKeyword(perf.name);
 
     // Website links — skip if we've already linked this exact URL
     // (e.g. troupe site == one of the individuals').
