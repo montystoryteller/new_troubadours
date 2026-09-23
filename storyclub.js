@@ -787,8 +787,20 @@ async function renderPage(data, clubId) {
 
     // Show name
     const showname = document.createElement("div");
+
     showname.className = "showname";
     showname.textContent = ev.showname || ev.name;
+    if (ev.eventId) {
+      showname.appendChild(
+        icon(
+          ICON_SVG.link,
+          `event.html?event=${ev.eventId}`,
+          "event-link",
+          "Event page",
+        ),
+      );
+    }
+
     card.appendChild(showname);
 
     // Performer
