@@ -1,5 +1,14 @@
 {
   "promoters": {
+    "forgingfantastical": {
+      "promoter_id": "forgingfantastical",
+      "name": "Forging Fantastical",
+      "description": "Forging Fantastical is a not-for-profit arts organisation from Swindon run by volunteers, developing a diverse programme of small-scale informal arts events that feed the imagination and are quirky, friendly, fun and interesting! We specialise in storytelling shows aimed at adult audiences, including folktales, historical and true tales, legends, myths, fairy tales and wonder tales. Some stories raise questions about social or environmental issues in society and some stories are more whimsical and/or comedic. There's a real mix and every show is different.\n\n\n\nForging Fantastical programmes some of the finest Storytellers from across Britain. We started in 2023 and have grown a wonderful audience of local people as well as people who travel quite some way for our events. The programme is thoughtfully curated to include support slots for emerging tellers where possible and champion oral storytelling for intimate audiences, typically of between 40 and 50 people depending on the venue.\n\n\n\nTickets for Forging Fantastical events pay for the fees and travel of storytellers, venue hire, marketing costs, Company House costs, insurance and helping us with planning ahead with the programme. The organistion does not have any paid staff and Directors don't take any renumeration for their time. Annually any surplus income is donated to the chosen charity, Swindon Hardship Fund, who help local people and families who are really struggling.\n\n\n\nForging Fantastical don't have a fixed venue, instead hosting pop up events in different spaces.",
+      "ticketing_url": "https://www.ticketsource.com/forging-fantastical/",
+      "promoter_link": "https://www.forging-fantastical.org/",
+      "promoter_venues": [],
+      "promoter_artists": []
+    },
     "beaford": {
       "promoter_id": "beaford",
       "name": "Beaford",
@@ -10493,6 +10502,22 @@
       "venue_id": "ropetackle-arts-centre-shoreham",
       "performer_id": "minnie-wilkinson",
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
+    },
+    {
+      "name": "Greek Myths and Legends [Maria Credali]",
+      "showname": "Greek Myths and Legends",
+      "date": "14/11/2026",
+      "time": "7pm",
+      "club": "forgingfantastical",
+      "price": "£10 (+ £0.84)",
+      "description": "An evening of traditional Greek tales told for adults with Maria Credali.\n\n\n\nStep into a world where gods walk among mortals, fate cannot be escaped, and every choice echoes through eternity. This evening of traditional storytelling brings the myths of ancient Greece vividly to life—tales of love and vengeance, hubris and heroism, beauty and betrayal.\n\n\n\nHear of powerful deities and flawed heroes, of mortals who dared to challenge the will of the gods. These are stories filled with passion, danger, and dark humour—where triumph is never simple, and the cost of glory is often high.\n\n\n\nTold in the living oral tradition, each story unfolds afresh in the moment—rich, immersive, and unforgettable.",
+      "isSpecial": true,
+      "event_flyer": "2026_11_14_credali_greek_forgingfantastical.webp",
+      "ticket_url": "https://www.ticketsource.com/forging-fantastical/greek-myths-and-legends-maria-credali/e-pmgela",
+      "date_added": "23/09/2026",
+      "venue_id": "eastcott-community-centre-swindon",
+      "performer_id": "maria-credali",
+      "eventId": "20261114-maria-credali-eastcott-community-centre-swindon"
     },
     {
       "name": "Fairytales for Grow-Ups: Baba Yaga [Ben Haggarty & Sarah-Liisa Wilkinson & Steph Brittain]",
