@@ -616,3 +616,7 @@
 .feature-slot-performer a:hover {
     text-decoration: underline;
 }
+
+.club-list-grid .event-link svg {
+    color: black;
+}
