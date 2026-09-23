@@ -481,6 +481,7 @@ setCanonical("performer");
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     renderPerformer();
+    renderShareBadge("performer", performerId);
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("performerContent").style.display = "";
   }, 0);

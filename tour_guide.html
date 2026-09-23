@@ -214,24 +214,10 @@
             </div>
         </div>
 
-        <!-- Populated by renderTourBadge() in tour_display.js, once a tour
-             is on screen — reuses badges.js's own "tour" badge (image URL,
-             alt text, sizing) rather than duplicating a second, different
-             badge image just for this spot. Unlike badges.js's copy of
-             this badge (built for a dedicated badge-generator page that
-             reads ?tour= etc. off its own URL), this one is shown directly
-             on the tour page it refers to — but now also offers its own
-             "Copy badge HTML" control (wireBadgeCopyButton(), shared_utils.js),
-             so getting the embed code doesn't require a trip to that
-             separate page. -->
-        <div id="tourBadge" class="tour-badge" style="display:none;">
-            <a id="tourBadgeLink" href="#" target="_blank" rel="noopener">
-                <img src="https://newtroubadours.org/badges/findtouron.png" alt="Find tour on New Troubadours"
-                    style="height: 24px; width: auto;">
-            </a>
-            <a href="#" id="tourBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
-            <span id="tourBadgeCopyMessage" class="badge-copy-message"></span>
-        </div>
+        <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+             (shared_utils.js) once a real tour is on screen; empty (and hidden)
+             otherwise. -->
+        <div id="shareBadge" class="share-badge"></div>
 
     </div>
 

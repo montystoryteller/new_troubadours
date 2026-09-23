@@ -12,8 +12,10 @@
     <title>UK Storytelling Clubs, Cafes and Circles — New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <!-- Leaflet's CSS+JS are loaded on demand by storyclub.js's loadLeaflet()
+         (once a club's page or the directory map actually needs them), so a
+         slow cdnjs request can never delay the page's text content. The
+         preconnect above just warms the connection up. -->
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="storyclub-styles.css">
 </head>
@@ -41,15 +43,10 @@
         <p class="status-message status-message--loading">Loading…</p>
     </div>
 
-    <div id="badge-container" style="display: none;">
-        <hr />
-        <p><span id="badge-preview"></span>
-            <a href="#" id="copy-badge">
-                Copy HTML for this badge
-            </a>
-            <span id="copy-message" style="margin-left: 10px;"></span>
-        </p>
-    </div>
+    <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+         (shared_utils.js) once a real club is on screen; empty (and hidden)
+         otherwise. -->
+    <div id="shareBadge" class="share-badge"></div>
 
     <div class="about" id="colophon">
         <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
@@ -64,11 +61,9 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="recurrence-engine.js"></script>
     <script src="shared_utils.js?v=202609230007"></script>
     <script src="storyclub.js"></script>
-    <script src="badges.js"></script>
 </body>
 
 </html>

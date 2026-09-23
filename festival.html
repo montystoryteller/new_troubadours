@@ -153,14 +153,10 @@
             </div>
         </div>
 
-        <div id="festivalBadge" class="festival-share-badge" style="display:none;">
-            <a id="festivalBadgeLink" href="#" target="_blank" rel="noopener">
-                <img src="https://newtroubadours.org/badges/seefestivalon.png" alt="See festival on New Troubadours"
-                    style="height: 24px; width: auto;">
-            </a>
-            <a href="#" id="festivalBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
-            <span id="festivalBadgeCopyMessage" class="badge-copy-message"></span>
-        </div>
+        <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+             (shared_utils.js) once a real festival is on screen; empty (and hidden)
+             otherwise. -->
+        <div id="shareBadge" class="share-badge"></div>
 
     </div>
 

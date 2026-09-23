@@ -16,6 +16,41 @@ let toursLookup = {}; // needed by collectDatedEventsForVenue()'s call to
 // collectTourDatesForVenue() (shared_utils.js) — same convention as venues.js.
 let performersLookup = {}; // needed by renderEventRow() (shared_utils.js)
 
+// ── Lazy Leaflet loading ──────────────────────────────────────────────────
+// storyclub.html no longer links/preloads Leaflet's CSS or JS. It's loaded
+// here on demand — for a single club's venue map straight after its content
+// is built, and for the directory's collapsible map only when it's first
+// opened (createCollapsibleMap()'s loadMapLibrary hook) — so a slow or
+// unreachable cdnjs request can never hold up the page's own content.
+// Same approach as venues.js / tour_display.js / event.js / festival_display.js.
+let leafletPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
 // FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
 // copies of exactly the icons already in shared_utils.js's ICON_SVG
 // (.facebook, .website, .email respectively); use those instead.
@@ -173,6 +208,9 @@ async function renderPage(data, clubId) {
       `<div class="not-found"><h2>Club not found</h2><p>No club with id <code>${clubId}</code>.</p></div>`;
     return;
   }
+
+  // A real club is on screen: offer its "Find us on" badge.
+  renderShareBadge("club", clubId);
 
   // Performer lookup helper — must come before anything below
   // that calls it. tourClubEvents/repertoireClubEvents (built
@@ -714,15 +752,22 @@ async function renderPage(data, clubId) {
     mapDiv.id = "map";
     mapDiv.style.height = "100%";
     mapWrap.appendChild(mapDiv);
-    setTimeout(() => {
-      const map = L.map("map").setView(latlon, 14);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(map);
-      const popupHtml = `<strong>${venue.name}</strong><br>${venue.full_address || venue.city || ""}`;
-      L.marker(latlon).addTo(map).bindPopup(popupHtml).openPopup();
-    }, 0);
+    // Leaflet loads lazily (see loadLeaflet() above); the map is an
+    // enhancement, so a failed load just hides its container.
+    loadLeaflet()
+      .then(() => {
+        const map = L.map("map").setView(latlon, 14);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+        const popupHtml = `<strong>${venue.name}</strong><br>${venue.full_address || venue.city || ""}`;
+        L.marker(latlon).addTo(map).bindPopup(popupHtml).openPopup();
+      })
+      .catch((error) => {
+        console.error("Failed to load club map:", error);
+        mapWrap.style.display = "none";
+      });
   }
 
   // ── Sections ──────────────────────────────────────────────────────
@@ -1507,6 +1552,7 @@ async function renderDirectory(data) {
 
       renderMapMarkers(); // initial paint
     },
+    loadLeaflet, // loaded on first open, not up front
   );
 
   // Extend isVisible to respect the map's current viewport once it's open.

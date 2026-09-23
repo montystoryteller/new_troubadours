@@ -117,15 +117,10 @@
         </div>
     </div>
 
-    <div id="badge-container" style="display: none;">
-        <hr />
-        <p><span id="badge-preview"></span>
-            <a href="#" id="copy-badge">
-                Copy HTML for this badge
-            </a>
-            <span id="copy-message" style="margin-left: 10px;"></span>
-        </p>
-    </div>
+    <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+         (shared_utils.js) once a real venue is on screen; empty (and hidden)
+         otherwise. -->
+    <div id="shareBadge" class="share-badge"></div>
 
     <div class="about" id="colophon">
         <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
@@ -144,7 +139,6 @@
     <script src="shared_utils.js?v=202609230007"></script>
     <script src="shared_guessers.js"></script>
     <script src="venues.js"></script>
-    <script src="badges.js"></script>
 </body>
 
 </html>

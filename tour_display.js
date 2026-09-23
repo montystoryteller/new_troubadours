@@ -617,7 +617,7 @@ function getTourURLParams() {
   };
 }
 
-// Shared by updateURL() and renderTourBadge() below, so the two never
+// Shared by updateURL() and the tour share badge (renderShareBadge()), so the two never
 // drift apart on which params make a tour's URL "canonical".
 function buildTourURLParams(tourId) {
   const tour = toursLookup[tourId];
@@ -634,36 +634,6 @@ function updateURL(tourId) {
 
   const newURL = `${window.location.pathname}?${buildTourURLParams(tourId).toString()}`;
   window.history.pushState({ tourId }, "", newURL);
-}
-
-// Shows the "Find tour on New Troubadours" badge at the bottom of
-// #tourContent, linking to this tour's own shareable URL — reuses
-// badges.js's tour-badge image/alt text/sizing (that file builds the same
-// badge from ?tour= in its own URL, for a dedicated badge-generator page;
-// this renders it directly on the tour page it refers to instead).
-// Built from `tourId` via buildTourURLParams() rather than read off
-// window.location.href, since updateURL() — which is what actually
-// updates the visible URL — always runs right *after* displayTour() at
-// every call site, so location.href would still be the previous tour's
-// URL (or blank) at this point otherwise.
-function renderTourBadge(tourId) {
-  const badgeContainer = document.getElementById("tourBadge");
-  const badgeLink = document.getElementById("tourBadgeLink");
-  if (!badgeContainer || !badgeLink) return;
-
-  const params = buildTourURLParams(tourId);
-  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-  badgeLink.href = url;
-  badgeContainer.style.display = "";
-
-  // Same badge HTML shape badges.js's own generator page builds from
-  // ?tour= — see wireBadgeCopyButton() (shared_utils.js).
-  const badgeHtml =
-    `<a href="${url}" target="_blank" rel="noopener">` +
-    `<img src="https://newtroubadours.org/badges/findtouron.png" ` +
-    `alt="Find tour on New Troubadours" style="height: 24px; width: auto;">` +
-    `</a>`;
-  wireBadgeCopyButton("tourBadgeCopy", "tourBadgeCopyMessage", badgeHtml);
 }
 
 function loadTour() {
@@ -903,7 +873,9 @@ function displayTour(tourId) {
     addTourMarkersToMap(tour);
   }
 
-  renderTourBadge(tourId);
+  // "Find tour on" badge — links to this tour's own URL, incl. its performer
+  // param (same as buildTourURLParams()).
+  renderShareBadge("tour", tourId, { performer: tour.performer_id });
 }
 
 function displayTourDates(tour, status) {

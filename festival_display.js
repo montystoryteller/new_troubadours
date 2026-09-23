@@ -457,38 +457,6 @@ function buildTypeLegend(programme) {
 }
 
 
-// Shows the "See festival on New Troubadours" badge at the bottom of
-// #festivalContent, linking to this festival's own shareable URL — same
-// pattern as tour_display.js's renderTourBadge(). Same badge image/alt text
-// as badges.js (which builds it from ?festival= for the separate
-// badge-generator page — that file must NOT be loaded here, it expects that
-// page's own #badge-container element).
-// Built from `festivalId` rather than read off window.location.href, since
-// updateURL() runs *after* displayFestival() at the browse-mode call sites,
-// so location.href could still be the previous festival's URL at this point.
-function renderFestivalBadge(festivalId) {
-  const badgeContainer = document.getElementById("festivalBadge");
-  const badgeLink = document.getElementById("festivalBadgeLink");
-  if (!badgeContainer || !badgeLink) return;
-
-  const url = `${window.location.origin}${window.location.pathname}?festival=${encodeURIComponent(festivalId)}`;
-  badgeLink.href = url;
-  badgeContainer.style.display = "";
-
-  // Same badge HTML shape badges.js builds — see wireBadgeCopyButton()
-  // (shared_utils.js).
-  const badgeHtml =
-    `<a href="${url}" target="_blank" rel="noopener">` +
-    `<img src="https://newtroubadours.org/badges/seefestivalon.png" ` +
-    `alt="See festival on New Troubadours" style="height: 24px; width: auto;">` +
-    `</a>`;
-  wireBadgeCopyButton(
-    "festivalBadgeCopy",
-    "festivalBadgeCopyMessage",
-    badgeHtml,
-  );
-}
-
 function renderClashfinder() {
   const fest = currentFestival?.record;
   if (!fest) return;
@@ -1128,7 +1096,7 @@ function displayFestival(festivalId) {
   renderFestivalPerformers(fest);
 
   // "See festival on" badge
-  renderFestivalBadge(festivalId);
+  renderShareBadge("festival", festivalId);
 
   // Flyer(s) — getEventLevelFlyers() merges event_flyer/event_flyers
   // (see shared_utils.js); render one image per flyer.

@@ -303,19 +303,3 @@ a.event-performer-name:hover {
     margin: 0 0 10px 0;
 }
 
-/* ── "See event on" badge, bottom of #eventContent ─────────────
-   Mirrors tour-styles.css's .tour-badge exactly — see
-   renderEventBadge() in event.js. Named .event-share-badge rather than
-   .event-badge — shared-styles.css already uses .event-badge for the
-   small inline cancelled/sold-out/festival pill shown next to an event
-   name (background/padding/border-radius etc.), which would otherwise
-   bleed onto this completely different element (same class name, and
-   this file loads after shared-styles.css, so its properties only add
-   to that rule rather than replacing it). */
-.event-share-badge {
-    margin: 1.5em 0 0.5em;
-}
-
-.event-share-badge img {
-    display: block;
-}

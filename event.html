@@ -162,24 +162,10 @@
             </div>
         </div>
 
-        <!-- Populated by renderEventBadge() in event.js, once an event is on
-             screen — reuses badges.js's own "event" badge (image URL, alt
-             text, sizing) rather than duplicating a second, different badge
-             image just for this spot. Unlike badges.js's copy of this badge
-             (built for a dedicated badge-generator page that reads
-             ?event= off its own URL), this one is shown directly on the
-             event page it refers to — same pattern as tour_guide.html's
-             #tourBadge, including its own "Copy badge HTML" control
-             (wireBadgeCopyButton(), shared_utils.js), so getting the embed
-             code doesn't require a trip to that separate page. -->
-        <div id="eventBadge" class="event-share-badge" style="display:none;">
-            <a id="eventBadgeLink" href="#" target="_blank" rel="noopener">
-                <img src="https://newtroubadours.org/badges/seeeventon.png" alt="See event on New Troubadours"
-                    style="height: 24px; width: auto;">
-            </a>
-            <a href="#" id="eventBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
-            <span id="eventBadgeCopyMessage" class="badge-copy-message"></span>
-        </div>
+        <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+             (shared_utils.js) once a real event is on screen; empty (and hidden)
+             otherwise. -->
+        <div id="shareBadge" class="share-badge"></div>
     </div>
 
     <div class="about" id="colophon">

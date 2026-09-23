@@ -1661,13 +1661,23 @@ a.festival-programme-link:hover {
     }
 }
 
-#badge-container {
-    margin-top: 30px;
+/* "Find/See … on New Troubadours" share badge — one mount point per page
+   (<div id="shareBadge" class="share-badge">), populated by
+   renderShareBadge() in shared_utils.js. Left empty (so hidden) when the
+   page has no entity id in its URL or the entity isn't found. */
+.share-badge {
+    margin: 1.5em 0 0.5em;
 }
 
-/* "Copy badge HTML" control next to an inline badge (tour_guide.html's
-   #tourBadge, event.html's #eventBadge) — see wireBadgeCopyButton()
-   above. */
+.share-badge:empty {
+    display: none;
+}
+
+.share-badge img {
+    display: block;
+}
+
+/* "Copy badge HTML" control next to the badge — see renderShareBadge(). */
 .badge-copy-link {
     margin-left: 10px;
     font-size: 12px;

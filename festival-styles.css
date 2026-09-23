@@ -868,17 +868,3 @@
 }
 
 
-
-/* ── "See festival on" badge, bottom of #festivalContent ─────────
-   Mirrors tour-styles.css's .tour-badge — see renderFestivalBadge() in
-   festival_display.js. Named .festival-share-badge rather than
-   .event-badge — shared-styles.css already uses .event-badge for the
-   small inline cancelled/sold-out pill shown next to an event name, which
-   would otherwise bleed onto this completely different element. */
-.festival-share-badge {
-    margin: 1.5em 0 0.5em;
-}
-
-.festival-share-badge img {
-    display: block;
-}

@@ -802,6 +802,7 @@ setCanonical("venue");
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     renderVenue();
+    renderShareBadge("venue", venueId);
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("venueContent").style.display = "";
     if (hasLatlon(venue)) {

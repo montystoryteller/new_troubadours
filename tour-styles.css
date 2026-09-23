@@ -802,14 +802,6 @@ select {
     margin: 1.5em 0;
 }
 
-.tour-badge {
-    margin: 1.5em 0 0.5em;
-}
-
-.tour-badge img {
-    display: block;
-}
-
 /* Performer */
 .now-touring-performer {
     font-size: 0.85em;

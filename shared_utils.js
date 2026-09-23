@@ -261,12 +261,8 @@ function sanitizeUrl(url) {
 /**
  * Wires a "Copy badge HTML" control's click handler to copy a badge's HTML
  * embed code to the clipboard, with transient "Copied!"/"Copy failed"
- * feedback — matching badges.js's own copy-to-clipboard button on its
- * dedicated badge-generator page, but for the inline badges shown
- * directly on the page they refer to (tour_display.js's
- * renderTourBadge(), event.js's renderEventBadge()). Shared here so the
- * same clipboard-and-feedback logic isn't duplicated in every page that
- * shows one of these badges.
+ * feedback. Used by renderShareBadge() below — pages don't call this
+ * directly.
  * @param {string} buttonId - id of the clickable element (a link or
  *   button) to attach the copy handler to
  * @param {string} messageId - id of the element used to show the
@@ -298,6 +294,95 @@ function wireBadgeCopyButton(buttonId, messageId, badgeHtml) {
       }
     }
   };
+}
+
+// ---------------------------------------------------------------------------
+// Share badges ("Find me on / See event on … New Troubadours")
+//
+// One table + one renderer for every page that offers a badge (performers,
+// venues, story clubs, tours, events, festivals). A page needs only:
+//
+//   HTML:  <div id="shareBadge" class="share-badge"></div>
+//   JS:    renderShareBadge("venue", venueId);   // once the entity has
+//                                                // been found and rendered
+//
+// No id → no badge: directory/landing views and "not found" states simply
+// never call it (and calling it with a falsy id clears the mount point), and
+// an empty .share-badge is hidden by CSS (shared-styles.css).
+// ---------------------------------------------------------------------------
+
+const BADGE_IMAGE_BASE = "https://newtroubadours.org/badges/";
+
+// type -> the URL param that identifies the entity, badge image, and the
+// text used for its alt attribute.
+const BADGE_TYPES = {
+  performer: { param: "performer", image: "findmeon.png", text: "Find me on" },
+  venue: { param: "venue", image: "finduson.png", text: "Find us on" },
+  club: { param: "club", image: "finduson.png", text: "Find us on" },
+  tour: { param: "tour", image: "findtouron.png", text: "Find tour on" },
+  event: { param: "event", image: "seeeventon.png", text: "See event on" },
+  festival: {
+    param: "festival",
+    image: "seefestivalon.png",
+    text: "See festival on",
+  },
+};
+
+/**
+ * The embeddable badge markup (an <a><img></a> pair) for a badge type
+ * pointing at `url`. This exact string is both what's previewed on the page
+ * and what "Copy badge HTML" puts on the clipboard.
+ * @param {string} type - key of BADGE_TYPES
+ * @param {string} url - absolute URL the badge links to
+ * @returns {string} HTML, or "" for an unknown type
+ */
+function buildBadgeHtml(type, url) {
+  const cfg = BADGE_TYPES[type];
+  if (!cfg || !url) return "";
+  const href = url.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  return (
+    `<a href="${href}" target="_blank" rel="noopener">` +
+    `<img src="${BADGE_IMAGE_BASE}${cfg.image}" ` +
+    `alt="${cfg.text} New Troubadours" style="height: 24px; width: auto;">` +
+    `</a>`
+  );
+}
+
+/**
+ * Renders the share badge (preview + "Copy badge HTML" control) into
+ * #shareBadge for the entity `id` of the given type. The badge links to
+ * this page's own URL with just that entity's param (plus any extraParams),
+ * e.g. venues.html?venue=<id> — never whatever else happens to be in the
+ * address bar (cache-busters etc.).
+ *
+ * Does nothing visible without an id: the mount point is emptied (and so
+ * hidden) instead.
+ * @param {string} type - key of BADGE_TYPES
+ * @param {string} id - the entity's id, as used in its ?<param>= URL
+ * @param {Object<string,string>} [extraParams] - additional URL params to
+ *   include after the entity's own (falsy values are skipped)
+ */
+function renderShareBadge(type, id, extraParams = {}) {
+  const mount = document.getElementById("shareBadge");
+  if (!mount) return;
+  mount.innerHTML = "";
+
+  const cfg = BADGE_TYPES[type];
+  if (!cfg || !id) return;
+
+  const params = new URLSearchParams();
+  params.set(cfg.param, id);
+  Object.entries(extraParams).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+  const badgeHtml = buildBadgeHtml(type, url);
+  mount.innerHTML =
+    badgeHtml +
+    `<a href="#" id="shareBadgeCopy" class="badge-copy-link">Copy badge HTML</a>` +
+    `<span id="shareBadgeCopyMessage" class="badge-copy-message"></span>`;
+  wireBadgeCopyButton("shareBadgeCopy", "shareBadgeCopyMessage", badgeHtml);
 }
 
 /**
@@ -624,7 +709,7 @@ function resolveEventId(record, date) {
 function linkEventRowTitle(titleEl, record, date) {
   if (!record || !record.name || !date) return;
   const a = document.createElement("a");
-  a.href = `event.html?event=${encodeURIComponent(resolveEventId(record, date))}`;
+  a.href = `event.html?event_id=${encodeURIComponent(resolveEventId(record, date))}`;
   a.textContent = titleEl.textContent;
   titleEl.textContent = "";
   titleEl.appendChild(a);

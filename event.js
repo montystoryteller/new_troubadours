@@ -821,7 +821,12 @@ function renderPage() {
   renderPerformerUpcomingEvents(ev);
   renderVenueDescription(hostVenue);
   renderInfoTable(hostVenue);
-  renderEventBadge(ev);
+  // Built via resolveEventId(ev, ev._date) rather than the raw ?event= the
+  // page was loaded with — findEventById() also accepts an old-scheme id as
+  // a fallback match (see buildEventId()'s docstring in shared_utils.js), so
+  // the incoming URL isn't guaranteed to be the current-scheme one; this
+  // keeps the badge pointing at the canonical link.
+  renderShareBadge("event", resolveEventId(ev, ev._date));
 
   if (hostVenue && hasLatlon(hostVenue)) {
     const nearby = findNearbyByLatLon(
@@ -833,41 +838,6 @@ function renderPage() {
     renderNearbyVenues(nearby);
     renderNearbyEvents(nearby, getTodayMidnight());
   }
-}
-
-// Shows the "See event on New Troubadours" badge at the bottom of
-// #eventContent, linking to this event's own shareable URL — reuses
-// badges.js's event badge (image URL, alt text, sizing) rather than
-// duplicating a second, different badge image just for this spot (that
-// file builds the same badge from ?event= in its own URL, for a
-// dedicated badge-generator page; this renders it directly on the event
-// page it refers to instead — same pattern as tour_display.js's
-// renderTourBadge()).
-// Built via resolveEventId(ev, ev._date) rather than read off
-// window.location.href (or the raw eventIdParam the page was loaded
-// with) — findEventById() also accepts an old-scheme id as a fallback
-// match (see buildEventId()'s docstring in shared_utils.js), so the
-// incoming URL isn't guaranteed to already be the current-scheme one;
-// resolving it fresh here keeps every badge pointing at the canonical
-// link, same as buildSearchIndex()/linkEventRowTitle() do elsewhere.
-function renderEventBadge(ev) {
-  const badgeContainer = document.getElementById("eventBadge");
-  const badgeLink = document.getElementById("eventBadgeLink");
-  if (!badgeContainer || !badgeLink) return;
-
-  const eventId = resolveEventId(ev, ev._date);
-  const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(eventId)}`;
-  badgeLink.href = url;
-  badgeContainer.style.display = "";
-
-  // Same badge HTML shape badges.js's own generator page builds from
-  // ?event= — see wireBadgeCopyButton() (shared_utils.js).
-  const badgeHtml =
-    `<a href="${url}" target="_blank" rel="noopener">` +
-    `<img src="https://newtroubadours.org/badges/seeeventon.png" ` +
-    `alt="See event on New Troubadours" style="height: 24px; width: auto;">` +
-    `</a>`;
-  wireBadgeCopyButton("eventBadgeCopy", "eventBadgeCopyMessage", badgeHtml);
 }
 
 // ---------------------------------------------------------------------------
