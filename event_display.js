@@ -808,6 +808,18 @@ async function processSpecialEvents(events, typ, startDate, endDate) {
       }
       if (eventDate >= startDate && eventDate <= endDate) {
         const eventData = createEventData(flatEvent, eventDate, typ);
+        // These are the only events findEventById()/resolveEventId()
+        // (shared_utils.js/event.js) can actually resolve a permalink for
+        // — tour dates and repertoire-show dates are processed elsewhere
+        // (processTourEvents()/processRepertoireShows() below) and never
+        // reach this function. hasEventPage additionally requires the
+        // record's own plain `.date` field (not just `.datetimes`), since
+        // a datetimes-derived clone has `.date` cleared to undefined by
+        // expandDatetimes() above and event.js's own resolvableFlatEvents()
+        // can't resolve those either — see performers.js's identical
+        // caveat on this same point.
+        eventData.eventId = flatEvent.eventId || null;
+        eventData.hasEventPage = !!flatEvent.date;
         allEventsData.push(eventData);
         await addMarkerForEvent(eventData);
       }
@@ -1407,6 +1419,30 @@ function createIconsContainer(event) {
 
   if (event.facebook) {
     createIcon(container, "facebook", normaliseFacebookUrl(event.facebook));
+  }
+
+  // "View event page" — only for flat one-off specific/music/poetry events
+  // that findEventById() (event.js) can actually resolve a permalink for;
+  // see the hasEventPage comment in processSpecialEvents() above. Sits in
+  // this same icon row as website/email/facebook (.event-link is sized
+  // and coloured by shared-styles.css, same as those three). Built as a
+  // plain relative link rather than via createIcon() — createIcon()
+  // resolves its url through sanitizeUrl(), which anchors a relative URL
+  // to window.location.origin and so would drop the current directory
+  // path on a site not hosted at the domain root. Same approach
+  // storyclub.js's own internal "Link" icon (to storyclub.html?club=...)
+  // already uses, for the same reason.
+  if (event.hasEventPage) {
+    const a = document.createElement("a");
+    a.href = `event.html?event_id=${encodeURIComponent(resolveEventId(event, event.date))}`;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "event-link";
+    a.title = "View event page";
+    a.setAttribute("aria-label", "View event page");
+    a.onclick = (e) => e.stopPropagation();
+    a.innerHTML = ICON_SVG.link;
+    container.appendChild(a);
   }
 
   return container;
@@ -2358,6 +2394,9 @@ async function searchAllUpcoming() {
           if (!eventDate) continue;
           if (eventDate >= today && eventDate <= futureDate) {
             const eventData = createEventData(flatEvent, eventDate, type);
+            // See the matching comment in processSpecialEvents() above.
+            eventData.eventId = flatEvent.eventId || null;
+            eventData.hasEventPage = !!flatEvent.date;
             allEventsData.push(eventData);
             await addMarkerForEvent(eventData);
           }
@@ -3131,12 +3170,10 @@ function collectNewlyAddedEvents(cutoff) {
       .sort((a, b) => a.date - b.date);
     const toRender = upcoming.length > 0 ? [upcoming[0]] : [expanded[0]];
     for (const { flatEvent, date } of toRender) {
-      push(
-        createEventData(flatEvent, date, "special"),
-        false,
-        ev.date_added,
-        date,
-      );
+      const eventData = createEventData(flatEvent, date, "special");
+      eventData.eventId = flatEvent.eventId || null;
+      eventData.hasEventPage = !!flatEvent.date;
+      push(eventData, false, ev.date_added, date);
     }
   }
 
@@ -3145,12 +3182,10 @@ function collectNewlyAddedEvents(cutoff) {
     if (!isNewlyAdded(ev, cutoff)) continue;
     const eventDate = parseDateString(ev.date);
     if (!eventDate) continue;
-    push(
-      createEventData(ev, eventDate, "music"),
-      false,
-      ev.date_added,
-      eventDate,
-    );
+    const eventData = createEventData(ev, eventDate, "music");
+    eventData.eventId = ev.eventId || null;
+    eventData.hasEventPage = !!ev.date;
+    push(eventData, false, ev.date_added, eventDate);
   }
 
   // --- 6. Tours (one entry per tour, showing the first upcoming date) ---

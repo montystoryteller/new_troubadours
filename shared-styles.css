@@ -610,7 +610,8 @@ select {
 
 .event-facebook,
 .event-email,
-.event-website {
+.event-website,
+.event-link {
     display: inline-block;
     margin-left: 10px;
     text-decoration: none !important;
@@ -621,10 +622,11 @@ select {
 
 .event-facebook svg,
 .event-email svg,
-.event-website svg {
+.event-website svg,
+.event-link svg {
     width: 20px;
     height: 20px;
-    transition: fill 0.3s;
+    transition: fill 0.3s, color 0.3s;
 }
 
 /* Default icon colours */
@@ -648,6 +650,37 @@ select {
 
 .event.special .event-website svg {
     fill: #d9d5d5;
+}
+
+.event-link {
+    color: #ffffff;
+}
+
+.event-link:hover {
+    color: #77ee77;
+}
+
+/* event-link is a stroke-based outline icon (fill: none in the SVG
+   itself), unlike the fill-based icons above, so it's coloured via
+   `color` rather than `fill` — its <path> declares stroke="currentColor"
+   directly (not on the <svg> root the way the email icon does), so
+   `currentColor` resolves against the inherited `color` property, not
+   against a `stroke` value set on an ancestor. The anchor itself also
+   needs `color` set explicitly (above) — same reason
+   .event-storyclub-name-link/.event-performer-link (events-styles.css)
+   set `color: inherit` on their own anchors: without it, the browser's
+   default `a:-webkit-any-link { color: -webkit-link; }` wins on the
+   anchor and that's what currentColor would inherit down to the <path>.
+   Only special/music/poetry cards ever carry this icon (see
+   event_display.js's hasEventPage), and all three use a dark/coloured
+   card background, so plain white suits every variant — no per-type
+   override needed the way website/facebook get above. */
+.event-link svg {
+    color: #ffffff;
+}
+
+.event-link:hover svg {
+    color: #77ee77;
 }
 
 /* Music variant icon overrides */
