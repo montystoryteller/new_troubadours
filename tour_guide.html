@@ -10,18 +10,16 @@
         content="tours, UK tours, music tours, storytelling tours, Arts Council, storytelling, traditional storytelling, storytelling for adults, live music, live storytelling, grass roots music, grass roots music venues, events">
     <title>UK Storytelling Repertoire & Touring Shows - New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <!-- Leaflet's CSS+JS are no longer linked/preloaded here — they're loaded
+         on demand by tour_display.js's loadLeaflet(), once the tour's own
+         title/meta tags/content are already in the DOM. That way a slow or
+         unreachable cdnjs request for the map can never delay the text
+         content this page exists to serve (and that search engines need to
+         crawl) — see ensureMapInitialized() in tour_display.js. The
+         preconnect hint below just lets the browser warm up the connection
+         in the background ahead of that later request, at no cost to first
+         paint. -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
-    <!-- Non-blocking load: without this, a slow/unreachable cdnjs would stall
-         first paint of the ENTIRE page (nav bar included) until leaflet.css
-         finishes downloading. media="print" makes it a no-op for on-screen
-         rendering until the onload handler flips it to "all". -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" as="style" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" media="print"
-        onload="this.media='all'; this.onload=null;">
-    <noscript>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-    </noscript>
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="tour-styles.css">
 </head>
@@ -31,7 +29,7 @@
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
         <a href="event_guide.html">🗺️ Calendar</a>
-        <a href="tour_guide.html" aria-current="page">🎭 Tours</a>
+        <a href="tour_guide.html" aria-current="page">🎭 Tours & Repertoire</a>
         <a href="storyclub.html">📖 Story Clubs</a>
         <a href="performers.html">🎤 Performers</a>
         <a href="venues.html">📍 Venues</a>
@@ -47,96 +45,119 @@
         punk-poet shows on tour and in
         repertoire</h2>
 
-    <div id="pastToursPanel">
-        <details class="past-tours-details">
-            <summary class="upcoming-tours-summary">
-                <span class="upcoming-tours-summary-label">📜 Previous Tours</span>
-                <span class="upcoming-tours-summary-hint">click to expand</span>
-            </summary>
-            <div class="upcoming-tours-body" id="pastToursBody">
-                <p class="loading-state">Loading previous tours…</p>
-                <!-- Populated by renderPastToursPanel() in tour_display.js -->
-            </div>
-        </details>
-    </div>
-
-    <div id="nowTouringPanel">
-        <details class="now-touring-details" open>
-            <summary class="upcoming-tours-summary">
-                <span class="upcoming-tours-summary-label">🎭 Now Touring</span>
-                <span class="upcoming-tours-summary-hint">click to collapse</span>
-            </summary>
-            <div class="upcoming-tours-body" id="nowTouringBody">
-                <p class="loading-state">Loading current tours…</p>
-                <!-- Populated by renderNowTouringPanel() in tour_display.js -->
-            </div>
-        </details>
-    </div>
-
-    <div id="upcomingToursPanel">
-        <details class="upcoming-tours-details">
-            <summary class="upcoming-tours-summary">
-                <span class="upcoming-tours-summary-label">🗓️ Upcoming Tours</span>
-                <span class="upcoming-tours-summary-hint">click to expand</span>
-            </summary>
-            <div class="upcoming-tours-body" id="upcomingToursBody">
-                <p class="loading-state">Loading upcoming tours…</p>
-                <!-- Populated by renderUpcomingToursPanel() in tour_display.js -->
-            </div>
-        </details>
-    </div>
-
-    <div id="repertoireBrowsePanel">
-        <details class="repertoire-browse-details">
-            <summary class="upcoming-tours-summary">
-                <span class="upcoming-tours-summary-label" id="repertoireBrowseSummaryLabel">🔁 Browse Repertoire
-                    Shows</span>
-                <span class="upcoming-tours-summary-hint">click to expand</span>
-            </summary>
-            <div class="upcoming-tours-body" id="repertoireBrowseBody">
-                <p class="loading-state">Loading repertoire shows…</p>
-                <!-- Populated by renderRepertoireBrowseList() in tour_display.js -->
-            </div>
-        </details>
-    </div>
-
-    <div id="storyWalksBrowsePanel" style="display:none;">
-        <details class="repertoire-browse-details">
-            <summary class="upcoming-tours-summary">
-                <span class="upcoming-tours-summary-label" id="storyWalksBrowseSummaryLabel">Story Walks</span>
-                <span class="upcoming-tours-summary-hint">click to expand</span>
-            </summary>
-            <div class="upcoming-tours-body" id="storyWalksBrowseBody">
-                <p class="loading-state">Loading story walks…</p>
-                <!-- Populated by renderStoryWalksBrowseList() in tour_display.js.
-                     Starts hidden (inline style above) and is only revealed once
-                     there's at least one story walk to show; see that function. -->
-            </div>
-        </details>
-    </div>
-
-    <a href="event_guide.html" class="back-link">View Complete Events Calendar Map</a>
-
-    <div class="tour-controls">
-        <div class="tour-selector">
-            <label for="performerSelect">Performer:</label>
-            <select id="performerSelect" onchange="handlePerformerChange()">
-                <option value="">Select a performer...</option>
-            </select>
-
-            <label for="tourSelect">Touring show:</label>
-            <select id="tourSelect" onchange="handleTourChange()">
-                <option value="">Select a touring show...</option>
-            </select>
-
-            <button onclick="loadTour()" class="btn-primary">Show</button>
+    <!-- Everything in here is the "browse" UI: the Now Touring/Upcoming/
+         Previous panels, the two browse-by-show lists, and the performer/
+         touring-show dropdowns. When the page is loaded with a ?tour= in
+         the URL, tour_display.js hides this whole block and shows only
+         #tourContent + the back link below instead — see the singleTourMode
+         branch at the bottom of tour_display.js. Skipping all of this
+         (rather than just hiding it after building it) is also what lets a
+         direct tour link render fast: none of it needs to be populated to
+         show one tour. -->
+    <div id="tourBrowseState">
+        <div id="pastToursPanel">
+            <details class="past-tours-details">
+                <summary class="upcoming-tours-summary">
+                    <span class="upcoming-tours-summary-label">📜 Previous Tours</span>
+                    <span class="upcoming-tours-summary-hint">click to expand</span>
+                </summary>
+                <div class="upcoming-tours-body" id="pastToursBody">
+                    <p class="loading-state">Loading previous tours…</p>
+                    <!-- Populated by renderPastToursPanel() in tour_display.js -->
+                </div>
+            </details>
         </div>
 
-        <div class="share-container">
-            <button onclick="shareTourLink()" class="btn-secondary">🔗 Copy Shareable Link</button>
-            <button id="refreshDataBtn" onclick="refreshEventsData()" class="btn-secondary"
-                title="Bypasses the cache to fetch the latest events data immediately">🔄 Refresh Data</button>
+        <div id="nowTouringPanel">
+            <details class="now-touring-details" open>
+                <summary class="upcoming-tours-summary">
+                    <span class="upcoming-tours-summary-label">🎭 Now Touring</span>
+                    <span class="upcoming-tours-summary-hint">click to collapse</span>
+                </summary>
+                <div class="upcoming-tours-body" id="nowTouringBody">
+                    <p class="loading-state">Loading current tours…</p>
+                    <!-- Populated by renderNowTouringPanel() in tour_display.js -->
+                </div>
+            </details>
         </div>
+
+        <div id="upcomingToursPanel">
+            <details class="upcoming-tours-details">
+                <summary class="upcoming-tours-summary">
+                    <span class="upcoming-tours-summary-label">🗓️ Upcoming Tours</span>
+                    <span class="upcoming-tours-summary-hint">click to expand</span>
+                </summary>
+                <div class="upcoming-tours-body" id="upcomingToursBody">
+                    <p class="loading-state">Loading upcoming tours…</p>
+                    <!-- Populated by renderUpcomingToursPanel() in tour_display.js -->
+                </div>
+            </details>
+        </div>
+
+        <div id="repertoireBrowsePanel">
+            <details class="repertoire-browse-details">
+                <summary class="upcoming-tours-summary">
+                    <span class="upcoming-tours-summary-label" id="repertoireBrowseSummaryLabel">🔁 Browse Repertoire
+                        Shows</span>
+                    <span class="upcoming-tours-summary-hint">click to expand</span>
+                </summary>
+                <div class="upcoming-tours-body" id="repertoireBrowseBody">
+                    <p class="loading-state">Loading repertoire shows…</p>
+                    <!-- Populated by renderRepertoireBrowseList() in tour_display.js -->
+                </div>
+            </details>
+        </div>
+
+        <div id="storyWalksBrowsePanel" style="display:none;">
+            <details class="repertoire-browse-details">
+                <summary class="upcoming-tours-summary">
+                    <span class="upcoming-tours-summary-label" id="storyWalksBrowseSummaryLabel">Story Walks</span>
+                    <span class="upcoming-tours-summary-hint">click to expand</span>
+                </summary>
+                <div class="upcoming-tours-body" id="storyWalksBrowseBody">
+                    <p class="loading-state">Loading story walks…</p>
+                    <!-- Populated by renderStoryWalksBrowseList() in tour_display.js.
+                         Starts hidden (inline style above) and is only revealed once
+                         there's at least one story walk to show; see that function. -->
+                </div>
+            </details>
+        </div>
+
+        <a href="event_guide.html" class="back-link">View Complete Events Calendar Map</a>
+
+        <div class="tour-controls">
+            <div class="tour-selector">
+                <label for="performerSelect">Performer:</label>
+                <select id="performerSelect" onchange="handlePerformerChange()">
+                    <option value="">Select a performer...</option>
+                </select>
+
+                <label for="tourSelect">Touring show:</label>
+                <select id="tourSelect" onchange="handleTourChange()">
+                    <option value="">Select a touring show...</option>
+                </select>
+
+                <button onclick="loadTour()" class="btn-primary">Show</button>
+            </div>
+
+            <div class="share-container">
+                <button onclick="shareTourLink()" class="btn-secondary">🔗 Copy Shareable Link</button>
+                <button id="refreshDataBtn" onclick="refreshEventsData()" class="btn-secondary"
+                    title="Bypasses the cache to fetch the latest events data immediately">🔄 Refresh Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shown instead when the page loads with ?tour=<id> — see singleTourMode
+         in tour_display.js. -->
+    <div id="tourBackLinkWrap" style="display:none;">
+        <a href="tour_guide.html" class="back-link">← All Touring Shows</a>
+    </div>
+
+    <!-- Shown when ?tour=<id> doesn't resolve to a known tour — the
+         singleTourMode equivalent of event.html's #notFoundState. -->
+    <div id="tourNotFoundState" style="display:none;">
+        <p>Touring show not found. <a href="tour_guide.html">Return to touring shows.</a></p>
     </div>
 
     <div id="tourContent" style="display: none;">
@@ -235,7 +256,6 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="recurrence-engine.js"></script>
     <script src="shared_utils.js?v=202609230007"></script>
     <script src="tour_display.js"></script>

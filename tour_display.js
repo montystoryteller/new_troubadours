@@ -6,6 +6,82 @@ let performersLookup = {};
 let toursLookup = {}; // combined: real tours + synthetic "rep:<id>" entries for repertoire shows — see buildCombinedToursLookup()
 let repertoireShowsLookup = {};
 let currentTour = null; // Store current tour for map filtering
+let leafletPromise = null;
+let mapInitPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+// ---------------------------------------------------------------------------
+// Lazy Leaflet/map loading — tour_guide.html no longer links/preloads
+// Leaflet's CSS or JS at all. Loading it here, on demand, means a slow or
+// unreachable cdnjs request can never hold up this file's own execution
+// (previously a blocking <script> tag for leaflet.js sat *before*
+// tour_display.js in the HTML, so the events-JSON fetch below couldn't
+// even start until Leaflet had downloaded) or the tour's title/meta
+// tags/dates list, which all land in the DOM well before the map now.
+// Duplicated from event.js's loadLeaflet() rather than shared — matches
+// that file's own precedent (it isn't in shared_utils.js either).
+// ---------------------------------------------------------------------------
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+/**
+ * Creates the Leaflet map the first time it's needed (lazily loading
+ * Leaflet itself first). If a tour is already on screen (currentTour set
+ * by displayTour() before the map was ready), its markers are added as
+ * soon as the map exists, so nothing has to wait around for this to
+ * resolve except the map/markers themselves.
+ * Safe to call more than once — later calls resolve the same map/promise.
+ * @returns {Promise<L.Map>}
+ */
+function ensureMapInitialized() {
+  if (map) return Promise.resolve(map);
+  if (mapInitPromise) return mapInitPromise;
+
+  mapInitPromise = loadLeaflet()
+    .then(() => {
+      map = initMap("map", updateMapView);
+      // The map may have been created while its container was hidden
+      // (browse mode, no tour picked yet) or just became visible a moment
+      // ago (displayTour() already flipped #tourContent to display:block);
+      // either way Leaflet needs a nudge to size the tiles correctly.
+      map.invalidateSize();
+      if (currentTour) {
+        addTourMarkersToMap(currentTour);
+      }
+      return map;
+    })
+    .catch((error) => {
+      console.error("Failed to load tour map:", error);
+      const mapContainer = document.getElementById("map-container");
+      if (mapContainer) mapContainer.style.display = "none";
+      throw error;
+    });
+
+  return mapInitPromise;
+}
 
 // ---------------------------------------------------------------------------
 // "Touring Shows" merge — a repertoire show (top-level `repertoire_shows`)
@@ -140,7 +216,7 @@ function buildTourDropdownGroups(performerId) {
   return groups;
 }
 
-// UK_IRELAND_BOUNDS, ICON_SVG — defined in shared_utils.js
+// getUkIrelandBounds(), ICON_SVG — defined in shared_utils.js
 
 // getTodayMidnight() — defined in shared_utils.js
 
@@ -517,7 +593,9 @@ function handlePerformerChange() {
     // Optional: If there are multiple, you might want to clear
     // the previous view until they pick one from the new list
     document.getElementById("tourContent").style.display = "none";
-    markers = clearMarkers(map, markers);
+    // The map may not have loaded yet (it's now lazy — see
+    // ensureMapInitialized()), in which case there's nothing to clear.
+    markers = map ? clearMarkers(map, markers) : [];
   }
 }
 
@@ -584,6 +662,10 @@ function displayTour(tourId) {
   if (map) {
     map.invalidateSize();
   }
+  // If the map hasn't loaded yet, nothing to do here — ensureMapInitialized()
+  // picks up `currentTour` (set just above) and adds its markers itself
+  // once the map exists, so the text/meta rendering below is never made
+  // to wait on it.
 
   // Set title and subtitle
   document.getElementById("tourTitle").textContent = tour.name;
@@ -780,8 +862,11 @@ function displayTour(tourId) {
   // Render flyer gallery (tour-level + per-date flyers)
   renderTourFlyers(tour);
 
-  // Add markers to map
-  addTourMarkersToMap(tour);
+  // Add markers to map, if it's ready (see the note near the top of this
+  // function — ensureMapInitialized() handles it instead when it isn't).
+  if (map) {
+    addTourMarkersToMap(tour);
+  }
 }
 
 function displayTourDates(tour, status) {
@@ -1179,13 +1264,15 @@ function updateEventDisplayFilters() {
 }
 
 function resetMapZoom() {
-  const tourId = document.getElementById("tourSelect").value;
-  if (tourId && toursLookup[tourId]) {
-    const tour = toursLookup[tourId];
-    addTourMarkersToMap(tour);
+  // Reads currentTour rather than #tourSelect's value: in singleTourMode
+  // (see the bottom of this file) the dropdown is never populated, so
+  // currentTour — set by displayTour() — is the only reliable source here.
+  if (!currentTour) return;
+  ensureMapInitialized().then(() => {
+    addTourMarkersToMap(currentTour);
     // Reset to show all dates
-    displayTourDates(tour, getTourStatus(tour));
-  }
+    displayTourDates(currentTour, getTourStatus(currentTour));
+  });
 }
 
 function updateMapView() {
@@ -1604,10 +1691,29 @@ function refreshEventsData() {
   window.location.reload();
 }
 
+// ---------------------------------------------------------------------------
 // Initialize.
+//
 // Runs as soon as this script executes rather than waiting for the "load"
 // event (which would also wait on the Leaflet CDN CSS/JS and anything else
 // on the page), so the JSON fetch starts as early as possible.
+//
+// Two modes, decided purely from the URL, before any data has loaded:
+//
+//   - singleTourMode (?tour=<id> present): the page shows just that one
+//     tour. The whole browse UI (#tourBrowseState — panels + dropdowns) is
+//     skipped entirely rather than built and hidden, and once the data
+//     arrives displayTour() runs immediately so the tour's title, meta
+//     tags, description and dates list are in the DOM as fast as possible
+//     — this is the content a shared link or a search engine crawler
+//     actually wants. The map is loaded and initialised afterwards, in the
+//     background (see ensureMapInitialized()), so it can never hold that
+//     up.
+//
+//   - browse mode (no ?tour=): the original dropdown-driven landing page,
+//     unchanged apart from the map likewise being deferred until just
+//     after the panels/dropdowns are rendered.
+// ---------------------------------------------------------------------------
 setCanonical("tour");
 
 (async () => {
@@ -1616,15 +1722,22 @@ setCanonical("tour");
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
 
-  const loadingHTML =
-    '<div class="upcoming-tours-placeholder">Loading tours…</div>';
-  ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = loadingHTML;
-  });
-
   const urlParams = getTourURLParams();
   console.log("URL params:", urlParams);
+
+  const singleTourMode = !!urlParams.tourId;
+
+  if (singleTourMode) {
+    document.getElementById("tourBrowseState").style.display = "none";
+    document.getElementById("tourBackLinkWrap").style.display = "";
+  } else {
+    const loadingHTML =
+      '<div class="upcoming-tours-placeholder">Loading tours…</div>';
+    ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = loadingHTML;
+    });
+  }
 
   const result = await loadEventsData(
     urlParams.cacheBuster || (forcedRefresh ? Date.now() : null),
@@ -1632,12 +1745,20 @@ setCanonical("tour");
 
   if (!result) {
     console.error("Failed to load events data");
-    ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el)
-        el.innerHTML =
-          '<div class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</div>';
-    });
+    if (singleTourMode) {
+      document.getElementById("tourNotFoundState").innerHTML =
+        '<p class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</p>';
+      document.getElementById("tourNotFoundState").style.display = "";
+    } else {
+      ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach(
+        (id) => {
+          const el = document.getElementById(id);
+          if (el)
+            el.innerHTML =
+              '<div class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</div>';
+        },
+      );
+    }
     return;
   }
 
@@ -1661,9 +1782,29 @@ setCanonical("tour");
   console.log("Performers:", Object.keys(performersLookup).length);
   console.log("Venues:", Object.keys(venuesLookup).length);
 
-  map = initMap("map", updateMapView);
-  console.log("Map initialized");
+  if (singleTourMode) {
+    const tour = toursLookup[urlParams.tourId];
 
+    if (tour) {
+      // Renders title/meta tags/description/dates list synchronously —
+      // none of it touches the map, so it's all in the DOM before the
+      // line below even starts loading Leaflet.
+      console.log("Loading tour from URL:", urlParams.tourId);
+      displayTour(urlParams.tourId);
+    } else {
+      console.warn(
+        `tour_guide.html: tour "${urlParams.tourId}" not found.`,
+      );
+      document.getElementById("tourNotFoundState").style.display = "";
+    }
+
+    // Map is enhancement, not the text content this page needs indexed —
+    // load it in the background so it never blocks the above.
+    ensureMapInitialized();
+    return;
+  }
+
+  // Browse mode: full dropdown UI.
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     populatePerformerDropdown();
@@ -1679,34 +1820,14 @@ setCanonical("tour");
 
     renderPastToursPanel();
     console.log("Past Tours panel rendered");
+
+    // The map isn't needed until a tour is actually picked, so it's loaded
+    // here too — after the panels/dropdowns above, never before them.
+    ensureMapInitialized();
   }, 0);
 
-  // If URL has tour/performer params, load them.
-  // When only ?tour= is supplied (no performer=), derive the performer from
-  // the tour data so both dropdowns are correctly populated.
-  if (urlParams.tourId) {
-    const tour = toursLookup[urlParams.tourId];
-    const performerId =
-      urlParams.performerId || (tour && tour.performer_id) || null;
-
-    if (performerId) {
-      console.log("Setting performer from URL (or tour lookup):", performerId);
-      document.getElementById("performerSelect").value = performerId;
-      handlePerformerChange(); // populates tourSelect for this performer
-    }
-
-    console.log("Loading tour from URL:", urlParams.tourId);
-    document.getElementById("tourSelect").value = urlParams.tourId;
-    displayTour(urlParams.tourId);
-
-    // Scroll so the tour content is visible, not stranded below the panels
-    setTimeout(() => {
-      document
-        .getElementById("tourContent")
-        .scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 300);
-  } else if (urlParams.performerId) {
-    // performer= present but no tour= — just seed the performer dropdown
+  // performer= present but no tour= — just seed the performer dropdown
+  if (urlParams.performerId) {
     console.log("Setting performer from URL:", urlParams.performerId);
     document.getElementById("performerSelect").value = urlParams.performerId;
     handlePerformerChange();

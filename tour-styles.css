@@ -793,6 +793,15 @@ select {
     margin-top: -8px;
 }
 
+/* singleTourMode's back-link / not-found states — see tour_display.js */
+#tourBackLinkWrap {
+    margin: 0.5em 0 1em;
+}
+
+#tourNotFoundState {
+    margin: 1.5em 0;
+}
+
 /* Performer */
 .now-touring-performer {
     font-size: 0.85em;

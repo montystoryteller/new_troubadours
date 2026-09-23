@@ -10,13 +10,20 @@
 
 const PARAGRAPH_SEPARATOR = "\n\n\n\n";
 
-const UK_IRELAND_BOUNDS =
-  typeof L !== "undefined"
-    ? L.latLngBounds(
-        [49.5, -11.0], // SW corner (Atlantic)
-        [61.0, 2.5], // NE corner (North Sea)
-      )
-    : null;
+// Computed lazily (inside initMap(), on first use) rather than once here at
+// module-parse time: pages now load Leaflet on demand, after shared_utils.js
+// has already run (see tour_display.js's loadLeaflet()/ensureMapInitialized()),
+// so `L` isn't guaranteed to exist yet when this file is first parsed.
+let _ukIrelandBounds = null;
+function getUkIrelandBounds() {
+  if (!_ukIrelandBounds && typeof L !== "undefined") {
+    _ukIrelandBounds = L.latLngBounds(
+      [49.5, -11.0], // SW corner (Atlantic)
+      [61.0, 2.5], // NE corner (North Sea)
+    );
+  }
+  return _ukIrelandBounds;
+}
 
 // Icon SVGs used for website, email, and Facebook links.
 // The email icon uses a stroked envelope style (from the event guide).
@@ -1392,7 +1399,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
  */
 function initMap(elementId, onMoveEnd) {
   const map = L.map(elementId, {
-    maxBounds: UK_IRELAND_BOUNDS,
+    maxBounds: getUkIrelandBounds(),
     maxBoundsViscosity: 1.0,
     minZoom: 5,
     maxZoom: 16,
