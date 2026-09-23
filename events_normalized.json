@@ -18515,7 +18515,9 @@
       "id": "sound-of-the-sirens",
       "name": "Sound of the Sirens",
       "url": "https://www.soundofthesirens.uk/",
-      "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too."
+      "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.",
+      "musician": true,
+      "isBand": true
     },
     "daniel-morden-hugh-lupton-sarah-lianne-lewis": {
       "id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",
@@ -18654,6 +18656,16 @@
       "instagram": "elizacarthh",
       "musician": true,
       "bio": "Eliza Carthy MBE has been the multi award-winning irreverent, passionate, difficult face of English folk punk and traditional music since the early 1990s. Born into a formidable musical dynasty, her mother Norma was one of The Watersons and her father Martin Carthy is a hugely influential singer and guitarist, the incredible range of traditional and contemporary musicians who were part of the extended Waterson/Carthy world helped her develop her own unique approach to music."
+    },
+    "beans-on-toast": {
+      "id": "beans-on-toast",
+      "name": "Beans On Toast",
+      "url": "https://beansontoastmusic.com/",
+      "facebook": "beansontoastmusic",
+      "instagram": "beans.on.toast",
+      "youtube": "https://music.youtube.com/channel/UC737h5dgq8jLYeMvrlTSSpg",
+      "musician": true,
+      "bio": "Jay McAllister, known by his stage name Beans On Toast, is a British folk singer-songwriter from Braintree, Essex, England, who rose to prominence out of the UK folk scene in 2005. Beans on Toast has released fifteen studio albums, traditionally releasing a new record each year on 1 December, McAllister's birthday."
     },
     "jess-silk": {
       "id": "jess-silk",

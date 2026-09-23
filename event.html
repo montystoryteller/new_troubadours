@@ -161,6 +161,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- Populated by renderEventBadge() in event.js, once an event is on
+             screen — reuses badges.js's own "event" badge (image URL, alt
+             text, sizing) rather than duplicating a second, different badge
+             image just for this spot. Unlike badges.js's copy of this badge
+             (built for a dedicated badge-generator page that reads
+             ?event_id= off its own URL and offers a "copy the HTML" button),
+             this one is just the clickable badge itself, shown directly on
+             the event page it refers to — same pattern as tour_guide.html's
+             #tourBadge. -->
+        <div id="eventBadge" class="event-share-badge" style="display:none;">
+            <a id="eventBadgeLink" href="#" target="_blank" rel="noopener">
+                <img src="https://newtroubadours.org/badges/seeeventon.png" alt="See event on New Troubadours"
+                    style="height: 24px; width: auto;">
+            </a>
+        </div>
     </div>
 
     <div class="about" id="colophon">
