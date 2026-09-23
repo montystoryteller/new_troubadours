@@ -468,9 +468,13 @@ select {
    dimmed even when the "Hide past events" checkbox is left unchecked.
    Cancelled/rescheduled events already have their own faded striped
    look, so they only get the dimming filter, not the colour override —
-   avoids fighting their !important background/border rule above. */
+   avoids fighting their !important background/border rule above.
+   No opacity here (deliberately) — an opaque card sitting at reduced
+   opacity on the page's white background washes the "solid" grey
+   colours below right back out toward invisible, which is the muted
+   grey-on-grey/pale-on-pale look this is meant to prevent. The
+   grayscale filter alone is enough of a "this one's past" cue. */
 .event.date-past {
-    opacity: 0.55;
     filter: grayscale(40%);
 }
 
@@ -488,7 +492,6 @@ select {
     background: linear-gradient(135deg, #777 0%, #aaa 100%) !important;
     border-color: #999 !important;
     color: #ddd !important;
-    opacity: 0.6;
 }
 
 .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-name::after {
@@ -498,6 +501,51 @@ select {
     font-weight: normal;
     font-style: italic;
     opacity: 0.85;
+}
+
+/* .event-location/.event-tickets a/.event-featured-guest all set their
+   own colour directly (per-type: yellow/green/wheat depending on
+   variant), so the ancestor .event.date-past colour override above
+   never reaches them — inheritance loses to a value specified directly
+   on the same element, regardless of !important on the ancestor. Force
+   these specific children to the same muted colour explicitly instead,
+   for every type variant, so a past card reads as one flat muted
+   colour rather than its original bright palette bleeding through. */
+.event.date-past:not(.event-cancelled):not(.event-rescheduled)
+  :is(.event-location, .event-tickets a, .event-tickets .separator, .event-featured-guest, .event-featured-guest a) {
+    color: #888 !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past
+  :is(.event-location, .event-tickets a, .event-tickets .separator, .event-featured-guest, .event-featured-guest a) {
+    color: #ddd !important;
+}
+
+/* Same issue for the website/email/link icons — they're coloured via
+   fill/color set directly on the svg (or, for event-link, on the
+   anchor too — see the ICONS section above), not inherited, so they
+   need the same explicit per-variant muting. Facebook's colours are
+   baked into the SVG itself (not currentColor-based) so it isn't
+   included here — the grayscale filter on the whole card is the only
+   thing that dims it, same as before. */
+.event.date-past:not(.event-cancelled):not(.event-rescheduled)
+  :is(.event-website, .event-email, .event-link) svg {
+    fill: #aaa !important;
+    color: #aaa !important;
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-link {
+    color: #aaa !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past
+  :is(.event-website, .event-email, .event-link) svg {
+    fill: #ccc !important;
+    color: #ccc !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past .event-link {
+    color: #ccc !important;
 }
 
 
