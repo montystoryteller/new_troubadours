@@ -15,17 +15,11 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="canonical" href="https://newtroubadours.org/event_guide.html">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
-    <!-- Non-blocking load: without this, a slow/unreachable cdnjs would stall
-         first paint of the ENTIRE page (nav bar included) until leaflet.css
-         finishes downloading. media="print" makes it a no-op for on-screen
-         rendering until the onload handler flips it to "all". -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" as="style" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" media="print"
-        onload="this.media='all'; this.onload=null;">
-    <noscript>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-    </noscript>
+    <!-- Leaflet's CSS+JS are loaded on demand by event_display.js's
+         loadLeaflet() once the events list has been built (see
+         ensureMapInitialized()), so a slow or unreachable cdnjs request can
+         never delay the page's text content or first paint. The preconnect
+         above just warms the connection up in the background. -->
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="events-styles.css">
 </head>
@@ -301,7 +295,6 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202609232325"></script>
     <script src="recurrence-engine.js?v=202609232325"></script>
     <script src="shared_utils.js?v=202609232325"></script>
     <script src="event_display.js?v=202609232325"></script>

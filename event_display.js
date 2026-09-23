@@ -11,6 +11,102 @@ let toursLookup = {};
 let mapViewPinned = false;
 let pinnedMapView = null;
 
+// ---------------------------------------------------------------------------
+// Lazy Leaflet/map loading — event_guide.html no longer links/preloads
+// Leaflet's CSS or JS. The events list (which is what the page is for, and
+// what search engines need) is built without it; the map is an enhancement
+// that arrives afterwards. Until then:
+//   - event.coords are still computed (addMarkerForEvent()), so the list and
+//     "fit map to events" logic have what they need;
+//   - the list is simply shown unfiltered — once the map exists its viewport
+//     filters the list as before (updateMapView()).
+// Same approach as venues.js / tour_display.js / event.js / festival_display.js.
+// ---------------------------------------------------------------------------
+let leafletPromise = null;
+let mapInitPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+/**
+ * Creates the Leaflet map the first time it's needed (loading Leaflet
+ * itself first), then catches it up with whatever has already been
+ * displayed: draws markers for every event already in allEventsData and
+ * fits/pins the view, exactly as displayEvents() would have if the map had
+ * been ready. Safe to call more than once. Resolves to null (and hides the
+ * map panel) if Leaflet can't be loaded — the list still works without it.
+ * @returns {Promise<L.Map|null>}
+ */
+function ensureMapInitialized() {
+  if (map) return Promise.resolve(map);
+  if (mapInitPromise) return mapInitPromise;
+
+  mapInitPromise = loadLeaflet()
+    .then(() => {
+      map = initMap("map", updateMapView);
+      map.invalidateSize();
+      redrawAllMarkers();
+      fitMapToEvents();
+      return map;
+    })
+    .catch((error) => {
+      console.error("Failed to load events map:", error);
+      const mapContainer = document.getElementById("map-container");
+      if (mapContainer) mapContainer.style.display = "none";
+      return null;
+    });
+
+  return mapInitPromise;
+}
+
+/**
+ * Draws a marker for every already-displayed event that has coordinates —
+ * used once, when the map first becomes available after events were
+ * processed without it.
+ */
+function redrawAllMarkers() {
+  if (!map) return;
+  markers = clearMarkers(map, markers);
+  allEventsData.forEach((eventData) => {
+    if (eventData.coords) createMarkerForEvent(eventData);
+  });
+
+  // Apply the current type/search/cancelled/etc. filters to the new
+  // markers. Nothing about the filter checkboxes has changed, so don't let
+  // this call re-save them as the visitor's remembered preferences (it
+  // would clobber their own settings after opening a shared link).
+  const previous = suppressFilterPrefsSave;
+  suppressFilterPrefsSave = true;
+  try {
+    filterEvents();
+  } finally {
+    suppressFilterPrefsSave = previous;
+  }
+}
+
 // True only while checkboxes are being set programmatically from a
 // shared/bookmarked URL's own filter params. A link someone shares
 // deliberately encodes a specific view — it shouldn't silently overwrite
@@ -981,7 +1077,7 @@ async function displayEvents(startDate, endDate) {
   }
 
   allEventsData = [];
-  markers = clearMarkers(map, markers);
+  markers = map ? clearMarkers(map, markers) : [];
 
   // Process all recurring event types with one function
   await processRecurringEvents(
@@ -1025,6 +1121,12 @@ async function displayEvents(startDate, endDate) {
 }
 
 function togglePinMapView() {
+  // Nothing to pin until the (lazily loaded) map exists.
+  if (!map) {
+    document.getElementById("pinMapView").checked = false;
+    mapViewPinned = false;
+    return;
+  }
   mapViewPinned = document.getElementById("pinMapView").checked;
 
   if (mapViewPinned) {
@@ -1043,6 +1145,10 @@ function togglePinMapView() {
 }
 
 function fitMapToEvents() {
+  // The map loads lazily — ensureMapInitialized() calls this again once it
+  // exists.
+  if (!map) return;
+
   // If map view is pinned, don't auto-zoom
   if (mapViewPinned && pinnedMapView) {
     map.setView(pinnedMapView.center, pinnedMapView.zoom);
@@ -1159,30 +1265,41 @@ async function addMarkerForEvent(eventData) {
   }
 
   if (coords) {
+    // Always record the coordinates — the list's viewport filtering and
+    // fitMapToEvents() read eventData.coords whether or not the map exists.
     eventData.coords = coords;
 
-    const eventType = getEventType(eventData);
-    const markerColor = EVENT_COLORS[eventType];
-    const markerConfig = EVENT_MARKER_CONFIG[eventType];
-
-    const marker = L.circleMarker([coords.lat, coords.lon], {
-      radius: markerConfig.radius,
-      fillColor: markerColor,
-      color: "#fff",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: markerConfig.fillOpacity,
-    }).addTo(map);
-
-    marker.bindPopup(createSafePopup(eventData));
-    marker.eventData = eventData;
-
-    marker.on("click", () => {
-      highlightEvent(eventData);
-    });
-
-    markers.push(marker);
+    // The marker itself needs Leaflet, which loads lazily. If the map isn't
+    // ready yet, ensureMapInitialized() → redrawAllMarkers() draws it later.
+    if (map) createMarkerForEvent(eventData);
   }
+}
+
+// Adds a map marker for an event whose .coords has already been set.
+// Requires the map to exist.
+function createMarkerForEvent(eventData) {
+  const { coords } = eventData;
+  const eventType = getEventType(eventData);
+  const markerColor = EVENT_COLORS[eventType];
+  const markerConfig = EVENT_MARKER_CONFIG[eventType];
+
+  const marker = L.circleMarker([coords.lat, coords.lon], {
+    radius: markerConfig.radius,
+    fillColor: markerColor,
+    color: "#fff",
+    weight: 2,
+    opacity: 1,
+    fillOpacity: markerConfig.fillOpacity,
+  }).addTo(map);
+
+  marker.bindPopup(createSafePopup(eventData));
+  marker.eventData = eventData;
+
+  marker.on("click", () => {
+    highlightEvent(eventData);
+  });
+
+  markers.push(marker);
 }
 
 function updateMapView() {
@@ -2091,7 +2208,7 @@ function renderEventsList(eventsToShow) {
 }
 
 function zoomToEvent(lat, lon) {
-  if (lat && lon) {
+  if (map && lat && lon) {
     map.setView([lat, lon], 13);
   }
 }
@@ -2354,7 +2471,7 @@ async function searchAllUpcoming() {
 
   // Clear the list and markers
   allEventsData = [];
-  markers = clearMarkers(map, markers);
+  markers = map ? clearMarkers(map, markers) : [];
 
   // The checkboxes will filter visibility after loading
 
@@ -2693,10 +2810,12 @@ function generateShareableURL(startDate, endDate) {
   const pinned = document.getElementById("pinMapView").checked;
   if (pinned) {
     params.set("pinmap", "1");
-    const center = map.getCenter();
-    params.set("lat", center.lat.toFixed(5));
-    params.set("lng", center.lng.toFixed(5));
-    params.set("zoom", map.getZoom());
+    if (map) {
+      const center = map.getCenter();
+      params.set("lat", center.lat.toFixed(5));
+      params.set("lng", center.lng.toFixed(5));
+      params.set("zoom", map.getZoom());
+    }
   }
 
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -2893,7 +3012,8 @@ function refreshEventsData() {
   checkMissing(eventsData.musicEvents, "music events");
   checkMissing(eventsData.poetryEvents, "poetry events");
 
-  map = initMap("map", updateMapView);
+  // The map is created later, by ensureMapInitialized() (called at the end
+  // of the first render below), so Leaflet never holds up the events list.
 
   // Data is now loaded; make it available to event counting
   // (waitForDataThenCount in the HTML checks for this)
@@ -2946,8 +3066,11 @@ function refreshEventsData() {
       mapViewPinned = urlParams.pinmap;
 
       // Apply specific map view if provided
+      // (The map may not exist yet — it loads lazily. A pinned view is
+      // applied by fitMapToEvents() via pinnedMapView once it does; an
+      // unpinned one was always overridden by fitMapToEvents() anyway.)
       if (urlParams.lat && urlParams.lng && urlParams.zoom) {
-        map.setView([urlParams.lat, urlParams.lng], urlParams.zoom);
+        if (map) map.setView([urlParams.lat, urlParams.lng], urlParams.zoom);
         if (mapViewPinned) {
           pinnedMapView = {
             center: [urlParams.lat, urlParams.lng],
@@ -2982,6 +3105,10 @@ function refreshEventsData() {
 
     // Mark events as computed and cached for the day
     setSchedulesCache({ computed: true });
+
+    // List is built — now bring in the map (markers for everything already
+    // displayed are drawn as soon as it exists).
+    ensureMapInitialized();
   }, 0);
 })();
 
