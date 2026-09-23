@@ -167,15 +167,18 @@
              text, sizing) rather than duplicating a second, different badge
              image just for this spot. Unlike badges.js's copy of this badge
              (built for a dedicated badge-generator page that reads
-             ?event_id= off its own URL and offers a "copy the HTML" button),
-             this one is just the clickable badge itself, shown directly on
-             the event page it refers to — same pattern as tour_guide.html's
-             #tourBadge. -->
+             ?event_id= off its own URL), this one is shown directly on the
+             event page it refers to — same pattern as tour_guide.html's
+             #tourBadge, including its own "Copy badge HTML" control
+             (wireBadgeCopyButton(), shared_utils.js), so getting the embed
+             code doesn't require a trip to that separate page. -->
         <div id="eventBadge" class="event-share-badge" style="display:none;">
             <a id="eventBadgeLink" href="#" target="_blank" rel="noopener">
                 <img src="https://newtroubadours.org/badges/seeeventon.png" alt="See event on New Troubadours"
                     style="height: 24px; width: auto;">
             </a>
+            <a href="#" id="eventBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
+            <span id="eventBadgeCopyMessage" class="badge-copy-message"></span>
         </div>
     </div>
 

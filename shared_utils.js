@@ -10,20 +10,13 @@
 
 const PARAGRAPH_SEPARATOR = "\n\n\n\n";
 
-// Computed lazily (inside initMap(), on first use) rather than once here at
-// module-parse time: pages now load Leaflet on demand, after shared_utils.js
-// has already run (see tour_display.js's loadLeaflet()/ensureMapInitialized()),
-// so `L` isn't guaranteed to exist yet when this file is first parsed.
-let _ukIrelandBounds = null;
-function getUkIrelandBounds() {
-  if (!_ukIrelandBounds && typeof L !== "undefined") {
-    _ukIrelandBounds = L.latLngBounds(
-      [49.5, -11.0], // SW corner (Atlantic)
-      [61.0, 2.5], // NE corner (North Sea)
-    );
-  }
-  return _ukIrelandBounds;
-}
+const UK_IRELAND_BOUNDS =
+  typeof L !== "undefined"
+    ? L.latLngBounds(
+        [49.5, -11.0], // SW corner (Atlantic)
+        [61.0, 2.5], // NE corner (North Sea)
+      )
+    : null;
 
 // Icon SVGs used for website, email, and Facebook links.
 // The email icon uses a stroked envelope style (from the event guide).
@@ -34,8 +27,7 @@ const ICON_SVG = {
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>',
   facebook:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877f2"/><path d="M16.5 8H14c-.3 0-.5.2-.5.5V10H16l-.3 2.5H13.5V19h-2.5v-6.5H9V10h2V8.5C11 6.6 12.3 5.5 14 5.5c.8 0 2.5.1 2.5.1V8z" fill="#ffffff"/></svg>',
-  link:
-    '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2H14V6M14 2L8 8M12 9V13C12 13.55 11.55 14 11 14H3C2.45 14 2 13.55 2 13V5C2 4.45 2.45 4 3 4H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  link: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2H14V6M14 2L8 8M12 9V13C12 13.55 11.55 14 11 14H3C2.45 14 2 13.55 2 13V5C2 4.45 2.45 4 3 4H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
 // ---------------------------------------------------------------------------
@@ -264,6 +256,48 @@ function sanitizeUrl(url) {
     console.warn("Invalid URL:", url);
     return null;
   }
+}
+
+/**
+ * Wires a "Copy badge HTML" control's click handler to copy a badge's HTML
+ * embed code to the clipboard, with transient "Copied!"/"Copy failed"
+ * feedback — matching badges.js's own copy-to-clipboard button on its
+ * dedicated badge-generator page, but for the inline badges shown
+ * directly on the page they refer to (tour_display.js's
+ * renderTourBadge(), event.js's renderEventBadge()). Shared here so the
+ * same clipboard-and-feedback logic isn't duplicated in every page that
+ * shows one of these badges.
+ * @param {string} buttonId - id of the clickable element (a link or
+ *   button) to attach the copy handler to
+ * @param {string} messageId - id of the element used to show the
+ *   transient feedback text; feedback is skipped (silently) if missing
+ * @param {string} badgeHtml - the exact HTML string to copy
+ */
+function wireBadgeCopyButton(buttonId, messageId, badgeHtml) {
+  const btn = document.getElementById(buttonId);
+  if (!btn) return;
+  const message = document.getElementById(messageId);
+
+  btn.onclick = async (event) => {
+    event.preventDefault();
+    try {
+      await navigator.clipboard.writeText(badgeHtml);
+      if (message) {
+        message.textContent = "Copied!";
+        setTimeout(() => {
+          message.textContent = "";
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Could not copy badge HTML:", error);
+      if (message) {
+        message.textContent = "Copy failed";
+        setTimeout(() => {
+          message.textContent = "";
+        }, 3000);
+      }
+    }
+  };
 }
 
 /**
@@ -842,7 +876,6 @@ function renderEventRow(container, entry, isPast, options = {}) {
   return row;
 }
 
-
 /**
  * Category used for "story-first, opt-in music/poetry/folk" filtering on
  * nearby/upcoming event listings (venues.js's own-venue and nearby-venue
@@ -932,11 +965,7 @@ function collectDatedEventsForVenue(vid) {
       // Repertoire-derived synthetic tours set isMusic/isPoetry: false, so
       // this correctly falls through to "story" for those, same as a
       // genuine storytelling tour.
-      category: t.tour.isMusic
-        ? "music"
-        : t.tour.isPoetry
-          ? "poetry"
-          : "story",
+      category: t.tour.isMusic ? "music" : t.tour.isPoetry ? "poetry" : "story",
     })),
     ...showDatesHere.map((s) => ({
       type: "show",
@@ -1399,7 +1428,7 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
  */
 function initMap(elementId, onMoveEnd) {
   const map = L.map(elementId, {
-    maxBounds: getUkIrelandBounds(),
+    maxBounds: UK_IRELAND_BOUNDS,
     maxBoundsViscosity: 1.0,
     minZoom: 5,
     maxZoom: 16,
@@ -2697,7 +2726,6 @@ function updateMeta(metaName, extraContent, separator = " — ") {
   const originalContent = meta.getAttribute("content") || "";
   meta.setAttribute("content", `${extraContent}${separator}${originalContent}`);
 }
-
 
 /**
  * Replace <meta name="description"> content outright (creating the tag if

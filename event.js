@@ -856,8 +856,18 @@ function renderEventBadge(ev) {
   if (!badgeContainer || !badgeLink) return;
 
   const eventId = resolveEventId(ev, ev._date);
-  badgeLink.href = `${window.location.origin}${window.location.pathname}?event_id=${encodeURIComponent(eventId)}`;
+  const url = `${window.location.origin}${window.location.pathname}?event_id=${encodeURIComponent(eventId)}`;
+  badgeLink.href = url;
   badgeContainer.style.display = "";
+
+  // Same badge HTML shape badges.js's own generator page builds from
+  // ?event_id= — see wireBadgeCopyButton() (shared_utils.js).
+  const badgeHtml =
+    `<a href="${url}" target="_blank" rel="noopener">` +
+    `<img src="https://newtroubadours.org/badges/seeeventon.png" ` +
+    `alt="See event on New Troubadours" style="height: 24px; width: auto;">` +
+    `</a>`;
+  wireBadgeCopyButton("eventBadgeCopy", "eventBadgeCopyMessage", badgeHtml);
 }
 
 // ---------------------------------------------------------------------------

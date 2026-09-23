@@ -1664,3 +1664,25 @@ a.festival-programme-link:hover {
 #badge-container {
     margin-top: 30px;
 }
+
+/* "Copy badge HTML" control next to an inline badge (tour_guide.html's
+   #tourBadge, event.html's #eventBadge) — see wireBadgeCopyButton()
+   above. */
+.badge-copy-link {
+    margin-left: 10px;
+    font-size: 12px;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.badge-copy-link:hover {
+    text-decoration: underline;
+}
+
+.badge-copy-message {
+    margin-left: 6px;
+    font-size: 12px;
+    color: #888;
+    vertical-align: middle;
+}

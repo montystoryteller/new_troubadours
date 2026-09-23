@@ -29,7 +29,7 @@
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
         <a href="event_guide.html">🗺️ Calendar</a>
-        <a href="tour_guide.html" aria-current="page">🎭 Tours & Repertoire</a>
+        <a href="tour_guide.html" aria-current="page">🎭 Tours</a>
         <a href="storyclub.html">📖 Story Clubs</a>
         <a href="performers.html">🎤 Performers</a>
         <a href="venues.html">📍 Venues</a>
@@ -219,14 +219,18 @@
              alt text, sizing) rather than duplicating a second, different
              badge image just for this spot. Unlike badges.js's copy of
              this badge (built for a dedicated badge-generator page that
-             reads ?tour= etc. off its own URL and offers a "copy the HTML"
-             button), this one is just the clickable badge itself, shown
-             directly on the tour page it refers to. -->
+             reads ?tour= etc. off its own URL), this one is shown directly
+             on the tour page it refers to — but now also offers its own
+             "Copy badge HTML" control (wireBadgeCopyButton(), shared_utils.js),
+             so getting the embed code doesn't require a trip to that
+             separate page. -->
         <div id="tourBadge" class="tour-badge" style="display:none;">
             <a id="tourBadgeLink" href="#" target="_blank" rel="noopener">
                 <img src="https://newtroubadours.org/badges/findtouron.png" alt="Find tour on New Troubadours"
                     style="height: 24px; width: auto;">
             </a>
+            <a href="#" id="tourBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
+            <span id="tourBadgeCopyMessage" class="badge-copy-message"></span>
         </div>
 
     </div>

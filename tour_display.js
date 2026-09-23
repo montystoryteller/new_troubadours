@@ -652,8 +652,18 @@ function renderTourBadge(tourId) {
   if (!badgeContainer || !badgeLink) return;
 
   const params = buildTourURLParams(tourId);
-  badgeLink.href = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  badgeLink.href = url;
   badgeContainer.style.display = "";
+
+  // Same badge HTML shape badges.js's own generator page builds from
+  // ?tour= — see wireBadgeCopyButton() (shared_utils.js).
+  const badgeHtml =
+    `<a href="${url}" target="_blank" rel="noopener">` +
+    `<img src="https://newtroubadours.org/badges/findtouron.png" ` +
+    `alt="Find tour on New Troubadours" style="height: 24px; width: auto;">` +
+    `</a>`;
+  wireBadgeCopyButton("tourBadgeCopy", "tourBadgeCopyMessage", badgeHtml);
 }
 
 function loadTour() {
