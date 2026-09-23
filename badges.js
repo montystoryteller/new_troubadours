@@ -3,6 +3,8 @@ const params = new URLSearchParams(window.location.search);
 const performer_badge = params.get("performer");
 const venue_badge = params.get("venue");
 const storyclub_badge = params.get("club");
+const tour_badge = params.get("tour");
+const event_badge = params.get("event");
 
 let badgeText = "";
 let badgeImage = "";
@@ -13,6 +15,12 @@ if (performer_badge) {
 } else if (venue_badge || storyclub_badge) {
   badgeText = "Find us on";
   badgeImage = "finduson.png";
+} else if (tour_badge) {
+  badgeText = "Find tour on";
+  badgeImage = "findtouron.png";
+} else if (event_badge) {
+  badgeText = "See event on";
+  badgeImage = "seeeventon.png";
 }
 
 if (badgeText) {

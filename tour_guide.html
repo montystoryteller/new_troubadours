@@ -29,7 +29,7 @@
     <nav class="site-nav" aria-label="Site navigation">
         <a href="index.html">🏠 Home</a>
         <a href="event_guide.html">🗺️ Calendar</a>
-        <a href="tour_guide.html" aria-current="page">🎭 Tours & Repertoire</a>
+        <a href="tour_guide.html" aria-current="page">🎭 Tours</a>
         <a href="storyclub.html">📖 Story Clubs</a>
         <a href="performers.html">🎤 Performers</a>
         <a href="venues.html">📍 Venues</a>
@@ -123,8 +123,6 @@
             </details>
         </div>
 
-        <a href="event_guide.html" class="back-link">View Complete Events Calendar Map</a>
-
         <div class="tour-controls">
             <div class="tour-selector">
                 <label for="performerSelect">Performer:</label>
@@ -216,9 +214,22 @@
             </div>
         </div>
 
-    </div>
+        <!-- Populated by renderTourBadge() in tour_display.js, once a tour
+             is on screen — reuses badges.js's own "tour" badge (image URL,
+             alt text, sizing) rather than duplicating a second, different
+             badge image just for this spot. Unlike badges.js's copy of
+             this badge (built for a dedicated badge-generator page that
+             reads ?tour= etc. off its own URL and offers a "copy the HTML"
+             button), this one is just the clickable badge itself, shown
+             directly on the tour page it refers to. -->
+        <div id="tourBadge" class="tour-badge" style="display:none;">
+            <a id="tourBadgeLink" href="#" target="_blank" rel="noopener">
+                <img src="https://newtroubadours.org/badges/findtouron.png" alt="Find tour on New Troubadours"
+                    style="height: 24px; width: auto;">
+            </a>
+        </div>
 
-    <a href="event_guide.html" class="back-link">View Complete Events Calendar Map</a>
+    </div>
 
     <div class="about" id="colophon">
         <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a

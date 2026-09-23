@@ -617,18 +617,43 @@ function getTourURLParams() {
   };
 }
 
-function updateURL(tourId) {
+// Shared by updateURL() and renderTourBadge() below, so the two never
+// drift apart on which params make a tour's URL "canonical".
+function buildTourURLParams(tourId) {
   const tour = toursLookup[tourId];
-  if (!tour) return;
-
   const params = new URLSearchParams();
   params.set("tour", tourId);
-  if (tour.performer_id) {
+  if (tour && tour.performer_id) {
     params.set("performer", tour.performer_id);
   }
+  return params;
+}
 
-  const newURL = `${window.location.pathname}?${params.toString()}`;
+function updateURL(tourId) {
+  if (!toursLookup[tourId]) return;
+
+  const newURL = `${window.location.pathname}?${buildTourURLParams(tourId).toString()}`;
   window.history.pushState({ tourId }, "", newURL);
+}
+
+// Shows the "Find tour on New Troubadours" badge at the bottom of
+// #tourContent, linking to this tour's own shareable URL — reuses
+// badges.js's tour-badge image/alt text/sizing (that file builds the same
+// badge from ?tour= in its own URL, for a dedicated badge-generator page;
+// this renders it directly on the tour page it refers to instead).
+// Built from `tourId` via buildTourURLParams() rather than read off
+// window.location.href, since updateURL() — which is what actually
+// updates the visible URL — always runs right *after* displayTour() at
+// every call site, so location.href would still be the previous tour's
+// URL (or blank) at this point otherwise.
+function renderTourBadge(tourId) {
+  const badgeContainer = document.getElementById("tourBadge");
+  const badgeLink = document.getElementById("tourBadgeLink");
+  if (!badgeContainer || !badgeLink) return;
+
+  const params = buildTourURLParams(tourId);
+  badgeLink.href = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  badgeContainer.style.display = "";
 }
 
 function loadTour() {
@@ -867,6 +892,8 @@ function displayTour(tourId) {
   if (map) {
     addTourMarkersToMap(tour);
   }
+
+  renderTourBadge(tourId);
 }
 
 function displayTourDates(tour, status) {
@@ -876,15 +903,14 @@ function displayTourDates(tour, status) {
   // "Hide past dates" defaults to checked (see the checkbox's HTML) and
   // only makes sense as a *default* for a tour that's still ongoing
   // (status "current" straddles today) — that's the one case with a
-  // genuinely useful past/upcoming split to hide. Previously the label
-  // (and checkbox) were simply hidden for any other status, but the
-  // checkbox stayed checked underneath — so a fully completed ("past")
-  // tour silently filtered out every single date with no visible control
-  // left to un-hide them. Fixed by explicitly un-checking it for anything
-  // that isn't "current", and keeping the control visible for "past" too
-  // (not just "current") so it's still there to toggle if wanted — a
-  // "future" tour has no past dates yet, so there's nothing for it to do
-  // there, and it stays hidden in that case as before.
+  // genuinely useful past/upcoming split to hide. The label (and
+  // checkbox) are hidden for any other status, with the checkbox
+  // explicitly un-checked underneath so a fully completed ("past") tour
+  // doesn't silently filter out every single date with no visible control
+  // left to un-hide them. The control stays visible for "past" too (not
+  // just "current") so it's still there to toggle if wanted — a "future"
+  // tour has no past dates yet, so there's nothing for it to do there,
+  // and it stays hidden in that case.
   const hidePastLabel = document.getElementById("hidePastLabel");
   const hidePastCheckbox = document.getElementById("hidePastDates");
   hidePastLabel.style.display =
