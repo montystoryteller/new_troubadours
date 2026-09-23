@@ -4712,7 +4712,6 @@
       "name": "Gaz Brookfield and The Company of Thieves — Waiting For Wisdom tour",
       "tour_name": "Waiting For Wisdom tour",
       "performer_id": "gaz-brookfield-and-the-company-of-thieves",
-      "club": "gazbrookfield",
       "tour_flyer": "tour_gazbrookfield_2026q1-2.jpg",
       "tour_description": "Following the release of his tenth studio album, Waiting For Wisdom, Gaz Brookfield takes to the road once more. Folk / Punk festival favourite, Brookfield has been at this for a while now. Since winning Acoustic Magazine Singer/ Songwriter of the year way back in 2010 he has continued to tirelessly tour the length and breadth of the country, building a strong and loyal following where he goes.\n\n\n\nHis last album, Morning Walking Club, saw Gaz achieve his first top 40 record, and it even got number 1 in the UK Official Folk Charts. Not a bad result for this fiercely independent musician, with no record label, no manager, and no agent — just a guitar, a van, and a steadfastly belligerent refusal to give in.",
       "time": "7.30pm",
@@ -4772,7 +4771,6 @@
       "tour_dates": [
         {
           "date": "06/02/2026",
-          "club": "gazbrookfield",
           "ticket_url": "https://wegottickets.com/af/671/event/673293",
           "venue_id": "gupshill-manor-tewkesbury"
         },
@@ -5192,6 +5190,12 @@
     }
   },
   "clubs": [
+    {
+      "club": "woolly-tellers",
+      "promoter_id": "woolly-tellers",
+      "name": "Woolly Tellers",
+      "link": "https://www.thewoollytellers.co.uk/"
+    },
     {
       "club": "forgingfantastical",
       "promoter_id": "forgingfantastical",
@@ -10020,6 +10024,23 @@
       "eventId": "20260925-polis-loizou-st-johns-church-hall-worcester-park"
     },
     {
+      "name": "Chasing the Sun Uffington White Horse [Jon Mason]",
+      "showname": "Chasing the Sun Uffington White Horse",
+      "date": "26/09/2026",
+      "club": "forgingfantastical",
+      "venue_id": "uffington-horse-carpark",
+      "performer_id": "jon-mason",
+      "date_added": "24/09/2026",
+      "time": "10.45am & 2pm",
+      "price": "£7 (+ £0.59)",
+      "description": "Walk the green earth. Scour the sky above the chalk hills. Your troubles will follow you, whatever the age. But did a hero once walk among us? Did a mother raise her son? Did he grow to face our fears – and will that sun rise again?\n\n\n\nInspired by the White Horse at Uffington, Oxfordshire, this collection of myths and folktales considers the traces left in the soil of that place, and the hopes and dreams of those who walked there before us. Combining tantalising archaeological evidence, and echoes of ancient legend, Jon Mason weaves together stories from Wales to Yorkshire to Iceland and more, and imagine the myth that might have been.\n\n\n\nJoin us for a gentle walk with stories by Jon Mason. Suitable for ages 7+ but requires concentration. \n\n\n\nMeet at national trust White Horse Hill Car Park 10.45am.\n\n\n\nThere are no toilets.\n\n\n\nNearest coffee shop The Baking Bee at Ashbury a 6 minute drive.\n\n\n\nThe performance should finish 12.15-12.45pm After the performance, should you like to bring your own picnic, we'll sit together (if you want to) and enjoy the view!\n\n\n\nWeather is unpredictable, please dress appropriately. You will require sufficient mobility to handle a gentle walk across potentially uneven perhaps slippery ground. This is probably not suitable for persons with mobility aids.\n\n\n\nDogs welcome but you will need to keep them on the lead and please be mindful that not everyone is comfortable around dogs and may have allergies.",
+      "event_flyer": "2026_09_26_mason_uffington_forgingfantastical.jpg",
+      "ticket_url": "https://www.ticketsource.com/forging-fantastical/chasing-the-sun-uffington-white-horse-morning/e-qrpmzg",
+      "isSpecial": true,
+      "isStoryWalk": true,
+      "eventId": "20260927-the-folk-bus-stroud-brewery-taproom"
+    },
+    {
       "name": "Grimm Tales at Stroud Brewery [the-folk-bus]",
       "showname": "Grimm Tales at Stroud Brewery",
       "date": "27/09/2026",
@@ -11041,7 +11062,6 @@
       "name": "Gaz Brookfield + supports",
       "date": "04/04/2026",
       "time": "8pm",
-      "club": "gazbrookfield",
       "price": "£12.50",
       "description": "VicFest Day 3...",
       "event_flyer": "2026_04_04_gaz_brookfield_vicfest.jpg",
@@ -11055,7 +11075,6 @@
       "name": "Gaz Brookfield + support (Josh Oldfield)",
       "date": "05/07/2026",
       "time": "7.30pm",
-      "club": "gazbrookfield",
       "price": "£15",
       "description": "",
       "event_flyer": "2026-07-05-gaz-brookfield-devizes.jpg",
@@ -16296,6 +16315,18 @@
       "latlon": [
         52.30237,
         -2.10228
+      ]
+    },
+    "uffington-horse-carpark": {
+      "id": "uffington-horse-carpark",
+      "name": "White Horse Hill Car Park, Uffington",
+      "city": "Swindon",
+      "postcode": "SN7 7QJ",
+      "full_address": "White Horse Hill Car Park, Uffington, SN7 7QJ",
+      "url": "https://www.nationaltrust.org.uk/visit/oxfordshire-buckinghamshire-berkshire/white-horse-hill",
+      "latlon": [
+        51.60244,
+        -1.55634
       ]
     },
     "chapel-arts-centre-bath": {
