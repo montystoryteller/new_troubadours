@@ -5,6 +5,8 @@ const venue_badge = params.get("venue");
 const storyclub_badge = params.get("club");
 const tour_badge = params.get("tour");
 const event_badge = params.get("event");
+const troupe_badge = params.get("troupe");
+const band_badge = params.get("band");
 
 let badgeText = "";
 let badgeImage = "";
@@ -12,7 +14,7 @@ let badgeImage = "";
 if (performer_badge) {
   badgeText = "Find me on";
   badgeImage = "findmeon.png";
-} else if (venue_badge || storyclub_badge) {
+} else if (venue_badge || storyclub_badge || troupe_badge || band_badge) {
   badgeText = "Find us on";
   badgeImage = "finduson.png";
 } else if (tour_badge) {
