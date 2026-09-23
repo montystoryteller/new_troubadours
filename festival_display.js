@@ -8,6 +8,74 @@ let eventsData = null;
 let venuesLookup = {};
 let performersLookup = {};
 let currentFestival = null; // { key, record }
+let leafletPromise = null;
+let mapInitPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+// ---------------------------------------------------------------------------
+// Lazy Leaflet/map loading — festival.html no longer links/preloads
+// Leaflet's CSS or JS at all. Loading it here, on demand, means a slow or
+// unreachable cdnjs request can never hold up this file's own execution or
+// the festival's title/meta tags/description/programme, which all land in
+// the DOM well before the map now. Same approach as tour_display.js.
+// ---------------------------------------------------------------------------
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+/**
+ * Creates the Leaflet map the first time it's needed (lazily loading
+ * Leaflet itself first). If a festival is already on screen (currentFestival
+ * set by displayFestival() before the map was ready), its markers are added
+ * as soon as the map exists. Safe to call more than once.
+ * @returns {Promise<L.Map|null>} null if Leaflet failed to load
+ */
+function ensureMapInitialized() {
+  if (map) return Promise.resolve(map);
+  if (mapInitPromise) return mapInitPromise;
+
+  mapInitPromise = loadLeaflet()
+    .then(() => {
+      map = initMap("map", () => {});
+      // The container may have been hidden (browse mode, no festival picked
+      // yet) or only just shown; Leaflet needs a nudge to size tiles.
+      map.invalidateSize();
+      if (currentFestival) {
+        addFestivalMarkersToMap(currentFestival.key, currentFestival.record);
+      }
+      return map;
+    })
+    .catch((error) => {
+      console.error("Failed to load festival map:", error);
+      const mapContainer = document.getElementById("map-container");
+      if (mapContainer) mapContainer.style.display = "none";
+      return null;
+    });
+
+  return mapInitPromise;
+}
 
 // ---------------------------------------------------------------------------
 // URL helpers
@@ -386,6 +454,39 @@ function buildTypeLegend(programme) {
     legend.appendChild(item);
   });
   return legend;
+}
+
+
+// Shows the "See festival on New Troubadours" badge at the bottom of
+// #festivalContent, linking to this festival's own shareable URL — same
+// pattern as tour_display.js's renderTourBadge(). Same badge image/alt text
+// as badges.js (which builds it from ?festival= for the separate
+// badge-generator page — that file must NOT be loaded here, it expects that
+// page's own #badge-container element).
+// Built from `festivalId` rather than read off window.location.href, since
+// updateURL() runs *after* displayFestival() at the browse-mode call sites,
+// so location.href could still be the previous festival's URL at this point.
+function renderFestivalBadge(festivalId) {
+  const badgeContainer = document.getElementById("festivalBadge");
+  const badgeLink = document.getElementById("festivalBadgeLink");
+  if (!badgeContainer || !badgeLink) return;
+
+  const url = `${window.location.origin}${window.location.pathname}?festival=${encodeURIComponent(festivalId)}`;
+  badgeLink.href = url;
+  badgeContainer.style.display = "";
+
+  // Same badge HTML shape badges.js builds — see wireBadgeCopyButton()
+  // (shared_utils.js).
+  const badgeHtml =
+    `<a href="${url}" target="_blank" rel="noopener">` +
+    `<img src="https://newtroubadours.org/badges/seefestivalon.png" ` +
+    `alt="See festival on New Troubadours" style="height: 24px; width: auto;">` +
+    `</a>`;
+  wireBadgeCopyButton(
+    "festivalBadgeCopy",
+    "festivalBadgeCopyMessage",
+    badgeHtml,
+  );
 }
 
 function renderClashfinder() {
@@ -1026,6 +1127,9 @@ function displayFestival(festivalId) {
   // Performers
   renderFestivalPerformers(fest);
 
+  // "See festival on" badge
+  renderFestivalBadge(festivalId);
+
   // Flyer(s) — getEventLevelFlyers() merges event_flyer/event_flyers
   // (see shared_utils.js); render one image per flyer.
   const flyerEl = document.getElementById("festivalFlyer");
@@ -1274,6 +1378,7 @@ function buildSpecificEventCard(item) {
   if (venue.latlon) {
     div.style.cursor = "pointer";
     div.addEventListener("click", () => {
+      if (!map) return;
       map.flyTo(venue.latlon, 14);
       markers.forEach((m) => {
         if (m.venue_id === event.venue_id) m.openPopup();
@@ -1358,6 +1463,7 @@ function buildTourDateCard(item) {
   if (venue.latlon) {
     div.style.cursor = "pointer";
     div.addEventListener("click", () => {
+      if (!map) return;
       map.flyTo(venue.latlon, 14);
       markers.forEach((m) => {
         if (m.venue_id === tourDate.venue_id) m.openPopup();
@@ -1393,6 +1499,9 @@ function createFestivalExpandable(label, content) {
 // ---------------------------------------------------------------------------
 
 function addFestivalMarkersToMap(festivalId, fest) {
+  // Map loads lazily — if it isn't ready yet, ensureMapInitialized() will
+  // call this again for currentFestival once it is.
+  if (!map) return;
   markers = clearMarkers(map, markers);
   const bounds = [];
 
@@ -1464,7 +1573,7 @@ function addFestivalMarkersToMap(festivalId, fest) {
 }
 
 function resetFestivalMap() {
-  if (currentFestival)
+  if (map && currentFestival)
     addFestivalMarkersToMap(currentFestival.key, currentFestival.record);
 }
 
@@ -1656,43 +1765,70 @@ function refreshEventsData() {
 }
 
 // Initialize.
+//
 // Runs as soon as this script executes rather than waiting for the "load"
-// event (which would also wait on the Leaflet CDN CSS/JS and anything else
-// on the page), so the JSON fetch starts as early as possible.
+// event, so the JSON fetch starts as early as possible.
+//
+// Two modes, decided purely from the URL, before any data has loaded
+// (same pattern as tour_display.js):
+//
+//   - singleFestivalMode (?festival=<id> present): the page shows just that
+//     one festival. The whole browse UI (#festivalBrowseState — panels +
+//     dropdown) is skipped entirely rather than built and hidden, and once
+//     the data arrives displayFestival() runs immediately so the festival's
+//     title, meta tags, description and programme are in the DOM as fast as
+//     possible — this is what a shared link or a search engine crawler
+//     actually wants. The map is loaded afterwards, in the background.
+//     An unknown id shows #festivalNotFound.
+//
+//   - browse mode (no ?festival=): the generic landing page with the
+//     Happening Now / Upcoming / Past panels and the dropdown.
+// ---------------------------------------------------------------------------
 setCanonical("festival");
 
 (async () => {
   const forcedRefresh = sessionStorage.getItem("forceFreshEventsData");
   if (forcedRefresh) sessionStorage.removeItem("forceFreshEventsData");
 
-  const loadingHTML =
-    '<p class="festival-panel-placeholder">Loading festivals…</p>';
-  [
+  const { festivalId, cacheBuster } = getFestivalURLParams();
+  const singleFestivalMode = !!festivalId;
+
+  const panelBodyIds = [
     "currentFestivalsBody",
     "upcomingFestivalsBody",
     "pastFestivalsBody",
-  ].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = loadingHTML;
-  });
+  ];
 
-  const { festivalId, cacheBuster } = getFestivalURLParams();
+  if (singleFestivalMode) {
+    document.getElementById("festivalBrowseState").style.display = "none";
+    document.getElementById("festivalBackLinkWrap").style.display = "";
+  } else {
+    const loadingHTML =
+      '<p class="festival-panel-placeholder">Loading festivals…</p>';
+    panelBodyIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = loadingHTML;
+    });
+  }
 
   const result = await loadEventsData(
     cacheBuster || (forcedRefresh ? Date.now() : null),
   );
   if (!result) {
     console.error("Failed to load events data");
-    [
-      "currentFestivalsBody",
-      "upcomingFestivalsBody",
-      "pastFestivalsBody",
-    ].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el)
-        el.innerHTML =
-          '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
-    });
+    if (singleFestivalMode) {
+      const nf = document.getElementById("festivalNotFound");
+      nf.innerHTML =
+        '<p class="not-found">Could not load festival data. Please try refreshing the page.</p>';
+      nf.style.display = "block";
+    } else {
+      panelBodyIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el)
+          el.innerHTML =
+            '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
+      });
+    }
     return;
   }
 
@@ -1706,21 +1842,24 @@ setCanonical("festival");
   // Initialize navigation feedback
   initNavFeedback();
 
-  map = initMap("map", () => {});
+  if (singleFestivalMode) {
+    // Renders title/meta tags/description/programme/events list
+    // synchronously — none of it needs the map (displayFestival() shows
+    // #festivalNotFound itself if the id is unknown).
+    displayFestival(festivalId);
 
+    // Map is enhancement, not the text content this page needs indexed —
+    // load it in the background so it never blocks the above.
+    ensureMapInitialized();
+    return;
+  }
+
+  // Browse mode: panels + dropdown, then the map.
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     populateFestivalDropdown();
     renderFestivalPanels();
-
-    if (festivalId) {
-      document.getElementById("festivalSelect").value = festivalId;
-      displayFestival(festivalId);
-      setTimeout(() => {
-        document
-          .getElementById("festivalContent")
-          .scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300);
-    }
+    // Not needed until a festival is picked, so loaded after the panels.
+    ensureMapInitialized();
   }, 0);
 })();

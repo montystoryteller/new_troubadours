@@ -11,8 +11,13 @@
     <title>UK Storytelling, Folk, & Grass Roots Music Festivals — New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <!-- Leaflet's CSS+JS are no longer linked/preloaded here — they're loaded
+         on demand by festival_display.js's loadLeaflet(), once the festival's
+         own title/meta tags/content are already in the DOM. That way a slow or
+         unreachable cdnjs request for the map can never delay the text
+         content this page exists to serve (and that search engines need to
+         crawl) — see ensureMapInitialized() in festival_display.js. The
+         preconnect hint above just warms up the connection in the background. -->
     <link rel="stylesheet" href="shared-styles.css">
     <link rel="stylesheet" href="festival-styles.css">
 </head>
@@ -34,58 +39,70 @@
 
     <h1>The New Troubadours — Festival &amp; Wider Event Guide</h1>
     <h2>Directory of traditional storytelling festivals in the UK.</h2>
-    <!-- ── Overview panels ─────────────────────────────────────────── -->
+    <!-- Everything in here is the "browse" UI: the Happening Now/Upcoming/Past
+         panels and the festival dropdown. When the page is loaded with a
+         ?festival= in the URL, festival_display.js hides this whole block and
+         shows only #festivalContent + the back link below instead — see the
+         singleFestivalMode branch at the bottom of festival_display.js. -->
+    <div id="festivalBrowseState">
+        <!-- ── Overview panels ─────────────────────────────────────────── -->
 
-    <div id="currentFestivalsPanel">
-        <details class="festival-panel-details" open>
-            <summary class="festival-panel-summary">
-                <span class="festival-panel-label">🎪 Happening Now</span>
-                <span class="festival-panel-hint">click to collapse</span>
-            </summary>
-            <div class="festival-panel-body" id="currentFestivalsBody"></div>
-        </details>
-    </div>
-
-    <div id="upcomingFestivalsPanel">
-        <details class="festival-panel-details" open>
-            <summary class="festival-panel-summary">
-                <span class="festival-panel-label">🗓️ Upcoming Festivals</span>
-                <span class="festival-panel-hint">click to collapse</span>
-            </summary>
-            <div class="festival-panel-body" id="upcomingFestivalsBody"></div>
-        </details>
-    </div>
-
-    <div id="pastFestivalsPanel">
-        <details class="festival-panel-details">
-            <summary class="festival-panel-summary">
-                <span class="festival-panel-label">📜 Past Festivals</span>
-                <span class="festival-panel-hint">click to expand</span>
-            </summary>
-            <div class="festival-panel-body" id="pastFestivalsBody"></div>
-        </details>
-    </div>
-
-    <!-- ── Selector ────────────────────────────────────────────────── -->
-
-    <div class="festival-controls">
-        <div class="festival-selector">
-            <label for="festivalSelect">Festival:</label>
-            <select id="festivalSelect" onchange="handleFestivalSelectChange()">
-                <option value="">Select a festival…</option>
-            </select>
-            <button onclick="loadSelectedFestival()" class="btn-primary">Show Festival</button>
+        <div id="currentFestivalsPanel">
+            <details class="festival-panel-details" open>
+                <summary class="festival-panel-summary">
+                    <span class="festival-panel-label">🎪 Happening Now</span>
+                    <span class="festival-panel-hint">click to collapse</span>
+                </summary>
+                <div class="festival-panel-body" id="currentFestivalsBody"></div>
+            </details>
         </div>
-        <div class="share-container">
-            <button onclick="shareFestivalLink()" class="btn-secondary">🔗 Copy Shareable Link</button>
-            <button id="refreshDataBtn" onclick="refreshEventsData()" class="btn-secondary"
-                title="Bypasses the cache to fetch the latest events data immediately">🔄 Refresh Data</button>
+
+        <div id="upcomingFestivalsPanel">
+            <details class="festival-panel-details" open>
+                <summary class="festival-panel-summary">
+                    <span class="festival-panel-label">🗓️ Upcoming Festivals</span>
+                    <span class="festival-panel-hint">click to collapse</span>
+                </summary>
+                <div class="festival-panel-body" id="upcomingFestivalsBody"></div>
+            </details>
         </div>
+
+        <div id="pastFestivalsPanel">
+            <details class="festival-panel-details">
+                <summary class="festival-panel-summary">
+                    <span class="festival-panel-label">📜 Past Festivals</span>
+                    <span class="festival-panel-hint">click to expand</span>
+                </summary>
+                <div class="festival-panel-body" id="pastFestivalsBody"></div>
+            </details>
+        </div>
+
+        <!-- ── Selector ────────────────────────────────────────────────── -->
+
+        <div class="festival-controls">
+            <div class="festival-selector">
+                <label for="festivalSelect">Festival:</label>
+                <select id="festivalSelect" onchange="handleFestivalSelectChange()">
+                    <option value="">Select a festival…</option>
+                </select>
+                <button onclick="loadSelectedFestival()" class="btn-primary">Show Festival</button>
+            </div>
+            <div class="share-container">
+                <button onclick="shareFestivalLink()" class="btn-secondary">🔗 Copy Shareable Link</button>
+                <button id="refreshDataBtn" onclick="refreshEventsData()" class="btn-secondary"
+                    title="Bypasses the cache to fetch the latest events data immediately">🔄 Refresh Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shown instead when the page loads with ?festival=<id> -->
+    <div id="festivalBackLinkWrap" style="display:none;">
+        <a href="festival.html" class="back-link">← All Festivals</a>
     </div>
 
     <!-- ── Not found ───────────────────────────────────────────────── -->
     <div id="festivalNotFound" style="display:none;" class="not-found-state">
-        <p>Festival not found. <a href="festival.html">View all festivals</a></p>
+        <p>Festival not found. <a href="festival.html">Return to all festivals.</a></p>
     </div>
 
     <!-- ── Festival detail ─────────────────────────────────────────── -->
@@ -136,6 +153,15 @@
             </div>
         </div>
 
+        <div id="festivalBadge" class="festival-share-badge" style="display:none;">
+            <a id="festivalBadgeLink" href="#" target="_blank" rel="noopener">
+                <img src="https://newtroubadours.org/badges/seefestivalon.png" alt="See festival on New Troubadours"
+                    style="height: 24px; width: auto;">
+            </a>
+            <a href="#" id="festivalBadgeCopy" class="badge-copy-link">Copy badge HTML</a>
+            <span id="festivalBadgeCopyMessage" class="badge-copy-message"></span>
+        </div>
+
     </div>
 
     <div class="about" id="colophon">
@@ -159,7 +185,6 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="recurrence-engine.js"></script>
     <script src="shared_utils.js?v=202609230007"></script>
     <script src="festival_display.js"></script>

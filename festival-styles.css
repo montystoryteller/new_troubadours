@@ -182,6 +182,11 @@
 }
 .back-link:hover { text-decoration: underline; }
 
+/* singleFestivalMode's back-link / not-found states — see festival_display.js */
+#festivalBackLinkWrap { margin: 0.5em 0 1em; }
+#festivalBackLinkWrap .back-link { margin: 0; }
+#festivalNotFound { margin: 1.5em 0; }
+
 
 /* =============================================================
    3. FESTIVAL HEADER
@@ -860,4 +865,20 @@
     color: #444;
     margin-top: 6px;
     line-height: 1.4;
+}
+
+
+
+/* ── "See festival on" badge, bottom of #festivalContent ─────────
+   Mirrors tour-styles.css's .tour-badge — see renderFestivalBadge() in
+   festival_display.js. Named .festival-share-badge rather than
+   .event-badge — shared-styles.css already uses .event-badge for the
+   small inline cancelled/sold-out pill shown next to an event name, which
+   would otherwise bleed onto this completely different element. */
+.festival-share-badge {
+    margin: 1.5em 0 0.5em;
+}
+
+.festival-share-badge img {
+    display: block;
 }

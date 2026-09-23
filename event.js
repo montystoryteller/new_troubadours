@@ -1,14 +1,14 @@
 // ---------------------------------------------------------------------------
 // event.js — event.html
 //
-// With a resolvable ?event_id=: loads data, resolves the event, and renders
+// With a resolvable ?event=: loads data, resolves the event, and renders
 // the hero + tickets/video + performer info in the left column, flyer
 // thumbnail(s) at the top of the right-hand sidebar, and reuses venues.js's
 // map/nearby-venues/nearby-events pattern for the rest of the right column
 // (map itself sits in the left column next to performer info — see
 // event-styles.css's .left-col-split). Also wires up the top search box.
 //
-// With no ?event_id= (or one that doesn't resolve): shows a filterable
+// With no ?event= (or one that doesn't resolve): shows a filterable
 // list of today's one-off dated events instead (see showTodayEvents()).
 //
 // Tickets / flyer(s) / video trailer mirror storyclub.js's per-event
@@ -109,7 +109,7 @@ function resolvableFlatEvents(list) {
     .filter((e) => e._date && e.name);
 }
 
-// Resolves an event_id against any one-off dated event that uses the plain
+// Resolves an event id against any one-off dated event that uses the plain
 // name+date id scheme (specific/music/poetry events) — this is also used to
 // build permalinks out from the "More by this performer" and "Events today"
 // panels. Tour dates and touring-show dates use a different identity
@@ -246,7 +246,7 @@ function buildSearchIndex() {
           performerNames: performerNamesOf(e),
           hostVenue: venuesLookup[e.venue_id] || null,
           date: e._date,
-          href: `event.html?event_id=${encodeURIComponent(resolveEventId(e, e._date))}`,
+          href: `event.html?event=${encodeURIComponent(resolveEventId(e, e._date))}`,
           // "story" is the always-on default bucket, so it needs no badge
           // of its own — same reasoning as TODAY_EVENTS_TYPE_LABELS not
           // badging specificEvents rows either.
@@ -521,11 +521,11 @@ function initSearchFilters() {
 
 // Initialize immediately (don't wait for DOMContentLoaded) so data starts
 // loading early, matching venues.js/storyclub.js.
-setCanonical("event_id");
+setCanonical("event");
 
 (async () => {
   const params = new URLSearchParams(window.location.search);
-  const eventIdParam = params.get("event_id");
+  const eventIdParam = params.get("event");
   prependMetaKeyword(`${eventIdParam}`);
 
   const loaded = await loadEventsData();
@@ -549,10 +549,10 @@ setCanonical("event_id");
   if (!eventRecord) {
     if (eventIdParam) {
       console.warn(
-        `event.html: event_id "${eventIdParam}" not found — showing today's events instead.`,
+        `event.html: event "${eventIdParam}" not found — showing today's events instead.`,
       );
     } else {
-      console.info("event.html: no ?event_id= given — showing today's events.");
+      console.info("event.html: no ?event= given — showing today's events.");
     }
     document.getElementById("loadingState").style.display = "none";
     showTodayEvents();
@@ -583,7 +583,7 @@ setCanonical("event_id");
 })();
 
 // ---------------------------------------------------------------------------
-// Today's events (no-?event_id= fallback). One-off dated events only
+// Today's events (no-?event= fallback). One-off dated events only
 // (specific/music/poetry events, tour dates, touring-show dates, festivals
 // in progress) — recurring club/folk/session nights aren't matched against
 // today's date yet, since that needs the recurrence engine wired in here
@@ -839,7 +839,7 @@ function renderPage() {
 // #eventContent, linking to this event's own shareable URL — reuses
 // badges.js's event badge (image URL, alt text, sizing) rather than
 // duplicating a second, different badge image just for this spot (that
-// file builds the same badge from ?event_id= in its own URL, for a
+// file builds the same badge from ?event= in its own URL, for a
 // dedicated badge-generator page; this renders it directly on the event
 // page it refers to instead — same pattern as tour_display.js's
 // renderTourBadge()).
@@ -856,12 +856,12 @@ function renderEventBadge(ev) {
   if (!badgeContainer || !badgeLink) return;
 
   const eventId = resolveEventId(ev, ev._date);
-  const url = `${window.location.origin}${window.location.pathname}?event_id=${encodeURIComponent(eventId)}`;
+  const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(eventId)}`;
   badgeLink.href = url;
   badgeContainer.style.display = "";
 
   // Same badge HTML shape badges.js's own generator page builds from
-  // ?event_id= — see wireBadgeCopyButton() (shared_utils.js).
+  // ?event= — see wireBadgeCopyButton() (shared_utils.js).
   const badgeHtml =
     `<a href="${url}" target="_blank" rel="noopener">` +
     `<img src="https://newtroubadours.org/badges/seeeventon.png" ` +

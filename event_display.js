@@ -1434,7 +1434,7 @@ function createIconsContainer(event) {
   // already uses, for the same reason.
   if (event.hasEventPage) {
     const a = document.createElement("a");
-    a.href = `event.html?event_id=${encodeURIComponent(resolveEventId(event, event.date))}`;
+    a.href = `event.html?event=${encodeURIComponent(resolveEventId(event, event.date))}`;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.className = "event-link";

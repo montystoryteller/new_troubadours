@@ -56,7 +56,7 @@
     </div>
 
     <!-- Shown instead of a single event's detail view when the page is
-         opened with no ?event_id= (or one that doesn't resolve) — populated
+         opened with no ?event= (or one that doesn't resolve) — populated
          by event.js's showTodayEvents(). One-off dated events only (specific/
          music/poetry events, tour dates, touring-show dates, festivals in
          progress); recurring club/folk/session nights aren't matched against
@@ -167,7 +167,7 @@
              text, sizing) rather than duplicating a second, different badge
              image just for this spot. Unlike badges.js's copy of this badge
              (built for a dedicated badge-generator page that reads
-             ?event_id= off its own URL), this one is shown directly on the
+             ?event= off its own URL), this one is shown directly on the
              event page it refers to — same pattern as tour_guide.html's
              #tourBadge, including its own "Copy badge HTML" control
              (wireBadgeCopyButton(), shared_utils.js), so getting the embed

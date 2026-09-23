@@ -624,7 +624,7 @@ function resolveEventId(record, date) {
 function linkEventRowTitle(titleEl, record, date) {
   if (!record || !record.name || !date) return;
   const a = document.createElement("a");
-  a.href = `event.html?event_id=${encodeURIComponent(resolveEventId(record, date))}`;
+  a.href = `event.html?event=${encodeURIComponent(resolveEventId(record, date))}`;
   a.textContent = titleEl.textContent;
   titleEl.textContent = "";
   titleEl.appendChild(a);
