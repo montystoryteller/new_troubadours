@@ -6,12 +6,8 @@
       "description": "We connect artists and communities with North Devon finding entertaining and extraordinary ways to explore our land, lives and future.",
       "ticketing_url": "",
       "promoter_link": "https://beaford.org/events",
-      "promoter_venues": [
-       
-      ],
-      "promoter_artists": [
-
-      ]
+      "promoter_venues": [],
+      "promoter_artists": []
     },
     "crickcrack": {
       "promoter_id": "crickcrack",
@@ -4522,6 +4518,99 @@
         }
       ]
     },
+        "sound-of-the-sirens-sound-of-the-sirens": {
+          "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
+          "tour_dates": [
+            {
+              "date": "23/10/2026",
+              "venue_id": "holy-trinity-church-westward-ho",
+              "time": "7.30-9:pm",
+              "price": "Advance: £10/U16 £7.50;  on the door: £12.50/U16 £10",
+              "ticket_url": "https://beaford.org/events/sirenswwho",
+              "promoter_id": "Beaford",
+              "isSpecial": true
+            },
+            {
+              "date": "24/10/2026",
+              "venue_id": "bluebird-cafe-wedmore",
+              "ticket_url": "https://www.bluebirdcafewedmore.com/eventsandshows",
+              "isSpecial": true
+            },
+            {
+              "date": "30/10/2026",
+              "venue_id": "village-hall-woolacombe",
+              "time": "Doors 7pm, show 7.30-9:pm",
+              "price": "Advance £10 /U16s £5 / On the day £12.50/U16s £7.50",
+              "ticket_url": "https://beaford.org/events/sirenswooly",
+              "promoter_id": "beaford",
+              "isSpecial": true
+            },
+            {
+              "date": "07/11/2026",
+              "venue_id": "the-beehive-honiton",
+              "time": "7.30pm",
+              "price": "General Admission £18. All tickets includes a £2 booking fee.",
+              "ticket_url": "https://thebeehive.savoysystems.co.uk/TheBeehive.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_1529.TcsWebTab_3773.TcsProgramme_1491487",
+              "isSpecial": true,
+              "event_flyers": [
+                "2026_11_07_sound_sirens_beehive.jpg",
+                "2026_11_07_sound_sirens_beehive2.jpg"
+              ]
+            },
+            {
+              "date": "13/11/2026",
+              "venue_id": "st-michael-s-church-kingsteignton",
+              "time": "7pm",
+              "price": "£20.00 + £1.68 booking fee",
+              "ticket_url": "https://www.ticketsource.com/soundofthesirens",
+              "isSpecial": true,
+              "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg"
+            },
+            {
+              "date": "14/11/2026",
+              "venue_id": "railway-inn-winchester",
+              "ticket_url": "https://ffsfest.com/tickets/",
+              "isSpecial": true
+            },
+            {
+              "date": "20/11/2026",
+              "venue_id": "harwell-village-hall",
+              "time": "Doors: 7:00pm, start: 7:40pm",
+              "price": "£18.00 (+ £1.80) / U16 £9.00 (+ £0.90)",
+              "ticket_url": "https://wegottickets.com/f/15126",
+              "isSpecial": true
+            },
+            {
+              "date": "21/11/2026",
+              "venue_id": "wrington-memorial-hall",
+              "time": "6.30-11pm",
+              "price": "£16.65-£25",
+              "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
+              "isSpecial": true
+            },
+            {
+              "date": "28/11/2026",
+              "venue_id": "the-pit-at-newstead-nottinghamshire",
+              "time": "7.30pm",
+              "price": "£14.30",
+              "ticket_url": "https://www.ents24.com/newstead-events/the-pit-at-newstead/sound-of-the-sirens/7475445",
+              "isSpecial": true
+            },
+            {
+              "date": "05/12/2026",
+              "venue_id": "the-fleece-bristol",
+              "time": "7pm",
+              "price": "£17",
+              "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
+              "isSpecial": true,
+              "event_flyer": "2026_12_05_gaz_sirens_fleece.webp"
+            }
+          ],
+          "name": "Sound of the Sirens",
+          "performer_id": "sound-of-the-sirens",
+          "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
+          "isMusic": true
+        },
     "jess-silk-matt-johnson-dashboard-jesus-2026": {
       "name": "Jess Silk + Matt Johnson — The Dashboard Jesus Tour",
       "tour_name": "Dashboard Jesus Tour",
@@ -16978,6 +17067,90 @@
       "latlon": [
         51.02433,
         -3.25248
+      ]
+    },
+    "holy-trinity-church-westward-ho": {
+      "id": "holy-trinity-church-westward-ho",
+      "name": "Holy Trinity Church, Westward Ho",
+      "full_address": "Holy Trinity Church, Westward Ho!, EX39 1HX",
+      "city": "Bideford",
+      "postcode": "EX39 1HX",
+      "url": "https://www.facebook.com/holytrinitywestwardho/",
+      "latlon": [
+        51.03888,
+        -4.24022
+      ]
+    },
+    "bluebird-cafe-wedmore": {
+      "id": "bluebird-cafe-wedmore",
+      "name": "Bluebird Cafe, Wedmore",
+      "full_address": "Bluebird Cafe, The Borough, Wedmore, BS28 4EB",
+      "city": "Wedmore",
+      "postcode": "BS28 4EB",
+      "url": "https://www.bluebirdcafewedmore.com/",
+      "latlon": [
+        51.22751,
+        -2.80791
+      ]
+    },
+    "village-hall-woolacombe": {
+      "id": "village-hall-woolacombe",
+      "name": "Village Hall, Woolacombe",
+      "full_address": "Village Hall, Beach Road, Woolacombe,  EX34 7BY",
+      "city": "Woolacombe",
+      "postcode": "EX34 7BY",
+      "url": "https://www.woolacombevillagehall.co.uk/",
+      "latlon": [
+        51.17234,
+        -4.1987
+      ]
+    },
+    "the-beehive-honiton": {
+      "id": "the-beehive-honiton",
+      "name": "The Beehive, Honiton",
+      "full_address": "The Beehive Dowell Street, Honiton, EX14 1LZ",
+      "city": "Honiton",
+      "postcode": "EX14 1LZ",
+      "url": "https://beehivehoniton.co.uk/",
+      "latlon": [
+        50.80045,
+        -3.19575
+      ]
+    },
+    "st-michael-s-church-kingsteignton": {
+      "id": "st-michael-s-church-kingsteignton",
+      "name": "St Michael's Church, Kingsteignton",
+      "full_address": "St Michael's Church, Church Street, Kingsteignton, TQ12 3BQ",
+      "city": "Kingsteignton, Newton Abbot",
+      "postcode": "TQ12 3BQ",
+      "url": "https://www.kingsteigntonchurch.org.uk/welcome.htm",
+      "latlon": [
+        50.54564,
+        -3.59569
+      ]
+    },
+    "harwell-village-hall": {
+      "id": "harwell-village-hall",
+      "name": "Harwell Village Hall",
+      "full_address": "Harwell Village Hall, High Street, Harwell, Didcot, OX11 0EX",
+      "city": "Didcot",
+      "postcode": "OX11 0EX",
+      "url": "https://www.harwellvillagehall.co.uk/the-orchard-hall/",
+      "latlon": [
+        51.59863,
+        -1.29268
+      ]
+    },
+    "wrington-memorial-hall": {
+      "id": "wrington-memorial-hall",
+      "name": "Wrington Memorial Hall",
+      "full_address": "Wrington Memorial Hall, Silver Street, Wrington, BS40 5QL",
+      "city": "Bristol / Weston-super-Mare",
+      "postcode": "BS40 5QL",
+      "url": "https://wringtonparishcouncil.gov.uk/local-information/village-halls/",
+      "latlon": [
+        51.36059,
+        -2.76058
       ]
     }
   },
