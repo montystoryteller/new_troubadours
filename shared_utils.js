@@ -1092,7 +1092,7 @@ function collectDatedEventsForVenue(vid) {
 function collectRecurringEventsForVenue(vid, from, to) {
   const out = [];
   const sources = [
-    { list: eventsData.events || [], type: "club", category: "story" },
+    { list: eventsData.clubs || [], type: "club", category: "story" },
     { list: eventsData.folkNights || [], type: "folk", category: "folk" },
     {
       list: eventsData.irishSessions || [],
@@ -2052,7 +2052,7 @@ const CLUB_REFERENCING_EVENT_KEYS = [
  * @param {object} eventsData
  */
 function applyClubInheritance(eventsData) {
-  const clubs = eventsData?.events || [];
+  const clubs = eventsData?.clubs || [];
   if (!clubs.length) return;
 
   const clubsById = {};

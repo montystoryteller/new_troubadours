@@ -1227,10 +1227,10 @@
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202609232325"></script>
-    <script src="recurrence-engine.js?v=202609232325"></script>
-    <script src="shared_utils.js?v=202609232341"></script>
-    <script src="shared_guessers.js?v=202609232325"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202609240005"></script>
+    <script src="recurrence-engine.js?v=202609240005"></script>
+    <script src="shared_utils.js?v=202609240005"></script>
+    <script src="shared_guessers.js?v=202609240005"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
         let performersLookup = {};
@@ -3381,7 +3381,7 @@
                 batch.poetryEvents.push(record);
             } else {
                 if (document.getElementById("ev-special").checked) record.isSpecial = true;
-                batch.events.push(record);
+                batch.clubs.push(record);
             }
 
             refreshBatchSummary();
@@ -4428,7 +4428,7 @@
                     remove: () => delete updatedVenues[id], previewData: updatedVenues[id],
                     edit: () => { switchToTab("venue"); venueMatcher.edit(updatedVenues[id], "lookup"); },
                 })),
-                ...batch.events.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.events.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("events", i) }] })),
+                ...batch.clubs.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.clubs.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("clubs", i) }] })),
                 ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("musicEvents", i) }] })),
                 ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("poetryEvents", i) }] })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1), previewData: t.record })),
@@ -4556,7 +4556,7 @@
             if (Object.keys(updatedPerformers).length) out.updatedPerformers = updatedPerformers;
             if (Object.keys(newVenues).length) out.newVenues = newVenues;
             if (Object.keys(updatedVenues).length) out.updatedVenues = updatedVenues;
-            if (batch.events.length) out.specificEvents = batch.events;
+            if (batch.clubs.length) out.specificEvents = batch.clubs;
             if (batch.musicEvents.length) out.musicEvents = batch.musicEvents;
             if (batch.poetryEvents.length) out.poetryEvents = batch.poetryEvents;
             if (batch.tours.length) out.tours = Object.fromEntries(batch.tours.map(t => [t.key, t.record]));
@@ -5311,7 +5311,7 @@
         function collectUsedClubIds(data) {
             const ids = new Set();
             const add = v => { if (typeof v === "string" && v.trim()) ids.add(v.trim()); };
-            (data.events || []).forEach(e => add(e.club));
+            (data.clubs || []).forEach(e => add(e.club));
             (data.specificEvents || []).forEach(e => add(e.club));
             (data.musicEvents || []).forEach(e => add(e.club));
             (data.poetryEvents || []).forEach(e => add(e.club));
@@ -6365,7 +6365,7 @@
                 venuesLookup = result.venuesLookup;
                 podcastsLookup = Object.fromEntries((result.eventsData.podcasts || []).map(p => [p.podcast_id, p]));
                 festivalsLookup = result.eventsData.festivals || {};
-                clubIds = [...new Set((result.eventsData.events || []).map(e => e.club).filter(Boolean))];
+                clubIds = [...new Set((result.eventsData.clubs || []).map(e => e.club).filter(Boolean))];
                 existingTourKeys = new Set(Object.keys(result.toursLookup || {}));
                 existingShowKeys = new Set(Object.keys(result.eventsData.repertoire_shows || {}));
                 repertoireShowsLookup = result.eventsData.repertoire_shows || {};

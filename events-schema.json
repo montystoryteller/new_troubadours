@@ -28,7 +28,7 @@
         "$ref": "#/$defs/tour"
       }
     },
-    "events": {
+    "clubs": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/recurringClubEvent"

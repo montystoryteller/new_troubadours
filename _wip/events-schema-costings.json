@@ -8,7 +8,7 @@
     "festivals":        { "type": "object", "additionalProperties": { "$ref": "#/$defs/festival" } },
     "repertoire_shows":  { "type": "object", "additionalProperties": { "$ref": "#/$defs/repertoireShow" } },
     "tours":            { "type": "object", "additionalProperties": { "$ref": "#/$defs/tour" } },
-    "events":           { "type": "array", "items": { "$ref": "#/$defs/recurringClubEvent" } },
+    "clubs":           { "type": "array", "items": { "$ref": "#/$defs/recurringClubEvent" } },
     "podcasts":         { "type": "array", "items": { "$ref": "#/$defs/podcast" } },
     "workshops":        { "type": "array", "items": { "$ref": "#/$defs/workshop" } },
     "specificEvents":   { "type": "array", "items": { "$ref": "#/$defs/specificEvent" } },

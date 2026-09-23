@@ -4527,99 +4527,99 @@
         }
       ]
     },
-        "sound-of-the-sirens-sound-of-the-sirens": {
-          "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
-          "tour_dates": [
-            {
-              "date": "23/10/2026",
-              "venue_id": "holy-trinity-church-westward-ho",
-              "time": "7.30-9:pm",
-              "price": "Advance: £10/U16 £7.50;  on the door: £12.50/U16 £10",
-              "ticket_url": "https://beaford.org/events/sirenswwho",
-              "promoter_id": "Beaford",
-              "isSpecial": true
-            },
-            {
-              "date": "24/10/2026",
-              "venue_id": "bluebird-cafe-wedmore",
-              "ticket_url": "https://www.bluebirdcafewedmore.com/eventsandshows",
-              "isSpecial": true
-            },
-            {
-              "date": "30/10/2026",
-              "venue_id": "village-hall-woolacombe",
-              "time": "Doors 7pm, show 7.30-9:pm",
-              "price": "Advance £10 /U16s £5 / On the day £12.50/U16s £7.50",
-              "ticket_url": "https://beaford.org/events/sirenswooly",
-              "promoter_id": "beaford",
-              "isSpecial": true
-            },
-            {
-              "date": "07/11/2026",
-              "venue_id": "the-beehive-honiton",
-              "time": "7.30pm",
-              "price": "General Admission £18. All tickets includes a £2 booking fee.",
-              "ticket_url": "https://thebeehive.savoysystems.co.uk/TheBeehive.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_1529.TcsWebTab_3773.TcsProgramme_1491487",
-              "isSpecial": true,
-              "event_flyers": [
-                "2026_11_07_sound_sirens_beehive.jpg",
-                "2026_11_07_sound_sirens_beehive2.jpg"
-              ]
-            },
-            {
-              "date": "13/11/2026",
-              "venue_id": "st-michael-s-church-kingsteignton",
-              "time": "7pm",
-              "price": "£20.00 + £1.68 booking fee",
-              "ticket_url": "https://www.ticketsource.com/soundofthesirens",
-              "isSpecial": true,
-              "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg"
-            },
-            {
-              "date": "14/11/2026",
-              "venue_id": "railway-inn-winchester",
-              "ticket_url": "https://ffsfest.com/tickets/",
-              "isSpecial": true
-            },
-            {
-              "date": "20/11/2026",
-              "venue_id": "harwell-village-hall",
-              "time": "Doors: 7:00pm, start: 7:40pm",
-              "price": "£18.00 (+ £1.80) / U16 £9.00 (+ £0.90)",
-              "ticket_url": "https://wegottickets.com/f/15126",
-              "isSpecial": true
-            },
-            {
-              "date": "21/11/2026",
-              "venue_id": "wrington-memorial-hall",
-              "time": "6.30-11pm",
-              "price": "£16.65-£25",
-              "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
-              "isSpecial": true
-            },
-            {
-              "date": "28/11/2026",
-              "venue_id": "the-pit-at-newstead-nottinghamshire",
-              "time": "7.30pm",
-              "price": "£14.30",
-              "ticket_url": "https://www.ents24.com/newstead-events/the-pit-at-newstead/sound-of-the-sirens/7475445",
-              "isSpecial": true
-            },
-            {
-              "date": "05/12/2026",
-              "venue_id": "the-fleece-bristol",
-              "time": "7pm",
-              "price": "£17",
-              "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
-              "isSpecial": true,
-              "event_flyer": "2026_12_05_gaz_sirens_fleece.webp"
-            }
-          ],
-          "name": "Sound of the Sirens",
-          "performer_id": "sound-of-the-sirens",
-          "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
-          "isMusic": true
+    "sound-of-the-sirens-sound-of-the-sirens": {
+      "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
+      "tour_dates": [
+        {
+          "date": "23/10/2026",
+          "venue_id": "holy-trinity-church-westward-ho",
+          "time": "7.30-9:pm",
+          "price": "Advance: £10/U16 £7.50;  on the door: £12.50/U16 £10",
+          "ticket_url": "https://beaford.org/events/sirenswwho",
+          "promoter_id": "Beaford",
+          "isSpecial": true
         },
+        {
+          "date": "24/10/2026",
+          "venue_id": "bluebird-cafe-wedmore",
+          "ticket_url": "https://www.bluebirdcafewedmore.com/eventsandshows",
+          "isSpecial": true
+        },
+        {
+          "date": "30/10/2026",
+          "venue_id": "village-hall-woolacombe",
+          "time": "Doors 7pm, show 7.30-9:pm",
+          "price": "Advance £10 /U16s £5 / On the day £12.50/U16s £7.50",
+          "ticket_url": "https://beaford.org/events/sirenswooly",
+          "promoter_id": "beaford",
+          "isSpecial": true
+        },
+        {
+          "date": "07/11/2026",
+          "venue_id": "the-beehive-honiton",
+          "time": "7.30pm",
+          "price": "General Admission £18. All tickets includes a £2 booking fee.",
+          "ticket_url": "https://thebeehive.savoysystems.co.uk/TheBeehive.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_1529.TcsWebTab_3773.TcsProgramme_1491487",
+          "isSpecial": true,
+          "event_flyers": [
+            "2026_11_07_sound_sirens_beehive.jpg",
+            "2026_11_07_sound_sirens_beehive2.jpg"
+          ]
+        },
+        {
+          "date": "13/11/2026",
+          "venue_id": "st-michael-s-church-kingsteignton",
+          "time": "7pm",
+          "price": "£20.00 + £1.68 booking fee",
+          "ticket_url": "https://www.ticketsource.com/soundofthesirens",
+          "isSpecial": true,
+          "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg"
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "railway-inn-winchester",
+          "ticket_url": "https://ffsfest.com/tickets/",
+          "isSpecial": true
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "harwell-village-hall",
+          "time": "Doors: 7:00pm, start: 7:40pm",
+          "price": "£18.00 (+ £1.80) / U16 £9.00 (+ £0.90)",
+          "ticket_url": "https://wegottickets.com/f/15126",
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "wrington-memorial-hall",
+          "time": "6.30-11pm",
+          "price": "£16.65-£25",
+          "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
+          "isSpecial": true
+        },
+        {
+          "date": "28/11/2026",
+          "venue_id": "the-pit-at-newstead-nottinghamshire",
+          "time": "7.30pm",
+          "price": "£14.30",
+          "ticket_url": "https://www.ents24.com/newstead-events/the-pit-at-newstead/sound-of-the-sirens/7475445",
+          "isSpecial": true
+        },
+        {
+          "date": "05/12/2026",
+          "venue_id": "the-fleece-bristol",
+          "time": "7pm",
+          "price": "£17",
+          "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
+          "isSpecial": true,
+          "event_flyer": "2026_12_05_gaz_sirens_fleece.webp"
+        }
+      ],
+      "name": "Sound of the Sirens",
+      "performer_id": "sound-of-the-sirens",
+      "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
+      "isMusic": true
+    },
     "jess-silk-matt-johnson-dashboard-jesus-2026": {
       "name": "Jess Silk + Matt Johnson — The Dashboard Jesus Tour",
       "tour_name": "Dashboard Jesus Tour",
@@ -5191,7 +5191,7 @@
       ]
     }
   },
-  "events": [
+  "clubs": [
     {
       "name": "Word of Mouth storytelling club [lapsed?]",
       "schedule": "1st wednesday",
@@ -8309,6 +8309,24 @@
       "venue_id": "the-folk-preservation-society-teignmouth",
       "performer_id": "shane-ibbs",
       "eventId": "20260509-shane-ibbs-the-folk-preservation-society-teignmouth"
+    },
+    {
+      "name": "The Prophecy of Merlin [Mike O'Connor & Barbara Griggs]",
+      "showname": "The Prophecy of Merlin",
+      "date": "09/05/2026",
+      "time": "Doors 6.30pm, start 7pm",
+      "club": "forgingfantastical",
+      "price": "£7",
+      "description": "An hour of fast-moving oral storytelling, and achingly beautiful music. Set against real events, a fictitious, epic adventure story by Mike O'Connor and Barbara Griggs.\n\n\n\nThe year is 936. The Dargan a Verdhin (Prophecy of Merlin), an ancient and precious Cornish book, is an icon of Cornish nationhood. Stolen by Saxons, its message suppressed, it lies in a monastery at Exeter.But then Saxon King Athelstan, hungry for land, purged Exeter of the Cornish. At once Britons beyond the Tamar become refugees...Follow their path to freedom, secretly bearing a priceless treasure; beset by danger, but sustained by the land and its legends.\n\n\n\nShow also includes a talk about the real life events that inspired this epic",
+      "event_flyer": "2026_05_09_oconnor_prophecy_forgingfantaastical.png",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "lydiard-millicent-parish-hall",
+      "performer_ids": [
+        "mike-oconnor",
+        "barbara-griggs"
+      ],
+      "eventId": "20260509-mike-oconnor-avalon-archaeology"
     },
     {
       "name": "A Thousand Years of Story and Song [Dan Broadbent & Emily Fear]",
@@ -16295,12 +16313,24 @@
         -3.53118
       ]
     },
+    "lydiard-millicent-parish-hall": {
+      "id": "lydiard-millicent-parish-hall",
+      "name": "Lydiard Millicent Parish Hall",
+      "city": "Swindon",
+      "postcode": "SN5 3LS",
+      "full_address": "Lydiard Millicent Parish Hall, Church Place, Lydiard Millicent, SN5 3LS",
+      "url": "https://lydiardmillicentparishhall.org.uk/",
+      "latlon": [
+        51.57241,
+        -1.86781
+      ]
+    },
     "whiskers-newquay": {
       "id": "whiskers-newquay",
       "name": "Whiskers, Newquay",
       "city": "Newquay",
       "postcode": "TR7 1ER",
-      "full_address": "Whiskers, 5-7 Gover Lane, Newqua, TR7 1ER",
+      "full_address": "Whiskers, 5-7 Gover Lane, Newquay, TR7 1ER",
       "url": "https://www.whiskersnewquay.co.uk/",
       "latlon": [
         50.41371,
@@ -17854,6 +17884,12 @@
       "name": "Mike O'Connor",
       "url": "https://www.lyngham.co.uk/mike_oconnor.html",
       "bio": "Accomplished on the fiddle and accordion, Mike has a wealth of songs and stories.\n\n\n\nMike tells spell-binding stories, many with musical accompaniment, for both adult & schools audiences. His tales vary from 5 minute fireside tales to epics such as Return to Lyonesse, Tristan & Iseult, Imravoe, the Tales of the Holy Rood, & Loki. He is one of the few in the land capable of delivering such epic tales and sagas. He is the author of the best selling 'Cornish Folk Tales' published by History Press. In 2013, with Barbara Griggs he won a British Award for Storytelling Excellence for 'Return to Lyonesse'."
+    },
+    "barbara-griggs": {
+      "id": "barbara-griggs",
+      "name": "Barbara Griggs",
+      "url": "https://www.lyngham.co.uk/Mike&Barbara.html",
+      "bio": "Harpist. Frequent collaborator with Mike O'Connor."
     },
     "shane-ibbs": {
       "id": "shane-ibbs",

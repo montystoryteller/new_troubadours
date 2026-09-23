@@ -195,7 +195,7 @@ setCanonical("club");
 })();
 
 async function renderPage(data, clubId) {
-  const clubRecord = data.events.find((e) => e.club === clubId) || null;
+  const clubRecord = data.clubs.find((e) => e.club === clubId) || null;
 
   if (!clubRecord && !clubId) {
     // No club param — show a directory of all clubs
@@ -1314,7 +1314,7 @@ async function renderDirectory(data) {
     "Sunday",
   ];
 
-  const clubs = data.events.filter((e) => e.club);
+  const clubs = data.clubs.filter((e) => e.club);
 
   // ── Parse day and week from schedule string ──────────────────────────
   function clubDay(c) {

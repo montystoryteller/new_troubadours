@@ -512,7 +512,7 @@
                     const resp = await fetch('events_normalized.json');
                     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                     const data = await resp.json();
-                    const clubs = data.events || [];
+                    const clubs = data.clubs || [];
 
                     const today = new Date(); today.setHours(0, 0, 0, 0);
                     const todayEnd = new Date(today); todayEnd.setHours(23, 59, 59, 999);

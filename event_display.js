@@ -1081,7 +1081,7 @@ async function displayEvents(startDate, endDate) {
 
   // Process all recurring event types with one function
   await processRecurringEvents(
-    eventsData.events,
+    eventsData.clubs,
     "storyclub",
     startDate,
     endDate,
@@ -2477,7 +2477,7 @@ async function searchAllUpcoming() {
 
   // Search recurring events by type
   await searchRecurringEvents(
-    eventsData.events,
+    eventsData.clubs,
     "storyclub",
     searchTerm,
     today,
@@ -2986,7 +2986,7 @@ function refreshEventsData() {
   initNavFeedback();
 
   // Log event-guide-specific counts
-  console.log(`  - ${eventsData.events?.length || 0} recurring events`);
+  console.log(`  - ${eventsData.clubs?.length || 0} recurring events`);
   console.log(`  - ${eventsData.specificEvents?.length || 0} specific events`);
   console.log(`  - ${eventsData.musicEvents?.length || 0} music events`);
   console.log(`  - ${eventsData.poetryEvents?.length || 0} poetry events`);
@@ -3007,7 +3007,7 @@ function refreshEventsData() {
       missing.forEach((e) => console.warn(`  - ${e.name}: ${e.location}`));
     }
   };
-  checkMissing(eventsData.events, "recurring events");
+  checkMissing(eventsData.clubs, "recurring events");
   checkMissing(eventsData.specificEvents, "specific events");
   checkMissing(eventsData.musicEvents, "music events");
   checkMissing(eventsData.poetryEvents, "poetry events");
@@ -3261,7 +3261,7 @@ function collectNewlyAddedEvents(cutoff) {
   }
 
   // --- 1. Recurring events (storyclubs) ---
-  for (const ev of eventsData.events || []) {
+  for (const ev of eventsData.clubs || []) {
     if (!isNewlyAdded(ev, cutoff)) continue;
     const dates = parseSchedule(ev.schedule, today, sixMonths);
     const useDate = dates.length > 0 ? dates[0] : today;
@@ -3490,7 +3490,7 @@ function waitForDataThenCount() {
   if (
     eventsData !== null &&
     eventsData !== undefined &&
-    (eventsData.events || eventsData.specificEvents || eventsData.musicEvents)
+    (eventsData.clubs || eventsData.specificEvents || eventsData.musicEvents)
   ) {
     refreshNewEventsCounts();
   } else {

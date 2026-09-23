@@ -79,7 +79,7 @@ const PTYPE_COLOUR = Object.fromEntries(
 function classifyVenuePerformanceTypes(venueId) {
   const types = new Set();
 
-  (eventsData.events || []).forEach((e) => {
+  (eventsData.clubs || []).forEach((e) => {
     if (e.venue_id === venueId) types.add("story");
   });
   (eventsData.folkNights || []).forEach((e) => {
@@ -917,7 +917,7 @@ function renderVenue() {
   // base venue_id points elsewhere (and correctly excludes one whose base
   // venue_id is here but which actually alternates away half the time —
   // see the parity note rendered by renderRegularClub() below).
-  const regularClubs = (eventsData.events || []).filter((e) =>
+  const regularClubs = (eventsData.clubs || []).filter((e) =>
     couldBeAtVenue(e, venueId),
   );
   const folkNights = (eventsData.folkNights || []).filter((e) =>

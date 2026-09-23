@@ -505,7 +505,7 @@ async function loadFlyers() {
       if (eFlyers.length === 0) continue;
       const type = e.isMusic ? "music" : e.isPoetry ? "poetry" : defaultType;
       const clubRec = e.club
-        ? (data.events || []).find((c) => c.club === e.club)
+        ? (data.clubs || []).find((c) => c.club === e.club)
         : null;
       const dates = Array.isArray(e.date) ? e.date : [e.date];
       for (const dateStr of dates) {
@@ -703,7 +703,7 @@ async function loadFlyers() {
   const clubsWithUpcomingFlyer = new Set(
     items.filter((i) => !i.isPast && i.clubId).map((i) => i.clubId),
   );
-  for (const e of data.events || []) {
+  for (const e of data.clubs || []) {
     const flyer = e.club_flyer?.trim();
     if (!flyer || !e.club) continue;
     if (clubsWithUpcomingFlyer.has(e.club)) continue;
@@ -744,7 +744,7 @@ async function loadFlyers() {
   // pushed as a "story" card at that date rather than a "club" card —
   // see datedClubFlyerDateStr() above. Anything else is generic club
   // artwork, always shown, same as club_flyer's fallback.
-  for (const e of data.events || []) {
+  for (const e of data.clubs || []) {
     const extraFlyers = Array.isArray(e.club_flyers) ? e.club_flyers : [];
     if (!extraFlyers.length || !e.club) continue;
     const v = ven(e.venue_id);

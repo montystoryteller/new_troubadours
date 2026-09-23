@@ -559,7 +559,7 @@ function renderAllStats(data, venues, performers, tours) {
   const poetry = data.poetryEvents || [];
   const folkNights = data.folkNights || [];
   const sessions = data.irishSessions || [];
-  const events = (data.events || []).map((e) => {
+  const events = (data.clubs || []).map((e) => {
     // If schedule is an object, keep it an object but ensure string parameters don't break
     if (e.schedule && typeof e.schedule === "object") {
       // clone it or let it pass safely through string conversion protections
@@ -1019,7 +1019,7 @@ function renderAllStats(data, venues, performers, tours) {
       "",
       "All recurring story clubs",
       (panel) => {
-        const items = [...events]
+        const items = [...clubs]
           .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
           .map((e) => ({
             label: e.name,
@@ -2273,7 +2273,7 @@ function renderAllStats(data, venues, performers, tours) {
       const med = [...faces]
         .sort((a, b) => a - b)
         [Math.floor(faces.length / 2)].toFixed(2);
-      const unit = perShow ? "shows" : "events";
+      const unit = perShow ? "shows" : "clubs";
       parts.push(`avg £${avg} · median £${med} (${paid.length} paid ${unit})`);
     }
     if (free) parts.push(`${free} free`);
