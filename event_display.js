@@ -2558,6 +2558,16 @@ function showWeek(weeksAhead = 1) {
   targetWeekStart.setDate(targetWeekStart.getDate() + 7 * weeksAhead);
   const targetWeekEnd = getWeekEnd(targetWeekStart);
   updateDateInputs(targetWeekStart, targetWeekEnd);
+  // "Last Week" (weeksAhead < 0) shows events that are, by definition, all
+  // in the past — leaving "Hide past events" checked would hide the
+  // entire view. filterEvents() (called at the end of displayEvents() ->
+  // renderEventsList()) reads this checkbox's live DOM state, so setting
+  // it here before displayEvents() runs is enough; no separate re-filter
+  // call needed.
+  if (weeksAhead < 0) {
+    const hidePastEl = document.getElementById("hidePastEvents");
+    if (hidePastEl) hidePastEl.checked = false;
+  }
   displayEvents(targetWeekStart, targetWeekEnd);
   setActiveMode(
     weeksAhead > 0
