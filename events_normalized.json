@@ -120,7 +120,8 @@
           "date": "28/11/2026",
           "time": "13:00-14:30",
           "venue_id": "st-nicholas-priory-exeter",
-          "name": "Showcase of new work from up-and-coming storytellers",
+          "performer_ids": ["lara-mcclure", "danielle-free", "chris-adriaanse"],
+          "name": "Showcase of new work from up-and-coming storytellers (Lara McClure, Danielle Free & Chris Adriaanse)",
           "description": "Free tickets available for storytelling club organisers/storytelling venue promoters and we have limited budget to pay travel expenses, if this would make a big difference to your being able to attend - please contact Katy to reserve a spot.",
           "ticket_url": "https://artemis-storytelling.co.uk/tickets",
           "type": "showcase"
@@ -142,6 +143,7 @@
           "venue_id": "st-nicholas-priory-exeter",
           "name": "A Harper's Trade",
           "performer": "nick-hennessey",
+          "description": "There was a time when ‘to harp’ meant to speak, when harpers travelled the length and breadth of the country telling stories and singing songs. As they travelled, the stories and the songs they carried with them were shaped by the places they went, by the roads they took and by the wind that blew them.\n\n\n\nOver the last 18 years Nick been developing a vibrant and exciting style of performance harpers of old would recognize. Drawing deeply from the wellspring of traditional sources, this performance of song and story re-interprets the material for a modern 21st century, with powerful and evocative language and an innovative style of harp playing.",
           "type": "storytelling_shows",
           "ticket_url": ""
         }
@@ -18367,6 +18369,12 @@
       "name": "Gauri Raje",
       "url": "https://www.silentsounds.in/",
       "bio": "Gauri Raje is a storyteller working with adolescents and adults from multilingual, multicultural and disadvantaged backgrounds. She tells folk tales, fairy tales, epics and myths and autobiographical storytelling. She tells stories in different languages including Urdu, Hindi, English and Gujarati."
+    },
+    "danielle-free": {
+      "id": "danielle-free",
+      "name": "Danielle Free",
+      "url": "https://daniellefree.co.uk/",
+      "bio": "Danielle is a traditional performance oral storyteller who has a love for weird folk, fairy, and wonder tales, and sassy animal stories. Though, her absolute love is for finding the stories of overlooked historical women (of which there are many...) so she can lend them her tongue so they can speak once again, to tell of their loves, travels, fates, horrors, and dreams. Danielle weaves together history and folklore with a contemporary twist."
     },
     "joshua-crisp": {
       "id": "joshua-crisp",
