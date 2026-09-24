@@ -1,6 +1,6 @@
 {
   "promoters": {
-    "artsreach":{
+    "artsreach": {
       "promoter_id": "artsreach",
       "name": "Artsreach",
       "description": "Artsreach aims to enrich and positively impact the lives of people in Dorset by connecting and empowering rural communities through creative and cultural experiences, by:\n\n\n\n- partnering with a network of volunteers and empower them to programme, promote and present cultural activities in their community venues;\n\n\n\n-presenting a diverse range of high-quality cultural activities which support the health and well-being of the rural community;\n\n\n\nstimulating community development through engagement with cultural activities and support vital community resources such as village halls;\n\n\n\n-supporting a diverse range of artists, companies and creative practitioners and provide opportunities for artist's development;\n\n\n\nengaging with public bodies, business, education and community organisations and work in partnership to develop a thriving cultural offer across rural Dorset;\n\n\n\nbuilding a sustainable and resilient organisation for the future.",
@@ -2429,6 +2429,50 @@
     }
   },
   "tours": {
+    "adderstone-changelings-hildegardeners": {
+      "tour_name": "Norn Iron Tour October 2026",
+      "tour_dates": [
+        {
+          "date": "17/10/2026",
+          "venue_id": "the-braid-ballymena",
+          "time": "Doors 7.30pm, 8pm start",
+          "price": "£11.50 (+ £1.50 fees)",
+          "ticket_url": "https://thebraid.ticketsolve.com/ticketbooth/shows/1173674535",
+          "isSpecial": true,
+          "title": "CHANGELINGS"
+        },
+        {
+          "date": "18/10/2026",
+          "venue_id": "yarn-ballycastle",
+          "time": "Doors 6.30 pm, start 7pm",
+          "price": "£14.00 (+ £0.35)",
+          "ticket_url": "https://www.yarnballycastle.com/event-details/hildegardeners-a-storytelling-cabaret-performance-by-adderstone",
+          "isSpecial": true,
+          "title": "HILDEGARDENers"
+        },
+        {
+          "date": "22/10/2026",
+          "venue_id": "the-duncairn-belfast",
+          "time": "7.30-9pm",
+          "price": "Pay what you cam £2-£10 (+ 10%)",
+          "ticket_url": "https://theduncairn.ticketsolve.com/ticketbooth/shows/1173692375",
+          "isSpecial": true,
+          "title": "CHANGELINGS"
+        },
+        {
+          "date": "23/10/2026",
+          "venue_id": "the-lobster-pot-strangford",
+          "isSpecial": true,
+          "isMusic": true,
+          "title": "Songs at The Lobster Pot"
+        }
+      ],
+      "name": "CHANGELINGS / HILDEGARDeners",
+      "performer_id": "adderstone",
+      "tour_description": "Bringing 2 shows and original songs:\n\n\n\nSat 17 - CHANGELINGS at The Braid, Ballymena || Sun 18 - HILDEGARDeners at YARN, Ballycastle Thurs 22 || CHANGELINGS at The Duncairn, Belfast || Fri 23 - Songs at The Lobster Pot.\n\n\n\n- CHANGELINGS: The tale of a mother, a daughter, and a retired climate goddess — where do the changelings really go at night? Up on a high windy mountainside sits a cailleach, a hag whose days as a powerful goddess are long behind her (if they were ever quite as impressive as she remembers...) And a retired climate goddess needs a hobby - so why not take up kidnapping? But the only ones she seems to be able to reach are the sensitive ones, the ones who find it hard to ignore her nighttime calls. The changelings. Approximate Run Time - 1 hour 45 Minutes  There is nothing in the show that is unsuitable for children, but it is aimed at adults, so we would recommend age 13+.\n\n\n\n- HILDEGARDeners: Hildegard of Bingen: a visionary, a composer, a scientist, a healer, a proto-ecologist, a rebel. Inventor of 'greening power' and bane of the corrupt. Not what you'd expect from a 12th-century nun with migraines. In this storytelling performance, threaded with songs, illuminations, just 17 quizzes, and general good craic, Adderstone takes you inside Hildegard's incredible life and invites you to join her legacy and become a Hildegardener! 90 minutes in length, with a short interval.",
+      "touring_event_flyer": "tour_adderstones_norn_iron_oct_2026.jpg",
+      "isSpecial": true
+    },
     "blabbermouth-storytelling-midwinter-a-ghost-story": {
       "tour_name": "Midwinter — A Ghost Story (Winter 2026)",
       "tour_dates": [
@@ -10114,20 +10158,20 @@
       "isSpecial": true,
       "eventId": "20260927-dave-brookes-fox-grapes-nottingham"
     },
-        {
-          "name": "The Giant Who Had No Heart In His Body: tales for our times [Wonder Night Cafe]",
-          "showname": "The Giant Who Had No Heart In His Body: tales for our times",
-          "date": "30/09/2026",
-          "venue_id": "star-anise-cafe-stroud",
-          "performer_id": "hannah-moore",
-          "eventId": "20260930-hannah-moore-star-anise-cafe-stroud",
-          "date_added": "24/09/2026",
-          "time": "7:30-9:30pm",
-          "promoter_id": "wondernightcafe",
-          "price": "£13 / £10 inc drink (pay on the door)",
-          "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
-          "isSpecial": true
-        },
+    {
+      "name": "The Giant Who Had No Heart In His Body: tales for our times [Wonder Night Cafe]",
+      "showname": "The Giant Who Had No Heart In His Body: tales for our times",
+      "date": "30/09/2026",
+      "venue_id": "star-anise-cafe-stroud",
+      "performer_id": "hannah-moore",
+      "eventId": "20260930-hannah-moore-star-anise-cafe-stroud",
+      "date_added": "24/09/2026",
+      "time": "7:30-9:30pm",
+      "promoter_id": "wondernightcafe",
+      "price": "£13 / £10 inc drink (pay on the door)",
+      "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+      "isSpecial": true
+    },
     {
       "name": "The Grandfather's Harp [Stacey Blythe]",
       "showname": "The Grandfather's Harp",
@@ -10520,7 +10564,10 @@
       "showname": "Deathly & Dastardly Tales for Halloween",
       "date": "28/19/2026",
       "venue_id": "star-anise-cafe-stroud",
-      "performer_ids": ["fiona-eadie", "hannah-moore"],
+      "performer_ids": [
+        "fiona-eadie",
+        "hannah-moore"
+      ],
       "eventId": "20261028-hannah-moore-star-anise-cafe-stroud",
       "date_added": "24/09/2026",
       "time": "7:30-9:30pm",
@@ -10730,24 +10777,24 @@
       "age_rating": "Adults only",
       "eventId": "20261121-marion-leeper-rectory-cottages-bletchley"
     },
-        {
-          "name": "Snakes & Skins [Wonder Night Cafe]",
-          "showname": "Snakes & Skins",
-          "date": "25/11/2026",
-          "venue_id": "star-anise-cafe-stroud",
-          "performer_ids": [
-            "bronia-evers",
-            "hannah-moore"
-          ],
-          "eventId": "20261125-hannah-moore-star-anise-cafe-stroud",
-          "date_added": "24/09/2026",
-          "description": "With Bronia Evers and her wondrous Crankie.",
-          "time": "7:30-9:30pm",
-          "promoter_id": "wondernightcafe",
-          "price": "£13 / £10 inc drink (pay on the door)",
-          "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
-          "isSpecial": true
-        },
+    {
+      "name": "Snakes & Skins [Wonder Night Cafe]",
+      "showname": "Snakes & Skins",
+      "date": "25/11/2026",
+      "venue_id": "star-anise-cafe-stroud",
+      "performer_ids": [
+        "bronia-evers",
+        "hannah-moore"
+      ],
+      "eventId": "20261125-hannah-moore-star-anise-cafe-stroud",
+      "date_added": "24/09/2026",
+      "description": "With Bronia Evers and her wondrous Crankie.",
+      "time": "7:30-9:30pm",
+      "promoter_id": "wondernightcafe",
+      "price": "£13 / £10 inc drink (pay on the door)",
+      "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+      "isSpecial": true
+    },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
       "showname": "Midwinter Open Tellers' Night [Feast of Fools]",
@@ -11762,6 +11809,58 @@
       "latlon": [
         52.25956,
         -7.11108
+      ]
+    },
+    "the-braid-ballymena": {
+      "id": "the-braid-ballymena",
+      "name": "The Braid, Ballymena",
+      "full_address": "The Braid Arts Centre, 1-29 Bridge Street, Ballymena, County Antrim, Northern Ireland, BT43 5EJ",
+      "city": "Ballymeena",
+      "postcode": "BT43 5EJ",
+      "url": "https://www.facebook.com/thebraidartscentre",
+      "description": "Named after the river that runs through Ballymena, the Braid weaves together history, arts and culture alongside contemporary conference, tourism and civic centre.\n\n\n\nhttps://thebraid.ticketsolve.com/ticketbooth/shows",
+      "latlon": [
+        54.86379,
+        -6.27671
+      ]
+    },
+    "yarn-ballycastle": {
+      "id": "yarn-ballycastle",
+      "name": "YARN, Ballycastle",
+      "full_address": "Yarn, 24-26, Ann St, Ballycastle, Northern Ireland, BT54 6AD",
+      "city": "Ballycastle",
+      "postcode": "BT54 6AD",
+      "url": "https://www.yarnballycastle.com/",
+      "description": "Yarn is a creative events space and boutique accommodation on Northern Ireland’s north coast, bringing together food, creativity and nature. It’s a place to stay, connect and explore ideas across multiple forms.",
+      "latlon": [
+        55.20198,
+        -6.24868
+      ]
+    },
+    "the-duncairn-belfast": {
+      "id": "the-duncairn-belfast",
+      "name": "The Duncairn, Belfast",
+      "full_address": "The Duncairn, Duncairn Avenue, Belfast, County Antrim, Northern Ireland, BT14 6BP",
+      "city": "Belfast",
+      "postcode": "BT14 6BP",
+      "url": "https://www.theduncairn.com/",
+      "description": "Shared space arts facility in North Belfast, showcasing, supporting & developing the work of young emerging local artists.",
+      "latlon": [
+        54.61255,
+        -5.93663
+      ]
+    },
+    "the-lobster-pot-strangford": {
+      "id": "the-lobster-pot-strangford",
+      "name": "The Lobster Pot, Strangford",
+      "full_address": "The Lobster Pot, 7-11, The Square, Strangford, Downpatrick, Northern Ireland, BT30 7ND",
+      "city": "Downpatrick",
+      "postcode": "BT30 7ND",
+      "url": "https://www.facebook.com/lobsterpotstrangford/",
+      "description": "Seafood Restaurant in Strangford, Downpatrick, where seafood lovers indulge in delicious dishes like seafood chowder, scampi, and fresh lobster. Enjoy our cozy beer garden and don't miss out on our famous pecan pie.",
+      "latlon": [
+        54.3709,
+        -5.55619
       ]
     },
     "rougemont-room-exeter": {
@@ -17797,6 +17896,14 @@
       "name": "Mark Fraser",
       "url": "",
       "bio": "Mark Fraser is an itinerant storyteller, traversing the land with his original tales and weird stories. Join him for a selection of the odd, ghastly and vaguely unsettling tales from his own brain and around the world. A dark hour of devilish deeds and strange characters, just perfect for a dark winter's evening. A writer, an artist and the master of the bizarre story, Mark brings twenty years of storytelling experience to Wonder Monger at Cambridge Junction."
+    },
+    "adderstone": {
+      "id": "adderstone",
+      "name": "Adderstone",
+      "facebook": "adderstone.duo",
+      "instagram": "adderstone.duo",
+      "youtube": "https://www.youtube.com/@Adderstone",
+      "bio": "Looking through an adderstone, you see life differently. Leftfield folk & music-infused storytelling. Storyteller-musicians. Cath Heinemeyer & Gemma McDermott, York."
     },
     "sheema-mukherjee": {
       "id": "sheema-mukherjee",
