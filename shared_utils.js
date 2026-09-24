@@ -777,9 +777,11 @@ function renderEventRow(container, entry, isPast, options = {}) {
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
-    if (e.isMusic) {
+    // musicEvents/poetryEvents are implicitly music/poetry even without an
+    // explicit flag on the record (schema default), so trust entry.type too.
+    if (e.isMusic || entry.type === "music") {
       badges.appendChild(makeBadge("badge-music", "Music"));
-    } else if (e.isPoetry) {
+    } else if (e.isPoetry || entry.type === "poetry") {
       badges.appendChild(makeBadge("badge-poetry", "Poetry"));
     } else {
       badges.appendChild(makeBadge("badge-special", "Story show"));
@@ -975,7 +977,14 @@ function renderEventRow(container, entry, isPast, options = {}) {
 function collectTourDatesForVenue(vid) {
   const tourDatesHere = [];
   Object.entries(toursLookup).forEach(([tourId, tour]) => {
-    (tour.tour_dates || []).forEach((td) => {
+    // A tour_dates entry's .date can be an array — several nights at one
+    // venue on a single stop (e.g. ventnor-arts-club: ["04/12/2026",
+    // "05/12/2026"]) — see events-schema.json → dateOrDates. Expand those
+    // into one entry per date FIRST: parseDateString() downstream in
+    // collectDatedEventsForVenue() rejects an array outright, so without
+    // this a multi-night stop is silently dropped instead of shown once
+    // per date.
+    expandDateOrDates(tour.tour_dates).forEach((td) => {
       if (td.venue_id === vid) {
         tourDatesHere.push({ tour, tourId, tourDate: td });
       }
@@ -987,7 +996,9 @@ function collectTourDatesForVenue(vid) {
 function collectShowDatesForVenue(vid) {
   const showDatesHere = [];
   Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
-    (ts.show_dates || []).forEach((sd) => {
+    // Same dateOrDates shorthand as tour_dates above — expand before
+    // filtering by venue.
+    expandDateOrDates(ts.show_dates).forEach((sd) => {
       if (sd.venue_id === vid) {
         showDatesHere.push({ ts, tsId, showDate: sd });
       }
@@ -1009,14 +1020,17 @@ function collectShowDatesForVenue(vid) {
  * @returns {{type: string, date: Date, data: object, category: string}[]}
  */
 function collectDatedEventsForVenue(vid) {
-  const specificEvents = (eventsData.specificEvents || []).filter(
-    (e) => e.venue_id === vid,
+  // specificEvents/musicEvents/poetryEvents share the same dateOrDates
+  // shorthand as tour_dates/show_dates above — expandDateOrDates() first,
+  // same reasoning as collectTourDatesForVenue()/collectShowDatesForVenue().
+  const specificEvents = expandDateOrDates(
+    (eventsData.specificEvents || []).filter((e) => e.venue_id === vid),
   );
-  const musicEvents = (eventsData.musicEvents || []).filter(
-    (e) => e.venue_id === vid,
+  const musicEvents = expandDateOrDates(
+    (eventsData.musicEvents || []).filter((e) => e.venue_id === vid),
   );
-  const poetryEvents = (eventsData.poetryEvents || []).filter(
-    (e) => e.venue_id === vid,
+  const poetryEvents = expandDateOrDates(
+    (eventsData.poetryEvents || []).filter((e) => e.venue_id === vid),
   );
   const tourDatesHere = collectTourDatesForVenue(vid);
   const showDatesHere = collectShowDatesForVenue(vid);
@@ -1050,7 +1064,14 @@ function collectDatedEventsForVenue(vid) {
       // Repertoire-derived synthetic tours set isMusic/isPoetry: false, so
       // this correctly falls through to "story" for those, same as a
       // genuine storytelling tour.
-      category: t.tour.isMusic ? "music" : t.tour.isPoetry ? "poetry" : "story",
+      // A tourDate can also carry its own isMusic (see events-schema.json →
+      // tourDate.isMusic), e.g. one music night on an otherwise-story tour.
+      category:
+        t.tour.isMusic || t.tourDate.isMusic
+          ? "music"
+          : t.tour.isPoetry
+            ? "poetry"
+            : "story",
     })),
     ...showDatesHere.map((s) => ({
       type: "show",
@@ -1058,7 +1079,10 @@ function collectDatedEventsForVenue(vid) {
       data: s,
       // Story walks stay in the "story" scope (not a separate opt-in
       // category) — entry.data.ts.isStoryWalk drives the badge, not this.
-      category: "story",
+      // A repertoire show can optionally set isMusic / isPoetry on its own
+      // record; classifyPerformanceType() falls back to "story" when
+      // neither is set, so existing data is unaffected.
+      category: classifyPerformanceType(s.ts),
     })),
     ...festivalsHere.map(([fid, f]) => ({
       type: "festival",
@@ -1958,6 +1982,8 @@ const TOUR_REPERTOIRE_INHERITABLE_FIELDS = [
   "performer_ids",
   "video_trailer",
   "touring_event_flyer",
+  "isMusic",
+  "isPoetry",
 ];
 
 /**
@@ -2506,9 +2532,20 @@ async function forEachDateInRange(items, startDate, endDate, label, callback) {
  * @param {object[]|null|undefined} tourDates - Raw tour_dates array.
  * @returns {object[]} Flat array with one single-date entry per occurrence.
  */
-function expandTourDates(tourDates) {
+/**
+ * Generic version of the above: expands ANY array of `dateOrDates`-shaped
+ * items (see events-schema.json → $defs.dateOrDates), not just tour_dates —
+ * only ever looks at `item.date`, so it works identically for
+ * repertoire_shows[].show_dates, specificEvents/musicEvents/poetryEvents,
+ * or anything else with the same shape. `expandTourDates` below is kept as
+ * a same-behaviour alias so existing callers (e.g. tour_guide.js) don't
+ * need to change; new code should call this directly.
+ * @param {object[]|null|undefined} items - Raw array of date-bearing records.
+ * @returns {object[]} Flat array with one single-date entry per occurrence.
+ */
+function expandDateOrDates(items) {
   const expanded = [];
-  for (const item of tourDates ?? []) {
+  for (const item of items ?? []) {
     if (!item.date) {
       expanded.push(item); // keep as-is; downstream code already warns on missing date
       continue;
@@ -2522,6 +2559,10 @@ function expandTourDates(tourDates) {
   }
   return expanded;
 }
+
+// @deprecated — same function under its original, tour-specific name.
+// Use expandDateOrDates() in new code.
+const expandTourDates = expandDateOrDates;
 
 // ---------------------------------------------------------------------------
 // Performance type classification (story / music / poetry / troupe)
@@ -2559,6 +2600,55 @@ function classifyPerformanceType(entity) {
   if (entity && entity.isMusic) return "music";
   if (entity && entity.isPoetry) return "poetry";
   return "story";
+}
+
+/**
+ * Maps an entry's .category (as tagged by collectDatedEventsForVenue() /
+ * collectRecurringEventsForVenue(): "story" | "music" | "poetry" | "folk")
+ * onto the three story/music/poetry filter buckets. Folk nights and Irish
+ * sessions are live music, so "folk" folds into "music" here.
+ * @param {string} category
+ * @returns {"story"|"music"|"poetry"}
+ */
+function ptypeForCategory(category) {
+  return category === "folk" ? "music" : category || "story";
+}
+
+/**
+ * Read a saved set of ticked checkbox keys from localStorage — the
+ * persistence half of a "remember my checkboxes" control. Returns a fresh
+ * Set. With nothing saved yet (first visit), unreadable data, or storage
+ * being unavailable (private mode), every key in `allKeys` is ticked.
+ * A saved EMPTY selection is respected (the visitor really did untick
+ * everything); keys no longer in `allKeys` are dropped.
+ * @param {string} storageKey
+ * @param {string[]} allKeys - every valid key, i.e. the "all ticked" default
+ * @returns {Set<string>}
+ */
+function loadSavedKeySet(storageKey, allKeys) {
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw === null) return new Set(allKeys);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return new Set(allKeys);
+    return new Set(parsed.filter((k) => allKeys.includes(k)));
+  } catch (e) {
+    return new Set(allKeys);
+  }
+}
+
+/**
+ * Persist a Set of ticked checkbox keys — counterpart to loadSavedKeySet().
+ * Silently does nothing if storage is unavailable or full.
+ * @param {string} storageKey
+ * @param {Set<string>|string[]} keys
+ */
+function saveKeySet(storageKey, keys) {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify([...keys]));
+  } catch (e) {
+    // Non-fatal: the filter still works, it just won't be remembered.
+  }
 }
 
 // ---------------------------------------------------------------------------

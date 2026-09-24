@@ -79,37 +79,22 @@ const PTYPE_COLOUR = Object.fromEntries(
 function classifyVenuePerformanceTypes(venueId) {
   const types = new Set();
 
-  (eventsData.clubs || []).forEach((e) => {
-    if (e.venue_id === venueId) types.add("story");
-  });
-  (eventsData.folkNights || []).forEach((e) => {
-    if (e.venue_id === venueId) types.add("music");
-  });
-  (eventsData.irishSessions || []).forEach((e) => {
-    if (e.venue_id === venueId) types.add("music");
-  });
+  // Recurring nights. couldBeAtVenue() rather than a plain venue_id match,
+  // so a night that alternates here by month parity still counts.
+  if ((eventsData.clubs || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("story");
+  if ((eventsData.folkNights || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("music");
+  if ((eventsData.irishSessions || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("music");
 
-  [
-    ...(eventsData.specificEvents || []),
-    ...(eventsData.musicEvents || []),
-    ...(eventsData.poetryEvents || []),
-  ].forEach((e) => {
-    if (e.venue_id !== venueId) return;
-    types.add(classifyPerformanceType(e));
-  });
-
-  Object.values(toursLookup).forEach((tour) => {
-    (tour.tour_dates || []).forEach((td) => {
-      if (td.venue_id !== venueId) return;
-      types.add(classifyPerformanceType(tour));
-    });
-  });
-
-  Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
-    (ts.show_dates || []).forEach((sd) => {
-      if (sd.venue_id === venueId) types.add("story");
-    });
-  });
+  // One-off dated events — the same collector the venue page itself lists
+  // from, so the directory badges and the page's act-type checkboxes can't
+  // disagree about what a venue hosts (tour dates, repertoire shows and
+  // festivals all included).
+  collectDatedEventsForVenue(venueId).forEach((e) =>
+    types.add(ptypeForCategory(e.category)),
+  );
 
   return types;
 }
@@ -927,75 +912,246 @@ function renderVenue() {
     couldBeAtVenue(e, venueId),
   );
 
-  // Regular clubs
-  if (regularClubs.length > 0) {
-    document.getElementById("regularClubsSection").style.display = "";
-    regularClubs.forEach((e) =>
-      renderRegularClub(
-        document.getElementById("regularClubsList"),
-        e,
-        "storyclub",
-        venueId,
-      ),
-    );
-  }
+  // Act-type filter (story / music / poetry checkboxes) — all ticked unless
+  // the visitor has saved a different selection.
+  venueActiveActTypes = loadSavedKeySet(
+    VENUE_ACT_FILTER_STORAGE_KEY,
+    PTYPE_DEFS.map((p) => p.key),
+  );
 
-  if (folkNights.length > 0) {
-    document.getElementById("folkNightsSection").style.display = "";
-    folkNights.forEach((e) =>
-      renderRegularClub(
-        document.getElementById("folkNightsList"),
-        e,
-        "folk",
-        venueId,
-      ),
-    );
-  }
-
-  if (irishSessions.length > 0) {
-    document.getElementById("irishSessionsSection").style.display = "";
-    irishSessions.forEach((e) =>
-      renderRegularClub(
-        document.getElementById("irishSessionsList"),
-        e,
-        "session",
-        venueId,
-      ),
-    );
-  }
-
-  // Sort specific + music + tour dates by date
   const today = getTodayMidnight();
-  const allDated = collectDatedEventsForVenue(venueId);
+  const venueActs = {
+    regularClubs,
+    folkNights,
+    irishSessions,
+    // Tours, repertoire shows, festivals and one-off events, sorted by date
+    allDated: collectDatedEventsForVenue(venueId),
+    today,
+  };
 
-  const upcoming = allDated.filter((e) => e.date >= today);
-  const past = allDated.filter((e) => e.date < today);
-
-  if (upcoming.length > 0) {
-    document.getElementById("upcomingSection").style.display = "";
-    upcoming.forEach((e) =>
-      renderEventRow(document.getElementById("upcomingList"), e, false),
-    );
-  }
-
-  if (past.length > 0) {
-    document.getElementById("pastSection").style.display = "";
-    // Show most recent first for past
-    [...past]
-      .reverse()
-      .forEach((e) =>
-        renderEventRow(document.getElementById("pastList"), e, true),
-      );
-  }
-
-  // Flyers gallery — current/upcoming in full colour, past greyed out
-  renderVenueFlyers(regularClubs, allDated, today);
+  renderActTypeFilter(venueActs);
+  renderVenueActs(venueActs);
 
   // Nearby venues
   renderNearbyVenues();
 
-  // Nearby events (next 7 days, across nearby venues)
+  // Nearby events (next 7 days, across nearby venues) — also respects the
+  // act-type checkboxes; see renderNearbyEventsList().
   renderNearbyEvents(today);
+}
+
+// ---------------------------------------------------------------------------
+// Act-type filter — story / music / poetry checkboxes for this venue's page
+// ---------------------------------------------------------------------------
+
+// One saved selection shared across every venue page (loadSavedKeySet() /
+// saveKeySet() in shared_utils.js), not one per venue — "I only care about
+// music" should carry from venue to venue.
+const VENUE_ACT_FILTER_STORAGE_KEY = "venueActTypeFilter";
+let venueActiveActTypes = new Set(PTYPE_DEFS.map((p) => p.key));
+
+function countActsByType({ regularClubs, folkNights, irishSessions, allDated }) {
+  const counts = Object.fromEntries(PTYPE_DEFS.map((p) => [p.key, 0]));
+  counts.story += regularClubs.length;
+  counts.music += folkNights.length + irishSessions.length;
+  allDated.forEach((e) => {
+    const t = ptypeForCategory(e.category);
+    if (t in counts) counts[t] += 1;
+  });
+  return counts;
+}
+
+function renderActTypeFilter(venueActs) {
+  const existing = document.getElementById("venueActFilter");
+  if (existing) existing.remove();
+
+  const counts = countActsByType(venueActs);
+  const totalHere = Object.values(counts).reduce((a, b) => a + b, 0);
+  // Nothing at this venue and no nearby events to filter either → no bar.
+  if (totalHere === 0 && getNearbyVenues().length === 0) return;
+
+  // The flyer gallery is itself filtered by act-type (see
+  // renderVenueFlyers()), so the bar belongs above it, not just above the
+  // event lists — anchor to the top of .left-col rather than any one
+  // section, so this doesn't silently drift out of place if the sections
+  // in venues.html get reordered again.
+  const leftCol = document.querySelector(".two-col-layout .left-col");
+  const anchor =
+    leftCol?.firstElementChild ||
+    document.getElementById("venueFlyersSection") ||
+    document.getElementById("regularClubsSection") ||
+    document.getElementById("upcomingSection");
+  if (!anchor || !anchor.parentNode) return;
+
+  const bar = document.createElement("div");
+  bar.id = "venueActFilter";
+  bar.className = "content-section venue-act-filter";
+
+  const row = document.createElement("div");
+  row.className = "venue-act-filter-row";
+
+  const heading = document.createElement("span");
+  heading.className = "venue-act-filter-label";
+  heading.textContent = "Show:";
+  row.appendChild(heading);
+
+  PTYPE_DEFS.forEach(({ key, label, colour }) => {
+    const wrap = document.createElement("label");
+    wrap.className = "venue-act-check";
+    if (counts[key] === 0) wrap.classList.add("venue-act-check-empty");
+    wrap.style.setProperty("--act-colour", colour);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = key;
+    input.checked = venueActiveActTypes.has(key);
+    input.addEventListener("change", () => {
+      if (input.checked) venueActiveActTypes.add(key);
+      else venueActiveActTypes.delete(key);
+      saveKeySet(VENUE_ACT_FILTER_STORAGE_KEY, venueActiveActTypes);
+      renderVenueActs(venueActs);
+      updateActFilterStatus(venueActs);
+    });
+    wrap.appendChild(input);
+    wrap.appendChild(document.createTextNode(label));
+
+    const count = document.createElement("span");
+    count.className = "venue-act-count";
+    count.textContent = counts[key];
+    wrap.appendChild(count);
+
+    row.appendChild(wrap);
+  });
+  bar.appendChild(row);
+
+  const status = document.createElement("div");
+  status.id = "venueActFilterStatus";
+  status.className = "venue-act-filter-status";
+  status.hidden = true;
+  bar.appendChild(status);
+
+  anchor.parentNode.insertBefore(bar, anchor);
+  updateActFilterStatus(venueActs);
+}
+
+// If the saved selection hides EVERYTHING this venue has, say so (with a
+// one-click way out) rather than leaving a page that looks empty.
+function updateActFilterStatus(venueActs) {
+  const status = document.getElementById("venueActFilterStatus");
+  if (!status) return;
+
+  const counts = countActsByType(venueActs);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const shown = PTYPE_DEFS.reduce(
+    (n, { key }) => n + (venueActiveActTypes.has(key) ? counts[key] : 0),
+    0,
+  );
+  const hidden = total - shown;
+
+  status.textContent = "";
+  if (hidden === 0 || shown > 0) {
+    status.hidden = true;
+    return;
+  }
+
+  status.hidden = false;
+  status.appendChild(
+    document.createTextNode(
+      `Nothing to show — ${hidden} ${hidden === 1 ? "item is" : "items are"} hidden by your selection. `,
+    ),
+  );
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "venue-act-filter-reset";
+  btn.textContent = "Show all";
+  btn.addEventListener("click", () => {
+    venueActiveActTypes = new Set(PTYPE_DEFS.map((p) => p.key));
+    saveKeySet(VENUE_ACT_FILTER_STORAGE_KEY, venueActiveActTypes);
+    document
+      .querySelectorAll("#venueActFilter input[type=checkbox]")
+      .forEach((cb) => (cb.checked = true));
+    renderVenueActs(venueActs);
+    updateActFilterStatus(venueActs);
+  });
+  status.appendChild(btn);
+}
+
+function fillRegularClubSection(sectionId, listId, items, type) {
+  const section = document.getElementById(sectionId);
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
+  section.style.display = items.length > 0 ? "" : "none";
+  items.forEach((e) => renderRegularClub(list, e, type, venueId));
+}
+
+function fillDatedSection(sectionId, listId, entries, isPast) {
+  const section = document.getElementById(sectionId);
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
+  section.style.display = entries.length > 0 ? "" : "none";
+  entries.forEach((e) => renderEventRow(list, e, isPast));
+}
+
+// (Re)builds every act-dependent section of the venue page from the
+// currently ticked types: regular nights, upcoming/past dated events, the
+// flyer gallery, and the nearby-events list. Safe to call repeatedly.
+function renderVenueActs({
+  regularClubs,
+  folkNights,
+  irishSessions,
+  allDated,
+  today,
+}) {
+  const on = venueActiveActTypes;
+
+  // Story clubs are "story"; folk nights and Irish sessions are "music"
+  // (same grouping as PTYPE_DEFS / ptypeForCategory()).
+  const clubsShown = on.has("story") ? regularClubs : [];
+  fillRegularClubSection(
+    "regularClubsSection",
+    "regularClubsList",
+    clubsShown,
+    "storyclub",
+  );
+  fillRegularClubSection(
+    "folkNightsSection",
+    "folkNightsList",
+    on.has("music") ? folkNights : [],
+    "folk",
+  );
+  fillRegularClubSection(
+    "irishSessionsSection",
+    "irishSessionsList",
+    on.has("music") ? irishSessions : [],
+    "session",
+  );
+
+  const visibleDated = allDated.filter((e) =>
+    on.has(ptypeForCategory(e.category)),
+  );
+  fillDatedSection(
+    "upcomingSection",
+    "upcomingList",
+    visibleDated.filter((e) => e.date >= today),
+    false,
+  );
+  // Most recent first for past
+  fillDatedSection(
+    "pastSection",
+    "pastList",
+    visibleDated.filter((e) => e.date < today).reverse(),
+    true,
+  );
+
+  // Flyers gallery — current/upcoming in full colour, past greyed out
+  renderVenueFlyers(clubsShown, visibleDated, today);
+
+  // Nearby events share the same checkboxes. (nearbyEventsToday is still
+  // null on the very first render; renderNearbyEvents() draws it then.)
+  if (nearbyEventsToday) {
+    const horizonSelect = document.getElementById("nearbyEventsHorizon");
+    renderNearbyEventsList(Number(horizonSelect.value));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1230,6 +1386,13 @@ function extractFlyersForEntry(entry) {
 function renderVenueFlyers(regularClubs, allDated, today) {
   const flyerMap = new Map();
 
+  // Re-runnable: wipe any previous render (the act-type checkboxes call
+  // this again on every change).
+  const flyersSection = document.getElementById("venueFlyersSection");
+  const list = document.getElementById("venueFlyersList");
+  flyersSection.style.display = "none";
+  list.innerHTML = "";
+
   function addFlyer(filename, basePath, date) {
     const key = `${basePath}${filename}`;
     const isPast = date ? date < today : false;
@@ -1275,8 +1438,7 @@ function renderVenueFlyers(regularClubs, allDated, today) {
     .sort((a, b) => (a.date || today) - (b.date || today));
   const past = items.filter((i) => i.isPast).sort((a, b) => b.date - a.date);
 
-  document.getElementById("venueFlyersSection").style.display = "";
-  const list = document.getElementById("venueFlyersList");
+  flyersSection.style.display = "";
 
   [...current, ...past].forEach((item) => {
     const src = `${item.basePath}${sanitizeFlyerPath(item.filename)}`;
@@ -1415,13 +1577,17 @@ function renderNearbyEventsList(days) {
         venue: v,
       })),
     ])
+    .filter((e) => venueActiveActTypes.has(ptypeForCategory(e.category)))
     .sort((a, b) => a.date - b.date)
     .slice(0, MAX_EVENTS);
 
   if (upcomingNearby.length === 0) {
     const empty = document.createElement("div");
     empty.className = "no-events";
-    empty.textContent = `No nearby events found in the next ${days} days.`;
+    empty.textContent =
+      venueActiveActTypes.size === PTYPE_DEFS.length
+        ? `No nearby events found in the next ${days} days.`
+        : `No nearby events of the selected types in the next ${days} days.`;
     list.appendChild(empty);
     return;
   }

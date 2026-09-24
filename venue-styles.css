@@ -128,6 +128,91 @@
    page's own nearby-events feature and storyclub.js's nearby-story
    feature now that renderEventRow() lives in shared_utils.js. */
 
+/* Act-type filter (story / music / poetry checkboxes) — see
+   renderActTypeFilter() in venues.js. Colour per type comes in via
+   --act-colour, set inline from PTYPE_DEFS. */
+
+.venue-act-filter {
+    padding: 12px 16px;
+}
+
+.venue-act-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+}
+
+.venue-act-filter-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #555;
+}
+
+.venue-act-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+
+.venue-act-check input {
+    accent-color: var(--act-colour, var(--theme-green));
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.venue-act-count {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: var(--act-colour, #555);
+    background: color-mix(in srgb, var(--act-colour, #999) 12%, white);
+    border: 1px solid color-mix(in srgb, var(--act-colour, #999) 35%, white);
+}
+
+/* Types this venue has nothing of stay tickable (they still govern the
+   nearby-events list) but read as quiet. */
+.venue-act-check-empty {
+    color: #999;
+}
+
+.venue-act-check-empty .venue-act-count {
+    color: #aaa;
+    background: #f5f5f5;
+    border-color: #e5e5e5;
+}
+
+/* Shown only when the saved selection hides everything at this venue */
+.venue-act-filter-status {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #777;
+}
+
+.venue-act-filter-status[hidden] {
+    display: none;
+}
+
+.venue-act-filter-reset {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 
 
 /* =============================================================
