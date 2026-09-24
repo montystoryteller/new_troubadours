@@ -2560,6 +2560,7 @@
           "time": "3-6pm",
           "price": "Free",
           "ticket_url": "https://www.facebook.com/events/1472990477638287?locale=en_GB",
+          "fb_event": 1472990477638287,
           "isSpecial": true
         },
         {
@@ -5307,7 +5308,7 @@
       "time": "7.30pm (Bar & Bookshop from 7pm)",
       "link": "https://stealingthunder.co.uk/storynights",
       "club": "stealingthunder",
-      "facebook": "https://www.facebook.com/thunderstealing",
+      "facebook": "thunderstealing",
       "venue_id": "brigsteer-village-hall-kendal"
     },
     {
@@ -5324,7 +5325,7 @@
       "name": "Ship Inn Storytelling, Exeter",
       "schedule": "1st thursday",
       "time": "7-9pm",
-      "facebook": "https://www.facebook.com/SuzanneArnoldWiseWoman",
+      "facebook": "SuzanneArnoldWiseWoman",
       "club": "shipinnstorytelling",
       "venue_id": "ship-inn-exeter"
     },
@@ -5356,7 +5357,7 @@
       "schedule": "last wednesday",
       "time": "7.30pm",
       "link": "https://www.thedukewilliammatlock.com/",
-      "facebook": "https://www.facebook.com/MatlockStorytellingCafe",
+      "facebook": "MatlockStorytellingCafe",
       "club": "matlock-story-club",
       "venue_id": "the-duke-william-matlock"
     },
@@ -5375,7 +5376,7 @@
       "name": "Exeter Story Club",
       "schedule": "4th wednesday",
       "time": "7-9pm",
-      "facebook": "https://www.facebook.com/ExeterStoryClub",
+      "facebook": "ExeterStoryClub",
       "club": "exeterSC",
       "venue_id": "rougemont-room-exeter"
     },
@@ -5384,6 +5385,7 @@
       "schedule": "3rd wednesday",
       "link": "https://www.birminghamstorytellingcafe.co.uk/",
       "facebook": "https://www.facebook.com/groups/BirminghamStorytellingcafe",
+      "facebook_group": "BirminghamStorytellingcafe",
       "club": "birminghamSCafe",
       "venue_id": "kitchen-garden-cafe-birmingham"
     },
@@ -5392,7 +5394,7 @@
       "schedule": "1st sunday",
       "time": "3-5pm",
       "link": "https://elephanttaleslondo.wixsite.com/elephant-tales",
-      "instagram": "https://www.instagram.com/elephant.tales.london/",
+      "instagram": "elephant.tales.london",
       "club": "elephanttales",
       "venue_id": "pullens-centre"
     },
@@ -5409,6 +5411,7 @@
       "schedule": "3rd wednesday",
       "time": "7.30-10pm",
       "facebook": "https://www.facebook.com/groups/beestontales",
+      "facebook_group": "beestontales",
       "club": "beestontales",
       "price": "£9 OTD; £7.50 (+ £0.50); £6 (+ £0.50) online",
       "tickets_url": "https://www.tickettailor.com/events/beestontales/",
@@ -5600,8 +5603,8 @@
       "name": "Ropetackle Storytellers",
       "schedule": "",
       "time": "",
-      "link": "https://www.instagram.com/ropetacklestorytellers/",
-      "facebook": "https://www.facebook.com/RopetackleStorytellers",
+      "link": "ropetacklestorytellers",
+      "facebook": "RopetackleStorytellers",
       "club": "ropetackle-storytellers",
       "venue_id": "ropetackle-arts-centre-shoreham"
     },
@@ -5610,7 +5613,7 @@
       "schedule": "",
       "time": "",
       "link": "",
-      "facebook": "https://www.instagram.com/jessie_wild_storyteller",
+      "facebook": "jessie_wild_storyteller",
       "club": "tell-tales-club",
       "venue_id": ""
     },
@@ -5666,6 +5669,7 @@
       "time": "7-9pm",
       "link": "https://tistales.org.uk/island-storytellers/",
       "facebook": "https://www.facebook.com/groups/islandstorytellers",
+      "facebook_group": "islandstorytellers",
       "club": "islandstorytellers",
       "venue_id": "fig-tree-shanklin"
     },
@@ -5881,6 +5885,7 @@
       "schedule": "2nd tuesday",
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/guesthousestorytellers",
+      "facebook_group": "guesthousestorytellers",
       "club": "guesthouseST",
       "exceptions": [
         "08/2026"
@@ -5921,6 +5926,7 @@
       "schedule": "1st thursday",
       "time": "8-10pm",
       "facebook": "https://www.facebook.com/groups/southamptonstories",
+      "facebook_group": "southamptonstories",
       "club": "southamptonSC",
       "venue_id": "guide-dog-pub-southampton"
     },
@@ -5928,7 +5934,6 @@
       "name": "Abergavenny and Beyond Zooming Storytelling Circle",
       "schedule": "4th monday",
       "time": "Link open at 6.45pm, stories from 7pm",
-      "facebook": "https://www.facebook.com/groups/southamptonstories",
       "club": "abergavennyandbeyond",
       "venue_id": "",
       "description": "A storytelling gathering, with a warm welcome to all with tales to tell, songs to sing, or simply coming to listen. Every 4th Monday of the month, with the link open from 18:45 and stories starting at 19:00 UK. If you aren't on the mailing list, message https://www.facebook.com/anne.lister.3 to join or for the zoom link (before Monday evening!)",
@@ -5939,6 +5944,7 @@
       "schedule": "3rd tuesday",
       "location": "",
       "facebook": "https://www.facebook.com/groups/sarumstoryclub",
+      "facebook_group": "sarumstoryclub",
       "club": "sarumSC",
       "geocode_missing": true
     },
@@ -6083,6 +6089,7 @@
       "name": "Much Wenlock, Salop - words at the edge",
       "schedule": "2nd monday",
       "facebook": "https://www.facebook.com/groups/wordsattheedge",
+      "facebook_group": "wordsattheedge",
       "club": "wordsattheedge",
       "venue_id": "town-hall-bishops-castle"
     },
@@ -6138,6 +6145,7 @@
       "time": "7-8.30pm",
       "venue_id": "climate-shop-cafe-aberystwyth",
       "facebook": "https://www.facebook.com/groups/aberfables",
+      "facebook_group": "aberfables",
       "club": "aberystwythfables"
     },
     {
@@ -6455,6 +6463,7 @@
       "date": "06/12/2025",
       "cost": "£40",
       "link": "https://www.facebook.com/ABitCrack",
+      "facebook": "ABitCrack",
       "club": "abitcrack",
       "course_flyer": "2025_12_06_abitcrack_pomme_24storyseeds.jpg",
       "venue_id": "summerhill-bowling-club-newcastle"
@@ -7058,7 +7067,7 @@
       "club": "",
       "price": "£5",
       "description": "",
-      "ticket_url": "https://www.facebook.com/angelscutdarlington",
+      "facebook": "angelscutdarlington",
       "event_flyer": "2026_02_12_talesnales_tombroses_brown.jpg",
       "isSpecial": true,
       "venue_id": "angels-cut-darlington",
@@ -7716,7 +7725,7 @@
       "time": "7.30-9.30pm",
       "price": "",
       "link": "https://www.abitcrack.com/",
-      "facebook": "https://www.facebook.com/ABitCrack",
+      "facebook": "ABitCrack",
       "isSpecial": true,
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
@@ -9667,7 +9676,7 @@
       "time": "7.30-9.30pm",
       "price": "Entry on the door. £8. £6 hardship rate, £10 philanthropist.",
       "link": "https://www.abitcrack.com/",
-      "facebook": "https://www.facebook.com/ABitCrack",
+      "facebook": "ABitCrack",
       "fb_event": 1610755257129366,
       "isSpecial": true,
       "club": "abitcrack",
@@ -11463,7 +11472,7 @@
       "schedule": "1st and 3rd tuesday",
       "time": "8pm",
       "link": "https://www.scragfolk.co.uk/index.php",
-      "facebook": "https://www.facebook.com/scragend.folkclub",
+      "facebook": "scragend.folkclub",
       "storiesWelcome": true,
       "exceptions": [],
       "venue_id": "the-mushroom-hall-swadlincote"
@@ -11817,7 +11826,7 @@
       "full_address": "The Braid Arts Centre, 1-29 Bridge Street, Ballymena, County Antrim, Northern Ireland, BT43 5EJ",
       "city": "Ballymeena",
       "postcode": "BT43 5EJ",
-      "url": "https://www.facebook.com/thebraidartscentre",
+      "facebook": "thebraidartscentre",
       "description": "Named after the river that runs through Ballymena, the Braid weaves together history, arts and culture alongside contemporary conference, tourism and civic centre.\n\n\n\nhttps://thebraid.ticketsolve.com/ticketbooth/shows",
       "latlon": [
         54.86379,
@@ -11856,7 +11865,7 @@
       "full_address": "The Lobster Pot, 7-11, The Square, Strangford, Downpatrick, Northern Ireland, BT30 7ND",
       "city": "Downpatrick",
       "postcode": "BT30 7ND",
-      "url": "https://www.facebook.com/lobsterpotstrangford/",
+      "facebook": "lobsterpotstrangford/",
       "description": "Seafood Restaurant in Strangford, Downpatrick, where seafood lovers indulge in delicious dishes like seafood chowder, scampi, and fresh lobster. Enjoy our cozy beer garden and don't miss out on our famous pecan pie.",
       "latlon": [
         54.3709,
@@ -12103,7 +12112,7 @@
       "city": "Shanklin",
       "postcode": "PO37 6BW",
       "full_address": "Chine Inn, 1 Chine Avenue, Shanklin, Isle of Wight, PO37 6BW",
-      "url": "https://www.facebook.com/albionpalace.co.uk/",
+      "url": "albionpalace.co.uk",
       "latlon": [
         50.62592,
         -1.17813
@@ -12259,7 +12268,7 @@
       "city": "Southampton",
       "postcode": "SO14 6SF",
       "full_address": "Guide Dog Pub, Southampton, SO14 6SF",
-      "url": "https://www.facebook.com/TheGuideDog",
+      "facebook": "TheGuideDog",
       "latlon": [
         50.9174605,
         -1.3969686
@@ -12403,7 +12412,7 @@
       "city": "St Austell",
       "postcode": "PL25 4LD",
       "full_address": "St Austell Library, 2 Carlyon Rd, Saint Austell, PL25 4LD",
-      "url": "https://www.facebook.com/staustelllibrary/",
+      "facebook": "staustelllibrary",
       "latlon": [
         50.33916,
         -4.78568
@@ -12415,7 +12424,7 @@
       "city": "Liskeard",
       "postcode": "PL14 6AB",
       "full_address": "Liskeard Library, Barras Street, Liskeard, PL14 6AB",
-      "url": "https://www.facebook.com/TheLiskeardLibrary/",
+      "facebook": "TheLiskeardLibrary",
       "latlon": [
         50.4545,
         -4.46498
@@ -12994,7 +13003,7 @@
       "city": "Cowes",
       "postcode": "PO31 7TF",
       "full_address": "Carvel Lane Coffee House, Cowes, Isle of Wight, PO31 7TF",
-      "url": "https://www.instagram.com/carvellanecoffee/",
+      "url": "carvellanecoffee",
       "latlon": [
         50.7621899,
         -1.29831
@@ -14473,7 +14482,7 @@
       "city": "Stratford-upon-Avon",
       "postcode": "CV37 0AH",
       "full_address": "Nelly's Retro & Vintage, Stratford-upon-Avon, CV37 0AH",
-      "url": "https://www.facebook.com/nellysretroandvintage/",
+      "facebook": "nellysretroandvintage",
       "latlon": [
         52.19601,
         -1.71522
@@ -14932,7 +14941,7 @@
       "city": "Ventnor",
       "postcode": "PO38 1LZ",
       "full_address": "Ventnor British Legion, Ventnor, Isle of Wight, PO38 1LZ",
-      "url": "https://www.facebook.com/ventnorlegion/",
+      "facebook": "ventnorlegion",
       "latlon": [
         50.5966,
         -1.20076
@@ -15776,7 +15785,7 @@
       "city": "Fraserburgh",
       "postcode": "AB43 6NF",
       "full_address": "New Pitsligo Public Hall, 63a, High Street, Fraserburgh, AB43 6NF",
-      "url": "https://www.facebook.com/NewPitsligoPublicHall/",
+      "facebook": "NewPitsligoPublicHall",
       "latlon": [
         57.59267,
         -2.19797
@@ -16125,7 +16134,7 @@
       "city": "Ashton-under-Lyne",
       "postcode": "OL6 6XB",
       "full_address": "Station Hotel, 2, Warrington Street, Ashton-under-Lyne, OL6 6XB",
-      "url": "https://www.facebook.com/TheStationHotelAUL/",
+      "facebook": "TheStationHotelAUL",
       "latlon": [
         53.4867,
         -2.09233
@@ -16401,7 +16410,7 @@
       "city": "Bedford",
       "postcode": "MK40 1SP",
       "full_address": "The Standard, 26-28 High Street, Bedford, MK40 1SP",
-      "url": "https://www.facebook.com/standardbedford/",
+      "facebook": "standardbedford",
       "latlon": [
         52.13612,
         -0.4666
@@ -17049,7 +17058,7 @@
       "city": "Gateshead",
       "postcode": "NE8 2AN",
       "full_address": "Central Bar, Half Moon Lane, Gateshead, NE8 2AN",
-      "url": "https://www.facebook.com/central.gateshead/",
+      "facebook": "central.gateshead",
       "latlon": [
         54.96545,
         -1.60493
@@ -17109,7 +17118,7 @@
       "city": "Blackpool",
       "postcode": "FY1 1DU",
       "full_address": "Compass Cafe, 24 Birley Street, Blackpool, FY1 1DU",
-      "url": "https://www.facebook.com/compasscafebar/",
+      "facebook": "compasscafebar",
       "latlon": [
         53.81833,
         -3.053
@@ -17331,7 +17340,7 @@
       "city": "Bristol",
       "postcode": "BS4 2AG",
       "full_address": "Knowle Constitutional Club, 162, Wells Rd, Bristol, BS4 2AG",
-      "url": "https://www.facebook.com/KnowleConstitutionalClub/",
+      "facebook": "KnowleConstitutionalClub",
       "latlon": [
         51.44091,
         -2.57495
@@ -17453,7 +17462,7 @@
       "full_address": "Holy Trinity Church, Westward Ho!, EX39 1HX",
       "city": "Bideford",
       "postcode": "EX39 1HX",
-      "url": "https://www.facebook.com/holytrinitywestwardho/",
+      "facebook": "holytrinitywestwardho",
       "latlon": [
         51.03888,
         -4.24022
@@ -17734,7 +17743,7 @@
     "dave-tonge": {
       "id": "dave-tonge",
       "name": "Dave Tonge",
-      "instagram": "https://www.instagram.com/davetongestoryteller/",
+      "instagram": "davetongestoryteller",
       "facebook": "https://www.facebook.com/profile.php?id=100063205569916",
       "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich."
     },
@@ -17868,13 +17877,13 @@
     "carmel-page": {
       "id": "carmel-page",
       "name": "Carmel Page",
-      "url": "https://www.facebook.com/carmelcreatively/",
+      "facebook": "carmelcreatively",
       "bio": "Author, Storyteller, Artist and Flying Teddy Bear Woman."
     },
     "p-d-brown": {
       "id": "p-d-brown",
       "name": "P. D. Brown",
-      "url": "https://www.facebook.com/halfmanhalfmyth/",
+      "facebook": "halfmanhalfmyth",
       "facebook": "halfmanhalfmyth",
       "bio": "Since 1985, David Brown has been telling stories in theatres, art centres, libraries, city farms and schools, in woods and fields, at camp sites and festivals from Orkney to Land's End.\n\n\n\nDavid specialises in epics, myths and legends from the so-called “Dark Ages” or early mediaeval period including the Welsh Four Branches of the Mabinogion, the Norse mythological cycle, Beowulf, Wayland the Smith and historical tales of sixth century northern British kings, from Gwynedd to Edinburgh.\n\n\n\nHe is keen to promote storytelling for the enjoyment of adults as well as children. Ghost and horror stories are his second favourite genre which he has collected from trips to Cornwall and Iceland as well as his native Cumbria.\n\n\n\nDavid first started telling stories after hearing a cassette of Robin Williamson's tales. He learnt a couple of the stories on the cassette, commenced learning the Norse mythological cycle and has not stopped since then. To more fully recreate the voice of the bards, David's translations of appropriate poems are interspersed in the narrative of such stories, as well as his own poems composed according to the rules of Anglo-Saxon and Norse verse. The lyre — the storyteller's instrument up until the early Middle Ages — accompanies some of these tales."
     },
@@ -17963,7 +17972,7 @@
     "hannah-sneyd": {
       "id": "hannah-sneyd",
       "name": "Hannah Sneyd",
-      "url": "https://www.instagram.com/hanu_oh/",
+      "url": "hanu_oh",
       "bio": "Hannah Sneyd is a storyteller and healer based in the Dartmoor wilds. Her original stories arrive on the wind and thread a canny path between the familiar and the fantastical."
     },
     "royal-tales-story-club-sutton-coldfield": {
@@ -18011,13 +18020,13 @@
     "jessie-wild": {
       "id": "jessie-wild",
       "name": "Jessie Wild",
-      "url": "https://www.instagram.com/jessie_wild_storyteller",
+      "url": "jessie_wild_storyteller",
       "bio": "Jessie Wild is a performance Storyteller/ Creative Educator. Runs The Tell Tales Club, Cardigan / Aberteifi."
     },
     "oliver-lavery": {
       "id": "oliver-lavery",
       "name": "Oliver Lavery",
-      "url": "https://www.facebook.com/olivermurgatroydlavery/",
+      "facebook": "olivermurgatroydlavery",
       "bio": "Actor, Writer, Storyteller & Artist. Storyteller with The Folk Bus.",
       "youtube": "http://www.youtube.com/@TheStoryCrow",
       "troupe": "the-folk-bus"
@@ -18037,7 +18046,7 @@
       ],
       "name": "Folk Bus / Olivery Lavery & Tamsin Quin",
       "url": "https://linktr.ee/thefolkbus?",
-      "instagram": "https://www.instagram.com/the_folk_bus/",
+      "instagram": "the_folk_bus",
       "bio": "A flying ship of Myth, song and story. Myths & melodies on a big green bus! Join us for folklore tales of myth and magic!"
     },
     "ben-haggarty-steph-brittain": {
@@ -18098,7 +18107,7 @@
     "jason-buck": {
       "id": "jason-buck",
       "name": "Jason Buck",
-      "url": "https://www.facebook.com/JasonBuckStoryteller/",
+      "facebook": "JasonBuckStoryteller",
       "facebook": "JasonBuckStoryteller",
       "bio": "Award-winning performance storyteller, author and illustrator.",
       "youtube_videos": [
@@ -18246,7 +18255,7 @@
     "merl-fluin": {
       "id": "merl-fluin",
       "name": "Merl Fluin",
-      "url": "https://www.instagram.com/merlfluin/",
+      "url": "merlfluin",
       "tickets_url": "https://www.tickettailor.com/events/merlfluin",
       "bio": "Merl Fluin specialises in storytelling for grown-ups: folk tales, fairy tales, magical tales, dark and creepy tales... wonders and horrors to thrill you and chill you (and sometimes both at once). I also perform tales from the vast treasury of Buddhist tradition, from the Buddha's life story to the mysteries of Zen and beyond."
     },
@@ -18365,7 +18374,7 @@
     "jordan-price-williams": {
       "id": "jordan-price-williams",
       "name": "Jordan Price Williams",
-      "url": "https://www.facebook.com/WilliamsPriceJordan/",
+      "facebook": "WilliamsPriceJordan",
       "facebook": "WilliamsPriceJordan",
       "bio": "Jordan Price Williams is an award-winning traditional musician from Cwmafan, South Wales (cello, double bass)."
     },
@@ -18437,7 +18446,7 @@
     "keith-wallis": {
       "id": "keith-wallis",
       "name": "Keith Wallis",
-      "url": "https://www.facebook.com/keith.wallis.77/",
+      "facebook": "keith.wallis.77",
       "podcast": "https://shows.acast.com/the-piskie-trap",
       "bio": "Podcaster, host of The Piskie Trap."
     },
@@ -18487,7 +18496,7 @@
     "catherine-chadwick": {
       "id": "catherine-chadwick",
       "name": "Catherine Chadwick",
-      "url": "https://www.facebook.com/catherine.chadwick.58/",
+      "facebook": "catherine.chadwick.58",
       "bio": ""
     },
     "martin-maudsley": {
@@ -18499,7 +18508,7 @@
     "ragged-storytelling-collective": {
       "id": "ragged-storytelling-collective",
       "name": "Ragged Storytelling Collective",
-      "url": "https://www.facebook.com/TheRaggedStorytellingCollective/",
+      "facebook": "TheRaggedStorytellingCollective",
       "bio": "The Ragged Storytelling Collective create 'tales both ancient, contemporary, fantastical and grounded' woven with 'twisting tunes coiling like smoke, an invocation of something very ancient and yet completely current'.\n\n\n\nTraditional myth meets urban magic."
     },
     "hari-berrow": {
@@ -18511,7 +18520,7 @@
     "marc-tuckey": {
       "id": "marc-tuckey",
       "name": "Marc Tuckey",
-      "url": "https://www.facebook.com/iwghostexperience/",
+      "facebook": "iwghostexperience",
       "ticketing_url": "https://www.ticketsource.com/isle-of-wight-ghost-experience",
       "bio": "Leader of Isle of Wight Ghost Experience, guided walks around the Isle of Wight."
     },
@@ -18587,7 +18596,7 @@
     "sara-hurley": {
       "id": "sara-hurley",
       "name": "Sara Hurley",
-      "url": "https://www.facebook.com/sara.hurley1/",
+      "facebook": "sara.hurley1",
       "bio": ""
     },
     "harriet-grindley": {
@@ -18599,7 +18608,7 @@
     "lara-mcclure": {
       "id": "lara-mcclure",
       "name": "Lara McClure",
-      "url": "https://www.instagram.com/drlaramcclure/",
+      "url": "drlaramcclure",
       "bio": "Performance storyteller from York."
     },
     "dragon-storytellers": {
@@ -18617,8 +18626,8 @@
     "rebecca-bletcher": {
       "id": "rebecca-bletcher",
       "name": "Rebecca Bletcher",
-      "facebook": "https://www.facebook.com/rebecca.bletcher.3",
-      "instagram": "https://www.instagram.com/rebecca_storyteller/"
+      "facebook": "rebecca.bletcher.3",
+      "instagram": "rebecca_storyteller"
     },
     "sheeha-blackhall": {
       "id": "sheeha-blackhall",
@@ -18787,7 +18796,7 @@
       "id": "charlotte-mooney",
       "name": "Charlotte Mooney",
       "url": "https://www.charlottemooneystories.com/",
-      "instagram": "https://www.instagram.com/charlottemooneystories/",
+      "instagram": "charlottemooneystories",
       "bio": "Since 2015 Charlotte has been telling stories in theatres, clubs, and around campfires. She disentangles tales of power and transformation and asks how we make sense of the stories we have. She is drawn to the place where mythology, folklore, history and the every day meet."
     },
     "dave-brookes": {
@@ -18999,7 +19008,7 @@
     "claire-mace": {
       "id": "claire-mace",
       "name": "Claire Mace",
-      "url": "https://www.facebook.com/claire.mace/",
+      "facebook": "claire.mace",
       "facebook": "claire.mace",
       "bio": "Storyteller. Yoga teacher. Facilitator. Retreat leader."
     },
