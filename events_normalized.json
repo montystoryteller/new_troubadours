@@ -120,7 +120,11 @@
           "date": "28/11/2026",
           "time": "13:00-14:30",
           "venue_id": "st-nicholas-priory-exeter",
-          "performer_ids": ["lara-mcclure", "danielle-free", "chris-adriaanse"],
+          "performer_ids": [
+            "lara-mcclure",
+            "danielle-free",
+            "chris-adriaanse"
+          ],
           "name": "Showcase of new work from up-and-coming storytellers (Lara McClure, Danielle Free & Chris Adriaanse)",
           "description": "Free tickets available for storytelling club organisers/storytelling venue promoters and we have limited budget to pay travel expenses, if this would make a big difference to your being able to attend - please contact Katy to reserve a spot.",
           "ticket_url": "https://artemis-storytelling.co.uk/tickets",
@@ -5600,7 +5604,7 @@
       "link": "https://tistales.org.uk/island-storytellers/",
       "facebook": "https://www.facebook.com/groups/islandstorytellers",
       "club": "islandstorytellers",
-      "venue_id": "chine-inn-shanklin"
+      "venue_id": "fig-tree-shanklin"
     },
     {
       "name": "Legendaery, Norwich",
@@ -7729,7 +7733,7 @@
       "time": "7-9pm",
       "club": "",
       "price": "£8",
-      "description": "ome and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Ffion Phillips.\n\n\n\nFfion is a bilingual storyteller and folk musician with a passion for breathing new enchantment into old tales and reworking scraps of forgotten material into fresh stories. Her work often explores environmentalist themes and the natural world(s), with much of her repertoire rooted deeply in her native Eryri. As part of the 'Harebell Tellers' alongside Ailsa Dixon she has brought her collaborative shows 'Hear us and Hasten' and 5 star sell-out 'Aderyn/Bird' to the Edinburgh Fringe.",
+      "description": "Come and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Ffion Phillips.\n\n\n\nFfion is a bilingual storyteller and folk musician with a passion for breathing new enchantment into old tales and reworking scraps of forgotten material into fresh stories. Her work often explores environmentalist themes and the natural world(s), with much of her repertoire rooted deeply in her native Eryri. As part of the 'Harebell Tellers' alongside Ailsa Dixon she has brought her collaborative shows 'Hear us and Hasten' and 5 star sell-out 'Aderyn/Bird' to the Edinburgh Fringe.",
       "event_flyer": "",
       "ticket_url": "https://dragontheatre.littleboxoffice.com/events/145169",
       "isSpecial": true,
@@ -10452,6 +10456,21 @@
       "eventId": "20261026-jason-buck-cafe-9-sheffield"
     },
     {
+      "name": "Historic Halloween Ghost Talk with Supper [Marc Tuckey]",
+      "showname": "Historic Halloween Ghost Talk with Supper",
+      "date": "27/10/2026",
+      "venue_id": "chine-inn-shanklin",
+      "performer_id": "marc-tuckey",
+      "date_added": "24/09/2026",
+      "time": "6-10pm",
+      "price": "£21.45 / £18.95",
+      "event_flyer": "2026_10_27_tuckey_ghost_chine-inn",
+      "description": "With Halloween creeping ever closer, renowned ghost hunter and storyteller Marc Tuckey is heading to The Chine Inn in Shanklin on Tuesday 27th October 2026 for an evening packed with spine-tingling stories, eerie encounters and fascinating tales from some of the Island’s most haunted and mysterious locations.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to strange sightings, sinister snippets of Island history and stories of the people and places that refuse to be forgotten, Marc will delve into the darker side of the Isle of Wight.\n\n\n\nAnd, of course, what better way to enjoy an evening of spooky storytelling than with a hearty Two-Course Supper?",
+      "ticket_url": "https://www.thepriceiswight.co.uk/product/the-chine-inn-ghost-talks",
+      "isSpecial": true,
+      "eventId": "20261027-marc-tuckey-chine-in-shanklin"
+    },
+    {
       "name": "Strange Tales for Halloween [the-folk-bus]",
       "showname": "Strange Tales for Halloween",
       "date": "28/10/2026",
@@ -10461,7 +10480,7 @@
       "time": "7.30-10pm",
       "price": "£17.50",
       "event_flyer": "folk_bus_autumn_2026.jpg",
-      "description": "he nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver’s storytelling draws on the oral traditions of Britain and Ireland, while Tamsin’s music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
+      "description": "The nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver’s storytelling draws on the oral traditions of Britain and Ireland, while Tamsin’s music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
       "ticket_url": "https://boxoffice.cheltladiescollege.org/events/175765",
       "isSpecial": true,
       "eventId": "20261028-the-folk-bus-parabola-arts-centre"
@@ -11871,6 +11890,18 @@
       "latlon": [
         50.92766,
         -1.79055
+      ]
+    },
+    "fig-tree-shanklin": {
+      "id": "fig-tree-shanklin",
+      "name": "Fig Tree Hotel, Shanklin",
+      "city": "Shanklin",
+      "postcode": "PO37 6AN",
+      "full_address": "10 Queen's Road, Shanklin, Isle of Wight, PO37 6AN",
+      "url": "https://thefigtreeshanklin.co.uk/",
+      "latlon": [
+        50.62873,
+        -1.17552
       ]
     },
     "chine-inn-shanklin": {
@@ -16925,6 +16956,18 @@
       "latlon": [
         51.88953,
         0.90235
+      ]
+    },
+    "star-anise-cafe-stroud": {
+      "id": "star-anise-cafe-stroud",
+      "name": "Star Anise Cafe, Stroud",
+      "city": "Stroud",
+      "postcode": "GL5 1QG",
+      "full_address": "Star Anise Cafe, 1 Gloucester St, Stroud, GL5 1QG",
+      "url": "https://www.staranisecafe.co.uk/",
+      "latlon": [
+        51.74717,
+        -2.21702
       ]
     },
     "star-inn-guildford": {
