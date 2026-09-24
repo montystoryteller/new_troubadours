@@ -1265,11 +1265,38 @@
                     id already used elsewhere, so this is usually a typo between the two rather than an actual
                     error, but worth a look either way. Promoters themselves are created and edited in the New Promoter tab; this check is report only, like the duplicate-venues check above:
                     there's no safe way to guess which ids a promoter should actually be associated with, so
-                    fixing a flagged one means editing that promoter (New Promoter tab) or the loaded file directly.
+                    fixing a flagged one means editing that promoter (New Promoter tab) or the loaded file directly. For empty or short venue/artist lists, the scanner just below can fill them in from the events.
                 </p>
                 <button class="btn-add-batch" id="enrich-promoter-scan-btn" disabled>Scan promoter
                     references</button>
                 <div id="enrich-promoter-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>➕ Fill in missing promoter venues &amp; artists</h3>
+                <p class="field-hint">
+                    For each promoter in the <code>promoters</code> registry, works out which venues and performers
+                    it's actually been involved with, and offers the ones not yet in its
+                    <code>promoter_venues</code> / <code>promoter_artists</code>. "Involved with" means any event,
+                    tour date or repertoire show date carrying that <code>promoter_id</code> (or the older
+                    <code>promoter</code>), any event at one of the promoter's clubs (a <code>club</code> whose id
+                    is the promoter's id, or whose own <code>promoter_id</code> is), and those clubs' own venue and
+                    guest <code>feature_slots</code>. A tour's performer is taken from its linked repertoire show when it
+                    has none of its own. Only ids that really exist in <code>venues</code> / <code>performers</code>
+                    are offered. Everything starts ticked, with a count of how many listings each comes from —
+                    untick anything that's a one-off rather than part of the promoter's regular roster (these lists
+                    are meant as a <em>general</em> roster, not a full history), then click "Apply checked rows".
+                    Accepting adds to the promoter's existing lists (nothing is removed) and lists it in the batch as
+                    a complete replacement (<code>updatedPromoters</code>) — building on any edit you've already made
+                    to that promoter in the New Promoter tab rather than overwriting it.
+                </p>
+                <button class="btn-add-batch" id="enrich-promoter-fill-scan-btn" disabled>Scan for missing promoter
+                    venues &amp; artists</button>
+                <div id="enrich-promoter-fill-results"></div>
+                <div class="btn-row" id="enrich-promoter-fill-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-promoter-fill-apply-btn">Apply checked rows to
+                        loaded data</button>
+                </div>
             </div>
 
             <div class="enrich-section">
@@ -5465,6 +5492,7 @@
                 document.getElementById("enrich-latlon-scan-btn").disabled = false;
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-promoter-scan-btn").disabled = false;
+                document.getElementById("enrich-promoter-fill-scan-btn").disabled = false;
                 document.getElementById("enrich-datequality-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
@@ -5480,6 +5508,7 @@
                 document.getElementById("enrich-latlon-scan-btn").disabled = true;
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-promoter-scan-btn").disabled = true;
+                document.getElementById("enrich-promoter-fill-scan-btn").disabled = true;
                 document.getElementById("enrich-datequality-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
@@ -6313,6 +6342,185 @@
                 return;
             }
             alert(`Applied ${applied} age rating suggestion(s) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
+            markEnrichedDataDirty();
+            refreshBatchSummary();
+        });
+
+        // -- Fill in missing promoter venues & artists -------------------------
+        // Derives, for every promoter in the registry, which venues/performers
+        // it has been involved with (see the section's hint text for the exact
+        // rules), and diffs that against its promoter_venues/promoter_artists.
+        function collectPromoterAssociations(data) {
+            const lc = v => (typeof v === "string" ? v.trim().toLowerCase() : "");
+            const clubs = data.clubs || [];
+            const shows = data.repertoire_shows || {};
+            const clubById = {};
+            clubs.forEach(c => { if (lc(c.club) && !clubById[lc(c.club)]) clubById[lc(c.club)] = c; });
+            const idsOf = (single, multi) => [...new Set([single, ...(Array.isArray(multi) ? multi : [])].filter(Boolean))];
+            const out = {};
+
+            Object.entries(data.promoters || {}).forEach(([key, promoter]) => {
+                const pid = lc(promoter.promoter_id || key);
+                const ownClubs = clubs.filter(c => lc(c.promoter_id) === pid || lc(c.club) === pid);
+                const clubIds = new Set([pid, ...ownClubs.map(c => lc(c.club)).filter(Boolean)]);
+                const ours = r => lc(r.promoter_id) === pid || lc(r.promoter) === pid || clubIds.has(lc(r.club));
+                const venues = new Map(), artists = new Map();
+                const note = (map, id, label) => {
+                    if (!id) return;
+                    const e = map.get(id) || { count: 0, examples: [] };
+                    e.count++;
+                    if (label && e.examples.length < 2 && !e.examples.includes(label)) e.examples.push(label);
+                    map.set(id, e);
+                };
+
+                ["specificEvents", "musicEvents", "poetryEvents"].forEach(bucket => (data[bucket] || []).forEach(r => {
+                    if (!ours(r)) return;
+                    const label = r.showname || r.name;
+                    note(venues, r.venue_id || (r.inheritClubData && clubById[lc(r.club)] ? clubById[lc(r.club)].venue_id : ""), label);
+                    idsOf(r.performer_id, r.performer_ids).forEach(a => note(artists, a, label));
+                }));
+                Object.values(data.tours || {}).forEach(t => {
+                    const rep = shows[t.repertoire_id] || {};
+                    const tourPerformers = idsOf(t.performer_id || rep.performer_id, t.performer_ids || rep.performer_ids);
+                    (t.tour_dates || []).forEach(d => {
+                        if (!ours(d)) return;
+                        const label = t.name || t.tour_name || rep.name;
+                        note(venues, d.venue_id, label);
+                        (d.performer_id ? [d.performer_id] : tourPerformers).forEach(a => note(artists, a, label));
+                    });
+                });
+                Object.values(shows).forEach(sh => {
+                    const showPerformers = idsOf(sh.performer_id, sh.performer_ids);
+                    (sh.show_dates || []).forEach(d => {
+                        if (!ours(d)) return;
+                        const label = sh.showname || sh.name;
+                        note(venues, d.venue_id, label);
+                        (d.performer_id ? [d.performer_id] : showPerformers).forEach(a => note(artists, a, label));
+                    });
+                });
+                ownClubs.forEach(c => {
+                    note(venues, c.venue_id, c.name);
+                    (c.feature_slots || []).forEach(slot => { if (Array.isArray(slot)) note(artists, slot[1], c.name); });
+                });
+
+                const haveVenues = new Set(promoter.promoter_venues || []);
+                const haveArtists = new Set(promoter.promoter_artists || []);
+                const build = (map, have, table) => [...map.entries()]
+                    .filter(([id]) => !have.has(id) && table && table[id])
+                    .map(([id, info]) => ({ id, name: table[id].name || id, ...info }))
+                    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+                const missingVenues = build(venues, haveVenues, data.venues);
+                const missingArtists = build(artists, haveArtists, data.performers);
+                if (missingVenues.length || missingArtists.length) {
+                    out[key] = { name: promoter.name || key, id: promoter.promoter_id || key, missingVenues, missingArtists };
+                }
+            });
+            return out;
+        }
+
+        document.getElementById("enrich-promoter-fill-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-promoter-fill-results");
+            const actionsEl = document.getElementById("enrich-promoter-fill-actions");
+            resultsEl.innerHTML = "";
+            actionsEl.style.display = "none";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            if (!enrichedData.promoters || !Object.keys(enrichedData.promoters).length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No promoters registered in the loaded data — nothing to check.</div>';
+                return;
+            }
+            const found = collectPromoterAssociations(enrichedData);
+            const keys = Object.keys(found);
+            if (!keys.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Nothing to add — every venue and performer each promoter has been involved with is already listed.</div>';
+                return;
+            }
+            const makeGroup = (title, items, kind) => {
+                const group = document.createElement("div");
+                group.style.marginTop = "6px";
+                const heading = document.createElement("div");
+                heading.className = "enrich-result-detail";
+                heading.textContent = `${title} (${items.length})`;
+                group.appendChild(heading);
+                items.forEach(item => {
+                    const label = document.createElement("label");
+                    label.style.cssText = "display:flex; gap:6px; align-items:baseline;";
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.checked = true;
+                    cb.className = "enrich-promoter-fill-check";
+                    cb.dataset.kind = kind;
+                    cb.dataset.id = item.id;
+                    const text = document.createElement("span");
+                    text.textContent = item.name;
+                    const meta = document.createElement("span");
+                    meta.className = "enrich-result-detail";
+                    meta.textContent = `${item.count} listing${item.count === 1 ? "" : "s"}${item.examples.length ? " — e.g. " + item.examples.join("; ") : ""}`;
+                    label.append(cb, text, meta);
+                    group.appendChild(label);
+                });
+                return group;
+            };
+            keys.forEach(key => {
+                const f = found[key];
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.key = key;
+                const main = document.createElement("div");
+                main.className = "enrich-result-main";
+                const name = document.createElement("div");
+                name.className = "enrich-result-name";
+                name.textContent = `${f.name} `;
+                const idSpan = document.createElement("span");
+                idSpan.style.cssText = "font-weight:normal;color:#999;";
+                idSpan.textContent = `(${f.id})`;
+                name.appendChild(idSpan);
+                main.appendChild(name);
+                if (f.missingVenues.length) main.appendChild(makeGroup("Venues to add", f.missingVenues, "venue"));
+                if (f.missingArtists.length) main.appendChild(makeGroup("Artists to add", f.missingArtists, "artist"));
+                row.appendChild(main);
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, keys.length, "promoter");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-promoter-fill-apply-btn").addEventListener("click", () => {
+            let promotersTouched = 0, venuesAdded = 0, artistsAdded = 0;
+            document.querySelectorAll("#enrich-promoter-fill-results .enrich-result-row").forEach(row => {
+                const key = row.dataset.key;
+                const target = enrichedData?.promoters?.[key];
+                if (!target) return;
+                const picked = kind => Array.from(row.querySelectorAll(`.enrich-promoter-fill-check[data-kind="${kind}"]`))
+                    .filter(cb => cb.checked).map(cb => cb.dataset.id);
+                const newVenues = picked("venue"), newArtists = picked("artist");
+                if (!newVenues.length && !newArtists.length) return;
+                const merge = (existing, extra) => [...new Set([...(Array.isArray(existing) ? existing : []), ...extra])];
+                const promoterId = target.promoter_id || key;
+
+                // Build on an edit already made in the New Promoter tab, if any,
+                // so applying this doesn't silently discard it.
+                const base = JSON.parse(JSON.stringify(updatedPromoters[promoterId] || target));
+                const before = { v: (base.promoter_venues || []).length, a: (base.promoter_artists || []).length };
+                if (newVenues.length) base.promoter_venues = merge(base.promoter_venues, newVenues);
+                if (newArtists.length) base.promoter_artists = merge(base.promoter_artists, newArtists);
+                venuesAdded += base.promoter_venues ? base.promoter_venues.length - before.v : 0;
+                artistsAdded += base.promoter_artists ? base.promoter_artists.length - before.a : 0;
+
+                // Keep the loaded copy in step too, so "Download full enriched JSON" includes it.
+                if (newVenues.length) target.promoter_venues = merge(target.promoter_venues, newVenues);
+                if (newArtists.length) target.promoter_artists = merge(target.promoter_artists, newArtists);
+                delete updatedPromoters[promoterId];
+                updatedPromoters[promoterId] = base;
+                promotersTouched++;
+            });
+            if (!promotersTouched) {
+                alert("No rows checked.");
+                return;
+            }
+            alert(`Added ${venuesAdded} venue(s) and ${artistsAdded} artist(s) across ${promotersTouched} promoter(s), applied to the loaded data and listed in the batch below as updated promoters. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
             markEnrichedDataDirty();
             refreshBatchSummary();
         });
