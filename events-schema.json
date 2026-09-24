@@ -518,7 +518,23 @@
           "items": {
             "type": "string"
           },
-          "description": "Other performers on that tour date."
+          "description": "Other performers on that tour date, with no assumed billing relationship to the headliner — co-headliners, guests, or anything else not captured by support_performer_ids. For a support-act relationship specifically, use support_performer_ids instead; for performers who share top billing on this date, also set isDoubleHeadline."
+        },
+        "support_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Performers supporting the headliner on this specific date — a more specific relationship than other_performer_ids, which makes no claim about billing. When set, this overrides (rather than merges with) the tour-level support_performer_ids for this date, mirroring how other per-date fields override their tour-level counterpart. The headliner being supported is tour.performer_id as normal, unless this date's own `headliner` field names someone else."
+        },
+        "isDoubleHeadline": {
+          "type": "boolean",
+          "default": false,
+          "description": "Per-date override of the tour-level isDoubleHeadline (see tour.isDoubleHeadline): true when the other performer(s) billed on this date share top billing with the headliner rather than supporting them. Despite the name, covers any co-headline bill, not just two acts."
+        },
+        "headliner": {
+          "type": "string",
+          "description": "Performer id of the actual headliner for this specific date, when it differs from the tour's own performer_id — used when a date on this tour is really an appearance supporting someone else's show (e.g. one stop where the tour's own act is second-billed on another performer's night) while still being tracked as part of this tour for the calendar/tour page. When set, the tour's own performer_id should be treated as the support act for this date rather than the headliner, and support_performer_ids on this date (if set) would typically just be [headliner]."
         },
         "price": {
           "type": "string",
@@ -674,7 +690,19 @@
           "items": {
             "type": "string"
           },
-          "description": "Other performers on the tour."
+          "description": "Other performers on the tour, with no assumed billing relationship to the headliner — co-headliners, guests, or anything else not captured by support_performer_ids. For a support-act relationship specifically, use support_performer_ids instead; for performers who share top billing with performer_id, also set isDoubleHeadline."
+        },
+        "support_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Performers who support performer_id (the tour's headline act) across this tour generally — a more specific relationship than other_performer_ids, which makes no claim about billing. A given tour_dates entry may set its own support_performer_ids to override this for just that date."
+        },
+        "isDoubleHeadline": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, the performer(s) in other_performer_ids (and/or performer_ids, for a multi-performer tour) share top billing with performer_id, rather than the default assumption that performer_id alone headlines. Despite the name, covers any co-headline bill, not just two acts — most commonly a double bill, but a triple-or-more co-headline bill also sets this true. A tour_dates entry may override this per-date via its own isDoubleHeadline."
         },
         "tour_description": {
           "type": "string",
