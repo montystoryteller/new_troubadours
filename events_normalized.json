@@ -4696,7 +4696,11 @@
           "event_flyers": [
             "2026_11_07_sound_sirens_beehive.jpg",
             "2026_11_07_sound_sirens_beehive2.jpg"
-          ]
+          ],
+          "other_performer_ids": [
+            "fieldlily"
+          ],
+          "isDoubleHeadline": true
         },
         {
           "date": "13/11/2026",
@@ -4705,7 +4709,9 @@
           "price": "£20.00 + £1.68 booking fee",
           "ticket_url": "https://www.ticketsource.com/soundofthesirens",
           "isSpecial": true,
-          "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg"
+          "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg",
+          "other_performer_ids": ["devnent"],
+          "isDoubleHeadline": true
         },
         {
           "date": "14/11/2026",
@@ -4719,7 +4725,8 @@
           "time": "Doors: 7:00pm, start: 7:40pm",
           "price": "£18.00 (+ £1.80) / U16 £9.00 (+ £0.90)",
           "ticket_url": "https://wegottickets.com/f/15126",
-          "isSpecial": true
+          "isSpecial": true,
+          "other_performer_ids": ["rob-clamp"]
         },
         {
           "date": "21/11/2026",
@@ -4727,7 +4734,11 @@
           "time": "6.30-11pm",
           "price": "£16.65-£25",
           "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
-          "isSpecial": true
+          "isSpecial": true,
+          "other_performer_ids": [
+            "samantics"
+          ],
+          "isDoubleHeadline": true
         },
         {
           "date": "28/11/2026",
@@ -4744,7 +4755,18 @@
           "price": "£17",
           "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
           "isSpecial": true,
-          "event_flyer": "2026_12_05_gaz_sirens_fleece.webp"
+          "event_flyer": "2026_12_05_gaz_sirens_fleece.webp",
+          "headliner": "gaz-brookfield-and-the-company-of-thieves"
+        },
+        {
+          "date": "06/12/2026",
+          "venue_id": "exeter-phoenix",
+          "time": "7pm",
+          "price": "£17",
+          "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
+          "isSpecial": true,
+          "event_flyer": "2026_12_05_gaz_sirens_fleece.webp",
+          "headliner": "tom-robinson"
         }
       ],
       "name": "Sound of the Sirens",
@@ -19025,6 +19047,20 @@
       "url": "https://www.sarahliannelewis.com/",
       "bio": "Sarah Lianne Lewis is a Welsh composer crafting vivid and inventive music that bridges tradition and innovation. Working in both concert hall and stage, her music weaves unexpected sonorities - acoustic and electronic - into bold soundscapes that captivate and challenge in equal measure."
     },
+    "tom-robinson": {
+      "id": "tom-robinson",
+      "name": "Tom Robinson",
+      "url": "https://tomrobinson.com/",
+      "bio": "Tom Robinson is a song-writer and broadcaster, who first became known in the 1970s as a touring musician, LGBT activist and recording artist with the Tom Robinson Band. In 1977 their Top 5 debut release 2-4-6-8 Motorway became one of the landmark singles of the UK punk era.",
+      "musician": true
+    },
+    "samantics": {
+      "id": "samantics",
+      "name": "Samantics",
+      "url": "https://www.samantics.co.uk/",
+      "bio": "Samantics is a livewire rap-poet and musician whose lyrical maps are a personal stroll around his vision of England and his own life. Taking us on a multitudinous odyssey of instrumentation - ukulele, piano, beats, bass, electronics and more - all created and controlled via a loop station and sampler. His live shows are a frantic, funny, and thrilling experience. Skirting the line between slam poet, social commentator and street busker, Samantics is an unmissable solo artist bound to spike your energy levels.",
+      "musician": true
+    },
     "sound-of-the-sirens": {
       "id": "sound-of-the-sirens",
       "name": "Sound of the Sirens",
@@ -19032,6 +19068,36 @@
       "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.",
       "musician": true,
       "isBand": true
+    },
+    "fieldlily": {
+      "id": "fieldlily",
+      "name": "Fieldlily",
+      "facebook": "fieldlilymusicpage",
+      "instagram": "fieldlilymusic",
+      "bio": "Sister harmony duo, writing gentle songs for weary hearts.",
+      "musician": true,
+      "isBand": true,
+      "isDuo": true
+    },
+    "rob-clamp": {
+      "id": "rob-clamp",
+      "name": "Rob Clamp",
+      "url": "https://www.robclampmusic.com/",
+      "facebook": "robclampmusic",
+      "instagram": "rob_clamp_music",
+      "bio": "It's not often you come across a voice with such controlled power: even at the emotional heights and depths of the songs, Rob's voice retains a purity and focus that is all too rare. Wherever his songwriting leads him, his voice adapts to the genre, from pop through folk and roots. A classic voice for classic music",
+      "musician": true,
+      "isBand": true,
+      "isDuo": true
+    },
+    "devnent": {
+      "id": "devnent",
+      "name": "Devnent",
+      "facebook": "https://www.facebook.com/people/Devnent/61573588991248/",
+      "bio": "Dynamic covers / originals duo (Rhys and Gaz) reviving the very best of the 1990s guitar-driven music scene.",
+      "musician": true,
+      "isBand": true,
+      "isDuo": true
     },
     "daniel-morden-hugh-lupton-sarah-lianne-lewis": {
       "id": "daniel-morden-hugh-lupton-sarah-lianne-lewis",

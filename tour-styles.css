@@ -608,6 +608,142 @@ select {
     text-decoration: none !important;
 }
 
+/* "Also featuring" / "With" rows of additional performers (tour header and
+   individual tour-date cards). Reuses the .performer-tag pill above. */
+.additional-performers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.additional-performers-label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #666;
+}
+
+.additional-performers-tour {
+    margin: 0 0 20px 0;
+}
+
+.additional-performers-date {
+    margin: 4px 0 8px 0;
+}
+
+/* Tighter pills inside date cards */
+.additional-performers-date .performer-tag {
+    padding: 2px 10px;
+    font-size: 0.8em;
+}
+
+/* Support-act rows (support_performer_ids) get a distinct, muted tint
+   from the "With" / "Also featuring" / "Co-headlining" pills above, so
+   the different billing relationship reads at a glance without relying
+   on the label text alone. Reuses the purple accent already used for
+   repertoire shows elsewhere on this page. */
+.additional-performers-support .performer-tag {
+    background: rgba(94, 75, 139, 0.08);
+    border-color: rgba(94, 75, 139, 0.3);
+    color: #5e4b8b !important;
+}
+
+.additional-performers-support .performer-tag:hover {
+    background: #5e4b8b;
+    color: #fff !important;
+}
+
+/* Readability on coloured tour-date cards (.event.music/.poetry, and any
+   other event-card variant this markup might land on): the label + pill
+   colours above are tuned for a plain white/light background, so they
+   need overriding wherever a date card carries its own gradient
+   background — otherwise a grey label and a blue-on-blue pill both wash
+   out against those backgrounds. Mirrors the same per-variant colour
+   choices already used for .venue-page-link / .event-tickets a on these
+   card types, just extended to the additional-performers rows.
+   Same-specificity ties are resolved by writing the ".additional-performers-support"
+   variants after the plain ones, so support pills keep their own tint
+   rather than being overridden by the plain-pill rules below them. */
+.event.special .additional-performers-label,
+.event.music .additional-performers-label,
+.event.poetry .additional-performers-label {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.event.folk .additional-performers-label {
+    color: #f5deb3;
+}
+
+.event.session .additional-performers-label {
+    color: #1a5c1a;
+}
+
+.event.special .performer-tag,
+.event.music .performer-tag,
+.event.poetry .performer-tag {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff !important;
+}
+
+.event.special .performer-tag:hover,
+.event.music .performer-tag:hover,
+.event.poetry .performer-tag:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff !important;
+}
+
+.event.folk .performer-tag {
+    background: rgba(0, 0, 0, 0.18);
+    border-color: rgba(245, 222, 179, 0.5);
+    color: #f5deb3 !important;
+}
+
+.event.folk .performer-tag:hover {
+    background: rgba(0, 0, 0, 0.32);
+    color: #fff !important;
+}
+
+.event.session .performer-tag {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(26, 92, 26, 0.4);
+    color: #1a5c1a !important;
+}
+
+.event.session .performer-tag:hover {
+    background: #1a5c1a;
+    color: #fff !important;
+}
+
+/* Support pills keep their own purple tint even on coloured cards —
+   these three-class selectors outrank the two-class rules above
+   regardless of source order, so no !important tug-of-war is needed. */
+.event.special .additional-performers-support .performer-tag,
+.event.music .additional-performers-support .performer-tag,
+.event.poetry .additional-performers-support .performer-tag {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff !important;
+}
+
+.event.special .additional-performers-support .performer-tag:hover,
+.event.music .additional-performers-support .performer-tag:hover,
+.event.poetry .additional-performers-support .performer-tag:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.event.folk .additional-performers-support .performer-tag {
+    background: rgba(0, 0, 0, 0.22);
+    border-color: rgba(245, 222, 179, 0.6);
+    color: #f5deb3 !important;
+}
+
+.event.session .additional-performers-support .performer-tag {
+    background: rgba(0, 0, 0, 0.14);
+    border-color: rgba(26, 92, 26, 0.5);
+    color: #1a5c1a !important;
+}
+
 /* Extra top margin on the expand button inside tour date cards */
 .expand-btn-spaced {
     margin-top: 8px;
@@ -1002,7 +1138,8 @@ select {
 
 .upcoming-tours-details[open] .upcoming-tours-summary-label::before,
 .past-tours-details[open] .upcoming-tours-summary-label::before,
-.now-touring-details[open] .upcoming-tours-summary-label::before {
+.now-touring-details[open] .upcoming-tours-summary-label::before,
+.repertoire-browse-details[open] .upcoming-tours-summary-label::before {
     transform: rotate(90deg);
 }
 

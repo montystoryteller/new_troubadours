@@ -865,6 +865,12 @@ select {
     font-weight: bold;
 }
 
+.event-badge-support-slot {
+    background-color: #5e4b8b !important;
+    color: white !important;
+    font-weight: bold;
+}
+
 
 /* =============================================================
    10. EXPANDABLE SECTIONS

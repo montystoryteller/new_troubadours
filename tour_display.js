@@ -286,6 +286,129 @@ function getTourLinkPerformerIds(tour) {
   return ids;
 }
 
+
+// Additional (non-headline) performers. tour.other_performer_ids lists
+// the other performers on the tour as a whole; a tour date's own
+// other_performer_ids, when it has at least one entry, REPLACES the
+// tour-level list for that date (it doesn't merge with it). Returns
+// de-duplicated ids that have a performer record, excluding anyone
+// already billed as a headliner on the tour, and anyone already
+// rendered via the more specific support_performer_ids relationship
+// (see getSupportPerformerIds() below) — a performer only ever shows up
+// in one of the two rows, never both.
+function getAdditionalPerformerIds(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.other_performer_ids)
+      ? tourDate.other_performer_ids.filter(Boolean)
+      : [];
+  const tourIds =
+    tour && Array.isArray(tour.other_performer_ids)
+      ? tour.other_performer_ids.filter(Boolean)
+      : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = tour ? getTourLinkPerformerIds(tour) : new Set();
+  const supportIds = new Set(getSupportPerformerIds(tour, tourDate));
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (seen.has(id) || headliners.has(id) || supportIds.has(id) || !performersLookup[id])
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
+// Support acts (support_performer_ids) — a more specific, always-"opening
+// for the headliner" relationship than the arbitrary other_performer_ids
+// above. Same per-date-replaces-tour-level semantics: a tour_dates entry's
+// own support_performer_ids, when it has at least one entry, REPLACES the
+// tour-level list for that date rather than merging with it. Excludes
+// anyone already billed as a tour headliner, and — for a date whose
+// billing is flipped via tourDate.headliner — the effective headliner
+// for that date too, so a data slip can't render the same person as both
+// headlining and supporting themselves on one date.
+function getSupportPerformerIds(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.support_performer_ids)
+      ? tourDate.support_performer_ids.filter(Boolean)
+      : [];
+  const tourIds =
+    tour && Array.isArray(tour.support_performer_ids)
+      ? tour.support_performer_ids.filter(Boolean)
+      : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = tour ? getTourLinkPerformerIds(tour) : new Set();
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, tourDate);
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      id === effectiveHeadlinerId ||
+      !performersLookup[id]
+    )
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
+// Who's actually headlining a given tour date. Normally that's just the
+// tour's own performer_id, but a tour_dates entry may set its own
+// `headliner` to name someone else instead — used for a date where the
+// tour's own act is really appearing in a support slot on somebody
+// else's night, while the date is still tracked (and shown) as part of
+// this tour. Pass tourDate as null/undefined for tour-header-level
+// context, where there's no per-date override to consider.
+function getEffectiveHeadlinerId(tour, tourDate) {
+  if (tourDate && tourDate.headliner) return tourDate.headliner;
+  return tour ? tour.performer_id : null;
+}
+
+// Resolves the effective isDoubleHeadline flag for a given context: a
+// tour_dates entry's own isDoubleHeadline, when EXPLICITLY set (true or
+// false), overrides the tour-level default; otherwise falls back to
+// tour.isDoubleHeadline (default false when unset). Pass tourDate as
+// null/undefined for tour-header-level rendering.
+function isDoubleHeadlineForDate(tour, tourDate) {
+  if (tourDate && typeof tourDate.isDoubleHeadline === "boolean") {
+    return tourDate.isDoubleHeadline;
+  }
+  return !!(tour && tour.isDoubleHeadline);
+}
+
+// Builds a "label: [pill] [pill]" row of links to performer profile pages
+// (reusing the .performer-tag pills), or null if there's nobody to show.
+// `extraClass` distinguishes the tour-header row from the per-date one.
+function buildAdditionalPerformersEl(ids, label, extraClass) {
+  if (!ids || ids.length === 0) return null;
+  const wrap = document.createElement("div");
+  wrap.className = `additional-performers ${extraClass || ""}`.trim();
+
+  const labelEl = document.createElement("span");
+  labelEl.className = "additional-performers-label";
+  labelEl.textContent = label;
+  wrap.appendChild(labelEl);
+
+  ids.forEach((id) => {
+    const perf = performersLookup[id];
+    if (!perf) return;
+    const tag = document.createElement("a");
+    tag.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    tag.className = "performer-tag";
+    tag.textContent = perf.name;
+    // Don't let a click on a tag also zoom the map (date cards do that).
+    tag.addEventListener("click", (e) => e.stopPropagation());
+    wrap.appendChild(tag);
+  });
+  return wrap;
+}
+
 // sanitizeUrl() — defined in shared_utils.js
 
 // initMap() — defined in shared_utils.js
@@ -634,6 +757,7 @@ function updateURL(tourId) {
 
   const newURL = `${window.location.pathname}?${buildTourURLParams(tourId).toString()}`;
   window.history.pushState({ tourId }, "", newURL);
+  setCanonical("tour");
 }
 
 function loadTour() {
@@ -655,8 +779,24 @@ function displayTour(tourId) {
   }
 
   document.title = `${tour.name}${tour.tour_name ? ` — ${tour.tour_name}` : ""} — New Troubadours`;
-  updateMeta("description", tour.tour_name || tour.name, " — ");
+  // setMetaDescription() (not updateMeta()) so this REPLACES the
+  // description each time rather than prepending to whatever the last
+  // tour left there — displayTour() can run repeatedly in one page
+  // session (browse-mode clicks, Back/Forward via the popstate handler
+  // below), and updateMeta()'s prepend behaviour would otherwise grow the
+  // tag by one more "Tour name — " fragment on every single switch.
+  setMetaDescription(`${tour.tour_name || tour.name} — ${DEFAULT_META_DESCRIPTION}`);
   prependMetaKeyword(tour.tour_name || tour.name);
+
+  // Switch into the same "clean" single-tour view that ?tour=<id> gets on
+  // a fresh page load: hide the browse UI (panels + dropdowns) and show the
+  // back link, so clicking a card/row (or the "Show" button) from browse
+  // mode doesn't just render tourContent underneath the still-visible
+  // browse panels. No-op if we're already in single-tour mode.
+  const browseState = document.getElementById("tourBrowseState");
+  if (browseState) browseState.style.display = "none";
+  const backLinkWrap = document.getElementById("tourBackLinkWrap");
+  if (backLinkWrap) backLinkWrap.style.display = "";
 
   // Store current tour for map filtering
   currentTour = tour;
@@ -675,6 +815,40 @@ function displayTour(tourId) {
   // Set title and subtitle
   document.getElementById("tourTitle").textContent = tour.name;
   document.getElementById("tourSubtitle").textContent = tour.tour_name || "";
+
+  // Additional tour performers, listed directly under the title/subtitle.
+  // Cleared and rebuilt each time so switching tours never leaves stale tags.
+  const addlContainer = document.getElementById("tourAdditionalPerformers");
+  addlContainer.innerHTML = "";
+  const tourAddlIds = getAdditionalPerformerIds(tour, null);
+  const tourAddlEl = buildAdditionalPerformersEl(
+    tourAddlIds,
+    isDoubleHeadlineForDate(tour, null) ? "Co-headlining:" : "Also featuring:",
+    "additional-performers-tour",
+  );
+  if (tourAddlEl) {
+    tourAddlIds.forEach((id) => prependMetaKeyword(performersLookup[id].name));
+    addlContainer.appendChild(tourAddlEl);
+  }
+
+  // Support acts for the tour as a whole (support_performer_ids) — a more
+  // specific "opening for the headliner" relationship than the arbitrary
+  // other_performer_ids row above, so it gets its own row/label.
+  const tourSupportIds = getSupportPerformerIds(tour, null);
+  const tourSupportEl = buildAdditionalPerformersEl(
+    tourSupportIds,
+    "Support:",
+    "additional-performers-tour additional-performers-support",
+  );
+  if (tourSupportEl) {
+    tourSupportIds.forEach((id) =>
+      prependMetaKeyword(performersLookup[id].name),
+    );
+    addlContainer.appendChild(tourSupportEl);
+  }
+
+  addlContainer.style.display =
+    addlContainer.children.length > 0 ? "" : "none";
 
   // Performer websites & profile pages. For a tour with a combined/troupe
   // performer_id (e.g. "jess-silk-joe-solo"), we want links to each real
@@ -1037,7 +1211,45 @@ function createTourDateElement(tourDate, tour, past = false) {
     nameDiv.appendChild(cancelBadge);
   }
 
+  // Billing flip: tourDate.headliner names someone else as the actual
+  // headliner for this one date, meaning the tour's own act is really
+  // appearing in a support slot on that person's night. Flag it clearly
+  // right on the date — everything else on this page (title, "Also
+  // featuring"/"Support" rows, flyers, etc.) still describes the tour as
+  // a whole, so without this badge a flipped date would look like an
+  // ordinary headline date for this tour.
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, tourDate);
+  if (tourDate.headliner && effectiveHeadlinerId !== tour.performer_id) {
+    const headlinerRecord = performersLookup[effectiveHeadlinerId];
+    const headlinerName = headlinerRecord
+      ? headlinerRecord.name
+      : effectiveHeadlinerId;
+    nameDiv.appendChild(document.createTextNode(" "));
+    const supportSlotBadge = createBadge(`Supporting ${headlinerName}`);
+    supportSlotBadge.className = "event-badge event-badge-support-slot";
+    nameDiv.appendChild(supportSlotBadge);
+  }
+
   div.appendChild(nameDiv);
+
+  // Additional performers for this date: the date's own other_performer_ids
+  // if it has any, otherwise the tour-level list.
+  const dateDoubleHeadline = isDoubleHeadlineForDate(tour, tourDate);
+  const dateAddlEl = buildAdditionalPerformersEl(
+    getAdditionalPerformerIds(tour, tourDate),
+    dateDoubleHeadline ? "Co-headliner(s):" : "With:",
+    "additional-performers-date",
+  );
+  if (dateAddlEl) div.appendChild(dateAddlEl);
+
+  // Support act(s) for this date (support_performer_ids) — a more specific
+  // "opening for the headliner" relationship than other_performer_ids above.
+  const dateSupportEl = buildAdditionalPerformersEl(
+    getSupportPerformerIds(tour, tourDate),
+    "Support:",
+    "additional-performers-date additional-performers-support",
+  );
+  if (dateSupportEl) div.appendChild(dateSupportEl);
 
   // Venue Location with icons — createVenueElement() defined in shared_utils.js
   if (tourDate.venue_id && venuesLookup[tourDate.venue_id]) {
@@ -1721,7 +1933,74 @@ function refreshEventsData() {
 //   - browse mode (no ?tour=): the original dropdown-driven landing page,
 //     unchanged apart from the map likewise being deferred until just
 //     after the panels/dropdowns are rendered.
+//
+// Neither mode is final, though: updateURL()/shareTourLink() push new
+// history entries as the user picks tours, and the browser's Back/Forward
+// buttons can land back on either shape of URL at any time. See the
+// popstate handler at the very end of this file for how the page's own
+// content is kept in sync with that — it reuses renderBrowseLandingPanels()
+// below so the browse UI can also be built lazily, the first time it's
+// actually needed, if the page was loaded directly into singleTourMode.
 // ---------------------------------------------------------------------------
+
+// Snapshot the page's own default title/meta before any tour overwrites
+// them (displayTour() sets document.title and the description/keywords
+// meta tags below) — popstate's return to the browse landing page restores
+// these exactly, rather than leaving a previously-viewed tour's title/meta
+// behind. Must run before displayTour() can possibly be called, hence
+// right here rather than inside the async IIFE.
+const DEFAULT_TITLE = document.title;
+const DEFAULT_META_DESCRIPTION =
+  document.querySelector('meta[name="description"]')?.getAttribute("content") ||
+  "";
+const DEFAULT_META_KEYWORDS =
+  document.querySelector('meta[name="keywords"]')?.getAttribute("content") ||
+  "";
+
+// Renders the dropdown-driven landing page (Now Touring/Upcoming/Previous
+// panels, the two browse lists, and the performer dropdown), guarded so it
+// only ever runs once. Called from the browse-mode branch of the init IIFE
+// below on a normal page load, and — lazily, the first time it's actually
+// needed — from showBrowseLanding() if the page instead loaded straight
+// into singleTourMode and the user then navigates Back to a bare
+// tour_guide.html.
+let browsePanelsRendered = false;
+function renderBrowseLandingPanels() {
+  if (browsePanelsRendered) return;
+  browsePanelsRendered = true;
+
+  populatePerformerDropdown();
+  renderRepertoireBrowseList();
+  renderStoryWalksBrowseList();
+  renderNowTouringPanel();
+  renderUpcomingToursPanel();
+  renderPastToursPanel();
+
+  // The map isn't needed until a tour is actually picked, so it's loaded
+  // here too — after the panels/dropdowns above, never before them.
+  ensureMapInitialized();
+}
+
+// The reverse of what singleTourMode/displayTour() do when showing one
+// tour: switches the page back to the browse landing view. Used by the
+// popstate handler below when Back/Forward lands on a URL with no ?tour=.
+function showBrowseLanding() {
+  document.getElementById("tourContent").style.display = "none";
+  document.getElementById("tourNotFoundState").style.display = "none";
+  document.getElementById("tourBackLinkWrap").style.display = "none";
+  document.getElementById("tourBrowseState").style.display = "";
+
+  document.title = DEFAULT_TITLE;
+  setMetaDescription(DEFAULT_META_DESCRIPTION);
+  const keywordsMeta = document.querySelector('meta[name="keywords"]');
+  if (keywordsMeta) keywordsMeta.setAttribute("content", DEFAULT_META_KEYWORDS);
+  
+  setCanonical("tour");
+
+  currentTour = null;
+  renderBrowseLandingPanels();
+}
+
 setCanonical("tour");
 
 (async () => {
@@ -1814,25 +2093,7 @@ setCanonical("tour");
 
   // Browse mode: full dropdown UI.
   // Defer heavy rendering to background to allow loading state to display
-  setTimeout(() => {
-    populatePerformerDropdown();
-    renderRepertoireBrowseList();
-    renderStoryWalksBrowseList();
-    console.log("Performer dropdown populated");
-
-    renderNowTouringPanel();
-    console.log("Now Touring panel rendered");
-
-    renderUpcomingToursPanel();
-    console.log("Upcoming Tours panel rendered");
-
-    renderPastToursPanel();
-    console.log("Past Tours panel rendered");
-
-    // The map isn't needed until a tour is actually picked, so it's loaded
-    // here too — after the panels/dropdowns above, never before them.
-    ensureMapInitialized();
-  }, 0);
+  setTimeout(renderBrowseLandingPanels, 0);
 
   // performer= present but no tour= — just seed the performer dropdown
   if (urlParams.performerId) {
@@ -1841,3 +2102,37 @@ setCanonical("tour");
     handlePerformerChange();
   }
 })();
+
+// Browser Back/Forward navigation doesn't re-run any of the above by
+// itself — pushState() (used by updateURL()/shareTourLink()) only ever
+// changes the address bar; it never fires popstate. This listener is what
+// keeps the page's own content in sync when the user actually navigates
+// with Back/Forward: a URL with no ?tour= switches back to the browse
+// landing page (building it lazily via renderBrowseLandingPanels() if the
+// page was loaded directly into singleTourMode and never needed it
+// before), and a URL with ?tour=<id> shows that tour — mirroring what
+// singleTourMode does on a fresh page load.
+window.addEventListener("popstate", () => {
+  const urlParams = getTourURLParams();
+
+  if (!urlParams.tourId) {
+    showBrowseLanding();
+    return;
+  }
+
+  if (toursLookup[urlParams.tourId]) {
+    document.getElementById("tourNotFoundState").style.display = "none";
+    displayTour(urlParams.tourId);
+    setCanonical("tour");
+    ensureMapInitialized();
+  } else {
+    // Either genuinely unknown, or Back/Forward fired before the initial
+    // data fetch finished (toursLookup still empty) — either way, match
+    // singleTourMode's own "not found" treatment rather than leaving
+    // whatever was on screen before.
+    document.getElementById("tourBrowseState").style.display = "none";
+    document.getElementById("tourBackLinkWrap").style.display = "";
+    document.getElementById("tourContent").style.display = "none";
+    document.getElementById("tourNotFoundState").style.display = "";
+  }
+});
