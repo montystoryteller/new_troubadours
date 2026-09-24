@@ -2635,7 +2635,7 @@
         },
         {
           "date": "26/11/2026",
-          "venue_id": "fulford-arms",
+          "venue_id": "fulford-arms-york",
           "time": "7.30pm",
           "price": "£15 (+ £1.50)",
           "ticket_url": "https://wegottickets.com/af/671/f/25606",
@@ -4200,7 +4200,7 @@
           "price": "£10-15",
           "ticket_url": "https://www.eventbrite.co.uk/e/slaine-the-horned-god-notts-tickets-1867486846429",
           "fb_event": 830908939589642,
-          "venue_id": "the-pit-at-newstead-nottinghamshire"
+          "venue_id": "the-pit-at-newstead"
         },
         {
           "date": "30/03/2026",
@@ -4599,7 +4599,7 @@
         },
         {
           "date": "28/11/2026",
-          "venue_id": "the-pit-at-newstead-nottinghamshire",
+          "venue_id": "the-pit-at-newstead",
           "time": "7.30pm",
           "price": "£14.30",
           "ticket_url": "https://www.ents24.com/newstead-events/the-pit-at-newstead/sound-of-the-sirens/7475445",
@@ -5165,7 +5165,7 @@
           "time": "2pm",
           "ticket_url": "https://www.fatsoma.com/e/rrc6sn3d/joe-solo-jess-silk-afternoon-show",
           "price": "£13.80",
-          "venue_id": "fulford-arms",
+          "venue_id": "fulford-arms-york",
           "event_flyer": "2026_10_04_jess_silk_joe_solo_fulford_arms.jpg"
         },
         {
@@ -5211,7 +5211,7 @@
       "link": "https://wordofmouthstorytelling.blogspot.com/",
       "facebook": "https://www.facebook.com/groups/391825947545400/",
       "club": "wordofmouth-story-club",
-      "venue_id": "the-britons-protection-great"
+      "venue_id": "the-britons-protection-manchester"
     },
     {
       "name": "Stealing Thunder",
@@ -5731,7 +5731,7 @@
       "schedule": "4th sunday",
       "facebook": "https://www.facebook.com/profile.php?id=61580047292990",
       "club": "plymouth-story-circle",
-      "venue_id": "snapdragons-victoria",
+      "venue_id": "snapdragons-plymouth",
       "flyers": [
         "2026_06_28_plymouth_storytelling_circle.jpg"
       ]
@@ -6048,7 +6048,7 @@
       "time": "7pm",
       "facebook": "https://www.facebook.com/thepitatnewstead",
       "club": "taleasandtunesthepit",
-      "venue_id": "the-pit-at-newstead-nottinghamshire"
+      "venue_id": "the-pit-at-newstead"
     },
     {
       "name": "Aberystwyth Fables Storytelling Circle",
@@ -6915,11 +6915,11 @@
       "price": "£13.75 - £22.00",
       "description": "",
       "event_flyer": "2025_12_21_vanessa_woolf_snow_queen.jpg",
-      "ticket_url": "https://connectionwithwonder.com/events/the-snow-queen-storytelling-at-the-asylum-chapel/",
+      "ticket_url": "https://connectionwithwonder.com/events/the-snow-queen-storytelling-at-the-asylum-chapel-london/",
       "isSpecial": true,
-      "venue_id": "asylum-chapel",
+      "venue_id": "asylum-chapel-london",
       "performer_id": "vanessa-woolf",
-      "eventId": "20251221-vanessa-woolf-asylum-chapel"
+      "eventId": "20251221-vanessa-woolf-asylum-chapel-london"
     },
     {
       "name": "Arnside Sailing Club — Storyteller [Nick Hennessey]",
@@ -7101,11 +7101,11 @@
       "description": "Newspapers and court records tell the facts of the notorious of Suffolk and East Anglia, but what of the people behind them? Join the storyteller, Chris Richardson, as he explores the events of Behind Bars and brings to life the drama, characters and world of these events. Chris tells folk tales and historical stories in events and festivals across East Anglia. Suitable for an Audience 12+",
       "event_flyer": "",
       "isSpecial": true,
-      "venue_id": "the-hold-fore",
+      "venue_id": "the-hold-ipswich",
       "performer_id": "chris-richardson",
       "age_rating": "12+",
       "min_age": 12,
-      "eventId": "20260122-chris-richardson-the-hold-fore"
+      "eventId": "20260122-chris-richardson-the-hold-ipswich"
     },
     {
       "name": "Peronik: The Diary In The Attic [Marion Leeper]",
@@ -7153,9 +7153,9 @@
       "ticket_url": "https://www.ticketsource.co.uk/forging-fantastical/last-orders-a-storytelling-show-by-mike-payton/e-leomog?ref=montystoryteller.org",
       "isSpecial": true,
       "fb_event": 2737200426620868,
-      "venue_id": "the-old-stables-behind",
+      "venue_id": "the-old-stables-cricklade",
       "performer_id": "mike-payton",
-      "eventId": "20260130-mike-payton-the-old-stables-behind"
+      "eventId": "20260130-mike-payton-the-old-stables-cricklade"
     },
     {
       "name": "Tales By The Teign [Shane Ibbs]",
@@ -7649,10 +7649,10 @@
       "email": "hello@hannahsneyd.com",
       "description": "Come one, come all, for a treasure-trove of stories around an open fire, at the Snapdragons community space in Plymouth. Feast your ears on tales both old and new, told by local storyteller Hannah Sneyd.\n\n\n\nFeaturing reluctant moles, dancing rivers and sharp-witted crones, Hannah's stories inhabit the space between mythic realms and mundane modern life. She peppers her tales with insights from the natural world, and always tells with a healthy dose of humour.\n\n\n\nStories are suitable for all ages. We have seating available, but you are invited to bring something cosy to sit on (blanket, rug) and to dress warmly. A hot drink (dairy free) will be available.\n\n\n\nIf it's very wet or cold, we will use the indoor space at Snapdragons.",
       "fb_event": 1181245144186017,
-      "venue_id": "snapdragons-victoria",
+      "venue_id": "snapdragons-plymouth",
       "performer_id": "hannah-sneyd",
       "age_rating": "Family friendly",
-      "eventId": "20260212-hannah-sneyd-snapdragons-victoria"
+      "eventId": "20260212-hannah-sneyd-snapdragons-plymouth"
     },
     {
       "name": "Fur and Folds [James Canvin]",
@@ -10002,10 +10002,10 @@
       "event_flyer": "2026_09_25_jon_mason_saga_ring_forgingfantastical.jpg",
       "ticket_url": "",
       "isSpecial": true,
-      "venue_id": "the-old-stables-behind",
+      "venue_id": "the-old-stables-cricklade",
       "performer_id": "jon-mason",
       "date_added": "27/06/2026",
-      "eventId": "20260925-jon-mason-the-old-stables-behind"
+      "eventId": "20260925-jon-mason-the-old-stables-cricklade"
     },
     {
       "name": "Island of Love [Polis Loizou]",
@@ -10749,11 +10749,11 @@
       "ticket_url": "https://www.eventbrite.co.uk/e/the-nutcracker-story-tickets-1986635106081",
       "isSpecial": true,
       "date_added": "15/08/2026",
-      "venue_id": "the-pit-at-newstead-nottinghamshire",
+      "venue_id": "the-pit-at-newstead",
       "performer_id": "jason-buck",
       "age_rating": "9+",
       "min_age": 9,
-      "eventId": "20261222-jason-buck-the-pit-at-newstead-nottinghamshire"
+      "eventId": "20261222-jason-buck-the-pit-at-newstead"
     },
     {
       "name": "The Nutcracker [Jason Buck]",
@@ -11389,8 +11389,8 @@
         -2.73241
       ]
     },
-    "fulford-arms": {
-      "id": "fulford-arms",
+    "fulford-arms-york": {
+      "id": "fulford-arms-york",
       "name": "Fulford Arms",
       "city": "York",
       "postcode": "YO10 4EX",
@@ -11449,8 +11449,8 @@
         -1.471777
       ]
     },
-    "the-britons-protection-great": {
-      "id": "the-britons-protection-great",
+    "the-britons-protection-manchester": {
+      "id": "the-britons-protection-manchester",
       "name": "The Britons Protection, Manchester",
       "city": "Manchester",
       "postcode": "M1 5LE",
@@ -11911,8 +11911,8 @@
         -0.8924581
       ]
     },
-    "snapdragons-victoria": {
-      "id": "snapdragons-victoria",
+    "snapdragons-plymouth": {
+      "id": "snapdragons-plymouth",
       "name": "Snapdragons, Victoria Park",
       "city": "Plymouth",
       "postcode": "PL1 5NJ",
@@ -12380,8 +12380,8 @@
         -1.8243397
       ]
     },
-    "the-pit-at-newstead-nottinghamshire": {
-      "id": "the-pit-at-newstead-nottinghamshire",
+    "the-pit-at-newstead": {
+      "id": "the-pit-at-newstead",
       "name": "The Pit at Newstead",
       "city": "Nottinghamshire",
       "postcode": "NG15 0BU",
@@ -12862,8 +12862,8 @@
         -4.06688
       ]
     },
-    "asylum-chapel": {
-      "id": "asylum-chapel",
+    "asylum-chapel-london": {
+      "id": "asylum-chapel-london",
       "name": "Asylum Chapel",
       "city": "London",
       "postcode": "SE15 2SQ",
@@ -13138,8 +13138,8 @@
         -0.10437
       ]
     },
-    "the-hold-fore": {
-      "id": "the-hold-fore",
+    "the-hold-ipswich": {
+      "id": "the-hold-ipswich",
       "name": "The Hold, Ipswich",
       "city": "Ipswich",
       "postcode": "IP4 1LR",
@@ -13210,8 +13210,8 @@
         -0.0723
       ]
     },
-    "the-old-stables-behind": {
-      "id": "the-old-stables-behind",
+    "the-old-stables-cricklade": {
+      "id": "the-old-stables-cricklade",
       "name": "The Old Stables (behind The White Hart), Cricklade",
       "city": "Swindon",
       "postcode": "SN6 6AA",
