@@ -580,6 +580,10 @@
         "event_url": {
           "type": "string"
         },
+        "title": {
+          "type": "string",
+          "description": "Rare per-date title override."
+        },
         "description": {
           "type": "string",
           "description": "Rare per-date description override."
