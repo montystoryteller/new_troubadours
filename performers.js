@@ -1071,17 +1071,17 @@ function renderPerformer() {
 
     if (pastOther.length > 0) {
       const details = document.createElement("details");
-      details.className = "tour-history-details";
+      details.className = "dates-collapsible-details";
       // Nothing upcoming → the past list is the section's whole content,
       // so don't hide it behind a click.
       const openByDefault = upcomingOther.length === 0;
       if (openByDefault) details.open = true;
 
       const summary = document.createElement("summary");
-      summary.className = "tour-history-summary";
+      summary.className = "dates-collapsible-summary";
       summary.textContent = `Past appearances (${pastOther.length})`;
       const hint = document.createElement("span");
-      hint.className = "tour-history-hint";
+      hint.className = "dates-collapsible-hint";
       hint.textContent = openByDefault ? "click to collapse" : "click to expand";
       summary.appendChild(hint);
       details.appendChild(summary);
@@ -1090,7 +1090,7 @@ function renderPerformer() {
       });
 
       const pastList = document.createElement("div");
-      pastList.className = "tour-history-list";
+      pastList.className = "dates-collapsible-list";
       pastOther.forEach((e) => renderEventRow(pastList, e));
       details.appendChild(pastList);
       list.appendChild(details);
@@ -1299,7 +1299,7 @@ function renderUpcomingSection(
   if (rest.length > 0) {
     const moreBtn = document.createElement("button");
     moreBtn.type = "button";
-    moreBtn.className = "perf-podcast-more upcoming-more";
+    moreBtn.className = "perf-more-btn upcoming-more";
     moreBtn.textContent = `+${rest.length} more`;
     moreBtn.addEventListener("click", () => {
       rest.forEach((it) => renderUpcomingRow(list, it));
@@ -1684,7 +1684,7 @@ function togglePodcastAudioPreview(
 // fetch, since the data's already in hand.
 function createPodcastFeedCard(url) {
   const card = document.createElement("div");
-  card.className = "perf-podcast-feed";
+  card.className = "perf-card";
 
   const header = document.createElement("div");
   header.className = "perf-podcast-feed-header";
@@ -1720,24 +1720,24 @@ function createPodcastFeedCard(url) {
   // eagerly by load() below, but only actually revealed when the
   // visitor clicks it open.
   const episodesDetails = document.createElement("details");
-  episodesDetails.className = "perf-podcast-episodes-details";
+  episodesDetails.className = "perf-nested-details";
 
   const episodesSummary = document.createElement("summary");
-  episodesSummary.className = "perf-podcast-episodes-summary";
+  episodesSummary.className = "perf-nested-summary";
 
   const episodesLabel = document.createElement("span");
   episodesLabel.textContent = "Episodes";
   episodesSummary.appendChild(episodesLabel);
 
   const episodesHint = document.createElement("span");
-  episodesHint.className = "perf-podcast-episodes-hint";
+  episodesHint.className = "perf-nested-hint";
   episodesHint.textContent = "loading…";
   episodesSummary.appendChild(episodesHint);
 
   episodesDetails.appendChild(episodesSummary);
 
   const episodesBody = document.createElement("div");
-  episodesBody.className = "perf-podcast-episodes-body";
+  episodesBody.className = "perf-nested-body";
   episodesDetails.appendChild(episodesBody);
 
   card.appendChild(episodesDetails);
@@ -1750,7 +1750,7 @@ function createPodcastFeedCard(url) {
     top.className = "perf-podcast-episode-row";
 
     const epBody = document.createElement("div");
-    epBody.className = "perf-podcast-episode-body";
+    epBody.className = "perf-item-body";
 
     const epTitle = document.createElement("div");
     epTitle.className = "perf-podcast-episode-title";
@@ -1829,7 +1829,7 @@ function createPodcastFeedCard(url) {
     if (rest.length > 0) {
       const moreBtn = document.createElement("button");
       moreBtn.type = "button";
-      moreBtn.className = "perf-podcast-more";
+      moreBtn.className = "perf-more-btn";
       moreBtn.textContent = `+${rest.length} more episode${rest.length !== 1 ? "s" : ""}`;
       moreBtn.addEventListener("click", () => {
         rest.forEach((ep) => addEpisode(episodeList, ep));
@@ -1879,7 +1879,7 @@ function renderPodcastSection(performer) {
   if (rest.length > 0) {
     const moreBtn = document.createElement("button");
     moreBtn.type = "button";
-    moreBtn.className = "perf-podcast-more";
+    moreBtn.className = "perf-more-btn";
     moreBtn.textContent = `+${rest.length} more podcast${rest.length !== 1 ? "s" : ""}`;
     moreBtn.addEventListener("click", () => {
       rest.forEach(addFeed);
@@ -1938,7 +1938,7 @@ function renderPodcastAppearancesSection(performer) {
   // Reuse the same card chrome as a podcast feed card, just without
   // its header, so appearances visually match the feeds above.
   const card = document.createElement("div");
-  card.className = "perf-podcast-feed";
+  card.className = "perf-card";
   const episodeList = document.createElement("div");
   episodeList.className = "perf-podcast-episode-list";
   card.appendChild(episodeList);
@@ -1952,7 +1952,7 @@ function renderPodcastAppearancesSection(performer) {
     top.className = "perf-podcast-episode-row";
 
     const body = document.createElement("div");
-    body.className = "perf-podcast-episode-body";
+    body.className = "perf-item-body";
 
     const title = document.createElement("div");
     title.className = "perf-podcast-episode-title";
@@ -2012,7 +2012,7 @@ function renderPodcastAppearancesSection(performer) {
   if (rest.length > 0) {
     const moreBtn = document.createElement("button");
     moreBtn.type = "button";
-    moreBtn.className = "perf-podcast-more";
+    moreBtn.className = "perf-more-btn";
     moreBtn.textContent = `+${rest.length} more`;
     moreBtn.addEventListener("click", () => {
       rest.forEach(addAppearance);
@@ -2197,24 +2197,24 @@ function renderVideosSection(performer) {
   // Reuse the same card chrome as a podcast feed card, just without
   // its header, so this list visually matches the sections above.
   const card = document.createElement("div");
-  card.className = "perf-podcast-feed";
+  card.className = "perf-card";
   list.appendChild(card);
 
   videos.forEach((video) => {
     const videoId = extractYoutubeId(video.yt_url);
 
     const details = document.createElement("details");
-    details.className = "perf-podcast-episodes-details";
+    details.className = "perf-nested-details";
 
     const summary = document.createElement("summary");
-    summary.className = "perf-podcast-episodes-summary";
+    summary.className = "perf-nested-summary";
 
-    // Reuse .perf-podcast-episode-body's flex:1/min-width:0 so the title
+    // Reuse .perf-item-body's flex:1/min-width:0 so the title
     // (and, for registry-sourced videos, a series subtitle beneath it)
     // takes the available space, pushing the hint to the right edge —
     // matching the appearances list's title+meta layout.
     const textCol = document.createElement("div");
-    textCol.className = "perf-podcast-episode-body";
+    textCol.className = "perf-item-body";
 
     const label = document.createElement("div");
     label.textContent = video.story_name || "Untitled video";
@@ -2241,14 +2241,14 @@ function renderVideosSection(performer) {
     summary.appendChild(textCol);
 
     const hint = document.createElement("span");
-    hint.className = "perf-podcast-episodes-hint";
+    hint.className = "perf-nested-hint";
     hint.textContent = "▶ click to play";
     summary.appendChild(hint);
 
     details.appendChild(summary);
 
     const body = document.createElement("div");
-    body.className = "perf-podcast-episodes-body";
+    body.className = "perf-nested-body";
     details.appendChild(body);
 
     details.addEventListener("toggle", () => {
@@ -2610,20 +2610,20 @@ function renderDateCollapsible(
   if (dateEntries.length === 0) return;
 
   const details = document.createElement("details");
-  details.className = "tour-history-details";
+  details.className = "dates-collapsible-details";
   if (defaultOpen) details.open = true;
 
   const summary = document.createElement("summary");
-  summary.className = "tour-history-summary";
+  summary.className = "dates-collapsible-summary";
   summary.textContent = `${titlePrefix} (${dateEntries.length})`;
   const hint = document.createElement("span");
-  hint.className = "tour-history-hint";
+  hint.className = "dates-collapsible-hint";
   hint.textContent = defaultOpen ? "click to collapse" : "click to expand";
   summary.appendChild(hint);
   details.appendChild(summary);
 
   const list = document.createElement("div");
-  list.className = "tour-history-list";
+  list.className = "dates-collapsible-list";
   // Upcoming dates read soonest-first (ascending); past dates read most-
   // recent-first (descending) — reverse chronological, so the thing that
   // just happened is at the top rather than buried below years-old dates.
@@ -2664,7 +2664,7 @@ function renderTourCard(container, tourId, tour) {
   const isMusic = tour.isMusic;
   const isPoetry = tour.isPoetry;
   const card = document.createElement("div");
-  card.className = `tour-card${isMusic ? " tour-card-music" : ""}${isPoetry ? " tour-card-poetry" : ""}`;
+  card.className = `listing-card${isMusic ? " listing-card-music" : ""}${isPoetry ? " listing-card-poetry" : ""}`;
 
   // Flyer thumbnail (floated right) — first of the tour's flyers, via
   // getTourLevelFlyers() (shared_utils.js), which covers
@@ -2678,22 +2678,22 @@ function renderTourCard(container, tourId, tour) {
 
   // Header row
   const header = document.createElement("div");
-  header.className = "tour-card-header";
+  header.className = "listing-card-header";
 
   const nameEl = document.createElement("div");
-  nameEl.className = "tour-card-name";
+  nameEl.className = "listing-card-name";
   nameEl.textContent = tour.tour_name || tour.name;
   header.appendChild(nameEl);
 
   // Badge: remaining dates
   if (futureDates.length > 0) {
     const badge = document.createElement("span");
-    badge.className = "tour-remaining-badge";
+    badge.className = "listing-remaining-badge";
     badge.textContent = `${futureDates.length} date${futureDates.length !== 1 ? "s" : ""} remaining`;
     header.appendChild(badge);
   } else {
     const badge = document.createElement("span");
-    badge.className = "tour-completed-badge";
+    badge.className = "listing-completed-badge";
     badge.textContent =
       pastDates.length > 0
         ? `Completed (${pastDates.length} date${pastDates.length !== 1 ? "s" : ""})`
@@ -2707,7 +2707,7 @@ function renderTourCard(container, tourId, tour) {
   // one of their individual pages
   const tourCoLine = buildCoPerformerLine(
     coPerformerIdsFor(tour),
-    "tour-card-meta tour-card-with",
+    "listing-card-meta listing-card-with",
   );
   if (tourCoLine) card.appendChild(tourCoLine);
 
@@ -2731,7 +2731,7 @@ function renderTourCard(container, tourId, tour) {
     const hasMore = isTruncated || paras.length > 1;
 
     const desc = document.createElement("div");
-    desc.className = "tour-card-desc";
+    desc.className = "listing-card-desc";
 
     const previewP = document.createElement("p");
     previewP.textContent = isTruncated
@@ -2741,7 +2741,7 @@ function renderTourCard(container, tourId, tour) {
 
     if (hasMore) {
       const fullWrap = document.createElement("div");
-      fullWrap.className = "tour-card-desc-full";
+      fullWrap.className = "listing-card-desc-full";
       fullWrap.style.display = "none";
       paras.forEach((p) => {
         const el = document.createElement("p");
@@ -2752,7 +2752,7 @@ function renderTourCard(container, tourId, tour) {
 
       const toggle = document.createElement("button");
       toggle.type = "button";
-      toggle.className = "tour-card-desc-toggle";
+      toggle.className = "listing-card-desc-toggle";
       toggle.textContent = "more…";
       toggle.onclick = (e) => {
         e.stopPropagation();
@@ -2771,7 +2771,7 @@ function renderTourCard(container, tourId, tour) {
   // Date range + count
   if (firstDate && lastDate) {
     const meta = document.createElement("div");
-    meta.className = "tour-card-meta";
+    meta.className = "listing-card-meta";
     meta.textContent = `${formatShortDate(firstDate)} – ${formatShortDate(lastDate)} · ${dates.length} date${dates.length !== 1 ? "s" : ""}`;
     card.appendChild(meta);
   }
@@ -2791,10 +2791,10 @@ function renderTourCard(container, tourId, tour) {
 
   // View tour link
   const footer = document.createElement("div");
-  footer.className = "tour-card-footer";
+  footer.className = "listing-card-footer";
   const viewLink = document.createElement("a");
   viewLink.href = `tour_guide.html?tour=${encodeURIComponent(tourId)}`;
-  viewLink.className = "tour-view-link";
+  viewLink.className = "listing-view-link";
   viewLink.textContent = "View full tour →";
   footer.appendChild(viewLink);
   card.appendChild(footer);
@@ -2820,7 +2820,7 @@ function renderTouringShowCard(container, tsId, ts) {
   });
 
   const card = document.createElement("div");
-  card.className = "tour-card repertoire-card";
+  card.className = "listing-card repertoire-card";
 
   // Flyer thumbnail from touring_event_flyer, or the first date's own
   // flyer(s) via getEventLevelFlyers() (shared_utils.js).
@@ -2835,16 +2835,16 @@ function renderTouringShowCard(container, tsId, ts) {
 
   // Header: show name + badge
   const header = document.createElement("div");
-  header.className = "tour-card-header";
+  header.className = "listing-card-header";
 
   const nameEl = document.createElement("div");
-  nameEl.className = "tour-card-name";
+  nameEl.className = "listing-card-name";
   nameEl.textContent = ts.showname || ts.name;
   header.appendChild(nameEl);
 
   const badge = document.createElement("span");
   badge.className =
-    futureDates.length > 0 ? "tour-remaining-badge" : "tour-completed-badge";
+    futureDates.length > 0 ? "listing-remaining-badge" : "listing-completed-badge";
   badge.textContent =
     futureDates.length > 0
       ? `${futureDates.length} upcoming date${futureDates.length !== 1 ? "s" : ""}`
@@ -2856,14 +2856,14 @@ function renderTouringShowCard(container, tsId, ts) {
 
   const showCoLine = buildCoPerformerLine(
     coPerformerIdsFor(ts),
-    "tour-card-meta tour-card-with",
+    "listing-card-meta listing-card-with",
   );
   if (showCoLine) card.appendChild(showCoLine);
 
   // Full description — the show is the thing, so give it room
   if (ts.description) {
     const desc = document.createElement("div");
-    desc.className = "tour-card-desc repertoire-desc";
+    desc.className = "listing-card-desc repertoire-desc";
     const paras = ts.description
       .split("\n\n\n\n")
       .map((p) => p.replace(/\n\n/g, " ").trim())
@@ -2894,10 +2894,10 @@ function renderTouringShowCard(container, tsId, ts) {
   // "rep:<showId>" (see repertoireShowAsTourShape() there) so it can't
   // collide with a real tour id.
   const footer = document.createElement("div");
-  footer.className = "tour-card-footer";
+  footer.className = "listing-card-footer";
   const viewLink = document.createElement("a");
   viewLink.href = `tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`;
-  viewLink.className = "tour-view-link";
+  viewLink.className = "listing-view-link";
   viewLink.textContent = "View full show →";
   footer.appendChild(viewLink);
   card.appendChild(footer);

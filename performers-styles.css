@@ -186,7 +186,7 @@
    4. TOUR CARDS
    ============================================================= */
 
-.tour-card {
+.listing-card {
     border: 1px solid #e0e0e0;
     border-left: 4px solid var(--theme-green);
     border-radius: 4px;
@@ -195,21 +195,21 @@
     background: #fafafa;
 }
 
-.tour-card:last-child {
+.listing-card:last-child {
     margin-bottom: 0;
 }
 
-.tour-card-music {
+.listing-card-music {
     border-left-color: #1006c6;
     background: #f5f6ff;
 }
 
-.tour-card-poetry {
+.listing-card-poetry {
     border-left-color: #8a0040;
     background: #fff5fa;
 }
 
-.tour-card-header {
+.listing-card-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -218,22 +218,22 @@
     flex-wrap: wrap;
 }
 
-.tour-card-name {
+.listing-card-name {
     font-size: 16px;
     font-weight: bold;
     color: #333;
     flex: 1;
 }
 
-.tour-card-music .tour-card-name {
+.listing-card-music .listing-card-name {
     color: #1006c6;
 }
 
-.tour-card-poetry .tour-card-name {
+.listing-card-poetry .listing-card-name {
     color: #8a0040;
 }
 
-.tour-remaining-badge {
+.listing-remaining-badge {
     background: var(--theme-green-bg);
     color: var(--theme-green-dark);
     border: 1px solid var(--theme-green-border);
@@ -244,19 +244,19 @@
     white-space: nowrap;
 }
 
-.tour-card-music .tour-remaining-badge {
+.listing-card-music .listing-remaining-badge {
     background: #e8eaf6;
     color: #1a237e;
     border-color: #9fa8da;
 }
 
-.tour-card-poetry .tour-remaining-badge {
+.listing-card-poetry .listing-remaining-badge {
     background: #fde8f2;
     color: #8a0040;
     border-color: #f5a8ce;
 }
 
-.tour-completed-badge {
+.listing-completed-badge {
     background: #f5f5f5;
     color: #888;
     border: 1px solid #ddd;
@@ -266,26 +266,26 @@
     white-space: nowrap;
 }
 
-.tour-card-desc {
+.listing-card-desc {
     font-size: 13px;
     color: #555;
     line-height: 1.5;
     margin-bottom: 8px;
 }
 
-.tour-card-desc p {
+.listing-card-desc p {
     margin: 0 0 8px;
 }
 
-.tour-card-desc p:last-child {
+.listing-card-desc p:last-child {
     margin-bottom: 0;
 }
 
-.tour-card-desc-full {
+.listing-card-desc-full {
     margin-top: 8px;
 }
 
-.tour-card-desc-toggle {
+.listing-card-desc-toggle {
     display: inline-block;
     margin-top: 2px;
     padding: 0;
@@ -298,36 +298,36 @@
     cursor: pointer;
 }
 
-.tour-card-desc-toggle:hover {
+.listing-card-desc-toggle:hover {
     text-decoration: underline;
 }
 
-.tour-card-meta {
+.listing-card-meta {
     font-size: 12px;
     color: #888;
     margin-bottom: 8px;
     font-style: italic;
 }
 
-.tour-card-footer {
+.listing-card-footer {
     border-top: 1px solid #eee;
     padding-top: 10px;
     margin-top: 4px;
 }
 
-.tour-view-link {
+.listing-view-link {
     color: var(--theme-green-dark);
     font-size: 13px;
     font-weight: bold;
     text-decoration: none;
 }
 
-.tour-history-details {
+.dates-collapsible-details {
     border-top: 1px solid #e0e0e0;
     margin-top: 8px;
 }
 
-.tour-history-summary {
+.dates-collapsible-summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -340,11 +340,11 @@
     color: #888;
 }
 
-.tour-history-summary::-webkit-details-marker {
+.dates-collapsible-summary::-webkit-details-marker {
     display: none;
 }
 
-.tour-history-summary::before {
+.dates-collapsible-summary::before {
     content: "▶";
     font-size: 9px;
     margin-right: 7px;
@@ -352,32 +352,32 @@
     display: inline-block;
 }
 
-details.tour-history-details[open] > .tour-history-summary::before {
+details.dates-collapsible-details[open] > .dates-collapsible-summary::before {
     transform: rotate(90deg);
 }
 
-.tour-history-hint {
+.dates-collapsible-hint {
     font-size: 11px;
     color: #aaa;
     font-weight: normal;
 }
 
-.tour-history-list {
+.dates-collapsible-list {
     margin-top: 6px;
     background: #fff;
     border-radius: 4px;
     border: 1px solid #eee;
 }
 
-.tour-view-link:hover {
+.listing-view-link:hover {
     text-decoration: underline;
 }
 
-.tour-card-music .tour-view-link {
+.listing-card-music .listing-view-link {
     color: #1006c6;
 }
 
-.tour-card-poetry .tour-view-link {
+.listing-card-poetry .listing-view-link {
     color: #8a0040;
 }
 
@@ -555,12 +555,12 @@ details.tour-history-details[open] > .tour-history-summary::before {
     line-height: 1.3;
 }
 
-.tour-card-music .perf-flyer-thumb {
+.listing-card-music .perf-flyer-thumb {
     background: #e8eaf6;
     border-color: #9fa8da;
 }
 
-.tour-card-poetry .perf-flyer-thumb {
+.listing-card-poetry .perf-flyer-thumb {
     background: #fde8f2;
     border-color: #f5a8ce;
 }
@@ -893,7 +893,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
    11. PODCAST SECTION
    ============================================================= */
 
-.perf-podcast-section {
+.perf-collapsible-section {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -901,7 +901,7 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
     overflow: hidden;
 }
 
-.perf-podcast-summary {
+.perf-collapsible-summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -915,11 +915,11 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
     letter-spacing: 0.03em;
 }
 
-.perf-podcast-summary::-webkit-details-marker {
+.perf-collapsible-summary::-webkit-details-marker {
     display: none;
 }
 
-.perf-podcast-summary::before {
+.perf-collapsible-summary::before {
     content: "▶";
     font-size: 10px;
     margin-right: 8px;
@@ -927,29 +927,29 @@ details.perf-flyer-gallery[open]>.perf-flyer-gallery-summary::before {
     display: inline-block;
 }
 
-details.perf-podcast-section[open]>.perf-podcast-summary::before {
+details.perf-collapsible-section[open]>.perf-collapsible-summary::before {
     transform: rotate(90deg);
 }
 
-.perf-podcast-summary:hover {
+.perf-collapsible-summary:hover {
     background: var(--theme-green-bg-light);
 }
 
-.perf-podcast-hint {
+.perf-collapsible-hint {
     font-size: 11px;
     color: #aaa;
     font-weight: normal;
     letter-spacing: 0;
 }
 
-.perf-podcast-list {
+.perf-collapsible-list {
     padding: 0 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-.perf-podcast-feed {
+.perf-card {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background: #fafafa;
@@ -1036,11 +1036,11 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     text-decoration: underline;
 }
 
-.perf-podcast-episodes-details {
+.perf-nested-details {
     border-top: 1px solid #eee;
 }
 
-.perf-podcast-episodes-summary {
+.perf-nested-summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1053,11 +1053,11 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     color: var(--theme-green-dark);
 }
 
-.perf-podcast-episodes-summary::-webkit-details-marker {
+.perf-nested-summary::-webkit-details-marker {
     display: none;
 }
 
-.perf-podcast-episodes-summary::before {
+.perf-nested-summary::before {
     content: "▶";
     font-size: 9px;
     margin-right: 7px;
@@ -1065,21 +1065,21 @@ details.perf-podcast-section[open]>.perf-podcast-summary::before {
     display: inline-block;
 }
 
-details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::before {
+details.perf-nested-details[open]>.perf-nested-summary::before {
     transform: rotate(90deg);
 }
 
-.perf-podcast-episodes-summary:hover {
+.perf-nested-summary:hover {
     background: var(--theme-green-bg-light);
 }
 
-.perf-podcast-episodes-hint {
+.perf-nested-hint {
     font-size: 11px;
     color: #aaa;
     font-weight: normal;
 }
 
-.perf-podcast-episodes-body {
+.perf-nested-body {
     padding: 0 0 4px;
 }
 
@@ -1206,7 +1206,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     gap: 10px;
 }
 
-.perf-podcast-episode-body {
+.perf-item-body {
     min-width: 0;
     flex: 1;
 }
@@ -1250,7 +1250,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     height: 32px;
 }
 
-.perf-podcast-more {
+.perf-more-btn {
     align-self: flex-start;
     font: inherit;
     font-size: 12px;
@@ -1264,7 +1264,7 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
     cursor: pointer;
 }
 
-.perf-podcast-more:hover {
+.perf-more-btn:hover {
     background: var(--theme-green-bg-alt);
 }
 
@@ -1512,14 +1512,14 @@ details.perf-podcast-episodes-details[open]>.perf-podcast-episodes-summary::befo
 }
 
 .event-row-with a,
-.tour-card-with a {
+.listing-card-with a {
     color: var(--theme-green-dark);
     text-decoration: none;
     font-weight: bold;
 }
 
 .event-row-with a:hover,
-.tour-card-with a:hover {
+.listing-card-with a:hover {
     text-decoration: underline;
 }
 
