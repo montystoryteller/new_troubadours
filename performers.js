@@ -2259,6 +2259,87 @@ function renderTroupeConfigs(troupe) {
 // reuse that renderer — and its date/venue/badge/flyer handling — as-is.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Co-performers + description dropdown (shared by tour/show cards and
+// event rows)
+// ---------------------------------------------------------------------------
+
+/**
+ * Ids of the OTHER performers billed on an event/tour/show record, seen
+ * from the current performer's page. Covers both ways a shared billing is
+ * recorded: an explicit performer_ids[] array, or a compound performer_id
+ * (a joint record whose own performer_ids/ids list its members). The
+ * current performer (and any troupe/alias ids standing in for them) are
+ * left out, as are ids with no performer record to name or link to.
+ * @param {object} record
+ * @returns {string[]}
+ */
+function coPerformerIdsFor(record) {
+  const out = [];
+  const add = (id) => {
+    if (!id || id === performerId || compoundIdsForMe.has(id)) return;
+    if (!performersLookup[id] || out.includes(id)) return;
+    out.push(id);
+  };
+  performerIdsOf(record).forEach((id) => {
+    const rec = performersLookup[id];
+    const members = rec?.performer_ids || rec?.ids || [];
+    if (compoundIdsForMe.has(id) && members.length > 0) {
+      members.forEach(add);
+    } else {
+      add(id);
+    }
+  });
+  return out;
+}
+
+/**
+ * Builds a "with A & B" line of links to the co-performers' pages, or null
+ * if there are none.
+ * @param {string[]} ids
+ * @param {string} className
+ * @returns {HTMLElement|null}
+ */
+function buildCoPerformerLine(ids, className) {
+  if (!ids || ids.length === 0) return null;
+  const line = document.createElement("div");
+  line.className = className;
+  line.appendChild(document.createTextNode("with "));
+  ids.forEach((id, i) => {
+    if (i > 0) line.appendChild(document.createTextNode(" & "));
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.textContent = performersLookup[id].name;
+    a.onclick = (e) => e.stopPropagation();
+    line.appendChild(a);
+  });
+  return line;
+}
+
+/**
+ * Builds a collapsed "About this event" dropdown from a description string
+ * (paragraphs separated by PARAGRAPH_SEPARATOR, as elsewhere), or null if
+ * there's no description text.
+ * @param {string|null|undefined} text
+ * @param {string} [label]
+ * @returns {HTMLElement|null}
+ */
+function buildDescriptionDropdown(text, label = "About this event") {
+  if (typeof text !== "string" || !text.trim()) return null;
+  const details = document.createElement("details");
+  details.className = "event-row-desc";
+  details.addEventListener("click", (e) => e.stopPropagation());
+  const summary = document.createElement("summary");
+  summary.className = "event-row-desc-summary";
+  summary.textContent = label;
+  details.appendChild(summary);
+  const body = document.createElement("div");
+  body.className = "event-row-desc-body";
+  appendParagraphs(body, text);
+  details.appendChild(body);
+  return details;
+}
+
 function tourDateToEventRow(tour, td) {
   return {
     name: tour.tour_name || tour.name,
@@ -2271,6 +2352,12 @@ function tourDateToEventRow(tour, td) {
     isPoetry: tour.isPoetry,
     isSpecial: tour.isSpecial,
     ticket_url: td.ticket_url,
+    // Rare per-date copy only — the tour's own description is already
+    // shown on the tour card above, so it isn't repeated on every row.
+    description: combineDescriptionWithPrefix(
+      td.description_prefix,
+      td.description,
+    ),
     // First of this date's own flyer(s), falling back to the tour's —
     // getEventLevelFlyers()/getTourLevelFlyers() (shared_utils.js) apply
     // the full event_flyer/event_flyer2/event_flyers and
@@ -2294,6 +2381,10 @@ function showDateToEventRow(show, sd) {
     performer_id: show.performer_id,
     isSpecial: show.isSpecial,
     ticket_url: sd.ticket_url,
+    description: combineDescriptionWithPrefix(
+      sd.description_prefix,
+      sd.description,
+    ),
     event_flyer:
       getEventLevelFlyers(sd)[0]?.filename || show.touring_event_flyer || null,
   };
@@ -2432,33 +2523,13 @@ function renderTourCard(container, tourId, tour) {
 
   card.appendChild(header);
 
-  // Co-performers line — shown when this tour has multiple performers
-  // and we are viewing it from one of their individual pages
-  if (Array.isArray(tour.performer_ids) && tour.performer_ids.length > 1) {
-    const coPerformers = tour.performer_ids
-      .filter((id) => id !== performerId)
-      .map((id) => {
-        const p = performersLookup[id];
-        if (!p) return null;
-        const a = document.createElement("a");
-        a.href = `performers.html?performer=${encodeURIComponent(id)}`;
-        a.textContent = p.name;
-        a.className = "tour-view-link";
-        a.onclick = (e) => e.stopPropagation();
-        return a;
-      })
-      .filter(Boolean);
-    if (coPerformers.length > 0) {
-      const coDiv = document.createElement("div");
-      coDiv.className = "tour-card-meta";
-      coDiv.appendChild(document.createTextNode("with "));
-      coPerformers.forEach((a, i) => {
-        if (i > 0) coDiv.appendChild(document.createTextNode(" & "));
-        coDiv.appendChild(a);
-      });
-      card.appendChild(coDiv);
-    }
-  }
+  // Co-performers line — other performers billed on this tour, seen from
+  // one of their individual pages
+  const tourCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(tour),
+    "tour-card-meta tour-card-with",
+  );
+  if (tourCoLine) card.appendChild(tourCoLine);
 
   // Description — collapsed by default (first paragraph, capped at
   // TOUR_CARD_DESC_PREVIEW_LENGTH chars), with a "more…" toggle that swaps
@@ -2603,6 +2674,12 @@ function renderTouringShowCard(container, tsId, ts) {
   header.appendChild(badge);
   card.appendChild(header);
 
+  const showCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(ts),
+    "tour-card-meta tour-card-with",
+  );
+  if (showCoLine) card.appendChild(showCoLine);
+
   // Full description — the show is the thing, so give it room
   if (ts.description) {
     const desc = document.createElement("div");
@@ -2721,31 +2798,13 @@ function renderEventRow(container, event) {
     detail.appendChild(t);
   }
 
-  // Co-performer credit for joint shows (e.g. "with Lucy Lill")
-  if (event.performer_id && compoundIdsForMe.has(event.performer_id)) {
-    const compound = performersLookup[event.performer_id];
-    const members = compound && (compound.performer_ids || compound.ids || []);
-    const coPerformers = (members || []).filter((id) => id !== performerId);
-    if (coPerformers.length > 0) {
-      const coDiv = document.createElement("div");
-      coDiv.className = "event-row-time";
-      coDiv.appendChild(document.createTextNode("with "));
-      coPerformers.forEach((id, i) => {
-        if (i > 0) coDiv.appendChild(document.createTextNode(" & "));
-        const p = performersLookup[id];
-        if (p) {
-          const a = document.createElement("a");
-          a.href = `performers.html?performer=${encodeURIComponent(id)}`;
-          a.textContent = p.name;
-          a.onclick = (e) => e.stopPropagation();
-          coDiv.appendChild(a);
-        } else {
-          coDiv.appendChild(document.createTextNode(id));
-        }
-      });
-      detail.appendChild(coDiv);
-    }
-  }
+  // Co-performer credit for shared bills (e.g. "with Lucy Lill") — from an
+  // explicit performer_ids[] list or a compound performer_id.
+  const eventCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(event),
+    "event-row-time event-row-with",
+  );
+  if (eventCoLine) detail.appendChild(eventCoLine);
 
   if (venue) {
     const v = document.createElement("div");
@@ -2788,6 +2847,10 @@ function renderEventRow(container, event) {
     badges.appendChild(a);
   }
   detail.appendChild(badges);
+
+  // Description dropdown (if the event has one)
+  const descDropdown = buildDescriptionDropdown(event.description);
+  if (descDropdown) detail.appendChild(descDropdown);
 
   // Flyer expand-button (if available)
   if (event.event_flyer?.trim()) {
