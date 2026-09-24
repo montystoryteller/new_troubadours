@@ -2429,6 +2429,49 @@
     }
   },
   "tours": {
+    "hannah-moore-winter-calling": {
+      "tour_name": "Winter Calling — Stories and Songs for the Turning of the Year",
+      "tour_dates": [
+        {
+          "date": "27/11/2026",
+          "venue_id": "ruskin-mill-gallery",
+          "isSpecial": true
+        },
+        {
+          "date": "06/12/2026",
+          "venue_id": "the-front-room-theatre-weston",
+          "isSpecial": true
+        },
+        {
+          "date": "10/12/2026",
+          "venue_id": "east-quay-watchet",
+          "isSpecial": true
+        },
+        {
+          "date": "13/12/2026",
+          "venue_id": "alma-tavern-theatre",
+          "isSpecial": true
+        },
+        {
+          "date": "18/12/2026",
+          "venue_id": "taunton-brewhouse",
+          "isSpecial": true
+        },
+        {
+          "date": "19/12/2026",
+          "venue_id": "pound-arts-corsham",
+          "isSpecial": true
+        }
+      ],
+      "name": "Winter Calling",
+      "performer_ids": [
+        "hannah-moore",
+        "danny-pedler"
+      ],
+      "tour_description": "Winter stories and songs to warm the bones and stir the heart.\n\n\n\nFrom true events in snow-clad forests, to solstice legends and fiery folk tales, this is a show, humming with myth and music, that celebrates the warmth, hope and glittering imagination that bring us together in the dark season. With storyteller Hannah Moore and musician Danny Pedler.",
+      "touring_event_flyer": "tour_hannah_moore_winter_calling_2026.jpg",
+      "isSpecial": true
+    },
     "adderstone-changelings-hildegardeners": {
       "tour_name": "Norn Iron Tour October 2026",
       "tour_dates": [
@@ -5826,7 +5869,8 @@
       "club": "plymouth-story-circle",
       "venue_id": "snapdragons-plymouth",
       "flyers": [
-        "2026_06_28_plymouth_storytelling_circle.jpg"
+        "2026_06_28_plymouth_storytelling_circle.jpg",
+        "2026_90_27_plymouth_snapdragons.webp"
       ]
     },
     {
@@ -12887,6 +12931,30 @@
         -1.55519
       ]
     },
+    "east-quay-watchet": {
+      "id": "east-quay-watchet",
+      "name": "East Quay, Watchet",
+      "full_address": "East Quay, Harbour Rd, Watchet, TA23 0AQ",
+      "city": "Watchet",
+      "postcode": "TA23 0AQ",
+      "url": "https://www.eastquaywatchet.co.uk/",
+      "latlon": [
+        51.18166,
+        -3.32897
+      ]
+    },
+    "taunton-brewhouse": {
+      "id": "taunton-brewhouse",
+      "name": "Taunton Brewhouse",
+      "full_address": "Taunton Brewhouse, Coal Orchard, Taunton, TA1 1JL",
+      "city": "Taunton",
+      "postcode": "TA1 1JL",
+      "url": "https://www.tauntonbrewhouse.co.uk/",
+      "latlon": [
+        51.01805,
+        -3.10225
+      ]
+    },
     "elis-rose-crown-episcopi": {
       "id": "elis-rose-crown-episcopi",
       "name": "Rose & Crown / Eli's Pub, Huish Episcopi",
@@ -16418,7 +16486,7 @@
     },
     "the-birley-centre-eastboune": {
       "id": "the-birley-centre-eastboune",
-      "name": "THe Birley Centre, Eastboune",
+      "name": "The Birley Centre, Eastboune",
       "city": "Eastbourne",
       "postcode": "BN21 4JR",
       "full_address": "The Birley Centre, 49 Carlisle Road, Eastbourne, BN21 4JR",
@@ -17775,7 +17843,7 @@
       "id": "monty-the-anywhens",
       "name": "Monty + The AnyWhens",
       "url": "https://montystoryteller.org/",
-      "bio": "Isle of Wight based storyteller (Tony 'Monty' Hirst plus folk and blues duo, THe AnyWhens (Glenn Koppany and Sue Caiun) telling combinations of songs and stories, as well as thematic fringe festival shows."
+      "bio": "Isle of Wight based storyteller (Tony 'Monty' Hirst plus folk and blues duo, The AnyWhens (Glenn Koppany and Sue Caiun) telling combinations of songs and stories, as well as thematic fringe festival shows."
     },
     "tim-ralphs": {
       "id": "tim-ralphs",
@@ -19085,6 +19153,13 @@
       "youtube": "https://music.youtube.com/channel/UC737h5dgq8jLYeMvrlTSSpg",
       "musician": true,
       "bio": "Jay McAllister, known by his stage name Beans On Toast, is a British folk singer-songwriter from Braintree, Essex, England, who rose to prominence out of the UK folk scene in 2005. Beans on Toast has released fifteen studio albums, traditionally releasing a new record each year on 1 December, McAllister's birthday."
+    },
+    "danny-pedler": {
+      "id": "danny-pedler",
+      "name": "Danny Pedler",
+      "url": "https://takeart.org/team/danny-pedler",
+      "bio": "Folk musician",
+      "musician": true
     },
     "jess-silk": {
       "id": "jess-silk",
