@@ -402,6 +402,17 @@
             </div>
 
             <div class="field-row">
+                <label>Other performers</label>
+                <div>
+                    <div id="tour-other-performers-field"></div>
+                    <div class="field-hint">Optional. Anyone else on the tour beyond the main performer(s) above
+                        (e.g. a support act or accompanist) — saved as <code>other_performer_ids</code>. Type a name to
+                        pick an existing performer or create a new one. For someone on only some dates, use the
+                        per-date field instead.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Description</label>
                 <textarea id="tour-description" placeholder="Tour description"></textarea>
             </div>
@@ -1282,7 +1293,7 @@
                     <code>promoter</code>), any event at one of the promoter's clubs (a <code>club</code> whose id
                     is the promoter's id, or whose own <code>promoter_id</code> is), and those clubs' own venue and
                     guest <code>feature_slots</code>. A tour's performer is taken from its linked repertoire show when it
-                    has none of its own. Only ids that really exist in <code>venues</code> / <code>performers</code>
+                    has none of its own, and a tour's or tour date's <code>other_performer_ids</code> count too. Only ids that really exist in <code>venues</code> / <code>performers</code>
                     are offered. Everything starts ticked, with a count of how many listings each comes from —
                     untick anything that's a one-off rather than part of the promoter's regular roster (these lists
                     are meant as a <em>general</em> roster, not a full history), then click "Apply checked rows".
@@ -1474,6 +1485,7 @@
         let festivalsLookup = {};
         let repertoireShowsLookup = {};
         let clubIds = [];
+        let tourOtherPerformersField; // list widget for tour.other_performer_ids
         // Raw `clubs` array from events_normalized.json (recurring club nights).
         let clubsList = [];
         // Top-level `promoters` registry from events_normalized.json, keyed by promoter_id.
@@ -3441,6 +3453,27 @@
                 </div>
                 ${kind === "tour" ? `
                 <div class="field-row">
+                    <label>Title override</label>
+                    <div>
+                        <input type="text" class="dr-title" placeholder="(rare) show a different title for this date only">
+                        <div class="field-hint">Saved as <code>title</code> on this date. Leave blank to use the tour's name.</div>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <label>Description override</label>
+                    <div>
+                        <textarea class="dr-description" placeholder="(rare) a different description for this date only"></textarea>
+                        <div class="field-hint">Saved as <code>description</code> on this date. Leave blank to use the tour's description.</div>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <label>Other performers</label>
+                    <div>
+                        <div class="dr-other-performers"></div>
+                        <div class="field-hint">Optional. Other performers appearing on this date only — saved as <code>other_performer_ids</code>.</div>
+                    </div>
+                </div>
+                <div class="field-row">
                     <label>Club event</label>
                     <input type="text" class="dr-club-event" list="clubOptions" placeholder="(optional) link this date into a club's event list">
                 </div>
@@ -3506,6 +3539,7 @@
                     flyerRowsContainer.appendChild(flyerRowTemplate());
                 });
                 row._flyerRowsContainer = flyerRowsContainer;
+                row._otherPerformersField = buildPerformerIdListField(grid.querySelector(".dr-other-performers"), "Add another performer");
             }
             return row;
         }
@@ -3553,6 +3587,12 @@
                 if (kind === "tour") {
                     const clubEvent = row.querySelector(".dr-club-event").value.trim();
                     if (clubEvent) entry.club_event = clubEvent;
+                    const dateTitle = row.querySelector(".dr-title").value.trim();
+                    if (dateTitle) entry.title = dateTitle;
+                    const dateDescription = encodeParagraphBreaks(row.querySelector(".dr-description").value);
+                    if (dateDescription) entry.description = dateDescription;
+                    const dateOthers = readPerformerIdListField(row._otherPerformersField).filter((id, i, a) => a.indexOf(id) === i);
+                    if (dateOthers.length) entry.other_performer_ids = dateOthers;
                     entry.isSpecial = row.querySelector(".dr-special").checked;
                     const flyerFields = readFlyerRows(row._flyerRowsContainer, "event_flyer", "event_flyers");
                     if (flyerFields.event_flyer) entry.event_flyer = flyerFields.event_flyer;
@@ -3788,6 +3828,9 @@
                 promoterInput.dispatchEvent(new Event("input"));
                 if (kind === "tour") {
                     if (d.club_event) row.querySelector(".dr-club-event").value = d.club_event;
+                    row.querySelector(".dr-title").value = d.title || "";
+                    row.querySelector(".dr-description").value = decodeParagraphBreaksForEdit(d.description || "");
+                    populatePerformerIdListField(row._otherPerformersField, d.other_performer_ids);
                     row.querySelector(".dr-special").checked = d.isSpecial !== false;
                     // event_flyer(s) for a tour date are intentionally left
                     // for the person to re-add — flyerRowTemplate's format
@@ -3863,6 +3906,7 @@
 
         function initTourForm() {
             tourPerformerMulti = buildMultiPerformerField(document.getElementById("tour-performer-field"));
+            tourOtherPerformersField = buildPerformerIdListField(document.getElementById("tour-other-performers-field"), "Add another performer");
             document.getElementById("tour-date-rows").innerHTML = "";
             addTourDateRow();
             document.getElementById("tour-flyer-rows").innerHTML = "";
@@ -3929,6 +3973,10 @@
             if (name) record.name = name;
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            // Anyone already listed as a main performer is dropped, as are repeats.
+            const mainIds = new Set([perf.performer_id, ...(perf.performer_ids || [])].filter(Boolean));
+            const otherIds = readPerformerIdListField(tourOtherPerformersField).filter((id, i, a) => !mainIds.has(id) && a.indexOf(id) === i);
+            if (otherIds.length) record.other_performer_ids = otherIds;
             const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
             const flyerFields = readFlyerRows(document.getElementById("tour-flyer-rows"), "touring_event_flyer", "touring_event_flyers");
             const video = document.getElementById("tour-video").value.trim();
@@ -6381,12 +6429,12 @@
                 }));
                 Object.values(data.tours || {}).forEach(t => {
                     const rep = shows[t.repertoire_id] || {};
-                    const tourPerformers = idsOf(t.performer_id || rep.performer_id, t.performer_ids || rep.performer_ids);
+                    const tourPerformers = idsOf(t.performer_id || rep.performer_id, [...(t.performer_ids || rep.performer_ids || []), ...(t.other_performer_ids || [])]);
                     (t.tour_dates || []).forEach(d => {
                         if (!ours(d)) return;
                         const label = t.name || t.tour_name || rep.name;
                         note(venues, d.venue_id, label);
-                        (d.performer_id ? [d.performer_id] : tourPerformers).forEach(a => note(artists, a, label));
+                        [...(d.performer_id ? [d.performer_id] : tourPerformers), ...(d.other_performer_ids || [])].forEach(a => note(artists, a, label));
                     });
                 });
                 Object.values(shows).forEach(sh => {
