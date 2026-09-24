@@ -2015,6 +2015,26 @@
           "fb_event": 1036717522109697,
           "ticket_url": "https://www.eventbrite.co.uk/e/hugh-lupton-and-sarah-moody-when-the-morning-stars-sang-tickets-1993767264559",
           "date_added": "27/08/2026"
+        },
+        {
+          "date": "17/10/2026",
+          "venue_id": "buckland-newton-village-hall",
+          "time": "7.30pm",
+          "price": "£14 (£6)",
+          "promoter_id": "artsreach",
+          "age": "Recommended 14+",
+          "ticket_url": "https://artsreach.co.uk/event/when-the-morning-stars",
+          "date_added": "24/09/2026"
+        },
+        {
+          "date": "18/10/2026",
+          "venue_id": "burton-bradstock-village-hall",
+          "time": "7pm",
+          "price": "£14 (£7 / £35)",
+          "promoter_id": "artsreach",
+          "age": "Recommended 14+",
+          "ticket_url": "https://artsreach.co.uk/event/when-the-morning-stars",
+          "date_added": "24/09/2026"
         }
       ],
       "performer_ids": [
@@ -15743,6 +15763,30 @@
         -0.43007
       ]
     },
+    "buckland-newton-village-hall": {
+      "id": "buckland-newton-village-hall",
+      "name": "Buckland Newton Village Hall",
+      "city": "Dorchester",
+      "postcode": "DT2 7BZ",
+      "full_address": "Buckland Newton Village Hall, Major's Common, Buckland Newton, Dorchester, DT2 7BZ",
+      "url": "https://www.bucklandnewton.com/",
+      "latlon": [
+        50.84544,
+        -2.43666
+      ]
+    },
+    "burton-bradstock-village-hall": {
+      "id": "burton-bradstock-village-hall",
+      "name": "Burton Bradstock Village Hall",
+      "city": "Bridport",
+      "postcode": "DT6 4QD",
+      "full_address": "Burton Bradstock Village Hall, Church Street, Burton Bradstock, DT6 4QD",
+      "url": "https://www.burtonbradstockvillage.org/villagehall",
+      "latlon": [
+        50.70326,
+        -2.72498
+      ]
+    },
     "capel-le-ferne-village-hall": {
       "id": "capel-le-ferne-village-hall",
       "name": "Capel le Ferne Village Hall",
@@ -18784,6 +18828,15 @@
       "instagram": "jess_silk",
       "musician": true,
       "bio": "Jess Silk is a guitarist, singer and songwriter from the Black Country. Her passionate and melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, powerful voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene."
+    },
+    "mexican-dave": {
+      "id": "mexican-dave",
+      "name": "Mexican Dave",
+      "url": "https://www.mexicandave.uk/",
+      "facebook": "MexicanDaveMusic",
+      "instagram": "MexicanDaveMusic",
+      "musician": true,
+      "bio": "Mexican Dave is a rising folk-punk artist based in Bristol. Following the release of his debut EP, Kinda Wasted, he has taken his energetic performances across the UK, playing everywhere from intimate pubs and cozy house shows to renowned venues and major festivals like 2000 Trees, Beautiful Days, Barnstomper and Here for the Music."
     },
     "joe-solo": {
       "id": "joe-solo",
