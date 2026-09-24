@@ -914,11 +914,23 @@ function renderPerformer() {
     .filter(([, f]) => (f.performers || []).some((p) => performerMatches(p)))
     .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
 
+  // Tours where this performer appears only via other_performer_ids. They
+  // aren't in myTours (the tour's own performer billing) but everyone else
+  // on the bill is still a collaborator — see collectCollaborators().
+  const myAdditionalTours = Object.entries(toursLookup).filter(
+    ([, t]) =>
+      !performerMatches(t) && getTourAdditionalPerformerIds(t).has(performerId),
+  );
+
   // Collaborators — note myFestivals is deliberately excluded here: sharing
   // a festival bill isn't performing together (see collectCollaborators()).
   renderCollaboratorsSection(
     collectCollaborators([
       ...myTours.map(([, t]) => ({
+        record: t,
+        displayName: t.tour_name || t.name,
+      })),
+      ...myAdditionalTours.map(([, t]) => ({
         record: t,
         displayName: t.tour_name || t.name,
       })),
@@ -2066,6 +2078,67 @@ function renderPodcastAppearancesSection(performer) {
 // not a collaboration with someone else.
 // ---------------------------------------------------------------------------
 
+// Additional performers on a tour, per tour.other_performer_ids and
+// tour_dates[].other_performer_ids. A date's own non-empty list REPLACES
+// the tour-level one for that date (same rule as the tour page's
+// getAdditionalPerformerIds() in tour_display.js). Returns one list per
+// date — i.e. one per distinct bill — or just [tour-level list] if the
+// tour has no dates. Nothing on the data says who "headlines", so these
+// lists plus the tour's performer_id/performer_ids are treated as one bill.
+function getTourAdditionalLists(tour) {
+  const tourIds = Array.isArray(tour?.other_performer_ids)
+    ? tour.other_performer_ids.filter(Boolean)
+    : [];
+  const dates = Array.isArray(tour?.tour_dates) ? tour.tour_dates : [];
+  if (dates.length === 0) return tourIds.length > 0 ? [tourIds] : [];
+  return dates
+    .map((td) => {
+      const dateIds = Array.isArray(td?.other_performer_ids)
+        ? td.other_performer_ids.filter(Boolean)
+        : [];
+      return dateIds.length > 0 ? dateIds : tourIds;
+    })
+    .filter((list) => list.length > 0);
+}
+
+// Everyone who appears as an additional performer on any date of the tour.
+function getTourAdditionalPerformerIds(tour) {
+  const result = new Set();
+  getTourAdditionalLists(tour).forEach((list) =>
+    list.forEach((id) => result.add(id)),
+  );
+  return result;
+}
+
+// Other additional performers who share at least one date's bill with `id`.
+function getCoAdditionalPerformerIds(tour, id) {
+  const result = new Set();
+  getTourAdditionalLists(tour).forEach((list) => {
+    if (list.includes(id)) list.forEach((other) => result.add(other));
+  });
+  return result;
+}
+
+// The individual headline performer ids of a tour: explicit performer_ids,
+// plus performer_id — expanded to its declared members when it's a
+// compound/troupe id (same convention as the compound handling below).
+function getTourHeadlinerIds(tour) {
+  const ids = new Set();
+  if (Array.isArray(tour?.performer_ids)) {
+    tour.performer_ids.forEach((id) => id && ids.add(id));
+  }
+  if (tour?.performer_id) {
+    const rec = performersLookup[tour.performer_id];
+    const members = rec?.performer_ids || rec?.ids || [];
+    if (Array.isArray(members) && members.length > 0) {
+      members.forEach((id) => id && ids.add(id));
+    } else {
+      ids.add(tour.performer_id);
+    }
+  }
+  return ids;
+}
+
 function collectCollaborators(records) {
   const map = new Map(); // collaboratorId -> Set of shared show/tour names
 
@@ -2087,6 +2160,24 @@ function collectCollaborators(records) {
       const compound = performersLookup[record.performer_id];
       const compoundMembers = compound?.performer_ids || compound?.ids || [];
       compoundMembers.forEach((id) => castIds.add(id));
+    }
+
+    // Additional tour performers (other_performer_ids). The data doesn't
+    // say who headlines, so the whole bill counts: if this performer is
+    // billed on the tour (performerMatches), everyone additional is a
+    // collaborator; if they're themselves an additional performer, the
+    // tour's billed performers are, plus any other additional performers
+    // sharing a date's bill with them.
+    const additionalIds = getTourAdditionalPerformerIds(record);
+    if (additionalIds.size > 0) {
+      if (performerMatches(record)) {
+        additionalIds.forEach((id) => castIds.add(id));
+      } else if (additionalIds.has(performerId)) {
+        getTourHeadlinerIds(record).forEach((id) => castIds.add(id));
+        getCoAdditionalPerformerIds(record, performerId).forEach((id) =>
+          castIds.add(id),
+        );
+      }
     }
 
     castIds.forEach((id) => {
