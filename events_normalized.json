@@ -10354,6 +10354,21 @@
       "eventId": "20261004-unknown-performer-savoy-theatre-monmouth"
     },
     {
+      "name": "Myths and Legends on the Isle of Wight [Holly Medland]",
+      "showname": "Myths and Legends on the Isle of Wight",
+      "date": "07/10/2026",
+      "venue_id": "carisbrooke-castle-museum",
+      "performer_id": "holly-medland",
+      "eventId": "20261007-holly-medland-carisbrooke-castle-museum",
+      "date_added": "24/09/2026",
+      "time": "7pm",
+      "price": "£7.50",
+      "description": "Discover the Isle of Wight’s strange history through its stories, where fact and folklore weave seamlessly together.\n\n\n\nJoin storyteller Holly Medland for an enchanting retelling of traditional Isle of Wight folktales, featuring a colourful cast of sly smugglers, heroic hermits, and raging river spirits. After each tale, we'll dive into the real-world history, local origins, and forgotten truths lurking behind the myth.\nStep into the space between fact and fiction, and decide for yourself where the truth really lies.",
+      "event_flyer": "2026_10_07_medland_island_carisbrooke.jpg",
+      "ticket_url": "https://www.eventbrite.co.uk/e/isle-of-wight-myths-and-legends-tickets-2002196186692",
+      "isSpecial": true
+    },
+    {
       "name": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland [Lisa Schneidau]",
       "showname": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland",
       "date": "07/10/2026",
@@ -14989,6 +15004,18 @@
       "latlon": [
         50.76368,
         -1.29807
+      ]
+    },
+    "carisbrooke-castle-museum": {
+      "id": "carisbrooke-castle-museum",
+      "name": "Carisbrooke Castle Museum",
+      "full_address": "Carisbrooke Castle Museum, Carisbrooke Castle, Castle Hill, Newport Isle of Wight, PO30 1XY",
+      "city": "Newport",
+      "postcode": "PO30 1XY",
+      "url": "https://carisbrookecastlemuseum.org.uk/about-the-museum/",
+      "latlon": [
+        50.68766,
+        -1.31365
       ]
     },
     "the-waverley-carisbrooke": {
