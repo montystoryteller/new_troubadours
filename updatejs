@@ -26,15 +26,22 @@ import re
 import sys
 from pathlib import Path
 
+
 # Matches: src="...basename.js" or src="...basename.js?anything"
 # Captures: (1) everything before and including the filename,
 #           (2) the existing "?...query" if present (optional),
 #           (3) the closing quote character.
 def build_pattern(basename: str) -> re.Pattern:
     escaped = re.escape(basename)
-    return re.compile(
-        r'(src=(["\'])[^"\']*' + escaped + r')(\?[^"\']*)?(\2)'
-    )
+
+    if escaped.endswith(".js"):
+        return re.compile(r'(src=(["\'])[^"\']*' + escaped + r')(\?[^"\']*)?(\2)')
+    elif escaped.endswith(".css"):
+        return re.compile(
+            r'(<link rel="stylesheet" href=(["\'])[^"\']*'
+            + escaped
+            + r')(\?[^"\']*)?(\2)'
+        )
 
 
 def next_version(existing_query: str | None, scheme: str) -> str:
@@ -75,13 +82,15 @@ def main() -> int:
         "references to a given JS file, across all HTML files in a tree.",
     )
     parser.add_argument(
-        "-r", "--refers-to",
+        "-r",
+        "--refers-to",
         required=True,
         metavar="FILE",
         help="Basename of the JS file to bump references to, e.g. shared_utils.js",
     )
     parser.add_argument(
-        "-d", "--dir",
+        "-d",
+        "--dir",
         default=".",
         metavar="DIR",
         help="Root directory to scan for .html files (default: current directory)",
