@@ -142,6 +142,8 @@
             <button class="type-tab" data-type="performer">New Performer</button>
             <button class="type-tab" data-type="venue">New Venue</button>
             <button class="type-tab" data-type="podcast">Podcast Series</button>
+            <button class="type-tab" data-type="promoter">New Promoter</button>
+            <button class="type-tab" data-type="club">New Club</button>
             <button class="type-tab" data-type="festival">Festival</button>
             <button class="type-tab" data-type="enrich">Enrich</button>
         </div>
@@ -247,6 +249,18 @@
                     <input type="text" id="ev-club" list="clubOptions"
                         placeholder="Existing club id, if this is a guest spot at a club night">
                     <div class="field-hint">Leave blank for a standalone show with no club night.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Promoter</label>
+                <div>
+                    <input type="text" id="ev-promoter" list="promoterOptions"
+                        placeholder="Promoter id from the promoters registry, e.g. crickcrack">
+                    <div class="field-hint" id="ev-promoter-hint" style="display:none;"></div>
+                    <div class="field-hint">Optional. Saved as <code>promoter_id</code>. Pick from the list (typing a
+                        promoter's name also works — it's converted to its id). Separate from Club: a club is a
+                        recurring night, a promoter is whoever is putting this event on.</div>
                 </div>
             </div>
 
@@ -898,6 +912,199 @@
             </div>
         </div>
 
+        <!-- ── Promoter panel ──────────────────────────────────── -->
+        <div class="panel" id="panel-promoter" style="display:none;">
+            <h2>New Promoter</h2>
+            <p class="field-hint">Adds an entry to the top-level <code>promoters</code> registry — a promoter or
+                production company in its own right. Once it's registered, pick it from the Promoter box on an
+                event, tour date or show date (saved there as <code>promoter_id</code>). Type the name of an
+                existing promoter to edit it instead.</p>
+
+            <div class="field-row">
+                <label>Promoter id</label>
+                <div>
+                    <input type="text" id="promoter-key" placeholder="auto-suggested, edit if needed">
+                    <div class="field-hint">Often the same slug already used as a <code>club</code> value elsewhere
+                        (e.g. <code>crickcrack</code>) — if so, reuse it here so the two line up.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Name</label>
+                <div>
+                    <input type="text" id="promoter-name" list="promoterNameOptions" placeholder="e.g. Crick Crack Club">
+                    <div id="promoter-name-status" class="entity-status"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="promoter-description" placeholder="(optional) about this promoter"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Website</label>
+                <input type="url" id="promoter-link" placeholder="saved as promoter_link">
+            </div>
+
+            <div class="field-row">
+                <label>Ticketing page</label>
+                <input type="url" id="promoter-ticketing-url" placeholder="(optional) their TicketSource / Eventbrite organiser page — saved as ticketing_url">
+            </div>
+
+            <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="promoter-facebook">
+            </div>
+
+            <div class="field-row">
+                <label>Email</label>
+                <input type="text" id="promoter-email">
+            </div>
+
+            <div class="field-row">
+                <label>Venues</label>
+                <div>
+                    <div id="promoter-venues-field"></div>
+                    <div class="field-hint">Venues this promoter regularly puts events on (<code>promoter_venues</code>).
+                        Use "+ details" on a row to add a venue that doesn't exist yet.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Artists</label>
+                <div>
+                    <div id="promoter-artists-field"></div>
+                    <div class="field-hint">Performers this promoter regularly books (<code>promoter_artists</code>) — a
+                        general roster, not tied to any one event.</div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addPromoterToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearPromoterForm()">Clear form</button>
+            </div>
+        </div>
+
+        <!-- ── Club panel ──────────────────────────────────────── -->
+        <div class="panel" id="panel-club" style="display:none;">
+            <h2>New Club</h2>
+            <p class="field-hint">Adds a recurring story-club night to the top-level <code>clubs</code> array — the home
+                record for a <code>club</code> id used elsewhere (e.g. in the Club box on an event). Type the name of an
+                existing club to edit it instead. This is for the regular night itself; one-off guest spots at it are
+                added as events on the Specific / Music Event tab.</p>
+
+            <div class="field-row">
+                <label>Club id</label>
+                <div>
+                    <input type="text" id="club-key" placeholder="auto-suggested, edit if needed">
+                    <div class="field-hint">Short slug other records use to refer to this club. Changing an existing
+                        club's id will break any events that reference the old one.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Name</label>
+                <div>
+                    <input type="text" id="club-name" list="clubNameOptions" placeholder="e.g. Tell Tales Club">
+                    <div id="club-name-status" class="entity-status"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Description</label>
+                <textarea id="club-description" placeholder="(optional) about this club"></textarea>
+            </div>
+
+            <div class="field-row">
+                <label>Schedule</label>
+                <div>
+                    <input type="text" id="club-schedule" placeholder="e.g. 3rd tuesday, Every Thursday">
+                    <div class="field-hint">Free-text recurrence rule. A structured (object-form) schedule on an existing
+                        club is shown as JSON and saved back as an object.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Skipped dates</label>
+                <div>
+                    <input type="text" id="club-exceptions" placeholder="(optional) comma-separated, e.g. 24/02/2026, 08/2026">
+                    <div class="field-hint">Saved as <code>exceptions</code>: <code>DD/MM/YYYY</code> skips one night,
+                        <code>MM/YYYY</code> skips that whole month.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Time</label>
+                <input type="text" id="club-time" placeholder="e.g. 7.30-9pm">
+            </div>
+
+            <div class="field-row">
+                <label>Price</label>
+                <input type="text" id="club-price" placeholder="e.g. Free, or £5">
+            </div>
+
+            <div class="field-row">
+                <label>Venue</label>
+                <div>
+                    <div id="club-venue-field"></div>
+                    <div class="field-hint">Also the default venue for events that opt in with
+                        <code>inheritClubData</code>. Leave blank for an online club or one with only a free-text
+                        <code>location</code> (an existing <code>location</code> is kept when editing).</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Promoter</label>
+                <div>
+                    <input type="text" id="club-promoter" list="promoterOptions" placeholder="(optional) promoter id, if the club is run by a registered promoter">
+                    <div class="field-hint" id="club-promoter-hint" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Website / link</label>
+                <input type="url" id="club-link">
+            </div>
+
+            <div class="field-row">
+                <label>Facebook</label>
+                <input type="url" id="club-facebook">
+            </div>
+
+            <div class="field-row">
+                <label>Instagram</label>
+                <input type="url" id="club-instagram">
+            </div>
+
+            <div class="field-row">
+                <label>Ticketing page</label>
+                <input type="url" id="club-tickets-url" placeholder="(optional) saved as tickets_url">
+            </div>
+
+            <div class="field-row">
+                <label>Email</label>
+                <input type="text" id="club-email">
+            </div>
+
+            <div class="field-row">
+                <label>Club flyer</label>
+                <input type="text" id="club-flyer" placeholder="filename.jpg — generic flyer shown when there's no event-specific one">
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="club-online"> Meets online</label>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-add-batch" onclick="addClubToBatch()">Add to batch</button>
+                <button class="btn-clear-form" onclick="clearClubForm()">Clear form</button>
+            </div>
+        </div>
+
         <!-- ── Enrich ──────────────────────────────────────────── -->
         <div class="panel" id="panel-enrich" style="display:none;">
             <h2>Enrich existing data</h2>
@@ -1052,14 +1259,13 @@
                     Checks every entry in the top-level <code>promoters</code> registry: that it has a
                     non-empty <code>promoter_venues</code> list and a non-empty <code>promoter_artists</code>
                     list, and that every id in each actually points at a real venue/performer. Also flags a
-                    promoter whose id doesn't turn up as a <code>club</code> value anywhere (<code>events</code>,
+                    promoter whose id doesn't turn up as a <code>club</code> or <code>promoter_id</code> value anywhere (<code>events</code>,
                     <code>specificEvents</code>/<code>musicEvents</code>/<code>poetryEvents</code>, tours, or
                     repertoire show dates) — registering a promoter is optional enrichment layered onto a club
                     id already used elsewhere, so this is usually a typo between the two rather than an actual
-                    error, but worth a look either way. This tool doesn't otherwise manage promoters — nothing
-                    here builds or edits one — and it's report only, like the duplicate-venues check above:
+                    error, but worth a look either way. Promoters themselves are created and edited in the New Promoter tab; this check is report only, like the duplicate-venues check above:
                     there's no safe way to guess which ids a promoter should actually be associated with, so
-                    fixing a flagged one means editing the loaded file directly.
+                    fixing a flagged one means editing that promoter (New Promoter tab) or the loaded file directly.
                 </p>
                 <button class="btn-add-batch" id="enrich-promoter-scan-btn" disabled>Scan promoter
                     references</button>
@@ -1180,16 +1386,15 @@
                 <code>newPerformers</code> into <code>performers</code>, <code>newVenues</code> into
                 <code>venues</code>, then merge each record into its matching top-level array/object
                 (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
-                <code>repertoire_shows</code>, <code>podcasts</code>). <code>podcastEpisodeAdditions</code>
+                <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>clubs</code> holds new recurring club nights — append them to the top-level <code>clubs</code> array (not <code>specificEvents</code>, which is where one-off events at a club go). <code>podcastEpisodeAdditions</code>
                 is different: each entry's <code>item</code> needs appending, by hand, into the
                 <code>items</code> array of the existing podcast named by its <code>podcast_id</code> —
                 it's a patch against a podcast that already exists, not a new top-level record.
                 <br><br>
-                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code> and
-                <code>updatedPodcasts</code> come from using "Edit this record" on an existing entry — each
+                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code>, <code>updatedPodcasts</code>, <code>updatedPromoters</code> and <code>updatedClubs</code> come from using "Edit this record" on an existing entry — each
                 is a <strong>complete, edited replacement</strong> for the entry with that same id/key, not a
                 partial patch. Overwrite the matching entry in <code>performers</code> / <code>venues</code> /
-                <code>festivals</code> / <code>podcasts</code> with it wholesale (any field you didn't touch
+                <code>festivals</code> / <code>podcasts</code> / <code>promoters</code> with it wholesale (for <code>updatedClubs</code>, the <code>clubs</code> array entry whose <code>name</code> is that key — some older records have no <code>club</code> id, and two ids are shared, so the name is the only unique handle) (any field you didn't touch
                 is carried over unchanged from what was loaded, but any field you cleared out will be gone
                 from the replacement — check before overwriting if that matters).
                 <br><br>
@@ -1224,6 +1429,9 @@
     <datalist id="venueTypeOptions"></datalist>
     <datalist id="ageRatingOptions"></datalist>
     <datalist id="clubOptions"></datalist>
+    <datalist id="promoterOptions"></datalist>
+    <datalist id="promoterNameOptions"></datalist>
+    <datalist id="clubNameOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
 
@@ -1239,6 +1447,10 @@
         let festivalsLookup = {};
         let repertoireShowsLookup = {};
         let clubIds = [];
+        // Raw `clubs` array from events_normalized.json (recurring club nights).
+        let clubsList = [];
+        // Top-level `promoters` registry from events_normalized.json, keyed by promoter_id.
+        let promotersLookup = {};
         let existingTourKeys = new Set();
         let existingShowKeys = new Set();
         let existingFestivalKeys = new Set();
@@ -1253,6 +1465,11 @@
         const updatedVenues = {};
         const updatedFestivals = {};
         const updatedPodcasts = {};
+        const updatedPromoters = {};
+        // Keyed by the club's NAME as loaded (not its id): a few records have no
+        // `club` id and two ids are shared by two records, so name is the only
+        // unique handle. Complete replacement records, like the other updated*.
+        const updatedClubs = {};
         // Events have no stable id in events_normalized.json (unlike
         // performers/venues/festivals/podcasts), so there's no natural key
         // to patch by. Keyed here as "<bucket>#<original array index>" —
@@ -1280,10 +1497,10 @@
         // than down by each panel's functions, since the Venue tab's static
         // wiring runs (and calls initVenueMatcher()) at script-load time,
         // before that section of the script is otherwise reached.
-        let perfMatcher, venueMatcher, festivalMatcher, podcastMatcher;
+        let perfMatcher, venueMatcher, festivalMatcher, podcastMatcher, promoterMatcher, clubMatcher;
 
         // Batch of records waiting to be exported
-        const batch = { events: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], podcastEpisodeAdditions: [] };
+        const batch = { clubs: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], promoters: [], recurringClubs: [], podcastEpisodeAdditions: [] };
 
         // ── Paragraph-break encoding ─────────────────────────────────────────
         // House convention (see tour_description in events-schema.json): a
@@ -1439,6 +1656,7 @@
                     <div class="field-hint entity-address-guess-hint" style="display:none;"></div>
                     <input data-field="postcode" type="text" placeholder="Postcode">
                     <input data-field="url" type="url" placeholder="Venue website URL">
+                    <textarea data-field="description" placeholder="Description (optional)"></textarea>
                     <div class="latlon-row">
                         <input data-field="latlon" type="text" placeholder="Latitude, longitude (optional, e.g. 51.5, -0.12)">
                         <button type="button" class="btn-geocode entity-geocode-btn">📍 Geocode</button>
@@ -1504,6 +1722,7 @@
                     detailsPanel.querySelector('[data-field="postcode"]').value = record.postcode || "";
                     detailsPanel.querySelector('[data-field="full_address"]').value = record.full_address || "";
                     detailsPanel.querySelector('[data-field="url"]').value = record.url || "";
+                    detailsPanel.querySelector('[data-field="description"]').value = decodeParagraphBreaksForEdit(record.description);
                     detailsPanel.querySelector('[data-field="latlon"]').value =
                         (record.latlon && record.latlon.length === 2) ? record.latlon.join(", ") : "";
                 }
@@ -1545,13 +1764,14 @@
                 postcode: detailsPanel.querySelector('[data-field="postcode"]').value.trim(),
                 full_address: detailsPanel.querySelector('[data-field="full_address"]').value.trim(),
                 url: detailsPanel.querySelector('[data-field="url"]').value.trim(),
+                description: detailsPanel.querySelector('[data-field="description"]').value.trim(),
                 latlon,
             };
         }
 
         // Merges this widget's editable fields (plus a possibly-changed
         // name) into a clone of the original matched record. Fields the
-        // widget doesn't expose (social links, description, etc. for a
+        // widget doesn't expose (social links, venue type, etc. for a
         // venue) come through untouched from the clone.
         function mergeEntityRecord(kind, original, name, panelValues) {
             const merged = JSON.parse(JSON.stringify(original));
@@ -1564,6 +1784,7 @@
                 ["city", "postcode", "full_address", "url"].forEach(f => {
                     if (panelValues[f]) merged[f] = panelValues[f]; else delete merged[f];
                 });
+                if (panelValues.description) merged.description = encodeParagraphBreaks(panelValues.description); else delete merged.description;
                 if (panelValues.latlon) merged.latlon = panelValues.latlon; else delete merged.latlon;
             }
             return merged;
@@ -1620,6 +1841,8 @@
                     if (parts.length === 2 && parts.every(n => !isNaN(n))) record.latlon = parts;
                 } else if (inp.dataset.field === "bio") {
                     record.bio = encodeParagraphBreaks(v);
+                } else if (inp.dataset.field === "description") {
+                    record.description = encodeParagraphBreaks(v);
                 } else {
                     record[inp.dataset.field] = v;
                 }
@@ -2003,7 +2226,7 @@
         // relevant when billing several individuals together under a new group
         // name. Used wherever we just need "zero or more performers": a troupe's
         // own member list, or multiple guests on a podcast episode.
-        function buildPerformerIdListField(container, addLabel = "Add another performer") {
+        function buildPerformerIdListField(container, addLabel = "Add another performer", kind = "performer") {
             container.innerHTML = "";
             const list = document.createElement("div");
             list.className = "multi-performer-list";
@@ -2014,13 +2237,13 @@
                 row.className = "multi-performer-row";
                 const fieldHolder = document.createElement("div");
                 fieldHolder.style.flex = "1";
-                row._field = buildEntityField(fieldHolder, "performer");
+                row._field = buildEntityField(fieldHolder, kind);
 
                 const removeBtn = document.createElement("button");
                 removeBtn.type = "button";
                 removeBtn.className = "mp-remove";
                 removeBtn.textContent = "×";
-                removeBtn.title = "Remove performer";
+                removeBtn.title = `Remove ${kind}`;
                 removeBtn.addEventListener("click", () => {
                     if (list.children.length > 1) row.remove();
                 });
@@ -2048,12 +2271,12 @@
         // Fills a performer-id-list field (built by buildPerformerIdListField)
         // with a set of performer ids — used when loading an existing record
         // into the form for editing (e.g. a troupe's members).
-        function populatePerformerIdListField(field, ids) {
+        function populatePerformerIdListField(field, ids, kind = "performer") {
             const wanted = ids && ids.length ? ids : [""];
             const rows = field.rows();
             while (rows.length < wanted.length) { field.addRow(); rows.push(field.rows()[field.rows().length - 1]); }
             field.rows().forEach((row, i) => {
-                const name = wanted[i] ? repertoirePerformerLabel(wanted[i]) : "";
+                const name = wanted[i] ? (kind === "venue" ? venueLabel(wanted[i]) : repertoirePerformerLabel(wanted[i])) : "";
                 row._field.input.value = name;
                 row._field.input.dispatchEvent(new Event("input"));
             });
@@ -2892,7 +3115,7 @@
 
         function switchToTab(type) {
             document.querySelectorAll(".type-tab").forEach(t => t.classList.toggle("active", t.dataset.type === type));
-            ["event", "tour", "show", "performer", "venue", "podcast", "festival", "enrich"].forEach(t => {
+            ["event", "tour", "show", "performer", "venue", "podcast", "promoter", "club", "festival", "enrich"].forEach(t => {
                 document.getElementById(`panel-${t}`).style.display = t === type ? "" : "none";
             });
         }
@@ -2938,6 +3161,61 @@
             document.getElementById("venue-type-hint").textContent =
                 `Suggested from the venue name — edit, pick a different option, or clear it if this doesn't fit.`;
         });
+
+        // ── Promoter field helpers ──────────────────────────────────────────
+        // A promoter is stored on a record as `promoter_id` (a key into the
+        // top-level `promoters` registry). Older data also has a `promoter`
+        // string on show_dates — read as a legacy alias when editing, but
+        // only ever written back as promoter_id.
+        // Registry as loaded, overlaid with anything added/edited this session,
+        // so a promoter just created in the New Promoter tab is immediately
+        // usable (and recognised) on the event forms.
+        function allPromoters() {
+            const out = { ...promotersLookup };
+            batch.promoters.forEach(p => { out[p.promoter_id] = p; });
+            Object.entries(updatedPromoters).forEach(([k, p]) => { out[k] = p; });
+            return out;
+        }
+        function findPromoter(raw) {
+            const typed = (raw || "").trim();
+            const v = typed.toLowerCase();
+            if (!v) return null;
+            const entries = Object.entries(allPromoters());
+            const idOf = (key, p) => (p.promoter_id || key);
+            const byId = entries.find(([key, p]) => idOf(key, p).toLowerCase() === v);
+            if (byId) {
+                const id = idOf(byId[0], byId[1]);
+                return { id, promoter: byId[1], exact: id === typed };
+            }
+            const byName = entries.find(([, p]) => (p.name || "").trim().toLowerCase() === v);
+            return byName ? { id: idOf(byName[0], byName[1]), promoter: byName[1], exact: false } : null;
+        }
+        // Canonical id to save: a registry id/name resolves to its id; anything
+        // else is kept exactly as typed (the hint already warned about it).
+        function resolvePromoterInput(raw) {
+            const typed = (raw || "").trim();
+            if (!typed) return "";
+            const m = findPromoter(typed);
+            return m ? m.id : typed;
+        }
+        function wirePromoterField(input, hintEl) {
+            const update = () => {
+                const typed = input.value.trim();
+                if (!typed) { hintEl.style.display = "none"; hintEl.textContent = ""; return; }
+                const m = findPromoter(typed);
+                hintEl.style.display = "";
+                if (!m) {
+                    hintEl.textContent = "Not in the promoters registry — will be saved as typed. Register it in the New Promoter tab to give it a name and details.";
+                } else if (m.exact) {
+                    hintEl.textContent = `✓ ${m.promoter.name || m.id}`;
+                } else {
+                    hintEl.textContent = `Will be saved as ${m.id} (${m.promoter.name || m.id}).`;
+                }
+            };
+            input.addEventListener("input", update);
+            input.addEventListener("change", update);
+            return update;
+        }
 
         // ── Date row helpers (shared shape for tour_dates / show_dates) ────
         function flyerRowTemplate() {
@@ -3169,6 +3447,13 @@
                     <input type="text" class="dr-flyer" placeholder="filename.jpg (this date only)">
                 </div>`}
                 <div class="field-row">
+                    <label>Promoter</label>
+                    <div>
+                        <input type="text" class="dr-promoter" list="promoterOptions" placeholder="(optional) promoter id for this date">
+                        <div class="field-hint dr-promoter-hint" style="display:none;"></div>
+                    </div>
+                </div>
+                <div class="field-row">
                     <label>Flags</label>
                     <div class="checkbox-row">
                         ${kind === "tour" ? `<label><input type="checkbox" class="dr-special" checked> Special</label>` : ""}
@@ -3185,6 +3470,7 @@
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
             attachOpenLinkButton(grid.querySelector(".dr-ticket-url"));
             wirePastDateWarning(grid.querySelector(".dr-date"), grid.querySelector(".dr-date-past-warning"));
+            wirePromoterField(grid.querySelector(".dr-promoter"), grid.querySelector(".dr-promoter-hint"));
 
             if (kind === "tour") {
                 const flyerRowsContainer = grid.querySelector(".dr-flyer-rows");
@@ -3234,6 +3520,8 @@
                 if (video) entry.video_trailer = video;
                 const dateAdded = row.querySelector(".dr-date-added").value.trim();
                 if (dateAdded) entry.date_added = dateAdded;
+                const promoterId = resolvePromoterInput(row.querySelector(".dr-promoter").value);
+                if (promoterId) entry.promoter_id = promoterId;
 
                 if (kind === "tour") {
                     const clubEvent = row.querySelector(".dr-club-event").value.trim();
@@ -3356,6 +3644,8 @@
             const structuredTime = evStructuredTimeField.getEntries();
             if (structuredTime.length) record.structured_time = structuredTime;
             if (club) record.club = club;
+            const promoterId = resolvePromoterInput(document.getElementById("ev-promoter").value);
+            if (promoterId) record.promoter_id = promoterId;
             if (widerEvent) record.wider_event = widerEvent;
             if (price) record.price = price;
             const structuredPrice = evStructuredPriceField.getEntries();
@@ -3389,10 +3679,11 @@
         }
 
         function clearEventForm() {
-            ["ev-showname", "ev-name", "ev-date", "ev-event-id", "ev-date-added", "ev-time", "ev-club", "ev-wider-event", "ev-price",
+            ["ev-showname", "ev-name", "ev-date", "ev-event-id", "ev-date-added", "ev-time", "ev-club", "ev-promoter", "ev-wider-event", "ev-price",
                 "ev-description", "ev-age-rating", "ev-min-age", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("ev-age-suggestion").style.display = "none";
+            document.getElementById("ev-promoter-hint").style.display = "none";
             document.getElementById("ev-date-added-today").checked = false;
             document.getElementById("ev-date-added").readOnly = false;
             document.getElementById("ev-special").checked = true;
@@ -3465,6 +3756,9 @@
                 ticketInput.dispatchEvent(new Event("input"));
                 row.querySelector(".dr-video").value = d.video_trailer || "";
                 row.querySelector(".dr-date-added").value = d.date_added || "";
+                const promoterInput = row.querySelector(".dr-promoter");
+                promoterInput.value = d.promoter_id || d.promoter || "";
+                promoterInput.dispatchEvent(new Event("input"));
                 if (kind === "tour") {
                     if (d.club_event) row.querySelector(".dr-club-event").value = d.club_event;
                     row.querySelector(".dr-special").checked = d.isSpecial !== false;
@@ -3737,7 +4031,7 @@
             populateDateRowsContainer(document.getElementById("show-date-rows"), "show", [{
                 date: ev.date, venue_id: ev.venue_id, time: ev.time, structured_time: ev.structured_time,
                 price: ev.price, structured_price: ev.structured_price, ticket_url: ev.ticket_url,
-                date_added: ev.date_added, club: ev.club, fb_event: ev.fb_event,
+                date_added: ev.date_added, club: ev.club, promoter_id: ev.promoter_id, fb_event: ev.fb_event,
                 event_flyer: ev.event_flyer, isCancelled: ev.isCancelled, isSoldOut: ev.isSoldOut,
             }]);
 
@@ -4015,7 +4309,7 @@
         // clicked; everything else (status text, edit/cancel banner) is
         // handled generically. Loading only happens on the explicit click, not
         // as-you-type, so a transient mid-typing match never clobbers fields.
-        function makeRecordMatcher({ statusEl, findExisting, findBatch, populate, entityLabel }) {
+        function makeRecordMatcher({ statusEl, findExisting, findBatch, populate, entityLabel, idText = m => m.id }) {
             let editing = null; // { source: "lookup" | "batch", id, original } | null
 
             function renderMatchPrompt(name) {
@@ -4033,7 +4327,7 @@
                 const source = batchMatch ? "batch" : "lookup";
                 const span = document.createElement("span");
                 span.className = "entity-status match";
-                span.textContent = `Matches ${source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${match.id}. `;
+                span.textContent = `Matches ${source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${idText(match)}. `;
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.className = "add-subitem-btn";
@@ -4053,7 +4347,7 @@
                 statusEl.innerHTML = "";
                 const span = document.createElement("span");
                 span.className = "entity-status match";
-                span.textContent = `Editing ${editing.source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${editing.id}. Change fields below, then use "Add to batch" to save. `;
+                span.textContent = `Editing ${editing.source === "batch" ? "a pending" : "an existing"} ${entityLabel} — id: ${idText(editing.original)}. Change fields below, then use "Add to batch" to save. `;
                 const cancelBtn = document.createElement("button");
                 cancelBtn.type = "button";
                 cancelBtn.className = "add-subitem-btn";
@@ -4401,6 +4695,279 @@
             initPodcastForm();
         }
 
+        // ── Promoter form ───────────────────────────────────────────────────
+        // Edits the top-level `promoters` registry (keyed by promoter_id).
+        // Keys the form manages itself; anything else on an edited record
+        // (e.g. a field added by hand) is carried over untouched. The legacy
+        // `url` (an alias of promoter_link) is folded into promoter_link.
+        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "promoter_venues", "promoter_artists"];
+        let promoterKeyAutoValue = "";
+        let promoterVenuesField, promoterArtistsField;
+
+        function suggestPromoterId() {
+            const keyField = document.getElementById("promoter-key");
+            if (keyField.value && keyField.value !== promoterKeyAutoValue) return; // edited manually
+            promoterKeyAutoValue = slugify(document.getElementById("promoter-name").value.trim());
+            keyField.value = promoterKeyAutoValue;
+        }
+
+        function buildPromoterListFields() {
+            promoterVenuesField = buildPerformerIdListField(document.getElementById("promoter-venues-field"), "Add another venue", "venue");
+            promoterArtistsField = buildPerformerIdListField(document.getElementById("promoter-artists-field"), "Add another artist", "performer");
+        }
+
+        function populatePromoterForm(match) {
+            document.getElementById("promoter-key").value = match.id;
+            document.getElementById("promoter-name").value = match.name || "";
+            document.getElementById("promoter-description").value = decodeParagraphBreaksForEdit(match.description || "");
+            document.getElementById("promoter-link").value = match.promoter_link || match.url || "";
+            document.getElementById("promoter-ticketing-url").value = match.ticketing_url || "";
+            document.getElementById("promoter-facebook").value = match.facebook || "";
+            document.getElementById("promoter-email").value = match.email || "";
+            ["promoter-link", "promoter-ticketing-url", "promoter-facebook"].forEach(id => ticketUrlLinkUpdaters[id]?.());
+            buildPromoterListFields();
+            populatePerformerIdListField(promoterVenuesField, match.promoter_venues, "venue");
+            populatePerformerIdListField(promoterArtistsField, match.promoter_artists, "performer");
+        }
+
+        function findPromoterByName(name) {
+            const want = name.toLowerCase();
+            const hit = Object.entries(allPromoters()).find(([, p]) => (p.name || "").trim().toLowerCase() === want);
+            return hit ? { id: hit[1].promoter_id || hit[0], ...hit[1] } : null;
+        }
+
+        function initPromoterForm() {
+            buildPromoterListFields();
+            promoterMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("promoter-name-status"),
+                findExisting: name => {
+                    const found = findPromoterByName(name);
+                    return found && promotersLookup[found.id] && !batch.promoters.some(p => p.promoter_id === found.id) ? found : null;
+                },
+                findBatch: name => {
+                    const found = batch.promoters.find(p => (p.name || "").trim().toLowerCase() === name.toLowerCase());
+                    return found ? { id: found.promoter_id, ...found } : null;
+                },
+                populate: populatePromoterForm,
+                entityLabel: "promoter",
+            });
+        }
+
+        function addPromoterToBatch() {
+            const name = document.getElementById("promoter-name").value.trim();
+            if (!name) {
+                alert("Please enter a promoter name.");
+                return;
+            }
+            const editing = promoterMatcher.getEditing();
+            if (!editing) {
+                const existing = findPromoterByName(name);
+                if (existing) {
+                    alert(`A promoter named "${name}" already exists (id: ${existing.id}). Click "Edit this record" above to update it, or change the name if you meant to add a different one.`);
+                    return;
+                }
+            }
+            let key = editing ? editing.id : (document.getElementById("promoter-key").value.trim() || slugify(name));
+            if (!editing) key = uniqueId(key, k => !!promotersLookup[k] || batch.promoters.some(p => p.promoter_id === k));
+
+            const record = { promoter_id: key, name };
+            const description = encodeParagraphBreaks(document.getElementById("promoter-description").value);
+            const link = document.getElementById("promoter-link").value.trim();
+            const ticketing = document.getElementById("promoter-ticketing-url").value.trim();
+            const facebook = document.getElementById("promoter-facebook").value.trim();
+            const email = document.getElementById("promoter-email").value.trim();
+            if (description) record.description = description;
+            if (ticketing) record.ticketing_url = ticketing;
+            if (link) record.promoter_link = link;
+            if (facebook) record.facebook = facebook;
+            if (email) record.email = email;
+            const venues = readPerformerIdListField(promoterVenuesField);
+            const artists = readPerformerIdListField(promoterArtistsField);
+            if (venues.length) record.promoter_venues = venues;
+            if (artists.length) record.promoter_artists = artists;
+            if (editing && editing.original) {
+                Object.keys(editing.original).forEach(k => {
+                    if (!PROMOTER_FORM_KEYS.includes(k) && !(k in record)) record[k] = editing.original[k];
+                });
+            }
+
+            if (editing && editing.source === "batch") {
+                const idx = batch.promoters.findIndex(p => p.promoter_id === editing.id);
+                if (idx !== -1) batch.promoters[idx] = record;
+                else batch.promoters.push(record);
+            } else if (editing && editing.source === "lookup") {
+                delete updatedPromoters[key];
+                updatedPromoters[key] = record;
+            } else {
+                batch.promoters.push(record);
+            }
+            refreshBatchSummary();
+            clearPromoterForm();
+        }
+
+        function clearPromoterForm() {
+            ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-email"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("promoter-name-status").innerHTML = "";
+            promoterKeyAutoValue = "";
+            ["promoter-link", "promoter-ticketing-url", "promoter-facebook"].forEach(id => ticketUrlLinkUpdaters[id]?.());
+            initPromoterForm();
+        }
+
+        // ── Club form ───────────────────────────────────────────────────────
+        // Edits the top-level `clubs` array (recurring club nights). Keys the
+        // form manages itself; anything else on an edited record
+        // (feature_slots, location, geocode_missing, themes, legacy flyers…)
+        // is carried over untouched.
+        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "email", "online"];
+        let clubKeyAutoValue = "";
+        let clubVenueField;
+
+        // Club ids in use: as loaded, plus any created/edited this session.
+        function allClubIds() {
+            return [...new Set([
+                ...clubIds,
+                ...batch.recurringClubs.map(c => c.club),
+                ...Object.values(updatedClubs).map(c => c.club),
+            ].filter(Boolean))];
+        }
+
+        function suggestClubId() {
+            const keyField = document.getElementById("club-key");
+            if (keyField.value && keyField.value !== clubKeyAutoValue) return; // edited manually
+            clubKeyAutoValue = slugify(document.getElementById("club-name").value.trim());
+            keyField.value = clubKeyAutoValue;
+        }
+
+        // A schedule is normally free text, but one existing club uses an
+        // object ({type, day, start}); show that as JSON and parse it back.
+        function scheduleToText(v) { return v == null ? "" : (typeof v === "string" ? v : JSON.stringify(v)); }
+        function textToSchedule(t) {
+            t = t.trim();
+            if (t.startsWith("{")) { try { return JSON.parse(t); } catch (e) { /* fall through: keep as text */ } }
+            return t;
+        }
+
+        function populateClubForm(match) {
+            // A club with no id yet (a few older records): show a suggested one so it isn't a surprise on save.
+            const suggestedId = match.club ? "" : slugify(match.name || "");
+            document.getElementById("club-key").value = match.club || suggestedId;
+            clubKeyAutoValue = suggestedId;
+            document.getElementById("club-name").value = match.name || "";
+            document.getElementById("club-description").value = decodeParagraphBreaksForEdit(match.description || "");
+            document.getElementById("club-schedule").value = scheduleToText(match.schedule);
+            document.getElementById("club-exceptions").value = (match.exceptions || []).join(", ");
+            document.getElementById("club-time").value = match.time || "";
+            document.getElementById("club-price").value = match.price || "";
+            const promoterInput = document.getElementById("club-promoter");
+            promoterInput.value = match.promoter_id || "";
+            promoterInput.dispatchEvent(new Event("input"));
+            document.getElementById("club-link").value = match.link || "";
+            document.getElementById("club-facebook").value = match.facebook || "";
+            document.getElementById("club-instagram").value = match.instagram || "";
+            document.getElementById("club-tickets-url").value = match.tickets_url || "";
+            document.getElementById("club-email").value = match.email || "";
+            document.getElementById("club-flyer").value = match.club_flyer || "";
+            document.getElementById("club-online").checked = !!match.online;
+            ["club-link", "club-facebook", "club-tickets-url"].forEach(id => ticketUrlLinkUpdaters[id]?.());
+            clubVenueField = buildEntityField(document.getElementById("club-venue-field"), "venue");
+            clubVenueField.input.value = venueLabel(match.venue_id);
+            clubVenueField.input.dispatchEvent(new Event("input"));
+        }
+
+        function findClubByName(name) {
+            const want = name.toLowerCase();
+            const hit = [...clubsList, ...batch.recurringClubs].find(c => (c.name || "").trim().toLowerCase() === want);
+            return hit || null;
+        }
+
+        function initClubForm() {
+            clubVenueField = buildEntityField(document.getElementById("club-venue-field"), "venue");
+            clubMatcher = makeRecordMatcher({
+                statusEl: document.getElementById("club-name-status"),
+                // id here is the club's NAME (see updatedClubs) — `club` (the slug) can be missing or shared.
+                findExisting: name => {
+                    const found = clubsList.find(c => (c.name || "").trim().toLowerCase() === name.toLowerCase());
+                    return found && !batch.recurringClubs.some(c => c.name === found.name) ? { ...found, id: found.name } : null;
+                },
+                findBatch: name => {
+                    const found = batch.recurringClubs.find(c => (c.name || "").trim().toLowerCase() === name.toLowerCase());
+                    return found ? { ...found, id: found.name } : null;
+                },
+                populate: populateClubForm,
+                entityLabel: "club",
+                idText: m => m.club || "(none yet — one is suggested below)",
+            });
+        }
+
+        function addClubToBatch() {
+            const name = document.getElementById("club-name").value.trim();
+            if (!name) { alert("Please enter a club name."); return; }
+            const editing = clubMatcher.getEditing();
+            const typedKey = document.getElementById("club-key").value.trim();
+            if (!editing && findClubByName(name)) {
+                alert(`A club named "${name}" already exists. Click "Edit this record" above to update it, or change the name if you meant to add a different one.`);
+                return;
+            }
+            let clubId = typedKey || slugify(name);
+            if (!editing && allClubIds().includes(clubId)) clubId = uniqueId(clubId, k => allClubIds().includes(k));
+
+            const record = { name, club: clubId };
+            const schedule = textToSchedule(document.getElementById("club-schedule").value);
+            const exceptions = document.getElementById("club-exceptions").value.split(",").map(x => x.trim()).filter(Boolean);
+            const time = document.getElementById("club-time").value.trim();
+            const price = document.getElementById("club-price").value.trim();
+            const venueId = hasEntityFieldTyped(clubVenueField) ? resolveEntityField(clubVenueField) : null;
+            const description = encodeParagraphBreaks(document.getElementById("club-description").value);
+            const flyer = document.getElementById("club-flyer").value.trim();
+            const promoterId = resolvePromoterInput(document.getElementById("club-promoter").value);
+            const text = id => document.getElementById(id).value.trim();
+            if (schedule && (typeof schedule !== "string" || schedule.length)) record.schedule = schedule;
+            if (exceptions.length) record.exceptions = exceptions;
+            if (time) record.time = time;
+            if (price) record.price = price;
+            if (venueId) record.venue_id = venueId;
+            if (description) record.description = description;
+            if (flyer) record.club_flyer = flyer;
+            if (promoterId) record.promoter_id = promoterId;
+            if (text("club-link")) record.link = text("club-link");
+            if (text("club-facebook")) record.facebook = text("club-facebook");
+            if (text("club-instagram")) record.instagram = text("club-instagram");
+            if (text("club-tickets-url")) record.tickets_url = text("club-tickets-url");
+            if (text("club-email")) record.email = text("club-email");
+            if (document.getElementById("club-online").checked) record.online = true;
+            if (editing && editing.original) {
+                Object.keys(editing.original).forEach(k => {
+                    if (!CLUB_FORM_KEYS.includes(k) && !(k in record)) record[k] = editing.original[k];
+                });
+            }
+
+            if (editing && editing.source === "batch") {
+                const idx = batch.recurringClubs.findIndex(c => c.name === editing.id);
+                if (idx !== -1) batch.recurringClubs[idx] = record;
+                else batch.recurringClubs.push(record);
+            } else if (editing && editing.source === "lookup") {
+                delete updatedClubs[editing.id];
+                updatedClubs[editing.id] = record;
+            } else {
+                batch.recurringClubs.push(record);
+            }
+            refreshBatchSummary();
+            clearClubForm();
+        }
+
+        function clearClubForm() {
+            ["club-key", "club-name", "club-description", "club-schedule", "club-exceptions", "club-time", "club-price", "club-promoter",
+                "club-link", "club-facebook", "club-instagram", "club-tickets-url", "club-email", "club-flyer"]
+                .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("club-online").checked = false;
+            document.getElementById("club-name-status").innerHTML = "";
+            document.getElementById("club-promoter-hint").style.display = "none";
+            clubKeyAutoValue = "";
+            ["club-link", "club-facebook", "club-tickets-url"].forEach(id => ticketUrlLinkUpdaters[id]?.());
+            initClubForm();
+        }
+
         // ── Batch summary ───────────────────────────────────────────────────
         function refreshBatchSummary() {
             refreshDatalists();
@@ -4452,6 +5019,26 @@
                     tag: "podcast-edit", label: `${updatedPodcasts[id].series_title} (editing existing podcast: ${id})`,
                     remove: () => delete updatedPodcasts[id], previewData: updatedPodcasts[id],
                     edit: () => { switchToTab("podcast"); podcastMatcher.edit({ id, ...updatedPodcasts[id] }, "lookup"); },
+                })),
+                ...batch.promoters.map((r, i) => ({
+                    tag: "promoter", label: `${r.name} (${r.promoter_id})`,
+                    remove: () => batch.promoters.splice(i, 1), previewData: r,
+                    edit: () => { switchToTab("promoter"); promoterMatcher.edit({ id: r.promoter_id, ...r }, "batch"); },
+                })),
+                ...Object.keys(updatedPromoters).map(id => ({
+                    tag: "promoter-edit", label: `${updatedPromoters[id].name} (editing existing promoter: ${id})`,
+                    remove: () => delete updatedPromoters[id], previewData: updatedPromoters[id],
+                    edit: () => { switchToTab("promoter"); promoterMatcher.edit({ id, ...updatedPromoters[id] }, "lookup"); },
+                })),
+                ...batch.recurringClubs.map((r, i) => ({
+                    tag: "club", label: `${r.name} (${r.club || "no id"})`,
+                    remove: () => batch.recurringClubs.splice(i, 1), previewData: r,
+                    edit: () => { switchToTab("club"); clubMatcher.edit({ ...r, id: r.name }, "batch"); },
+                })),
+                ...Object.keys(updatedClubs).map(key => ({
+                    tag: "club-edit", label: `${updatedClubs[key].name} (editing existing club: ${key})`,
+                    remove: () => delete updatedClubs[key], previewData: updatedClubs[key],
+                    edit: () => { switchToTab("club"); clubMatcher.edit({ ...updatedClubs[key], id: key }, "lookup"); },
                 })),
                 ...batch.podcastEpisodeAdditions.map((a, i) => ({ tag: "episode", label: `${a.item.title} → ${a.series_title} (${a.podcast_id})`, remove: () => batch.podcastEpisodeAdditions.splice(i, 1), previewData: a })),
                 ...Object.keys(updatedEvents).map(key => ({
@@ -4565,6 +5152,13 @@
             if (Object.keys(updatedFestivals).length) out.updatedFestivals = updatedFestivals;
             if (batch.podcasts.length) out.podcasts = batch.podcasts;
             if (Object.keys(updatedPodcasts).length) out.updatedPodcasts = updatedPodcasts;
+            // promoters are keyed by promoter_id in the file, so emit the same shape to merge straight in.
+            if (batch.promoters.length) out.promoters = Object.fromEntries(batch.promoters.map(p => [p.promoter_id, p]));
+            if (Object.keys(updatedPromoters).length) out.updatedPromoters = updatedPromoters;
+            // Recurring club nights (top-level `clubs` array) — not to be confused with
+            // specificEvents, which is what batch.clubs holds in this file.
+            if (batch.recurringClubs.length) out.clubs = batch.recurringClubs;
+            if (Object.keys(updatedClubs).length) out.updatedClubs = updatedClubs;
             if (batch.podcastEpisodeAdditions.length) out.podcastEpisodeAdditions = batch.podcastEpisodeAdditions;
             if (Object.keys(updatedEvents).length) out.updatedEvents = updatedEvents;
             if (Object.keys(updatedTours).length) out.updatedTours = updatedTours;
@@ -4603,7 +5197,16 @@
                 [...Object.values(venuesLookup), ...Object.values(newVenues)]
                     .map(v => `<option value="${(v.name || "").replace(/"/g, "&quot;")}">`).join("");
             document.getElementById("clubOptions").innerHTML =
-                clubIds.map(c => `<option value="${c.replace(/"/g, "&quot;")}">`).join("");
+                allClubIds().map(c => `<option value="${c.replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("clubNameOptions").innerHTML =
+                [...clubsList, ...batch.recurringClubs].map(c => `<option value="${(c.name || "").replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("promoterNameOptions").innerHTML =
+                Object.values(allPromoters()).map(p => `<option value="${(p.name || "").replace(/"/g, "&quot;")}">`).join("");
+            document.getElementById("promoterOptions").innerHTML =
+                Object.entries(allPromoters()).map(([key, p]) => {
+                    const id = (p.promoter_id || key).replace(/"/g, "&quot;");
+                    return `<option value="${id}" label="${(p.name || "").replace(/"/g, "&quot;")}">`;
+                }).join("");
             document.getElementById("festivalOptions").innerHTML =
                 [...Object.keys(festivalsLookup), ...batch.festivals.map(f => f.key)]
                     .map(id => `<option value="${id.replace(/"/g, "&quot;")}">`).join("");
@@ -5311,16 +5914,21 @@
         function collectUsedClubIds(data) {
             const ids = new Set();
             const add = v => { if (typeof v === "string" && v.trim()) ids.add(v.trim()); };
-            (data.clubs || []).forEach(e => add(e.club));
-            (data.specificEvents || []).forEach(e => add(e.club));
-            (data.musicEvents || []).forEach(e => add(e.club));
-            (data.poetryEvents || []).forEach(e => add(e.club));
+            // promoter_id (and the legacy `promoter` string on show_dates) is
+            // collected alongside `club`: either one is a real reference to
+            // a promoters-registry entry.
+            const addRef = e => { add(e.club); add(e.promoter_id); add(e.promoter); };
+            (data.clubs || []).forEach(addRef);
+            (data.specificEvents || []).forEach(addRef);
+            (data.musicEvents || []).forEach(addRef);
+            (data.poetryEvents || []).forEach(addRef);
             Object.values(data.tours || {}).forEach(tour => {
-                add(tour.club);
-                (tour.tour_dates || []).forEach(d => { add(d.club); add(d.club_event); });
+                addRef(tour);
+                (tour.tour_dates || []).forEach(d => { addRef(d); add(d.club_event); });
             });
             Object.values(data.repertoire_shows || {}).forEach(show => {
-                (show.show_dates || []).forEach(d => add(d.club));
+                addRef(show);
+                (show.show_dates || []).forEach(addRef);
             });
             return ids;
         }
@@ -5349,7 +5957,7 @@
                 const badArtists = artistIds.filter(pid => !enrichedData.performers || !enrichedData.performers[pid]);
                 if (badArtists.length) reasons.push(`promoter_artists references unknown performer id(s): ${badArtists.join(", ")}`);
                 if (!usedClubIds.has(promoter.promoter_id || id)) {
-                    reasons.push("not used as a club id anywhere (events/specificEvents/musicEvents/poetryEvents/tours/repertoire shows) — check for a typo, or it may just not be linked yet");
+                    reasons.push("not used as a club or promoter_id anywhere (events/specificEvents/musicEvents/poetryEvents/tours/repertoire shows) — check for a typo, or it may just not be linked yet");
                 }
                 if (reasons.length) found.push({ id, name: promoter.name || id, reasons });
             });
@@ -6365,6 +6973,8 @@
                 venuesLookup = result.venuesLookup;
                 podcastsLookup = Object.fromEntries((result.eventsData.podcasts || []).map(p => [p.podcast_id, p]));
                 festivalsLookup = result.eventsData.festivals || {};
+                promotersLookup = result.eventsData.promoters || {};
+                clubsList = result.eventsData.clubs || [];
                 clubIds = [...new Set((result.eventsData.clubs || []).map(e => e.club).filter(Boolean))];
                 existingTourKeys = new Set(Object.keys(result.toursLookup || {}));
                 existingShowKeys = new Set(Object.keys(result.eventsData.repertoire_shows || {}));
@@ -6378,12 +6988,16 @@
                 statusEl.textContent = "Could not load events_normalized.json — you can still build records, but performer/venue/podcast search won't have any existing suggestions.";
             }
 
+            wirePromoterField(document.getElementById("ev-promoter"), document.getElementById("ev-promoter-hint"));
             initEventForm();
             initTourForm();
             initShowForm();
             initPerformerForm();
             initPodcastForm();
             initFestivalForm();
+            initPromoterForm();
+            initClubForm();
+            wirePromoterField(document.getElementById("club-promoter"), document.getElementById("club-promoter-hint"));
 
             // Ticket URL fields aren't built dynamically like the date-row
             // ones (see dateRowTemplate), so they're wired individually here
@@ -6391,7 +7005,7 @@
             // as everywhere else, for previewing a pasted link. The update
             // function is kept so populate*Form() can refresh it after
             // setting .value programmatically (see ticketUrlLinkUpdaters).
-            ["ev-ticket-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url"].forEach(id => {
+            ["ev-ticket-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "club-link", "club-tickets-url", "club-facebook"].forEach(id => {
                 ticketUrlLinkUpdaters[id] = attachOpenLinkButton(document.getElementById(id));
             });
 
@@ -6421,6 +7035,14 @@
             });
 
             document.getElementById("perf-name").addEventListener("input", (e) => perfMatcher.updateStatus(e.target.value.trim()));
+            document.getElementById("club-name").addEventListener("input", (e) => {
+                suggestClubId();
+                clubMatcher.updateStatus(e.target.value.trim());
+            });
+            document.getElementById("promoter-name").addEventListener("input", (e) => {
+                suggestPromoterId();
+                promoterMatcher.updateStatus(e.target.value.trim());
+            });
 
             refreshBatchSummary();
         })();

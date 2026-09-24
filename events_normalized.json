@@ -1,5 +1,23 @@
 {
   "promoters": {
+    "artsreach":{
+      "promoter_id": "artsreach",
+      "name": "Artsreach",
+      "description": "Artsreach aims to enrich and positively impact the lives of people in Dorset by connecting and empowering rural communities through creative and cultural experiences, by:\n\n\n\n- partnering with a network of volunteers and empower them to programme, promote and present cultural activities in their community venues;\n\n\n\n-presenting a diverse range of high-quality cultural activities which support the health and well-being of the rural community;\n\n\n\nstimulating community development through engagement with cultural activities and support vital community resources such as village halls;\n\n\n\n-supporting a diverse range of artists, companies and creative practitioners and provide opportunities for artist's development;\n\n\n\nengaging with public bodies, business, education and community organisations and work in partnership to develop a thriving cultural offer across rural Dorset;\n\n\n\nbuilding a sustainable and resilient organisation for the future.",
+      "ticketing_url": "https://artsreach.co.uk/whats-on",
+      "promoter_link": "https://artsreach.co.uk/",
+      "promoter_venues": [],
+      "promoter_artists": []
+    },
+    "wondernightcafe": {
+      "promoter_id": "wondernightcafe",
+      "name": "Wonder Night Cafe",
+      "description": "A monthly evening of fairy tales, cake and conversation, with storyteller Hannah Moore & guests.\n\n\n\nWhat do the old stories mean for you, and for the world today?",
+      "ticketing_url": "",
+      "promoter_link": "https://www.hannahmoore.co.uk/",
+      "promoter_venues": [],
+      "promoter_artists": []
+    },
     "forgingfantastical": {
       "promoter_id": "forgingfantastical",
       "name": "Forging Fantastical",
@@ -5275,6 +5293,7 @@
     },
     {
       "name": "Tea & Tales",
+      "club": "teaandtales",
       "schedule": "1st wednesday",
       "time": "2.30-3.30pm",
       "price": "£2 pay on the door",
@@ -5866,7 +5885,7 @@
       "schedule": "4th monday",
       "time": "Link open at 6.45pm, stories from 7pm",
       "facebook": "https://www.facebook.com/groups/southamptonstories",
-      "club": "southamptonSC",
+      "club": "abergavennyandbeyond",
       "venue_id": "",
       "description": "A storytelling gathering, with a warm welcome to all with tales to tell, songs to sing, or simply coming to listen. Every 4th Monday of the month, with the link open from 18:45 and stories starting at 19:00 UK. If you aren't on the mailing list, message https://www.facebook.com/anne.lister.3 to join or for the zoom link (before Monday evening!)",
       "online": true
@@ -5940,15 +5959,6 @@
       ]
     },
     {
-      "name": "Mendip story circle",
-      "schedule": "2nd wednesday",
-      "time": "7.30pm",
-      "link": "https://www.mendipstorycircle.com/",
-      "facebook": "https://www.facebook.com/profile.php?id=100064070403986",
-      "club": "",
-      "venue_id": "ston-easton-village-hall-radstock"
-    },
-    {
       "name": "Frome storytelling circle",
       "schedule": "last sunday",
       "time": "7-9pm",
@@ -5994,7 +6004,7 @@
       "time": "7-9pm",
       "price": "£5 / £8 (pwyc)",
       "facebook": "",
-      "club": "portlandstoryslingers",
+      "club": "wildwoodstorytellingcafe",
       "club_flyer": "Wildwood_Storytelling_Cafe.png",
       "venue_id": "galley-lyme-regis"
     },
@@ -6050,7 +6060,9 @@
     {
       "name": "3rd Wednesday Storytellers, [online]",
       "schedule": "3rd wednesday",
+      "club": "3rdwednesdaytellersonline",
       "time": "8-10pm",
+      "isOnlineOnly": true,
       "facebook": "https://www.facebook.com/groups/4500677516682341",
       "venue_id": "online"
     },
@@ -6087,6 +6099,8 @@
     {
       "name": "Winchester Wykeham Tales [Lapsed?]",
       "schedule": "2nd wednesday",
+      "club": "winchesterwykehamtales",
+      "isLapsed": true,
       "location": "",
       "facebook": "",
       "geocode_missing": true
@@ -10100,6 +10114,20 @@
       "isSpecial": true,
       "eventId": "20260927-dave-brookes-fox-grapes-nottingham"
     },
+        {
+          "name": "The Giant Who Had No Heart In His Body: tales for our times [Wonder Night Cafe]",
+          "showname": "The Giant Who Had No Heart In His Body: tales for our times",
+          "date": "30/09/2026",
+          "venue_id": "star-anise-cafe-stroud",
+          "performer_id": "hannah-moore",
+          "eventId": "20260930-hannah-moore-star-anise-cafe-stroud",
+          "date_added": "24/09/2026",
+          "time": "7:30-9:30pm",
+          "promoter_id": "wondernightcafe",
+          "price": "£13 / £10 inc drink (pay on the door)",
+          "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+          "isSpecial": true
+        },
     {
       "name": "The Grandfather's Harp [Stacey Blythe]",
       "showname": "The Grandfather's Harp",
@@ -10471,6 +10499,20 @@
       "eventId": "20261027-marc-tuckey-chine-in-shanklin"
     },
     {
+      "name": "Deathly & Dastardly Tales for Halloween [Wonder Night Cafe]",
+      "showname": "Deathly & Dastardly Tales for Halloween",
+      "date": "28/19/2026",
+      "venue_id": "star-anise-cafe-stroud",
+      "performer_ids": ["fiona-eadie", "hannah-moore"],
+      "eventId": "20261028-hannah-moore-star-anise-cafe-stroud",
+      "date_added": "24/09/2026",
+      "time": "7:30-9:30pm",
+      "promoter_id": "wondernightcafe",
+      "price": "£13 / £10 inc drink (pay on the door)",
+      "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "Strange Tales for Halloween [the-folk-bus]",
       "showname": "Strange Tales for Halloween",
       "date": "28/10/2026",
@@ -10671,6 +10713,24 @@
       "age_rating": "Adults only",
       "eventId": "20261121-marion-leeper-rectory-cottages-bletchley"
     },
+        {
+          "name": "Snakes & Skins [Wonder Night Cafe]",
+          "showname": "Snakes & Skins",
+          "date": "25/11/2026",
+          "venue_id": "star-anise-cafe-stroud",
+          "performer_ids": [
+            "bronia-evers",
+            "hannah-moore"
+          ],
+          "eventId": "20261125-hannah-moore-star-anise-cafe-stroud",
+          "date_added": "24/09/2026",
+          "description": "With Bronia Evers and her wondrous Crankie.",
+          "time": "7:30-9:30pm",
+          "promoter_id": "wondernightcafe",
+          "price": "£13 / £10 inc drink (pay on the door)",
+          "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+          "isSpecial": true
+        },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
       "showname": "Midwinter Open Tellers' Night [Feast of Fools]",
@@ -10696,6 +10756,24 @@
       "club": "stealingthunder",
       "isSpecial": true,
       "eventId": "20261212-dominic-kelly-brigsteer-village-hall-kendal"
+    },
+    {
+      "name": "Tales for the Turning of the Year [Wonder Night Cafe]",
+      "showname": "Tales for the Turning of the Year",
+      "date": "16/12/2026",
+      "venue_id": "star-anise-cafe-stroud",
+      "performer_ids": [
+        "bronia-evers",
+        "hannah-moore"
+      ],
+      "eventId": "20261216-hannah-moore-star-anise-cafe-stroud",
+      "date_added": "24/09/2026",
+      "description": "With guuest musician.",
+      "time": "7:30-9:30pm",
+      "promoter_id": "wondernightcafe",
+      "price": "£13 / £10 inc drink (pay on the door)",
+      "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+      "isSpecial": true
     },
     {
       "name": "Kallikantzari [Polis Loizou]",
@@ -18311,6 +18389,7 @@
       "id": "marc-tuckey",
       "name": "Marc Tuckey",
       "url": "https://www.facebook.com/iwghostexperience/",
+      "ticketing_url": "https://www.ticketsource.com/isle-of-wight-ghost-experience",
       "bio": "Leader of Isle of Wight Ghost Experience, guided walks around the Isle of Wight."
     },
     "amy-jeffs": {
@@ -18339,6 +18418,18 @@
       "name": "Hannah Brailsford",
       "url": "https://www.hannahbrailsfordstoryteller.com/",
       "bio": "Hannah Brailsford is an experienced performance storyteller & creative practitioner. For over 25 years I have been providing entertainment & storytelling for schools, events & special occasions."
+    },
+    "fiona-eadie": {
+      "id": "fiona-eadie",
+      "name": "Fiona Eadie",
+      "url": "http://www.fionaeadiestoryteller.com/",
+      "bio": "Fiona Eadie is passionate about language and about bringing the spoken word to life. Like most storytellers, I work with stories that have come down to us through the oral tradition and tell these face to face rather than reading from books or scripts"
+    },
+    "hannah-moore": {
+      "id": "hannah-moore",
+      "name": "Hannah Moore",
+      "url": "https://www.hannahmoore.co.uk/storytelling",
+      "bio": "Hannah's background is as a theatre-maker and event producer, specialising in creative workshops and social dance experiences that bring people together and sneakily contain a lot of joy. In recent years, Hannah has developed her practice as a restorative justice practitioner and mediator, alongside working as a storyteller and facilitator.\n\n\n\nTrained as a professional storyteller by the School of Storytelling on their flagship course Storytelling Beyond Words, Hannah has since taught, performed and facilitated programmes with the School for Storytelling."
     },
     "dan-sedgwick": {
       "id": "dan-sedgwick",

@@ -311,6 +311,10 @@
           },
           "minItems": 2,
           "maxItems": 2
+        },
+        "ticketing_url": {
+          "type": "string",
+          "description": "Variant spelling of `tickets_url` (one venue uses it). Kept for data as it stands; `tickets_url` is the standard name here."
         }
       },
       "required": [
@@ -404,6 +408,18 @@
             "$ref": "#/$defs/youtubeVideo"
           },
           "description": "YouTube videos of this performer (e.g. recorded storytelling/performances), shown as a collapsible list of nested collapsibles on the performer profile page. Each video's embed is only created if/when the visitor opens that specific video's collapsible, and is torn down again if they close it."
+        },
+        "ticketing_url": {
+          "type": "string",
+          "description": "Performer's own ticket shop/organiser page (e.g. TicketSource, Eventbrite). Variant spelling of `tickets_url` — both are in use."
+        },
+        "youtube": {
+          "type": "string",
+          "description": "Link to the performer's YouTube channel (as opposed to `youtube_videos`, which lists individual videos)."
+        },
+        "podcastX": {
+          "type": "string",
+          "description": "[TO DO — looks like a stray/disabled copy of `podcast`: one record (owen-staton) has a podbean URL under this name, so it is not read as a podcast link. Confirm whether it should be renamed to `podcast`.]"
         }
       },
       "required": [
@@ -601,6 +617,17 @@
         "description_prefix": {
           "type": "string",
           "description": "Rare per-date text prepended ahead of the resolved show/tour description when this date's listing is displayed — e.g. a promoter's own billing copy (\"The Crick Crack Club presents...\"). Rendered as `{description_prefix}\\n\\n\\n\\n{description}` (see combineDescriptionWithPrefix() in shared_utils.js), i.e. as its own leading paragraph, not merged into the description text itself."
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
+        },
+        "date_added": {
+          "type": "string",
+          "description": "DD/MM/YYYY — when this date was added, used to surface it in the \"new events\" panel. Same meaning as showDate.date_added and the event records' date_added (the event builder writes this on tour dates)."
+        },
+        "related_event": {
+          "type": "string",
+          "description": "Free-text name of a wider event this date is part of (e.g. 'Cornwall Tattoo Convention'). Display/reference only — unlike wider_event on specificEvents it is not a key into `festivals`."
         }
       },
       "required": [
@@ -726,6 +753,13 @@
           "items": {
             "$ref": "#/$defs/tourDate"
           }
+        },
+        "tour_flyers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "[TO DO — one tour (katy-cawkwell-lilith-autumn-winter-2026-2027) uses this plural name, which is not one of the recognised flyer fields (touring_event_flyer / tour_flyer / touring_event_flyers). Probably meant to be `touring_event_flyers`, which getTourLevelFlyers() actually merges — worth renaming in the data.]"
         }
       },
       "required": [
@@ -810,6 +844,21 @@
         "description_prefix": {
           "type": "string",
           "description": "Rare per-date text prepended ahead of the show's description when this date's listing is displayed — e.g. a promoter's own billing copy (\"The Crick Crack Club presents...\"). Rendered as `{description_prefix}\\n\\n\\n\\n{description}` (see combineDescriptionWithPrefix() in shared_utils.js), i.e. as its own leading paragraph, not merged into the description text itself."
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
+        },
+        "promoter": {
+          "type": "string",
+          "description": "LEGACY alias of `promoter_id` (used by 10 show_dates entries). Same meaning: a key into `promoters`. New records use `promoter_id`; the event builder reads this when editing and writes it back as `promoter_id`."
+        },
+        "performer_id": {
+          "type": "string",
+          "description": "Rare per-date performer override, e.g. a guest replacing the usual performer for one date (same as tourDate.performer_id)."
+        },
+        "age": {
+          "type": "string",
+          "description": "Free-text age note for this date (e.g. 'Recommended 14+'). Not the standard field — age_rating/min_age are defined on the repertoireShow record itself rather than per date; this is a per-date variant seen in the data."
         }
       },
       "required": [
@@ -1095,6 +1144,25 @@
               }
             }
           }
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{2}/\\d{2}/\\d{4}$"
+          },
+          "description": "Full list of dates in a series of which THIS record is one date (each record's own date is in `date`). In current data, 5 records for one series each carry the whole 5-date list here while `date` holds just that record's night. Informational — `date` is what date-driven code reads."
+        },
+        "isStoryWalk": {
+          "type": "boolean",
+          "description": "Marks a one-off story walk (3 specificEvents records do this), mirroring repertoireShow.isStoryWalk — see that field for how story walks are displayed."
+        },
+        "event_url": {
+          "type": "string",
+          "description": "Link to the event's own web page (as opposed to `link`, `ticket_url` or `facebook`)."
         }
       },
       "required": [
@@ -1195,6 +1263,13 @@
         "venue_id": {
           "type": "string",
           "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent with its own venue_id — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's venue_id in at load time."
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
+        },
+        "date_added": {
+          "type": "string",
+          "description": "DD/MM/YYYY — when this event was added, used to surface it in the \"new events\" panel."
         }
       },
       "required": [
@@ -1204,7 +1279,7 @@
       "additionalProperties": true
     },
     "poetryEvent": {
-      "description": "A one-off spoken-word/punk-poetry event (poetryEvents[] array) — same shape as musicEvent/specificEvent but always implicitly isPoetry.",
+      "description": "A one-off spoken-word/punk-poetry event (poetryEvents[] array) — same shape as musicEvent/specificEvent but always implicitly isPoetry. [TO DO — data mismatch: both records currently in the poetryEvents[] array are recurring-night records (schedule/time/price/location/venue_url/exceptions/latlon, no `date`) — i.e. the poetryNight shape, and so they don't satisfy this def's required `date`. They probably belong in the poetryNights[] array, which isn't present in the data at all.]",
       "type": "object",
       "properties": {
         "name": {
@@ -1295,6 +1370,9 @@
         "venue_id": {
           "type": "string",
           "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent with its own venue_id — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's venue_id in at load time."
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
         }
       },
       "required": [
@@ -1404,6 +1482,41 @@
         },
         "geocode_missing": {
           "type": "boolean"
+        },
+        "promoter_id": {
+          "$ref": "#/$defs/promoterId"
+        },
+        "flyers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "LEGACY name for `club_flyers`, still used by 4 clubs (storytellingsunday, ease, plymouth-story-circle, quirkytales) — each with a single YYYY_MM_DD-prefixed one-off flyer. club_flyers is the name this schema says flyers.js/storyclub.js/venues.js/event_display.js read; if that's so, these 4 flyers are currently not being picked up and the field should be renamed in the data."
+        },
+        "ticketing_url": {
+          "type": "string",
+          "description": "The club's ticket shop/organiser page (one club, forgingfantastical, uses this name rather than `tickets_url`)."
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "description": "Per-occurrence themes: a list of [date, theme] pairs, same tuple shape as feature_slots (date first). One club (southdevonstorytellers) has this. NOTE the dates there are not all valid DD/MM/YYYY ('28/20/2026', '23rd/12/2026') — worth fixing in the data."
+        },
+        "online": {
+          "type": "boolean",
+          "description": "True for a club that meets online (one club, southamptonSC). Note: showDate.online is a string attendance mode (\"online\"/\"hybrid\"/\"in-person\"), whereas on a club record it is a plain boolean."
         }
       },
       "required": [
@@ -1414,7 +1527,7 @@
       "additionalProperties": true
     },
     "promoter": {
-      "description": "An entry in the top-level `promoters` registry — a promoter/production company in its own right. A promoter_id is frequently (but not necessarily) the same id already used as a bare `club` slug elsewhere (events[].club, specificEvents[].club, etc.) — this registry exists to give that id a name, link, and associated venues/artists once it's worth doing so, without requiring anything already referencing the slug to change.",
+      "description": "An entry in the top-level `promoters` registry — a promoter/production company in its own right. A promoter_id is frequently (but not necessarily) the same id already used as a bare `club` slug elsewhere (events[].club, specificEvents[].club, etc.) — this registry exists to give that id a name, link, and associated venues/artists once it's worth doing so, without requiring anything already referencing the slug to change. Events reference a promoter via `promoter_id` (specificEvents/musicEvents/poetryEvents, tour_dates, show_dates, clubs); The event builder's New Promoter tab creates and edits these entries.",
       "type": "object",
       "properties": {
         "promoter_id": {
@@ -1440,6 +1553,25 @@
             "type": "string"
           },
           "description": "Keys into the top-level `performers` object — performers this promoter regularly books, as a general roster rather than tied to any specific event."
+        },
+        "description": {
+          "type": "string",
+          "description": "About this promoter, About this promoter. Paragraphs separated by a blank double-line (\\n\\n\\n\\n), same convention as tour_description."
+        },
+        "ticketing_url": {
+          "type": "string",
+          "description": "The promoter's own ticket shop/organiser page (e.g. a TicketSource or Eventbrite organiser page). Note the name: `ticketing_url`, not `tickets_url`/`ticket_url` as on other record types — this is what the data actually uses (5 promoters, plus clubs/venues/performers)."
+        },
+        "facebook": {
+          "type": "string",
+          "description": "Facebook page/profile URL."
+        },
+        "email": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "description": "Alternative to `promoter_link` for the promoter's website — one registry entry (woolly-tellers) uses this instead. The event builder's New Promoter tab folds `url` into `promoter_link` when it saves an edited record; new entries should use `promoter_link`."
         }
       },
       "required": [
@@ -1707,6 +1839,17 @@
         },
         "venue_id": {
           "type": "string"
+        },
+        "facebook": {
+          "type": "string",
+          "description": "Facebook page/group URL — or, for one entry, a bare page name ('musicaltraditionsclub') rather than a full URL."
+        },
+        "tickets_url": {
+          "type": "string"
+        },
+        "byInvitation": {
+          "type": "boolean",
+          "description": "True if attendance is by invitation only."
         }
       },
       "required": [
@@ -1779,6 +1922,14 @@
         "name"
       ],
       "additionalProperties": true
+    },
+    "promoterId": {
+      "type": "string",
+      "description": "Key into the top-level `promoters` registry: who is putting this particular event/date on. Distinct from `club` — a club is a recurring night, a promoter is the organisation behind an event (the two often share an id, since a promoter_id is frequently also used as a bare `club` slug, but neither implies the other). Written by the event builder's \"Promoter\" field (it accepts a promoter's id or name and stores the id); the registry entries themselves are created/edited in the builder's New Promoter tab. Should match a registry key exactly — a mismatched id (e.g. 'Beaford' vs 'beaford') won't resolve to the registry entry. An id with no registry entry is tolerated but has no name or details attached.",
+      "examples": [
+        "crickcrack",
+        "beaford"
+      ]
     }
   }
 }

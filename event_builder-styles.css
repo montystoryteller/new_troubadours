@@ -697,6 +697,22 @@
     background: #8e24aa;
 }
 
+.batch-tag-promoter {
+    background: #e65100;
+}
+
+.batch-tag-promoter-edit {
+    background: #f57c00;
+}
+
+.batch-tag-club {
+    background: #00838f;
+}
+
+.batch-tag-club-edit {
+    background: #0097a7;
+}
+
 /* ── Repeatable performer sub-lists (podcast links / videos / appearances) */
 .subitem-list {
     display: flex;
