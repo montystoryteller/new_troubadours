@@ -2439,7 +2439,7 @@
           "price": "£11.50 (+ £1.50 fees)",
           "ticket_url": "https://thebraid.ticketsolve.com/ticketbooth/shows/1173674535",
           "isSpecial": true,
-          "title": "CHANGELINGS"
+          "title": "CHANGELINGS [Adderstone]"
         },
         {
           "date": "18/10/2026",
@@ -2448,7 +2448,7 @@
           "price": "£14.00 (+ £0.35)",
           "ticket_url": "https://www.yarnballycastle.com/event-details/hildegardeners-a-storytelling-cabaret-performance-by-adderstone",
           "isSpecial": true,
-          "title": "HILDEGARDENers"
+          "title": "HILDEGARDENers [Adderstone]"
         },
         {
           "date": "22/10/2026",
@@ -2457,14 +2457,14 @@
           "price": "Pay what you cam £2-£10 (+ 10%)",
           "ticket_url": "https://theduncairn.ticketsolve.com/ticketbooth/shows/1173692375",
           "isSpecial": true,
-          "title": "CHANGELINGS"
+          "title": "CHANGELINGS [Adderstone]"
         },
         {
           "date": "23/10/2026",
           "venue_id": "the-lobster-pot-strangford",
           "isSpecial": true,
           "isMusic": true,
-          "title": "Songs at The Lobster Pot"
+          "title": "Songs at The Lobster Pot [Adderstone]"
         }
       ],
       "name": "CHANGELINGS / HILDEGARDeners",
