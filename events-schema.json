@@ -513,6 +513,13 @@
         "structured_time": {
           "$ref": "#/$defs/structuredTimeList"
         },
+        "other_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other performers on that tour date."
+        },
         "price": {
           "type": "string",
           "examples": [
@@ -661,6 +668,13 @@
           "examples": [
             "Dauntless"
           ]
+        },
+        "other_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other performers on the tour."
         },
         "tour_description": {
           "type": "string",
@@ -1421,7 +1435,7 @@
         },
         "venue_id": {
           "type": "string",
-          "description": "Also serves as the default `venue_id` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `venue_id` blank — see applyClubInheritance() in shared_utils.js."
+          "description": "Also serves as the default `venue_id` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `venue_id` blank — see applyClubInheritance() in shared_utils.js. Optional: a club with no fixed venue — meets online, or has only a free-text `location` — omits it (8 existing club records do), and the event builder's New Club tab likewise leaves it blank in that case. Any event that opts into `inheritClubData` simply gets no venue from such a club."
         },
         "location": {
           "type": "string",
@@ -1525,8 +1539,7 @@
       },
       "required": [
         "name",
-        "club",
-        "venue_id"
+        "club"
       ],
       "additionalProperties": true
     },
