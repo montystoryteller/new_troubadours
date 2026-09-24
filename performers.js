@@ -446,6 +446,9 @@ setCanonical("performer");
     eventsData = loaded.eventsData;
     toursLookup = loaded.toursLookup;
     performersLookup = loaded.performersLookup;
+    // Needed by hasAnyMedia()/featuredSeriesFor() for the directory's
+    // media icon and WSC/TTTO series badges.
+    podcastsLookup = loaded.podcastsLookup;
     displayDataLastUpdated(loaded.lastUpdateTime);
     initNavFeedback();
 
@@ -485,77 +488,6 @@ setCanonical("performer");
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("performerContent").style.display = "";
   }, 0);
-
-  // ── Jump-to-performer search in the page header ────────────────
-  const jumpWrap = document.getElementById("perfJumpWrap");
-  if (jumpWrap) {
-    jumpWrap.style.display = "";
-
-    // Build a lightweight index: name + show/tour names
-    const jumpIndex = Object.entries(performersLookup)
-      .filter(([, p]) => !isTroupeConfig(p) && p)
-      .sort((a, b) => a[1].name.localeCompare(b[1].name))
-      .map(([pid, p]) => {
-        const aliasIds = new Set([pid, ...(p.aliases || [])]);
-        const showNames = [];
-        Object.values(toursLookup).forEach((t) => {
-          if (performerIdsOf(t).some((id) => aliasIds.has(id))) {
-            const n = t.tour_name || t.name;
-            if (n) showNames.push(n);
-          }
-        });
-        Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
-          if (performerIdsOf(ts).some((id) => aliasIds.has(id))) {
-            const n = ts.showname || ts.name;
-            if (n) showNames.push(n);
-          }
-        });
-        return {
-          pid,
-          name: p.name,
-          nameLower: p.name.toLowerCase(),
-          showNamesLower: showNames.map((s) => s.toLowerCase()),
-          showNames,
-          href: `performers.html?performer=${encodeURIComponent(pid)}`,
-        };
-      });
-
-    createSearchBox(jumpWrap, {
-      placeholder: "Jump to performer…",
-      search: (term) => {
-        const t = term.toLowerCase();
-        return jumpIndex
-          .filter((e) => e.pid !== performerId) // exclude current
-          .map((e) => {
-            if (e.nameLower.includes(t)) return { e, hint: null };
-            const sm = e.showNames.find((s, i) =>
-              e.showNamesLower[i].includes(t),
-            );
-            if (sm) return { e, hint: sm };
-            return null;
-          })
-          .filter(Boolean)
-          .slice(0, 8);
-      },
-      renderItem: ({ e, hint }) => {
-        const div = document.createElement("div");
-        const strong = document.createElement("strong");
-        strong.textContent = e.name;
-        div.appendChild(strong);
-        if (hint) {
-          const meta = document.createElement("span");
-          meta.className = "dir-search-item-meta";
-          meta.textContent = hint;
-          div.appendChild(meta);
-        }
-        return div;
-      },
-      onSelect: ({ e }) => {
-        location.href = e.href;
-      },
-      onChange: () => {},
-    });
-  }
 })();
 
 // ---------------------------------------------------------------------------
@@ -683,6 +615,43 @@ window.addEventListener("pageshow", () => {
     applyDirectoryHeadingMode();
   }
 });
+
+// ---------------------------------------------------------------------------
+// Ownership test — does an event/tour/show/festival-lineup entry belong to
+// the performer whose page is showing?
+// Checks: direct performer_id match, performer_ids array on the record
+// itself (used on tours like Haggarty/Brittain), and compound performer
+// records whose ids/performer_ids include this performer (used on
+// specificEvents like Queen of Between which carry a compound
+// performer_id). Relies on performerId and compoundIdsForMe, which
+// renderPerformer() sets up before anything calls this.
+// ---------------------------------------------------------------------------
+
+function performerMatches(obj) {
+  if (obj.performer_id === performerId) return true;
+  if (
+    Array.isArray(obj.performer_ids) &&
+    obj.performer_ids.includes(performerId)
+  )
+    return true;
+  if (obj.performer_id && compoundIdsForMe.has(obj.performer_id)) return true;
+  return false;
+}
+
+// Is a flat event (single .date, or a .datetimes list — judged by its
+// LAST date) in the past? Same rule renderEventRow() uses for its Past badge.
+function isPastFlatEvent(event) {
+  const today = getTodayMidnight();
+  if (Array.isArray(event.datetimes) && event.datetimes.length > 0) {
+    const lastDateStr = event.datetimes[event.datetimes.length - 1]
+      .split(/\s*:\s*/)[0]
+      .trim();
+    const lastDate = parseDateString(lastDateStr);
+    return !!(lastDate && lastDate < today);
+  }
+  const d = parseDateString(event.date);
+  return !!(d && d < today);
+}
 
 function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
@@ -919,22 +888,6 @@ function renderPerformer() {
     });
   }
 
-  // Helper: returns true if an event/tour/show belongs to this performer.
-  // Checks: direct performer_id match, performer_ids array on the event itself
-  // (used on tours like Haggarty/Brittain), and compound performer records
-  // whose ids/performer_ids include this performer (used on specificEvents
-  // like Queen of Between which carry a compound performer_id).
-  function performerMatches(obj) {
-    if (obj.performer_id === performerId) return true;
-    if (
-      Array.isArray(obj.performer_ids) &&
-      obj.performer_ids.includes(performerId)
-    )
-      return true;
-    if (obj.performer_id && compoundIdsForMe.has(obj.performer_id)) return true;
-    return false;
-  }
-
   // Gather all data for this performer
   const myTours = Object.entries(toursLookup)
     .filter(([, t]) => performerMatches(t))
@@ -958,9 +911,7 @@ function renderPerformer() {
     (eventsData.poetryEvents || []).filter((e) => performerMatches(e)),
   );
   const myFestivals = Object.entries(eventsData.festivals || {})
-    .filter(([, f]) =>
-      (f.performers || []).some((p) => p.performer_id === performerId),
-    )
+    .filter(([, f]) => (f.performers || []).some((p) => performerMatches(p)))
     .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
 
   // Collaborators — note myFestivals is deliberately excluded here: sharing
@@ -1109,8 +1060,41 @@ function renderPerformer() {
         }
       });
     }
+    // Upcoming (and undated/TBC) appearances stay in the main list; past
+    // ones sit behind a collapsible, like past tour/show dates, so a long
+    // history doesn't bury what's coming up. allOther is already ordered
+    // upcoming-first then most-recent-past-first, so order is preserved.
     const list = document.getElementById("eventsList");
-    allOther.forEach((e) => renderEventRow(list, e));
+    const upcomingOther = allOther.filter((e) => !isPastFlatEvent(e));
+    const pastOther = allOther.filter((e) => isPastFlatEvent(e));
+    upcomingOther.forEach((e) => renderEventRow(list, e));
+
+    if (pastOther.length > 0) {
+      const details = document.createElement("details");
+      details.className = "tour-history-details";
+      // Nothing upcoming → the past list is the section's whole content,
+      // so don't hide it behind a click.
+      const openByDefault = upcomingOther.length === 0;
+      if (openByDefault) details.open = true;
+
+      const summary = document.createElement("summary");
+      summary.className = "tour-history-summary";
+      summary.textContent = `Past appearances (${pastOther.length})`;
+      const hint = document.createElement("span");
+      hint.className = "tour-history-hint";
+      hint.textContent = openByDefault ? "click to collapse" : "click to expand";
+      summary.appendChild(hint);
+      details.appendChild(summary);
+      details.addEventListener("toggle", () => {
+        hint.textContent = details.open ? "click to collapse" : "click to expand";
+      });
+
+      const pastList = document.createElement("div");
+      pastList.className = "tour-history-list";
+      pastOther.forEach((e) => renderEventRow(pastList, e));
+      details.appendChild(pastList);
+      list.appendChild(details);
+    }
   }
 
   // Festivals
@@ -1120,12 +1104,208 @@ function renderPerformer() {
     myFestivals.forEach(([fid, f]) => renderFestivalRow(list, fid, f));
   }
 
+  // "Coming up" — merged upcoming dates, shown above the stats row
+  renderUpcomingSection(myTours, myTouringShows, allOther, myFestivals);
+
   // Flyer gallery — collects all flyers across tours, shows and events
   renderFlyerGallery(myTours, myTouringShows, allOther);
 
   // If this is a troupe, render each alias config as a collapsible sub-section
   if (isTroupe(performer)) {
     renderTroupeConfigs(performer);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// "Coming up" — the next few dated appearances across tours, repertoire,
+// story walks, other events and festivals, merged and soonest-first, shown
+// between the bio and the stats row so "where can I see this performer
+// next?" is answered without scrolling through each section below.
+// Deliberately compact: one line per date (date | title, time, venue,
+// co-performers, tickets), wrapping inside its own column on narrow
+// screens rather than stacking like the full event rows further down
+// (which also carry badges, flyers and descriptions — all still there).
+// Undated/TBC events are left out here (they still appear under
+// "Other appearances").
+// ---------------------------------------------------------------------------
+
+const UPCOMING_VISIBLE = 5;
+
+function formatUpcomingDate(d) {
+  const withYear = d.getFullYear() !== getTodayMidnight().getFullYear();
+  return `${DAYS_SHORT[d.getDay()]} ${formatShortDate(d)}${withYear ? " " + d.getFullYear() : ""}`;
+}
+
+function renderUpcomingRow(container, it) {
+  const row = document.createElement("div");
+  row.className = "upcoming-row";
+
+  const dateEl = document.createElement("div");
+  dateEl.className = "upcoming-row-date";
+  dateEl.textContent = it.dateLabel || formatUpcomingDate(it.date);
+  row.appendChild(dateEl);
+
+  const main = document.createElement("div");
+  main.className = "upcoming-row-main";
+
+  const title = document.createElement("span");
+  title.className = "upcoming-row-title";
+  if (it.href) {
+    const a = document.createElement("a");
+    a.href = it.href;
+    a.textContent = it.title;
+    title.appendChild(a);
+  } else {
+    title.textContent = it.title;
+    if (it.linkRecord) {
+      // event.html permalink, when the record has a plain .date
+      linkEventRowTitle(title, it.linkRecord, it.linkDate || null);
+    }
+  }
+  main.appendChild(title);
+
+  if (it.tag) {
+    const tag = document.createElement("span");
+    tag.className = "upcoming-row-tag";
+    tag.textContent = it.tag;
+    main.appendChild(tag);
+  }
+
+  const bits = [];
+  if (it.time) bits.push(it.time);
+  const venue = it.venueId ? venuesLookup[it.venueId] : null;
+  if (venue) bits.push(venue.name + (venue.city ? `, ${venue.city}` : ""));
+  if (bits.length > 0) {
+    const meta = document.createElement("span");
+    meta.className = "upcoming-row-meta";
+    meta.textContent = bits.join(" · ");
+    main.appendChild(meta);
+  }
+
+  const coLine = buildCoPerformerLine(
+    coPerformerIdsFor(it.record),
+    "upcoming-row-with",
+  );
+  if (coLine) main.appendChild(coLine);
+
+  const ticketHref = it.ticketUrl ? sanitizeUrl(it.ticketUrl) : null;
+  if (ticketHref) {
+    const a = document.createElement("a");
+    a.href = ticketHref;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "upcoming-row-tickets";
+    a.textContent = "Tickets";
+    main.appendChild(a);
+  }
+
+  row.appendChild(main);
+  container.appendChild(row);
+}
+
+function renderUpcomingSection(
+  myTours,
+  myTouringShows,
+  allOther,
+  myFestivals,
+) {
+  const today = getTodayMidnight();
+  const items = [];
+
+  myTours.forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      const d = parseDateString(td.date);
+      if (!d || d < today) return;
+      items.push({
+        date: d,
+        title: tour.tour_name || tour.name,
+        href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+        time: td.time || tour.time || null,
+        venueId: td.venue_id,
+        ticketUrl: td.ticket_url,
+        record: tour,
+      });
+    });
+  });
+
+  myTouringShows.forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      const d = parseDateString(sd.date);
+      if (!d || d < today) return;
+      items.push({
+        date: d,
+        title: ts.showname || ts.name,
+        href: `tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`,
+        time: sd.time || null,
+        venueId: sd.venue_id,
+        ticketUrl: sd.ticket_url,
+        record: ts,
+      });
+    });
+  });
+
+  allOther.forEach((e) => {
+    if (isPastFlatEvent(e)) return;
+    let d = parseDateString(e.date);
+    let time = e.time || null;
+    if (!d && Array.isArray(e.datetimes) && e.datetimes.length > 0) {
+      const parts = e.datetimes[0].split(/\s*:\s*/);
+      d = parseDateString((parts[0] || "").trim());
+      if (!time && parts[1]) time = parts[1].trim();
+    }
+    if (!d) return; // TBC — stays in "Other appearances" only
+    items.push({
+      date: d,
+      title: e.showname || e.name,
+      time,
+      venueId: e.venue_id,
+      ticketUrl: e.ticket_url,
+      record: e,
+      // Permalinks only exist for events with their own plain .date
+      linkRecord: e.date ? e : null,
+      linkDate: e.date ? d : null,
+    });
+  });
+
+  myFestivals.forEach(([, f]) => {
+    const start = parseDateString(f.start_date);
+    const end = parseDateString(f.end_date) || start;
+    if (!start || end < today) return;
+    const underway = start < today;
+    items.push({
+      // A festival already under way sorts as "today".
+      date: underway ? today : start,
+      dateLabel: underway ? `Until ${formatShortDate(end)}` : null,
+      title: f.name,
+      tag: "Festival",
+      venueId: f.venue_id,
+      ticketUrl: f.ticket_url,
+      record: {}, // festival lineups aren't a shared billing — no "with"
+    });
+  });
+
+  if (items.length === 0) return;
+  items.sort((a, b) => a.date - b.date);
+
+  document.getElementById("upcomingSection").style.display = "";
+  document.getElementById("upcomingHeading").textContent =
+    `Coming up (${items.length})`;
+
+  const list = document.getElementById("upcomingList");
+  list.innerHTML = "";
+  items.slice(0, UPCOMING_VISIBLE).forEach((it) => renderUpcomingRow(list, it));
+
+  const rest = items.slice(UPCOMING_VISIBLE);
+  if (rest.length > 0) {
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "perf-podcast-more upcoming-more";
+    moreBtn.textContent = `+${rest.length} more`;
+    moreBtn.addEventListener("click", () => {
+      rest.forEach((it) => renderUpcomingRow(list, it));
+      moreBtn.remove();
+    });
+    list.parentNode.appendChild(moreBtn);
   }
 }
 
@@ -2929,9 +3109,7 @@ function renderFestivalRow(container, fid, festival) {
   title.textContent = festival.name;
   detail.appendChild(title);
 
-  const role = (festival.performers || []).find(
-    (p) => p.performer_id === performerId,
-  );
+  const role = (festival.performers || []).find((p) => performerMatches(p));
   if (role && role.role) {
     const r = document.createElement("span");
     r.className = "event-row-time";

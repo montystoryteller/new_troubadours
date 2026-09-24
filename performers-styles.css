@@ -1583,3 +1583,112 @@ details.event-row-desc[open] > .event-row-desc-summary::before {
         transition: none;
     }
 }
+
+
+/* =============================================================
+   "Coming up" — compact one-line-per-date list
+   Date stays beside the text at every width (unlike .event-row,
+   which stacks on mobile); the text column wraps within itself.
+   ============================================================= */
+
+.content-section.upcoming-section {
+    padding: 12px 18px;
+}
+
+.upcoming-section .section-heading {
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    font-size: 14px;
+}
+
+.upcoming-row {
+    display: grid;
+    grid-template-columns: 6.5em minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.upcoming-row:last-child {
+    border-bottom: none;
+}
+
+.upcoming-row-date {
+    color: #666;
+    font-size: 12px;
+}
+
+.upcoming-row-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.upcoming-row-main > * {
+    margin-right: 8px;
+}
+
+.upcoming-row-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.upcoming-row-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.upcoming-row-title a:hover {
+    text-decoration: underline;
+}
+
+.upcoming-row-tag {
+    font-size: 11px;
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border-alt);
+    border-radius: 10px;
+    padding: 0 6px;
+}
+
+.upcoming-row-meta {
+    color: #777;
+}
+
+.upcoming-row-with {
+    display: inline;
+    color: #888;
+    font-style: italic;
+}
+
+.upcoming-row-with a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.upcoming-row-tickets {
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.upcoming-row-with a:hover,
+.upcoming-row-tickets:hover {
+    text-decoration: underline;
+}
+
+.upcoming-more {
+    margin: 8px 0 2px;
+}
+
+@media (max-width: 600px) {
+    .content-section.upcoming-section {
+        padding: 10px 14px;
+    }
+
+    .upcoming-row {
+        grid-template-columns: 5.2em minmax(0, 1fr);
+        gap: 8px;
+    }
+}
