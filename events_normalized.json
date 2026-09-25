@@ -6944,7 +6944,8 @@
       "event_flyer": "2025_12_11_brown_darktales.png",
       "isSpecial": true,
       "venue_id": "angels-cut-darlington",
-      "performer_id": "p-d-brown"
+      "performer_id": "p-d-brown",
+      "eventId": "20251211-p-d-brown-angels-cut-darlington"
     },
     {
       "name": "A Dance with the Minotaur's Sister [Steph Brittain]",
@@ -7174,19 +7175,6 @@
       "eventId": "20260103-vanessa-woolf-plot-9-maze-hill-greenwich"
     },
     {
-      "name": "Tales and Ales — Tombs and Roses by Word of Mouth [P. D. Brown] [P. D. Brown]",
-      "showname": "Tales and Ales — Tombs and Roses by Word of Mouth",
-      "date": "11/12/2025",
-      "club": "",
-      "price": "£5",
-      "description": "",
-      "facebook": "angelscutdarlington",
-      "event_flyer": "2026_02_12_talesnales_tombroses_brown.jpg",
-      "isSpecial": true,
-      "venue_id": "angels-cut-darlington",
-      "performer_id": "p-d-brown"
-    },
-    {
       "name": "Welsh Whisperers [Gillian Brownson + Dragon Storytellers]",
       "showname": "Gillian Brownson",
       "date": "17/01/2026",
@@ -7248,7 +7236,8 @@
       "venue_id": "hotel-indigo-clerkenwell-london",
       "performer_id": "amy-douglas-jason-buck",
       "age_rating": "12+",
-      "min_age": 12
+      "min_age": 12,
+      "eventId": "20260131-amy-douglas-jason-buck-hotel-indigo-clerkenwell-london"
     },
     {
       "name": "Myth, Magic and Mischief (age 5+) [Amy Douglas and Jason Buck]",
@@ -7330,6 +7319,21 @@
       "eventId": "20260123-marion-leeper-st-johns-church-hall-worcester-park"
     },
     {
+      "name": "Tales By The Teign [Shane Ibbs]",
+      "showname": "Tales By The Teign",
+      "date": "25/01/2026",
+      "time": "2-4pm",
+      "club": "",
+      "price": "£5 (£4)",
+      "description": "",
+      "event_flyer": "2026_01_25_tales_teign.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "the-folk-preservation-society-teignmouth",
+      "performer_id": "shane-ibbs",
+      "eventId": "20260125-shane-ibbs-the-folk-preservation-society-teignmouth"
+    },
+    {
       "name": "The Girl Who Married a Dog [Nell Phoenix]",
       "showname": "The Girl Who Married a Dog",
       "promoter_link": "http://nellphoenix.co.uk/",
@@ -7364,19 +7368,35 @@
       "eventId": "20260130-mike-payton-the-old-stables-cricklade"
     },
     {
-      "name": "Tales By The Teign [Shane Ibbs]",
-      "showname": "Tales By The Teign",
-      "date": "25/01/2026",
-      "time": "2-4pm",
+      "name": "Tales That Topple Tyrants: Live Storytelling for Grownups [Merl Fluin]",
+      "showname": "Tales That Topple Tyrants: Live Storytelling for Grownups",
+      "date": "31/01/2026",
+      "time": "6.30-9pm",
       "club": "",
-      "price": "£5 (£4)",
-      "description": "",
-      "event_flyer": "2026_01_25_tales_teign.jpg",
-      "ticket_url": "",
+      "price": "£10",
+      "description": "Once upon a time there was a very bad king. He stole from his subjects, laid waste to the land, told outrageous lies, declared war on his neighbours, and always got his own way...\n\n\n\nExcept he didn't.",
+      "ticket_url": "https://www.tickettailor.com/events/merlfluin/1985839",
       "isSpecial": true,
-      "venue_id": "the-folk-preservation-society-teignmouth",
-      "performer_id": "shane-ibbs",
-      "eventId": "20260125-shane-ibbs-the-folk-preservation-society-teignmouth"
+      "fb_event": 1564415551652047,
+      "venue_id": "buddhist-centre-southampton",
+      "performer_id": "merl-fluin",
+      "eventId": "20260131-merl-fluin-buddhist-centre-southampton"
+    },
+    {
+      "name": "Tales Tattled & Told at StonyWords Literary Festival",
+      "showname": "Tales Tattled & Told at StonyWords Literary Festival",
+      "date": "01/02/2026",
+      "time": "7pm",
+      "club": "talestattledtold",
+      "price": "£12 (+ £1.20)",
+      "description": "In 'Shapes' storyteller Gill blends a haunting Selkie tale set on the Isle of Harris with an Innuit folk tale, plus a story of the Albrecht Durer painting, 'The Hare.'\n\n\n\nGill is a performance storyteller with a passion for encouraging the imagination to take her audiences to far away places and times! Patrick, a freelance musician and composer, weaves his harp tunes like golden magic around the words of the tales - shapeshifting selkies, hares and bears.\n\n\n\nSome of Patrick's recent compositions include his settings of commissioned poems by Shropshire/Welsh poets, A Shropshire Lass, and his Cantata, The Gentle Earth of Wales, based on Welsh folksongs and poetry.\n\n\n\nWe'll also have the fantastic music of Rebecca LaChance and the joyous stories of Lynette Hill, Pete Boyce and fingers crossed, the artistry of the newly cloaked Bard of Stony Stratford! Hosted by Stephen Hobbs.\n\n\n\nThis event is intended for ages 16 and older.",
+      "ticket_url": "https://wegottickets.com/af/671/event/662417",
+      "isSpecial": true,
+      "venue_id": "the-stables-at-the-bull-hotel-stony",
+      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
+      "age_rating": "16+",
+      "min_age": 16,
+      "eventId": "20260201-lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley-the-stables-at-the-bull-hotel-stony"
     },
     {
       "name": "Tales from Pixieland [Henry Everett]",
@@ -7411,21 +7431,6 @@
       "eventId": "20260204-marcus-pibworth-university-of-south-wales-cardiff"
     },
     {
-      "name": "Tales That Topple Tyrants: Live Storytelling for Grownups [Merl Fluin]",
-      "showname": "Tales That Topple Tyrants: Live Storytelling for Grownups",
-      "date": "31/01/2026",
-      "time": "6.30-9pm",
-      "club": "",
-      "price": "£10",
-      "description": "Once upon a time there was a very bad king. He stole from his subjects, laid waste to the land, told outrageous lies, declared war on his neighbours, and always got his own way...\n\n\n\nExcept he didn't.",
-      "ticket_url": "https://www.tickettailor.com/events/merlfluin/1985839",
-      "isSpecial": true,
-      "fb_event": 1564415551652047,
-      "venue_id": "buddhist-centre-southampton",
-      "performer_id": "merl-fluin",
-      "eventId": "20260131-merl-fluin-buddhist-centre-southampton"
-    },
-    {
       "name": "Storytelling at the Kashmir Fringe [Tony 'Monty' Hirst]",
       "showname": "Traditional Tales",
       "date": "07/02/2026",
@@ -7436,22 +7441,6 @@
       "venue_id": "quay-arts-newport",
       "performer_id": "monty-storyteller",
       "eventId": "20260207-monty-storyteller-quay-arts-newport"
-    },
-    {
-      "name": "Tales Tattled & Told at StonyWords Literary Festival",
-      "showname": "Tales Tattled & Told at StonyWords Literary Festival",
-      "date": "01/02/2026",
-      "time": "7pm",
-      "club": "talestattledtold",
-      "price": "£12 (+ £1.20)",
-      "description": "In 'Shapes' storyteller Gill blends a haunting Selkie tale set on the Isle of Harris with an Innuit folk tale, plus a story of the Albrecht Durer painting, 'The Hare.'\n\n\n\nGill is a performance storyteller with a passion for encouraging the imagination to take her audiences to far away places and times! Patrick, a freelance musician and composer, weaves his harp tunes like golden magic around the words of the tales - shapeshifting selkies, hares and bears.\n\n\n\nSome of Patrick's recent compositions include his settings of commissioned poems by Shropshire/Welsh poets, A Shropshire Lass, and his Cantata, The Gentle Earth of Wales, based on Welsh folksongs and poetry.\n\n\n\nWe'll also have the fantastic music of Rebecca LaChance and the joyous stories of Lynette Hill, Pete Boyce and fingers crossed, the artistry of the newly cloaked Bard of Stony Stratford! Hosted by Stephen Hobbs.\n\n\n\nThis event is intended for ages 16 and older.",
-      "ticket_url": "https://wegottickets.com/af/671/event/662417",
-      "isSpecial": true,
-      "venue_id": "the-stables-at-the-bull-hotel-stony",
-      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
-      "age_rating": "16+",
-      "min_age": 16,
-      "eventId": "20260201-lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley-the-stables-at-the-bull-hotel-stony"
     },
     {
       "name": "An Evening of Sussex Folklore and Wine [Jon Mason]",
@@ -7498,20 +7487,34 @@
       "eventId": "20260211-tuup-torriano-meeting-house-london"
     },
     {
-      "name": "The Stealing of the Sun and Moon [Nick Hennessey]",
-      "showname": "The Stealing of the Sun and Moon",
-      "date": "21/01/2026",
-      "time": "7.30-10pm",
-      "club": "beestontales",
-      "price": "£8 [£6.50]",
-      "description": "Join Nick for a performance that journeys into the deep, snow-filled forests of the Finnish far north, where the river of the underworld flows dark and fast, and the summer sun shines just a little too bright. In this world created from shards of eggshell, the sun and moon are fought over, magic is done and undone, and life is shot through with bizarre ordeals, misguided passions, magical battles and transformations. Expect a remarkable performance of elemental epic.",
-      "event_flyer": "",
-      "ticket_url": "https://www.tickettailor.com/events/beestontales/1955498",
-      "online": "hybrid",
+      "name": "Tales and Ales — Tombs and Roses by Word of Mouth [P. D. Brown] [P. D. Brown]",
+      "showname": "Tales and Ales — Tombs and Roses by Word of Mouth",
+      "date": "12/02/2026",
+      "club": "",
+      "price": "£5",
+      "description": "",
+      "facebook": "angelscutdarlington",
+      "event_flyer": "2026_02_12_talesnales_tombroses_brown.jpg",
       "isSpecial": true,
-      "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
-      "performer_id": "nick-hennessey",
-      "eventId": "20260121-nick-hennessey-our-lady-of-the-assumption-church-hall-beeston"
+      "venue_id": "angels-cut-darlington",
+      "performer_id": "p-d-brown",
+      "eventId": "20260212-p-d-brown-angles-cut-darlington"
+    },
+    {
+      "name": "Letters Through Time - a traditional storytelling for adults. [Maria Credali]",
+      "showname": "Letters Through Time - a traditional storytelling for adults.",
+      "date": "13/02/2026",
+      "time": "7pm",
+      "club": "",
+      "price": "£10",
+      "description": "This show was first created as part of an ACE funded commission for Festival at the Edge.",
+      "ticket_url": "",
+      "isSpecial": true,
+      "event_flyer": "2026_02_12_erasmus_darwin.jpg",
+      "fb_event": 650731398101504,
+      "venue_id": "erasmus-darwin-house-lichfield",
+      "performer_id": "maria-credali",
+      "eventId": "20260213-maria-credali-erasmus-darwin-house-lichfield"
     },
     {
       "name": "The Homing Stone [Hugh Lupton]",
@@ -7530,20 +7533,20 @@
       "eventId": "20260220-hugh-lupton-the-backyard-theatre-watchet"
     },
     {
-      "name": "Letters Through Time - a traditional storytelling for adults. [Maria Credali]",
-      "showname": "Letters Through Time - a traditional storytelling for adults.",
-      "date": "13/02/2026",
-      "time": "7pm",
-      "club": "",
-      "price": "£10",
-      "description": "This show was first created as part of an ACE funded commission for Festival at the Edge.",
-      "ticket_url": "",
+      "name": "The Stealing of the Sun and Moon [Nick Hennessey]",
+      "showname": "The Stealing of the Sun and Moon",
+      "date": "21/01/2026",
+      "time": "7.30-10pm",
+      "club": "beestontales",
+      "price": "£8 [£6.50]",
+      "description": "Join Nick for a performance that journeys into the deep, snow-filled forests of the Finnish far north, where the river of the underworld flows dark and fast, and the summer sun shines just a little too bright. In this world created from shards of eggshell, the sun and moon are fought over, magic is done and undone, and life is shot through with bizarre ordeals, misguided passions, magical battles and transformations. Expect a remarkable performance of elemental epic.",
+      "event_flyer": "",
+      "ticket_url": "https://www.tickettailor.com/events/beestontales/1955498",
+      "online": "hybrid",
       "isSpecial": true,
-      "event_flyer": "2026_02_12_erasmus_darwin.jpg",
-      "fb_event": 650731398101504,
-      "venue_id": "erasmus-darwin-house-lichfield",
-      "performer_id": "maria-credali",
-      "eventId": "20260213-maria-credali-erasmus-darwin-house-lichfield"
+      "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
+      "performer_id": "nick-hennessey",
+      "eventId": "20260121-nick-hennessey-our-lady-of-the-assumption-church-hall-beeston"
     },
     {
       "name": "Crazy Kings & Killer Queens [Merl Fluin & Holly Medland]",
