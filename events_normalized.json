@@ -4810,10 +4810,9 @@
           "date": "06/12/2026",
           "venue_id": "exeter-phoenix",
           "time": "7pm",
-          "price": "£17",
-          "ticket_url": "https://thefleece.co.uk/whats-on/gigs/gaz-brookfield-the-company-of-thieves-xmas-show-5/",
+          "price": "£25",
+          "ticket_url": "https://exeterphoenix.org.uk/events/mind-over-mayhem/",
           "isSpecial": true,
-          "event_flyer": "2026_12_05_gaz_sirens_fleece.webp",
           "headliner": "tom-robinson"
         }
       ],
