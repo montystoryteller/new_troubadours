@@ -1211,26 +1211,38 @@ function createTourDateElement(tourDate, tour, past = false) {
     nameDiv.appendChild(cancelBadge);
   }
 
+  div.appendChild(nameDiv);
+
   // Billing flip: tourDate.headliner names someone else as the actual
   // headliner for this one date, meaning the tour's own act is really
   // appearing in a support slot on that person's night. Flag it clearly
   // right on the date — everything else on this page (title, "Also
   // featuring"/"Support" rows, flyers, etc.) still describes the tour as
-  // a whole, so without this badge a flipped date would look like an
-  // ordinary headline date for this tour.
+  // a whole, so without this row a flipped date would look like an
+  // ordinary headline date for this tour. Rendered as the same label +
+  // linked performer-tag row as "With:"/"Co-headliner(s):"/"Support:"
+  // below (via buildAdditionalPerformersEl), rather than a single
+  // free-text badge, so it reads consistently and the headliner's name
+  // is a clickable link like every other billing relationship on this
+  // card, instead of one long solid button.
   const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, tourDate);
   if (tourDate.headliner && effectiveHeadlinerId !== tour.performer_id) {
-    const headlinerRecord = performersLookup[effectiveHeadlinerId];
-    const headlinerName = headlinerRecord
-      ? headlinerRecord.name
-      : effectiveHeadlinerId;
-    nameDiv.appendChild(document.createTextNode(" "));
-    const supportSlotBadge = createBadge(`Supporting ${headlinerName}`);
-    supportSlotBadge.className = "event-badge event-badge-support-slot";
-    nameDiv.appendChild(supportSlotBadge);
+    if (performersLookup[effectiveHeadlinerId]) {
+      const headlinerEl = buildAdditionalPerformersEl(
+        [effectiveHeadlinerId],
+        "Supporting:",
+        "additional-performers-date",
+      );
+      if (headlinerEl) div.appendChild(headlinerEl);
+    } else {
+      // No performer record for effectiveHeadlinerId — fall back to a
+      // plain badge so a data typo doesn't silently drop the notice.
+      nameDiv.appendChild(document.createTextNode(" "));
+      const fallbackBadge = createBadge(`Supporting ${effectiveHeadlinerId}`);
+      fallbackBadge.className = "event-badge event-badge-support-slot";
+      nameDiv.appendChild(fallbackBadge);
+    }
   }
-
-  div.appendChild(nameDiv);
 
   // Additional performers for this date: the date's own other_performer_ids
   // if it has any, otherwise the tour-level list.
