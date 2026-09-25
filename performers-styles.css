@@ -1523,6 +1523,49 @@ details.perf-nested-details[open]>.perf-nested-summary::before {
     text-decoration: underline;
 }
 
+/* Relationship badge (Co-headliner / Also featuring / Supporting X) on a
+   guest-appearance tour card — see relationshipLabelForTour() — styled
+   like the tour page's own support-act tint (rgba(94,75,139,...)) so the
+   same "opening for the headliner" relationship reads the same colour on
+   both pages. */
+.listing-relationship-badge {
+    background: rgba(94, 75, 139, 0.08);
+    color: #5e4b8b;
+    border: 1px solid rgba(94, 75, 139, 0.3);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Rest-of-the-bill rows (buildBillingRow()) on a tour card — "Also
+   featuring:"/"Co-headlining:"/"Support:" — beyond the headline
+   co-performers line above. Support acts get the same purple tint as the
+   relationship badge above and the tour page's own support-act pills. */
+.listing-card-billing a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.listing-card-billing a:hover {
+    text-decoration: underline;
+}
+
+.listing-card-billing-support a {
+    color: #5e4b8b;
+}
+
+/* Per-date billing rows on a tour's event rows (tourDateToEventRow() /
+   renderEventRow()) — "With:"/"Co-headliner(s):"/"Support:"/"Supporting X"
+   for this specific date, reusing the same .event-row-with link styling as
+   the co-performer "with A & B" line above. Support rows get the same
+   purple tint as everywhere else this relationship appears. */
+.event-row-support a {
+    color: #5e4b8b;
+}
+
 .event-row-desc {
     margin-top: 6px;
 }

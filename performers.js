@@ -915,13 +915,21 @@ function renderPerformer() {
     .filter(([, f]) => (f.performers || []).some((p) => performerMatches(p)))
     .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
 
-  // Tours where this performer appears only via other_performer_ids. They
-  // aren't in myTours (the tour's own performer billing) but everyone else
-  // on the bill is still a collaborator — see collectCollaborators().
-  const myAdditionalTours = Object.entries(toursLookup).filter(
-    ([, t]) =>
-      !performerMatches(t) && getTourAdditionalPerformerIds(t).has(performerId),
-  );
+  // Tours where this performer appears only via other_performer_ids or
+  // support_performer_ids ("guest" appearances). They aren't in myTours
+  // (the tour's own headline performer billing) but everyone else on the
+  // bill is still a collaborator — see collectCollaborators() — and the
+  // tour itself is still worth showing on this performer's page, labelled
+  // with how they're billed on it — see relationshipLabelForTour() and
+  // the Tours section below.
+  const myGuestTours = Object.entries(toursLookup)
+    .filter(
+      ([, t]) =>
+        !performerMatches(t) &&
+        (getTourAdditionalPerformerIds(t).has(performerId) ||
+          getTourSupportPerformerIds(t).has(performerId)),
+    )
+    .sort(upcomingFirstThenRecent(([, t]) => representativeTourDate(t)));
 
   // Collaborators — note myFestivals is deliberately excluded here: sharing
   // a festival bill isn't performing together (see collectCollaborators()).
@@ -931,7 +939,7 @@ function renderPerformer() {
         record: t,
         displayName: t.tour_name || t.name,
       })),
-      ...myAdditionalTours.map(([, t]) => ({
+      ...myGuestTours.map(([, t]) => ({
         record: t,
         displayName: t.tour_name || t.name,
       })),
@@ -978,7 +986,8 @@ function renderPerformer() {
   );
 
   // Stats row
-  const hasToursOrShows = myTours.length > 0 || myTouringShows.length > 0;
+  const hasToursOrShows =
+    myTours.length > 0 || myGuestTours.length > 0 || myTouringShows.length > 0;
   const otherEventsCount = mySpecific.length + myMusic.length + myPoetry.length;
   const otherEventsLabel = hasToursOrShows
     ? "Other events"
@@ -1000,11 +1009,17 @@ function renderPerformer() {
     statsRow.appendChild(card);
   });
 
-  // Tours
-  if (myTours.length > 0) {
+  // Tours — this performer's own headline tours first, then any tours
+  // where they only appear as an additional performer or support act
+  // (myGuestTours), each labelled with how they're billed — see
+  // relationshipLabelForTour().
+  if (myTours.length > 0 || myGuestTours.length > 0) {
     document.getElementById("toursSection").style.display = "";
     const list = document.getElementById("toursList");
     myTours.forEach(([tourId, tour]) => renderTourCard(list, tourId, tour));
+    myGuestTours.forEach(([tourId, tour]) =>
+      renderTourCard(list, tourId, tour, relationshipLabelForTour(tour)),
+    );
   }
 
   // Touring shows (excludes story walks — see myStoryWalks below)
@@ -2102,11 +2117,18 @@ function getTourAdditionalLists(tour) {
     .filter((list) => list.length > 0);
 }
 
-// Everyone who appears as an additional performer on any date of the tour.
+// Everyone who appears as an additional performer on any date of the
+// tour — excluding the tour's own headliners and anyone already covered
+// by the more specific support_performer_ids relationship, so a
+// performer only ever shows up in one of the two buckets.
 function getTourAdditionalPerformerIds(tour) {
+  const headliners = getTourHeadlinerIds(tour);
+  const supportIds = getTourSupportPerformerIds(tour);
   const result = new Set();
   getTourAdditionalLists(tour).forEach((list) =>
-    list.forEach((id) => result.add(id)),
+    list.forEach((id) => {
+      if (!headliners.has(id) && !supportIds.has(id)) result.add(id);
+    }),
   );
   return result;
 }
@@ -2140,6 +2162,139 @@ function getTourHeadlinerIds(tour) {
   return ids;
 }
 
+// Support acts (support_performer_ids) — a more specific, always-"opening
+// for the headliner" relationship than the arbitrary other_performer_ids
+// bucket above. Same replace-not-merge rule as getTourAdditionalLists():
+// a date's own support_performer_ids, when non-empty, replaces the
+// tour-level list for that date. Ported from tour_display.js's
+// getSupportPerformerIds()/getEffectiveHeadlinerId()/
+// isDoubleHeadlineForDate() — kept here rather than in shared_utils.js
+// only because that file wasn't in scope for this change; a future pass
+// could move all three there so the two pages can't drift apart.
+function getSupportLists(tour) {
+  const tourIds = Array.isArray(tour?.support_performer_ids)
+    ? tour.support_performer_ids.filter(Boolean)
+    : [];
+  const dates = Array.isArray(tour?.tour_dates) ? tour.tour_dates : [];
+  if (dates.length === 0) return tourIds.length > 0 ? [tourIds] : [];
+  return dates
+    .map((td) => {
+      const dateIds = Array.isArray(td?.support_performer_ids)
+        ? td.support_performer_ids.filter(Boolean)
+        : [];
+      return dateIds.length > 0 ? dateIds : tourIds;
+    })
+    .filter((list) => list.length > 0);
+}
+
+// Everyone who appears as a support act on any date of the tour.
+function getTourSupportPerformerIds(tour) {
+  const result = new Set();
+  getSupportLists(tour).forEach((list) =>
+    list.forEach((id) => result.add(id)),
+  );
+  return result;
+}
+
+// Other support acts who share at least one date's bill with `id`.
+function getCoSupportPerformerIds(tour, id) {
+  const result = new Set();
+  getSupportLists(tour).forEach((list) => {
+    if (list.includes(id)) list.forEach((other) => result.add(other));
+  });
+  return result;
+}
+
+// Whether a tour(-date)'s other_performer_ids bucket represents genuine
+// co-headline billing (isDoubleHeadline) rather than a plain "also
+// featuring" support slot — same aggregate-level flag tour_display.js
+// checks per date; used here at tour level since this page shows one
+// card per tour rather than one row per date.
+function isDoubleHeadlineForDate(tour, tourDate) {
+  if (tourDate && typeof tourDate.isDoubleHeadline === "boolean") {
+    return tourDate.isDoubleHeadline;
+  }
+  return !!(tour && tour.isDoubleHeadline);
+}
+
+// Who's actually headlining a given tour date. Normally that's just the
+// tour's own performer_id, but a date can set `headliner` to name someone
+// else instead (the touring act appearing in a support slot on that
+// person's own night) — ported from tour_display.js's
+// getEffectiveHeadlinerId().
+function getEffectiveHeadlinerId(tour, tourDate) {
+  if (tourDate && tourDate.headliner) return tourDate.headliner;
+  return tour?.performer_id;
+}
+
+// Per-date variants of getTourAdditionalPerformerIds()/
+// getTourSupportPerformerIds() above — those two aggregate across every
+// date of the tour for the one "Also featuring:"/"Support:" summary row
+// on the tour card; these instead resolve a SINGLE date's own bill, for
+// the per-date "With:"/"Co-headliner(s):"/"Support:" rows on each event
+// row underneath (tourDateToEventRow()/renderEventRow()) — the same
+// per-date relationship tour_display.js shows on the tour page itself,
+// since an override on one date can differ from the tour-level default.
+// Ported from tour_display.js's getAdditionalPerformerIds(tour, tourDate)/
+// getSupportPerformerIds(tour, tourDate).
+function getAdditionalPerformerIdsForDate(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.other_performer_ids)
+      ? tourDate.other_performer_ids.filter(Boolean)
+      : [];
+  const tourIds = Array.isArray(tour?.other_performer_ids)
+    ? tour.other_performer_ids.filter(Boolean)
+    : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = getTourHeadlinerIds(tour);
+  const supportIds = new Set(getSupportPerformerIdsForDate(tour, tourDate));
+
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      supportIds.has(id) ||
+      !performersLookup[id]
+    )
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
+function getSupportPerformerIdsForDate(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.support_performer_ids)
+      ? tourDate.support_performer_ids.filter(Boolean)
+      : [];
+  const tourIds = Array.isArray(tour?.support_performer_ids)
+    ? tour.support_performer_ids.filter(Boolean)
+    : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = getTourHeadlinerIds(tour);
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, tourDate);
+
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      id === effectiveHeadlinerId ||
+      !performersLookup[id]
+    )
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
 function collectCollaborators(records) {
   const map = new Map(); // collaboratorId -> Set of shared show/tour names
 
@@ -2163,21 +2318,34 @@ function collectCollaborators(records) {
       compoundMembers.forEach((id) => castIds.add(id));
     }
 
-    // Additional tour performers (other_performer_ids). The data doesn't
-    // say who headlines, so the whole bill counts: if this performer is
-    // billed on the tour (performerMatches), everyone additional is a
-    // collaborator; if they're themselves an additional performer, the
-    // tour's billed performers are, plus any other additional performers
-    // sharing a date's bill with them.
+    // Additional tour performers (other_performer_ids) and support acts
+    // (support_performer_ids). The data doesn't say who headlines, so the
+    // whole bill counts: if this performer is billed on the tour
+    // (performerMatches), everyone else on the bill is a collaborator; if
+    // they're themselves an additional performer or support act, the
+    // tour's billed headliners are, plus anyone else sharing a date's
+    // bill with them in the same bucket, plus the other bucket entirely
+    // (an "also featuring" performer and the tour's support act(s) are
+    // both on the same bill as each other too).
     const additionalIds = getTourAdditionalPerformerIds(record);
-    if (additionalIds.size > 0) {
-      if (performerMatches(record)) {
-        additionalIds.forEach((id) => castIds.add(id));
-      } else if (additionalIds.has(performerId)) {
+    const supportIds = getTourSupportPerformerIds(record);
+    if (performerMatches(record)) {
+      additionalIds.forEach((id) => castIds.add(id));
+      supportIds.forEach((id) => castIds.add(id));
+    } else {
+      if (additionalIds.has(performerId)) {
         getTourHeadlinerIds(record).forEach((id) => castIds.add(id));
         getCoAdditionalPerformerIds(record, performerId).forEach((id) =>
           castIds.add(id),
         );
+        supportIds.forEach((id) => castIds.add(id));
+      }
+      if (supportIds.has(performerId)) {
+        getTourHeadlinerIds(record).forEach((id) => castIds.add(id));
+        getCoSupportPerformerIds(record, performerId).forEach((id) =>
+          castIds.add(id),
+        );
+        additionalIds.forEach((id) => castIds.add(id));
       }
     }
 
@@ -2613,6 +2781,17 @@ function buildDescriptionDropdown(text, label = "About this event") {
 }
 
 function tourDateToEventRow(tour, td) {
+  // This date's own billing relationship — may differ from the tour-level
+  // "Also featuring:"/"Support:" summary on the card above if this date
+  // overrides other_performer_ids/support_performer_ids/headliner. Read
+  // by renderEventRow() to show the same per-date "With:"/
+  // "Co-headliner(s):"/"Support:"/"Supporting X" rows the tour page shows
+  // on this exact date — see getAdditionalPerformerIdsForDate() etc.
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, td);
+  const billingFlip =
+    td.headliner && effectiveHeadlinerId !== tour.performer_id
+      ? effectiveHeadlinerId
+      : null;
   return {
     name: tour.tour_name || tour.name,
     showname: tour.name,
@@ -2624,6 +2803,10 @@ function tourDateToEventRow(tour, td) {
     isPoetry: tour.isPoetry,
     isSpecial: tour.isSpecial,
     ticket_url: td.ticket_url,
+    _dateAdditionalIds: getAdditionalPerformerIdsForDate(tour, td),
+    _dateSupportIds: getSupportPerformerIdsForDate(tour, td),
+    _dateIsDoubleHeadline: isDoubleHeadlineForDate(tour, td),
+    _dateBillingFlip: billingFlip,
     // Rare per-date copy only — the tour's own description is already
     // shown on the tour card above, so it isn't repeated on every row.
     description: combineDescriptionWithPrefix(
@@ -2728,6 +2911,66 @@ function renderDateCollapsible(
 }
 
 // ---------------------------------------------------------------------------
+// Relationship labelling (headliner / co-headliner / also featuring /
+// support act) — for a tour this performer doesn't own outright, says how
+// they're billed on it, from their own page.
+// ---------------------------------------------------------------------------
+
+/**
+ * Describes how the performer whose page this is relates to `tour`, for a
+ * tour they're NOT the/a headline performer_id/performer_ids on (a headline
+ * tour already gets its own "with A & B" co-performers line — see
+ * coPerformerIdsFor()/buildCoPerformerLine() — so this only covers the
+ * other_performer_ids / support_performer_ids buckets).
+ * @param {object} tour
+ * @returns {string|null} a short label, or null if performerMatches(tour)
+ *   (own tour — no label needed) or neither bucket includes them.
+ */
+function relationshipLabelForTour(tour) {
+  if (performerMatches(tour)) return null;
+  if (getTourSupportPerformerIds(tour).has(performerId)) {
+    // Who they're supporting is named as a linked "Supporting:" row on
+    // the card body (see renderTourCard()) rather than embedded as plain
+    // text here, so the header badge just needs to say what role this is.
+    return "Support act";
+  }
+  if (getTourAdditionalPerformerIds(tour).has(performerId)) {
+    return isDoubleHeadlineForDate(tour, null)
+      ? "Co-headliner"
+      : "Also featuring";
+  }
+  return null;
+}
+
+/**
+ * Builds a "Label: A, B" row of links to performers.html profile pages, or
+ * null if there's nobody to show. Mirrors tour_display.js's
+ * buildAdditionalPerformersEl() — same label/link shape, just plain
+ * comma-separated links (this page's existing convention, see
+ * buildCoPerformerLine()) rather than tour_display.js's coloured pills.
+ * @param {string[]} ids
+ * @param {string} label
+ * @param {string} className
+ * @returns {HTMLElement|null}
+ */
+function buildBillingRow(ids, label, className) {
+  const valid = (ids || []).filter((id) => performersLookup[id]);
+  if (valid.length === 0) return null;
+  const row = document.createElement("div");
+  row.className = className;
+  row.appendChild(document.createTextNode(`${label} `));
+  valid.forEach((id, i) => {
+    if (i > 0) row.appendChild(document.createTextNode(", "));
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.textContent = performersLookup[id].name;
+    a.onclick = (e) => e.stopPropagation();
+    row.appendChild(a);
+  });
+  return row;
+}
+
+// ---------------------------------------------------------------------------
 // Tour card
 // ---------------------------------------------------------------------------
 
@@ -2735,7 +2978,7 @@ function renderDateCollapsible(
 // "more…" toggle — see the Description block in renderTourCard().
 const TOUR_CARD_DESC_PREVIEW_LENGTH = 200;
 
-function renderTourCard(container, tourId, tour) {
+function renderTourCard(container, tourId, tour, relationshipLabel = null) {
   const today = getTodayMidnight();
   const dates = tour.tour_dates || [];
 
@@ -2777,6 +3020,17 @@ function renderTourCard(container, tourId, tour) {
   nameEl.textContent = tour.tour_name || tour.name;
   header.appendChild(nameEl);
 
+  // How this performer is billed on a tour they don't own outright (see
+  // relationshipLabelForTour()) — e.g. "Co-headliner", "Also featuring",
+  // "Supporting Daniel Morden". Their own tours pass no label: the
+  // co-performers line below already covers headline billing.
+  if (relationshipLabel) {
+    const relBadge = document.createElement("span");
+    relBadge.className = "listing-relationship-badge";
+    relBadge.textContent = relationshipLabel;
+    header.appendChild(relBadge);
+  }
+
   // Badge: remaining dates
   if (futureDates.length > 0) {
     const badge = document.createElement("span");
@@ -2802,6 +3056,49 @@ function renderTourCard(container, tourId, tour) {
     "listing-card-meta listing-card-with",
   );
   if (tourCoLine) card.appendChild(tourCoLine);
+
+  // "Supporting:" — when the performer whose page this is is themselves a
+  // support act on this tour, name (and link to) who they're supporting,
+  // same label+button shape as "Also featuring:"/"Support:" below, rather
+  // than only naming the headliner as plain text inside the relationship
+  // badge above.
+  const headlinerIdsForSupportingRow = getTourHeadlinerIds(tour);
+  if (getTourSupportPerformerIds(tour).has(performerId)) {
+    const supportingRow = buildBillingRow(
+      [...headlinerIdsForSupportingRow],
+      "Supporting:",
+      "listing-card-meta listing-card-billing listing-card-billing-support",
+    );
+    if (supportingRow) card.appendChild(supportingRow);
+  }
+
+  // Rest of the bill beyond the headline co-performers line above —
+  // other_performer_ids / support_performer_ids, aggregated across every
+  // date, excluding the person whose page this is and the tour's own
+  // headliners. Mirrors tour_display.js's "Also featuring:"/
+  // "Co-headlining:"/"Support:" rows on the tour page itself, so the same
+  // bill is visible from a performer's own page too — including when
+  // this performer IS one of the headliners looking at who else is on
+  // their own tour.
+  const headlinerIds = getTourHeadlinerIds(tour);
+  const billAdditionalIds = [...getTourAdditionalPerformerIds(tour)].filter(
+    (id) => id !== performerId && !headlinerIds.has(id),
+  );
+  const billSupportIds = [...getTourSupportPerformerIds(tour)].filter(
+    (id) => id !== performerId && !headlinerIds.has(id),
+  );
+  const billAdditionalRow = buildBillingRow(
+    billAdditionalIds,
+    isDoubleHeadlineForDate(tour, null) ? "Co-headlining:" : "Also featuring:",
+    "listing-card-meta listing-card-billing",
+  );
+  if (billAdditionalRow) card.appendChild(billAdditionalRow);
+  const billSupportRow = buildBillingRow(
+    billSupportIds,
+    "Support:",
+    "listing-card-meta listing-card-billing listing-card-billing-support",
+  );
+  if (billSupportRow) card.appendChild(billSupportRow);
 
   // Description — collapsed by default (first paragraph, capped at
   // TOUR_CARD_DESC_PREVIEW_LENGTH chars), with a "more…" toggle that swaps
@@ -3077,6 +3374,35 @@ function renderEventRow(container, event) {
     "event-row-time event-row-with",
   );
   if (eventCoLine) detail.appendChild(eventCoLine);
+
+  // Per-date tour billing relationship (tour dates only — see
+  // tourDateToEventRow()): the same "Supporting X"/"With:"/
+  // "Co-headliner(s):"/"Support:" rows the tour page itself shows for
+  // this exact date, which can differ from the tour-level "Also
+  // featuring:"/"Support:" summary on the card above if this date
+  // overrides the tour's defaults. The page owner (performerId) is
+  // filtered out of each row — no point telling someone they're on the
+  // bill with themselves.
+  if (event._dateBillingFlip && event._dateBillingFlip !== performerId) {
+    const flipRow = buildBillingRow(
+      [event._dateBillingFlip],
+      "Supporting:",
+      "event-row-time event-row-with",
+    );
+    if (flipRow) detail.appendChild(flipRow);
+  }
+  const dateAddlRow = buildBillingRow(
+    (event._dateAdditionalIds || []).filter((id) => id !== performerId),
+    event._dateIsDoubleHeadline ? "Co-headliner(s):" : "With:",
+    "event-row-time event-row-with",
+  );
+  if (dateAddlRow) detail.appendChild(dateAddlRow);
+  const dateSupportRow = buildBillingRow(
+    (event._dateSupportIds || []).filter((id) => id !== performerId),
+    "Support:",
+    "event-row-time event-row-with event-row-support",
+  );
+  if (dateSupportRow) detail.appendChild(dateSupportRow);
 
   if (venue) {
     const v = document.createElement("div");
