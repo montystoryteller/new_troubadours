@@ -2631,6 +2631,50 @@
       "touring_event_flyer": "tour_paul_armfield_autumn_2026.jpg",
       "isMusic": true
     },
+    "jess-silk-winter-tour-2027": {
+      "tour_name": "Jess Silk Winter Tour 2027",
+      "tour_dates": [
+        {
+          "date": "28/01/2027",
+          "venue_id": "kitchen-garden-cafe-birmingham",
+          "other_performer_ids": [
+            "matt-johnson"
+          ],
+          "isSpecial": true
+        },
+        {
+          "date": "29/01/2027",
+          "venue_id": "prohibition-recording-studios-liverpool",
+          "other_performer_ids": [
+            "matt-johnson"
+          ],
+          "isSpecial": true
+        },
+        {
+          "date": "30/01/2027",
+          "venue_id": "dubrek-studios-derby",
+          "other_performer_ids": [
+            "matt-johnson",
+            "sam-draisey"
+          ],
+          "isSpecial": true
+        },
+        {
+          "date": "06/02/2027",
+          "venue_id": "bolton-socialist-club-bl1",
+          "isSpecial": true
+        },
+        {
+          "date": "12/02/2027",
+          "venue_id": "the-ropemakers-bridport",
+          "isSpecial": true
+        }
+      ],
+      "name": "Jess Silk Winter Tour 2027",
+      "performer_id": "jess-silk",
+      "touring_event_flyer": "tour_jess_silk_winter_q1_2027.jpg",
+      "isSpecial": true
+    },
     "gaz-brookfield-autumn-2026": {
       "tour_name": "Gaz Brookfield Autumn 2026 Tour",
       "name": "Gaz Brookfield Autumn 2026 Tour",
@@ -4710,7 +4754,9 @@
           "ticket_url": "https://www.ticketsource.com/soundofthesirens",
           "isSpecial": true,
           "event_flyer": "2026_11_13_sound_sirens_kingsteinton.jpg",
-          "other_performer_ids": ["devnent"],
+          "other_performer_ids": [
+            "devnent"
+          ],
           "isDoubleHeadline": true
         },
         {
@@ -4726,7 +4772,9 @@
           "price": "£18.00 (+ £1.80) / U16 £9.00 (+ £0.90)",
           "ticket_url": "https://wegottickets.com/f/15126",
           "isSpecial": true,
-          "other_performer_ids": ["rob-clamp"]
+          "other_performer_ids": [
+            "rob-clamp"
+          ]
         },
         {
           "date": "21/11/2026",
@@ -14067,6 +14115,19 @@
         -1.54804
       ]
     },
+    "dubrek-studios-derby": {
+      "id": "dubrek-studios-derby",
+      "name": "Dubrek Studios, Derby",
+      "full_address": "Dubrek Studios, 67 Bridge Street, Derby, DE1 3LB",
+      "city": "Derby",
+      "postcode": "DE1 3LB",
+      "url": "https://dubrek.co.uk/",
+      "description": "Dubrek Studios is a recording studio, rehearsal space, performance venue, art gallery, cafe & bar located in the heart of Derby City Centre. We work with artists from around the world to bring their ideas to life.",
+      "latlon": [
+        52.92661,
+        -1.48631
+      ]
+    },
     "bureau-centre-for-the-arts-blackburn": {
       "id": "bureau-centre-for-the-arts-blackburn",
       "name": "Bureau Centre for the Arts",
@@ -19078,6 +19139,12 @@
       "musician": true,
       "isBand": true,
       "isDuo": true
+    },
+    "sam-draisey": {
+      "id": "sam-draisey",
+      "name": "Sam Draisey",
+      "url": "http://www.samdraisey.com/",
+      "bio": "Sam Draisey is a singer/songwriter from the West Midlands, England. His music has, in the classic singer/songwriter style, many influences and muses, with particular attention paid to the story telling qualities and political nature of his songs."
     },
     "rob-clamp": {
       "id": "rob-clamp",
