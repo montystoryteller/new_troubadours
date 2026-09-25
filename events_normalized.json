@@ -6914,8 +6914,8 @@
       "isSpecial": true,
       "fb_event": 1838395960217862,
       "venue_id": "carvel-lane-coffee-house-cowes",
-      "performer_id": "tony-monty-hirst",
-      "eventId": "20251210-tony-monty-hirst-carvel-lane-coffee-house-cowes"
+      "performer_id": "monty-storyteller",
+      "eventId": "20251210-monty-storyteller-carvel-lane-coffee-house-cowes"
     },
     {
       "name": "Tom Thumb [Amelia Ace Armande]",
@@ -7434,8 +7434,8 @@
       "description": "A storytelling slot in a local music festival.",
       "event_flyer": "2026_02_07_kashmir_slot.png",
       "venue_id": "quay-arts-newport",
-      "performer_id": "tony-monty-hirst",
-      "eventId": "20260207-tony-monty-hirst-quay-arts-newport"
+      "performer_id": "monty-storyteller",
+      "eventId": "20260207-monty-storyteller-quay-arts-newport"
     },
     {
       "name": "Tales Tattled & Told at StonyWords Literary Festival",
@@ -7992,8 +7992,8 @@
       "description": "An evening of traditional storytelling with storyteller Tony 'Monty' Hirst, featuring legends of Ross-on-Wye (who is, or was, the sin-eater of Ross? How did Old Maid's Walk get its name?), tales of the Forest, and a traditional tale or two from the time of once...\n\n\n\nAge: grown-ups. Because stories aren't just for children...",
       "event_flyer": "2026_03_10_sineater_crown.png",
       "venue_id": "crown-sceptre-ross",
-      "performer_id": "tony-monty-hirst",
-      "eventId": "20260310-tony-monty-hirst-crown-sceptre-ross"
+      "performer_id": "monty-storyteller",
+      "eventId": "20260310-monty-storyteller-crown-sceptre-ross"
     },
     {
       "name": "Fairy Tale Blues [Monty + The AnyWhens]",
@@ -8425,8 +8425,8 @@
       "event_flyer": "2026_04_24_monty_traditional-solt.png",
       "date_added": "16/04/2026",
       "venue_id": "solt-almondbury-hudds",
-      "performer_id": "tony-monty-hirst",
-      "eventId": "20260424-tony-monty-hirst-solt-almondbury-hudds"
+      "performer_id": "monty-storyteller",
+      "eventId": "20260424-monty-storyteller-solt-almondbury-hudds"
     },
     {
       "name": "How to Spin Enchantment [Tim Ralphs]",
@@ -8727,8 +8727,8 @@
       "date_added": "16/04/2026",
       "event_flyer": "2026_05_19_cunning_folk_crown.png",
       "venue_id": "crown-sceptre-ross",
-      "performer_id": "tony-monty-hirst",
-      "eventId": "20260519-tony-monty-hirst-crown-sceptre-ross"
+      "performer_id": "monty-storyteller",
+      "eventId": "20260519-monty-storyteller-crown-sceptre-ross"
     },
     {
       "name": "1647: The Poorest Hee [Sarah Rundle]",
@@ -9458,9 +9458,9 @@
       "isSpecial": true,
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
-      "performer_id": "tony-monty-hirst",
+      "performer_id": "monty-storyteller",
       "wider_event": "ventnor-fringe-2026",
-      "eventId": "20260722-tony-monty-hirst-bijou-ventnor-fringe"
+      "eventId": "20260722-monty-storyteller-bijou-ventnor-fringe"
     },
     {
       "name": "VFringe: Tarot Tales [Merl Fluin]",
@@ -10802,6 +10802,34 @@
       "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what's behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
       "isSpecial": true,
       "eventId": "20261029-holly-medland-babushka-books-shanklin"
+    },
+    {
+      "name": "Macabe Tales, Sinister Stories [Tony \"Monty\" Hirst]",
+      "showname": "Macabe Tales, Sinister Stories",
+      "date": "",
+      "venue_id": "carvel-lane-coffee-house-cowes",
+      "performer_id": "monty-storyteller",
+      "date_added": "30/10/2026",
+      "time": "Doors 7pm, first story 7.30pm",
+      "price": "£7 on the door, reserved in advance",
+      "description": "An evening of local and traditional tales with a dark twist.",
+      "event_flyer": "2026_10_30_monty_macabre_carvel.png",
+      "isSpecial": true
+    },
+    {
+      "name": "Macabre Tales, Sinister Stories [Tony \"Monty\" Hirst]",
+      "showname": "Macabre Tales, Sinister Stories",
+      "date": "03/11/2026",
+      "venue_id": "crown-sceptre-ross",
+      "performer_id": "monty-storyteller",
+      "eventId": "20261103-monty-storyteller-crown-sceptre-ross",
+      "date_added": "25/09/2026",
+      "time": "Doors 7pm, start 7.30pm",
+      "price": "£5 on the door",
+      "description": "Local and traditional tales with a dark twist.",
+      "event_flyer": "2026_11_03_monty_macabre_ross.png",
+      "ticket_url": "https://www.tickettailor.com/events/montystoryteller/2433204",
+      "isSpecial": true
     },
     {
       "name": "What a Woman [Baden Prince]",
@@ -18039,11 +18067,11 @@
       "url": "https://attilathestockbroker.com/",
       "bio": "Punk poet, dub ranter, singer-songwriter, early music punk pioneer, writer and social commentator."
     },
-    "tony-monty-hirst": {
-      "id": "tony-monty-hirst",
-      "name": "Tony \"Monty\" Hirst",
+    "monty-storyteller": {
+      "id": "monty-storyteller",
+      "name": "Monty Storyteller (Tony \"Monty\" Hirst)",
       "url": "https://montystoryteller.org/",
-      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in teas tents at music festivals around the country. A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate."
+      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst, aka Monty Storyeller, has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in teas tents at music festivals around the country. A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate."
     },
     "amelia-ace-armande": {
       "id": "amelia-ace-armande",
@@ -18176,7 +18204,7 @@
       "performer_ids": [
         "holly-medland",
         "sue-bailey",
-        "tony-monty-hirst"
+        "monty-storyteller"
       ],
       "name": "'Tis Tales, feat. Holly Medland, Sue Bailey, Tony 'Monty' Hirst",
       "url": "https://tistales.org.uk/",
@@ -18262,13 +18290,13 @@
       "type": "troupe",
       "members": [
         "holly-medland",
-        "tony-monty-hirst",
+        "monty-storyteller",
         "sue-bailey",
         "merl-fluin"
       ],
       "performer_ids": [
         "holly-medland",
-        "tony-monty-hirst",
+        "monty-storyteller",
         "sue-bailey",
         "merl-fluin"
       ],
