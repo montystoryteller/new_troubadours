@@ -1431,21 +1431,21 @@
             </div>
 
             <div class="enrich-section">
-                <h3>📝 Missing descriptions</h3>
+                <h3>📝 Missing descriptions &amp; bios</h3>
                 <p class="field-hint">
                     Report only, same as the duplicate-venues and promoter-reference checks above — there's
-                    nothing to auto-fill here, since writing a description is editorial work, not something
-                    a heuristic should guess at. Scans every record type whose schema
+                    nothing to auto-fill here, since writing a description or bio is editorial work, not
+                    something a heuristic should guess at. Scans every record type whose schema
                     (<code>events-schema.json</code>) actually defines a description-style field for one
                     that's missing or blank, and lists what it finds grouped by record type:
                     <code>venues</code>, <code>promoters</code>, <code>festivals</code>,
                     <code>repertoire_shows</code>, <code>tours</code> (its <code>tour_description</code>),
-                    <code>clubs</code>, <code>specificEvents</code>, <code>musicEvents</code>, and
-                    <code>poetryEvents</code>. Record types with no description-style field in the schema at
-                    all — <code>performers</code> (which has <code>bio</code> instead), <code>workshops</code>,
-                    <code>folkNights</code>, <code>irishSessions</code>, and <code>poetryNights</code> — aren't
-                    scanned, since there's nothing missing to flag. Per-date overrides
-                    (<code>tourDate.description</code>, a tour date's rare description of its own;
+                    <code>clubs</code>, <code>specificEvents</code>, <code>musicEvents</code>,
+                    <code>poetryEvents</code>, and <code>performers</code> (its <code>bio</code> field —
+                    same idea, different name). Record types with no description-style field in the schema
+                    at all — <code>workshops</code>, <code>folkNights</code>, <code>irishSessions</code>, and
+                    <code>poetryNights</code> — aren't scanned, since there's nothing missing to flag. Per-date
+                    overrides (<code>tourDate.description</code>, a tour date's rare description of its own;
                     <code>showDate.description_prefix</code>) and podcast-episode descriptions are left out
                     too: those are optional add-ons layered on top of a parent record's own description,
                     essentially unused across this dataset, and would only pad the list with rows that don't
@@ -1453,7 +1453,7 @@
                     loaded file directly) — same as the duplicate-venues check.
                 </p>
                 <button class="btn-add-batch" id="enrich-description-scan-btn" disabled>Scan for missing
-                    descriptions</button>
+                    descriptions &amp; bios</button>
                 <div id="enrich-description-results"></div>
             </div>
         </div>
@@ -6884,16 +6884,17 @@
             addResultsCollapseToggle(resultsEl, clashes.length, "clash");
         });
 
-        // -- Missing descriptions -------------------------------------------
+        // -- Missing descriptions & bios -------------------------------------
         // Report only, same spirit as the duplicate-venues/promoter-reference
-        // checks above: writing a description is editorial work, so there's
-        // nothing here to auto-fill or generate a patch from — just a
+        // checks above: writing a description or bio is editorial work, so
+        // there's nothing here to auto-fill or generate a patch from — just a
         // checklist of what's still blank, grouped by record type. Only
         // record types whose schema (events-schema.json) actually defines a
-        // description-style field are scanned; see the field hint in the
-        // markup for what's deliberately left out (performers' bio,
-        // workshops/folkNights/irishSessions/poetryNights which have no such
-        // field at all, and the per-date description overrides/podcast
+        // description-style field are scanned (performers' own field is
+        // called `bio`, not `description`, but it's the same idea); see the
+        // field hint in the markup for what's deliberately left out
+        // (workshops/folkNights/irishSessions/poetryNights, which have no
+        // such field at all, and the per-date description overrides/podcast
         // episodes, which are optional add-ons essentially unused in this
         // dataset rather than a gap in the parent record's own description).
         const DESCRIPTION_SCAN_GROUPS = [
@@ -6906,6 +6907,7 @@
             { key: "specificEvents", label: "Specific / Music events (specificEvents)", isDict: false, field: "description", name: r => r.showname || r.name },
             { key: "musicEvents", label: "Music events (musicEvents)", isDict: false, field: "description", name: r => r.showname || r.name },
             { key: "poetryEvents", label: "Poetry events", isDict: false, field: "description", name: r => r.showname || r.name },
+            { key: "performers", label: "Performers (bio)", isDict: true, field: "bio", name: r => r.name },
         ];
 
         document.getElementById("enrich-description-scan-btn").addEventListener("click", () => {
