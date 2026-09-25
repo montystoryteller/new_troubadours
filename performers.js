@@ -111,7 +111,8 @@ function renderAllPerformers() {
       // single category.
       const types = new Set();
       if (p.poet === true) types.add("poetry");
-
+      if (p.musician === true) types.add("music");
+      
       // Tours
       Object.values(toursLookup).forEach((t) => {
         if (performerIdsOf(t).some((id) => aliasIds.has(id))) {
