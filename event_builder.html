@@ -70,6 +70,20 @@
             padding-right: 4px;
         }
 
+        /* Sub-heading between groups in the missing-descriptions report,
+           so a long multi-type list reads as sections rather than one
+           undifferentiated wall of rows. */
+        .enrich-result-group-header {
+            font-weight: 600;
+            color: #555;
+            margin: 14px 0 4px;
+            font-size: 0.9em;
+        }
+
+        .enrich-result-group-header:first-child {
+            margin-top: 0;
+        }
+
         /* Batch summary list: Edit/Preview buttons, styled distinctly from
            the destructive-looking Remove button (.batch-list button, red). */
         .batch-list-actions {
@@ -1414,6 +1428,33 @@
                 <button class="btn-add-batch" id="enrich-eventid-clash-scan-btn" disabled>Scan for clashing
                     event IDs</button>
                 <div id="enrich-eventid-clash-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>📝 Missing descriptions</h3>
+                <p class="field-hint">
+                    Report only, same as the duplicate-venues and promoter-reference checks above — there's
+                    nothing to auto-fill here, since writing a description is editorial work, not something
+                    a heuristic should guess at. Scans every record type whose schema
+                    (<code>events-schema.json</code>) actually defines a description-style field for one
+                    that's missing or blank, and lists what it finds grouped by record type:
+                    <code>venues</code>, <code>promoters</code>, <code>festivals</code>,
+                    <code>repertoire_shows</code>, <code>tours</code> (its <code>tour_description</code>),
+                    <code>clubs</code>, <code>specificEvents</code>, <code>musicEvents</code>, and
+                    <code>poetryEvents</code>. Record types with no description-style field in the schema at
+                    all — <code>performers</code> (which has <code>bio</code> instead), <code>workshops</code>,
+                    <code>folkNights</code>, <code>irishSessions</code>, and <code>poetryNights</code> — aren't
+                    scanned, since there's nothing missing to flag. Per-date overrides
+                    (<code>tourDate.description</code>, a tour date's rare description of its own;
+                    <code>showDate.description_prefix</code>) and podcast-episode descriptions are left out
+                    too: those are optional add-ons layered on top of a parent record's own description,
+                    essentially unused across this dataset, and would only pad the list with rows that don't
+                    represent an actual gap. Editing a flagged record means going to its own tab (or the
+                    loaded file directly) — same as the duplicate-venues check.
+                </p>
+                <button class="btn-add-batch" id="enrich-description-scan-btn" disabled>Scan for missing
+                    descriptions</button>
+                <div id="enrich-description-results"></div>
             </div>
         </div>
 
@@ -5553,6 +5594,7 @@
                 document.getElementById("enrich-format-scan-btn").disabled = false;
                 document.getElementById("enrich-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = false;
+                document.getElementById("enrich-description-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
                 enrichedData = null;
@@ -5569,6 +5611,7 @@
                 document.getElementById("enrich-format-scan-btn").disabled = true;
                 document.getElementById("enrich-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = true;
+                document.getElementById("enrich-description-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -6839,6 +6882,72 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, clashes.length, "clash");
+        });
+
+        // -- Missing descriptions -------------------------------------------
+        // Report only, same spirit as the duplicate-venues/promoter-reference
+        // checks above: writing a description is editorial work, so there's
+        // nothing here to auto-fill or generate a patch from — just a
+        // checklist of what's still blank, grouped by record type. Only
+        // record types whose schema (events-schema.json) actually defines a
+        // description-style field are scanned; see the field hint in the
+        // markup for what's deliberately left out (performers' bio,
+        // workshops/folkNights/irishSessions/poetryNights which have no such
+        // field at all, and the per-date description overrides/podcast
+        // episodes, which are optional add-ons essentially unused in this
+        // dataset rather than a gap in the parent record's own description).
+        const DESCRIPTION_SCAN_GROUPS = [
+            { key: "venues", label: "Venues", isDict: true, field: "description", name: r => r.name },
+            { key: "promoters", label: "Promoters", isDict: true, field: "description", name: r => r.name },
+            { key: "festivals", label: "Festivals", isDict: true, field: "description", name: r => r.name },
+            { key: "repertoire_shows", label: "Repertoire shows", isDict: true, field: "description", name: r => r.showname || r.name },
+            { key: "tours", label: "Tours (tour_description)", isDict: true, field: "tour_description", name: r => r.tour_name || r.name },
+            { key: "clubs", label: "Clubs", isDict: false, field: "description", name: r => r.name },
+            { key: "specificEvents", label: "Specific / Music events (specificEvents)", isDict: false, field: "description", name: r => r.showname || r.name },
+            { key: "musicEvents", label: "Music events (musicEvents)", isDict: false, field: "description", name: r => r.showname || r.name },
+            { key: "poetryEvents", label: "Poetry events", isDict: false, field: "description", name: r => r.showname || r.name },
+        ];
+
+        document.getElementById("enrich-description-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-description-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            let totalMissing = 0;
+            DESCRIPTION_SCAN_GROUPS.forEach(g => {
+                const coll = enrichedData[g.key];
+                if (!coll) return;
+                const entries = g.isDict ? Object.entries(coll) : coll.map((r, i) => [i, r]);
+                if (!entries.length) return;
+                const missing = entries.filter(([, r]) => !(typeof r[g.field] === "string" && r[g.field].trim()));
+                if (!missing.length) return;
+                totalMissing += missing.length;
+
+                const header = document.createElement("div");
+                header.className = "enrich-result-group-header";
+                header.textContent = `${g.label} — ${missing.length} of ${entries.length} missing a description`;
+                resultsEl.appendChild(header);
+
+                missing.forEach(([id, r]) => {
+                    const row = document.createElement("div");
+                    row.className = "enrich-result-row";
+                    const displayName = g.name(r) || "(untitled)";
+                    const idLabel = g.isDict ? id : `#${id}`;
+                    const dateStr = r.date ? (Array.isArray(r.date) ? r.date[0] : r.date) : null;
+                    row.innerHTML = `
+                        <div class="enrich-result-main">
+                            <div class="enrich-result-name">${displayName}${dateStr ? ` — ${dateStr}` : ""} <span style="font-weight:normal;color:#999;">(${idLabel})</span></div>
+                        </div>`;
+                    resultsEl.appendChild(row);
+                });
+            });
+            if (!totalMissing) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Every scanned record type has a description set.</div>';
+                return;
+            }
+            addResultsCollapseToggle(resultsEl, totalMissing, "missing description");
         });
 
         // -- Possible structured pricing (writes into loaded data directly — --
