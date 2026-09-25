@@ -2673,7 +2673,7 @@
       "name": "Jess Silk Winter Tour 2027",
       "performer_id": "jess-silk",
       "touring_event_flyer": "tour_jess_silk_winter_q1_2027.jpg",
-      "isSpecial": true
+      "isMusic": true
     },
     "gaz-brookfield-autumn-2026": {
       "tour_name": "Gaz Brookfield Autumn 2026 Tour",
