@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="shared-styles.css?v=202609250051">
     <link rel="stylesheet" href="venue-styles.css?v=202609250051">
-    <link rel="stylesheet" href="event-styles.css?v=202609250051">
+    <link rel="stylesheet" href="event-styles.css?v=202609251035">
 </head>
 
 <body class="page-event">
@@ -48,6 +48,15 @@
              same way. Remembered across visits via localStorage, same
              pattern as event_display.js's calendar filter checkboxes. -->
         <div id="eventSearchTypeFilters" class="event-search-type-filters"></div>
+        <!-- Populated by event.js's renderSearchResultsList() — a persistent,
+             scrollable list of the current search matches, shown alongside
+             the dropdown so results stay visible on mobile once the
+             dropdown itself closes (e.g. on blur/tap-elsewhere). Hidden
+             when the search box is empty. -->
+        <div id="eventSearchResultsSection" class="content-section event-search-results" style="display:none;">
+            <div id="eventSearchResultsCount" class="event-search-results-count"></div>
+            <div id="eventSearchResultsList"></div>
+        </div>
     </div>
 
     <div id="loadingState" class="loading-state">Loading event…</div>
@@ -183,7 +192,7 @@
 
     <script src="recurrence-engine.js?v=202609250051"></script>
     <script src="shared_utils.js?v=202609250051"></script>
-    <script src="event.js?v=202609250051"></script>
+    <script src="event.js?v=202609251035"></script>
 </body>
 
 </html>

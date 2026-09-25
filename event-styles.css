@@ -56,6 +56,74 @@
     cursor: pointer;
 }
 
+/* ── Search results panel, below the filters ──────────────────────
+   Persistent (doesn't close on blur, unlike #eventSearchBox's own
+   dropdown), so results stay on screen to skim on mobile. Outer card
+   reuses venue-styles.css's .content-section, same as the rest of this
+   page — see the note at the top of this file. */
+.event-search-results {
+    margin-top: 14px;
+}
+
+.event-search-results-count {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.event-search-result-row {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: inherit;
+}
+
+.event-search-result-row:last-child {
+    border-bottom: none;
+}
+
+.event-search-result-row:hover .event-search-result-title {
+    text-decoration: underline;
+}
+
+.event-search-result-date {
+    flex: 0 0 auto;
+    width: 90px;
+    font-size: 13px;
+    color: #777;
+}
+
+.event-search-result-detail {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.event-search-result-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+}
+
+.event-search-result-meta {
+    font-size: 13px;
+    color: #777;
+    margin-top: 2px;
+}
+
+@media (max-width: 500px) {
+    .event-search-result-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .event-search-result-date {
+        width: auto;
+    }
+}
+
 /* ── Event hero ──────────────────────────────────────────────
    Same shape as venue-styles.css's .venue-hero, just with
    event-specific field names (name/date/venue rather than

@@ -150,6 +150,67 @@ let eventSearchTimeFilter = "upcoming";
 let eventSearchInputEl = null; // set once createSearchBox() returns, so
 // changing the time filter can re-run whatever search term is already typed
 
+// ---------------------------------------------------------------------------
+// Shareable search links: ?q=&time=&types=
+// ---------------------------------------------------------------------------
+// A search is shareable by copying the address bar: the typed term, time
+// filter, and story/music/poetry checkboxes are kept in the URL via
+// history.replaceState() (see syncSearchStateToUrl()) as the visitor types
+// or changes a filter, and read back out again on load (see
+// applyUrlSearchParams(), called once from the boot IIFE below). Only
+// applied when the URL actually has a `q` — this is deliberately a
+// for-this-pageview-only override, not written to
+// SEARCH_TYPE_FILTER_STORAGE_KEY, so opening a shared link never silently
+// overwrites the visitor's own saved checkbox preference.
+let urlTypeFilterOverride = null; // {story,music,poetry} booleans, or null
+
+function applyUrlSearchParams(params) {
+  const time = params.get("time");
+  if (time === "upcoming" || time === "previous" || time === "all") {
+    eventSearchTimeFilter = time;
+  }
+
+  // Present-but-empty ("types=") deliberately means "nothing ticked", not
+  // "no override" — only a fully absent param falls through to localStorage
+  // /defaults, so distinguish null (absent) from "" (empty) here.
+  const types = params.get("types");
+  if (types !== null) {
+    const set = new Set(types.split(",").filter(Boolean));
+    urlTypeFilterOverride = {
+      story: set.has("story"),
+      music: set.has("music"),
+      poetry: set.has("poetry"),
+    };
+  }
+
+  return params.get("q") || "";
+}
+
+// Mirrors the current search term + filters into the URL via
+// history.replaceState (not pushState — a search shouldn't fill up the
+// back-button history one keystroke at a time). Called from onChange, so it
+// tracks every keystroke, the clear button, and every filter change (both
+// re-dispatch an "input" event — see initSearchFilters()/
+// initSearchTypeFilters() below). An empty term clears all three params
+// rather than leaving stale filters behind with no search to apply them to.
+function syncSearchStateToUrl(term) {
+  const url = new URL(window.location.href);
+  const trimmed = term.trim();
+  if (trimmed) {
+    url.searchParams.set("q", trimmed);
+    url.searchParams.set("time", eventSearchTimeFilter);
+    url.searchParams.set(
+      "types",
+      [...activeSearchTypeCategories()].join(","),
+    );
+  } else {
+    url.searchParams.delete("q");
+    url.searchParams.delete("time");
+    url.searchParams.delete("types");
+  }
+  history.replaceState(null, "", url);
+}
+
 function matchesEventSearchTimeFilter(eventDate, today) {
   if (eventSearchTimeFilter === "all") return true;
   if (eventSearchTimeFilter === "previous") return eventDate < today;
@@ -372,6 +433,97 @@ function activeSearchTypeCategories() {
   );
 }
 
+// Applies the time filter + type checkboxes + typed term to the search
+// index — the same three filters the dropdown's own `search` callback
+// applies, factored out here so the below-the-filters results panel (see
+// renderSearchResultsList()) matches the dropdown exactly rather than
+// drifting out of sync with it. Returns every match, unsliced; callers cap
+// it to however many they want to show.
+function searchEventIndex(term, index, today) {
+  const activeCategories = activeSearchTypeCategories();
+  return index
+    .filter((e) => matchesEventSearchTimeFilter(e.date, today))
+    .filter((e) => activeCategories.has(e.category))
+    .filter((e) => e.searchText.includes(term));
+}
+
+// How many rows the below-the-filters panel shows before truncating. The
+// dropdown itself is disabled on this page (see initSearchBox() below), so
+// this is the only cap that matters here.
+const SEARCH_RESULTS_PANEL_MAX = 30;
+
+// Persistent, scrollable list of the current search matches, shown below
+// the search filters (see #eventSearchResultsSection in event.html) —
+// unlike the dropdown, it doesn't close on blur, so it stays put while
+// skimming on mobile. Reuses the exact same filtering as the dropdown
+// (searchEventIndex above); only how it's rendered differs.
+function renderSearchResultsList(term, index, today) {
+  const section = document.getElementById("eventSearchResultsSection");
+  const countEl = document.getElementById("eventSearchResultsCount");
+  const list = document.getElementById("eventSearchResultsList");
+  if (!section || !countEl || !list) return;
+
+  list.innerHTML = "";
+
+  // Same minimum-length threshold as the dropdown (createSearchBox only
+  // searches once term.length >= 1); below that, hide entirely rather than
+  // showing an empty card.
+  if (!term || term.length < 1) {
+    section.style.display = "none";
+    return;
+  }
+
+  const matches = searchEventIndex(term.toLowerCase(), index, today);
+  section.style.display = "";
+
+  if (matches.length === 0) {
+    countEl.textContent = "No matching events.";
+    return;
+  }
+
+  countEl.textContent =
+    matches.length > SEARCH_RESULTS_PANEL_MAX
+      ? `Showing ${SEARCH_RESULTS_PANEL_MAX} of ${matches.length} matching events — narrow your search to see more.`
+      : `${matches.length} matching event${matches.length === 1 ? "" : "s"}`;
+
+  matches.slice(0, SEARCH_RESULTS_PANEL_MAX).forEach((entry) => {
+    const row = document.createElement("a");
+    row.className = "event-search-result-row";
+    row.href = entry.href;
+
+    const dateCol = document.createElement("div");
+    dateCol.className = "event-search-result-date";
+    dateCol.textContent = entry.date ? formatMediumDate(entry.date) : "TBC";
+    row.appendChild(dateCol);
+
+    const detail = document.createElement("div");
+    detail.className = "event-search-result-detail";
+
+    const title = document.createElement("div");
+    title.className = "event-search-result-title";
+    title.textContent = entry.displayName;
+    detail.appendChild(title);
+
+    const metaParts = [
+      entry.kindLabel,
+      entry.performerName,
+      entry.hostVenue?.name,
+      entry.hostVenue?.city,
+    ]
+      .filter(Boolean)
+      .join(" \u2022 ");
+    if (metaParts) {
+      const meta = document.createElement("div");
+      meta.className = "event-search-result-meta";
+      meta.textContent = metaParts;
+      detail.appendChild(meta);
+    }
+    row.appendChild(detail);
+
+    list.appendChild(row);
+  });
+}
+
 // Story/Music/Poetry checkboxes, shown under the search box. Initial state
 // comes from localStorage (falling back to SEARCH_TYPE_FILTER_DEFAULTS for
 // a first-ever visit or a category added since); every change both saves
@@ -398,10 +550,13 @@ function initSearchTypeFilters() {
     checkbox.type = "checkbox";
     checkbox.id = id;
     checkbox.value = category;
+    // Priority: URL override (a shared link) > stored preference > default.
     checkbox.checked =
-      typeof stored[category] === "boolean"
-        ? stored[category]
-        : SEARCH_TYPE_FILTER_DEFAULTS[category];
+      urlTypeFilterOverride && typeof urlTypeFilterOverride[category] === "boolean"
+        ? urlTypeFilterOverride[category]
+        : typeof stored[category] === "boolean"
+          ? stored[category]
+          : SEARCH_TYPE_FILTER_DEFAULTS[category];
     checkbox.addEventListener("change", () => {
       writeStoredSearchTypeFilters();
       if (eventSearchInputEl && eventSearchInputEl.value.trim().length >= 1) {
@@ -430,49 +585,43 @@ function initSearchBox() {
 
   const { input } = createSearchBox(container, {
     placeholder: "Search events by name, performer, venue, town\u2026",
-    search: (term) => {
-      const activeCategories = activeSearchTypeCategories();
-      return index
-        .filter((e) => matchesEventSearchTimeFilter(e.date, today))
-        .filter((e) => activeCategories.has(e.category))
-        .filter((e) => e.searchText.includes(term))
-        .slice(0, 8);
-    },
-    renderItem: (entry) => {
-      const item = document.createElement("div");
-      const strong = document.createElement("strong");
-      strong.textContent = entry.displayName;
-      item.appendChild(strong);
-
-      const metaParts = [
-        entry.kindLabel,
-        formatShortDateWithYear(entry.date),
-        entry.performerName,
-        entry.hostVenue?.name,
-        entry.hostVenue?.city,
-      ]
-        .filter(Boolean)
-        .join(" \u2022 ");
-      if (metaParts) {
-        const meta = document.createElement("span");
-        meta.className = "dir-search-item-meta";
-        meta.textContent = metaParts;
-        item.appendChild(meta);
-      }
-      return item;
-    },
-    onSelect: (entry) => {
-      window.location.href = entry.href;
-    },
-    onChange: () => {
-      // Nothing to re-filter on this page — event.html shows one event,
-      // not a list — so this is deliberately a no-op.
+    // createSearchBox's own dropdown is position:absolute (shared-styles.css),
+    // so on this page it would sit directly on top of the type-filter
+    // checkboxes and the results panel below — and offers nothing over that
+    // panel anyway (no keyboard nav, same underlying filter). So: always
+    // return no results, which keeps the dropdown permanently empty/hidden.
+    // We still use createSearchBox for the input/clear-button plumbing and
+    // its onChange hook; renderItem/onSelect are dropdown-only, so they're
+    // dropped along with it. venues.js/performers.js use createSearchBox
+    // for their own directory dropdowns unchanged — this only disables it
+    // here.
+    search: () => [],
+    // Drives the below-the-filters results panel (renderSearchResultsList)
+    // rather than re-filtering anything on this page directly — event.html
+    // shows one event, not a list, so there's nothing else here to
+    // re-filter. Fires on every keystroke, on clear, and whenever the time/
+    // type filters re-dispatch an "input" event (see initSearchFilters()/
+    // initSearchTypeFilters() above), so the panel always tracks the typed
+    // term and current filters.
+    onChange: (term) => {
+      renderSearchResultsList(term, index, today);
+      syncSearchStateToUrl(term);
     },
   });
 
   eventSearchInputEl = input;
   initSearchFilters();
   initSearchTypeFilters();
+
+  // A shared link's ?q= — filters (time/types) are already applied above
+  // via eventSearchTimeFilter/urlTypeFilterOverride, since those need to be
+  // in place before the radios/checkboxes are built. The term itself is
+  // applied last, once the input exists, by dispatching "input" so it runs
+  // through the exact same path a visitor typing it would.
+  if (initialSearchTerm) {
+    input.value = initialSearchTerm;
+    input.dispatchEvent(new Event("input"));
+  }
 }
 
 // Upcoming (default) / Previous / All radio group, shown under the search
@@ -523,10 +672,16 @@ function initSearchFilters() {
 // loading early, matching venues.js/storyclub.js.
 setCanonical("event");
 
+let initialSearchTerm = "";
+
 (async () => {
   const params = new URLSearchParams(window.location.search);
   const eventIdParam = params.get("event");
   prependMetaKeyword(`${eventIdParam}`);
+  // Reads q/time/types, if present, so a shared search link reproduces the
+  // same box contents and filters it was copied from — see the "Shareable
+  // search links" block above.
+  initialSearchTerm = applyUrlSearchParams(params);
 
   const loaded = await loadEventsData();
   if (!loaded) return showNotFound();
