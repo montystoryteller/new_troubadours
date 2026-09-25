@@ -10667,6 +10667,19 @@
       ]
     },
     {
+      "name": "Darkness & Love",
+      "showname": "Darkness & Love",
+      "date": "24/10/2026",
+      "venue_id": "sunshine-rooms-findhorn",
+      "eventId": "20261024-unknown-performer-sunshine-rooms-findhorn",
+      "date_added": "25/09/2026",
+      "time": "4-5pm",
+      "price": "£10 (+ £1.50) [£5-£14.50]",
+      "description": "Stories for dark days and long nights with Peter Findlay. Featuring Gay Taffe on the gongs and musical guests for three very different stories.\n\n\n\n50% of proceeds will go to the Talebearers Bursary Fund for budding bards aged between 10 and 14 years.",
+      "ticket_url": "https://www.tickettailor.com/events/weavingwordsandwonder/2437444",
+      "isSpecial": true
+    },
+    {
       "name": "The call of Cthulhu [Jason Buck]",
       "showname": "The call of Cthulhu",
       "date": "26/10/2026",
@@ -15973,6 +15986,17 @@
       "latlon": [
         57.4811,
         -3.28303
+      ]
+    },
+    "sunshine-rooms-findhorn": {
+      "id": "sunshine-rooms-findhorn",
+      "name": "Sunshine Rooms, Findhorn",
+      "full_address": "Sunshine Rooms, The Park, 505 E Whins, Findhorn, Forres, IV36 3TH",
+      "city": "Findhorn",
+      "postcode": "IV36 3TH",
+      "latlon": [
+        57.65411,
+        -3.59229
       ]
     },
     "kirkhill-community-centre": {
