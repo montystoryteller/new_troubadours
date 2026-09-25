@@ -192,7 +192,7 @@ function makeVideoCard(item) {
   // not fetched until this card is actually near the viewport.
   const thumbImg = document.createElement("img");
   thumbImg.className = "video-card-thumb-img";
-  thumbImg.alt = "";
+  thumbImg.alt = "Video image thumbnail";
   thumbImg.dataset.src = `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg`;
   thumbBtn.appendChild(thumbImg);
   videoThumbLoader.observe(thumbImg);

@@ -1368,7 +1368,7 @@ function renderTourFlyers(tour) {
 
     const img = document.createElement("img");
     img.dataset.src = f.src; // deferred — observer loads when visible
-    img.alt = f.label;
+    img.alt = f.label || "Flyer thumbnail";
     img.onclick = () => openTourFlyerLightbox(flyers, i);
     card.appendChild(img);
 
@@ -1455,7 +1455,7 @@ function closeTourFlyerLightbox() {
 function showTfSlide() {
   const f = _tfLbItems[_tfLbIndex];
   document.getElementById("tfLbImg").src = f.src;
-  document.getElementById("tfLbImg").alt = f.label;
+  document.getElementById("tfLbImg").alt = f.label || "Tour flyer";
   document.getElementById("tfLbCaption").textContent = f.label;
   document.getElementById("tfLbPrev").disabled = _tfLbIndex <= 0;
   document.getElementById("tfLbNext").disabled =

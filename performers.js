@@ -1544,7 +1544,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
 
     const img = document.createElement("img");
     img.dataset.pfSrc = item.src;
-    img.alt = item.label;
+    img.alt = item.label || "Thumbnail";
     pfImgLoader.observe(img);
     wrap.appendChild(img);
 
@@ -1830,7 +1830,7 @@ function createPodcastFeedCard(url) {
       const img = document.createElement("img");
       img.className = "perf-podcast-feed-thumb";
       img.src = feed.image;
-      img.alt = "";
+      img.alt = "Podcast feed thumbnail";
       icon.replaceWith(img);
     }
     sub.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;

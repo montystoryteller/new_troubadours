@@ -1109,7 +1109,7 @@ function displayFestival(festivalId) {
       img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(f.filename)}`;
       img.alt = f.label
         ? `${fest.name} ${f.label.toLowerCase()}`
-        : `${fest.name} flyer`;
+        : `${fest.name} flyer` || "Festival flyer";
       img.className = "festival-flyer-img";
       flyerEl.appendChild(img);
     });

@@ -1449,7 +1449,7 @@ function renderVenueFlyers(regularClubs, allDated, today) {
     a.className = `venue-flyer-thumb${item.isPast ? " venue-flyer-thumb-past" : ""}`;
     const img = document.createElement("img");
     img.src = src;
-    img.alt = "";
+    img.alt = "Flyer thumbnail";
     img.loading = "lazy";
     a.appendChild(img);
     list.appendChild(a);
