@@ -18989,6 +18989,12 @@
       "url": "https://shonaleigh.uk/",
       "bio": "Word weaver, tradition bearer and educator\n\n\n\nShonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working."
     },
+    "raggedy-jack": {
+      "id": "raggedy-jack",
+      "name": "Raggedy Fack",
+      "facebook": "RaggedyJackStoryteller",
+      "bio": "Once upon a time, before there was an internet, before TV, before radio, even before there were books! All the stories in the world were kept by The Storytellers. And, even today, a story is always best when it's being told."
+    },
     "david-heathfield": {
       "id": "david-heathfield",
       "name": "David Heathfield",
@@ -19144,7 +19150,8 @@
       "id": "sam-draisey",
       "name": "Sam Draisey",
       "url": "http://www.samdraisey.com/",
-      "bio": "Sam Draisey is a singer/songwriter from the West Midlands, England. His music has, in the classic singer/songwriter style, many influences and muses, with particular attention paid to the story telling qualities and political nature of his songs."
+      "bio": "Sam Draisey is a singer/songwriter from the West Midlands, England. His music has, in the classic singer/songwriter style, many influences and muses, with particular attention paid to the story telling qualities and political nature of his songs.",
+      "musician": true
     },
     "rob-clamp": {
       "id": "rob-clamp",
