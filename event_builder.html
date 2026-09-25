@@ -228,6 +228,7 @@
                 <label>Date added</label>
                 <div>
                     <input type="text" id="ev-date-added" placeholder="DD/MM/YYYY">
+                    <div class="field-hint" id="ev-date-added-warning" style="display:none;"></div>
                     <label
                         style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
                         <input type="checkbox" id="ev-date-added-today"> Set to today
@@ -3059,6 +3060,7 @@
                     <div class="subitem-field-group">
                         <label class="subitem-field-label">Publish date</label>
                         <input type="text" class="ep-pubdate" placeholder="DD/MM/YYYY (optional)">
+                        <div class="field-hint ep-pubdate-warning" style="display:none;"></div>
                     </div>
                     <div class="subitem-field-group">
                         <label class="subitem-field-label">Duration</label>
@@ -3072,6 +3074,8 @@
                         <label class="subitem-field-label">Description</label>
                         <textarea class="ep-description" placeholder="(optional)"></textarea>
                     </div>`;
+                wireDateFormatWarning(fieldsWrap.querySelector(".ep-pubdate"), fieldsWrap.querySelector(".ep-pubdate-warning"));
+
                 const performerWrap = document.createElement("div");
                 fieldsWrap.appendChild(performerWrap);
                 performerFields.set(row, buildPerformerIdListField(performerWrap, "Add another guest"));
@@ -3446,6 +3450,7 @@
                     <label>Date added</label>
                     <div>
                         <input type="text" class="dr-date-added" placeholder="DD/MM/YYYY">
+                        <div class="field-hint dr-date-added-warning" style="display:none;"></div>
                         <label style="font-weight:normal; display:inline-flex; align-items:center; gap:5px; margin-top:5px;">
                             <input type="checkbox" class="dr-date-added-today"> Set to today
                         </label>
@@ -3530,6 +3535,7 @@
             wireDateAddedCheckbox(grid.querySelector(".dr-date-added-today"), grid.querySelector(".dr-date-added"));
             attachOpenLinkButton(grid.querySelector(".dr-ticket-url"));
             wirePastDateWarning(grid.querySelector(".dr-date"), grid.querySelector(".dr-date-past-warning"));
+            wireDateFormatWarning(grid.querySelector(".dr-date-added"), grid.querySelector(".dr-date-added-warning"));
             wirePromoterField(grid.querySelector(".dr-promoter"), grid.querySelector(".dr-promoter-hint"));
 
             if (kind === "tour") {
@@ -6060,13 +6066,39 @@
         // a multi-night run) an array of them — checks every entry and
         // reports each bad one individually, since a multi-night run could
         // have just one mistyped date among otherwise-fine ones.
+        // Handles three shapes a "date" value can arrive in: a bare string,
+        // an array of strings (multi-night run), or a {date: "...", ...}
+        // object / array of such objects (a tour_dates/show_dates-style row
+        // handed in whole) — unwrapping one level rather than mislabeling a
+        // perfectly good nested date as "empty" or crashing on it.
         function checkDateString(dateStr) {
+            if (dateStr && typeof dateStr === "object" && !Array.isArray(dateStr)) {
+                if (typeof dateStr.date === "string") return checkDateString(dateStr.date);
+                return "not a date string, and has no .date field to check instead";
+            }
             if (typeof dateStr !== "string" || !dateStr.trim()) return "empty";
-            const key = ddMmYyyySortKey(dateStr);
-            if (!key) return "not in DD/MM/YYYY format";
-            const year = parseInt(key.slice(0, 4), 10);
-            if (year < 2000) return "before 2000 — likely a typo";
-            if (year > new Date().getFullYear() + 2) return "more than 2 years from now — likely a typo";
+            const m = dateStr.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (!m) return "not in DD/MM/YYYY format";
+            const dd = parseInt(m[1], 10), mm = parseInt(m[2], 10), yyyy = parseInt(m[3], 10);
+            if (mm < 1 || mm > 12) return `month ${mm} doesn't exist`;
+            // The regex above only checks digit shape, not real calendar
+            // validity — "31/02/2026" matches it fine. JS's Date silently
+            // ROLLS an impossible day/month combo into the next month
+            // instead of rejecting it (new Date(2026, 1, 31) quietly becomes
+            // 3 Mar 2026), so the only way to actually catch 31 Apr/Jun/Sep/
+            // Nov, 30/31 Feb, or 29 Feb outside a leap year is to construct
+            // the date and check whether it reports back the same
+            // day/month/year we asked for.
+            const d = new Date(yyyy, mm - 1, dd);
+            if (d.getFullYear() !== yyyy || d.getMonth() !== mm - 1 || d.getDate() !== dd) {
+                const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                let reason = `${dd} ${MONTH_NAMES_FULL[mm - 1]} ${yyyy} doesn't exist`;
+                if (mm === 2 && dd === 29) reason += " — not a leap year";
+                return reason;
+            }
+            if (yyyy < 2000) return "before 2000 — likely a typo";
+            if (yyyy > new Date().getFullYear() + 2) return "more than 2 years from now — likely a typo";
             return null;
         }
         function findDateIssues(dateField) {
@@ -6075,7 +6107,15 @@
             const issues = [];
             values.forEach((v, i) => {
                 const issue = checkDateString(v);
-                if (issue) issues.push({ arrayIndex: isArray ? i : null, value: v, issue });
+                if (!issue) return;
+                // A dict entry reads oddly as a raw value in the results
+                // list — show its .date sub-field when it has one, and only
+                // fall back to a JSON dump for the genuinely unrecognised
+                // shape (checkDateString's "no .date field" branch above).
+                const displayValue = (v && typeof v === "object" && !Array.isArray(v))
+                    ? (typeof v.date === "string" ? v.date : JSON.stringify(v))
+                    : v;
+                issues.push({ arrayIndex: isArray ? i : null, value: displayValue, issue });
             });
             return issues;
         }
@@ -6977,14 +7017,56 @@
         // to enter one, so this only informs, never prevents submission.
         // Handles the same comma-separated multi-date format as #ev-date/
         // .dr-date; a plain single-date field (festival start/end) just
-        // happens to always have one part.
+        // happens to always have one part. Also runs checkDateString()
+        // (Enrich tab's date-quality scanner, above) on each part so a
+        // mistyped or calendar-impossible date (31/02/2026, 29/02/2026 in a
+        // non-leap year, etc.) gets flagged live instead of only surfacing
+        // later when someone runs the whole-file scan.
         function wirePastDateWarning(input, warnEl) {
             function check() {
                 const todayKey = todaySortKey();
-                const pastOnes = input.value.split(",").map(s => s.trim()).filter(Boolean)
-                    .filter(p => { const k = ddMmYyyySortKey(p); return k && k < todayKey; });
+                const parts = input.value.split(",").map(s => s.trim()).filter(Boolean);
+                const pastOnes = parts.filter(p => { const k = ddMmYyyySortKey(p); return k && k < todayKey; });
+                // "empty" (still typing) and "before 2000" (already covered
+                // by the past-date message below — no need to say it twice)
+                // are excluded; everything else (bad format, impossible
+                // calendar date, far future) is worth a live nudge.
+                const badOnes = parts
+                    .map(p => ({ p, issue: checkDateString(p) }))
+                    .filter(x => x.issue && x.issue !== "empty" && x.issue !== "before 2000 — likely a typo");
+                const messages = [];
+                if (badOnes.length) {
+                    messages.push(`⚠ ${badOnes.map(b => `"${b.p}" (${b.issue})`).join("; ")}`);
+                }
                 if (pastOnes.length) {
-                    warnEl.textContent = `⚠ ${pastOnes.length > 1 ? "These dates are" : "This date is"} in the past (${pastOnes.join(", ")}) — that's fine if you're backdating a past event, just flagging it in case it's a typo.`;
+                    messages.push(`⚠ ${pastOnes.length > 1 ? "These dates are" : "This date is"} in the past (${pastOnes.join(", ")}) — that's fine if you're backdating a past event, just flagging it in case it's a typo.`);
+                }
+                if (messages.length) {
+                    warnEl.textContent = messages.join("  ");
+                    warnEl.style.display = "";
+                } else {
+                    warnEl.textContent = "";
+                    warnEl.style.display = "none";
+                }
+            }
+            input.addEventListener("input", check);
+            check();
+            return check;
+        }
+
+        // Lighter sibling of wirePastDateWarning() for fields where being in
+        // the past is the norm rather than a red flag — "date added" (a
+        // record's own creation date) and a podcast episode's publish date.
+        // Only flags genuine typos (bad format, impossible calendar date,
+        // implausibly-far-future) via checkDateString(); never comments on
+        // past-ness, which would just be noise on these two fields.
+        function wireDateFormatWarning(input, warnEl) {
+            function check() {
+                const bad = input.value.split(",").map(s => s.trim()).filter(Boolean)
+                    .map(p => ({ p, issue: checkDateString(p) }))
+                    .filter(x => x.issue && x.issue !== "empty");
+                if (bad.length) {
+                    warnEl.textContent = `⚠ ${bad.map(b => `"${b.p}" (${b.issue})`).join("; ")}`;
                     warnEl.style.display = "";
                 } else {
                     warnEl.textContent = "";
@@ -7271,6 +7353,7 @@
             wirePastDateWarning(document.getElementById("ev-date"), document.getElementById("ev-date-past-warning"));
             wirePastDateWarning(document.getElementById("festival-start-date"), document.getElementById("festival-start-date-past-warning"));
             wirePastDateWarning(document.getElementById("festival-end-date"), document.getElementById("festival-end-date-past-warning"));
+            wireDateFormatWarning(document.getElementById("ev-date-added"), document.getElementById("ev-date-added-warning"));
 
             document.getElementById("tour-name").addEventListener("input", suggestTourKey);
             document.getElementById("tour-performer-field").addEventListener("input", suggestTourKey);

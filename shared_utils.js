@@ -193,10 +193,33 @@ function parseDateString(dateStr) {
     );
     return null;
   }
+  // A handful of call sites pass a whole {date: "DD/MM/YYYY", ...} row
+  // (e.g. a tour_dates/show_dates entry) rather than a bare string.
+  // Unwrap one level instead of falling through to dateStr.split() below,
+  // which would throw (objects have no .split) rather than returning the
+  // documented null.
+  if (typeof dateStr === "object") {
+    if (typeof dateStr.date === "string") return parseDateString(dateStr.date);
+    console.warn(
+      "parseDateString received an object with no usable .date string:",
+      dateStr,
+    );
+    return null;
+  }
+  if (typeof dateStr !== "string") return null;
   const parts = dateStr.split("/");
   if (parts.length !== 3) return null;
   const [day, month, year] = parts.map(Number);
-  return new Date(year, month - 1, day);
+  // Guard against non-numeric/zero components (NaN is falsy, so this also
+  // catches "00" for day/month). Without this, a malformed string like
+  // "xx/yy/zzzz" silently produced `new Date(NaN, NaN, NaN)` — an Invalid
+  // Date object, which is truthy — instead of the null this function's own
+  // docstring promises, so every `if (!date)` caller let it straight
+  // through as if it were a real parsed date.
+  if (!day || !month || !year) return null;
+  const date = new Date(year, month - 1, day);
+  if (isNaN(date.getTime())) return null; // belt-and-braces
+  return date;
 }
 
 /**
