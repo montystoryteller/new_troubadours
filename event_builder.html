@@ -6179,6 +6179,15 @@
                 ["poetryEvents", enrichedData.poetryEvents || []],
             ].forEach(([bucketName, list]) => {
                 (list || []).forEach((ev, index) => {
+                    // expandDatetimes() (event_display.js) prefers a populated
+                    // `datetimes` array over `date` and never falls back to
+                    // `date` when one exists — see events-schema.json's
+                    // `datetimes` field. So an empty/missing `date` alongside
+                    // a real `datetimes` array is correct, not a data error;
+                    // skip it rather than flagging a false positive. (The
+                    // datetimes[] entries themselves aren't yet covered by
+                    // this scan or its Apply flow.)
+                    if (Array.isArray(ev.datetimes) && ev.datetimes.length > 0) return;
                     findDateIssues(ev.date).forEach(issue => {
                         found.push({
                             kind: "event", bucket: bucketName, index,
