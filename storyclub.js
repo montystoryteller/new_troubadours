@@ -56,24 +56,28 @@ function loadLeaflet() {
 // (.facebook, .website, .email respectively); use those instead.
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-// parseDateString() used to delegate structured schedule objects to a local
-// parseScheduleObject() that called parseDate()/OCC_MAP/findNthDay — none of
-// which are defined anywhere in this file (they only exist in flyers.js).
-// Any call to parseDateString() with an object argument was a guaranteed
-// ReferenceError on any page that doesn't happen to also load flyers.js
-// first. Now delegates to recurrence-engine.js (loaded before this file),
-// which actually works for weekly/fortnightly/monthly alike.
-function parseDateString(s) {
-  if (!s) return null;
-  if (typeof s === "object") {
-    const occ = RecurrenceEngine.nextOccurrence(s, []);
-    return occ ? occ.date : null;
-  }
-  if (typeof s !== "string") return null;
-  const [d, m, y] = s.split("/").map(Number);
-  if (!d || !m || !y) return null;
-  return new Date(y, m - 1, d);
-}
+// parseDateString() used to be redefined locally here — a DD/MM/YYYY parser
+// that also resolved structured schedule objects via
+// RecurrenceEngine.nextOccurrence(). Being a plain `function` declaration,
+// it silently SHADOWED the global parseDateString() from shared_utils.js
+// for this entire page, including every call shared_utils.js makes to it
+// internally (festival/event/tour/show date parsing) — so storyclub.html
+// was quietly running different date-parsing logic than every other page
+// that loads shared_utils.js.
+//
+// Checked every parseDateString() call site across the whole codebase
+// (event.js, event_display.js, festival_display.js, performers.js,
+// tour_display.js, event_builder.html, shared_utils.js itself, and this
+// file's own four call sites below): none of them ever pass a schedule
+// object — only DD/MM/YYYY strings (event.date, tourDate.date,
+// showDate.date, festival.start_date/end_date, feature_slots[][0]) — so
+// the object-resolving branch was dead code. Removed; this file now uses
+// the one shared parseDateString() (shared_utils.js, loaded before this
+// file), same as everywhere else. If a genuine need to resolve a schedule
+// OBJECT to a single date ever comes up, call
+// RecurrenceEngine.nextOccurrence(schedule, exceptions) directly — as
+// nextScheduledDate() below already does — rather than re-adding this
+// under the parseDateString name.
 
 // formatDate() — defined in shared_utils.js
 

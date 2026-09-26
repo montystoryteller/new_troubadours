@@ -286,56 +286,22 @@ function syncFilterButtons() {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-function parseDate(s) {
-  if (!s) return null;
-  // New recurring-schedule object format, e.g.
-  // {"type":"fortnightly","day":"monday","start":"25/05/2026"}
-  // (Arrays are also typeof "object" in JS but represent multi-date
-  // lists, not schedule objects — callers should expand them into
-  // individual date strings before calling parseDate. Guard here so
-  // an unexpanded array fails loudly instead of being silently
-  // misread as a schedule object with no .start.)
-  if (Array.isArray(s)) {
-    console.warn(
-      "parseDate received an array; caller should expand it into individual date strings first:",
-      s,
-    );
-    return null;
-  }
-  if (typeof s === "object") return parseScheduleObject(s);
-  if (typeof s !== "string") return null;
-  const parts = s.split("/");
-  if (parts.length !== 3) return null;
-  const [d, m, y] = parts.map(Number);
-  if (!d || !m || !y) return null;
-  return new Date(y, m - 1, d);
-}
-
-// Resolve a recurring-schedule object down to a single concrete date —
-// the next upcoming occurrence on/after today. Used wherever code needs
-// one sortable date to represent a recurring club (cutoff checks, sorting,
-// isTonight/isTomorrow, etc).
+// parseDate() used to be its own local DD/MM/YYYY parser here — a second,
+// independently-maintained duplicate of shared_utils.js's parseDateString()
+// under a different name (so no shadowing bug, but still logic that could
+// silently drift out of sync), plus a parseScheduleObject() side-branch for
+// resolving structured schedule objects.
 //
-// Used to hand-roll weekly/fortnightly/monthly math here, including calls
-// to OCC_MAP/findNthDay for the monthly case — except OCC_MAP and findNthDay
-// were never defined anywhere near this function; every "monthly" structured
-// schedule threw a ReferenceError. Delegates to recurrence-engine.js now
-// (loaded before this file), which actually handles all three types. Kept
-// as a call into scheduledOccurrencesInRange (via today()) rather than
-// RecurrenceEngine.nextOccurrence() directly, so the ?date=YYYY-MM-DD test
-// override below still works exactly as before.
-function parseScheduleObject(schedule) {
-  const from = today();
-  const to = new Date(from);
-  to.setMonth(to.getMonth() + 6);
-  const occ = RecurrenceEngine.scheduledOccurrencesInRange(
-    schedule,
-    from,
-    to,
-    [],
-  ).find((o) => o.date >= from);
-  return occ ? occ.date : null;
-}
+// Checked every parseDate() call site in this file (all five below: push()'s
+// dateStr, tour_dates/show_dates .date fields, and festival.end_date): none
+// of them ever pass a schedule object — recurring-club resolution in this
+// file goes through scheduleMatchesDate() below instead, which takes the
+// schedule object directly — so parseScheduleObject() was dead code. Both
+// removed; call sites below now use shared_utils.js's parseDateString()
+// (loaded before this file), same as every other page. If a genuine need to
+// resolve a schedule OBJECT to a single date ever comes up, call
+// RecurrenceEngine.nextOccurrence(schedule, exceptions) directly rather than
+// re-adding this under a parseDate()/parseDateString() name.
 
 // ── Date override (for testing) ───────────────────────────────────────
 // Set via ?date=YYYY-MM-DD in the URL.
@@ -445,7 +411,7 @@ async function loadFlyers() {
     extra,
   ) {
     if (!flyer || !flyer.trim()) return;
-    const dt = parseDate(dateStr);
+    const dt = parseDateString(dateStr);
     if (!dt) return;
     const key = `${flyer.trim()}|${dateStr}`;
     if (seen.has(key)) return;
@@ -498,7 +464,7 @@ async function loadFlyers() {
   ];
   // NOTE: .date may be a single "DD/MM/YYYY" string OR an array of
   // such strings (multi-date run). Expand arrays so every date gets
-  // its own card instead of being silently dropped by parseDate().
+  // its own card instead of being silently dropped by parseDateString().
   for (const { dataKey, defaultType } of FLAT_EVENT_SOURCES) {
     for (const e of data[dataKey] || []) {
       const eFlyers = getEventLevelFlyers(e);
@@ -537,7 +503,7 @@ async function loadFlyers() {
   // tours — one card per tour keyed on earliest date in window
   for (const [tourKey, tour] of Object.entries(data.tours || {})) {
     const datesInWindow = (tour.tour_dates || [])
-      .map((d) => ({ ...d, _dt: parseDate(d.date) }))
+      .map((d) => ({ ...d, _dt: parseDateString(d.date) }))
       .filter((d) => d._dt && d._dt >= cutoff)
       .sort((a, b) => a._dt - b._dt);
     if (!datesInWindow.length) continue;
@@ -633,7 +599,7 @@ async function loadFlyers() {
         (Array.isArray(sd.date) ? sd.date : [sd.date]).map((dateStr) => ({
           ...sd,
           date: dateStr,
-          _dt: parseDate(dateStr),
+          _dt: parseDateString(dateStr),
         })),
       )
       .filter((sd) => sd._dt && sd._dt >= cutoff)
@@ -691,7 +657,7 @@ async function loadFlyers() {
         fest.venue_id,
         fest.ticket_url,
         {
-          festEnd: fest.end_date ? parseDate(fest.end_date) : null,
+          festEnd: fest.end_date ? parseDateString(fest.end_date) : null,
           festWebsite: fest.website || "",
           festFacebook: fest.facebook || "",
         },
@@ -868,7 +834,7 @@ async function loadFlyers() {
         (Array.isArray(d.date) ? d.date : [d.date]).map((dateStr) => ({
           ...d,
           date: dateStr,
-          _dt: parseDate(dateStr),
+          _dt: parseDateString(dateStr),
         })),
       )
       .filter((d) => d._dt)
