@@ -1178,17 +1178,10 @@
         },
         "datetimes": {
           "type": "array",
-          "description": "Optional explicit start/end datetime pairs, for events needing more than a date+time string (e.g. multi-day or precisely timed entries).",
+          "description": "Optional explicit per-performance date+time strings, for an event needing more than one date+time combination (e.g. a multi-day run with a matinee on one day) that a plain `date` (+ `time`) pair can't express. Each entry is a single \"DD/MM/YYYY : <time>\" string — e.g. \"04/04/2026 : 2.00pm\" — parsed by parseDatetimeString()/expandDatetimes() in event_display.js, NOT an object. (Previously documented here as an array of {start, end} objects; that shape doesn't match the parsing code or the one existing record that uses this field, so this description was corrected to match.) When present and non-empty, expandDatetimes() reads this in preference to `date`/`time` and never falls back to them — so `date` is commonly left blank (\"\") on a record that uses `datetimes` instead; that's correct, not a data error.",
           "items": {
-            "type": "object",
-            "properties": {
-              "start": {
-                "type": "string"
-              },
-              "end": {
-                "type": "string"
-              }
-            }
+            "type": "string",
+            "pattern": "^\\d{2}/\\d{2}/\\d{4} : .+$"
           }
         },
         "promoter_id": {
