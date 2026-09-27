@@ -1141,6 +1141,10 @@
           "type": "boolean",
           "default": false
         },
+        "isSoldOut": {
+          "type": "boolean",
+          "default": false
+        },
         "openslots": {
           "type": "boolean",
           "description": "Whether the event has open mic/floor slots."
@@ -1158,6 +1162,13 @@
             "type": "string"
           },
           "description": "For multi-performer bills."
+        },
+        "support_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Support act(s) for this event, distinct from performer_id/performer_ids (the headliner(s)) — a specific, lesser-billing relationship rather than a co-headline one. For a co-headline bill instead, list everyone in performer_ids; there's no separate isDoubleHeadline flag needed here the way tour/tourDate have one, since performer_ids is already unambiguous about billing for a standalone event."
         },
         "performer": {
           "type": "string",
@@ -1272,6 +1283,9 @@
         "event_flyers": {
           "$ref": "#/$defs/eventFlyersList"
         },
+        "video_trailer": {
+          "$ref": "#/$defs/youtubeUrl"
+        },
         "tour_flyer": {
           "type": "string",
           "description": "Rare — used when a music event is also linked to a tour-level flyer."
@@ -1296,8 +1310,34 @@
         "isSpecial": {
           "type": "boolean"
         },
+        "isCancelled": {
+          "type": "boolean",
+          "default": false
+        },
+        "isSoldOut": {
+          "type": "boolean",
+          "default": false
+        },
+        "wider_event": {
+          "type": "string",
+          "description": "Key into `festivals` if this is part of a larger festival."
+        },
         "performer_id": {
           "type": "string"
+        },
+        "performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "For multi-performer bills."
+        },
+        "support_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Support act(s) for this event, distinct from performer_id/performer_ids (the headliner(s)) — a specific, lesser-billing relationship rather than a co-headline one. For a co-headline bill instead, list everyone in performer_ids; there's no separate isDoubleHeadline flag needed here the way tour/tourDate have one, since performer_ids is already unambiguous about billing for a standalone event."
         },
         "venue_id": {
           "type": "string",
@@ -1379,6 +1419,9 @@
         "event_flyers": {
           "$ref": "#/$defs/eventFlyersList"
         },
+        "video_trailer": {
+          "$ref": "#/$defs/youtubeUrl"
+        },
         "tour_flyer": {
           "type": "string",
           "description": "Rare — used when a poetry event is also linked to a tour-level flyer."
@@ -1403,8 +1446,34 @@
         "isSpecial": {
           "type": "boolean"
         },
+        "isCancelled": {
+          "type": "boolean",
+          "default": false
+        },
+        "isSoldOut": {
+          "type": "boolean",
+          "default": false
+        },
+        "wider_event": {
+          "type": "string",
+          "description": "Key into `festivals` if this is part of a larger festival."
+        },
         "performer_id": {
           "type": "string"
+        },
+        "performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "For multi-performer bills."
+        },
+        "support_performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Support act(s) for this event, distinct from performer_id/performer_ids (the headliner(s)) — a specific, lesser-billing relationship rather than a co-headline one. For a co-headline bill instead, list everyone in performer_ids; there's no separate isDoubleHeadline flag needed here the way tour/tourDate have one, since performer_ids is already unambiguous about billing for a standalone event."
         },
         "venue_id": {
           "type": "string",
