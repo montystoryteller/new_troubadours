@@ -138,6 +138,112 @@ function findEventById(eventId) {
   return null;
 }
 
+// Resolves a T-/R- id (see shared_utils.js's TOUR_EVENT_ID_PREFIX/
+// SHOW_EVENT_ID_PREFIX) against a single date within toursLookup or
+// eventsData.repertoire_shows, and normalizes the match into the flat
+// specificEvent-shaped record renderPage() and friends already expect —
+// see buildEventRecordFromTourDate()/buildEventRecordFromShowDate() below.
+// Kept separate from findEventById() (rather than folded into it) since
+// that function's own docstring is explicit that tour/show dates are a
+// different identity scheme with no standalone permalink — this is the
+// new code path that gives them one, without disturbing the old function
+// or its two supported id schemes.
+//
+// Brute-force regenerate-and-compare, same philosophy as findEventById():
+// nothing here parses tourId/date/venueId back out of the incoming id
+// string (tourId and venueId can both contain hyphens, which would make
+// that fragile) — the prefix is only used to pick which pool to loop over.
+function findTourOrShowDateEventById(eventId) {
+  if (eventId.startsWith(TOUR_EVENT_ID_PREFIX)) {
+    for (const [tourId, tour] of Object.entries(toursLookup || {})) {
+      for (const tourDate of tour.tour_dates || []) {
+        if (resolveTourDateEventId(tourId, tourDate) === eventId) {
+          return buildEventRecordFromTourDate(tourId, tour, tourDate);
+        }
+      }
+    }
+    return null;
+  }
+
+  if (eventId.startsWith(SHOW_EVENT_ID_PREFIX)) {
+    for (const [tsId, ts] of Object.entries(
+      eventsData.repertoire_shows || {},
+    )) {
+      for (const showDate of ts.show_dates || []) {
+        if (resolveShowDateEventId(tsId, showDate) === eventId) {
+          return buildEventRecordFromShowDate(tsId, ts, showDate);
+        }
+      }
+    }
+    return null;
+  }
+
+  return null;
+}
+
+// Normalizes a (tour, tourDate) match into the shape renderPage() and its
+// helpers (renderTicketsFlyersVideo, renderPerformerSection,
+// renderEventFlyers, resolveEventId, getEventLevelFlyers, ...) already read
+// off a flat specificEvent record. tourDate's own fields (venue_id, time,
+// price, ticket_url, fb_event, event_flyer(s), isSoldOut, isCancelled, ...)
+// pass straight through via the spread; only fields that live on the
+// *tour* rather than the date are pulled across explicitly, and only when
+// the date doesn't already have its own (a date-level `description`, say,
+// wins over the tour's).
+//
+// `_sourceTourId`/`_sourceTourName` aren't read by any existing render
+// function — they're new, consumed by the "part of tour X" link
+// renderPage() adds when they're present (see below).
+function buildEventRecordFromTourDate(tourId, tour, tourDate) {
+  const dateStr = Array.isArray(tourDate.date)
+    ? tourDate.date[0]
+    : tourDate.date;
+  const displayName = tour.tour_name || tour.name;
+  return {
+    ...tourDate,
+    name: displayName,
+    showname: displayName,
+    performer_id: tour.performer_id,
+    performer_ids: tour.performer_ids,
+    performer: tour.performer,
+    description: tourDate.description || tour.tour_description || null,
+    video_trailer: tourDate.video_trailer || tour.video_trailer || null,
+    eventId: resolveTourDateEventId(tourId, tourDate),
+    date: dateStr,
+    _date: parseDateString(dateStr),
+    _sourceTourId: tourId,
+    _sourceTourName: displayName,
+  };
+}
+
+// Same normalization as buildEventRecordFromTourDate(), for a repertoire/
+// touring-show date. `_sourceTourId` is built with the same
+// "rep:"-prefixed form tour_guide.html's own ?tour= param expects (see
+// TOUR_GUIDE_REPERTOIRE_ID_PREFIX above), so the "part of X" link this
+// produces points at the right entry in tour_guide.html's combined
+// tour+repertoire selector.
+function buildEventRecordFromShowDate(tsId, ts, showDate) {
+  const dateStr = Array.isArray(showDate.date)
+    ? showDate.date[0]
+    : showDate.date;
+  const displayName = ts.showname || ts.name;
+  return {
+    ...showDate,
+    name: displayName,
+    showname: displayName,
+    performer_id: ts.performer_id,
+    performer_ids: ts.performer_ids,
+    performer: ts.performer,
+    description: showDate.description || ts.show_description || null,
+    video_trailer: showDate.video_trailer || ts.video_trailer || null,
+    eventId: resolveShowDateEventId(tsId, showDate),
+    date: dateStr,
+    _date: parseDateString(dateStr),
+    _sourceTourId: TOUR_GUIDE_REPERTOIRE_ID_PREFIX + tsId,
+    _sourceTourName: displayName,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Search box
 // ---------------------------------------------------------------------------
@@ -699,7 +805,9 @@ let initialSearchTerm = "";
   // );
   //document.body.appendChild(debugComment);
 
-  eventRecord = eventIdParam ? findEventById(eventIdParam) : null;
+  eventRecord = eventIdParam
+    ? findEventById(eventIdParam) || findTourOrShowDateEventById(eventIdParam)
+    : null;
 
   if (!eventRecord) {
     if (eventIdParam) {
@@ -962,6 +1070,18 @@ function renderPage() {
     a.textContent =
       hostVenue.name + (hostVenue.city ? `, ${hostVenue.city}` : "");
     venueDiv.appendChild(a);
+  }
+
+  // Set only on a record resolved via findTourOrShowDateEventById() (a
+  // single tour/touring-show date) — links back to the full run this one
+  // date belongs to, on its own line under the venue link.
+  if (ev._sourceTourId) {
+    venueDiv.appendChild(document.createElement("br"));
+    const tourLink = document.createElement("a");
+    tourLink.href = `tour_guide.html?tour=${encodeURIComponent(ev._sourceTourId)}`;
+    tourLink.className = "event-part-of-tour-link";
+    tourLink.textContent = `Part of ${ev._sourceTourName} — see all dates \u2192`;
+    venueDiv.appendChild(tourLink);
   }
 
   if (ev.description && ev.description.trim()) {

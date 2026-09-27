@@ -1499,6 +1499,38 @@
             </div>
 
             <div class="enrich-section">
+                <h3>🆔 Missing tour &amp; show date event IDs</h3>
+                <p class="field-hint">
+                    Same idea as "Missing event IDs" above, but for individual dates inside a <code>tours</code>
+                    or <code>repertoire_shows</code> record — each of those now has its own event.html
+                    permalink too, using a prefixed id so event.html's resolver knows which pool to search:
+                    <code>T-&lt;tourId&gt;-yyyymmdd-venueId</code> for a tour date
+                    (<code>buildTourDateEventId()</code> in shared_utils.js), e.g.
+                    <code>T-gaz-brookfield-autumn-2026-20261107-joiners-southampton</code>, or
+                    <code>R-&lt;showId&gt;-yyyymmdd-venueId</code> for a repertoire/touring-show date
+                    (<code>buildShowDateEventId()</code>). These ids already resolve without ever running this
+                    scanner — event.js generates the same fallback on the fly if a date has no explicit
+                    <code>eventId</code> — so this is here for the same two reasons the flat-event checker
+                    above exists: to catch a collision (two dates that would generate the same id) before it
+                    happens, and to let you freeze/pin a date's id by hand so a later edit to its
+                    <code>venue_id</code> or date doesn't silently change — and break — a link already shared
+                    or indexed elsewhere. A multi-night entry (<code>"date": [...]</code>) is suggested an id
+                    from its first night only; an explicit <code>eventId</code> you set is shared across every
+                    night in that array, same as a flat event's is. Accepting a row writes the
+                    <code>eventId</code> straight onto that date within the loaded tour/show record and lists
+                    the whole parent record in <code>updatedTours</code>/<code>updatedRepertoireShows</code> —
+                    same convention the age-rating checker above uses for tour/show-level fixes.
+                </p>
+                <button class="btn-add-batch" id="enrich-tourdate-eventid-scan-btn" disabled>Scan for missing
+                    tour/show date IDs</button>
+                <div id="enrich-tourdate-eventid-results"></div>
+                <div class="btn-row" id="enrich-tourdate-eventid-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-tourdate-eventid-apply-btn">Apply checked
+                        rows to loaded data</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>📝 Missing descriptions &amp; bios</h3>
                 <p class="field-hint">
                     Report only, same as the duplicate-venues and promoter-reference checks above — there's
@@ -4205,6 +4237,21 @@
             let key = document.getElementById("tour-key").value.trim() || slugify(`${keyBasisPerformer}-${keyBasisName}`);
             key = uniqueId(key, k => existingTourKeys.has(k) || batch.tours.some(t => t.key === k));
 
+            // Auto-write an eventId on each single-date tour date, same as
+            // addEventToBatch() already does for a flat specific/music/poetry
+            // event — mirrors that function's single-vs-multi-date caveat too
+            // (a multi-date shorthand entry is left to resolveTourDateEventId()'s
+            // per-night fallback at page-load time, since one explicit id can't
+            // represent every night in the array). Has to happen here, after
+            // `key` is known, rather than inside readDateRows() — the tour's
+            // own key isn't decided until this point.
+            dateRows.forEach(td => {
+                if (!Array.isArray(td.date)) {
+                    const id = buildTourDateEventId(key, td);
+                    if (id) td.eventId = id;
+                }
+            });
+
             const record = {
                 tour_name: tourName,
                 tour_dates: dateRows,
@@ -4290,6 +4337,15 @@
             }
             let key = document.getElementById("show-key").value.trim() || slugify(`${perf.performer_id || perf.displayName}-${showname}`);
             key = uniqueId(key, k => existingShowKeys.has(k) || batch.shows.some(s => s.key === k));
+
+            // Same auto-write as addTourToBatch() above, for repertoire/
+            // touring-show dates.
+            dateRows.forEach(sd => {
+                if (!Array.isArray(sd.date)) {
+                    const id = buildShowDateEventId(key, sd);
+                    if (id) sd.eventId = id;
+                }
+            });
 
             const record = {
                 name: fullname,
@@ -5817,6 +5873,7 @@
                 document.getElementById("enrich-format-scan-btn").disabled = false;
                 document.getElementById("enrich-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = false;
+                document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-description-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             } catch (err) {
@@ -5834,6 +5891,7 @@
                 document.getElementById("enrich-format-scan-btn").disabled = true;
                 document.getElementById("enrich-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = true;
+                document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-description-scan-btn").disabled = true;
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
@@ -7114,6 +7172,168 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, clashes.length, "clash");
+        });
+
+        // -- Missing tour/show date event IDs (writes into loaded data ---------
+        // -- directly, same as the flat-event checker above, but keyed by ------
+        // -- tour/show id + date index rather than bucket + array index, and ---
+        // -- snapshotted whole-record into updatedTours/updatedRepertoireShows,
+        // -- same convention the age-rating checker uses for tour/show fixes) --
+        document.getElementById("enrich-tourdate-eventid-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-tourdate-eventid-results");
+            const actionsEl = document.getElementById("enrich-tourdate-eventid-actions");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+            const pools = [
+                { kind: "tour", label: "Tour", dict: enrichedData.tours || {}, datesField: "tour_dates", buildId: buildTourDateEventId, nameOf: r => r.tour_name || r.name || "(untitled)" },
+                { kind: "show", label: "Repertoire show", dict: enrichedData.repertoire_shows || {}, datesField: "show_dates", buildId: buildShowDateEventId, nameOf: r => r.showname || r.name || "(untitled)" },
+            ];
+
+            // Every eventId already sitting on any tour/show date in the file
+            // — a fresh suggestion matching one of these is as much a
+            // collision as two fresh suggestions matching each other. Not
+            // cross-checked against specificEvents/musicEvents/poetryEvents'
+            // eventIds: those never carry a T-/R- prefix (see
+            // buildStructuredEventId()), so a correctly-formed id in this
+            // pool can't collide with one in that pool by construction.
+            const existingIds = new Set();
+            pools.forEach(({ dict, datesField }) => {
+                Object.values(dict).forEach(record => {
+                    (record[datesField] || []).forEach(d => { if (d.eventId) existingIds.add(d.eventId); });
+                });
+            });
+
+            const found = [];
+            pools.forEach(({ kind, label, dict, datesField, buildId, nameOf }) => {
+                Object.entries(dict).forEach(([key, record]) => {
+                    (record[datesField] || []).forEach((d, dateIndex) => {
+                        if (d.eventId) return;
+                        const suggestedId = buildId(key, d);
+                        if (!suggestedId) return; // unparsable date — the date-quality checker above is the place to fix that first
+                        found.push({
+                            kind,
+                            key,
+                            dateIndex,
+                            datesField,
+                            name: nameOf(record),
+                            label,
+                            date: Array.isArray(d.date) ? d.date.join(", ") : d.date,
+                            venueId: d.venue_id || null,
+                            multiDate: Array.isArray(d.date) && d.date.length > 1,
+                            suggestedId,
+                            usedFallbackVenue: !d.venue_id,
+                        });
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No tour/show dates missing an eventId (with a resolvable date).</div>';
+                actionsEl.style.display = "none";
+                return;
+            }
+
+            // Collision check across this batch of suggestions, plus against
+            // every eventId already set elsewhere in the file's tour/show dates.
+            const idCounts = {};
+            found.forEach(f => { idCounts[f.suggestedId] = (idCounts[f.suggestedId] || 0) + 1; });
+            found.forEach(f => {
+                f.collision = idCounts[f.suggestedId] > 1 || existingIds.has(f.suggestedId);
+            });
+
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.kind = f.kind;
+                row.dataset.key = f.key;
+                row.dataset.datesField = f.datesField;
+                row.dataset.dateIndex = f.dateIndex;
+                const fallbackNote = [
+                    f.usedFallbackVenue ? "no venue_id set on this date" : null,
+                    f.multiDate ? "multi-date entry — id generated from its first night only, but will be shared across every night" : null,
+                ].filter(Boolean).join("; ");
+                row.innerHTML = `
+                    <input type="checkbox" ${f.collision ? "" : "checked"} class="enrich-tourdate-eventid-check">
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${f.name} <span style="font-weight:normal;color:#999;">(${f.label}, ${f.date}${f.venueId ? `, ${f.venueId}` : ""})</span></div>
+                        <div class="enrich-result-detail">
+                            <label class="subitem-field-label">Suggested eventId — edit if needed</label>
+                            <input type="text" class="enrich-tourdate-eventid-input" value="${f.suggestedId.replace(/"/g, "&quot;")}">
+                        </div>
+                        ${fallbackNote ? `<div class="enrich-result-reasons">⚠ ${fallbackNote} — double-check this id, or set eventId by hand on the date instead.</div>` : ""}
+                        ${f.collision ? `<div class="enrich-result-reasons" style="color:#c62828;">⚠ Possible collision — this id matches another suggestion below and/or an eventId already set elsewhere in the file. Left unchecked; edit the id above to something unique before ticking and accepting it.</div>` : ""}
+                    </div>`;
+                const checkbox = row.querySelector(".enrich-tourdate-eventid-check");
+                const input = row.querySelector(".enrich-tourdate-eventid-input");
+                input.addEventListener("input", () => { checkbox.checked = true; });
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "date");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-tourdate-eventid-apply-btn").addEventListener("click", () => {
+            const rows = [...document.querySelectorAll("#enrich-tourdate-eventid-results .enrich-result-row")];
+
+            // Same duplicate-value guard as the flat-event apply handler —
+            // skip (don't apply) any checked rows that ended up sharing a
+            // value, even if that only became true after hand-editing.
+            const valueCounts = {};
+            rows.forEach(row => {
+                if (!row.querySelector(".enrich-tourdate-eventid-check").checked) return;
+                const value = row.querySelector(".enrich-tourdate-eventid-input").value.trim();
+                if (!value) return;
+                valueCounts[value] = (valueCounts[value] || 0) + 1;
+            });
+
+            let applied = 0;
+            let skippedCollision = 0;
+            const touchedRecords = new Set(); // "kind:key" pairs, so a record with several dates checked at once is only snapshotted once
+            rows.forEach(row => {
+                const checkbox = row.querySelector(".enrich-tourdate-eventid-check");
+                if (!checkbox.checked) return;
+                const value = row.querySelector(".enrich-tourdate-eventid-input").value.trim();
+                if (!value) return; // checked but left blank -- nothing to apply
+                if (valueCounts[value] > 1) { skippedCollision++; return; }
+
+                const { kind, key, datesField, dateIndex } = row.dataset;
+                const dict = kind === "tour" ? enrichedData?.tours : enrichedData?.repertoire_shows;
+                const record = dict && dict[key];
+                const dateEntry = record && record[datesField] && record[datesField][parseInt(dateIndex, 10)];
+                if (!dateEntry) return;
+                dateEntry.eventId = value;
+                touchedRecords.add(`${kind}:${key}`);
+                applied++;
+            });
+
+            touchedRecords.forEach(token => {
+                const [kind, key] = token.split(":");
+                const dict = kind === "tour" ? enrichedData?.tours : enrichedData?.repertoire_shows;
+                const batch = kind === "tour" ? updatedTours : updatedRepertoireShows;
+                const record = dict && dict[key];
+                if (!record) return;
+                delete batch[key];
+                batch[key] = JSON.parse(JSON.stringify(record));
+            });
+
+            if (!applied && !skippedCollision) {
+                alert("No rows checked.");
+                return;
+            }
+            let message = applied
+                ? `Applied ${applied} event ID(s) to the loaded data and added the affected tour(s)/show(s) to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`
+                : "";
+            if (skippedCollision) {
+                message += `${message ? " " : ""}Skipped ${skippedCollision} row(s) because their id matched another checked row — edit those ids to something unique and apply again.`;
+            }
+            alert(message);
+            if (applied) {
+                markEnrichedDataDirty();
+                refreshBatchSummary();
+            }
         });
 
         // -- Missing descriptions & bios -------------------------------------

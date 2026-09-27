@@ -705,6 +705,105 @@ function resolveEventId(record, date) {
 }
 
 /**
+ * Prefix marking an event.html permalink id as belonging to a single date
+ * within a *tour* record (toursLookup), rather than a flat specificEvent/
+ * musicEvent/poetryEvent (those never carry a prefix — see
+ * buildStructuredEventId() above) or a repertoire/touring-show date (see
+ * SHOW_EVENT_ID_PREFIX below). Distinct from tour_display.js's own
+ * REPERTOIRE_ID_PREFIX / event.js's TOUR_GUIDE_REPERTOIRE_ID_PREFIX
+ * ("rep:") — that constant disambiguates the *?tour= query value*
+ * tour_guide.html expects (a real tour id vs. a synthetic "rep:<tsId>"
+ * one); this constant disambiguates an *eventId's own namespace* so
+ * event.js's resolver knows which pool to search without having to try
+ * every pool for every incoming id. The two are related ("this is a
+ * repertoire show") but serve different consumers and are kept as two
+ * separate constants rather than reusing "rep:" verbatim inside a
+ * hyphen-delimited id.
+ */
+const TOUR_EVENT_ID_PREFIX = "T-";
+
+/** Same idea as TOUR_EVENT_ID_PREFIX, for a date within a repertoire/
+ * touring-show record (eventsData.repertoire_shows). Reserved for a
+ * future promoter-events pool: "P-". */
+const SHOW_EVENT_ID_PREFIX = "R-";
+
+/**
+ * New-scheme event id generator for a single date within a *tour* record
+ * (toursLookup[tourId].tour_dates[i]) — `T-<tourId>-yyyymmdd-venueId`,
+ * e.g. "T-gaz-brookfield-autumn-2026-20261107-joiners-southampton". Mirrors
+ * buildStructuredEventId() above (same yyyymmdd + venueId shape), but keys
+ * off the tour's own id instead of a performer id, since a tour date's
+ * identity is "this tour, this day, this venue" rather than "this
+ * performer, this day, this venue".
+ *
+ * Deterministic from fields every tour date already has, so this doesn't
+ * require the event builder's enricher to have run first — resolveTourDateEventId()
+ * below falls back to it exactly like resolveEventId() falls back to
+ * buildStructuredEventId(). The enricher still exists to let you freeze an
+ * explicit `eventId` on a date (so a later edit to venue_id/date doesn't
+ * silently change an already-shared permalink) and to flag the same
+ * matinee/evening-same-venue collision case buildStructuredEventId()'s
+ * docstring already calls out.
+ *
+ * For a multi-date shorthand entry (`"date": ["21/01/2026","22/01/2026"]`),
+ * only the first date is used to generate the fallback — same convention
+ * as the "Missing event IDs" enricher already uses for specificEvents/
+ * musicEvents/poetryEvents. An explicit `eventId` set on such an entry is
+ * shared across every night in the array, same as a flat event's is.
+ *
+ * @param {string} tourId - the key this tour is stored under in toursLookup
+ * @param {object} tourDate - one entry from tour.tour_dates
+ * @returns {string|null} - null if the date can't be parsed
+ */
+function buildTourDateEventId(tourId, tourDate) {
+  const dateStr = Array.isArray(tourDate.date)
+    ? tourDate.date[0]
+    : tourDate.date;
+  const date = parseDateString(dateStr);
+  if (!date) return null;
+  const yyyymmdd = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
+  const venueId = tourDate.venue_id || "unknown-venue";
+  return `${TOUR_EVENT_ID_PREFIX}${tourId}-${yyyymmdd}-${venueId}`;
+}
+
+/**
+ * Resolves the id to use for a single tour date's event.html permalink:
+ * the date's own explicit `eventId` if it has one, otherwise a generated
+ * `T-tourId-yyyymmdd-venueId` id via buildTourDateEventId() above. Mirrors
+ * resolveEventId()'s explicit-or-generated contract.
+ * @param {string} tourId
+ * @param {object} tourDate
+ * @returns {string|null}
+ */
+function resolveTourDateEventId(tourId, tourDate) {
+  return tourDate.eventId || buildTourDateEventId(tourId, tourDate);
+}
+
+/**
+ * Same as buildTourDateEventId()/resolveTourDateEventId(), for a date
+ * within a repertoire/touring-show record (eventsData.repertoire_shows[tsId]
+ * .show_dates[i]) — `R-<tsId>-yyyymmdd-venueId`.
+ * @param {string} tsId
+ * @param {object} showDate
+ * @returns {string|null}
+ */
+function buildShowDateEventId(tsId, showDate) {
+  const dateStr = Array.isArray(showDate.date)
+    ? showDate.date[0]
+    : showDate.date;
+  const date = parseDateString(dateStr);
+  if (!date) return null;
+  const yyyymmdd = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
+  const venueId = showDate.venue_id || "unknown-venue";
+  return `${SHOW_EVENT_ID_PREFIX}${tsId}-${yyyymmdd}-${venueId}`;
+}
+
+/** @param {string} tsId @param {object} showDate @returns {string|null} */
+function resolveShowDateEventId(tsId, showDate) {
+  return showDate.eventId || buildShowDateEventId(tsId, showDate);
+}
+
+/**
  * Wraps an event-row-title element's text in a link to that event's
  * event.html permalink, in place. Does nothing if there's no resolvable
  * record/date (e.g. a date-TBC or multi-date-array entry that

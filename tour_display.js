@@ -6,6 +6,7 @@ let performersLookup = {};
 let toursLookup = {}; // combined: real tours + synthetic "rep:<id>" entries for repertoire shows — see buildCombinedToursLookup()
 let repertoireShowsLookup = {};
 let currentTour = null; // Store current tour for map filtering
+let currentTourId = null; // Its toursLookup key — createTourDateElement() needs this (not just the object) to build a per-date permalink id
 let leafletPromise = null;
 let mapInitPromise = null;
 
@@ -800,6 +801,7 @@ function displayTour(tourId) {
 
   // Store current tour for map filtering
   currentTour = tour;
+  currentTourId = tourId;
 
   // Show tour content
   document.getElementById("tourContent").style.display = "block";
@@ -1036,7 +1038,7 @@ function displayTour(tourId) {
   const datesSection = document.getElementById("tourDatesList").parentElement;
   datesSection.insertBefore(banner, document.getElementById("tourDatesList"));
 
-  displayTourDates(tour, status);
+  displayTourDates(tour, status, tourId);
 
   // Render flyer gallery (tour-level + per-date flyers)
   renderTourFlyers(tour);
@@ -1052,7 +1054,7 @@ function displayTour(tourId) {
   renderShareBadge("tour", tourId, { performer: tour.performer_id });
 }
 
-function displayTourDates(tour, status) {
+function displayTourDates(tour, status, tourId) {
   const datesContainer = document.getElementById("tourDatesList");
   datesContainer.innerHTML = "";
 
@@ -1100,7 +1102,7 @@ function displayTourDates(tour, status) {
 
   sortedDates.forEach((tourDate) => {
     const past = isDatePast(tourDate.date);
-    const dateItem = createTourDateElement(tourDate, tour, past);
+    const dateItem = createTourDateElement(tourDate, tour, past, tourId);
 
     datesContainer.appendChild(dateItem);
 
@@ -1157,7 +1159,7 @@ function createTourExpandable(parent, label, content, type) {
 
 // createIcon() — defined in shared_utils.js
 
-function createTourDateElement(tourDate, tour, past = false) {
+function createTourDateElement(tourDate, tour, past = false, tourId = null) {
   const div = document.createElement("div");
   // Use the standard event classes for gradients and borders
   div.className = "event tour-date-item";
@@ -1209,6 +1211,26 @@ function createTourDateElement(tourDate, tour, past = false) {
     const cancelBadge = createBadge("❌ CANCELLED");
     cancelBadge.className = "event-badge event-badge-cancelled";
     nameDiv.appendChild(cancelBadge);
+  }
+
+  // Permalink to this single date's own event.html page — resolveTourDateEventId()
+  // (shared_utils.js) honours an explicit eventId set via the event
+  // builder's "Missing tour & show date event IDs" enricher, falling back
+  // to the generated T-tourId-yyyymmdd-venueId id otherwise. stopPropagation()
+  // for the same reason the venue "i" link below needs it: this row already
+  // has its own click handler (fly the map to the venue) added above.
+  if (tourId) {
+    const eventId = resolveTourDateEventId(tourId, tourDate);
+    if (eventId) {
+      const permalink = document.createElement("a");
+      permalink.href = `event.html?event=${encodeURIComponent(eventId)}`;
+      permalink.className = "event-permalink-link";
+      permalink.title = "View this date's own event page";
+      permalink.innerHTML =
+        '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6.5 9.5a2 2 0 0 0 2.8.2l2-2a2 2 0 1 0-2.8-2.8l-1 1M9.5 6.5a2 2 0 0 0-2.8-.2l-2 2a2 2 0 1 0 2.8 2.8l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+      permalink.onclick = (e) => e.stopPropagation();
+      nameDiv.appendChild(permalink);
+    }
   }
 
   div.appendChild(nameDiv);
@@ -1503,7 +1525,7 @@ function resetMapZoom() {
   ensureMapInitialized().then(() => {
     addTourMarkersToMap(currentTour);
     // Reset to show all dates
-    displayTourDates(currentTour, getTourStatus(currentTour));
+    displayTourDates(currentTour, getTourStatus(currentTour), currentTourId);
   });
 }
 
@@ -1555,7 +1577,7 @@ function updateMapView() {
 
   sortedDates.forEach((tourDate) => {
     const past = isDatePast(tourDate.date);
-    const dateItem = createTourDateElement(tourDate, currentTour, past);
+    const dateItem = createTourDateElement(tourDate, currentTour, past, currentTourId);
     datesContainer.appendChild(dateItem);
   });
 
@@ -2010,6 +2032,7 @@ function showBrowseLanding() {
   setCanonical("tour");
 
   currentTour = null;
+  currentTourId = null;
   renderBrowseLandingPanels();
 }
 
