@@ -181,6 +181,133 @@ function findTourOrShowDateEventById(eventId) {
   return null;
 }
 
+// ---------------------------------------------------------------------------
+// Legacy `${name}-${date.getTime()}` ids (old buildEventId() scheme)
+// ---------------------------------------------------------------------------
+// e.g. "Gaz Brookfield Autumn 2026 Tour-1795075200000". findEventById()
+// only matches these for flat events, and only if the timestamp matches to
+// the millisecond — but the timestamp is *local midnight in whichever
+// timezone built the link* (1795075200000 is 08:00 UTC, i.e. midnight in
+// UTC-8, for the 19/11/2026 date), so links built in a different timezone
+// than this browser's never match exactly. This resolver instead parses the
+// id into (name, timestamp), finds records whose name matches, and picks
+// the date whose UTC midnight is consistent with that timestamp under any
+// real-world UTC offset (UTC-12 … UTC+14). Covers flat events, tour dates
+// (matched on tour_name/name) and repertoire-show dates (showname/name).
+const LEGACY_EVENT_ID_RE = /^(.+)-(\d{10,14})$/;
+const HOUR_MS = 60 * 60 * 1000;
+
+// ts is local midnight in some timezone, so ts = dateUTCmidnight - offset,
+// offset ∈ [-12h, +14h]  →  ts - dateUTCmidnight ∈ [-14h, +12h].
+// Returns the distance (for picking the best of two adjacent-day matches
+// when the timestamp falls in the 2h overlap), or null for no match.
+function legacyTimestampScore(ts, date) {
+  if (!date) return null;
+  const dateUtc = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  const diff = ts - dateUtc;
+  return diff >= -14 * HOUR_MS && diff <= 12 * HOUR_MS ? Math.abs(diff) : null;
+}
+
+function findEventByLegacyId(eventId) {
+  const m = LEGACY_EVENT_ID_RE.exec(eventId);
+  if (!m) return null;
+  const norm = (s) => String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
+  const wantedName = norm(m[1]);
+  const ts = Number(m[2]);
+
+  let best = null;
+  let bestScore = Infinity;
+  const consider = (score, build) => {
+    if (score !== null && score < bestScore) {
+      bestScore = score;
+      best = build;
+    }
+  };
+  // A date field may be a string or a string[] (multi-night shorthand).
+  const datesOf = (d) =>
+    (Array.isArray(d.date) ? d.date : [d.date]).map(parseDateString);
+
+  for (const list of [
+    eventsData.specificEvents,
+    eventsData.musicEvents,
+    eventsData.poetryEvents,
+  ]) {
+    for (const e of resolvableFlatEvents(list)) {
+      if (norm(e.name) !== wantedName) continue;
+      consider(legacyTimestampScore(ts, e._date), () => e);
+    }
+  }
+
+  for (const [tourId, tour] of Object.entries(toursLookup || {})) {
+    const names = [tour.tour_name, tour.name].map(norm);
+    if (!names.includes(wantedName)) continue;
+    for (const tourDate of tour.tour_dates || []) {
+      for (const d of datesOf(tourDate)) {
+        consider(legacyTimestampScore(ts, d), () =>
+          buildEventRecordFromTourDate(tourId, tour, tourDate),
+        );
+      }
+    }
+  }
+
+  for (const [tsId, show] of Object.entries(eventsData.repertoire_shows || {})) {
+    const names = [show.showname, show.name].map(norm);
+    if (!names.includes(wantedName)) continue;
+    for (const showDate of show.show_dates || []) {
+      for (const d of datesOf(showDate)) {
+        consider(legacyTimestampScore(ts, d), () =>
+          buildEventRecordFromShowDate(tsId, show, showDate),
+        );
+      }
+    }
+  }
+
+  return best ? best() : null;
+}
+
+// ---------------------------------------------------------------------------
+// Prerender signalling (read by the Cloudflare gatekeeper worker)
+// ---------------------------------------------------------------------------
+// The page is a static file, so humans always get HTTP 200. Crawlers are
+// served a prerendered snapshot by the gatekeeper worker, which reads these
+// tags out of the rendered HTML and turns them into a real status code
+// (the same `prerender-status-code` / `prerender-header` convention
+// Prerender.io uses). Ignored by browsers.
+function setPrerenderMeta(name, content) {
+  let meta = document.querySelector(`meta[name="${name}"]`);
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.setAttribute("name", name);
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", content);
+}
+
+// code 404: id couldn't be resolved. code 301: id was a legacy/aliased form
+// that resolved to `canonicalUrl`.
+function setPrerenderStatus(code, canonicalUrl) {
+  setPrerenderMeta("prerender-status-code", String(code));
+  if (code === 404) setPrerenderMeta("robots", "noindex");
+  if (code === 301 && canonicalUrl) {
+    setPrerenderMeta("prerender-header", `Location: ${canonicalUrl}`);
+  }
+}
+
+// Signals "the client-side render has finished" — lets the renderer worker
+// waitForSelector on it instead of guessing from network idle.
+function markPrerenderReady() {
+  document.body.setAttribute("data-prerender-ready", "true");
+}
+
+// Points the address bar and <link rel="canonical"> at ?event=<canonical>,
+// dropping the legacy ?event_id= alias, keeping other params (q/time/types).
+function canonicalEventUrl(canonicalId) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("event_id");
+  url.searchParams.set("event", canonicalId);
+  return url;
+}
+
 // Normalizes a (tour, tourDate) match into the shape renderPage() and its
 // helpers (renderTicketsFlyersVideo, renderPerformerSection,
 // renderEventFlyers, resolveEventId, getEventLevelFlyers, ...) already read
@@ -782,7 +909,8 @@ let initialSearchTerm = "";
 
 (async () => {
   const params = new URLSearchParams(window.location.search);
-  const eventIdParam = params.get("event");
+  // `event_id` is accepted as an alias — some old shared links used it.
+  const eventIdParam = params.get("event") || params.get("event_id");
   prependMetaKeyword(`${eventIdParam}`);
   // Reads q/time/types, if present, so a shared search link reproduces the
   // same box contents and filters it was copied from — see the "Shareable
@@ -809,16 +937,45 @@ let initialSearchTerm = "";
     ? findEventById(eventIdParam) || findTourOrShowDateEventById(eventIdParam)
     : null;
 
+  // Old `${name}-${getTime()}` ids that didn't match exactly (see
+  // findEventByLegacyId()).
+  if (!eventRecord && eventIdParam) eventRecord = findEventByLegacyId(eventIdParam);
+
+  // Anything that resolved under an id other than the record's current one
+  // (an old-scheme id, or the `?event_id=` alias) is treated as an alias:
+  // the address bar and <link rel="canonical"> are rewritten to ?event=<id>,
+  // and a 301 to that URL is signalled to the prerender gatekeeper.
+  if (eventRecord) {
+    const currentId =
+      eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
+    if (currentId !== eventIdParam || !params.get("event")) {
+      const canonicalUrl = canonicalEventUrl(currentId);
+      history.replaceState(null, "", canonicalUrl);
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "canonical";
+        document.head.appendChild(link);
+      }
+      link.href = canonicalUrl.href;
+      setPrerenderStatus(301, canonicalUrl.href);
+    }
+  }
+
   if (!eventRecord) {
     if (eventIdParam) {
       console.warn(
         `event.html: event "${eventIdParam}" not found — showing today's events instead.`,
       );
+      // Unresolvable id: keep the friendly today's-events fallback for
+      // people, but tell the prerender gatekeeper to answer crawlers 404.
+      setPrerenderStatus(404);
     } else {
       console.info("event.html: no ?event= given — showing today's events.");
     }
     document.getElementById("loadingState").style.display = "none";
     showTodayEvents();
+    markPrerenderReady();
     return;
   }
 
@@ -827,6 +984,7 @@ let initialSearchTerm = "";
     renderPage();
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("eventContent").style.display = "";
+    markPrerenderReady();
 
     const hostVenue = venuesLookup[eventRecord.venue_id] || null;
     if (hostVenue && hasLatlon(hostVenue)) {
