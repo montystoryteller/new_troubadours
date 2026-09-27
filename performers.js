@@ -2780,7 +2780,7 @@ function buildDescriptionDropdown(text, label = "About this event") {
   return details;
 }
 
-function tourDateToEventRow(tour, td) {
+function tourDateToEventRow(tourId, tour, td) {
   // This date's own billing relationship — may differ from the tour-level
   // "Also featuring:"/"Support:" summary on the card above if this date
   // overrides other_performer_ids/support_performer_ids/headliner. Read
@@ -2793,6 +2793,14 @@ function tourDateToEventRow(tour, td) {
       ? effectiveHeadlinerId
       : null;
   return {
+    // Explicit T-tourId-yyyymmdd-venueId id (or td's own frozen eventId),
+    // via resolveTourDateEventId() (shared_utils.js) — same scheme
+    // tour_display.js's permalink and event.js's findTourOrShowDateEventById()
+    // use. Setting it here means linkEventRowTitle()'s resolveEventId()
+    // call below picks it up instead of falling back to
+    // buildStructuredEventId()'s flat performerId+date+venueId scheme,
+    // which isn't resolvable for a tour date and would produce a dead link.
+    eventId: resolveTourDateEventId(tourId, td),
     name: tour.tour_name || tour.name,
     showname: tour.name,
     date: td.date,
@@ -2826,8 +2834,12 @@ function tourDateToEventRow(tour, td) {
   };
 }
 
-function showDateToEventRow(show, sd) {
+function showDateToEventRow(tsId, show, sd) {
   return {
+    // Same reasoning as tourDateToEventRow()'s eventId above, one level
+    // down: R-tsId-yyyymmdd-venueId (or sd's own frozen eventId) via
+    // resolveShowDateEventId().
+    eventId: resolveShowDateEventId(tsId, sd),
     name: show.name,
     showname: show.showname || show.name,
     date: sd.date,
@@ -3168,7 +3180,7 @@ function renderTourCard(container, tourId, tour, relationshipLabel = null) {
   // Upcoming and past dates — both as collapsibles (upcoming open by
   // default so nothing currently visible needs an extra click; past
   // closed by default). See renderDateCollapsible().
-  const toEventRow = (td) => tourDateToEventRow(tour, td);
+  const toEventRow = (td) => tourDateToEventRow(tourId, tour, td);
   renderDateCollapsible(card, futureDates, toEventRow, {
     titlePrefix: "Upcoming dates",
     defaultOpen: true,
@@ -3268,7 +3280,7 @@ function renderTouringShowCard(container, tsId, ts) {
   // Upcoming and past dates — both as collapsibles (upcoming open by
   // default so nothing currently visible needs an extra click; past
   // closed by default). See renderDateCollapsible().
-  const toEventRow = (sd) => showDateToEventRow(ts, sd);
+  const toEventRow = (sd) => showDateToEventRow(tsId, ts, sd);
   renderDateCollapsible(card, futureDates, toEventRow, {
     titlePrefix: "Upcoming dates",
     defaultOpen: true,

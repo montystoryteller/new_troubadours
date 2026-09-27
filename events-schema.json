@@ -200,6 +200,20 @@
         "20260315-daniel-morden-kings-arms-matinee"
       ]
     },
+    "tourDateEventId": {
+      "type": "string",
+      "description": "Optional stable, explicit identifier for a single date within a tour's tour_dates[], used as its event.html permalink (?event=) whenever set — see resolveTourDateEventId() in shared_utils.js. When a tour_dates entry has no eventId, resolveTourDateEventId() generates one instead, in the form `T-tourId-yyyymmdd-venueId` (the T- prefix, the key this tour is stored under in the top-level `tours` object, the date, and venue_id) via buildTourDateEventId(). Distinct from the plain eventId used on specificEvent/musicEvent/poetryEvent records — see TOUR_EVENT_ID_PREFIX's docstring for why tour dates get their own namespace. As with the flat eventId, the generated form isn't guaranteed unique (e.g. a matinee and an evening date at the same venue on the same day) — set eventId here by hand to disambiguate when that happens; the event builder's Enrich tab's \"Missing tour & show date event IDs\" checker can suggest one and flags likely collisions.",
+      "examples": [
+        "T-gaz-brookfield-autumn-2026-20261107-joiners-southampton"
+      ]
+    },
+    "showDateEventId": {
+      "type": "string",
+      "description": "Same idea as tourDateEventId, for a single date within a repertoire/touring show's show_dates[] — see resolveShowDateEventId() in shared_utils.js. Generated form is `R-tsId-yyyymmdd-venueId` (the R- prefix, the key this show is stored under in the top-level `repertoire_shows` object, the date, and venue_id) via buildShowDateEventId().",
+      "examples": [
+        "R-debs-newbold-dauntless-20260315-kings-arms"
+      ]
+    },
     "youtubeUrl": {
       "description": "Optional YouTube trailer URL (watch/youtu.be/shorts/embed form). Rendered via getYouTubeEmbedUrl() in shared_utils.js, which validates the host and converts it to a safe youtube-nocookie.com /embed/ URL; anything else is silently ignored by the front end.",
       "type": "string"
@@ -655,6 +669,9 @@
         "related_event": {
           "type": "string",
           "description": "Free-text name of a wider event this date is part of (e.g. 'Cornwall Tattoo Convention'). Display/reference only — unlike wider_event on specificEvents it is not a key into `festivals`."
+        },
+        "eventId": {
+          "$ref": "#/$defs/tourDateEventId"
         }
       },
       "required": [
@@ -905,6 +922,9 @@
         "age": {
           "type": "string",
           "description": "Free-text age note for this date (e.g. 'Recommended 14+'). Not the standard field — age_rating/min_age are defined on the repertoireShow record itself rather than per date; this is a per-date variant seen in the data."
+        },
+        "eventId": {
+          "$ref": "#/$defs/showDateEventId"
         }
       },
       "required": [
