@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <!-- Non-blocking load — see event_guide.html for the full explanation. -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" as="style" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css?v=202609250051" media="print"
-        onload="this.media='all'; this.onload=null;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css?v=202609250051"
+        media="print" onload="this.media='all'; this.onload=null;">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css?v=202609250051">
     </noscript>
@@ -123,6 +123,14 @@
             word-break: break-word;
             font-size: 0.82em;
         }
+
+        /* A field just filled in by "Edit" or "Duplicate" on a batch item
+           (see markFieldPrefilled()) — shows at a glance which fields came
+           from the source record, so far unreviewed. Clears itself the
+           moment the person actually edits that specific field. */
+        .field-prefilled {
+            background: #fde3ef;
+        }
     </style>
 </head>
 
@@ -202,6 +210,16 @@
             </div>
 
             <div class="field-row">
+                <label>Support performers</label>
+                <div>
+                    <div id="ev-support-performers-field"></div>
+                    <div class="field-hint">Optional. Support act(s) for this event, distinct from the main
+                        performer(s) above — saved as <code>support_performer_ids</code>. For a co-headline bill
+                        instead (equal billing), just list everyone in the Performer field above.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Venue</label>
                 <div id="ev-venue-field"></div>
             </div>
@@ -213,28 +231,6 @@
                         placeholder="DD/MM/YYYY, or several comma-separated for a multi-night run">
                     <div class="field-hint">e.g. <code>15/10/2025</code> or <code>15/10/2025, 16/10/2025</code></div>
                     <div class="field-hint" id="ev-date-past-warning" style="display:none;"></div>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <label>Event ID</label>
-                <div>
-                    <input type="text" id="ev-event-id"
-                        placeholder="(optional — leave blank to auto-generate yyyymmdd-performerId-venueId)">
-                    <div class="field-hint">
-                        Leave this blank for a single-date event and one is generated for you when you click
-                        "Add to batch", using <code>buildStructuredEventId()</code>
-                        (<code>yyyymmdd-performerId-venueId</code>, from the date/performer/venue above) —
-                        it'll be saved on the record as a real <code>eventId</code>, not left for the page to
-                        work out later. That generated form isn't guaranteed unique (e.g. the same performer
-                        at the same venue twice in one day), so type your own here instead if that could
-                        apply. For a <strong>multi-date</strong> event (several dates above), leave this
-                        blank too — a shared id here would apply to every one of those dates at once, so each
-                        night instead gets its own id worked out individually when the page loads; only fill
-                        this in by hand for a multi-date event if you specifically need to pin one id across
-                        all its nights. The Enrich tab's "Missing event IDs" checker can backfill this for
-                        existing records, and "Clashing event IDs" reports any that collide.
-                    </div>
                 </div>
             </div>
 
@@ -255,37 +251,6 @@
                 <div>
                     <input type="text" id="ev-time" placeholder="e.g. 7.30-9pm">
                     <div id="ev-structured-time-field"></div>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <label>Club</label>
-                <div>
-                    <input type="text" id="ev-club" list="clubOptions"
-                        placeholder="Existing club id, if this is a guest spot at a club night">
-                    <div class="field-hint">Leave blank for a standalone show with no club night.</div>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <label>Promoter</label>
-                <div>
-                    <input type="text" id="ev-promoter" list="promoterOptions"
-                        placeholder="Promoter id from the promoters registry, e.g. crickcrack">
-                    <div class="field-hint" id="ev-promoter-hint" style="display:none;"></div>
-                    <div class="field-hint">Optional. Saved as <code>promoter_id</code>. Pick from the list (typing a
-                        promoter's name also works — it's converted to its id). Separate from Club: a club is a
-                        recurring night, a promoter is whoever is putting this event on.</div>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <label>Festival</label>
-                <div>
-                    <input type="text" id="ev-wider-event" list="festivalOptions"
-                        placeholder="Existing festival id, if this is part of a larger festival">
-                    <div class="field-hint">Saved as `wider_event`. Leave blank if this isn't part of a festival. New
-                        festivals added via the Festival tab in this session will appear here automatically.</div>
                 </div>
             </div>
 
@@ -334,11 +299,6 @@
             </div>
 
             <div class="field-row">
-                <label>Video trailer</label>
-                <input type="url" id="ev-video" placeholder="https://www.youtube.com/watch?v=...">
-            </div>
-
-            <div class="field-row">
                 <label>Ticket URL</label>
                 <input type="url" id="ev-ticket-url">
             </div>
@@ -346,6 +306,64 @@
             <div class="field-row">
                 <label>Facebook event ID</label>
                 <input type="text" id="ev-fb-event" placeholder="numeric id, optional">
+            </div>
+
+            <div class="field-row">
+                <label>Event ID</label>
+                <div>
+                    <input type="text" id="ev-event-id"
+                        placeholder="(optional — leave blank to auto-generate yyyymmdd-performerId-venueId)">
+                    <div class="field-hint">
+                        Leave this blank for a single-date event and one is generated for you when you click
+                        "Add to batch", using <code>buildStructuredEventId()</code>
+                        (<code>yyyymmdd-performerId-venueId</code>, from the date/performer/venue above) —
+                        it'll be saved on the record as a real <code>eventId</code>, not left for the page to
+                        work out later. That generated form isn't guaranteed unique (e.g. the same performer
+                        at the same venue twice in one day), so type your own here instead if that could
+                        apply. For a <strong>multi-date</strong> event (several dates above), leave this
+                        blank too — a shared id here would apply to every one of those dates at once, so each
+                        night instead gets its own id worked out individually when the page loads; only fill
+                        this in by hand for a multi-date event if you specifically need to pin one id across
+                        all its nights. The Enrich tab's "Missing event IDs" checker can backfill this for
+                        existing records, and "Clashing event IDs" reports any that collide.
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Club</label>
+                <div>
+                    <input type="text" id="ev-club" list="clubOptions"
+                        placeholder="Existing club id, if this is a guest spot at a club night">
+                    <div class="field-hint">Leave blank for a standalone show with no club night.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Promoter</label>
+                <div>
+                    <input type="text" id="ev-promoter" list="promoterOptions"
+                        placeholder="Promoter id from the promoters registry, e.g. crickcrack">
+                    <div class="field-hint" id="ev-promoter-hint" style="display:none;"></div>
+                    <div class="field-hint">Optional. Saved as <code>promoter_id</code>. Pick from the list (typing a
+                        promoter's name also works — it's converted to its id). Separate from Club: a club is a
+                        recurring night, a promoter is whoever is putting this event on.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Festival</label>
+                <div>
+                    <input type="text" id="ev-wider-event" list="festivalOptions"
+                        placeholder="Existing festival id, if this is part of a larger festival">
+                    <div class="field-hint">Saved as `wider_event`. Leave blank if this isn't part of a festival. New
+                        festivals added via the Festival tab in this session will appear here automatically.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Video trailer</label>
+                <input type="url" id="ev-video" placeholder="https://www.youtube.com/watch?v=...">
             </div>
 
             <div class="field-row">
@@ -424,6 +442,28 @@
                         (e.g. a support act or accompanist) — saved as <code>other_performer_ids</code>. Type a name to
                         pick an existing performer or create a new one. For someone on only some dates, use the
                         per-date field instead.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Support performers</label>
+                <div>
+                    <div id="tour-support-performers-field"></div>
+                    <div class="field-hint">Performers supporting the headliner across this tour generally — saved as
+                        <code>support_performer_ids</code>. More specific than "Other performers" above, which makes no
+                        claim about billing; use this instead when it's specifically a support-act relationship.
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Co-headline billing</label>
+                <div class="checkbox-row">
+                    <label><input type="checkbox" id="tour-double-headline"> Other/support performers above share top
+                        billing with the main performer</label>
+                    <div class="field-hint">Saved as <code>isDoubleHeadline</code>. Covers any co-headline bill, not
+                        just two acts — check this for a double, triple, or larger co-headline lineup. Leave unchecked
+                        (the default) when the main performer above headlines alone.</div>
                 </div>
             </div>
 
@@ -518,6 +558,13 @@
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="show-special" checked> Special event</label>
                     <label><input type="checkbox" id="show-touring"> Touring show</label>
+                    <label><input type="checkbox" id="show-storywalk"> Story walk</label>
+                    <div class="field-hint">Story walk marks a one-off walking/route-based show — saved as
+                        <code>isStoryWalk</code>. Displayed the same as any other repertoire show for now; if a
+                        walk later needs route/waypoint data of its own, that's a separate
+                        <code>story_walk_details</code> object (keyed by this same show's id) — reserved in the
+                        schema but not yet built anywhere, since its shape isn't decided yet.
+                    </div>
                 </div>
             </div>
 
@@ -958,7 +1005,8 @@
             <div class="field-row">
                 <label>Name</label>
                 <div>
-                    <input type="text" id="promoter-name" list="promoterNameOptions" placeholder="e.g. Crick Crack Club">
+                    <input type="text" id="promoter-name" list="promoterNameOptions"
+                        placeholder="e.g. Crick Crack Club">
                     <div id="promoter-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -975,7 +1023,8 @@
 
             <div class="field-row">
                 <label>Ticketing page</label>
-                <input type="url" id="promoter-ticketing-url" placeholder="(optional) their TicketSource / Eventbrite organiser page — saved as ticketing_url">
+                <input type="url" id="promoter-ticketing-url"
+                    placeholder="(optional) their TicketSource / Eventbrite organiser page — saved as ticketing_url">
             </div>
 
             <div class="field-row">
@@ -992,7 +1041,8 @@
                 <label>Venues</label>
                 <div>
                     <div id="promoter-venues-field"></div>
-                    <div class="field-hint">Venues this promoter regularly puts events on (<code>promoter_venues</code>).
+                    <div class="field-hint">Venues this promoter regularly puts events on
+                        (<code>promoter_venues</code>).
                         Use "+ details" on a row to add a venue that doesn't exist yet.</div>
                 </div>
             </div>
@@ -1046,7 +1096,8 @@
                 <label>Schedule</label>
                 <div>
                     <input type="text" id="club-schedule" placeholder="e.g. 3rd tuesday, Every Thursday">
-                    <div class="field-hint">Free-text recurrence rule. A structured (object-form) schedule on an existing
+                    <div class="field-hint">Free-text recurrence rule. A structured (object-form) schedule on an
+                        existing
                         club is shown as JSON and saved back as an object.</div>
                 </div>
             </div>
@@ -1054,9 +1105,11 @@
             <div class="field-row">
                 <label>Skipped dates</label>
                 <div>
-                    <input type="text" id="club-exceptions" placeholder="(optional) comma-separated, e.g. 24/02/2026, 08/2026">
+                    <input type="text" id="club-exceptions"
+                        placeholder="(optional) comma-separated, e.g. 24/02/2026, 08/2026">
                     <div class="field-hint">Saved as <code>exceptions</code>: <code>DD/MM/YYYY</code> skips one night,
-                        <code>MM/YYYY</code> skips that whole month.</div>
+                        <code>MM/YYYY</code> skips that whole month.
+                    </div>
                 </div>
             </div>
 
@@ -1076,14 +1129,16 @@
                     <div id="club-venue-field"></div>
                     <div class="field-hint">Also the default venue for events that opt in with
                         <code>inheritClubData</code>. Leave blank for an online club or one with only a free-text
-                        <code>location</code> (an existing <code>location</code> is kept when editing).</div>
+                        <code>location</code> (an existing <code>location</code> is kept when editing).
+                    </div>
                 </div>
             </div>
 
             <div class="field-row">
                 <label>Promoter</label>
                 <div>
-                    <input type="text" id="club-promoter" list="promoterOptions" placeholder="(optional) promoter id, if the club is run by a registered promoter">
+                    <input type="text" id="club-promoter" list="promoterOptions"
+                        placeholder="(optional) promoter id, if the club is run by a registered promoter">
                     <div class="field-hint" id="club-promoter-hint" style="display:none;"></div>
                 </div>
             </div>
@@ -1105,7 +1160,12 @@
 
             <div class="field-row">
                 <label>Ticketing page</label>
-                <input type="url" id="club-tickets-url" placeholder="(optional) saved as tickets_url">
+                <div>
+                    <input type="url" id="club-tickets-url" placeholder="(optional) saved as tickets_url">
+                    <div class="field-hint">Always saved as <code>tickets_url</code>, the standard name for this.
+                        One existing club uses the older spelling <code>ticketing_url</code> instead — editing
+                        that club reads its value in here, and saving converges it onto <code>tickets_url</code>.</div>
+                </div>
             </div>
 
             <div class="field-row">
@@ -1115,7 +1175,8 @@
 
             <div class="field-row">
                 <label>Club flyer</label>
-                <input type="text" id="club-flyer" placeholder="filename.jpg — generic flyer shown when there's no event-specific one">
+                <input type="text" id="club-flyer"
+                    placeholder="filename.jpg — generic flyer shown when there's no event-specific one">
             </div>
 
             <div class="field-row">
@@ -1285,13 +1346,16 @@
                     Checks every entry in the top-level <code>promoters</code> registry: that it has a
                     non-empty <code>promoter_venues</code> list and a non-empty <code>promoter_artists</code>
                     list, and that every id in each actually points at a real venue/performer. Also flags a
-                    promoter whose id doesn't turn up as a <code>club</code> or <code>promoter_id</code> value anywhere (<code>events</code>,
+                    promoter whose id doesn't turn up as a <code>club</code> or <code>promoter_id</code> value anywhere
+                    (<code>events</code>,
                     <code>specificEvents</code>/<code>musicEvents</code>/<code>poetryEvents</code>, tours, or
                     repertoire show dates) — registering a promoter is optional enrichment layered onto a club
                     id already used elsewhere, so this is usually a typo between the two rather than an actual
-                    error, but worth a look either way. Promoters themselves are created and edited in the New Promoter tab; this check is report only, like the duplicate-venues check above:
+                    error, but worth a look either way. Promoters themselves are created and edited in the New Promoter
+                    tab; this check is report only, like the duplicate-venues check above:
                     there's no safe way to guess which ids a promoter should actually be associated with, so
-                    fixing a flagged one means editing that promoter (New Promoter tab) or the loaded file directly. For empty or short venue/artist lists, the scanner just below can fill them in from the events.
+                    fixing a flagged one means editing that promoter (New Promoter tab) or the loaded file directly. For
+                    empty or short venue/artist lists, the scanner just below can fill them in from the events.
                 </p>
                 <button class="btn-add-batch" id="enrich-promoter-scan-btn" disabled>Scan promoter
                     references</button>
@@ -1307,8 +1371,10 @@
                     tour date or repertoire show date carrying that <code>promoter_id</code> (or the older
                     <code>promoter</code>), any event at one of the promoter's clubs (a <code>club</code> whose id
                     is the promoter's id, or whose own <code>promoter_id</code> is), and those clubs' own venue and
-                    guest <code>feature_slots</code>. A tour's performer is taken from its linked repertoire show when it
-                    has none of its own, and a tour's or tour date's <code>other_performer_ids</code> count too. Only ids that really exist in <code>venues</code> / <code>performers</code>
+                    guest <code>feature_slots</code>. A tour's performer is taken from its linked repertoire show when
+                    it
+                    has none of its own, and a tour's or tour date's <code>other_performer_ids</code> count too. Only
+                    ids that really exist in <code>venues</code> / <code>performers</code>
                     are offered. Everything starts ticked, with a count of how many listings each comes from —
                     untick anything that's a one-off rather than part of the promoter's regular roster (these lists
                     are meant as a <em>general</em> roster, not a full history), then click "Apply checked rows".
@@ -1466,15 +1532,24 @@
                 <code>newPerformers</code> into <code>performers</code>, <code>newVenues</code> into
                 <code>venues</code>, then merge each record into its matching top-level array/object
                 (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
-                <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>clubs</code> holds new recurring club nights — append them to the top-level <code>clubs</code> array (not <code>specificEvents</code>, which is where one-off events at a club go). <code>podcastEpisodeAdditions</code>
+                <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by
+                promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>clubs</code>
+                holds new recurring club nights — append them to the top-level <code>clubs</code> array (not
+                <code>specificEvents</code>, which is where one-off events at a club go).
+                <code>podcastEpisodeAdditions</code>
                 is different: each entry's <code>item</code> needs appending, by hand, into the
                 <code>items</code> array of the existing podcast named by its <code>podcast_id</code> —
                 it's a patch against a podcast that already exists, not a new top-level record.
                 <br><br>
-                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code>, <code>updatedPodcasts</code>, <code>updatedPromoters</code> and <code>updatedClubs</code> come from using "Edit this record" on an existing entry — each
+                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code>,
+                <code>updatedPodcasts</code>, <code>updatedPromoters</code> and <code>updatedClubs</code> come from
+                using "Edit this record" on an existing entry — each
                 is a <strong>complete, edited replacement</strong> for the entry with that same id/key, not a
                 partial patch. Overwrite the matching entry in <code>performers</code> / <code>venues</code> /
-                <code>festivals</code> / <code>podcasts</code> / <code>promoters</code> with it wholesale (for <code>updatedClubs</code>, the <code>clubs</code> array entry whose <code>name</code> is that key — some older records have no <code>club</code> id, and two ids are shared, so the name is the only unique handle) (any field you didn't touch
+                <code>festivals</code> / <code>podcasts</code> / <code>promoters</code> with it wholesale (for
+                <code>updatedClubs</code>, the <code>clubs</code> array entry whose <code>name</code> is that key — some
+                older records have no <code>club</code> id, and two ids are shared, so the name is the only unique
+                handle) (any field you didn't touch
                 is carried over unchanged from what was loaded, but any field you cleared out will be gone
                 from the replacement — check before overwriting if that matters).
                 <br><br>
@@ -1528,6 +1603,7 @@
         let repertoireShowsLookup = {};
         let clubIds = [];
         let tourOtherPerformersField; // list widget for tour.other_performer_ids
+        let tourSupportPerformersField; // list widget for tour.support_performer_ids
         // Raw `clubs` array from events_normalized.json (recurring club nights).
         let clubsList = [];
         // Top-level `promoters` registry from events_normalized.json, keyed by promoter_id.
@@ -3662,11 +3738,13 @@
 
         // ── Specific / Music event form ─────────────────────────────────────
         let evPerformerMulti;
+        let evSupportPerformersField;
         let evVenueField;
         let evStructuredPriceField;
         let evStructuredTimeField;
         function initEventForm() {
             evPerformerMulti = buildMultiPerformerField(document.getElementById("ev-performer-field"));
+            evSupportPerformersField = buildPerformerIdListField(document.getElementById("ev-support-performers-field"), "Add another support performer");
             evVenueField = buildEntityField(document.getElementById("ev-venue-field"), "venue");
             evStructuredTimeField = buildStructuredTimeField(document.getElementById("ev-structured-time-field"), document.getElementById("ev-time"));
             evStructuredPriceField = buildStructuredPriceField(document.getElementById("ev-structured-price-field"), document.getElementById("ev-price"));
@@ -3727,6 +3805,10 @@
             };
             if (perf.performer_id) record.performer_id = perf.performer_id;
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
+            // Anyone already listed as a main performer is dropped, as are repeats — same pattern as tour's Other/Support performer fields.
+            const evMainIds = new Set([perf.performer_id, ...(perf.performer_ids || [])].filter(Boolean));
+            const supportIds = readPerformerIdListField(evSupportPerformersField).filter((id, i, a) => !evMainIds.has(id) && a.indexOf(id) === i);
+            if (supportIds.length) record.support_performer_ids = supportIds;
             const eventIdInput = document.getElementById("ev-event-id").value.trim();
             if (eventIdInput) {
                 record.eventId = eventIdInput;
@@ -3803,7 +3885,95 @@
             document.getElementById("ev-special").checked = true;
             document.getElementById("ev-cancelled").checked = false;
             document.getElementById("ev-soldout").checked = false;
+            // Strip any leftover pink prefill highlight from a previous
+            // Edit/Duplicate (see markFieldPrefilled()) — otherwise a field
+            // that isn't touched by whatever fills the form next (a normal
+            // blank form, or another record with that field left blank)
+            // would keep showing a highlight left over from an earlier one.
+            document.getElementById("panel-event").querySelectorAll(".field-prefilled")
+                .forEach(el => el.classList.remove("field-prefilled"));
             initEventForm();
+        }
+
+        // Fills every ev-* field from an existing specificEvent/musicEvent/
+        // poetryEvent-shaped record — the reverse of addEventToBatch()'s own
+        // field-by-field collection above. Used by both "Edit" (record
+        // removed from the batch first, in the caller) and "Duplicate" (record
+        // stays in the batch, kept as-is, and just serves as a starting point
+        // for a new one) on the batch summary list below. `kind` is "story"/
+        // "music"/"poetry" (matches #ev-kind's option values) — passed in by
+        // the caller rather than inferred from record.isMusic/isPoetry, since
+        // the caller already knows which of batch.clubs/musicEvents/
+        // poetryEvents it came from.
+        //
+        // Every field that ends up with a non-blank value gets a pink
+        // "field-prefilled" highlight (see markFieldPrefilled()) so, while
+        // reviewing before re-adding, it's obvious at a glance which fields
+        // came from the source record versus ones deliberately left blank —
+        // each highlight clears itself the moment that specific field is
+        // actually edited. Doesn't reach inside the performer-multi/support-
+        // performer/structured-time/structured-price sub-widgets to highlight
+        // their individual rows — those are shared across several forms, and
+        // teaching all of them to highlight-on-populate is a bigger, separate
+        // change; only the entity fields' own top-level inputs are marked.
+        function populateEventFormFromRecord(record, kind) {
+            clearEventForm(); // also rebuilds evVenueField/evPerformerMulti/etc. via initEventForm()
+            document.getElementById("ev-kind").value = kind;
+
+            const set = (id, value) => {
+                const el = document.getElementById(id);
+                el.value = value != null ? value : "";
+                if (value) markFieldPrefilled(el);
+            };
+            const setChecked = (id, checked, defaultChecked) => {
+                const el = document.getElementById(id);
+                el.checked = !!checked;
+                // Only highlight a checkbox when it's not sitting at the
+                // same state clearEventForm() already left it in — same
+                // "don't highlight what there's nothing to review" reasoning
+                // as blank text fields not being marked below.
+                if (!!checked !== !!defaultChecked) markFieldPrefilled(el);
+            };
+
+            set("ev-showname", record.showname);
+            set("ev-name", record.name);
+            set("ev-date", Array.isArray(record.date) ? record.date.join(", ") : record.date);
+            set("ev-event-id", record.eventId);
+            set("ev-date-added", record.date_added);
+            set("ev-time", record.time);
+            set("ev-club", record.club);
+            set("ev-promoter", record.promoter_id);
+            document.getElementById("ev-promoter").dispatchEvent(new Event("input"));
+            set("ev-wider-event", record.wider_event);
+            set("ev-price", record.price);
+            set("ev-description", decodeParagraphBreaksForEdit(record.description));
+            set("ev-age-rating", record.age_rating);
+            set("ev-min-age", record.min_age != null ? String(record.min_age) : "");
+            set("ev-flyer", record.event_flyer);
+            set("ev-video", record.video_trailer);
+            set("ev-ticket-url", record.ticket_url);
+            set("ev-fb-event", record.fb_event);
+            set("ev-facebook", record.facebook);
+
+            if (record.structured_time) evStructuredTimeField.populate(record.structured_time);
+            if (record.structured_price) evStructuredPriceField.populate(record.structured_price);
+
+            evVenueField.input.value = venueLabel(record.venue_id);
+            evVenueField.input.dispatchEvent(new Event("input"));
+            if (record.venue_id) markFieldPrefilled(evVenueField.input);
+
+            const performerIds = [record.performer_id, ...(record.performer_ids || [])].filter(Boolean);
+            populateMultiPerformerField(evPerformerMulti, performerIds);
+            if (performerIds.length) evPerformerMulti.getRows().forEach(f => markFieldPrefilled(f.input));
+
+            if (record.support_performer_ids && record.support_performer_ids.length) {
+                populatePerformerIdListField(evSupportPerformersField, record.support_performer_ids);
+                evSupportPerformersField.rows().forEach(row => markFieldPrefilled(row._field.input));
+            }
+
+            setChecked("ev-cancelled", record.isCancelled, false);
+            setChecked("ev-soldout", record.isSoldOut, false);
+            if (kind === "story") setChecked("ev-special", record.isSpecial, true);
         }
 
         // ── Tour form ────────────────────────────────────────────────────────
@@ -3839,6 +4009,26 @@
                 field.input.value = wanted[i] ? repertoirePerformerLabel(wanted[i]) : "";
                 field.input.dispatchEvent(new Event("input"));
             });
+        }
+
+        // Pink "this came from the record you just Edited/Duplicated"
+        // highlight (see .field-prefilled above and
+        // populateEventFormFromRecord() below, its only caller so far).
+        // Clears itself the moment the person actually edits *that specific*
+        // field — via "input" for text/textarea, "change" for
+        // checkboxes/selects — so what's still highlighted always reflects
+        // what hasn't been reviewed/changed yet, one field at a time rather
+        // than all-or-nothing.
+        function markFieldPrefilled(el) {
+            if (!el) return;
+            el.classList.add("field-prefilled");
+            const clear = () => {
+                el.classList.remove("field-prefilled");
+                el.removeEventListener("input", clear);
+                el.removeEventListener("change", clear);
+            };
+            el.addEventListener("input", clear);
+            el.addEventListener("change", clear);
         }
 
         // Rebuilds a date-rows container (tour or show) from existing
@@ -3954,6 +4144,7 @@
         function initTourForm() {
             tourPerformerMulti = buildMultiPerformerField(document.getElementById("tour-performer-field"));
             tourOtherPerformersField = buildPerformerIdListField(document.getElementById("tour-other-performers-field"), "Add another performer");
+            tourSupportPerformersField = buildPerformerIdListField(document.getElementById("tour-support-performers-field"), "Add another support performer");
             document.getElementById("tour-date-rows").innerHTML = "";
             addTourDateRow();
             document.getElementById("tour-flyer-rows").innerHTML = "";
@@ -4024,6 +4215,10 @@
             const mainIds = new Set([perf.performer_id, ...(perf.performer_ids || [])].filter(Boolean));
             const otherIds = readPerformerIdListField(tourOtherPerformersField).filter((id, i, a) => !mainIds.has(id) && a.indexOf(id) === i);
             if (otherIds.length) record.other_performer_ids = otherIds;
+            const supportIds = readPerformerIdListField(tourSupportPerformersField)
+                .filter((id, i, a) => !mainIds.has(id) && !otherIds.includes(id) && a.indexOf(id) === i);
+            if (supportIds.length) record.support_performer_ids = supportIds;
+            if (document.getElementById("tour-double-headline").checked) record.isDoubleHeadline = true;
             const description = encodeParagraphBreaks(document.getElementById("tour-description").value);
             const flyerFields = readFlyerRows(document.getElementById("tour-flyer-rows"), "touring_event_flyer", "touring_event_flyers");
             const video = document.getElementById("tour-video").value.trim();
@@ -4045,6 +4240,7 @@
             ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-video"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("tour-kind").value = "story";
+            document.getElementById("tour-double-headline").checked = false;
             document.getElementById("tour-repertoire-performer-filter").value = "";
             document.getElementById("tour-repertoire-show-select").value = "";
             tourKeyAutoValue = "";
@@ -4108,6 +4304,7 @@
             if (video) record.video_trailer = video;
             if (document.getElementById("show-special").checked) record.isSpecial = true;
             if (document.getElementById("show-touring").checked) record.isTouringShow = true;
+            if (document.getElementById("show-storywalk").checked) record.isStoryWalk = true;
 
             batch.shows.push({ key, record });
             refreshBatchSummary();
@@ -4119,6 +4316,7 @@
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("show-special").checked = true;
             document.getElementById("show-touring").checked = false;
+            document.getElementById("show-storywalk").checked = false;
             showKeyAutoValue = "";
             initShowForm();
         }
@@ -4146,6 +4344,7 @@
             document.getElementById("show-description").value = decodeParagraphBreaksForEdit(ev.description);
             document.getElementById("show-video").value = ev.video_trailer || "";
             document.getElementById("show-special").checked = !!ev.isSpecial;
+            document.getElementById("show-storywalk").checked = !!ev.isStoryWalk;
 
             const performerIds = [ev.performer_id, ...(ev.performer_ids || [])].filter(Boolean);
             populateMultiPerformerField(showPerformerMulti, performerIds);
@@ -4196,7 +4395,7 @@
                     <label><input type="checkbox" class="copy-field-group" value="performers" checked> Performers</label>
                     <label><input type="checkbox" class="copy-field-group" value="description" checked> Description</label>
                     <label><input type="checkbox" class="copy-field-group" value="media" checked> Media (flyer, video trailer)</label>
-                    <label><input type="checkbox" class="copy-field-group" value="flags" checked> Flags (special / touring show)</label>
+                    <label><input type="checkbox" class="copy-field-group" value="flags" checked> Flags (special / touring show / story walk)</label>
                     <label><input type="checkbox" class="copy-field-group" value="dates"> Dates (venue, time, price, tickets — per date)</label>
                 </div>
                 <div class="btn-row">
@@ -4228,6 +4427,7 @@
                 if (checked.has("flags")) {
                     document.getElementById("show-special").checked = !!record.isSpecial;
                     document.getElementById("show-touring").checked = !!record.isTouringShow;
+                    document.getElementById("show-storywalk").checked = !!record.isStoryWalk;
                 }
                 if (checked.has("dates") && record.show_dates && record.show_dates.length) {
                     populateDateRowsContainer(document.getElementById("show-date-rows"), "show", record.show_dates);
@@ -4941,7 +5141,7 @@
         // form manages itself; anything else on an edited record
         // (feature_slots, location, geocode_missing, themes, legacy flyers…)
         // is carried over untouched.
-        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "email", "online"];
+        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "ticketing_url", "email", "online"];
         let clubKeyAutoValue = "";
         let clubVenueField;
 
@@ -4987,7 +5187,7 @@
             document.getElementById("club-link").value = match.link || "";
             document.getElementById("club-facebook").value = match.facebook || "";
             document.getElementById("club-instagram").value = match.instagram || "";
-            document.getElementById("club-tickets-url").value = match.tickets_url || "";
+            document.getElementById("club-tickets-url").value = match.tickets_url || match.ticketing_url || "";
             document.getElementById("club-email").value = match.email || "";
             document.getElementById("club-flyer").value = match.club_flyer || "";
             document.getElementById("club-online").checked = !!match.online;
@@ -5117,9 +5317,30 @@
                     remove: () => delete updatedVenues[id], previewData: updatedVenues[id],
                     edit: () => { switchToTab("venue"); venueMatcher.edit(updatedVenues[id], "lookup"); },
                 })),
-                ...batch.clubs.map((r, i) => ({ tag: "event", label: r.name, remove: () => batch.clubs.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("clubs", i) }] })),
-                ...batch.musicEvents.map((r, i) => ({ tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("musicEvents", i) }] })),
-                ...batch.poetryEvents.map((r, i) => ({ tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r, extraActions: [{ label: "Convert to repertoire show", onClick: () => convertEventToShow("poetryEvents", i) }] })),
+                ...batch.clubs.map((r, i) => ({
+                    tag: "event", label: r.name, remove: () => batch.clubs.splice(i, 1), previewData: r,
+                    edit: () => { batch.clubs.splice(i, 1); refreshBatchSummary(); switchToTab("event"); populateEventFormFromRecord(r, "story"); },
+                    extraActions: [
+                        { label: "Duplicate…", onClick: () => { switchToTab("event"); populateEventFormFromRecord(r, "story"); } },
+                        { label: "Convert to repertoire show", onClick: () => convertEventToShow("clubs", i) },
+                    ],
+                })),
+                ...batch.musicEvents.map((r, i) => ({
+                    tag: "music", label: r.name, remove: () => batch.musicEvents.splice(i, 1), previewData: r,
+                    edit: () => { batch.musicEvents.splice(i, 1); refreshBatchSummary(); switchToTab("event"); populateEventFormFromRecord(r, "music"); },
+                    extraActions: [
+                        { label: "Duplicate…", onClick: () => { switchToTab("event"); populateEventFormFromRecord(r, "music"); } },
+                        { label: "Convert to repertoire show", onClick: () => convertEventToShow("musicEvents", i) },
+                    ],
+                })),
+                ...batch.poetryEvents.map((r, i) => ({
+                    tag: "poetry", label: r.name, remove: () => batch.poetryEvents.splice(i, 1), previewData: r,
+                    edit: () => { batch.poetryEvents.splice(i, 1); refreshBatchSummary(); switchToTab("event"); populateEventFormFromRecord(r, "poetry"); },
+                    extraActions: [
+                        { label: "Duplicate…", onClick: () => { switchToTab("event"); populateEventFormFromRecord(r, "poetry"); } },
+                        { label: "Convert to repertoire show", onClick: () => convertEventToShow("poetryEvents", i) },
+                    ],
+                })),
                 ...batch.tours.map((t, i) => ({ tag: "tour", label: `${t.record.tour_name} (${t.key})`, remove: () => batch.tours.splice(i, 1), previewData: t.record })),
                 ...batch.shows.map((s, i) => ({ tag: "show", label: `${s.record.name} (${s.key})`, remove: () => batch.shows.splice(i, 1), previewData: s.record, extraActions: [{ label: "Copy…", onClick: () => openCopyShowDialog(i) }] })),
                 ...batch.festivals.map((f, i) => ({
