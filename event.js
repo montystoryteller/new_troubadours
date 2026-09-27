@@ -265,8 +265,8 @@ function findEventByLegacyId(eventId) {
   return best ? best() : null;
 }
 
-// Points the address bar and <link rel="canonical"> at ?event=<canonical>,
-// dropping the legacy ?event_id= alias, keeping other params (q/time/types).
+// Address-bar URL for a resolved event: ?event=<id>, dropping the legacy
+// ?event_id= alias but keeping other params (q/time/types shareable-search state).
 function canonicalEventUrl(canonicalId) {
   const url = new URL(window.location.href);
   url.searchParams.delete("event_id");
@@ -910,21 +910,16 @@ let initialSearchTerm = "";
   }
 
   // Anything that resolved under an id other than the record's current one
-  // (an old-scheme id, or the `?event_id=` alias): rewrite the address bar
-  // and <link rel="canonical"> to ?event=<current id>.
+  // (an old-scheme id, or the `?event_id=` alias): rewrite the address bar to
+  // ?event=<current id>, then re-run setCanonical() (shared_utils.js), which
+  // reads ?event= from the URL — it ran at load, before the id was resolved,
+  // so it saw the legacy id (or nothing, for ?event_id=).
   if (eventRecord) {
     const currentId =
       eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
     if (currentId !== eventIdParam || !params.get("event")) {
-      const canonicalUrl = canonicalEventUrl(currentId);
-      history.replaceState(null, "", canonicalUrl);
-      let link = document.querySelector('link[rel="canonical"]');
-      if (!link) {
-        link = document.createElement("link");
-        link.rel = "canonical";
-        document.head.appendChild(link);
-      }
-      link.href = canonicalUrl.href;
+      history.replaceState(null, "", canonicalEventUrl(currentId));
+      setCanonical("event");
     }
   }
 
