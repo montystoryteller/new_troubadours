@@ -779,6 +779,11 @@ function displayTour(tourId) {
     return;
   }
 
+  // One H1 per page: the tour's own title becomes the H1 here (whether
+  // reached via ?tour= on load, picked from the browse dropdown, or via
+  // Back/Forward), and the static page heading drops to H2.
+  setPageHeadingMode(true, "tourTitle");
+
   document.title = `${tour.name}${tour.tour_name ? ` — ${tour.tour_name}` : ""} — New Troubadours`;
   // setMetaDescription() (not updateMeta()) so this REPLACES the
   // description each time rather than prepending to whatever the last
@@ -2023,6 +2028,9 @@ function showBrowseLanding() {
   document.getElementById("tourNotFoundState").style.display = "none";
   document.getElementById("tourBackLinkWrap").style.display = "none";
   document.getElementById("tourBrowseState").style.display = "";
+
+  // Reverse of the promotion displayTour() does below.
+  setPageHeadingMode(false, "tourTitle");
 
   document.title = DEFAULT_TITLE;
   setMetaDescription(DEFAULT_META_DESCRIPTION);

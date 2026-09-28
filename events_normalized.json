@@ -1,4 +1,5 @@
 {
+  "affiliate_ids":{"amazon": "newtroubadour-21", "wegottickets": "671"},
   "promoters": {
     "south-london-storytelling": {
       "promoter_id": "south-london-storytelling",
@@ -19745,7 +19746,10 @@
         "sarah-lianne-lewis"
       ],
       "url": "",
-      "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis."
+      "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis.",
+      "books": [
+        {"publisher": "", "isbn":"", "cover":"", "title": "", "year":, "buy_url":""}
+      ]
     },
     "hugh-lupton-sarah-moody": {
       "id": "hugh-lupton-sarah-moody",

@@ -989,6 +989,10 @@ function displayFestival(festivalId) {
   currentFestival = { key: festivalId, record: fest };
   document.getElementById("festivalNotFound").style.display = "none";
   document.getElementById("festivalContent").style.display = "block";
+  // One H1 per page: the festival's own title becomes the H1 here
+  // (whether reached via ?festival= on load or by picking from browse
+  // mode's dropdown), and the static page heading drops to H2.
+  setPageHeadingMode(true, "festivalTitle");
   document.title = `${fest.name} — New Troubadours`;
 
   updateMeta("description", fest.name, " — ");

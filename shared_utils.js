@@ -329,18 +329,29 @@ function wireBadgeCopyButton(buttonId, messageId, badgeHtml) {
 // Idempotent: safe to call more than once, in either direction.
 // ---------------------------------------------------------------------------
 
-function setPageHeadingMode(isDetail) {
+function setPageHeadingMode(isDetail, detailTitleId, detailRevertTag) {
   const swap = (el, tag) => {
-    if (!el || el.tagName === tag) return;
+    if (!el || el.tagName === tag) return el;
     const next = document.createElement(tag);
     next.id = el.id;
     next.className = el.className;
     next.innerHTML = el.innerHTML;
     el.replaceWith(next);
+    return next;
   };
   swap(document.getElementById("pageHeading"), isDetail ? "H2" : "H1");
   const sub = document.getElementById("pageSubheading");
   if (sub) sub.style.display = isDetail ? "none" : "";
+
+  // Some pages (festival, tour) don't already have an <h1> for the single
+  // item — their title is an h2/h3 styled to look right. detailTitleId lets
+  // those promote/demote that element to match, instead of relying on a
+  // separate #pageHeading swap. detailRevertTag is the tag to restore it to
+  // when leaving detail mode (defaults to "H2").
+  if (detailTitleId) {
+    const el = document.getElementById(detailTitleId);
+    swap(el, isDetail ? "H1" : detailRevertTag || "H2");
+  }
 }
 
 // ---------------------------------------------------------------------------
