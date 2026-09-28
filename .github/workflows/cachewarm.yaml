@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 60
 
     env:
-      SECRET: ${{ secrets.CLODFLARE_SECRET }}
+      SECRET: ${{ secrets.CLOUDFLARE_SECRET }}
 
     steps:
       - name: Purge cache and force render URLs
