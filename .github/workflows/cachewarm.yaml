@@ -54,8 +54,7 @@ jobs:
               echo "  Purge -> HTTP $purge_status"
 
               # 2. Force render
-              # Capture the response headers so we can check
-              # x-prerendered: true from the Cloudflare Worker.
+              # Capture response headers so we can check x-prerendered.
               render_headers=$(mktemp)
 
               render_status=$(curl \
@@ -67,15 +66,19 @@ jobs:
                 --max-time 60 \
                 "$url" || true)
 
+              # grep returns exit code 1 when the header doesn't exist.
+              # "|| true" prevents that from stopping the GitHub Action.
               prerendered=$(grep -i '^x-prerendered:' "$render_headers" \
                 | tail -n 1 \
                 | tr -d '\r' \
-                | awk '{print $2}')
-
-              rm -f "$render_headers"
+                | awk '{print $2}' || true)
 
               echo "  Render -> HTTP $render_status"
-              echo "  X-Prerendered -> $prerendered"
+              echo "  Response headers:"
+              cat "$render_headers"
+              echo "  X-Prerendered -> ${prerendered:-<missing>}"
+
+              rm -f "$render_headers"
 
               # Only consider the URL successful if BOTH conditions
               # are satisfied.
@@ -86,6 +89,7 @@ jobs:
                 remaining+=("$url")
               fi
 
+              # Wait 20 seconds before processing the next URL.
               sleep 20
             done
 
