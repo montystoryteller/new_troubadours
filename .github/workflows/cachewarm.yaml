@@ -18,6 +18,15 @@ jobs:
       - name: Purge cache and force render URLs
         shell: bash
         run: |
+          # Abort immediately if the secret is not configured.
+          if [ -z "$SECRET" ]; then
+            echo "❌ CLOUDFLARE_SECRET is not configured."
+            echo "Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          echo "✅ CLOUDFLARE_SECRET is configured."
+
           urls=(
             "https://newtroubadours.org/"
             "https://newtroubadours.org/index.html"
@@ -54,7 +63,6 @@ jobs:
               echo "  Purge -> HTTP $purge_status"
 
               # 2. Force render
-              # Capture response headers so we can check x-prerendered.
               render_headers=$(mktemp)
 
               render_status=$(curl \
@@ -66,22 +74,16 @@ jobs:
                 --max-time 60 \
                 "$url" || true)
 
-              # grep returns exit code 1 when the header doesn't exist.
-              # "|| true" prevents that from stopping the GitHub Action.
               prerendered=$(grep -i '^x-prerendered:' "$render_headers" \
                 | tail -n 1 \
                 | tr -d '\r' \
                 | awk '{print $2}' || true)
 
               echo "  Render -> HTTP $render_status"
-              echo "  Response headers:"
-              cat "$render_headers"
               echo "  X-Prerendered -> ${prerendered:-<missing>}"
 
               rm -f "$render_headers"
 
-              # Only consider the URL successful if BOTH conditions
-              # are satisfied.
               if [ "$render_status" = "200" ] && [ "$prerendered" = "true" ]; then
                 echo "  ✅ Successfully prerendered: $url"
               else
@@ -89,7 +91,6 @@ jobs:
                 remaining+=("$url")
               fi
 
-              # Wait 20 seconds before processing the next URL.
               sleep 20
             done
 
