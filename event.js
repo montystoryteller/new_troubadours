@@ -936,6 +936,9 @@ let initialSearchTerm = "";
     return;
   }
 
+  // One H1 per page: the event's own name is the H1 on its page.
+  setPageHeadingMode(true);
+
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     renderPage();

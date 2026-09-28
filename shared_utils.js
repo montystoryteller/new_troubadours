@@ -320,6 +320,30 @@ function wireBadgeCopyButton(buttonId, messageId, badgeHtml) {
 }
 
 // ---------------------------------------------------------------------------
+// Page heading level (one H1 per page)
+//
+// Directory/landing views keep the static #pageHeading as the page's H1.
+// A single-entity view (one venue, club, event …) has its own, more specific
+// H1 (the entity's name), so #pageHeading is demoted to H2 and the
+// directory-only #pageSubheading is hidden. Same approach as performers.js.
+// Idempotent: safe to call more than once, in either direction.
+// ---------------------------------------------------------------------------
+
+function setPageHeadingMode(isDetail) {
+  const swap = (el, tag) => {
+    if (!el || el.tagName === tag) return;
+    const next = document.createElement(tag);
+    next.id = el.id;
+    next.className = el.className;
+    next.innerHTML = el.innerHTML;
+    el.replaceWith(next);
+  };
+  swap(document.getElementById("pageHeading"), isDetail ? "H2" : "H1");
+  const sub = document.getElementById("pageSubheading");
+  if (sub) sub.style.display = isDetail ? "none" : "";
+}
+
+// ---------------------------------------------------------------------------
 // Share badges ("Find me on / See event on … New Troubadours")
 //
 // One table + one renderer for every page that offers a badge (performers,

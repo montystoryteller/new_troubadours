@@ -486,6 +486,9 @@ async function renderPage(data, clubId) {
   pageHeader.appendChild(backLink);
   root.appendChild(pageHeader);
 
+  // One H1 per page: the club's own name (below) is the H1 on its page.
+  setPageHeadingMode(true);
+
   // Header card
   const header = document.createElement("div");
   header.className = "club-header";
