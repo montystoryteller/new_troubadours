@@ -1,0 +1,339 @@
+/* =============================================================
+   promoters-styles.css
+   Styles for promoters.html
+   ============================================================= */
+
+:root {
+    /* Blue accent, distinguishing this page from the green festival
+       theme while reusing the same shared building blocks. */
+    --promoter-accent: #1565c0;
+    --promoter-accent-dark: #0d47a1;
+    --promoter-accent-bg: #e3f2fd;
+    --promoter-accent-border: #90caf9;
+}
+
+
+/* =============================================================
+   1. OVERVIEW PANEL (all promoters)
+   ============================================================= */
+
+.promoter-panel-details {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.promoter-panel-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--promoter-accent-dark) 0%, var(--promoter-accent) 100%);
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.promoter-panel-summary::-webkit-details-marker { display: none; }
+
+.promoter-panel-summary::after {
+    content: '▸';
+    margin-left: auto;
+    transition: transform 0.25s ease;
+}
+
+.promoter-panel-details[open] > .promoter-panel-summary::after {
+    transform: rotate(90deg);
+}
+
+.promoter-panel-hint {
+    font-size: 0.75em;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+.promoter-panel-body {
+    padding: 16px 20px 20px;
+    border-top: 3px solid var(--promoter-accent-dark);
+}
+
+.promoter-panel-placeholder {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Grid of promoter overview cards */
+.promoter-cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.promoter-overview-card {
+    background: #f3f8fd;
+    border: 1px solid var(--promoter-accent-border);
+    border-left: 4px solid var(--promoter-accent-dark);
+    border-radius: 6px;
+    padding: 14px 18px;
+    min-width: 220px;
+    flex: 1 1 220px;
+    max-width: 380px;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+a.promoter-overview-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.promoter-overview-card:hover {
+    background: var(--promoter-accent-bg);
+    box-shadow: 0 2px 8px rgba(13,71,161,0.2);
+}
+
+.promoter-card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--promoter-accent-dark);
+    margin-bottom: 4px;
+}
+
+.promoter-card-desc {
+    font-size: 0.85em;
+    color: #555;
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+
+.promoter-card-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.promoter-card-badge {
+    display: inline-block;
+    background: #bbdefb;
+    color: var(--promoter-accent-dark);
+    border-radius: 10px;
+    padding: 2px 10px;
+    font-size: 0.78em;
+    font-weight: 600;
+}
+
+
+/* =============================================================
+   2. CONTROLS / SELECTOR
+   ============================================================= */
+
+.promoter-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.promoter-selector {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.promoter-selector label {
+    font-weight: 600;
+}
+
+.promoter-selector select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.share-container {
+    margin-top: 12px;
+}
+
+.btn-primary {
+    background-color: var(--promoter-accent-dark);
+}
+.btn-primary:hover { background-color: var(--promoter-accent); }
+
+.btn-secondary {
+    background-color: #546e7a;
+}
+.btn-secondary:hover { background-color: #37474f; }
+
+
+/* =============================================================
+   3. PROMOTER HEADER
+   ============================================================= */
+
+.promoter-header {
+    background: white;
+    padding: 24px 30px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.promoter-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--promoter-accent-dark);
+    margin: 0 0 4px;
+    text-align: left;
+    font-style: normal;
+}
+
+.promoter-subtitle {
+    font-size: 0.85em;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.promoter-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.promoter-ext-link {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--promoter-accent-bg);
+    color: var(--promoter-accent-dark);
+    border: 1px solid var(--promoter-accent-border);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.88em;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+.promoter-ext-link:hover { background: #bbdefb; }
+
+.promoter-ticket-link {
+    background: #fff8e1;
+    color: #e65100;
+    border-color: #ffcc80;
+}
+.promoter-ticket-link:hover { background: #ffe0b2; }
+
+.promoter-apply-link {
+    background: #f3e5f5;
+    color: #6a1b9a;
+    border-color: #ce93d8;
+}
+.promoter-apply-link:hover { background: #e1bee7; }
+
+.promoter-description {
+    line-height: 1.6;
+    color: #333;
+    margin: 14px 0 0;
+}
+
+
+/* =============================================================
+   4. LINKED-LIST SECTIONS (festivals / stages / venues / artists)
+   ============================================================= */
+
+.promoter-section {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.promoter-section-heading {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+    color: var(--promoter-accent-dark);
+}
+
+.promoter-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.promoter-list-item {
+    display: block;
+    background: #f3f8fd;
+    border: 1px solid var(--promoter-accent-border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    min-width: 180px;
+    flex: 1 1 200px;
+    max-width: 320px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+a.promoter-list-item {
+    cursor: pointer;
+}
+
+a.promoter-list-item:hover {
+    background: var(--promoter-accent-bg);
+    box-shadow: 0 2px 8px rgba(13,71,161,0.15);
+}
+
+.promoter-list-item-unresolved {
+    opacity: 0.7;
+    border-style: dashed;
+}
+
+.promoter-list-item-name {
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--promoter-accent-dark);
+    margin-bottom: 3px;
+}
+
+.promoter-list-item-meta {
+    font-size: 0.82em;
+    color: #555;
+    margin-bottom: 2px;
+}
+
+.promoter-list-item-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.82em;
+    color: var(--promoter-accent-dark);
+    text-decoration: none;
+    font-weight: 600;
+}
+.promoter-list-item-link:hover { text-decoration: underline; }
+
+.promoter-empty-note {
+    color: #888;
+    font-style: italic;
+    font-size: 0.9em;
+    margin: 0;
+}
+
+
+@media (max-width: 768px) {
+    .promoter-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .promoter-list-item {
+        max-width: none;
+    }
+}

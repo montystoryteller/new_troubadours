@@ -1,12 +1,18 @@
 {
   "promoters": {
-    "promoters": {
-      "south-london-storytelling": {
-        "promoter_id": "south-london-storytelling",
-        "name": "South London Storytelling",
-        "description": "South London Storytelling creates experiences in a variety of outdoor and indoor spaces, connecting people through storytelling and art projects.\n\n\n\nDuring the year we invite really great storytellers to perform, and occasionally run workshops at our base at the Woodfield Pavilion on Tooting Common.\n\n\n\nIn between these we host informal story circles where everyone is invited to come and try out a story to a friendly group.\n\n\n\nEach October, Festival of the Dead celebrates life in the midst of death with stories, fire, music and dance.",
-        "promoter_link": "https://www.southlondonstorytelling.com/"
-      }
+    "south-london-storytelling": {
+      "promoter_id": "south-london-storytelling",
+      "name": "South London Storytelling",
+      "description": "South London Storytelling creates experiences in a variety of outdoor and indoor spaces, connecting people through storytelling and art projects.\n\n\n\nDuring the year we invite really great storytellers to perform, and occasionally run workshops at our base at the Woodfield Pavilion on Tooting Common.\n\n\n\nIn between these we host informal story circles where everyone is invited to come and try out a story to a friendly group.\n\n\n\nEach October, Festival of the Dead celebrates life in the midst of death with stories, fire, music and dance.",
+      "promoter_link": "https://www.southlondonstorytelling.com/",
+      "ticketing_url": "",
+      "promoter_venues": [
+        "woodland-pavilion"
+      ],
+      "promoter_artists": [
+        "daniel-morden",
+        "laura-sampson"
+      ]
     },
     "artsreach": {
       "promoter_id": "artsreach",
@@ -14,8 +20,14 @@
       "description": "Artsreach aims to enrich and positively impact the lives of people in Dorset by connecting and empowering rural communities through creative and cultural experiences, by:\n\n\n\n- partnering with a network of volunteers and empower them to programme, promote and present cultural activities in their community venues;\n\n\n\n-presenting a diverse range of high-quality cultural activities which support the health and well-being of the rural community;\n\n\n\nstimulating community development through engagement with cultural activities and support vital community resources such as village halls;\n\n\n\n-supporting a diverse range of artists, companies and creative practitioners and provide opportunities for artist's development;\n\n\n\nengaging with public bodies, business, education and community organisations and work in partnership to develop a thriving cultural offer across rural Dorset;\n\n\n\nbuilding a sustainable and resilient organisation for the future.",
       "ticketing_url": "https://artsreach.co.uk/whats-on",
       "promoter_link": "https://artsreach.co.uk/",
-      "promoter_venues": [],
-      "promoter_artists": []
+      "promoter_venues": [
+        "buckland-newton-village-hall",
+        "burton-bradstock-village-hall"
+      ],
+      "promoter_artists": [
+        "hugh-lupton",
+        "sarah-moody"
+      ]
     },
     "wondernightcafe": {
       "promoter_id": "wondernightcafe",
@@ -23,8 +35,14 @@
       "description": "A monthly evening of fairy tales, cake and conversation, with storyteller Hannah Moore & guests.\n\n\n\nWhat do the old stories mean for you, and for the world today?",
       "ticketing_url": "",
       "promoter_link": "https://www.hannahmoore.co.uk/",
-      "promoter_venues": [],
-      "promoter_artists": []
+      "promoter_venues": [
+        "star-anise-cafe-stroud"
+      ],
+      "promoter_artists": [
+        "hannah-moore",
+        "bronia-evers",
+        "fiona-eadie"
+      ]
     },
     "forgingfantastical": {
       "promoter_id": "forgingfantastical",
@@ -32,8 +50,20 @@
       "description": "Forging Fantastical is a not-for-profit arts organisation from Swindon run by volunteers, developing a diverse programme of small-scale informal arts events that feed the imagination and are quirky, friendly, fun and interesting! We specialise in storytelling shows aimed at adult audiences, including folktales, historical and true tales, legends, myths, fairy tales and wonder tales. Some stories raise questions about social or environmental issues in society and some stories are more whimsical and/or comedic. There's a real mix and every show is different.\n\n\n\nForging Fantastical programmes some of the finest Storytellers from across Britain. We started in 2023 and have grown a wonderful audience of local people as well as people who travel quite some way for our events. The programme is thoughtfully curated to include support slots for emerging tellers where possible and champion oral storytelling for intimate audiences, typically of between 40 and 50 people depending on the venue.\n\n\n\nTickets for Forging Fantastical events pay for the fees and travel of storytellers, venue hire, marketing costs, Company House costs, insurance and helping us with planning ahead with the programme. The organistion does not have any paid staff and Directors don't take any renumeration for their time. Annually any surplus income is donated to the chosen charity, Swindon Hardship Fund, who help local people and families who are really struggling.\n\n\n\nForging Fantastical don't have a fixed venue, instead hosting pop up events in different spaces.",
       "ticketing_url": "https://www.ticketsource.com/forging-fantastical/",
       "promoter_link": "https://www.forging-fantastical.org/",
-      "promoter_venues": [],
-      "promoter_artists": []
+      "promoter_venues": [
+        "eastcott-community-centre-swindon",
+        "the-old-stables-cricklade",
+        "lydiard-millicent-parish-hall",
+        "uffington-horse-carpark"
+      ],
+      "promoter_artists": [
+        "jon-mason",
+        "barbara-griggs",
+        "katy-cawkwell",
+        "maria-credali",
+        "mike-oconnor",
+        "mike-payton"
+      ]
     },
     "beaford": {
       "promoter_id": "beaford",
@@ -41,45 +71,76 @@
       "description": "We connect artists and communities with North Devon finding entertaining and extraordinary ways to explore our land, lives and future.",
       "ticketing_url": "",
       "promoter_link": "https://beaford.org/events",
-      "promoter_venues": [],
-      "promoter_artists": []
+      "promoter_venues": [
+        "dolton-village-hall",
+        "holy-trinity-church-westward-ho",
+        "village-hall-woolacombe"
+      ],
+      "promoter_artists": [
+        "sound-of-the-sirens"
+      ]
     },
     "crickcrack": {
       "promoter_id": "crickcrack",
       "name": "Crick Crack Club",
+      "description": "Founded in 1987 by world-class performance storyteller and sector pioneer, Ben Haggarty, today they are one of the UK's busiest and boldest performance storytelling programmers and promoters.\n\n\n\nThry create exuberant, intelligent, wild, weird and wonderful events in London, Bristol, Dorset, and across the UK, that draw people from all walks of life into a shared experience and the stunning content of international fairytale, folktale, myth and epic.\n\n\n\nFeaturing outstanding performance storytellers and the very best new talent, our annual public programme of shows, festivals, and residencies can be found in theatres, at festivals, in castles, caves, village halls, rose gardens and derelict warehouses.",
       "ticketing_url": "",
       "promoter_link": "https://crickcrackclub.com/",
       "promoter_venues": [
         "the-cube-kingsdown",
-        "hoxton-hall"
+        "hoxton-hall",
+        "cranborne-earthouse",
+        "the-story-museum-oxford",
+        "folklore-hoxton",
+        "jacksons-lane-london",
+        "chelsea-physic-garden",
+        "leicester-guildhall",
+        "lyric-theatre-bridport",
+        "next-door-at-theatre-deli-ec3a",
+        "pavilion-british-library",
+        "the-master-shipwright-s-house-deptford"
       ],
       "promoter_artists": [
         "debs-newbold",
         "emily-hennessey",
         "sheema-mukherjee",
         "ben-haggarty",
-        "steph-brittain"
+        "steph-brittain",
+        "sarah-liisa-wilkinson",
+        "ben-haggarty-steph-brittain",
+        "nell-phoenix",
+        "lucy-lill",
+        "xanthe-gresham-knight",
+        "tim-ralphs",
+        "tuup",
+        "daniel-morden"
       ]
     },
     "sally-port-walks-talks": {
       "promoter_id": "sally-port-walks-talks",
       "name": "Sally Port Walks & Talks",
+      "description": "Embark on a journey through time with Sally Port Walks and Talks, a premier provider of guided tours and historical talks in Portsmouth. In collaboration with the renowned Sally Port Inn and Sally Antiques, we offer immersive experiences that delve into the rich heritage of Old Portsmouth.",
       "promoter_link": "https://www.sallyporttours.co.uk/",
-      "promoter_venues": [],
-      "facebook": "https://www.facebook.com/profile.php?id=61565881770644"
+      "promoter_venues": [
+        "sally-port-inn"
+      ],
+      "facebook": "https://www.facebook.com/profile.php?id=61565881770644",
+      "promoter_artists": [
+        "dave-clark"
+      ]
     },
     "snake-stone-stories": {
       "promoter_id": "snake-stone-stories",
       "name": "Snake Stone Stories",
       "description": "Snake Stone Stories are a collective of storytellers based in Plymouth, Devon. They organise the monthly Plymouth Storytelling Circle at Snapdragons CIC in Victoria Park. They are available for bookings, events and other storytelling enquiries:snakestonestories@gmail.com",
       "email": "snakestonestories@gmail.com",
-      "promoter_venues": [],
-      "ticketing_url": "https://www.eventbrite.co.uk/o/snake-stone-stories-116437117061"
-    },
-    "woolly-tellers": {
-      "promoter_id": "woolly-tellers",
-      "name": "Woolly Tellers",
-      "url": "https://www.thewoollytellers.co.uk/"
+      "promoter_venues": [
+        "royal-william-yard-plymouth"
+      ],
+      "ticketing_url": "https://www.eventbrite.co.uk/o/snake-stone-stories-116437117061",
+      "promoter_artists": [
+        "snake-stone-stories"
+      ]
     }
   },
   "festivals": {
@@ -5797,7 +5858,6 @@
   "clubs": [
     {
       "club": "woolly-tellers",
-      "promoter_id": "woolly-tellers",
       "name": "Woolly Tellers",
       "link": "https://www.thewoollytellers.co.uk/"
     },

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UK Storytelling promoters — New Troubaodours">
+    <meta name="keywords" content="storytelling promoters">
+    <title>Storytelling Promoters — New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="stylesheet" href="promoters-styles.css">
+</head>
+
+<body class="page-promoters">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Tours & Repertoire</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html" aria-current="page">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="promoters.html">Promoters</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1 id="pageHeading">Grass Roots Scene — Independent Promoters Directory</h1>
+    <h2 id="pageSubheading">Directory of small, independent, grass roots music promoters and independent festival
+        promoters.</h2>
+    <!-- ── Overview panels ─────────────────────────────────────────── -->
+
+    <div id="allPromotersPanel">
+        <details class="promoter-panel-details" open>
+            <summary class="promoter-panel-summary">
+                <span class="promoter-panel-label">📇 All Promoters</span>
+                <span class="promoter-panel-hint">click to collapse</span>
+            </summary>
+            <div class="promoter-panel-body" id="allPromotersBody"></div>
+        </details>
+    </div>
+
+    <!-- ── Selector ────────────────────────────────────────────────── -->
+
+    <div class="promoter-controls">
+        <div class="promoter-selector" id="promoterSelectorRow">
+            <label for="promoterSelect">Promoter:</label>
+            <select id="promoterSelect" onchange="handlePromoterSelectChange()">
+                <option value="">Select a promoter...</option>
+            </select>
+            <button onclick="loadSelectedPromoter()" class="btn-primary">Show Promoter</button>
+        </div>
+        <div class="share-container">
+            <button id="shareLinkBtn" onclick="sharePromoterLink()" class="btn-secondary" style="display:none;">🔗 Copy
+                Shareable Link</button>
+            <button id="refreshDataBtn" onclick="refreshDirectoryData()" class="btn-secondary"
+                title="Bypasses the cache to fetch the latest directory data immediately">🔄 Refresh Data</button>
+        </div>
+    </div>
+
+    <!-- Back link: only shown on a single-promoter (?promoter=) page -->
+    <div class="page-header" id="promoterBackLink" style="display:none;">
+        <a href="promoters.html" class="back-link">← All Promoters</a>
+    </div>
+
+    <!-- ── Not found ───────────────────────────────────────────────── -->
+    <div id="promoterNotFound" style="display:none;" class="not-found-state">
+        <p>Promoter not found. <a href="promoters.html">View all promoters</a></p>
+    </div>
+
+    <!-- ── Promoter detail ─────────────────────────────────────────── -->
+    <div id="promoterContent" style="display:none;">
+
+        <div class="promoter-header">
+            <h2 class="promoter-title" id="promoterTitle"></h2>
+            <div class="promoter-subtitle" id="promoterSubtitle" style="display:none;"></div>
+            <div id="promoterLinks" class="promoter-links"></div>
+            <div id="promoterDescription" class="promoter-description" style="display:none;"></div>
+        </div>
+
+        <div class="promoter-section">
+            <h3 class="promoter-section-heading">🎪 Festivals</h3>
+            <div id="promoterFestivalsList" class="promoter-list"></div>
+        </div>
+
+        <div class="promoter-section">
+            <h3 class="promoter-section-heading">🏕️ Independent Stages / Tea Tents</h3>
+            <div id="promoterStagesList" class="promoter-list"></div>
+        </div>
+
+        <div class="promoter-section">
+            <h3 class="promoter-section-heading">📍 Venues</h3>
+            <div id="promoterVenuesList" class="promoter-list"></div>
+        </div>
+
+        <div class="promoter-section">
+            <h3 class="promoter-section-heading">🎤 Artists</h3>
+            <div id="promoterArtistsList" class="promoter-list"></div>
+        </div>
+
+    </div>
+
+    <div class="about" id="colophon">
+        <div id="dataLastUpdated"></div>
+        <p><strong>All data is manually sourced and manually added to the site.</strong></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code>.</em>
+        </p>
+    </div>
+
+    <script src="recurrence-engine.js"></script>
+    <script src="shared_utils.js"></script>
+    <script src="promoters.js"></script>
+</body>
+
+</html>
