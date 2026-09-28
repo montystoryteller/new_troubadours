@@ -102,6 +102,15 @@ h2 {
   font-weight: 700;
   pointer-events: none;
 }
+/* On a detail page (e.g. ?performer=x) the current-section link stays
+   clickable and returns to the plain base page. */
+.site-nav a[aria-current="page"].nav-current-detail {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.site-nav a[aria-current="page"].nav-current-detail:hover {
+  background: #eaeaea;
+}
 
 @media (prefers-color-scheme: dark) {
   .site-nav {

@@ -328,17 +328,15 @@ async function renderPage(data, clubId) {
   // (shared_utils.js) flattens any array-format dates first, so a
   // multi-night stop is picked up correctly too.
   //
-  // Some tour_dates entries in the data use a bare `club` field
-  // instead of `club_event` for the same purpose — that's not
-  // (yet) treated as equivalent here, so those dates currently
-  // don't appear on the club's page. Flagged separately; not
-  // silently changed by this fix.
+  // `club` is now the canonical field (same as specificEvents and
+  // show_dates); `club_event` is a deprecated alias still honoured here
+  // until the data has been migrated, after which the fallback can go.
   const tours = data.tours || {};
   const tourClubEvents = [];
   for (const tourKey in tours) {
     const tour = tours[tourKey];
     expandTourDates(tour.tour_dates)
-      .filter((tourDate) => tourDate.club_event === clubId)
+      .filter((tourDate) => (tourDate.club || tourDate.club_event) === clubId)
       .forEach((tourDate) => {
         const _date = parseDateString(tourDate.date);
         if (!_date) return;
@@ -617,6 +615,16 @@ async function renderPage(data, clubId) {
     );
   }
   if (iconsRow.children.length) header.appendChild(iconsRow);
+
+  // A club that is also a promoter has its own page in the promoters directory.
+  if (clubRecord.isPromoter) {
+    const pl = document.createElement("a");
+    pl.href = `promoters.html?promoter=${encodeURIComponent(clubRecord.club)}`;
+    pl.textContent = "📇 Promoter page";
+    pl.className = "club-promoter-link";
+    pl.style.cssText = "display:inline-block;margin:6px 0;font-size:0.9em;";
+    header.appendChild(pl);
+  }
 
   const hasGroupDesc = clubRecord.description && clubRecord.description.trim();
 

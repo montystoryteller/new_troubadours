@@ -3196,6 +3196,40 @@ function createSearchBox(container, options) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Marks the nav link for the current page with aria-current="page" (so pages
+ * needn't hard-code it), and decides whether it should be clickable:
+ *   - on a base page (no query string) it is inert, as before;
+ *   - on a detail/selected page (any query string, e.g. ?performer=x) it also
+ *     gets .nav-current-detail and stays clickable, so clicking it goes back
+ *     to the plain base page. That is a normal full navigation, so the URL,
+ *     <title>/meta description and canonical are all reset by the base
+ *     page's own load.
+ * Idempotent; runs as soon as the nav exists and again from initNavFeedback().
+ */
+function markCurrentNavLink() {
+  const normalise = (p) => (p.endsWith("/") ? p + "index.html" : p);
+  const here = normalise(window.location.pathname);
+  const isDetail = window.location.search.length > 1;
+  document.querySelectorAll(".site-nav a[href]").forEach((link) => {
+    let url;
+    try {
+      url = new URL(link.getAttribute("href"), window.location.href);
+    } catch (e) {
+      return;
+    }
+    if (url.search || normalise(url.pathname) !== here) return;
+    link.setAttribute("aria-current", "page");
+    link.classList.toggle("nav-current-detail", isDetail);
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", markCurrentNavLink);
+} else {
+  markCurrentNavLink();
+}
+
+/**
  * Initialize navigation feedback: adds visual indication when nav links are clicked.
  * Shows body opacity change and adds a loading indicator to the clicked link.
  * Also automatically cleans up the dimming effect when the page fully loads.
@@ -3203,6 +3237,7 @@ function createSearchBox(container, options) {
  * Requires CSS classes: .nav-loading, .nav-link-pending (add to shared-styles.css).
  */
 function initNavFeedback() {
+  markCurrentNavLink();
   const navLinks = document.querySelectorAll(".site-nav a[href]");
 
   // Clean up any lingering nav-loading class from previous navigation
@@ -3211,8 +3246,15 @@ function initNavFeedback() {
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
-      // Don't add feedback if this is the current page link or has aria-current
-      if (link.hasAttribute("aria-current")) {
+      // Don't add feedback if this is the current (base) page link. On a
+      // detail page (?performer=, ?venue=, ...) the current-section link is
+      // marked .nav-current-detail and stays clickable: it navigates to the
+      // plain base page, which loads with its own URL, title/meta and
+      // canonical.
+      if (
+        link.hasAttribute("aria-current") &&
+        !link.classList.contains("nav-current-detail")
+      ) {
         e.preventDefault();
         return;
       }

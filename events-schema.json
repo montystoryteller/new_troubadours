@@ -591,7 +591,8 @@
         },
         "club_event": {
           "type": "string",
-          "description": "Opts this date into a club's own event listing — set to the matching club id from `events[].club`. Picked up by the story-club page alongside that club's regular nights."
+          "deprecated": true,
+          "description": "DEPRECATED alias of `club` — use `club`. Still read by storyclub.js and promoters.js (as `club || club_event`) until the data is migrated."
         },
         "isSpecial": {
           "type": "boolean"
@@ -653,7 +654,8 @@
           "description": "Rare per-date performer override, e.g. a guest replacing the usual performer for one stop."
         },
         "club": {
-          "type": "string"
+          "type": "string",
+          "description": "Opts this date into a club's own event listing — set to the matching club id from `clubs[].club`. Picked up by the story-club page (and the promoter page, for a club that is also a promoter) alongside that club's regular nights. Same meaning as `club` on specificEvents and show_dates."
         },
         "description_prefix": {
           "type": "string",
@@ -1645,6 +1647,11 @@
         "online": {
           "type": "boolean",
           "description": "True for a club that meets online (one club, southamptonSC). Note: showDate.online is a string attendance mode (\"online\"/\"hybrid\"/\"in-person\"), whereas on a club record it is a plain boolean."
+        },
+        "isPromoter": {
+          "type": "boolean",
+          "default": false,
+          "description": "true when this club also acts as a promoter in its own right. It is then listed in the promoters directory (promoters.html) under its `club` id even with no `promoters` entry, and the promoter page links back to this club's page. If a `promoters[club]` record exists (ideally with isClub: true) the two are merged, promoter fields winning."
         }
       },
       "required": [
@@ -1659,10 +1666,11 @@
       "properties": {
         "promoter_id": {
           "type": "string",
-          "description": "Stable id for this promoter, often reused as a `club` value elsewhere."
+          "description": "Stable id for this promoter, often reused as a `club` value elsewhere. Optional — the registry key is the id (sparse records such as `{ \"isClub\": true }` omit it)."
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "Display name. Optional for a club promoter (isClub) — falls back to the club's name, then to a humanised id."
         },
         "promoter_link": {
           "type": "string"
@@ -1699,12 +1707,13 @@
         "url": {
           "type": "string",
           "description": "Alternative to `promoter_link` for the promoter's website — one registry entry (woolly-tellers) uses this instead. The event builder's New Promoter tab folds `url` into `promoter_link` when it saves an edited record; new entries should use `promoter_link`."
+        },
+        "isClub": {
+          "type": "boolean",
+          "default": false,
+          "description": "true when this promoter IS a story club: the promoters registry key is then also a `clubs[].club` id, and the club record supplies anything this record leaves out (name, description, website/facebook/tickets link, email), plus its venue and its feature_slots performers, and the venue/performers of any specific/tour/repertoire events tagged with that club, are folded into this promoter's Venues/Artists lists. A record may be as sparse as `{ \"isClub\": true }`. The reverse link is `clubs[].isPromoter`; either side alone is enough to join the two. Fields set on the promoter record itself always win over the club's."
         }
       },
-      "required": [
-        "promoter_id",
-        "name"
-      ],
       "additionalProperties": true
     },
     "festival": {

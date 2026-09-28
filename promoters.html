@@ -56,8 +56,7 @@
             <button onclick="loadSelectedPromoter()" class="btn-primary">Show Promoter</button>
         </div>
         <div class="share-container">
-            <button id="shareLinkBtn" onclick="sharePromoterLink()" class="btn-secondary" style="display:none;">🔗 Copy
-                Shareable Link</button>
+            <button id="shareLinkBtn" onclick="sharePromoterLink()" class="btn-secondary" style="display:none;">🔗 Copy Shareable Link</button>
             <button id="refreshDataBtn" onclick="refreshDirectoryData()" class="btn-secondary"
                 title="Bypasses the cache to fetch the latest directory data immediately">🔄 Refresh Data</button>
         </div>
@@ -81,6 +80,11 @@
             <div class="promoter-subtitle" id="promoterSubtitle" style="display:none;"></div>
             <div id="promoterLinks" class="promoter-links"></div>
             <div id="promoterDescription" class="promoter-description" style="display:none;"></div>
+        </div>
+
+        <div class="promoter-section">
+            <h3 class="promoter-section-heading">📖 Story Club</h3>
+            <div id="promoterClubList" class="promoter-list"></div>
         </div>
 
         <div class="promoter-section">

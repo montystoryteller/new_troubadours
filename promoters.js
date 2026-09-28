@@ -134,6 +134,112 @@ function formatDateRange(dates) {
 }
 
 // ---------------------------------------------------------------------------
+// Promoter registry (promoters + story clubs)
+//
+// A promoter and a story club can be the same organisation:
+//   - promoters[id].isClub  === true, with id also a clubs[].club id, and/or
+//   - clubs[].isPromoter    === true (no promoters[] record required).
+// Either side is enough. The result is one effective record per promoter id:
+// the promoter's own fields win, the club fills any gaps (name, description,
+// website / facebook / tickets / email), and the club's venue, its
+// feature_slots performers, plus the venue/performers of any specific, tour
+// or repertoire events tagged with the club, are merged into the promoter's
+// venue and artist lists. `_club` holds the club record for club promoters.
+// ---------------------------------------------------------------------------
+
+function normaliseFacebookUrl(fb) {
+  if (!fb) return null;
+  return /^https?:/i.test(fb) ? fb : `https://facebook.com/${fb}`;
+}
+
+function idsOf(obj) {
+  if (!obj) return [];
+  if (Array.isArray(obj.performer_ids) && obj.performer_ids.length)
+    return obj.performer_ids;
+  return obj.performer_id ? [obj.performer_id] : [];
+}
+
+// Venue and performer ids of every one-off event tagged with a club:
+// specificEvents[].club, tours[].tour_dates[].club (legacy alias club_event) and
+// repertoire_shows[].show_dates[].club (same rules as storyclub.js).
+function collectClubEventRefs(data, clubId) {
+  const venues = new Set();
+  const performers = new Set();
+  (data.specificEvents || [])
+    .filter((e) => e.club === clubId)
+    .forEach((e) => {
+      if (e.venue_id) venues.add(e.venue_id);
+      idsOf(e).forEach((id) => performers.add(id));
+    });
+  Object.values(data.tours || {}).forEach((tour) => {
+    expandTourDates(tour.tour_dates)
+      .filter((td) => (td.club || td.club_event) === clubId)
+      .forEach((td) => {
+        if (td.venue_id) venues.add(td.venue_id);
+        idsOf(tour).forEach((id) => performers.add(id));
+      });
+  });
+  Object.values(data.repertoire_shows || {}).forEach((show) => {
+    expandTourDates(show.show_dates)
+      .filter((sd) => sd.club === clubId)
+      .forEach((sd) => {
+        if (sd.venue_id) venues.add(sd.venue_id);
+        idsOf(show).forEach((id) => performers.add(id));
+      });
+  });
+  return { venues: [...venues], performers: [...performers] };
+}
+
+function uniq(...lists) {
+  return [...new Set(lists.flat().filter(Boolean))];
+}
+
+function buildPromoterRegistry(data) {
+  const clubs = Array.isArray(data.clubs) ? data.clubs : [];
+  const clubsById = {};
+  clubs.forEach((c) => {
+    if (c?.club) clubsById[c.club] = c;
+  });
+
+  const base = { ...(data.promoters || {}) };
+  // Clubs that declare themselves promoters get an entry even with no record.
+  clubs.forEach((c) => {
+    if (c?.club && c.isPromoter && !base[c.club]) base[c.club] = {};
+  });
+
+  const registry = {};
+  Object.entries(base).forEach(([id, rec]) => {
+    const club = rec.isClub || clubsById[id]?.isPromoter ? clubsById[id] : null;
+    if (!club) {
+      registry[id] = rec;
+      return;
+    }
+    const refs = collectClubEventRefs(data, id);
+    const featured = (club.feature_slots || [])
+      .map((slot) => (Array.isArray(slot) ? slot[1] : null))
+      .filter((v) => typeof v === "string");
+    registry[id] = {
+      ...rec,
+      name: rec.name || club.name,
+      description: rec.description || club.description,
+      promoter_link: rec.promoter_link || rec.url || club.link,
+      facebook: rec.facebook || normaliseFacebookUrl(club.facebook),
+      email: rec.email || club.email,
+      ticketing_url:
+        rec.ticketing_url || club.ticketing_url || club.tickets_url,
+      promoter_venues: uniq(
+        rec.promoter_venues || [],
+        [club.venue_id],
+        refs.venues,
+      ),
+      promoter_artists: uniq(rec.promoter_artists || [], featured, refs.performers),
+      _club: club,
+    };
+  });
+  return registry;
+}
+
+// ---------------------------------------------------------------------------
 // URL helpers
 // ---------------------------------------------------------------------------
 
@@ -211,9 +317,15 @@ function buildPromoterCard(id, promoter) {
     ["🎤", (promoter.promoter_artists || []).length, "artist"],
   ].filter(([, n]) => n > 0);
 
-  if (counts.length) {
+  if (counts.length || promoter._club) {
     const badges = document.createElement("div");
     badges.className = "promoter-card-counts";
+    if (promoter._club) {
+      const b = document.createElement("span");
+      b.className = "promoter-card-badge";
+      b.textContent = "📖 story club";
+      badges.appendChild(b);
+    }
     counts.forEach(([icon, n, label]) => {
       const badge = document.createElement("span");
       badge.className = "promoter-card-badge";
@@ -271,6 +383,40 @@ function populatePromoterDropdown() {
 function setSectionVisible(container, visible) {
   const section = container.closest(".promoter-section");
   if (section) section.style.display = visible ? "" : "none";
+}
+
+function renderPromoterClub(promoterId, promoter) {
+  const container = document.getElementById("promoterClubList");
+  container.innerHTML = "";
+  const club = promoter._club;
+  setSectionVisible(container, !!club);
+  if (!club) return;
+
+  const row = document.createElement("a");
+  row.className = "promoter-list-item";
+  row.href = `storyclub.html?club=${encodeURIComponent(club.club)}`;
+
+  const name = document.createElement("div");
+  name.className = "promoter-list-item-name";
+  name.textContent = club.name || promoterId;
+  row.appendChild(name);
+
+  const when = [
+    typeof club.schedule === "string" ? club.schedule : null,
+    typeof club.time === "string" ? club.time : null,
+  ].filter(Boolean);
+  const metas = [
+    when.join(" · "),
+    typeof club.price === "string" ? club.price : "",
+    venuesLookup[club.venue_id]?.name || "",
+  ].filter(Boolean);
+  metas.forEach((text) => {
+    const m = document.createElement("div");
+    m.className = "promoter-list-item-meta";
+    m.textContent = text;
+    row.appendChild(m);
+  });
+  container.appendChild(row);
 }
 
 function renderPromoterFestivals(promoter) {
@@ -552,6 +698,11 @@ function displayPromoter(promoterId) {
       cls: "",
     },
     {
+      url: promoter.facebook,
+      label: "📘 Facebook",
+      cls: "",
+    },
+    {
       url: promoter.ticketing_url,
       label: "🎟 Ticketing",
       cls: "promoter-ticket-link",
@@ -584,6 +735,7 @@ function displayPromoter(promoterId) {
     descEl.style.display = "none";
   }
 
+  renderPromoterClub(promoterId, promoter);
   renderPromoterFestivals(promoter);
   renderPromoterStages(promoter);
   renderPromoterVenues(promoter);
@@ -647,7 +799,7 @@ setCanonical("promoter");
   }
 
   eventsData = result.eventsData;
-  promotersLookup = eventsData.promoters || {};
+  promotersLookup = buildPromoterRegistry(eventsData);
   festivalsLookup = eventsData.festivals || {};
   venuesLookup = eventsData.locations || {};
   performersLookup = eventsData.performers || {};

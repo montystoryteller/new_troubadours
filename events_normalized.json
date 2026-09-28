@@ -14,6 +14,9 @@
         "laura-sampson"
       ]
     },
+    "beestontales": {
+      "isClub": true
+    },
     "artsreach": {
       "promoter_id": "artsreach",
       "name": "Artsreach",
@@ -141,6 +144,9 @@
       "promoter_artists": [
         "snake-stone-stories"
       ]
+    },
+    "ropetackle-storytellers": {
+      "isClub": true
     }
   },
   "festivals": {
@@ -3629,7 +3635,7 @@
           "date": "21/10/2026",
           "time": "7.30-10pm",
           "price": "£8",
-          "club_event": "beestontales",
+          "club": "beestontales",
           "ticket_url": "https://www.tickettailor.com/checkout/view-event/id/8570538/chk/db1b91f83ad3bbe369b1c97db11bc959/",
           "isSpecial": true,
           "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
@@ -3643,10 +3649,6 @@
             "13/11/2026",
             "10/11/2026"
           ],
-          "time": "",
-          "price": "",
-          "club_event": "",
-          "ticket_url": "",
           "isSpecial": true,
           "venue_id": "lion-and-unicorn-theatre",
           "eventId": "T-debs-newbold-dauntless-2026-20261110-lion-and-unicorn-theatre"
@@ -4158,7 +4160,7 @@
           "date": "16/09/2026",
           "price": "£8",
           "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
-          "club_event": "beestontales",
+          "club": "beestontales",
           "ticket_url": "https://www.tickettailor.com/events/beestontales/2212507",
           "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20260916-our-lady-of-the-assumption-church-hall-beeston"
         },
@@ -4207,7 +4209,7 @@
         {
           "date": "02/10/2026",
           "venue_id": "the-chillingham-arms",
-          "club_event": "abitcrack",
+          "club": "abitcrack",
           "ticket_url": "https://www.abitcrack.com/event/katy-cawkwell-lilith-the-other-side-of-the-story/",
           "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20261002-the-chillingham-arms"
         },
@@ -4228,7 +4230,7 @@
           "date": "20/11/2026",
           "venue_id": "town-hall-bishops-castle",
           "ticket_url": "",
-          "club_event": "blast",
+          "club": "blast",
           "price": "£10",
           "time": "7.30pm for 8pm start",
           "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20261120-town-hall-bishops-castle"
@@ -5988,7 +5990,9 @@
       "time": "7.30-10pm",
       "facebook": "https://www.facebook.com/groups/beestontales",
       "facebook_group": "beestontales",
+      "description": "Beeston Tales is a monthly storytelling club night happening Beeston. Hosted by Tim Ralphs and Mike Payton, the club features themed nights, renowned guests and all the best of the most ancient and human artform.",
       "club": "beestontales",
+      "isPromoter": true,
       "price": "£9 OTD; £7.50 (+ £0.50); £6 (+ £0.50) online",
       "tickets_url": "https://www.tickettailor.com/events/beestontales/",
       "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
@@ -6179,9 +6183,12 @@
       "name": "Ropetackle Storytellers",
       "schedule": "",
       "time": "",
-      "link": "ropetacklestorytellers",
+      "description": "Ropetackle Storytellers is a local storytelling club. We meet every month at the Ropetackle Arts Centre in Shoreham-by-Sea in the UK for a night of folklore and mythology, and then stream the show online for our global audience the next day.\n\n\n\nRopetackle Storytellers is run by storytellers Amelia Ace Armande and Joshua Crisp.",
+      "isPromoter": true,
+      "patreon": "RopetackleStorytellers",
       "facebook": "RopetackleStorytellers",
       "club": "ropetackle-storytellers",
+      "ticketing_url": "https://www.ticketsource.com/ropetackle-storytellers",
       "venue_id": "ropetackle-arts-centre-shoreham"
     },
     {

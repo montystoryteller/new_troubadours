@@ -1009,6 +1009,8 @@
                 <div>
                     <input type="text" id="promoter-name" list="promoterNameOptions"
                         placeholder="e.g. Crick Crack Club">
+                    <div class="field-hint">Optional for a story-club promoter (tick <em>Is a story club</em> below) —
+                        it then falls back to the club's own name.</div>
                     <div id="promoter-name-status" class="entity-status"></div>
                 </div>
             </div>
@@ -1055,6 +1057,21 @@
                     <div id="promoter-artists-field"></div>
                     <div class="field-hint">Performers this promoter regularly books (<code>promoter_artists</code>) — a
                         general roster, not tied to any one event.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Flags</label>
+                <div>
+                    <div class="checkbox-row">
+                        <label><input type="checkbox" id="promoter-isclub"> Is a story club</label>
+                    </div>
+                    <div class="field-hint">Saved as <code>isClub</code>. The promoter id above must also be a club id
+                        (<code>clubs[].club</code>): the club then supplies any name, description, website, Facebook,
+                        tickets link and email left blank here, and its venue, guest performers and tagged events feed
+                        this promoter's Venues/Artists on the promoters page. A record can be as sparse as just the id
+                        plus this flag.</div>
+                    <div class="field-hint" id="promoter-isclub-hint" style="display:none;"></div>
                 </div>
             </div>
 
@@ -1185,7 +1202,12 @@
                 <label>Flags</label>
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="club-online"> Meets online</label>
+                    <label><input type="checkbox" id="club-is-promoter"> Also a promoter</label>
                 </div>
+                <div class="field-hint">"Also a promoter" is saved as <code>isPromoter</code>: the club is listed in the
+                    promoters directory under its club id (no separate promoter record needed), and its club page
+                    links to that promoter page. The Promoter box above is for a <em>different</em> promoter that
+                    runs this club.</div>
             </div>
 
             <div class="btn-row">
@@ -1347,7 +1369,8 @@
                 <p class="field-hint">
                     Checks every entry in the top-level <code>promoters</code> registry: that it has a
                     non-empty <code>promoter_venues</code> list and a non-empty <code>promoter_artists</code>
-                    list, and that every id in each actually points at a real venue/performer. Also flags a
+                    list (not required for a promoter with <code>isClub</code>, which is instead checked for a
+                    matching club id), and that every id in each actually points at a real venue/performer. Also flags a
                     promoter whose id doesn't turn up as a <code>club</code> or <code>promoter_id</code> value anywhere
                     (<code>events</code>,
                     <code>specificEvents</code>/<code>musicEvents</code>/<code>poetryEvents</code>, tours, or
@@ -3381,7 +3404,7 @@
                 const id = idOf(byId[0], byId[1]);
                 return { id, promoter: byId[1], exact: id === typed };
             }
-            const byName = entries.find(([, p]) => (p.name || "").trim().toLowerCase() === v);
+            const byName = entries.find(([k, p]) => promoterDisplayName(k, p).toLowerCase() === v);
             return byName ? { id: idOf(byName[0], byName[1]), promoter: byName[1], exact: false } : null;
         }
         // Canonical id to save: a registry id/name resolves to its id; anything
@@ -3401,9 +3424,9 @@
                 if (!m) {
                     hintEl.textContent = "Not in the promoters registry — will be saved as typed. Register it in the New Promoter tab to give it a name and details.";
                 } else if (m.exact) {
-                    hintEl.textContent = `✓ ${m.promoter.name || m.id}`;
+                    hintEl.textContent = `✓ ${promoterDisplayName(m.id, m.promoter) || m.id}`;
                 } else {
-                    hintEl.textContent = `Will be saved as ${m.id} (${m.promoter.name || m.id}).`;
+                    hintEl.textContent = `Will be saved as ${m.id} (${promoterDisplayName(m.id, m.promoter) || m.id}).`;
                 }
             };
             input.addEventListener("input", update);
@@ -3630,8 +3653,8 @@
                     </div>
                 </div>
                 <div class="field-row">
-                    <label>Club event</label>
-                    <input type="text" class="dr-club-event" list="clubOptions" placeholder="(optional) link this date into a club's event list">
+                    <label>Club</label>
+                    <input type="text" class="dr-club-event" list="clubOptions" placeholder="(optional) club id — link this date into a club's event list (saved as club)">
                 </div>
                 <div class="field-row">
                     <label>Event flyer(s)</label>
@@ -3743,7 +3766,9 @@
 
                 if (kind === "tour") {
                     const clubEvent = row.querySelector(".dr-club-event").value.trim();
-                    if (clubEvent) entry.club_event = clubEvent;
+                    // `club` is canonical; the legacy `club_event` is not written back,
+                    // so re-saving an old record migrates it.
+                    if (clubEvent) entry.club = clubEvent;
                     const dateTitle = row.querySelector(".dr-title").value.trim();
                     if (dateTitle) entry.title = dateTitle;
                     const dateDescription = encodeParagraphBreaks(row.querySelector(".dr-description").value);
@@ -4098,7 +4123,7 @@
                 promoterInput.value = d.promoter_id || d.promoter || "";
                 promoterInput.dispatchEvent(new Event("input"));
                 if (kind === "tour") {
-                    if (d.club_event) row.querySelector(".dr-club-event").value = d.club_event;
+                    if (d.club || d.club_event) row.querySelector(".dr-club-event").value = d.club || d.club_event;
                     row.querySelector(".dr-title").value = d.title || "";
                     row.querySelector(".dr-description").value = decodeParagraphBreaksForEdit(d.description || "");
                     populatePerformerIdListField(row._otherPerformersField, d.other_performer_ids);
@@ -5080,7 +5105,7 @@
         // Keys the form manages itself; anything else on an edited record
         // (e.g. a field added by hand) is carried over untouched. The legacy
         // `url` (an alias of promoter_link) is folded into promoter_link.
-        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "promoter_venues", "promoter_artists"];
+        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "promoter_venues", "promoter_artists", "isClub"];
         let promoterKeyAutoValue = "";
         let promoterVenuesField, promoterArtistsField;
 
@@ -5096,9 +5121,35 @@
             promoterArtistsField = buildPerformerIdListField(document.getElementById("promoter-artists-field"), "Add another artist", "performer");
         }
 
+        // The story club a promoter id refers to (loaded, batched or edited this session).
+        function clubForPromoterId(id) {
+            const want = (id || "").trim().toLowerCase();
+            if (!want) return null;
+            const all = [...clubsList, ...batch.recurringClubs, ...Object.values(updatedClubs)];
+            return all.find(c => (c.club || "").toLowerCase() === want) || null;
+        }
+        // Name to show for a promoter: its own, else (for a club promoter) the club's.
+        function promoterDisplayName(id, p) {
+            return (p.name || "").trim() || (p.isClub ? (clubForPromoterId(p.promoter_id || id)?.name || "") : "");
+        }
+        function updatePromoterClubHint() {
+            const hint = document.getElementById("promoter-isclub-hint");
+            if (!document.getElementById("promoter-isclub").checked) { hint.style.display = "none"; return; }
+            const id = document.getElementById("promoter-key").value.trim();
+            const club = clubForPromoterId(id);
+            hint.style.display = "";
+            hint.textContent = !id ? "Enter the promoter id above."
+                : club ? `✓ Matches club "${club.name || club.club}".`
+                : `⚠ No club with id "${id}" found yet — add it on the Club tab, or check the id.`;
+        }
+        document.getElementById("promoter-isclub").addEventListener("change", updatePromoterClubHint);
+        document.getElementById("promoter-key").addEventListener("input", updatePromoterClubHint);
+
         function populatePromoterForm(match) {
             document.getElementById("promoter-key").value = match.id;
             document.getElementById("promoter-name").value = match.name || "";
+            document.getElementById("promoter-isclub").checked = !!match.isClub;
+            updatePromoterClubHint();
             document.getElementById("promoter-description").value = decodeParagraphBreaksForEdit(match.description || "");
             document.getElementById("promoter-link").value = match.promoter_link || match.url || "";
             document.getElementById("promoter-ticketing-url").value = match.ticketing_url || "";
@@ -5112,7 +5163,7 @@
 
         function findPromoterByName(name) {
             const want = name.toLowerCase();
-            const hit = Object.entries(allPromoters()).find(([, p]) => (p.name || "").trim().toLowerCase() === want);
+            const hit = Object.entries(allPromoters()).find(([k, p]) => promoterDisplayName(k, p).toLowerCase() === want);
             return hit ? { id: hit[1].promoter_id || hit[0], ...hit[1] } : null;
         }
 
@@ -5135,12 +5186,21 @@
 
         function addPromoterToBatch() {
             const name = document.getElementById("promoter-name").value.trim();
-            if (!name) {
-                alert("Please enter a promoter name.");
+            const isClub = document.getElementById("promoter-isclub").checked;
+            if (!name && !isClub) {
+                alert("Please enter a promoter name (or tick \"Is a story club\" and give the club's id).");
+                return;
+            }
+            if (!name && !document.getElementById("promoter-key").value.trim() && !promoterMatcher.getEditing()) {
+                alert("A club promoter with no name needs a promoter id (the club's id).");
                 return;
             }
             const editing = promoterMatcher.getEditing();
-            if (!editing) {
+            if (isClub) {
+                const cid = editing ? editing.id : document.getElementById("promoter-key").value.trim();
+                if (!clubForPromoterId(cid) && !confirm(`No club with id "${cid}" exists yet in the loaded data, batch or edits. Save this promoter as a club anyway?`)) return;
+            }
+            if (!editing && name) {
                 const existing = findPromoterByName(name);
                 if (existing) {
                     alert(`A promoter named "${name}" already exists (id: ${existing.id}). Click "Edit this record" above to update it, or change the name if you meant to add a different one.`);
@@ -5150,7 +5210,9 @@
             let key = editing ? editing.id : (document.getElementById("promoter-key").value.trim() || slugify(name));
             if (!editing) key = uniqueId(key, k => !!promotersLookup[k] || batch.promoters.some(p => p.promoter_id === k));
 
-            const record = { promoter_id: key, name };
+            const record = { promoter_id: key };
+            if (name) record.name = name;
+            if (isClub) record.isClub = true;
             const description = encodeParagraphBreaks(document.getElementById("promoter-description").value);
             const link = document.getElementById("promoter-link").value.trim();
             const ticketing = document.getElementById("promoter-ticketing-url").value.trim();
@@ -5189,6 +5251,8 @@
             ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-email"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("promoter-name-status").innerHTML = "";
+            document.getElementById("promoter-isclub").checked = false;
+            updatePromoterClubHint();
             promoterKeyAutoValue = "";
             ["promoter-link", "promoter-ticketing-url", "promoter-facebook"].forEach(id => ticketUrlLinkUpdaters[id]?.());
             initPromoterForm();
@@ -5199,7 +5263,7 @@
         // form manages itself; anything else on an edited record
         // (feature_slots, location, geocode_missing, themes, legacy flyers…)
         // is carried over untouched.
-        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "ticketing_url", "email", "online"];
+        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "ticketing_url", "email", "online", "isPromoter"];
         let clubKeyAutoValue = "";
         let clubVenueField;
 
@@ -5249,6 +5313,7 @@
             document.getElementById("club-email").value = match.email || "";
             document.getElementById("club-flyer").value = match.club_flyer || "";
             document.getElementById("club-online").checked = !!match.online;
+            document.getElementById("club-is-promoter").checked = !!match.isPromoter;
             ["club-link", "club-facebook", "club-tickets-url"].forEach(id => ticketUrlLinkUpdaters[id]?.());
             clubVenueField = buildEntityField(document.getElementById("club-venue-field"), "venue");
             clubVenueField.input.value = venueLabel(match.venue_id);
@@ -5316,6 +5381,7 @@
             if (text("club-tickets-url")) record.tickets_url = text("club-tickets-url");
             if (text("club-email")) record.email = text("club-email");
             if (document.getElementById("club-online").checked) record.online = true;
+            if (document.getElementById("club-is-promoter").checked) record.isPromoter = true;
             if (editing && editing.original) {
                 Object.keys(editing.original).forEach(k => {
                     if (!CLUB_FORM_KEYS.includes(k) && !(k in record)) record[k] = editing.original[k];
@@ -5341,6 +5407,7 @@
                 "club-link", "club-facebook", "club-instagram", "club-tickets-url", "club-email", "club-flyer"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("club-online").checked = false;
+            document.getElementById("club-is-promoter").checked = false;
             document.getElementById("club-name-status").innerHTML = "";
             document.getElementById("club-promoter-hint").style.display = "none";
             clubKeyAutoValue = "";
@@ -5602,11 +5669,11 @@
             document.getElementById("clubNameOptions").innerHTML =
                 [...clubsList, ...batch.recurringClubs].map(c => `<option value="${(c.name || "").replace(/"/g, "&quot;")}">`).join("");
             document.getElementById("promoterNameOptions").innerHTML =
-                Object.values(allPromoters()).map(p => `<option value="${(p.name || "").replace(/"/g, "&quot;")}">`).join("");
+                Object.entries(allPromoters()).map(([k, p]) => promoterDisplayName(k, p)).filter(Boolean).map(n => `<option value="${n.replace(/"/g, "&quot;")}">`).join("");
             document.getElementById("promoterOptions").innerHTML =
                 Object.entries(allPromoters()).map(([key, p]) => {
                     const id = (p.promoter_id || key).replace(/"/g, "&quot;");
-                    return `<option value="${id}" label="${(p.name || "").replace(/"/g, "&quot;")}">`;
+                    return `<option value="${id}" label="${promoterDisplayName(key, p).replace(/"/g, "&quot;")}">`;
                 }).join("");
             document.getElementById("festivalOptions").innerHTML =
                 [...Object.keys(festivalsLookup), ...batch.festivals.map(f => f.key)]
@@ -6357,8 +6424,16 @@
                 const venueIds = Array.isArray(promoter.promoter_venues) ? promoter.promoter_venues : [];
                 const artistIds = Array.isArray(promoter.promoter_artists) ? promoter.promoter_artists : [];
                 const reasons = [];
-                if (!venueIds.length) reasons.push("no promoter_venues listed");
-                if (!artistIds.length) reasons.push("no promoter_artists listed");
+                // A club promoter (isClub) gets its venues/artists from the club and
+                // its tagged events at display time, so empty lists are expected.
+                if (promoter.isClub) {
+                    if (!(enrichedData.clubs || []).some(c => (c.club || "").toLowerCase() === (promoter.promoter_id || id).toLowerCase())) {
+                        reasons.push("isClub is set but no club has this id (clubs[].club)");
+                    }
+                } else {
+                    if (!venueIds.length) reasons.push("no promoter_venues listed");
+                    if (!artistIds.length) reasons.push("no promoter_artists listed");
+                }
                 const badVenues = venueIds.filter(vid => !enrichedData.venues || !enrichedData.venues[vid]);
                 if (badVenues.length) reasons.push(`promoter_venues references unknown venue id(s): ${badVenues.join(", ")}`);
                 const badArtists = artistIds.filter(pid => !enrichedData.performers || !enrichedData.performers[pid]);
@@ -6782,9 +6857,9 @@
 
             Object.entries(data.promoters || {}).forEach(([key, promoter]) => {
                 const pid = lc(promoter.promoter_id || key);
-                const ownClubs = clubs.filter(c => lc(c.promoter_id) === pid || lc(c.club) === pid);
+                const ownClubs = clubs.filter(c => lc(c.promoter_id) === pid || lc(c.club) === pid);  // includes a club whose isPromoter/isClub link is by shared id
                 const clubIds = new Set([pid, ...ownClubs.map(c => lc(c.club)).filter(Boolean)]);
-                const ours = r => lc(r.promoter_id) === pid || lc(r.promoter) === pid || clubIds.has(lc(r.club));
+                const ours = r => lc(r.promoter_id) === pid || lc(r.promoter) === pid || clubIds.has(lc(r.club)) || clubIds.has(lc(r.club_event));
                 const venues = new Map(), artists = new Map();
                 const note = (map, id, label) => {
                     if (!id) return;
