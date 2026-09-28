@@ -147,6 +147,12 @@
     },
     "ropetackle-storytellers": {
       "isClub": true
+    },
+    "talestattledtold": {
+      "isClub": true
+    },
+    "feastoffools": {
+      "isClub": true
     }
   },
   "festivals": {
@@ -6294,12 +6300,14 @@
       "club": "threeheadsinawell"
     },
     {
-      "name": "Bletchley: Tales Tattled and Told",
+      "name": "Tales Tattled and Told",
       "schedule": "3rd saturday",
       "time": "7.30pm",
-      "facebook": "https://www.facebook.com/lynettehilluk",
+      "facebook": "lynettehilluk",
       "club": "talestattledtold",
+      "description": "Traditional tales from local and visiting tellers in Bletchley.",
       "venue_id": "rectory-cottages-bletchley",
+      "isPromoter": true,
       "tickets_url": "https://wegottickets.com/TravelingwordsProductions",
       "feature_slots": [
         [
@@ -6313,12 +6321,13 @@
       ]
     },
     {
-      "name": "Northampton: Feast of Fools",
+      "name": "Feast of Fools",
       "schedule": "1st wednesday",
       "time": "7-9.30pm",
       "link": "https://www.storyfeast.uk/",
       "facebook": "https://www.facebook.com/StorytellingFeast",
       "club": "feastoffools",
+      "isPromoter": true,
       "venue_id": "quaker-meeting-house-northampton",
       "feature_slots": [
         [

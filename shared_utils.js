@@ -342,6 +342,7 @@ const BADGE_TYPES = {
   performer: { param: "performer", image: "findmeon.png", text: "Find me on" },
   venue: { param: "venue", image: "finduson.png", text: "Find us on" },
   club: { param: "club", image: "finduson.png", text: "Find us on" },
+  promoter: { param: "promoter", image: "finduson.png", text: "Find us on" },
   tour: { param: "tour", image: "findtouron.png", text: "Find tour on" },
   event: { param: "event", image: "seeeventon.png", text: "See event on" },
   festival: {

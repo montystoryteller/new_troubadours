@@ -7,6 +7,7 @@ let promotersLookup = {};
 let festivalsLookup = {};
 let venuesLookup = {};
 let performersLookup = {};
+let toursLookup = {}; // needed by renderEventRow()/tour handling in shared_utils.js
 let stagesLookup = {};
 
 let currentPromoter = null; // { key, record }
@@ -252,23 +253,6 @@ function promoterPageURL(promoterId) {
   return `${window.location.pathname}?promoter=${encodeURIComponent(promoterId)}`;
 }
 
-function sharePromoterLink() {
-  if (!currentPromoter?.key) {
-    alert("No promoter selected");
-    return;
-  }
-  const url = `${location.origin}${location.pathname}?promoter=${encodeURIComponent(currentPromoter.key)}`;
-  navigator.clipboard
-    .writeText(url)
-    .then(() => {
-      const btn = document.querySelector(
-        "button[onclick='sharePromoterLink()']",
-      );
-      showCopyFeedback(btn);
-    })
-    .catch(console.error);
-}
-
 // Each promoter has its own canonical page (?promoter=id), so choosing one
 // is a full navigation rather than an in-page swap.
 function handlePromoterSelectChange() {
@@ -383,6 +367,148 @@ function populatePromoterDropdown() {
 function setSectionVisible(container, visible) {
   const section = container.closest(".promoter-section");
   if (section) section.style.display = visible ? "" : "none";
+}
+
+// ---------------------------------------------------------------------------
+// Events
+//
+// One-off dated events (specific / music / poetry events, tour dates, touring
+// show / story walk dates) belong to a promoter when the record carries its
+// promoter_id — or, for a club promoter, is tagged with the club (`club`, or
+// the legacy tour-date `club_event`). A club promoter also gets the upcoming
+// occurrences of the club's recurring schedule. Festivals keep their own
+// section. Rows are built by renderEventRow() (shared_utils.js), the same
+// renderer the venue page uses.
+// ---------------------------------------------------------------------------
+
+const PROMOTER_RECURRING_MONTHS_AHEAD = 6;
+
+function collectPromoterEvents(promoterId, promoter) {
+  const clubId = promoter._club ? promoter._club.club : null;
+  const mine = (r) =>
+    r.promoter_id === promoterId ||
+    r.promoter === promoterId ||
+    (clubId && r.club === clubId);
+  const withVenue = (entry, venueId) => {
+    entry.venueId = venueId || null;
+    entry.venue = venueId ? venuesLookup[venueId] || null : null;
+    return entry;
+  };
+  const out = [];
+
+  [
+    ["specificEvents", "specific", "story"],
+    ["musicEvents", "music", "music"],
+    ["poetryEvents", "poetry", "poetry"],
+  ].forEach(([bucket, type, category]) => {
+    expandDateOrDates((eventsData[bucket] || []).filter(mine)).forEach((e) => {
+      const date = parseDateString(e.date);
+      if (date) out.push(withVenue({ type, date, data: e, category }, e.venue_id));
+    });
+  });
+
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    expandDateOrDates(tour.tour_dates).forEach((td) => {
+      const tagged = clubId && (td.club || td.club_event) === clubId;
+      if (!tagged && td.promoter_id !== promoterId) return;
+      const date = parseDateString(td.date);
+      if (!date) return;
+      out.push(
+        withVenue(
+          {
+            type: "tour",
+            date,
+            data: { tour, tourId, tourDate: td },
+            category:
+              tour.isMusic || td.isMusic
+                ? "music"
+                : tour.isPoetry
+                  ? "poetry"
+                  : "story",
+          },
+          td.venue_id,
+        ),
+      );
+    });
+  });
+
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    expandDateOrDates(ts.show_dates).forEach((sd) => {
+      if (!mine(sd)) return;
+      const date = parseDateString(sd.date);
+      if (!date) return;
+      out.push(
+        withVenue(
+          {
+            type: "show",
+            date,
+            data: { ts, tsId, showDate: sd },
+            category: classifyPerformanceType(ts),
+          },
+          sd.venue_id,
+        ),
+      );
+    });
+  });
+
+  // Upcoming nights of the club's recurring schedule (past nights of a
+  // recurring schedule have no natural start, so only the future is listed).
+  const from = getTodayMidnight();
+  const to = new Date(from);
+  to.setMonth(to.getMonth() + PROMOTER_RECURRING_MONTHS_AHEAD);
+  (eventsData.clubs || [])
+    .filter((c) => c.schedule && (c.promoter_id === promoterId || (clubId && c.club === clubId)))
+    .forEach((rec) => {
+      RecurrenceEngine.scheduledOccurrencesInRange(
+        rec.schedule,
+        from,
+        to,
+        rec.exceptions || [],
+      ).forEach((occ) => {
+        if (occ.status === "cancelled" || occ.status === "moved_from") return;
+        out.push(
+          withVenue(
+            { type: "club", date: occ.date, data: { club: rec }, category: "story" },
+            resolveClubVenueId(rec, occ.date),
+          ),
+        );
+      });
+    });
+
+  return out;
+}
+
+function renderPromoterEvents(promoterId, promoter) {
+  const section = document.getElementById("promoterEventsSection");
+  const upcomingEl = document.getElementById("promoterUpcomingEvents");
+  const pastDetails = document.getElementById("promoterPastEventsDetails");
+  const pastEl = document.getElementById("promoterPastEvents");
+  upcomingEl.innerHTML = "";
+  pastEl.innerHTML = "";
+
+  const today = getTodayMidnight();
+  const all = collectPromoterEvents(promoterId, promoter);
+  const upcoming = all.filter((e) => e.date >= today).sort((a, b) => a.date - b.date);
+  const past = all.filter((e) => e.date < today).sort((a, b) => b.date - a.date);
+
+  section.style.display = all.length ? "" : "none";
+  if (!all.length) return;
+
+  if (upcoming.length) {
+    upcoming.forEach((e) => renderEventRow(upcomingEl, e, false, { showVenue: true }));
+  } else {
+    const note = document.createElement("p");
+    note.className = "promoter-empty-note";
+    note.textContent = "No upcoming events listed.";
+    upcomingEl.appendChild(note);
+  }
+
+  pastDetails.style.display = past.length ? "" : "none";
+  if (past.length) {
+    document.getElementById("promoterPastEventsSummary").textContent =
+      `Past events (${past.length})`;
+    past.forEach((e) => renderEventRow(pastEl, e, true, { showVenue: true }));
+  }
 }
 
 function renderPromoterClub(promoterId, promoter) {
@@ -632,8 +758,7 @@ function applyDirectoryMode() {
   if (sub) sub.style.display = "";
   demoteHeadingToH2(document.getElementById("promoterTitle"));
   document.getElementById("allPromotersPanel").style.display = "";
-  document.getElementById("promoterSelectorRow").style.display = "";
-  document.getElementById("shareLinkBtn").style.display = "none";
+  document.getElementById("promoterControls").style.display = "";
   document.getElementById("promoterBackLink").style.display = "none";
 }
 
@@ -643,8 +768,7 @@ function applyPromoterMode() {
   if (sub) sub.style.display = "none";
   promoteHeadingToH1(document.getElementById("promoterTitle"));
   document.getElementById("allPromotersPanel").style.display = "none";
-  document.getElementById("promoterSelectorRow").style.display = "none";
-  document.getElementById("shareLinkBtn").style.display = "";
+  document.getElementById("promoterControls").style.display = "none";
   document.getElementById("promoterBackLink").style.display = "";
 }
 
@@ -663,6 +787,7 @@ function displayPromoter(promoterId) {
   if (!promoter) {
     document.getElementById("promoterContent").style.display = "none";
     document.getElementById("promoterNotFound").style.display = "block";
+    renderShareBadge("promoter", null);
     return;
   }
 
@@ -735,7 +860,9 @@ function displayPromoter(promoterId) {
     descEl.style.display = "none";
   }
 
+  renderShareBadge("promoter", promoterId);
   renderPromoterClub(promoterId, promoter);
+  renderPromoterEvents(promoterId, promoter);
   renderPromoterFestivals(promoter);
   renderPromoterStages(promoter);
   renderPromoterVenues(promoter);
@@ -754,7 +881,6 @@ function displayPromoter(promoterId) {
 function refreshDirectoryData() {
   const btn = document.getElementById("refreshDataBtn");
   if (btn) {
-    btn.disabled = true;
     btn.textContent = "Refreshing…";
   }
   sessionStorage.setItem("forceFreshEventsData", "1");
@@ -804,6 +930,7 @@ setCanonical("promoter");
   venuesLookup = eventsData.locations || {};
   performersLookup = eventsData.performers || {};
   stagesLookup = eventsData.independent_stages || {};
+  toursLookup = result.toursLookup || {};
 
   displayDataLastUpdated(result.lastUpdateTime);
   initNavFeedback();

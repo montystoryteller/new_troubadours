@@ -319,6 +319,17 @@ a.promoter-list-item:hover {
 }
 .promoter-list-item-link:hover { text-decoration: underline; }
 
+.promoter-past-events {
+    margin-top: 14px;
+}
+
+.promoter-past-events > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--promoter-accent-dark);
+    padding: 6px 0;
+}
+
 .promoter-empty-note {
     color: #888;
     font-style: italic;
