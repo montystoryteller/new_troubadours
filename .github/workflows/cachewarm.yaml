@@ -1,0 +1,62 @@
+name: Wait for URLs
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  wait-for-urls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      FORCE_RENDER_SECRET: ${{ secrets.CLOUDFLARE_SECRET }}
+
+    steps:
+      - name: Wait until all URLs return 200
+        shell: bash
+        run: |
+          urls=(
+            "https://newtroubadours.org/"
+            "https://newtroubadours.org/index.html"
+            "https://newtroubadours.org/event_guide.html"
+            "https://newtroubadours.org/tour_guide.html"
+            "https://newtroubadours.org/storyclub.html"
+            "https://newtroubadours.org/performers.html"
+            "https://newtroubadours.org/venues.html"
+            "https://newtroubadours.org/festival.html"
+            "https://newtroubadours.org/flyers.html"
+            "https://newtroubadours.org/media.html"
+            "https://newtroubadours.org/stats.html"
+          )
+
+          while [ ${#urls[@]} -gt 0 ]; do
+            echo "URLs still waiting: ${#urls[@]}"
+
+            remaining=()
+
+            for url in "${urls[@]}"; do
+              status=$(curl \
+                -s \
+                -o /dev/null \
+                -w "%{http_code}" \
+                -H "x-force-render: ${FORCE_RENDER_SECRET}" \
+                --max-time 10 \
+                "$url" || true)
+
+              if [ "$status" = "200" ]; then
+                echo "✅ $url -> 200"
+              else
+                echo "❌ $url -> $status"
+                remaining+=("$url")
+              fi
+
+              sleep 20
+            done
+
+            urls=("${remaining[@]}")
+          done
+
+          echo "🎉 All URLs returned 200!"
