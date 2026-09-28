@@ -20,18 +20,18 @@
         <a href="event_guide.html">🗺️ Calendar</a>
         <a href="tour_guide.html">🎭 Tours & Repertoire</a>
         <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
         <a href="venues.html">📍 Venues</a>
         <a href="festival.html">🎪 Festivals</a>
         <a href="event.html">Event Pages</a>
         <a href="flyers.html">📋 Flyers</a>
         <a href="media.html">🎥 Watch &amp; Listen</a>
-        <a href="promoters.html">Promoters</a>
+        <a href="promoters.html" aria-current="page">Promoters</a>
         <a href="stats.html">📊 Stats</a>
     </nav>
 
-    <h1 id="pageHeading">Grass Roots Scene — Independent Promoters Directory</h1>
-    <h2 id="pageSubheading">Directory of small, independent, grass roots music promoters and independent festival
-        promoters.</h2>
+    <h1 id="pageHeading">The New Troubadours — Promoters</h1>
+    <h2 id="pageSubheading">Directory of UK based storytelling promoters.</h2>
     <!-- ── Overview panels ─────────────────────────────────────────── -->
 
     <div id="allPromotersPanel">
@@ -46,18 +46,13 @@
 
     <!-- ── Selector ────────────────────────────────────────────────── -->
 
-    <div class="promoter-controls">
+    <div class="promoter-controls" id="promoterControls">
         <div class="promoter-selector" id="promoterSelectorRow">
             <label for="promoterSelect">Promoter:</label>
             <select id="promoterSelect" onchange="handlePromoterSelectChange()">
                 <option value="">Select a promoter...</option>
             </select>
             <button onclick="loadSelectedPromoter()" class="btn-primary">Show Promoter</button>
-        </div>
-        <div class="share-container">
-            <button id="shareLinkBtn" onclick="sharePromoterLink()" class="btn-secondary" style="display:none;">🔗 Copy Shareable Link</button>
-            <button id="refreshDataBtn" onclick="refreshDirectoryData()" class="btn-secondary"
-                title="Bypasses the cache to fetch the latest directory data immediately">🔄 Refresh Data</button>
         </div>
     </div>
 
@@ -86,6 +81,15 @@
             <div id="promoterClubList" class="promoter-list"></div>
         </div>
 
+        <div class="promoter-section" id="promoterEventsSection" style="display:none;">
+            <h3 class="promoter-section-heading">📅 Events</h3>
+            <div id="promoterUpcomingEvents"></div>
+            <details id="promoterPastEventsDetails" class="promoter-past-events" style="display:none;">
+                <summary id="promoterPastEventsSummary"></summary>
+                <div id="promoterPastEvents"></div>
+            </details>
+        </div>
+
         <div class="promoter-section">
             <h3 class="promoter-section-heading">🎪 Festivals</h3>
             <div id="promoterFestivalsList" class="promoter-list"></div>
@@ -108,15 +112,22 @@
 
     </div>
 
+    <!-- "Find us on New Troubadours" badge — populated by renderShareBadge()
+         (shared_utils.js) once a real promoter is on screen; empty (and hidden)
+         otherwise. -->
+    <div id="shareBadge" class="share-badge"></div>
+
     <div class="about" id="colophon">
         <div id="dataLastUpdated"></div>
+        <p><a href="#" id="refreshDataBtn" onclick="refreshDirectoryData(); return false;"
+                title="Bypasses the cache to fetch the latest directory data immediately">🔄 Refresh data</a></p>
         <p><strong>All data is manually sourced and manually added to the site.</strong></p>
         <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code>.</em>
         </p>
     </div>
 
     <script src="recurrence-engine.js"></script>
-    <script src="shared_utils.js"></script>
+    <script src="shared_utils.js?v=202609281202"></script>
     <script src="promoters.js"></script>
 </body>
 
