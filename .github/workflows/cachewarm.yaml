@@ -54,20 +54,35 @@ jobs:
               echo "  Purge -> HTTP $purge_status"
 
               # 2. Force render
+              # Capture the response headers so we can check
+              # x-prerendered: true from the Cloudflare Worker.
+              render_headers=$(mktemp)
+
               render_status=$(curl \
                 -s \
+                -D "$render_headers" \
                 -o /dev/null \
                 -w "%{http_code}" \
                 -H "x-force-render: ${SECRET}" \
-                --max-time 10 \
+                --max-time 60 \
                 "$url" || true)
 
-              echo "  Render -> HTTP $render_status"
+              prerendered=$(grep -i '^x-prerendered:' "$render_headers" \
+                | tail -n 1 \
+                | tr -d '\r' \
+                | awk '{print $2}')
 
-              if [ "$render_status" = "200" ]; then
-                echo "  ✅ Success: $url"
+              rm -f "$render_headers"
+
+              echo "  Render -> HTTP $render_status"
+              echo "  X-Prerendered -> $prerendered"
+
+              # Only consider the URL successful if BOTH conditions
+              # are satisfied.
+              if [ "$render_status" = "200" ] && [ "$prerendered" = "true" ]; then
+                echo "  ✅ Successfully prerendered: $url"
               else
-                echo "  ❌ Not ready: $url"
+                echo "  ❌ Not successfully prerendered: $url"
                 remaining+=("$url")
               fi
 
