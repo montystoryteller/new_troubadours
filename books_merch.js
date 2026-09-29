@@ -39,6 +39,30 @@ function pluralise(n, word) {
   return `${n} ${word}${n !== 1 ? "s" : ""}`;
 }
 
+function merchTypeKey(item) {
+  return (item.type || "").trim().toLowerCase();
+}
+
+// typeCounts: Map of type key ("" = untyped) -> count.
+// Returns e.g. "4 CDs" or "3 CDs, 2 T-shirts". Most common type first.
+function merchCountText(typeCounts) {
+  return [...typeCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([type, n]) =>
+      pluralise(n, type ? merchTypeLabel(type) : "merch item"),
+    )
+    .join(", ");
+}
+
+function countMerchTypes(entries) {
+  const counts = new Map();
+  entries.forEach(({ item }) => {
+    const key = merchTypeKey(item);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  return counts;
+}
+
 function bookSearchText({ ownerId, book }) {
   const { subtitle, description } = bookSubtitleAndBlurb(book);
   const pub = bookPublisherInfo(book, publishers);
@@ -76,7 +100,8 @@ function merchSearchText({ item, credited }) {
 function performerSummaries() {
   const out = new Map();
   const get = (id) => {
-    if (!out.has(id)) out.set(id, { id, books: 0, merch: 0, publishers: new Set() });
+    if (!out.has(id))
+      out.set(id, { id, books: 0, merch: 0, merchTypes: new Map(), publishers: new Set() });
     return out.get(id);
   };
   allBooks.forEach(({ ownerId, book }) => {
@@ -85,7 +110,14 @@ function performerSummaries() {
     const key = publisherKey(book);
     if (key) s.publishers.add(key);
   });
-  allMerch.forEach(({ credited }) => credited.forEach((id) => (get(id).merch += 1)));
+  allMerch.forEach(({ item, credited }) =>
+    credited.forEach((id) => {
+      const s = get(id);
+      const key = merchTypeKey(item);
+      s.merch += 1;
+      s.merchTypes.set(key, (s.merchTypes.get(key) || 0) + 1);
+    }),
+  );
   return [...out.values()].sort((a, b) =>
     performerName(a.id).localeCompare(performerName(b.id)),
   );
@@ -138,7 +170,7 @@ function renderPerformerTiles(container) {
   summaries.forEach((s) => {
     const badges = [];
     if (s.books) badges.push(`📚 ${pluralise(s.books, "book")}`);
-    if (s.merch) badges.push(`💿 ${pluralise(s.merch, "merch item")}`);
+    if (s.merch) badges.push(`💿 ${merchCountText(s.merchTypes)}`);
     grid.appendChild(
       buildTile(
         `books_merch.html?performer=${encodeURIComponent(s.id)}`,
@@ -193,7 +225,7 @@ function visibleMerch() {
       return false;
     if (
       filters.type &&
-      (entry.item.type || "").trim().toLowerCase() !== filters.type
+      merchTypeKey(entry.item) !== filters.type
     )
       return false;
     if (q && !merchSearchText(entry).includes(q)) return false;
@@ -209,10 +241,11 @@ function newestFirst(getItem) {
   return (a, b) => sortNewestFirst(a, b, getItem);
 }
 
-function summaryText(nBooks, nMerch) {
+function summaryText(nBooks, merchEntries) {
   const parts = [];
   if (nBooks) parts.push(pluralise(nBooks, "book"));
-  if (nMerch) parts.push(pluralise(nMerch, "merch item"));
+  if (merchEntries.length)
+    parts.push(merchCountText(countMerchTypes(merchEntries)));
   return parts.join(" · ");
 }
 
@@ -225,7 +258,7 @@ function renderGroups() {
 
   document.getElementById("booksSummary").textContent = summaryText(
     books.length,
-    merch.length,
+    merch,
   );
 
   if (!books.length && !merch.length) {
@@ -334,7 +367,7 @@ function initControls() {
 
   const types = new Map();
   scopedMerch.forEach(({ item }) => {
-    const t = (item.type || "").trim().toLowerCase();
+    const t = merchTypeKey(item);
     if (t) types.set(t, merchTypeLabel(t));
   });
   populateSelect(
