@@ -18,9 +18,10 @@ jobs:
     env:
       SECRET: ${{ secrets.CLOUDFLARE_SECRET }}
       SITE: https://newtroubadours.org
-      # Max browser renders per run (each ~20s of spacing). Anything left over
+      # Max browser renders per run. The free plan allows only 10 browser-minutes
+      # per day in total, so keep this modest (raise it on the paid plan). Anything left over
       # is still stale tomorrow and gets picked up then.
-      MAX_RENDERS: "120"
+      MAX_RENDERS: "60"
       # Skip pages whose snapshot is younger than this (seconds). 20h so a
       # daily run refreshes everything that was rendered on the previous run.
       REFRESH_AFTER: "72000"
@@ -81,7 +82,13 @@ jobs:
 
             prerendered=$(grep -i '^x-prerendered:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             skipped=$(grep -i '^x-prerender-skipped:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            quota=$(grep -i '^x-quota-exhausted:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             rm -f "$hdrs"
+
+            if [ "$quota" = "true" ]; then
+              echo "🛑 Daily Browser Run quota exhausted. Stopping; resumes after 00:00 UTC."
+              exit 0
+            fi
 
             if [ "$skipped" = "true" ]; then
               echo "⏭️  fresh, skipped: $url"
@@ -96,7 +103,7 @@ jobs:
               failed+=("$url")
             fi
 
-            sleep 20                        # stay under the Browser Run launch rate
+            sleep 15                        # free plan: ~1 Quick Action per 10s
           done
 
           echo ""

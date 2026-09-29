@@ -5,37 +5,23 @@ const ALLOWED_HOSTNAMES = new Set([
   "www.newtroubadours.org",
 ]);
 
-// Error that carries an HTTP status so callers can tell a bad request (400)
-// from a rate limit (429) or an upstream failure (502).
-class HttpError extends Error {
-  constructor(message, status) {
-    super(message);
-    this.status = status;
-  }
-}
-
 const getTargetUrl = (request) => {
   const requestUrl = new URL(request.url);
   const target = requestUrl.searchParams.get("url");
 
   if (!target) {
-    throw new HttpError("Missing url query parameter", 400);
+    throw new Error("Missing url query parameter");
   }
 
-  let targetUrl;
-  try {
-    targetUrl = new URL(target);
-  } catch {
-    throw new HttpError("Invalid url query parameter", 400);
-  }
+  const targetUrl = new URL(target);
 
   // Only render HTTP(S) pages. Other protocols are not valid web pages.
   if (!["http:", "https:"].includes(targetUrl.protocol)) {
-    throw new HttpError("Only HTTP and HTTPS URLs are allowed", 400);
+    throw new Error("Only HTTP and HTTPS URLs are allowed");
   }
 
   if (!ALLOWED_HOSTNAMES.has(targetUrl.hostname)) {
-    throw new HttpError("This hostname is not allowed", 400);
+    throw new Error("This hostname is not allowed");
   }
 
   return targetUrl;
@@ -57,18 +43,13 @@ const renderHtml = async (env, targetUrl) => {
 
   if (!response.ok) {
     const detail = (await response.text()).slice(0, 500);
-    // Pass 429 (rate limited) through; everything else is a generic upstream failure.
-    const status = response.status === 429 ? 429 : 502;
-    throw new HttpError(
-      `Browser Run failed with ${response.status}: ${detail}`,
-      status,
-    );
+    throw new Error(`Browser Run failed with ${response.status}: ${detail}`);
   }
 
   const data = await response.json();
 
   if (!data.success || typeof data.result !== "string") {
-    throw new HttpError("Browser Run returned an unsuccessful response", 502);
+    throw new Error("Browser Run returned an unsuccessful response");
   }
 
   return data.result;
@@ -88,12 +69,9 @@ export default {
         },
       });
     } catch (error) {
-      const status = error instanceof HttpError ? error.status : 500;
-      const headers = status === 429 ? { "retry-after": "20" } : {};
-      console.log("renderer error", status, error?.message);
       return Response.json(
         { error: error instanceof Error ? error.message : "Unknown error" },
-        { status, headers },
+        { status: 400 },
       );
     }
   },

@@ -100,37 +100,45 @@ function normalisedUrl(url) {
 
 const cacheKeyFor = (normUrl) => "render:" + normUrl.toString();
 
+// Browser Run (free plan) allows roughly one Quick Action request per 10s and
+// 10 browser-minutes per day, account-wide. So retries must wait >10s, and
+// crawler-triggered renders should NOT retry at all: retries from crawlers
+// would steal the few slots the scheduled prewarm needs.
+const RETRY_BASE_MS = 12000;
+
+// Returns {html} on success, or {html: null, status, quotaExhausted}.
 async function renderOnce(env, targetUrl) {
   const renderUrl = new URL("https://renderer/");
   renderUrl.searchParams.set("url", targetUrl);
   try {
     const res = await env.RENDERER.fetch(renderUrl);
     if (!res.ok) {
-      console.log(
-        "render failed",
-        res.status,
-        (await res.text()).slice(0, 300),
-        targetUrl,
-      );
-      return null;
+      const body = (await res.text()).slice(0, 300);
+      console.log("render failed", res.status, body, targetUrl);
+      return {
+        html: null,
+        status: res.status,
+        // Daily browser-time cap: no point retrying until tomorrow (UTC).
+        quotaExhausted: /time limit exceeded/i.test(body),
+      };
     }
-    return injectPrerenderBadge(await res.text());
+    return { html: injectPrerenderBadge(await res.text()) };
   } catch (err) {
     console.log("render threw", String(err), targetUrl);
-    return null;
+    return { html: null, status: 0, quotaExhausted: false };
   }
 }
 
-// Rate-limit failures usually clear within seconds, so retry with jitter.
-async function renderWithRetry(env, targetUrl, attempts = 3) {
+async function renderWithRetry(env, targetUrl, attempts = 1) {
+  let result = { html: null, status: 0, quotaExhausted: false };
   for (let i = 0; i < attempts; i++) {
-    const html = await renderOnce(env, targetUrl);
-    if (html) return html;
+    result = await renderOnce(env, targetUrl);
+    if (result.html || result.quotaExhausted) return result;
     if (i < attempts - 1) {
-      await sleep(3000 * (i + 1) + Math.random() * 2000);
+      await sleep(RETRY_BASE_MS * (i + 1) + Math.random() * 2000);
     }
   }
-  return null;
+  return result;
 }
 
 async function storeSnapshot(env, key, html) {
@@ -145,10 +153,10 @@ async function storeSnapshot(env, key, html) {
   }
 }
 
-async function refresh(env, key, targetUrl, attempts = 3) {
-  const html = await renderWithRetry(env, targetUrl, attempts);
-  if (html) await storeSnapshot(env, key, html);
-  return html;
+async function refresh(env, key, targetUrl, attempts = 1) {
+  const result = await renderWithRetry(env, targetUrl, attempts);
+  if (result.html) await storeSnapshot(env, key, result.html);
+  return result;
 }
 
 const htmlResponse = (html, extra = {}) =>
@@ -199,10 +207,18 @@ export default {
           });
         }
       }
-      const html = await refresh(env, key, normUrl.toString());
-      return html
-        ? htmlResponse(html, { "cache-control": "no-store" })
-        : new Response("render failed", { status: 502 });
+      // The prewarm is the one caller that may retry (spaced past the 10s limit).
+      const result = await refresh(env, key, normUrl.toString(), 3);
+      if (result.html) {
+        return htmlResponse(result.html, { "cache-control": "no-store" });
+      }
+      return new Response("render failed", {
+        status: result.status === 429 ? 429 : 502,
+        headers: {
+          "cache-control": "no-store",
+          ...(result.quotaExhausted ? { "x-quota-exhausted": "true" } : {}),
+        },
+      });
     }
 
     // Serve from KV when we can. If the snapshot is stale, serve it anyway
@@ -217,8 +233,10 @@ export default {
       });
     }
 
-    // True cache miss: render now (fewer retries, a crawler is waiting).
-    const html = await renderWithRetry(env, normUrl.toString(), 2);
+    // True cache miss: a single attempt, no waiting. If Browser Run is
+    // rate limited we fall straight through to the origin page below; the
+    // scheduled prewarm fills the cache later.
+    const { html } = await renderWithRetry(env, normUrl.toString(), 1);
     if (html) {
       ctx.waitUntil(storeSnapshot(env, key, html));
       return htmlResponse(html, {
