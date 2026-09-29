@@ -18656,6 +18656,11 @@
       "url": "https://attilathestockbroker.com/",
       "bio": "Punk poet, dub ranter, singer-songwriter, early music punk pioneer, writer and social commentator."
     },
+    "tony-hirst": {
+      "canonical": "monty-storyteller",
+      "name": "Tony Hirst"
+    },
+
     "monty-storyteller": {
       "id": "monty-storyteller",
       "name": "Monty Storyteller (Tony \"Monty\" Hirst)",
@@ -18774,12 +18779,7 @@
           "description": "Hugh Lupton, Ben Haggarty and Sally Pomme Clayton make a journey into the dark forests of Grimms.\n\n\n\nFairy tales for grown-ups, with music by Dylan Fowler and Gillian Stephens.",
           "buy_url": "https://burningshed.com/Hugh_Lupton_Ben_Haggarty_and_Sally_Pomme_Clayton-The_Three_Snake_Leaves-CD"
         },
-        "cd-three_snake_leaves": {
-          "performer_ids": [
-            "hugh-lupton",
-            "ben-haggarty",
-            "sally-pomme-clayton"
-          ],
+        "cd-on-common-ground": {
           "type": "cd",
           "year": null,
           "title": "On Common Ground",
@@ -18789,6 +18789,69 @@
           ],
           "description": "The enclosure of John Clare.",
           "buy_url": "https://burningshed.com/Hugh_Lupton_and_Chris_Wood-On_Common_Ground-CD"
+        },
+        "cd-liberty-tree": {
+          "type": "cd",
+          "year": null,
+          "title": "Liberty Tree",
+          "performer_ids": [
+            "hugh-lupton",
+            "nick-hennessey"
+          ],
+          "description": "Two of Britain's leading storytellers sing and tell their way deep into the secret, dappled heart of Sherwood, and at the same time tell the true and harsher histories of English dissenters and radicals. Hugh Lupton & Nick Hennessey.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_and_Nick_Hennessey-Liberty_Tree-CD?"
+        },
+        "cd-metamorphoses": {
+          "type": "cd",
+          "year": null,
+          "title": "Metamorphoses",
+          "performer_ids": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "description": "Ovid's darkly humorous and moving stories of transformation, told by Hugh and Daniel Morden. Includes Arachne, Persephone, Echo & Narcissus, Midas, Semele, Tiresias, Erisychthon, Baucis & Philemon.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_and_Daniel_Morden-Metamorphoses-CD?"
+        },
+        "cd-the-iliad": {
+          "type": "cd",
+          "year": null,
+          "title": "The Iliad",
+          "performer_ids": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "description": "Full-blooded retelling of Homer's epic tale of love and war told by Hugh and Daniel Morden.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_and_Chris_Wood-The_Iliad-CD?"
+        },
+        "cd-the-odyssey": {
+          "type": "cd",
+          "year": null,
+          "title": "The Odyssey",
+          "performer_ids": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "description": "Hugh & Daniel Morden's acclaimed retelling of Odysseus' journey home, the first and greatest adventure yarn of them all.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_and_Daniel-Morden-The_Odyssey-CD?"
+        },
+        "cd-sleeping-king": {
+          "type": "cd",
+          "year": null,
+          "title": "The Sleeping King",
+          "performer_ids": [
+            "hugh-lupton",
+            "daniel-morden",
+            "nick hennessey"
+          ],
+          "description": "Classic tales from the British Isles, interspersed with harp music and song. Includes Gawain and the Green Knight, The Pardoner's Tale, Fairy Ointment, Tam Lin, The King Asleep Under The Hill, The Loathly Lady, Llyn y Fan Fach. Hugh Lupton / Daniel Morden & Nick Hennessey.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_Daniel_Morden_and_Nick_Hennessey-The_Sleeping_King-CD"
+        },
+        "cd-marlding-acre": {
+          "type": "cd",
+          "year": null,
+          "title": "The Mardling Acre",
+          "description": "Mardling is the Norfolk word for gossiping. In this dazzling collection tricksters, numbskulls, ferrishers and hen-wives rub shoulders as Hugh Lupton tells some of his favourite folk tales from the gossiping acres of Norfolk, Suffolk, Lincolnshire and the Fens. The recording includes the story of Tom Hickathrift, Glamoury Ointment, The Pottle of Brains, Tom-Tit-Tot, The Parson of Sedgeford, Old Horse, The Grey Goose Feather and The Pedlar of Swaffham. The tales are interspersed with tunes played by Steve Bazire on the melodeon and concertina.",
+          "buy_url": "https://burningshed.com/hugh-lupton_the-mardling-acre_cd?"
         }
       },
       "books": [
@@ -18823,13 +18886,16 @@
         },
         {
           "publisher_id": "",
-          "authors": ["hugh-lupton", "daniel-morden"],
-          "isbn": "",
+          "authors": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "isbn": "9781846864063",
           "cover": "",
           "title": "The Adventures of Achilles",
-          "description": "",
+          "description": "The boyhood of Achilles, the causes of the Trojan War, the events of the Iliad and the wooden horse, told as a gripping narrative by two of Britain's most acclaimed storytellers.  ",
           "year": null,
-          "buy_url": ""
+          "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_the-adventures-of-achilles_book?"
         },
         {
           "publisher_id": "",
@@ -18837,12 +18903,12 @@
             "hugh-lupton",
             "daniel-morden"
           ],
-          "isbn": "",
+          "isbn": "9781846868337",
           "cover": "",
           "title": "Demeter and Persephone",
-          "description": "",
+          "description": "With spellbinding language, master storytellers Hugh Lupton and Daniel Morden bring the myths of the ancient Greek world to life. Vividly illustrated by award winning French artist Carole Henaff, the Greek Myths series is a captivating introduction to these classic tales.",
           "year": null,
-          "buy_url": ""
+          "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_demeter-and-persephone_book?"
         },
         {
           "publisher_id": "",
@@ -18850,12 +18916,38 @@
             "hugh-lupton",
             "daniel-morden"
           ],
-          "isbn": "",
+          "isbn": "9781846867835",
           "cover": "",
           "title": "Orpheus and Eurydice",
-          "description": "",
+          "description": "Orpheus, the master musician, loses his wife the day after their wedding. This is the story of his journey to the Land of the Dead, the realm of Hades, to try and win her back.",
           "year": null,
-          "buy_url": ""
+          "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_orpheus-and-eurydice_book?"
+        },
+        {
+          "publisher_id": "",
+          "authors": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "isbn": "9781846864469",
+          "cover": "",
+          "title": "The Adventures of Odysseus",
+          "description": "A retelling of Homer's epic of Odysseus' perilous journey home.",
+          "year": null,
+          "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_the-adventures-of-odysseus_pb?"
+        },
+        {
+          "publisher_id": "",
+          "authors": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "isbn": "9781846867811",
+          "cover": "",
+          "title": "Theseus and the Minotaur",
+          "description": "Locked in a maze beneath the palace of his father, the Minotaur devours human flesh. It will take a cunning and resourceful warrior to defeat him. Is Theseus that man?",
+          "year": null,
+          "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_theseus-and-the-minotaur_book?"
         }
       ]
     },

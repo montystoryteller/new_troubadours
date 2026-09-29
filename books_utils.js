@@ -18,6 +18,13 @@
 // as-is). Every cover in the data is currently empty, so nothing loads yet.
 const BOOK_COVER_BASE = "./book_covers/";
 
+// Fallback for books with an ISBN but no `cover`: Open Library's Covers API
+// (no key needed; ~100 lookups per visitor IP per 5 minutes). `?default=false`
+// makes a missing cover a 404 so the placeholder below is shown instead of a
+// blank image. Please keep the courtesy link back to Open Library in the page
+// colophon. Don't crawl it; for bulk use, save covers into BOOK_COVER_BASE.
+const OPEN_LIBRARY_COVER_BASE = "https://covers.openlibrary.org/b/isbn/";
+
 // A `subtitle` longer than this is treated as blurb text that was pasted into
 // the wrong field (one record has its whole description there): it's shown as
 // the description instead of as a subtitle.
@@ -259,10 +266,22 @@ function descriptionDropdown(text, label) {
   return details;
 }
 
+// Explicit `cover` (URL or local filename) wins; otherwise Open Library by
+// ISBN; otherwise "" (placeholder).
+function coverSrc(book) {
+  const cover = (book.cover || "").trim();
+  if (cover) {
+    return /^https?:\/\//i.test(cover)
+      ? cover
+      : BOOK_COVER_BASE + cover.replace(/[^a-zA-Z0-9._\-]/g, "");
+  }
+  const isbn = (book.isbn || "").replace(/[^0-9Xx]/g, "");
+  return isbn ? `${OPEN_LIBRARY_COVER_BASE}${isbn}-M.jpg?default=false` : "";
+}
+
 function coverElement(book) {
   const wrap = el("div", "bm-cover");
-  const cover = (book.cover || "").trim();
-  if (!cover) {
+  if (!coverSrc(book)) {
     wrap.classList.add("bm-cover-placeholder");
     wrap.textContent = "📖";
     return wrap;
@@ -270,9 +289,7 @@ function coverElement(book) {
   const img = document.createElement("img");
   img.alt = `Cover of ${book.title}`;
   img.loading = "lazy";
-  img.src = /^https?:\/\//i.test(cover)
-    ? cover
-    : BOOK_COVER_BASE + cover.replace(/[^a-zA-Z0-9._\-]/g, "");
+  img.src = coverSrc(book);
   img.addEventListener("error", () => {
     wrap.classList.add("bm-cover-placeholder");
     wrap.textContent = "📖";
