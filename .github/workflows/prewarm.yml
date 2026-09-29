@@ -1,0 +1,109 @@
+name: Prewarm prerender cache
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      full_refresh:
+        description: "Purge and re-render everything (ignore freshness)"
+        type: boolean
+        default: false
+
+jobs:
+  prewarm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    env:
+      SECRET: ${{ secrets.CLOUDFLARE_SECRET }}
+      SITE: https://newtroubadours.org
+      # Max browser renders per run (each ~20s of spacing). Anything left over
+      # is still stale tomorrow and gets picked up then.
+      MAX_RENDERS: "120"
+      # Skip pages whose snapshot is younger than this (seconds). 20h so a
+      # daily run refreshes everything that was rendered on the previous run.
+      REFRESH_AFTER: "72000"
+      FULL_REFRESH: ${{ inputs.full_refresh }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build URL list and prewarm
+        shell: bash
+        run: |
+          if [ -z "$SECRET" ]; then
+            echo "❌ CLOUDFLARE_SECRET is not configured."
+            exit 1
+          fi
+
+          # 1. Collect URLs: sitemap + optional prewarm-urls.txt (one URL per line)
+          all=$(mktemp)
+          curl -s --max-time 30 "$SITE/sitemap.xml" \
+            | grep -o '<loc>[^<]*</loc>' \
+            | sed -e 's/<loc>//' -e 's/<\/loc>//' -e 's/&amp;/\&/g' >> "$all" || true
+
+          if [ -f prewarm-urls.txt ]; then
+            grep -v '^\s*$' prewarm-urls.txt | grep -v '^#' >> "$all" || true
+          fi
+
+          # Always include the base pages
+          for p in "" index.html event_guide.html tour_guide.html storyclub.html \
+                   performers.html venues.html festival.html flyers.html media.html \
+                   promoters.html books_merch.html stats.html; do
+            echo "$SITE/$p" >> "$all"
+          done
+
+          mapfile -t urls < <(sort -u "$all")
+          echo "Total URLs: ${#urls[@]}"
+
+          full="${FULL_REFRESH:-false}"
+          renders=0
+          failed=()
+
+          for url in "${urls[@]}"; do
+            if [ "$renders" -ge "$MAX_RENDERS" ]; then
+              echo "Reached MAX_RENDERS ($MAX_RENDERS); remaining pages will be handled next run."
+              break
+            fi
+
+            if [ "$full" = "true" ]; then
+              curl -s -o /dev/null -H "x-purge-cache: ${SECRET}" --max-time 10 "$url" || true
+              extra=()
+            else
+              extra=(-H "x-only-if-older-than: ${REFRESH_AFTER}")
+            fi
+
+            hdrs=$(mktemp)
+            status=$(curl -s -D "$hdrs" -o /dev/null -w "%{http_code}" \
+              -H "x-force-render: ${SECRET}" "${extra[@]}" \
+              --max-time 90 "$url" || true)
+
+            prerendered=$(grep -i '^x-prerendered:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            skipped=$(grep -i '^x-prerender-skipped:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            rm -f "$hdrs"
+
+            if [ "$skipped" = "true" ]; then
+              echo "⏭️  fresh, skipped: $url"
+              continue                      # no browser used, no need to wait
+            fi
+
+            renders=$((renders + 1))
+            if [ "$status" = "200" ] && [ "$prerendered" = "true" ]; then
+              echo "✅ rendered ($renders): $url"
+            else
+              echo "❌ failed (HTTP $status): $url"
+              failed+=("$url")
+            fi
+
+            sleep 20                        # stay under the Browser Run launch rate
+          done
+
+          echo ""
+          echo "Rendered this run: $renders, failed: ${#failed[@]}"
+          if [ ${#failed[@]} -gt 0 ]; then
+            printf '  %s\n' "${failed[@]}"
+            # Failed pages stay stale, so tomorrow's run retries them.
+            # Only fail the job if everything failed (likely a real outage).
+            [ "$renders" -gt "${#failed[@]}" ] || exit 1
+          fi
