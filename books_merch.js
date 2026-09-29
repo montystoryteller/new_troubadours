@@ -21,6 +21,7 @@ let allBooks = [];
 let allMerch = [];
 
 let scopePerformerId = null;
+let scopeGroupIds = new Set(); // groups the scoped performer belongs to
 let scopePublisherKey = null;
 let currentView = "performers";
 
@@ -63,7 +64,7 @@ function countMerchTypes(entries) {
   return counts;
 }
 
-function bookSearchText({ ownerId, book }) {
+function bookSearchText({ credited, book }) {
   const { subtitle, description } = bookSubtitleAndBlurb(book);
   const pub = bookPublisherInfo(book, publishers);
   return [
@@ -72,11 +73,19 @@ function bookSearchText({ ownerId, book }) {
     description,
     pub?.name,
     book.isbn,
-    performerName(ownerId),
+    ...credited.map(performerName),
   ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
+}
+
+// On a ?performer= page: merch credits the performer, or a group they belong to.
+function merchInPerformerScope({ credited }) {
+  return (
+    credited.includes(scopePerformerId) ||
+    credited.some((id) => scopeGroupIds.has(id))
+  );
 }
 
 function merchSearchText({ item, credited }) {
@@ -101,15 +110,17 @@ function performerSummaries() {
   const out = new Map();
   const get = (id) => {
     if (!out.has(id))
-      out.set(id, { id, books: 0, merch: 0, merchTypes: new Map(), publishers: new Set() });
+      out.set(id, { id, books: 0, merch: 0, viaMerch: 0, merchTypes: new Map(), publishers: new Set() });
     return out.get(id);
   };
-  allBooks.forEach(({ ownerId, book }) => {
-    const s = get(ownerId);
-    s.books += 1;
-    const key = publisherKey(book);
-    if (key) s.publishers.add(key);
-  });
+  allBooks.forEach(({ credited, book }) =>
+    credited.forEach((id) => {
+      const s = get(id);
+      s.books += 1;
+      const key = publisherKey(book);
+      if (key) s.publishers.add(key);
+    }),
+  );
   allMerch.forEach(({ item, credited }) =>
     credited.forEach((id) => {
       const s = get(id);
@@ -118,6 +129,21 @@ function performerSummaries() {
       s.merchTypes.set(key, (s.merchTypes.get(key) || 0) + 1);
     }),
   );
+  // Members of a group get a "via groups" count for group merch that doesn't
+  // already credit them, so e.g. Daniel Morden gets a tile pointing at Devils
+  // Violin's merch. Kept apart from `merch` so a tile's own count matches what
+  // is listed as theirs.
+  allMerch.forEach(({ credited }) => {
+    const members = new Set();
+    credited.forEach((id) => {
+      const rec = performersLookup[id];
+      const list = rec?.performer_ids || rec?.ids;
+      if (Array.isArray(list)) list.forEach((m) => members.add(m));
+    });
+    members.forEach((m) => {
+      if (!credited.includes(m) && performersLookup[m]) get(m).viaMerch += 1;
+    });
+  });
   return [...out.values()].sort((a, b) =>
     performerName(a.id).localeCompare(performerName(b.id)),
   );
@@ -127,7 +153,7 @@ function performerSummaries() {
 // books yet isn't shown, and a book naming an unregistered publisher still is).
 function publisherSummaries() {
   const out = new Map();
-  allBooks.forEach(({ ownerId, book }) => {
+  allBooks.forEach(({ credited, book }) => {
     const key = publisherKey(book);
     if (!key) return;
     if (!out.has(key)) {
@@ -136,7 +162,7 @@ function publisherSummaries() {
     }
     const s = out.get(key);
     s.books += 1;
-    s.performers.add(ownerId);
+    credited.forEach((id) => s.performers.add(id));
   });
   return [...out.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -145,8 +171,10 @@ function publisherSummaries() {
 // Tiles
 // ---------------------------------------------------------------------------
 
-function tileBadge(text) {
-  return el("span", "bm-tile-badge", text);
+// `badge` is a string, or { text, outline } for a dashed "not their own" badge.
+function tileBadge(badge) {
+  const { text, outline } = typeof badge === "string" ? { text: badge } : badge;
+  return el("span", outline ? "bm-tile-badge bm-tile-badge-outline" : "bm-tile-badge", text);
 }
 
 function buildTile(href, name, badges, note) {
@@ -171,6 +199,8 @@ function renderPerformerTiles(container) {
     const badges = [];
     if (s.books) badges.push(`📚 ${pluralise(s.books, "book")}`);
     if (s.merch) badges.push(`💿 ${merchCountText(s.merchTypes)}`);
+    if (s.viaMerch)
+      badges.push({ text: `+ ${pluralise(s.viaMerch, "item")} via groups`, outline: true });
     grid.appendChild(
       buildTile(
         `books_merch.html?performer=${encodeURIComponent(s.id)}`,
@@ -205,7 +235,8 @@ function visibleBooks() {
   if (filters.kind === "merch") return [];
   const q = filters.q;
   return allBooks.filter((entry) => {
-    if (scopePerformerId && entry.ownerId !== scopePerformerId) return false;
+    if (scopePerformerId && !entry.credited.includes(scopePerformerId))
+      return false;
     if (scopePublisherKey && publisherKey(entry.book) !== scopePublisherKey)
       return false;
     if (filters.publisher && publisherKey(entry.book) !== filters.publisher)
@@ -221,8 +252,7 @@ function visibleMerch() {
     return [];
   const q = filters.q;
   return allMerch.filter((entry) => {
-    if (scopePerformerId && !entry.credited.includes(scopePerformerId))
-      return false;
+    if (scopePerformerId && !merchInPerformerScope(entry)) return false;
     if (
       filters.type &&
       merchTypeKey(entry.item) !== filters.type
@@ -275,22 +305,37 @@ function renderGroups() {
     if (!groups.has(id)) groups.set(id, { books: [], merch: [] });
     return groups.get(id);
   };
-  books.forEach((entry) => groupFor(entry.ownerId).books.push(entry));
-  merch.forEach((entry) => groupFor(entry.ownerId).merch.push(entry));
-
-  const orderedIds = [...groups.keys()].sort((a, b) =>
-    performerName(a).localeCompare(performerName(b)),
+  // On a performer's page their own books / merch come first; merch that only
+  // reaches them through a group is filed under that group ("Via Devils Violin").
+  const merchGroupId = (entry) => {
+    if (!scopePerformerId) return entry.ownerId;
+    if (entry.credited.includes(scopePerformerId)) return scopePerformerId;
+    return entry.credited.find((id) => scopeGroupIds.has(id)) || entry.ownerId;
+  };
+  books.forEach((entry) =>
+    groupFor(scopePerformerId || entry.ownerId).books.push(entry),
   );
+  merch.forEach((entry) => groupFor(merchGroupId(entry)).merch.push(entry));
+
+  const orderedIds = [...groups.keys()].sort((a, b) => {
+    if (scopePerformerId && a === scopePerformerId) return -1;
+    if (scopePerformerId && b === scopePerformerId) return 1;
+    return performerName(a).localeCompare(performerName(b));
+  });
 
   orderedIds.forEach((id) => {
     const { books: gBooks, merch: gMerch } = groups.get(id);
     const section = el("section", "books-group");
 
-    // On a single-performer page the page heading already names them.
-    if (!scopePerformerId) {
+    // On a single-performer page the page heading already names them; groups
+    // they belong to get a "Via …" heading linking to the group's own page.
+    if (!scopePerformerId || id !== scopePerformerId) {
       const heading = el("h3", "books-group-heading");
-      const link = el("a", "", performerName(id));
-      link.href = `performers.html?performer=${encodeURIComponent(id)}`;
+      const viaGroup = scopePerformerId && id !== scopePerformerId;
+      const link = el("a", "", viaGroup ? `Via ${performerName(id)}` : performerName(id));
+      link.href = viaGroup
+        ? `books_merch.html?performer=${encodeURIComponent(id)}`
+        : `performers.html?performer=${encodeURIComponent(id)}`;
       heading.appendChild(link);
       section.appendChild(heading);
     }
@@ -299,8 +344,16 @@ function renderGroups() {
       // Sub-headings only when a group has both kinds.
       if (gMerch.length) section.appendChild(el("div", "bm-subheading", "Books"));
       const list = el("div", "bm-list");
-      gBooks.forEach(({ book }) => {
-        list.appendChild(createBookCard(book, { publishers, performersLookup }));
+      gBooks.forEach(({ book, credited }) => {
+        // Co-authored: name the other authors (the holder is named by the page).
+        list.appendChild(
+          createBookCard(book, {
+            publishers,
+            performersLookup,
+            creditIds: credited.filter((cid) => cid !== id),
+            creditPrefix: "with ",
+          }),
+        );
       });
       section.appendChild(list);
     }
@@ -348,11 +401,11 @@ function initControls() {
   // publishers they've never used.
   const scopedBooks = allBooks.filter(
     (e) =>
-      (!scopePerformerId || e.ownerId === scopePerformerId) &&
+      (!scopePerformerId || e.credited.includes(scopePerformerId)) &&
       (!scopePublisherKey || publisherKey(e.book) === scopePublisherKey),
   );
   const scopedMerch = allMerch.filter(
-    (e) => !scopePerformerId || e.credited.includes(scopePerformerId),
+    (e) => !scopePerformerId || merchInPerformerScope(e),
   );
 
   const pubs = new Map();
@@ -544,6 +597,8 @@ setCanonical(
 
   if (scopePerformerId && !performersLookup[scopePerformerId])
     return showNotFound();
+  if (scopePerformerId)
+    scopeGroupIds = new Set(groupIdsForMember(scopePerformerId, performersLookup));
   if (
     scopePublisherKey &&
     !publisherSummaries().some((p) => p.key === scopePublisherKey)

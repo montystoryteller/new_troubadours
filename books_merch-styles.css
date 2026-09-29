@@ -395,6 +395,19 @@
     color: var(--theme-green-dark);
 }
 
+/* Badge for items that reach a performer only via a group they belong to */
+.bm-tile-badge-outline {
+    background: transparent;
+    border-style: dashed;
+    font-weight: 500;
+}
+
+/* "Also performs as: …" line on performer pages */
+.bm-collabs {
+    margin: 6px 0 0;
+    font-size: 13px;
+}
+
 @media (max-width: 520px) {
     .bm-tile {
         max-width: none;

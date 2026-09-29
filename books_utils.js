@@ -114,16 +114,32 @@ function sortNewestFirst(a, b, get) {
   return (get(a).title || "").localeCompare(get(b).title || "");
 }
 
-// Books held on these performer records (usually just one id).
+// Everyone credited on a book: the record that holds it (the main / first
+// author), plus any others named in book.performer_ids (preferred, same as
+// merch) or the older book.authors. Owner first, then in listed order.
+function bookCreditIds(ownerId, book) {
+  const ids = [ownerId];
+  [book?.performer_ids, book?.authors].forEach((list) =>
+    (Array.isArray(list) ? list : []).forEach((id) => {
+      if (id && !ids.includes(id)) ids.push(id);
+    }),
+  );
+  return ids;
+}
+
+// Books held by, or crediting, any of these ids. Each book appears once even
+// if several of the ids are credited on it.
 function collectBooksFor(ids, performersLookup) {
+  const idSet = ids instanceof Set ? ids : new Set(ids);
   const out = [];
-  ids.forEach((id) => {
-    const books = performersLookup[id]?.books;
-    if (Array.isArray(books)) {
-      books.forEach((book) => {
-        if (book && book.title) out.push({ ownerId: id, book });
-      });
-    }
+  Object.entries(performersLookup).forEach(([ownerId, performer]) => {
+    (Array.isArray(performer?.books) ? performer.books : []).forEach((book) => {
+      if (!book || !book.title) return;
+      const credited = bookCreditIds(ownerId, book);
+      if (credited.some((id) => idSet.has(id))) {
+        out.push({ ownerId, book, credited });
+      }
+    });
   });
   return out.sort((a, b) => sortNewestFirst(a, b, (x) => x.book));
 }
@@ -145,13 +161,28 @@ function collectMerchFor(ids, performersLookup) {
   return out.sort((a, b) => sortNewestFirst(a, b, (x) => x.item));
 }
 
+// Groups / duos / collaborations that list `memberId` in performer_ids (or the
+// legacy `ids` field). Derived, never stored, so it can't drift out of sync.
+function groupIdsForMember(memberId, performersLookup) {
+  return Object.entries(performersLookup)
+    .filter(([id, p]) => {
+      const members = p?.performer_ids || p?.ids;
+      return id !== memberId && Array.isArray(members) && members.includes(memberId);
+    })
+    .map(([id]) => id)
+    .sort((a, b) =>
+      (performersLookup[a].name || a).localeCompare(performersLookup[b].name || b),
+    );
+}
+
 // Everything in the data, each item once (merch under the record that holds it).
 function collectAllBooksAndMerch(performersLookup) {
   const books = [];
   const merch = [];
   Object.entries(performersLookup).forEach(([ownerId, performer]) => {
     (Array.isArray(performer.books) ? performer.books : []).forEach((book) => {
-      if (book && book.title) books.push({ ownerId, book });
+      if (book && book.title)
+        books.push({ ownerId, book, credited: bookCreditIds(ownerId, book) });
     });
     merchEntries(performer).forEach(([key, item]) => {
       if (item && item.title) {
@@ -184,6 +215,19 @@ function creditLine(prefix, ids, performersLookup) {
   line.appendChild(document.createTextNode(prefix));
   ids.forEach((id, i) => {
     if (i > 0) line.appendChild(document.createTextNode(i === ids.length - 1 ? " & " : ", "));
+    line.appendChild(performerLink(id, performersLookup));
+  });
+  return line;
+}
+
+// "Also performs as: Devils Violin, Daniel Morden | Hugh Lupton | …" or null.
+function collaborationsLine(memberId, performersLookup) {
+  const ids = groupIdsForMember(memberId, performersLookup);
+  if (!ids.length) return null;
+  const line = el("div", "bm-credit bm-collabs");
+  line.appendChild(document.createTextNode("Also performs as: "));
+  ids.forEach((id, i) => {
+    if (i > 0) line.appendChild(document.createTextNode(", "));
     line.appendChild(performerLink(id, performersLookup));
   });
   return line;
@@ -239,11 +283,17 @@ function coverElement(book) {
 
 /**
  * @param {object} book
- * @param {{ publishers?: object, performersLookup?: object, creditIds?: string[] }} [opts]
- *   creditIds: when given, a "by …" line is shown (used on books_merch.html).
+ * @param {{ publishers?: object, performersLookup?: object, creditIds?: string[], creditPrefix?: string }} [opts]
+ *   creditIds: when given, a credit line is shown, prefixed by creditPrefix
+ *   (default "by ").
  */
 function createBookCard(book, opts = {}) {
-  const { publishers = {}, performersLookup = {}, creditIds = null } = opts;
+  const {
+    publishers = {},
+    performersLookup = {},
+    creditIds = null,
+    creditPrefix = "by ",
+  } = opts;
   const card = el("article", "bm-card bm-book");
   card.appendChild(coverElement(book));
 
@@ -253,7 +303,7 @@ function createBookCard(book, opts = {}) {
   const { subtitle, description } = bookSubtitleAndBlurb(book);
   if (subtitle) body.appendChild(el("div", "bm-subtitle", subtitle));
   if (creditIds && creditIds.length) {
-    body.appendChild(creditLine("by ", creditIds, performersLookup));
+    body.appendChild(creditLine(creditPrefix, creditIds, performersLookup));
   }
 
   const meta = el("div", "bm-meta");

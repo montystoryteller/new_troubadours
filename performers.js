@@ -854,6 +854,13 @@ function renderPerformer() {
   addPerformerLink(performer.facebook, "Facebook", "facebook");
   addPerformerLink(performer.facebook_group, "Facebook Page", "facebook");
   addPerformerLink(performer.instagram, "Instagram", "instagram");
+  // Groups this performer belongs to ("Also performs as: …"), from the groups'
+  // own performer_ids — see groupIdsForMember() in books_utils.js.
+  const groupsDiv = document.getElementById("performerGroups");
+  groupsDiv.innerHTML = "";
+  const groupsLine = collaborationsLine(performerId, performersLookup);
+  if (groupsLine) groupsDiv.appendChild(groupsLine);
+
   // Podcast(s) get their own collapsible section further down the page
   // (see renderPodcastSection) rather than a link here, since performer.podcast
   // may be a single URL or a whole list of them.
@@ -2557,11 +2564,11 @@ function renderVideosSection(performer) {
 // books_utils.js. Both sections stay hidden when there's nothing to show.
 // ---------------------------------------------------------------------------
 
-function appendSeeAllLink(list, label) {
+function appendSeeAllLink(list, label, forId = performerId) {
   const line = document.createElement("div");
   line.className = "bm-see-all";
   const a = document.createElement("a");
-  a.href = `books_merch.html?performer=${encodeURIComponent(performerId)}`;
+  a.href = `books_merch.html?performer=${encodeURIComponent(forId)}`;
   a.textContent = label;
   line.appendChild(a);
   list.appendChild(line);
@@ -2585,8 +2592,16 @@ function renderBooksSection(performer) {
 
   const cards = document.createElement("div");
   cards.className = "bm-list";
-  entries.forEach(({ book }) => {
-    cards.appendChild(createBookCard(book, { publishers, performersLookup }));
+  entries.forEach(({ book, credited }) => {
+    // Co-authored: name the *other* authors.
+    cards.appendChild(
+      createBookCard(book, {
+        publishers,
+        performersLookup,
+        creditIds: credited.filter((cid) => cid !== performerId),
+        creditPrefix: "with ",
+      }),
+    );
   });
   list.appendChild(cards);
   appendSeeAllLink(list, "Books & merch page →");
@@ -2600,27 +2615,72 @@ function renderMerchSection(ids) {
     return;
   }
 
+  // Merch that credits this performer is "theirs". Merch that only reaches
+  // them because they belong to a group (e.g. Daniel Morden -> Devils Violin)
+  // is listed separately under a "Via <group>" subheading. On troupe pages
+  // the aliases / parent troupe count as the performer, so nothing is "via".
+  const allOwn = isTroupe(performer) || isTroupeConfig(performer);
+  const own = [];
+  const viaGroups = new Map(); // group id -> entries
+  entries.forEach((entry) => {
+    if (allOwn || entry.credited.includes(performerId)) {
+      own.push(entry);
+      return;
+    }
+    const groupId = entry.credited.find((cid) => ids.has(cid)) || entry.ownerId;
+    if (!viaGroups.has(groupId)) viaGroups.set(groupId, []);
+    viaGroups.get(groupId).push(entry);
+  });
+  const viaCount = entries.length - own.length;
+
   section.style.display = "";
   document.getElementById("perfMerchHint").textContent =
-    `${entries.length} item${entries.length !== 1 ? "s" : ""} — click to expand`;
+    `${entries.length} item${entries.length !== 1 ? "s" : ""}` +
+    (viaCount ? ` (${viaCount} via groups)` : "") +
+    " — click to expand";
 
   const list = document.getElementById("perfMerchList");
   list.innerHTML = "";
 
-  const cards = document.createElement("div");
-  cards.className = "bm-list";
-  entries.forEach(({ item, credited }) => {
-    // For a joint item, name the *other* credited performers.
-    const others = credited.filter((cid) => !ids.has(cid));
-    cards.appendChild(
-      createMerchCard(item, {
-        performersLookup,
-        creditIds: others,
-        creditPrefix: "with ",
-      }),
-    );
-  });
-  list.appendChild(cards);
+  if (own.length) {
+    const cards = document.createElement("div");
+    cards.className = "bm-list";
+    own.forEach(({ item, credited }) => {
+      // For a joint item, name the *other* credited performers.
+      const others = credited.filter((cid) => !ids.has(cid));
+      cards.appendChild(
+        createMerchCard(item, {
+          performersLookup,
+          creditIds: others,
+          creditPrefix: "with ",
+        }),
+      );
+    });
+    list.appendChild(cards);
+  }
+
+  [...viaGroups.entries()]
+    .sort((a, b) =>
+      (performersLookup[a[0]]?.name || a[0]).localeCompare(
+        performersLookup[b[0]]?.name || b[0],
+      ),
+    )
+    .forEach(([groupId, groupEntries]) => {
+      const groupName = performersLookup[groupId]?.name || groupId;
+      const heading = document.createElement("div");
+      heading.className = "bm-subheading";
+      heading.textContent = `Via ${groupName}`;
+      list.appendChild(heading);
+
+      const cards = document.createElement("div");
+      cards.className = "bm-list";
+      groupEntries.forEach(({ item }) => {
+        cards.appendChild(createMerchCard(item, { performersLookup }));
+      });
+      list.appendChild(cards);
+      appendSeeAllLink(list, `All ${groupName} books & merch →`, groupId);
+    });
+
   appendSeeAllLink(list, "Books & merch page →");
 }
 
