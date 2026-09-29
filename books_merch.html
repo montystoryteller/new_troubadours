@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Books, CDs and merchandise by UK storytellers, poets and acoustic musicians — with publishers and where to buy.">
+    <meta name="keywords"
+        content="storyteller books, UK storytellers books, folk tale books, storyteller CDs, storytelling merchandise, poets books, folk music CDs, New Troubadours">
+    <title>Books &amp; Merch by UK Storytellers, Poets &amp; Musicians — New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="shared-styles.css?v=202609250051">
+    <link rel="stylesheet" href="books_merch-styles.css?v=202609291500">
+</head>
+
+<body class="page-books">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Tours & Repertoire</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="books_merch.html">📚 Books &amp; Merch</a>
+        <a href="books_merch.html" aria-current="page">📚 Books &amp; Merch</a>
+        <a href="promoters.html">Promoters</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1 id="pageHeading">The New Troubadours — Books &amp; Merch</h1>
+    <h2 id="pageSubheading">Books, CDs and other merchandise from UK storytellers, poets and acoustic musicians.</h2>
+
+    <div id="loadingState" class="loading-state">Loading books &amp; merch…</div>
+    <div id="notFoundState" class="not-found-state" style="display:none;">
+        <p>Not found. <a href="books_merch.html">See all books &amp; merch.</a></p>
+    </div>
+
+    <div id="booksContent" class="books-container" style="display:none;">
+
+        <!-- Shown only on ?performer= / ?publisher= pages: says what the page is limited to,
+             with a link back to the unfiltered page. -->
+        <div id="scopeNote" class="books-scope-note" style="display:none;"></div>
+
+        <!-- ── Directory tabs (hidden on ?performer= / ?publisher= pages) ── -->
+        <div class="bm-tabs" id="booksTabs" role="tablist" aria-label="Browse books and merch by">
+            <button type="button" role="tab" id="tab-performers" data-view="performers" aria-selected="true"
+                aria-controls="tilesPanel">🎤 Performers</button>
+            <button type="button" role="tab" id="tab-publishers" data-view="publishers" aria-selected="false"
+                aria-controls="tilesPanel" tabindex="-1">🏢 Publishers</button>
+            <button type="button" role="tab" id="tab-all" data-view="all" aria-selected="false"
+                aria-controls="everythingPanel" tabindex="-1">📚 Everything</button>
+        </div>
+
+        <!-- Tiles: one per performer / publisher; each links to its own page -->
+        <div id="tilesPanel" class="bm-tiles-panel" role="tabpanel"></div>
+
+        <!-- Searchable list; also the body of every scoped page -->
+        <div id="everythingPanel" role="tabpanel" aria-labelledby="tab-all">
+            <div class="books-controls" id="booksControls">
+                <input type="search" id="booksSearch" placeholder="Search title, performer, publisher, ISBN…"
+                    aria-label="Search books and merch">
+                <div class="books-kind-toggle" id="kindToggle" role="group" aria-label="Show">
+                    <button type="button" data-kind="all" aria-pressed="true">All</button>
+                    <button type="button" data-kind="books" aria-pressed="false">Books</button>
+                    <button type="button" data-kind="merch" aria-pressed="false">Merch</button>
+                </div>
+                <select id="publisherFilter" aria-label="Filter books by publisher">
+                    <option value="">All publishers</option>
+                </select>
+                <select id="typeFilter" aria-label="Filter merch by type">
+                    <option value="">All merch types</option>
+                </select>
+            </div>
+
+            <p class="books-summary" id="booksSummary"></p>
+            <div id="booksGroups"></div>
+        </div>
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
+                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
+                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
+                Saturday, November 29th, 2025.</em></p>
+        <p><strong>All data
+                is manually sourced and manually added to the site, primarily sourced from primary (performer,
+                ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
+        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
+        </p>
+        <p id="dataLastUpdated"><em></em></p>
+    </div>
+
+    <script src="recurrence-engine.js?v=202609272353"></script>
+    <script src="shared_utils.js?v=202609290009"></script>
+    <script src="books_utils.js?v=202609291500"></script>
+    <script src="books_merch.js?v=202609291500"></script>
+
+</body>
+
+</html>

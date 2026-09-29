@@ -1,0 +1,335 @@
+// ---------------------------------------------------------------------------
+// books_utils.js
+// Shared by performers.html (Books / Merch sections on a performer's page) and
+// books_merch.html (the all-performers Books & Merch page).
+//
+// Data shapes — see events-schema.json → $defs.book / merchItem / publisher:
+//   performer.books   : array of book objects
+//   performer.merch   : OBJECT of merch items keyed by slug (joint items list
+//                       everyone credited in item.performer_ids)
+//   eventsData.publishers : registry keyed by publisher_id; a book points at it
+//                       via book.publisher_id (older books have a free-text
+//                       book.publisher instead)
+//
+// Depends on shared_utils.js (el, createExternalLink, appendParagraphs, capitalise).
+// ---------------------------------------------------------------------------
+
+// Where relative `book.cover` filenames are loaded from (absolute URLs are used
+// as-is). Every cover in the data is currently empty, so nothing loads yet.
+const BOOK_COVER_BASE = "./book_covers/";
+
+// A `subtitle` longer than this is treated as blurb text that was pasted into
+// the wrong field (one record has its whole description there): it's shown as
+// the description instead of as a subtitle.
+const MAX_SUBTITLE_CHARS = 140;
+
+const MERCH_TYPE_LABELS = {
+  cd: "CD",
+  vinyl: "Vinyl",
+  cassette: "Cassette",
+  download: "Download",
+  "t-shirt": "T-shirt",
+  tshirt: "T-shirt",
+  poster: "Poster",
+};
+
+function merchTypeLabel(type) {
+  const t = (type || "").trim().toLowerCase();
+  if (!t) return "Merch";
+  return MERCH_TYPE_LABELS[t] || capitalise(t);
+}
+
+// Buy links are hand-entered; strip stray whitespace (e.g. "https: //…") before
+// they reach the URL sanitiser, which would otherwise reject or mangle them.
+function cleanBuyUrl(url) {
+  return (url || "").replace(/\s+/g, "");
+}
+
+function bookSubtitleAndBlurb(book) {
+  let subtitle = (book.subtitle || "").trim();
+  let description = (book.description || "").trim();
+  if (subtitle.length > MAX_SUBTITLE_CHARS) {
+    if (!description) description = subtitle;
+    subtitle = "";
+  }
+  return { subtitle, description };
+}
+
+// -> { name, url, id } or null. Registry entry wins over legacy free text.
+function bookPublisherInfo(book, publishers) {
+  if (book.publisher_id) {
+    const rec = (publishers || {})[book.publisher_id];
+    return {
+      id: book.publisher_id,
+      name: rec?.name || book.publisher || book.publisher_id,
+      url: rec?.url || "",
+    };
+  }
+  if (book.publisher) return { id: "", name: book.publisher, url: "" };
+  return null;
+}
+
+// Stable key for ?publisher=: the registry id, or "name:<lowercased name>" for
+// older books that only carry free-text publisher text. "" when none.
+function bookPublisherKey(book, publishers) {
+  const info = bookPublisherInfo(book, publishers);
+  if (!info) return "";
+  return info.id || `name:${info.name.trim().toLowerCase()}`;
+}
+
+function publisherPageHref(key) {
+  return `books_merch.html?publisher=${encodeURIComponent(key)}`;
+}
+
+function bookYearNumber(y) {
+  return typeof y === "number" && Number.isFinite(y) ? y : null;
+}
+
+// ---------------------------------------------------------------------------
+// Collecting
+// ---------------------------------------------------------------------------
+
+function merchEntries(performer) {
+  const m = performer?.merch;
+  if (!m) return [];
+  if (Array.isArray(m)) return m.map((item, i) => [String(i), item]);
+  return Object.entries(m);
+}
+
+// Everyone credited on a merch item: its holder, plus item.performer_ids.
+function merchCreditIds(ownerId, item) {
+  const ids = [ownerId];
+  (Array.isArray(item?.performer_ids) ? item.performer_ids : []).forEach(
+    (id) => {
+      if (!ids.includes(id)) ids.push(id);
+    },
+  );
+  return ids;
+}
+
+function sortNewestFirst(a, b, get) {
+  const ya = bookYearNumber(get(a).year) ?? -1;
+  const yb = bookYearNumber(get(b).year) ?? -1;
+  if (ya !== yb) return yb - ya;
+  return (get(a).title || "").localeCompare(get(b).title || "");
+}
+
+// Books held on these performer records (usually just one id).
+function collectBooksFor(ids, performersLookup) {
+  const out = [];
+  ids.forEach((id) => {
+    const books = performersLookup[id]?.books;
+    if (Array.isArray(books)) {
+      books.forEach((book) => {
+        if (book && book.title) out.push({ ownerId: id, book });
+      });
+    }
+  });
+  return out.sort((a, b) => sortNewestFirst(a, b, (x) => x.book));
+}
+
+// Merch held by, or crediting, any of these ids. Each item appears once even
+// if several of the ids are credited on it.
+function collectMerchFor(ids, performersLookup) {
+  const idSet = ids instanceof Set ? ids : new Set(ids);
+  const out = [];
+  Object.entries(performersLookup).forEach(([ownerId, performer]) => {
+    merchEntries(performer).forEach(([key, item]) => {
+      if (!item || !item.title) return;
+      const credited = merchCreditIds(ownerId, item);
+      if (credited.some((id) => idSet.has(id))) {
+        out.push({ key, ownerId, item, credited });
+      }
+    });
+  });
+  return out.sort((a, b) => sortNewestFirst(a, b, (x) => x.item));
+}
+
+// Everything in the data, each item once (merch under the record that holds it).
+function collectAllBooksAndMerch(performersLookup) {
+  const books = [];
+  const merch = [];
+  Object.entries(performersLookup).forEach(([ownerId, performer]) => {
+    (Array.isArray(performer.books) ? performer.books : []).forEach((book) => {
+      if (book && book.title) books.push({ ownerId, book });
+    });
+    merchEntries(performer).forEach(([key, item]) => {
+      if (item && item.title) {
+        merch.push({
+          key,
+          ownerId,
+          item,
+          credited: merchCreditIds(ownerId, item),
+        });
+      }
+    });
+  });
+  return { books, merch };
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+function performerLink(id, performersLookup) {
+  const name = performersLookup[id]?.name || id;
+  const a = el("a", "bm-performer-link", name);
+  a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+  return a;
+}
+
+// Comma-joined performer links, prefixed by `prefix` (e.g. "by ", "with ").
+function creditLine(prefix, ids, performersLookup) {
+  const line = el("div", "bm-credit");
+  line.appendChild(document.createTextNode(prefix));
+  ids.forEach((id, i) => {
+    if (i > 0) line.appendChild(document.createTextNode(i === ids.length - 1 ? " & " : ", "));
+    line.appendChild(performerLink(id, performersLookup));
+  });
+  return line;
+}
+
+function buyLink(url, label) {
+  const clean = cleanBuyUrl(url);
+  if (!clean) return null;
+  const link = createExternalLink(clean, label || "Buy / more info →", {
+    className: "bm-buy",
+  });
+  if (!link) return null;
+  try {
+    const host = new URL(link.href).hostname.replace(/^www\./, "");
+    link.title = `Opens ${host}`;
+  } catch (e) {
+    /* title is a nicety only */
+  }
+  return link;
+}
+
+function descriptionDropdown(text, label) {
+  if (!text) return null;
+  const details = el("details", "bm-desc");
+  details.appendChild(el("summary", "bm-desc-summary", label));
+  const body = el("div", "bm-desc-body");
+  appendParagraphs(body, text);
+  details.appendChild(body);
+  return details;
+}
+
+function coverElement(book) {
+  const wrap = el("div", "bm-cover");
+  const cover = (book.cover || "").trim();
+  if (!cover) {
+    wrap.classList.add("bm-cover-placeholder");
+    wrap.textContent = "📖";
+    return wrap;
+  }
+  const img = document.createElement("img");
+  img.alt = `Cover of ${book.title}`;
+  img.loading = "lazy";
+  img.src = /^https?:\/\//i.test(cover)
+    ? cover
+    : BOOK_COVER_BASE + cover.replace(/[^a-zA-Z0-9._\-]/g, "");
+  img.addEventListener("error", () => {
+    wrap.classList.add("bm-cover-placeholder");
+    wrap.textContent = "📖";
+  });
+  wrap.appendChild(img);
+  return wrap;
+}
+
+/**
+ * @param {object} book
+ * @param {{ publishers?: object, performersLookup?: object, creditIds?: string[] }} [opts]
+ *   creditIds: when given, a "by …" line is shown (used on books_merch.html).
+ */
+function createBookCard(book, opts = {}) {
+  const { publishers = {}, performersLookup = {}, creditIds = null } = opts;
+  const card = el("article", "bm-card bm-book");
+  card.appendChild(coverElement(book));
+
+  const body = el("div", "bm-body");
+  body.appendChild(el("h4", "bm-title", book.title));
+
+  const { subtitle, description } = bookSubtitleAndBlurb(book);
+  if (subtitle) body.appendChild(el("div", "bm-subtitle", subtitle));
+  if (creditIds && creditIds.length) {
+    body.appendChild(creditLine("by ", creditIds, performersLookup));
+  }
+
+  const meta = el("div", "bm-meta");
+  const publisher = bookPublisherInfo(book, publishers);
+  const year = bookYearNumber(book.year);
+  const parts = [];
+  if (publisher) {
+    // Links to the publisher's own page here (which carries their website).
+    const span = el("span", "bm-publisher");
+    const link = el("a", "bm-publisher-link", publisher.name);
+    link.href = publisherPageHref(bookPublisherKey(book, publishers));
+    span.appendChild(link);
+    parts.push(span);
+  }
+  if (year) parts.push(el("span", "bm-year", String(year)));
+  if (book.isbn) parts.push(el("span", "bm-isbn", `ISBN ${book.isbn}`));
+  parts.forEach((part, i) => {
+    if (i > 0) meta.appendChild(document.createTextNode(" · "));
+    meta.appendChild(part);
+  });
+  if (parts.length) body.appendChild(meta);
+
+  const dd = descriptionDropdown(description, "About this book");
+  if (dd) body.appendChild(dd);
+
+  const buy = buyLink(book.buy_url);
+  if (buy) {
+    const actions = el("div", "bm-actions");
+    actions.appendChild(buy);
+    body.appendChild(actions);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+/**
+ * @param {object} item merch item
+ * @param {{ performersLookup?: object, creditIds?: string[], creditPrefix?: string }} [opts]
+ *   creditIds: performers to show in a credit line, prefixed by creditPrefix
+ *   (default "by ").
+ */
+function createMerchCard(item, opts = {}) {
+  const { performersLookup = {}, creditIds = null, creditPrefix = "by " } = opts;
+  const card = el("article", "bm-card bm-merch");
+
+  const icon = el("div", "bm-cover bm-cover-placeholder");
+  icon.textContent = /^(cd|vinyl|cassette|download)$/i.test(item.type || "")
+    ? "💿"
+    : /shirt/i.test(item.type || "")
+      ? "👕"
+      : "🛍";
+  card.appendChild(icon);
+
+  const body = el("div", "bm-body");
+  const head = el("div", "bm-title-row");
+  head.appendChild(el("h4", "bm-title", item.title));
+  head.appendChild(el("span", "bm-type-badge", merchTypeLabel(item.type)));
+  body.appendChild(head);
+
+  if (creditIds && creditIds.length) {
+    body.appendChild(creditLine(creditPrefix, creditIds, performersLookup));
+  }
+  const year = bookYearNumber(item.year);
+  if (year) body.appendChild(el("div", "bm-meta", String(year)));
+
+  const dd = descriptionDropdown((item.description || "").trim(), "About this item");
+  if (dd) body.appendChild(dd);
+
+  const buy = buyLink(item.buy_url);
+  if (buy) {
+    const actions = el("div", "bm-actions");
+    actions.appendChild(buy);
+    body.appendChild(actions);
+  }
+
+  card.appendChild(body);
+  return card;
+}

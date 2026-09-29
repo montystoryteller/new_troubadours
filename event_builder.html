@@ -817,6 +817,29 @@
                 </div>
             </div>
 
+            <div class="field-row">
+                <label>Books</label>
+                <div>
+                    <div id="perf-books-field"></div>
+                    <div class="field-hint">Books by this performer — shown in a Books section on their profile page
+                        and on the Books &amp; Merch page. Only the title is required. Pick the publisher from the
+                        suggestions where you can; if you type one that isn't registered yet, it's added to the
+                        top-level <code>publishers</code> registry (with the website, if you give one) and the book
+                        saved with its <code>publisher_id</code>. Older books that only have a free-text publisher
+                        keep it as typed unless you change it.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <label>Merch</label>
+                <div>
+                    <div id="perf-merch-field"></div>
+                    <div class="field-hint">CDs, vinyl, downloads, T-shirts etc. (non-book items). For a joint
+                        item (e.g. a duo CD) add the <em>other</em> credited performers — this performer is included
+                        automatically, and the item then appears on all of their profile pages.</div>
+                </div>
+            </div>
+
             <div class="btn-row">
                 <button class="btn-add-batch" onclick="addPerformerToBatch()">Add to batch</button>
                 <button class="btn-clear-form" onclick="clearPerformerForm()">Clear form</button>
@@ -1590,7 +1613,7 @@
                 <code>venues</code>, then merge each record into its matching top-level array/object
                 (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
                 <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by
-                promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>clubs</code>
+                promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>publishers</code> is the same shape (keyed by publisher_id) — merge into the top-level <code>publishers</code> object; it only appears when a book was given a publisher not already registered. <code>clubs</code>
                 holds new recurring club nights — append them to the top-level <code>clubs</code> array (not
                 <code>specificEvents</code>, which is where one-off events at a club go).
                 <code>podcastEpisodeAdditions</code>
@@ -1643,6 +1666,10 @@
     <datalist id="clubOptions"></datalist>
     <datalist id="promoterOptions"></datalist>
     <datalist id="promoterNameOptions"></datalist>
+    <datalist id="publisherNameOptions"></datalist>
+    <datalist id="merchTypeOptions">
+        <option value="cd"><option value="vinyl"><option value="cassette"><option value="download"><option value="t-shirt"><option value="poster"><option value="other">
+    </datalist>
     <datalist id="clubNameOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
@@ -1665,6 +1692,8 @@
         let clubsList = [];
         // Top-level `promoters` registry from events_normalized.json, keyed by promoter_id.
         let promotersLookup = {};
+        // Top-level `publishers` registry from events_normalized.json, keyed by publisher_id.
+        let publishersLookup = {};
         let existingTourKeys = new Set();
         let existingShowKeys = new Set();
         let existingFestivalKeys = new Set();
@@ -1714,7 +1743,7 @@
         let perfMatcher, venueMatcher, festivalMatcher, podcastMatcher, promoterMatcher, clubMatcher;
 
         // Batch of records waiting to be exported
-        const batch = { clubs: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], promoters: [], recurringClubs: [], podcastEpisodeAdditions: [] };
+        const batch = { clubs: [], musicEvents: [], poetryEvents: [], tours: [], shows: [], festivals: [], podcasts: [], promoters: [], publishers: [], recurringClubs: [], podcastEpisodeAdditions: [] };
 
         // ── Paragraph-break encoding ─────────────────────────────────────────
         // House convention (see tour_description in events-schema.json): a
@@ -4781,6 +4810,233 @@
             };
         }
 
+        // ── Publishers registry + performer.books / performer.merch fields ──
+        // Publishers live in the top-level `publishers` registry (keyed by
+        // publisher_id) so a name/link is stored once; a book points at one via
+        // `publisher_id`. New ones typed into a book row are queued in
+        // batch.publishers and exported as `publishers`.
+        function allPublishers() {
+            const out = { ...publishersLookup };
+            batch.publishers.forEach(p => { out[p.publisher_id] = p; });
+            return out;
+        }
+        function publisherNameFor(id) {
+            const rec = allPublishers()[id];
+            return rec ? (rec.name || id) : (id || "");
+        }
+        function findPublisherIdByName(name) {
+            const want = (name || "").trim().toLowerCase();
+            if (!want) return null;
+            const hit = Object.entries(allPublishers()).find(([k, p]) => (p.name || "").trim().toLowerCase() === want);
+            return hit ? hit[0] : null;
+        }
+        function refreshPublisherDatalist() {
+            document.getElementById("publisherNameOptions").innerHTML =
+                Object.values(allPublishers()).map(p => p.name).filter(Boolean)
+                    .map(n => `<option value="${n.replace(/"/g, "&quot;")}">`).join("");
+        }
+        // Returns the publisher_id for a typed name, registering a new
+        // publisher (queued in the batch) if it isn't already known.
+        function resolvePublisher(name, url) {
+            const existing = findPublisherIdByName(name);
+            if (existing) return existing;
+            const id = uniqueId(slugify(name), k => !!allPublishers()[k]);
+            const rec = { name: name.trim(), publisher_id: id };
+            if (url) rec.url = url;
+            batch.publishers.push(rec);
+            refreshPublisherDatalist();
+            return id;
+        }
+
+        // Shared by the book and merch readers: copies `value` onto rec[key],
+        // or removes the key when empty — except that a key the loaded record
+        // already held as an empty ("" / null) placeholder is left alone, so
+        // re-saving an untouched record doesn't produce noisy diffs.
+        function setOrClear(rec, orig, key, value) {
+            if (value !== "" && value != null) rec[key] = value;
+            else if (orig[key] === "" || orig[key] === null) rec[key] = orig[key];
+            else delete rec[key];
+        }
+        function readYearInput(input) {
+            const n = parseInt(input.value.trim(), 10);
+            return Number.isFinite(n) ? n : "";
+        }
+
+        // performer.books
+        function buildBooksField(container) {
+            return buildSubitemList(container, {
+                addLabel: "Add another book",
+                buildRowFields: (wrap) => {
+                    wrap.className = "subitem-row-fields two-col";
+                    wrap.innerHTML = `
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Title</label>
+                            <input type="text" class="bk-title" placeholder="e.g. Norfolk Folk Tales">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Subtitle (optional)</label>
+                            <input type="text" class="bk-subtitle">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Publisher</label>
+                            <input type="text" class="bk-publisher" list="publisherNameOptions" placeholder="Start typing to pick a registered publisher">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Publisher website (only used if this publisher is new)</label>
+                            <input type="url" class="bk-publisher-url" placeholder="https://...">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Year</label>
+                            <input type="number" class="bk-year" min="1000" max="2100" step="1">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">ISBN</label>
+                            <input type="text" class="bk-isbn" placeholder="digits only, e.g. 9780752479422">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Buy link</label>
+                            <input type="url" class="bk-buy-url" placeholder="https://...">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Cover image (optional)</label>
+                            <input type="text" class="bk-cover" placeholder="filename or URL">
+                        </div>
+                        <div class="subitem-field-group" style="grid-column: 1 / -1;">
+                            <label class="subitem-field-label">Description</label>
+                            <textarea class="bk-description" rows="3"></textarea>
+                        </div>`;
+                },
+            });
+        }
+        function readBooksField(field) {
+            const books = [];
+            field.rows().forEach(row => {
+                const val = sel => row.querySelector(sel).value.trim();
+                const title = val(".bk-title");
+                if (!title) return;
+                const orig = row._orig || {};
+                const rec = { ...orig, title };
+                setOrClear(rec, orig, "subtitle", val(".bk-subtitle"));
+                setOrClear(rec, orig, "description", encodeParagraphBreaks(row.querySelector(".bk-description").value));
+                setOrClear(rec, orig, "year", readYearInput(row.querySelector(".bk-year")));
+                setOrClear(rec, orig, "isbn", val(".bk-isbn").replace(/[\s-]+/g, ""));
+                setOrClear(rec, orig, "cover", val(".bk-cover"));
+                setOrClear(rec, orig, "buy_url", val(".bk-buy-url"));
+                const pubName = val(".bk-publisher");
+                if (pubName !== (row._origPublisherName || "")) {
+                    if (!pubName) {
+                        delete rec.publisher_id;
+                        delete rec.publisher;
+                    } else {
+                        rec.publisher_id = resolvePublisher(pubName, val(".bk-publisher-url"));
+                        delete rec.publisher;
+                    }
+                } // unchanged: whatever the loaded record had (publisher_id or legacy publisher text) is kept as-is
+                books.push(rec);
+            });
+            return books;
+        }
+        function populateBooksField(field, books) {
+            const items = Array.isArray(books) ? books : [];
+            while (field.rows().length < Math.max(items.length, 1)) field.addRow();
+            field.rows().forEach((row, i) => {
+                const b = items[i];
+                const set = (sel, v) => { row.querySelector(sel).value = v == null ? "" : v; };
+                row._orig = b ? JSON.parse(JSON.stringify(b)) : null;
+                set(".bk-title", b && b.title);
+                set(".bk-subtitle", b && b.subtitle);
+                set(".bk-year", b && b.year);
+                set(".bk-isbn", b && b.isbn);
+                set(".bk-cover", b && b.cover);
+                set(".bk-buy-url", b && b.buy_url);
+                set(".bk-description", b ? decodeParagraphBreaksForEdit(b.description) : "");
+                set(".bk-publisher-url", "");
+                const pubName = b ? (b.publisher_id ? publisherNameFor(b.publisher_id) : (b.publisher || "")) : "";
+                row._origPublisherName = pubName;
+                set(".bk-publisher", pubName);
+            });
+        }
+
+        // performer.merch — an object keyed by item slug; items shared between
+        // performers list everyone in `performer_ids`.
+        function buildMerchField(container) {
+            return buildSubitemList(container, {
+                addLabel: "Add another merch item",
+                buildRowFields: (wrap) => {
+                    wrap.className = "subitem-row-fields two-col";
+                    wrap.innerHTML = `
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Title</label>
+                            <input type="text" class="mc-title" placeholder="e.g. The Hanging of a Mouse">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Type</label>
+                            <input type="text" class="mc-type" list="merchTypeOptions" placeholder="cd, vinyl, download, t-shirt…">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Year</label>
+                            <input type="number" class="mc-year" min="1000" max="2100" step="1">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Buy link</label>
+                            <input type="url" class="mc-buy-url" placeholder="https://...">
+                        </div>
+                        <div class="subitem-field-group" style="grid-column: 1 / -1;">
+                            <label class="subitem-field-label">Description</label>
+                            <textarea class="mc-description" rows="3"></textarea>
+                        </div>
+                        <div class="subitem-field-group" style="grid-column: 1 / -1;">
+                            <label class="subitem-field-label">Other credited performers (joint items only)</label>
+                            <div class="mc-performers"></div>
+                        </div>`;
+                    wrap._perfs = buildPerformerIdListField(wrap.querySelector(".mc-performers"), "Add another credited performer");
+                },
+            });
+        }
+        // buildRowFields' wrapper is the row's first child, so its nested
+        // performer list is reachable from the row itself.
+        function merchRowPerfs(row) { return row.firstElementChild._perfs; }
+
+        function readMerchField(field, ownerId) {
+            const merch = {};
+            field.rows().forEach(row => {
+                const val = sel => row.querySelector(sel).value.trim();
+                const title = val(".mc-title");
+                if (!title) return;
+                const orig = row._orig || {};
+                const rec = { ...orig, title };
+                setOrClear(rec, orig, "type", val(".mc-type").toLowerCase());
+                setOrClear(rec, orig, "description", encodeParagraphBreaks(row.querySelector(".mc-description").value));
+                setOrClear(rec, orig, "year", readYearInput(row.querySelector(".mc-year")));
+                setOrClear(rec, orig, "buy_url", val(".mc-buy-url"));
+                const others = readPerformerIdListField(merchRowPerfs(row)).filter(id => id !== ownerId);
+                if (others.length) rec.performer_ids = [ownerId, ...new Set(others)];
+                else delete rec.performer_ids;
+                let key = row._key || `${slugify(rec.type || "item")}-${slugify(title)}`;
+                if (!row._key) key = uniqueId(key, k => k in merch);
+                else if (key in merch) key = uniqueId(key, k => k in merch);
+                merch[key] = rec;
+            });
+            return merch;
+        }
+        function populateMerchField(field, merch, ownerId) {
+            const entries = Array.isArray(merch) ? merch.map(m => [null, m]) : Object.entries(merch || {});
+            while (field.rows().length < Math.max(entries.length, 1)) field.addRow();
+            field.rows().forEach((row, i) => {
+                const [key, m] = entries[i] || [null, null];
+                const set = (sel, v) => { row.querySelector(sel).value = v == null ? "" : v; };
+                row._key = key;
+                row._orig = m ? JSON.parse(JSON.stringify(m)) : null;
+                set(".mc-title", m && m.title);
+                set(".mc-type", m && m.type);
+                set(".mc-year", m && m.year);
+                set(".mc-buy-url", m && m.buy_url);
+                set(".mc-description", m ? decodeParagraphBreaksForEdit(m.description) : "");
+                const others = m && Array.isArray(m.performer_ids) ? m.performer_ids.filter(id => id !== ownerId) : [];
+                populatePerformerIdListField(merchRowPerfs(row), others);
+            });
+        }
+
         // ── Standalone new performer ─────────────────────────────────────────
         function populatePerformerForm(record) {
             document.getElementById("perf-name").value = record.name || "";
@@ -4800,14 +5056,19 @@
             populateYoutubeVideosField(perfYoutubeVideos, record.youtube_videos);
             populatePodcastAppearancesField(perfPodcastAppearances, record.podcast_appearances);
             populatePerformerIdListField(perfMembersField, record.performer_ids);
+            populateBooksField(perfBooks, record.books);
+            populateMerchField(perfMerch, record.merch, record.id);
         }
 
-        let perfPodcastLinks, perfYoutubeVideos, perfPodcastAppearances, perfMembersField;
+        let perfPodcastLinks, perfYoutubeVideos, perfPodcastAppearances, perfMembersField, perfBooks, perfMerch;
         function initPerformerForm() {
             perfPodcastLinks = buildPodcastLinksField(document.getElementById("perf-podcast-field"));
             perfYoutubeVideos = buildYoutubeVideosField(document.getElementById("perf-youtube-field"));
             perfPodcastAppearances = buildPodcastAppearancesField(document.getElementById("perf-podcast-appearances-field"));
             perfMembersField = buildPerformerIdListField(document.getElementById("perf-members-field"), "Add another member");
+            perfBooks = buildBooksField(document.getElementById("perf-books-field"));
+            perfMerch = buildMerchField(document.getElementById("perf-merch-field"));
+            refreshPublisherDatalist();
             perfMatcher = makeRecordMatcher({
                 statusEl: document.getElementById("perf-name-status"),
                 findExisting: name => Object.values(performersLookup).find(r => (r.name || "").toLowerCase() === name.toLowerCase()),
@@ -4853,6 +5114,10 @@
             if (podcastLinks) record.podcast = podcastLinks;
             if (youtubeVideos.length) record.youtube_videos = youtubeVideos;
             if (podcastAppearances.length) record.podcast_appearances = podcastAppearances;
+            const books = readBooksField(perfBooks);
+            if (books.length) record.books = books;
+            const merch = readMerchField(perfMerch, id);
+            if (Object.keys(merch).length) record.merch = merch;
             batch.podcastEpisodeAdditions.push(...podcastEpisodeAdditions);
             if (instagram) record.instagram = instagram;
             if (ticketsUrl) record.tickets_url = ticketsUrl;
@@ -5493,6 +5758,10 @@
                     remove: () => batch.promoters.splice(i, 1), previewData: r,
                     edit: () => { switchToTab("promoter"); promoterMatcher.edit({ id: r.promoter_id, ...r }, "batch"); },
                 })),
+                ...batch.publishers.map((r, i) => ({
+                    tag: "publisher", label: `${r.name} (${r.publisher_id})`,
+                    remove: () => { batch.publishers.splice(i, 1); refreshPublisherDatalist(); }, previewData: r,
+                })),
                 ...Object.keys(updatedPromoters).map(id => ({
                     tag: "promoter-edit", label: `${updatedPromoters[id].name} (editing existing promoter: ${id})`,
                     remove: () => delete updatedPromoters[id], previewData: updatedPromoters[id],
@@ -5623,6 +5892,8 @@
             // promoters are keyed by promoter_id in the file, so emit the same shape to merge straight in.
             if (batch.promoters.length) out.promoters = Object.fromEntries(batch.promoters.map(p => [p.promoter_id, p]));
             if (Object.keys(updatedPromoters).length) out.updatedPromoters = updatedPromoters;
+            // publishers are keyed by publisher_id in the file too (only ones newly registered via a book's Publisher field).
+            if (batch.publishers.length) out.publishers = Object.fromEntries(batch.publishers.map(p => [p.publisher_id, p]));
             // Recurring club nights (top-level `clubs` array) — not to be confused with
             // specificEvents, which is what batch.clubs holds in this file.
             if (batch.recurringClubs.length) out.clubs = batch.recurringClubs;
@@ -7950,6 +8221,7 @@
                 podcastsLookup = Object.fromEntries((result.eventsData.podcasts || []).map(p => [p.podcast_id, p]));
                 festivalsLookup = result.eventsData.festivals || {};
                 promotersLookup = result.eventsData.promoters || {};
+                publishersLookup = result.eventsData.publishers || {};
                 clubsList = result.eventsData.clubs || [];
                 clubIds = [...new Set((result.eventsData.clubs || []).map(e => e.club).filter(Boolean))];
                 existingTourKeys = new Set(Object.keys(result.toursLookup || {}));

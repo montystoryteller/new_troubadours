@@ -12,6 +12,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="shared-styles.css?v=202609250051">
     <link rel="stylesheet" href="performers-styles.css?v=202609251115">
+    <link rel="stylesheet" href="books_merch-styles.css?v=202609291500">
 </head>
 
 <body class="page-performer">
@@ -27,6 +28,7 @@
         <a href="event.html">Event Pages</a>
         <a href="flyers.html">📋 Flyers</a>
         <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="books_merch.html">📚 Books &amp; Merch</a>
         <a href="promoters.html">Promoters</a>
         <a href="stats.html">📊 Stats</a>
     </nav>
@@ -97,6 +99,22 @@
             <div class="perf-collapsible-list" id="perfVideosList"></div>
         </details>
 
+        <details class="perf-collapsible-section" id="perfBooksSection" style="display:none;">
+            <summary class="perf-collapsible-summary">
+                📚 Books
+                <span class="perf-collapsible-hint" id="perfBooksHint">click to expand</span>
+            </summary>
+            <div class="perf-collapsible-list" id="perfBooksList"></div>
+        </details>
+
+        <details class="perf-collapsible-section" id="perfMerchSection" style="display:none;">
+            <summary class="perf-collapsible-summary">
+                🛍 Merch
+                <span class="perf-collapsible-hint" id="perfMerchHint">click to expand</span>
+            </summary>
+            <div class="perf-collapsible-list" id="perfMerchList"></div>
+        </details>
+
         <details class="perf-collapsible-section" id="perfCollaboratorsSection" style="display:none;">
             <summary class="perf-collapsible-summary">
                 🤝 Collaborators
@@ -164,7 +182,8 @@
     <script src="recurrence-engine.js?v=202609272353"></script>
     <script src="shared_utils.js?v=202609290009"></script>
     <script src="podcast_utils.js?v=202609272353"></script>
-    <script src="performers.js?v=202609272353"></script>
+    <script src="books_utils.js?v=202609291500"></script>
+    <script src="performers.js?v=202609291500"></script>
 
 </body>
 

@@ -1,5 +1,8 @@
 {
-  "affiliate_ids":{"amazon": "newtroubadour-21", "wegottickets": "671"},
+  "affiliate_ids": {
+    "amazon": "newtroubadour-21",
+    "wegottickets": "671"
+  },
   "promoters": {
     "south-london-storytelling": {
       "promoter_id": "south-london-storytelling",
@@ -247,7 +250,7 @@
           "venue_id": "st-nicholas-priory-exeter",
           "name": "A Harper's Trade",
           "performer": "nick-hennessey",
-          "description": "There was a time when ‘to harp’ meant to speak, when harpers travelled the length and breadth of the country telling stories and singing songs. As they travelled, the stories and the songs they carried with them were shaped by the places they went, by the roads they took and by the wind that blew them.\n\n\n\nOver the last 18 years Nick been developing a vibrant and exciting style of performance harpers of old would recognize. Drawing deeply from the wellspring of traditional sources, this performance of song and story re-interprets the material for a modern 21st century, with powerful and evocative language and an innovative style of harp playing.",
+          "description": "There was a time when ‘to harp' meant to speak, when harpers travelled the length and breadth of the country telling stories and singing songs. As they travelled, the stories and the songs they carried with them were shaped by the places they went, by the roads they took and by the wind that blew them.\n\n\n\nOver the last 18 years Nick been developing a vibrant and exciting style of performance harpers of old would recognize. Drawing deeply from the wellspring of traditional sources, this performance of song and story re-interprets the material for a modern 21st century, with powerful and evocative language and an innovative style of harp playing.",
           "type": "storytelling_shows",
           "ticket_url": ""
         }
@@ -1835,7 +1838,7 @@
       "ticket_url": "https://purchase.vfringe.co.uk/Events?attribute_WebsiteListing=VFringe",
       "website": "http://www.gather-round.uk/",
       "facebook": "",
-      "description": "Three extraordinary days. One beautiful town. Hundreds of stories waiting to be told.\n\n\n\nThis October, Monmouth comes alive with stories.\n\n\n\nFrom 2–4 October, Gather Round brings some of the UK's most captivating storytellers, myth-makers and performers to theatres, gardens, historic buildings, the library and pubs across this remarkable border town.\n\n\n\nCome for a story. Stay for the atmosphere. Discover Monmouth in a whole new way.\n\n\n\nMeet the storytellers\n\n\n\nOn Saturday evening, step into the atmospheric Savoy Theatre for an unmissable night with acclaimed mythologist, storyteller and New York Times bestselling author Dr Martin Shaw.\n\n\n\nOn Friday night, look up at the stars and gather round for Alim Kamara, the acclaimed Nigerian storyteller. Bring a blanket, pack a picnic, bring your friends — and prepare to be transported.\n\n\n\nAcross the weekend, discover the powerful world of goddess stories with Sally Pomme Clayton, dive into tales of rivers and water with Corinne Harragin & Familia Theatre, and uncover Monmouth's fascinating past on story walks through the town.\n\n\n\nAnd it's not just for grown-ups.\n\n\n\nFree family storytelling, crafts and performances — sponsored by Menter Iaith Mynwy — mean there's plenty for younger story-lovers too.\n\n\n\nA festival you can wander into\n\n\n\nGather Round isn't just something you watch.\n\n\n\nIt's something you experience.\n\n\n\nWander from one story to another. Discover hidden corners of Monmouth. Hear ancient myths, local histories and extraordinary tales. Laugh, listen, wonder and see the town through new eyes.\n\n\n\nWhether you're a lifelong lover of stories or simply looking for something different this autumn, there really is something for everyone.",
+      "description": "Three extraordinary days. One beautiful town. Hundreds of stories waiting to be told.\n\n\n\nThis October, Monmouth comes alive with stories.\n\n\n\nFrom 2—4 October, Gather Round brings some of the UK's most captivating storytellers, myth-makers and performers to theatres, gardens, historic buildings, the library and pubs across this remarkable border town.\n\n\n\nCome for a story. Stay for the atmosphere. Discover Monmouth in a whole new way.\n\n\n\nMeet the storytellers\n\n\n\nOn Saturday evening, step into the atmospheric Savoy Theatre for an unmissable night with acclaimed mythologist, storyteller and New York Times bestselling author Dr Martin Shaw.\n\n\n\nOn Friday night, look up at the stars and gather round for Alim Kamara, the acclaimed Nigerian storyteller. Bring a blanket, pack a picnic, bring your friends — and prepare to be transported.\n\n\n\nAcross the weekend, discover the powerful world of goddess stories with Sally Pomme Clayton, dive into tales of rivers and water with Corinne Harragin & Familia Theatre, and uncover Monmouth's fascinating past on story walks through the town.\n\n\n\nAnd it's not just for grown-ups.\n\n\n\nFree family storytelling, crafts and performances — sponsored by Menter Iaith Mynwy — mean there's plenty for younger story-lovers too.\n\n\n\nA festival you can wander into\n\n\n\nGather Round isn't just something you watch.\n\n\n\nIt's something you experience.\n\n\n\nWander from one story to another. Discover hidden corners of Monmouth. Hear ancient myths, local histories and extraordinary tales. Laugh, listen, wonder and see the town through new eyes.\n\n\n\nWhether you're a lifelong lover of stories or simply looking for something different this autumn, there really is something for everyone.",
       "event_flyer": "2026_10_04_monmouth_festival_stories.jpg",
       "performers": [],
       "performers_tbc": true,
@@ -1997,7 +2000,7 @@
         }
       ],
       "touring_event_flyer": "banner_mooney_comb.webp",
-      "description": "A Storytelling Performance by Charlotte Mooney\n\n\n\n“I saw a banshee once, just outside of Galway…”\n\n\n\nWhen Charlotte was 8 her Grandad told her the beginning of a story but refused to tell the full tale. Years later a chance encounter led her to find the rest of his story buried deep within an archive gathered from families in Ireland. Not only did she discover this unbelievable link to her past but also a far more startling realisation.\n\n\n\nAt times chilling, hilarious and moving Comb is a lament for the stories and people we have lost. A tangled ride through Celtic, Slavic and Siberian folklore – featuring sentient puddles, gods, mermaids and a healthy respect for nits, it is a clarion call for understanding just how interwoven we all are.",
+      "description": "A Storytelling Performance by Charlotte Mooney\n\n\n\n“I saw a banshee once, just outside of Galway…”\n\n\n\nWhen Charlotte was 8 her Grandad told her the beginning of a story but refused to tell the full tale. Years later a chance encounter led her to find the rest of his story buried deep within an archive gathered from families in Ireland. Not only did she discover this unbelievable link to her past but also a far more startling realisation.\n\n\n\nAt times chilling, hilarious and moving Comb is a lament for the stories and people we have lost. A tangled ride through Celtic, Slavic and Siberian folklore — featuring sentient puddles, gods, mermaids and a healthy respect for nits, it is a clarion call for understanding just how interwoven we all are.",
       "video_trailer": "https://www.youtube.com/watch?v=qalni2GSq3g",
       "isSpecial": true
     },
@@ -9803,7 +9806,7 @@
       "time": "7.30-9.30pm",
       "club": "ropetackle-storytellers",
       "price": "£10",
-      "description": "There's singing in the Greenwood, news of an archery competition, and someone keeps foiling the Sheriff of Nottingham's plans – it can only be Robin Hood! Ropetackle Storytellers gathers their own band of Merry Men to share some of Robin's best tales, through songs and stories. Hear how Robin first became an outlaw, how he met the likes of Friar Tuck, Will Scarlet and Little John, and exactly what happened in that infamous archery competition!\n\n\n\nThese tub-thumping tales of rebellion and raucous adventure are brought to you by Ace & Joshua, the Ropetackle Storytellers club founders, along with Heidi McNie (Sing a Song of Sussex), Marina Evans (To Shame the Devil), Jon Norman-Mason (You're Dead to Me, Beowulf), Sophie Gibson (The Wasteland Wanderer), Abbie Simmonds (Strange Times Storytelling) and Joanna Gilar (Storycommons CIC)",
+      "description": "There's singing in the Greenwood, news of an archery competition, and someone keeps foiling the Sheriff of Nottingham's plans — it can only be Robin Hood! Ropetackle Storytellers gathers their own band of Merry Men to share some of Robin's best tales, through songs and stories. Hear how Robin first became an outlaw, how he met the likes of Friar Tuck, Will Scarlet and Little John, and exactly what happened in that infamous archery competition!\n\n\n\nThese tub-thumping tales of rebellion and raucous adventure are brought to you by Ace & Joshua, the Ropetackle Storytellers club founders, along with Heidi McNie (Sing a Song of Sussex), Marina Evans (To Shame the Devil), Jon Norman-Mason (You're Dead to Me, Beowulf), Sophie Gibson (The Wasteland Wanderer), Abbie Simmonds (Strange Times Storytelling) and Joanna Gilar (Storycommons CIC)",
       "promoter_link": "",
       "event_flyer": "",
       "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-tales-of-robin-hood/",
@@ -10629,7 +10632,7 @@
       "date_added": "13/09/2026",
       "time": "7-9pm",
       "price": "£10 (children £8)",
-      "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man – stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i'r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o'r byd hon a'r byd arall. Trwy gydblethu'r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
+      "description": "Storytelling - A spark of magic!\n\n\n\nAtop a far-off mountain, birds gather to perch on the fate-shaping hands of an old mountain man — stories stirring in the murmuration, waiting to glide into the human world. In this 5 star Harebell Tellers production, traditional storytellers Ailsa Dixon and Ffion Phillips follow the flight paths of bird mythology across ancient Britain; oceans, forests, in and out of this world and that. Weaving together Welsh and Scots language, music and story into a meditative hour of storytelling magic, Ffion and Ailsa breathe new life into ancient myths and re-enchant old folktales.\n\n\n\nAr gopa mynydd pell, mae adar yn casglu i ddwylo hen ŵr mynyddog, ddwylo sydd yn llunio ffawd. Mae straeon yn troelli yng nghanol cwmwl o adenydd, yn aros i hedfan drwodd i'r byd dynol. Yn y cynhyrchiad 5 seren yma gan Harebell Tellers, mae chwedleuwyr traddodiadol Ailsa Dixon a Ffion Phillips yn dilyn mytholeg ein hadar ar eu llwybrau hedeg ar draws Prydain hynafol; moroedd, coetir, i mewn ag allan o'r byd hon a'r byd arall. Trwy gydblethu'r Gymraeg a Scoteg, cerddoriaeth a stori mewn awr fyfyriol a hudolus ,mae Ailsa a Ffion yn anadlu bywyd newydd i chwedlau hynafol ac yn ail swyno hen straeon gwerin.",
       "age_rating": "12+",
       "min_age": 12,
       "event_flyer": "2026_09_19_harebell_tellers.jpg",
@@ -10725,7 +10728,7 @@
       "date_added": "24/09/2026",
       "time": "10.45am & 2pm",
       "price": "£7 (+ £0.59)",
-      "description": "Walk the green earth. Scour the sky above the chalk hills. Your troubles will follow you, whatever the age. But did a hero once walk among us? Did a mother raise her son? Did he grow to face our fears – and will that sun rise again?\n\n\n\nInspired by the White Horse at Uffington, Oxfordshire, this collection of myths and folktales considers the traces left in the soil of that place, and the hopes and dreams of those who walked there before us. Combining tantalising archaeological evidence, and echoes of ancient legend, Jon Mason weaves together stories from Wales to Yorkshire to Iceland and more, and imagine the myth that might have been.\n\n\n\nJoin us for a gentle walk with stories by Jon Mason. Suitable for ages 7+ but requires concentration. \n\n\n\nMeet at national trust White Horse Hill Car Park 10.45am.\n\n\n\nThere are no toilets.\n\n\n\nNearest coffee shop The Baking Bee at Ashbury a 6 minute drive.\n\n\n\nThe performance should finish 12.15-12.45pm After the performance, should you like to bring your own picnic, we'll sit together (if you want to) and enjoy the view!\n\n\n\nWeather is unpredictable, please dress appropriately. You will require sufficient mobility to handle a gentle walk across potentially uneven perhaps slippery ground. This is probably not suitable for persons with mobility aids.\n\n\n\nDogs welcome but you will need to keep them on the lead and please be mindful that not everyone is comfortable around dogs and may have allergies.",
+      "description": "Walk the green earth. Scour the sky above the chalk hills. Your troubles will follow you, whatever the age. But did a hero once walk among us? Did a mother raise her son? Did he grow to face our fears — and will that sun rise again?\n\n\n\nInspired by the White Horse at Uffington, Oxfordshire, this collection of myths and folktales considers the traces left in the soil of that place, and the hopes and dreams of those who walked there before us. Combining tantalising archaeological evidence, and echoes of ancient legend, Jon Mason weaves together stories from Wales to Yorkshire to Iceland and more, and imagine the myth that might have been.\n\n\n\nJoin us for a gentle walk with stories by Jon Mason. Suitable for ages 7+ but requires concentration. \n\n\n\nMeet at national trust White Horse Hill Car Park 10.45am.\n\n\n\nThere are no toilets.\n\n\n\nNearest coffee shop The Baking Bee at Ashbury a 6 minute drive.\n\n\n\nThe performance should finish 12.15-12.45pm After the performance, should you like to bring your own picnic, we'll sit together (if you want to) and enjoy the view!\n\n\n\nWeather is unpredictable, please dress appropriately. You will require sufficient mobility to handle a gentle walk across potentially uneven perhaps slippery ground. This is probably not suitable for persons with mobility aids.\n\n\n\nDogs welcome but you will need to keep them on the lead and please be mindful that not everyone is comfortable around dogs and may have allergies.",
       "event_flyer": "2026_09_26_mason_uffington_forgingfantastical.jpg",
       "ticket_url": "https://www.ticketsource.com/forging-fantastical/chasing-the-sun-uffington-white-horse-morning/e-qrpmzg",
       "isSpecial": true,
@@ -10839,7 +10842,7 @@
       "time": "2pm",
       "club": "crickcrack",
       "price": "£10.00 - £20.00",
-      "description": "The Crick Crack Club presents a Storytelling Show with Nell Phoenix\n\n\n\nMyths and Legends from the Arctic Circle.\n\n\n\nGod forgets his socks.\n\n\n\nSkunk seeks revenge.\n\n\n\nGirl creates affordable housing – at the bottom of the ocean.\n\n\n\nAnd what happens when you race a rock?\n\n\n\nSuperb storyteller Nell Phoenix revels in the earthy humour and hair-raising horror of myths from the Arctic Circle. Feisty, fierce and funny these creation stories are full of tricksters, trouble-makers and barbarous beasts that stalk these icy wastelands beyond the cold, north wind.\n\n\n\nThese are stories where what happens next is almost certainly NOT what you'd expect.",
+      "description": "The Crick Crack Club presents a Storytelling Show with Nell Phoenix\n\n\n\nMyths and Legends from the Arctic Circle.\n\n\n\nGod forgets his socks.\n\n\n\nSkunk seeks revenge.\n\n\n\nGirl creates affordable housing — at the bottom of the ocean.\n\n\n\nAnd what happens when you race a rock?\n\n\n\nSuperb storyteller Nell Phoenix revels in the earthy humour and hair-raising horror of myths from the Arctic Circle. Feisty, fierce and funny these creation stories are full of tricksters, trouble-makers and barbarous beasts that stalk these icy wastelands beyond the cold, north wind.\n\n\n\nThese are stories where what happens next is almost certainly NOT what you'd expect.",
       "ticket_url": "https://www.jacksonslane.org.uk/events/thats-how-the-world-was-made-nell-phoenix/",
       "isSpecial": true,
       "eventId": "20261003-nell-phoenix-jacksons-lane-london"
@@ -10918,7 +10921,7 @@
       "date_added": "24/09/2026",
       "time": "7pm",
       "price": "£7.50",
-      "description": "Discover the Isle of Wight’s strange history through its stories, where fact and folklore weave seamlessly together.\n\n\n\nJoin storyteller Holly Medland for an enchanting retelling of traditional Isle of Wight folktales, featuring a colourful cast of sly smugglers, heroic hermits, and raging river spirits. After each tale, we'll dive into the real-world history, local origins, and forgotten truths lurking behind the myth.\nStep into the space between fact and fiction, and decide for yourself where the truth really lies.",
+      "description": "Discover the Isle of Wight's strange history through its stories, where fact and folklore weave seamlessly together.\n\n\n\nJoin storyteller Holly Medland for an enchanting retelling of traditional Isle of Wight folktales, featuring a colourful cast of sly smugglers, heroic hermits, and raging river spirits. After each tale, we'll dive into the real-world history, local origins, and forgotten truths lurking behind the myth.\nStep into the space between fact and fiction, and decide for yourself where the truth really lies.",
       "event_flyer": "2026_10_07_medland_island_carisbrooke.jpg",
       "ticket_url": "https://www.eventbrite.co.uk/e/isle-of-wight-myths-and-legends-tickets-2002196186692",
       "isSpecial": true
@@ -11190,7 +11193,7 @@
       "time": "6-10pm",
       "price": "£21.45 / £18.95",
       "event_flyer": "2026_10_27_tuckey_ghost_chine-inn",
-      "description": "With Halloween creeping ever closer, renowned ghost hunter and storyteller Marc Tuckey is heading to The Chine Inn in Shanklin on Tuesday 27th October 2026 for an evening packed with spine-tingling stories, eerie encounters and fascinating tales from some of the Island’s most haunted and mysterious locations.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to strange sightings, sinister snippets of Island history and stories of the people and places that refuse to be forgotten, Marc will delve into the darker side of the Isle of Wight.\n\n\n\nAnd, of course, what better way to enjoy an evening of spooky storytelling than with a hearty Two-Course Supper?",
+      "description": "With Halloween creeping ever closer, renowned ghost hunter and storyteller Marc Tuckey is heading to The Chine Inn in Shanklin on Tuesday 27th October 2026 for an evening packed with spine-tingling stories, eerie encounters and fascinating tales from some of the Island's most haunted and mysterious locations.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to strange sightings, sinister snippets of Island history and stories of the people and places that refuse to be forgotten, Marc will delve into the darker side of the Isle of Wight.\n\n\n\nAnd, of course, what better way to enjoy an evening of spooky storytelling than with a hearty Two-Course Supper?",
       "ticket_url": "https://www.thepriceiswight.co.uk/product/the-chine-inn-ghost-talks",
       "isSpecial": true,
       "eventId": "20261027-marc-tuckey-chine-in-shanklin"
@@ -11222,7 +11225,7 @@
       "time": "7.30-10pm",
       "price": "£17.50",
       "event_flyer": "folk_bus_autumn_2026.jpg",
-      "description": "The nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver’s storytelling draws on the oral traditions of Britain and Ireland, while Tamsin’s music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
+      "description": "The nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver's storytelling draws on the oral traditions of Britain and Ireland, while Tamsin's music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
       "ticket_url": "https://boxoffice.cheltladiescollege.org/events/175765",
       "isSpecial": true,
       "eventId": "20261028-the-folk-bus-parabola-arts-centre"
@@ -11279,7 +11282,7 @@
       "date_added": "18/09/2026",
       "time": "7.30pm",
       "price": "Pay What You Can: £8, £10*, £12",
-      "description": "When everyone has gone home, one light remains burning on the stage.\n\n\n\n\n\n\n\nThe Ghost Light.\n\n\n\n\n\n\n\nFor generations, it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\n\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light – an evening of live storytelling.\n\n\n\n\n\n\n\nOver the course of the evening, he'll share a collection of haunting tales rooted in the place we're gathered.\n\n\n\n\n\n\n\nEvery performance is unique, drawing on local ghost stories, forgotten folklore and strange true accounts from the surrounding area. From lonely roads and abandoned houses to ancient churches, quiet woodlands and restless spirits that refuse to leave the places they once called home, these are the stories that have shaped the landscape around us for generations.\n\n\n\n\n\n\n\nA storyteller. An audience. A theatre wrapped in darkness, save for the ghost light burning on the stage.\n\n\n\n\n\n\n\nAs the evening unfolds, you'll laugh, you'll wonder and, perhaps, you'll find yourself looking a little more carefully into the shadows as you leave. The stories will carry you through encounters with uncanny visitors, ancient curses, mysterious disappearances, spectral figures and moments when the ordinary world gives way to something altogether stranger. Each tale is told in the rich oral tradition that has made Time Between Times Storytelling one of Britain's most-loved folklore podcasts. These are stories shaped not by special effects, but by voice, imagination and the shared experience of sitting together – exactly as our ancestors have done for centuries.\n\n\n\n\n\n\n\nNo two performances are the same, because every town has its own ghosts.\n\n\n\nEvery theatre has its own silence.\n\n\n\nAnd every audience brings something different to the telling.\n\n\n\n\n\n\n\nSo when the house lights fade and the ghost light begins to glow, take your seat and listen carefully…\n\n\n\nThe stories are here.",
+      "description": "When everyone has gone home, one light remains burning on the stage.\n\n\n\n\n\n\n\nThe Ghost Light.\n\n\n\n\n\n\n\nFor generations, it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\n\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light — an evening of live storytelling.\n\n\n\n\n\n\n\nOver the course of the evening, he'll share a collection of haunting tales rooted in the place we're gathered.\n\n\n\n\n\n\n\nEvery performance is unique, drawing on local ghost stories, forgotten folklore and strange true accounts from the surrounding area. From lonely roads and abandoned houses to ancient churches, quiet woodlands and restless spirits that refuse to leave the places they once called home, these are the stories that have shaped the landscape around us for generations.\n\n\n\n\n\n\n\nA storyteller. An audience. A theatre wrapped in darkness, save for the ghost light burning on the stage.\n\n\n\n\n\n\n\nAs the evening unfolds, you'll laugh, you'll wonder and, perhaps, you'll find yourself looking a little more carefully into the shadows as you leave. The stories will carry you through encounters with uncanny visitors, ancient curses, mysterious disappearances, spectral figures and moments when the ordinary world gives way to something altogether stranger. Each tale is told in the rich oral tradition that has made Time Between Times Storytelling one of Britain's most-loved folklore podcasts. These are stories shaped not by special effects, but by voice, imagination and the shared experience of sitting together — exactly as our ancestors have done for centuries.\n\n\n\n\n\n\n\nNo two performances are the same, because every town has its own ghosts.\n\n\n\nEvery theatre has its own silence.\n\n\n\nAnd every audience brings something different to the telling.\n\n\n\n\n\n\n\nSo when the house lights fade and the ghost light begins to glow, take your seat and listen carefully…\n\n\n\nThe stories are here.",
       "ticket_url": "https://thewelfare.co.uk/Shows/the-ghost-light-with-owen-staton/",
       "isSpecial": true,
       "eventId": "20261029-owen-staton-horse-and-plough-bingham"
@@ -11298,7 +11301,7 @@
       "time": "7-9pm",
       "promoter_id": "south-london-storytelling",
       "price": "£15",
-      "description": "Tales of magic, wisdom and transformation by well-known storytellers Daniel Morden and Laura Sampson. A Festival of the Dead event.\n\n\n\nSouth London Storytelling are delighted to welcome storytellers Daniel Morden and Laura Sampson for an evening of stories that relate (or maybe don’t relate) to our theme of the Crone and Witch.\n\n\n\nJoin us at The Woodfield Pavilion for pre-show drinks at 6:30. The show will run from 7-9 with an interval during which food and drink will be on sale.",
+      "description": "Tales of magic, wisdom and transformation by well-known storytellers Daniel Morden and Laura Sampson. A Festival of the Dead event.\n\n\n\nSouth London Storytelling are delighted to welcome storytellers Daniel Morden and Laura Sampson for an evening of stories that relate (or maybe don't relate) to our theme of the Crone and Witch.\n\n\n\nJoin us at The Woodfield Pavilion for pre-show drinks at 6:30. The show will run from 7-9 with an interval during which food and drink will be on sale.",
       "ticket_url": "https://www.eventbrite.co.uk/e/in-the-night-forest-tickets-2001057045490",
       "isSpecial": true
     },
@@ -11831,7 +11834,7 @@
       "eventId": "20260920-sound-of-the-sirens-dolton-village-hall",
       "promoter_id": "beaford",
       "time": "7.30-9pm",
-      "description": "Sound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood. Honing their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as “one of the UK’s finest folk acts” not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.\n\n\n\nThe pairs’ musical and vocal dexterity dovetail beautifully on the co-written songs, which range from beautiful, emotive ballads, to up-beat, foot stomping, hands in the air, sing-along anthems. The dynamic duo and their musical creations translate very well onto recorded media, but it is in the live arena where the pair truly excel. There is a certain majesty about their live performances that simply cannot be put into words. It is this “je ne sais quoi” that keeps their loyal fans returning from far and wide to see these two perform. The onstage chemistry, camaraderie, and banter is worth the ticket price alone.",
+      "description": "Sound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood. Honing their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as “one of the UK's finest folk acts” not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair's prowess as songwriters and musicians, but as people too.\n\n\n\nThe pairs' musical and vocal dexterity dovetail beautifully on the co-written songs, which range from beautiful, emotive ballads, to up-beat, foot stomping, hands in the air, sing-along anthems. The dynamic duo and their musical creations translate very well onto recorded media, but it is in the live arena where the pair truly excel. There is a certain majesty about their live performances that simply cannot be put into words. It is this “je ne sais quoi” that keeps their loyal fans returning from far and wide to see these two perform. The onstage chemistry, camaraderie, and banter is worth the ticket price alone.",
       "ticket_url": "https://beaford.org/events/sirensdolton",
       "isMusic": true
     },
@@ -12513,7 +12516,7 @@
       "city": "Ballycastle",
       "postcode": "BT54 6AD",
       "url": "https://www.yarnballycastle.com/",
-      "description": "Yarn is a creative events space and boutique accommodation on Northern Ireland’s north coast, bringing together food, creativity and nature. It’s a place to stay, connect and explore ideas across multiple forms.",
+      "description": "Yarn is a creative events space and boutique accommodation on Northern Ireland's north coast, bringing together food, creativity and nature. It's a place to stay, connect and explore ideas across multiple forms.",
       "latlon": [
         55.20198,
         -6.24868
@@ -14618,7 +14621,7 @@
         51.72432,
         -2.20131
       ],
-      "description": "Here in the taproom, everything’s designed for lingering: long tables, lively chatter, kids colouring in the corner, friends catching up over pints brewed just metres away. Whether you’re rolling in for a morning flat white, a shared pizza with the family, or a post-work pint, this is your space to slow down, connect and enjoy the good stuff."
+      "description": "Here in the taproom, everything's designed for lingering: long tables, lively chatter, kids colouring in the corner, friends catching up over pints brewed just metres away. Whether you're rolling in for a morning flat white, a shared pizza with the family, or a post-work pint, this is your space to slow down, connect and enjoy the good stuff."
     },
     "parabola-arts-centre": {
       "id": "parabola-arts-centre",
@@ -17622,7 +17625,7 @@
       "name": "Plough Arts Centre, Torrington",
       "city": "Great Torrington",
       "postcode": "EX38 8HQ",
-      "full_address": "Plough Arts Centre, 9–11 Fore Street, Great Torrington, EX38 8HQ",
+      "full_address": "Plough Arts Centre, 9—11 Fore Street, Great Torrington, EX38 8HQ",
       "url": "https://www.theploughartscentre.org.uk/",
       "latlon": [
         50.95242,
@@ -18286,6 +18289,13 @@
       ]
     }
   },
+  "publishers": {
+    "history-press": {
+      "name": "The History Press Ltd",
+      "url": "https://thehistorypress.co.uk/",
+      "publisher_id": "history-press"
+    }
+  },
   "performers": {
     "daniel-morden": {
       "id": "daniel-morden",
@@ -18303,6 +18313,45 @@
       "podcast": [
         "https://www.podomatic.com/podcasts/thecraneskinbag",
         "https://www.podomatic.com/podcasts/thedevilsviolin"
+      ],
+      "books": [
+        {
+          "publisher": "Firefly Press Ltd",
+          "isbn": "9781915444349",
+          "cover": "",
+          "title": "Strange Tales",
+          "description": "A boy who cannot feel fear... A girl pursued by a ghostly figure... Two sisters turned into beasts... A wild party where all the guests are skeletons... These extraordinary stories from long ago have been shaped over a lifetime of performance in schools, festivals and theatres by extraordinary storyteller, Daniel Morden into their current form: thrilling adventures, brimming with mystery and magic.\n\n\n\nTo open these pages is to journey into a strange world where invisible beings move among us; animals speak, and luck, spells, fear and fortune are not to be treated lightly!",
+          "year": 2023,
+          "buy_url": "https://www.amazon.co.uk/Strange-Tales-Daniel-Morden/dp/1915444179"
+        },
+        {
+          "publisher": "Y Lolfa",
+          "isbn": "9781843235835",
+          "cover": "",
+          "title": "Dark Tales from the Woods",
+          "description": "Magical Gypsy Tales and Legends from Wales\n\n\n\nSeven short stories, in which are found vivid retellings of the gypsy tales collected from the Wood family of Caegwyn. Including magical tales rich with the mystery of the Welsh landscape and quest stories.",
+          "year": 2007,
+          "buy_url": "https://www.ylolfa.com/products/9781843235835/dark-tales-from-the-woods"
+        },
+        {
+          "publisher": "Y Lolfa",
+          "isbn": "9781848513877",
+          "cover": "",
+          "title": "Tree of Leaf and Flame",
+          "description": "Tree of Leaf and Flame is Daniel Morden's unique take on the tales of the Mabinogi. It's the perfect opportunity to hear these strange and fascinating tales retold by a storyteller who earns his living travelling Wales and holding audiences spellbound - just as the professional bards and troubadours did all those years ago.",
+          "year": 2012,
+          "buy_url": "https://www.ylolfa.com/products/9781848513877/tree-of-leaf-and-flame"
+        },
+        {
+          "publisher": "Y Lolfa",
+          "isbn": "9781785623219",
+          "cover": "",
+          "title": "Secret Tales from Wales",
+          "subtitle": "",
+          "description": "A collection of unfamiliar folk stories from across Wales.",
+          "year": 2019,
+          "buy_url": "https://www.ylolfa.com/products/9781785623219/secret-tales-from-wales"
+        }
       ]
     },
     "the-travelling-talesman-cliff-eastabrook": {
@@ -18671,6 +18720,13 @@
       "url": "https://emilyhennessey.co.uk/",
       "bio": "Emily Hennessey is a playful and dynamic performance storyteller with a great love of Hindu mythology. She has travelled over 10,000 miles across India and Nepal by train, bus, rattling rickshaw and bicycle. Emily has toured in India, Iceland and Japan and performed at venues and festivals across Europe. She spent many months at the Kattaikkuttu School in Tamil Nadu, learning from the children who perform stories from the Mahabharata through music, dance and song."
     },
+    "chris-wood": {
+      "id": "chris-wood",
+      "name": "Chris Wood",
+      "url": "https://chriswoodmusic.co.uk/",
+      "bio": "Chris Wood is an English songwriter and composer who plays fiddle, viola and guitar, and sings. He is a practitioner of traditional English dance music, including Morris and other rituals and ceremonies, but his repertoire also includes much French folk music and traditional Québécois material.",
+      "musician": true
+    },
     "hugh-lupton": {
       "id": "hugh-lupton",
       "name": "Hugh Lupton",
@@ -18697,6 +18753,70 @@
         {
           "story_name": "The Cow Tail Switch",
           "yt_url": "https://www.youtube.com/watch?v=Dvse_vHQ9v0"
+        }
+      ],
+      "merch": {
+        "cd-hanging-of-a-mouse": {
+          "type": "cd",
+          "title": "The Hanging of a Mouse",
+          "description": "A story of Love, Transformation, Enchantment and Revenge from the First and Third branches of the Mabinogion.\n\n\n\nTold by Hugh Lupton, accompanied by Nick Hennessey on harp.",
+          "buy_url": "https://burningshed.com/hugh-lupton_the-hanging-of-a-mouse_cd"
+        },
+        "cd-three_snake_leaves": {
+          "performer_ids": [
+            "hugh-lupton",
+            "ben-haggarty",
+            "sally-pomme-clayton"
+          ],
+          "type": "cd",
+          "year": null,
+          "title": "The Three Snake Leaves",
+          "description": "Hugh Lupton, Ben Haggarty and Sally Pomme Clayton make a journey into the dark forests of Grimms.\n\n\n\nFairy tales for grown-ups, with music by Dylan Fowler and Gillian Stephens.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_Ben_Haggarty_and_Sally_Pomme_Clayton-The_Three_Snake_Leaves-CD"
+        },
+        "cd-three_snake_leaves": {
+          "performer_ids": [
+            "hugh-lupton",
+            "ben-haggarty",
+            "sally-pomme-clayton"
+          ],
+          "type": "cd",
+          "year": null,
+          "title": "On Common Ground",
+          "performer_ids": ["hugh-lupton", "chris-wood"],
+          "description": "The enclosure of John Clare.",
+          "buy_url": "https://burningshed.com/Hugh_Lupton_and_Chris_Wood-On_Common_Ground-CD"
+        }
+      },
+      "books": [
+        {
+          "publisher": "Propolis",
+          "isbn": "9780992946050",
+          "cover": "",
+          "title": "The Assembly of the Severed Head",
+          "subtitle": "A Novel of the Mabinogi",
+          "description": "A small monastic outpost in 13th Century Wales is rocked to its core when a gruesome discovery is made on the nearby shoreline: a severed human head.\n\n\n\nIt's the first of several to wash up along the surrounding coast, and not long after, the holy brothers stumble across the smouldering ruins of a bardic school with a pile of decapitated bodies inside.\n\n\n\nOnly one survivor, barely alive, is found hiding nearby.\n\n\n\nHe is Cian Brydydd Mawr, the greatest bard of his age, who holds in his head the four `branches' of an ancient, epic Welsh myth cycle: The Mabinogion.\n\n\n\nPhysically weak but strong willed, he asks the monks to put aside their rigid Christian doctrine and commit his oral tales to parchment - before the stories of spirits and shape-shifters, giants and time-travellers, curses and spells, are lost forever.",
+          "year": 2018,
+          "buy_url": "https://uk.bookshop.org/p/books/the-assembly-of-the-severed-head-a-novel-of-the-mabinogi-hugh-lupton/5643a4c86590f9f"
+        },
+        {
+          "publisher": "Propolis",
+          "isbn": "9781916905139",
+          "cover": "",
+          "title": "The Dreaming of Place",
+          "subtitle": "Myth, Landscape and the Art of Storytelling",
+          "description": "For 35 years, Hugh Lupton has been at the forefront of the storytelling movement in Great Britain.\n\n\n\nThe renewed interest and subsequent flourishing of this tradition is in no small way a result of Lupton's work, vision and commitment.\n\n\n\nUnderpinning this is a deep understanding of the essential role stories play in the human psyche.\n\n\n\nFrom this career-spanning collection, including fiction, poetry, reviews, articles, talks and praise-songs, what emerges is a broad account of why our species remains so deeply connected both to the stories we tell and the land we inhabit; of the relationship between landscape and the way we communicate.\n\n\n\nThis is a story as old as earth itself.\n\n\n\nDrawing on his vast knowledge of folklore and legends from around the world, as well as an unrivalled experience of live storytelling, Lupton shows us how stories - always formed on the breath before the page - have nourished, taught and guided us for millennia.",
+          "year": 2022,
+          "buy_url": "https://uk.bookshop.org/p/books/the-dreaming-of-place-myth-landscape-and-the-art-of-storytelling-hugh-lupton/dc0d3413075f9b26"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752479422",
+          "cover": "",
+          "title": "Norfolk Folk Tales",
+          "description": "Norfolk is steeped in story. Whether we are treading fields, fens, beaches or streets, the landscape is pregnant with secret histories. The collective imagination of countless generations has populated the county with ghosts, saints, witches, pharisees, giants and supernatural beasts. Stories have evolved around historical characters, with Horatio Nelson, Oliver Cromwell, Anne Boleyn, Tom Paine and King Edmund becoming larger than life in folk memory. This book is a celebration of the deep connection between a place and its people.",
+          "year": 2013,
+          "buy_url": "https: //burningshed.com/hugh-lupton_norfolk-folk-tales_book"
         }
       ]
     },
@@ -19013,7 +19133,7 @@
       "id": "sue-bailey",
       "name": "Sue Bailey",
       "url": "https://thatsanotherstory.co.uk/",
-      "bio": "Sue has been telling tales for hundreds of years (Well, that's a tall tale if ever there was one!) She lives on the Isle of Wight and has told tales sheltering from storms in caves, sandblasted by beach debris, on the top deck of buses and ferries, and in many other strange ( and not so strange) places. She has helped countless children create their own stories inspired by local treasures ( both human and artefact) and is one of the organisers of the Somewhen Storytelling Festival.\n\n\n\nShe loves passing on the story gems that have come her way, intent on keeping alive the oral tradition. Folk tales, nursery tales, tales of wonder and tales to inspire or scare the pants off you – she will share them all. Just make sure you pass them on too.\n\n\n\nFounder of the Island Storytellers, and member of 'Tis Tales, Sue's has a story for every occasion, entertaining families, schools groups and adults alike, in workshops, on story walks, and in performance settings."
+      "bio": "Sue has been telling tales for hundreds of years (Well, that's a tall tale if ever there was one!) She lives on the Isle of Wight and has told tales sheltering from storms in caves, sandblasted by beach debris, on the top deck of buses and ferries, and in many other strange ( and not so strange) places. She has helped countless children create their own stories inspired by local treasures ( both human and artefact) and is one of the organisers of the Somewhen Storytelling Festival.\n\n\n\nShe loves passing on the story gems that have come her way, intent on keeping alive the oral tradition. Folk tales, nursery tales, tales of wonder and tales to inspire or scare the pants off you — she will share them all. Just make sure you pass them on too.\n\n\n\nFounder of the Island Storytellers, and member of 'Tis Tales, Sue's has a story for every occasion, entertaining families, schools groups and adults alike, in workshops, on story walks, and in performance settings."
     },
     "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley": {
       "id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
@@ -19176,6 +19296,53 @@
         {
           "story_name": "Lisa Schneidau tells a tale for #FolkloreThursday",
           "yt_url": "https://www.youtube.com/watch?v=Fx83I-X_G9A"
+        }
+      ],
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750981217",
+          "cover": "",
+          "title": "Botanical Folk Tales of Britain and Ireland",
+          "description": "The islands of Britain and Ireland hold a rich heritage of plant folklore and wisdom, from the magical yew tree to the bad-tempered dandelion. Here are traditional tales about the trees and plants that shape our landscapes and our lives through the seasons. They explore the complex relationship between people and plants, in lowlands and uplands, fields, bogs, moors, woodlands and towns. Suitable for all ages, this is an essential collection of stories for anyone interested in botany, the environment and our living heritage.",
+          "year": 2018,
+          "buy_url": "https://uk.bookshop.org/p/books/botanical-folk-tales-of-britain-and-ireland-lisa-schneidau/84c290d711fd35b3"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750990110",
+          "cover": "",
+          "title": "Woodland Folk Tales of Britain and Ireland",
+          "description": "Once upon a time, most of Britain and Ireland was covered in woodland. Many of the trees have been cleared, but our connection with the wildwood remains. It is a place of danger, adventure and transformation, where anything could happen. Here is a collection of traditional folk tales of oak, ash and thorn; of hunting forests and rebellion, timber and triumph in battle, wild ghosts and woodwoses. Lisa Schneidau retells some of the old stories and relates them to the trees and forests in the landscape of our islands today.",
+          "year": 2020,
+          "buy_url": "https://uk.bookshop.org/p/books/woodland-folk-tales-of-britain-and-ireland-lisa-schneidau/2cea403e08ec0b50"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750997225",
+          "cover": "",
+          "title": "River Folk Tales of Britain and Ireland",
+          "description": "Rivers and streams sculpt our landscape, and have connected our communities throughout history, from mountain to estuary and to the wide sea beyond. They give us water and food, trade and transport — yet they have a life-force all of their own.\n\n\n\nIn this collection of traditional folk tales from wild rivers, lakes, and streams, Lisa Schneidau retells old stories of danger and transformation, of river goddesses, ghosts and the mysterious creatures that dwell in the watery arteries of Britain and Ireland.",
+          "year": 2022,
+          "buy_url": "https://uk.bookshop.org/p/books/river-folk-tales-of-britain-and-ireland-lisa-schneidau/28d400446948a496"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803994239",
+          "cover": "",
+          "title": "English Folk Tales of Coast and Sea",
+          "description": "England is a maritime nation. Our folklore and history are scattered with tall tales of the high seas, mysteries of the unknown world beneath the ocean surface, and the coast where human life meets the salt sea.\n\n\n\nThis book is a collection of traditional folk tales from the coasts and seas of England, retold with a contemporary twist by Lisa Schneidau. Within these pages you'll find magic and monsters, sailor heroes and ghost ships, and even mermaids and shapeshifters.\n\n\n\nImmerse yourself in these sea stories and let the current of England's mysterious ocean world sweep you away.",
+          "year": 2024,
+          "buy_url": "https://uk.bookshop.org/p/books/english-folk-tales-of-coast-and-sea-lisa-schneidau/cedc824ddefff9f6"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803994239",
+          "cover": "",
+          "title": "Tree Folk",
+          "subtitle": "What is a folk tale, but a tangled woodland of words, where anything could happen? Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth. Take a fresh look at the tree folk you share your life with, and discover their stories.",
+          "year": 2026,
+          "buy_url": "https://uk.bookshop.org/p/books/tree-folk-tree-folk-tales-songs-and-lore-from-britain-and-ireland-lisa-schneidau/338da442ed54f521"
         }
       ]
     },
@@ -19696,7 +19863,7 @@
       "id": "sound-of-the-sirens",
       "name": "Sound of the Sirens",
       "url": "https://www.soundofthesirens.uk/",
-      "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.",
+      "bio": "Sound of the Sirens are an acoustic singer-songwriting duo based in Exeter, Devon comprising of Abbe Wood & Hannah Walker. Honing their craft over the past decade, Wood & Walker have cemented themselves as firm favourites not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair's prowess as songwriters and musicians, but as people too.",
       "musician": true,
       "isBand": true
     },
@@ -19746,10 +19913,7 @@
         "sarah-lianne-lewis"
       ],
       "url": "",
-      "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis.",
-      "books": [
-        {"publisher": "", "isbn":"", "cover":"", "title": "", "year":, "buy_url":""}
-      ]
+      "bio": "Two of Britain's leading storytellers — Hugh Lupton and Daniel Morden — performing in combination with composer Sarah Lianne Lewis."
     },
     "hugh-lupton-sarah-moody": {
       "id": "hugh-lupton-sarah-moody",

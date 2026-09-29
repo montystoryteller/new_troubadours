@@ -889,6 +889,11 @@ function renderPerformer() {
     });
   }
 
+  // Books and merch (books_utils.js). Merch can be credited to this performer
+  // via another record's performer_ids, or to a troupe they belong to.
+  renderBooksSection(performer);
+  renderMerchSection(new Set([performerId, ...compoundIdsForMe]));
+
   // Gather all data for this performer
   const myTours = Object.entries(toursLookup)
     .filter(([, t]) => performerMatches(t))
@@ -2538,6 +2543,79 @@ function renderVideosSection(performer) {
 
     card.appendChild(details);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Books & Merch sections
+// Card markup and data collection are shared with books_merch.html — see
+// books_utils.js. Both sections stay hidden when there's nothing to show.
+// ---------------------------------------------------------------------------
+
+function appendSeeAllLink(list, label) {
+  const line = document.createElement("div");
+  line.className = "bm-see-all";
+  const a = document.createElement("a");
+  a.href = `books_merch.html?performer=${encodeURIComponent(performerId)}`;
+  a.textContent = label;
+  line.appendChild(a);
+  list.appendChild(line);
+}
+
+function renderBooksSection(performer) {
+  const section = document.getElementById("perfBooksSection");
+  const entries = collectBooksFor([performerId], performersLookup);
+  if (entries.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfBooksHint").textContent =
+    `${entries.length} book${entries.length !== 1 ? "s" : ""} — click to expand`;
+
+  const publishers = eventsData?.publishers || {};
+  const list = document.getElementById("perfBooksList");
+  list.innerHTML = "";
+
+  const cards = document.createElement("div");
+  cards.className = "bm-list";
+  entries.forEach(({ book }) => {
+    cards.appendChild(createBookCard(book, { publishers, performersLookup }));
+  });
+  list.appendChild(cards);
+  appendSeeAllLink(list, "Books & merch page →");
+}
+
+function renderMerchSection(ids) {
+  const section = document.getElementById("perfMerchSection");
+  const entries = collectMerchFor(ids, performersLookup);
+  if (entries.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfMerchHint").textContent =
+    `${entries.length} item${entries.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfMerchList");
+  list.innerHTML = "";
+
+  const cards = document.createElement("div");
+  cards.className = "bm-list";
+  entries.forEach(({ item, credited }) => {
+    // For a joint item, name the *other* credited performers.
+    const others = credited.filter((cid) => !ids.has(cid));
+    cards.appendChild(
+      createMerchCard(item, {
+        performersLookup,
+        creditIds: others,
+        creditPrefix: "with ",
+      }),
+    );
+  });
+  list.appendChild(cards);
+  appendSeeAllLink(list, "Books & merch page →");
 }
 
 // ---------------------------------------------------------------------------

@@ -99,6 +99,20 @@
       "additionalProperties": {
         "$ref": "#/$defs/promoter"
       }
+    },
+    "publishers": {
+      "type": "object",
+      "description": "Publisher registry keyed by publisher_id; referenced from performers[].books[].publisher_id.",
+      "additionalProperties": {
+        "$ref": "#/$defs/publisher"
+      }
+    },
+    "affiliate_ids": {
+      "type": "object",
+      "description": "Site affiliate/referral identifiers by network, e.g. { \"amazon\": \"<associate tag>\", \"wegottickets\": \"<id>\" }. Recorded here for reference; nothing on the site reads it yet.",
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   },
   "additionalProperties": true,
@@ -434,6 +448,20 @@
         "podcastX": {
           "type": "string",
           "description": "[TO DO — looks like a stray/disabled copy of `podcast`: one record (owen-staton) has a podbean URL under this name, so it is not read as a podcast link. Confirm whether it should be renamed to `podcast`.]"
+        },
+        "books": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/book"
+          },
+          "description": "Books by this performer. Rendered as a collapsible Books section on their profile page, and on books.html."
+        },
+        "merch": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/merchItem"
+          },
+          "description": "Non-book merchandise (CDs etc.), keyed by an item slug. Rendered as a collapsible Merch section on the profile page of this performer and of anyone in an item's `performer_ids`, and on books.html."
         }
       },
       "required": [
@@ -2066,6 +2094,112 @@
         "crickcrack",
         "beaford"
       ]
+    },
+    "book": {
+      "description": "A book by (or featuring) a performer, listed in `performer.books[]` and shown in the Books section of their profile page and on books.html. Publisher is identified either by `publisher_id` (a key in the top-level `publishers` registry — preferred) or, in older records, by a free-text `publisher` name. Only `title` is needed for an entry to be shown.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Short subtitle only (e.g. \"A Novel of the Mabinogi\"). Long blurb text belongs in `description`."
+        },
+        "description": {
+          "type": "string",
+          "description": "Blurb / about this book. Paragraphs separated by the house four-newline convention (\\n\\n\\n\\n), same as tour_description."
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Year of (this edition's) publication."
+        },
+        "isbn": {
+          "type": "string",
+          "description": "ISBN-13, digits only. Not guaranteed unique across a performer's books in practice."
+        },
+        "cover": {
+          "type": "string",
+          "description": "Cover image filename/URL. Currently always empty in the data; reserved for cover thumbnails."
+        },
+        "publisher_id": {
+          "type": "string",
+          "description": "Key into the top-level `publishers` registry. Preferred over `publisher`."
+        },
+        "publisher": {
+          "type": "string",
+          "description": "Legacy free-text publisher name, used when the publisher isn't (yet) in the registry. Ignored if `publisher_id` is set."
+        },
+        "buy_url": {
+          "type": "string",
+          "description": "Where to buy it — publisher page, Bookshop.org, Amazon, the performer's own shop, etc."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": true
+    },
+    "merchItem": {
+      "description": "One item of non-book merchandise (CD, vinyl, download, T-shirt, poster…) in a performer's `merch` object. `performer.merch` is an OBJECT keyed by a slug id for the item (e.g. \"cd-hanging-of-a-mouse\"), unlike `performer.books` which is an array. Where an item is shared between several performers (a joint CD, say), it is stored once on one performer's record and lists everyone credited in `performer_ids`; the performer profile pages show it for every credited performer.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Free-text kind of item: \"cd\", \"vinyl\", \"download\", \"tshirt\", \"poster\", etc. Used for the badge and the type filter on books.html."
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "description": "Paragraphs separated by the four-newline convention (\\n\\n\\n\\n)."
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "buy_url": {
+          "type": "string"
+        },
+        "performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Everyone credited on the item, when it is a collaboration. The record that holds the item should normally be listed here too."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": true
+    },
+    "publisher": {
+      "description": "An entry in the top-level `publishers` registry, keyed by publisher_id. Books reference it via `book.publisher_id`, so a publisher's name and link live in one place. The event builder creates these automatically when a book is given a publisher name that isn't already registered.",
+      "type": "object",
+      "properties": {
+        "publisher_id": {
+          "type": "string",
+          "description": "Same as the object's own key."
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "description": "Publisher's website."
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
     }
   }
 }
