@@ -250,7 +250,7 @@
           "venue_id": "st-nicholas-priory-exeter",
           "name": "A Harper's Trade",
           "performer": "nick-hennessey",
-          "description": "There was a time when ‘to harp' meant to speak, when harpers travelled the length and breadth of the country telling stories and singing songs. As they travelled, the stories and the songs they carried with them were shaped by the places they went, by the roads they took and by the wind that blew them.\n\n\n\nOver the last 18 years Nick been developing a vibrant and exciting style of performance harpers of old would recognize. Drawing deeply from the wellspring of traditional sources, this performance of song and story re-interprets the material for a modern 21st century, with powerful and evocative language and an innovative style of harp playing.",
+          "description": "There was a time when 'to harp' meant to speak, when harpers travelled the length and breadth of the country telling stories and singing songs. As they travelled, the stories and the songs they carried with them were shaped by the places they went, by the roads they took and by the wind that blew them.\n\n\n\nOver the last 18 years Nick been developing a vibrant and exciting style of performance harpers of old would recognize. Drawing deeply from the wellspring of traditional sources, this performance of song and story re-interprets the material for a modern 21st century, with powerful and evocative language and an innovative style of harp playing.",
           "type": "storytelling_shows",
           "ticket_url": ""
         }
@@ -18075,7 +18075,7 @@
       "name": "WIlton Baptist Church, Wiltshire",
       "city": "Salisbury",
       "postcode": "SP2 0HT",
-      "full_address": "WIlton Baptist Church, Market Place, Wilton, Salisbury, SP2 0HT",
+      "full_address": "Wilton Baptist Church, Market Place, Wilton, Salisbury, SP2 0HT",
       "url": "https://www.wiltonbaptist.org.uk/",
       "latlon": [
         51.0798,
@@ -18426,7 +18426,17 @@
       "id": "cath-little",
       "name": "Cath Little",
       "url": "https://cathlittle.co.uk/",
-      "bio": "Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here.\n\n\n\nShe tells traditional stories from her Irish English heritage and her Welsh homeland. Cath enjoys re-imagining and retelling stories from The Mabinogion.\n\n\n\nCath helps run the Cardiff Storytelling Circle and curates their seasonal concerts, Tales for the Turning Year. She tells and listens to stories at Oasis, a Cardiff Charity which offers a warm Welsh welcome to refugees and asylum seekers."
+      "bio": "Cardiff Storyteller and Singer Cath Little has 'rough magic' in her voice, and in her words 'the gift of the story comes through.' She has a strong belief in the power of stories to connect us to one another, to the land, and to the people who once lived here.\n\n\n\nShe tells traditional stories from her Irish English heritage and her Welsh homeland. Cath enjoys re-imagining and retelling stories from The Mabinogion.\n\n\n\nCath helps run the Cardiff Storytelling Circle and curates their seasonal concerts, Tales for the Turning Year. She tells and listens to stories at Oasis, a Cardiff Charity which offers a warm Welsh welcome to refugees and asylum seekers.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781837050994",
+          "cover": "",
+          "title": "Cardiff Folk Tales",
+          "description": "Folk tales have been passed down by word of mouth through generations of ordinary, extraordinary Cardiff people. Countless Cardiffians have made them, heard them, forgotten them, remembered them — and they have nearly always added their own twist on the way. Luckily for us, some of the storytellers wrote them down in books. These stories share common universal themes of kindness and courage rewarded, of human triumphs and human troubles. They celebrate the creative imagination of our ancestors, featuring marvellous animals, restless ghosts, horrible monsters and strange, other worldly beings. But all these stories are unique to one place — they all happened right here in Cardiff. Cardiff storyteller Cath Little has searched and researched, reimagined, remade and added her own twist to the tales. These are Cardiff Folk Tales and they belong to us all. Read them, tell them, add your own twist — then pass them on again.",
+          "year": 2026,
+          "publication_url": "https://thehistorypress.co.uk/publication/cardiff-folk-tales/"
+        }]
     },
     "lizzie-bryant": {
       "id": "lizzie-bryant",
@@ -18539,13 +18549,62 @@
       "name": "Dave Tonge",
       "instagram": "davetongestoryteller",
       "facebook": "https://www.facebook.com/profile.php?id=100063205569916",
-      "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich."
+      "bio": "Professional storyteller, author & historian. He tells at museums, heritage sites, festivals, fairs and schools. Also known as The Yarnsmith of Norwich.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750991643",
+          "cover": "",
+          "title": "Tudor Folk Tales",
+          "description": "In Tudor times the 'common sort' were no different from us, laughing together, mocking each other and sharing bawdy tales in tavern yards, marketplaces and anywhere else that people came together. These stories were later collected in the cheap print of the period, and professional storyteller Dave Tonge has sought them out to assemble here.\n\n\n\nWithin these pages hide smooth-talking tricksters, lusty knaves, wayward youths and stories of the eternal struggle to wear the breeches in the family, for a sometimes coarse but often comic telling of the everyday ups and downs in Tudor life.",
+          "year": 2019,
+          "publication_url": "https://thehistorypress.co.uk/publication/tudor-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750984812",
+          "cover": "",
+          "title": "Norfolk Folk Tales for Children",
+          "description": "From dark dangerous dogs and wily wicked wyrms, to poor penniless pedlars and lanky, long-limbed lads, Norfolk is steeped in stories. Some had their beginnings here, growing in the telling until they were as big as Norfolk's skies. Others were brought here by travellers from far away — even Viking raiders long ago. Stories that in time would change to suit our Norfolk ways, for as everyone knows — we do different! This is a collection of tales reworked and rewritten by Dave Tonge so that children might learn something of this most special county: its places and people, its strange and wondrous dialect. In this collection of stories, each introduced with snippets of local history, we journey to a place where fact, fiction, truth and lies become as one.",
+          "year": 2018,
+          "publication_url": "https://thehistorypress.co.uk/publication/norfolk-folk-tales-for-children/"
+        }
+      ]
     },
     "sharon-jacksties": {
       "id": "sharon-jacksties",
       "name": "Sharon Jacksties",
       "url": "https://www.sharonjackstories.co.uk/",
-      "bio": "Sharon Jacksties tells stories to audiences of adults, young people and families.\n\n\n\nHer dynamic and versatile performances draw on stories from all over the world.\n\n\n\nInterpreting the wisdom of traditional material for contemporary audiences, her repertoire includes tales that have rarely been heard in this country."
+      "bio": "Sharon Jacksties tells stories to audiences of adults, young people and families.\n\n\n\nHer dynamic and versatile performances draw on stories from all over the world.\n\n\n\nInterpreting the wisdom of traditional material for contemporary audiences, her repertoire includes tales that have rarely been heard in this country.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750984805",
+          "cover": "",
+          "title": "Somerset Folk Tales for Children",
+          "description": "When you are in Somerset you are never far from mysterious caverns, whispering woods, hidden valleys and places which can't decide whether they are seascapes or landscapes. The ancient Kings Arthur and Alfred hid amongst Somerset's secret waterways, waging the wars and making treaties that forged Britain's history. Outlaws and highwaymen lived on the wildest of moors that plummet into the sea. Ordinary people farmed the land and fished the waters alongside the Little People, the Fair Folk, the fairies and goblins that were as tricksy and unchancy to meet as any smuggler… In this collection, professional storyteller Sharon Jacksties has selected and reworked tales for children aged 7-11 to discover.",
+          "year": 2018,
+          "publication_url": "https://thehistorypress.co.uk/publication/somerset-folk-tales-for-children/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752463339",
+          "cover": "",
+          "title": "Somerset Folk Tales",
+          "description": "These Somerset tales, newly collected or retold with a strong sense of the land and the waters that shaped them, reflect our enduring interest in the natural landscape. Let these stories from the Summer Lands take you on a journey: across wind-wild moors that plummet to treacherous tides traversed by sea morgans; on a scramble from gorges shaped by the Devil's spite to caves dwelled in by bitter witches. Discover ancient mines and dragons' haunts, and emerge into forests and fields to be befriended by bees or bedevilled by fairies; then stroll beside ancient waterways, where willows walk and orchards talk. From Gwyn ap Neath to Joseph of Arimathea, your travelling companions will meet you from legend, history and living memory — from the places where they were once known best. Sharon Jacksties has a sharp eye for the landscape of Somerset and the seen and unseen stories that it holds, a sympathetic ear for the dialect of the South West, and a playful wit that brings this collection of tales to vivid and delightful life.",
+          "year": 2012,
+          "publication_url": "https://thehistorypress.co.uk/publication/somerset-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750991353",
+          "cover": "",
+          "title": "Animal Folk Tales of Britain and Ireland",
+          "description": "Stories and animals have long travelled the same routes. Through our heritage of charming, quirky and profound tales, you will find yourself re-acquainted with Britain's wondrous fauna. Find out how hedgehog ended up with spines and what makes him scuttle so fast, discover how pigs saved a prince from leprosy and why the wealthy lord was so intent on capturing the black fox. Sharon Jacksties' wonderful book combines traditional stories, little-known zoological facts and true anecdotes to create a treasure trove of stories for animal lovers of every kind.",
+          "year": 2020,
+          "publication_url": "https://thehistorypress.co.uk/publication/animal-folk-tales-of-britain-and-ireland/"
+        }
+      ]
     },
     "aaron-oliver": {
       "id": "aaron-oliver",
@@ -18629,13 +18688,59 @@
       "id": "cath-edwards",
       "name": "Cath Edwards",
       "url": "https://storytellingforall.co.uk/",
-      "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs."
+      "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750985390",
+          "cover": "",
+          "title": "West Midlands Folk Tales",
+          "description": "Woven from the ancient fabric that is the landscape of the West Midlands and passed down through the generations, these stories from a modern county with a rich and varied history are brought together by local storyteller Cath Edwards. Here are mysterious tales and local legends. Here are witches and noodleheads, ghosts and magpies, mines and wishing trees. Retold in an engaging style, and stylishly illustrated with unique line drawings, these humorous, clever and enchanting folk tales are sure to be enjoyed and shared time and again.",
+          "year": 2014,
+          "publication_url": "https://thehistorypress.co.uk/publication/west-midlands-folk-tales/"
+        }]
     },
     "fiona-collins": {
       "id": "fiona-collins",
       "name": "Fiona Collins",
       "url": "https://artsconnection.org.uk/project/fiona-collins/",
-      "bio": "Fiona Collins is a storyteller telling traditional tales from around the world, with a special interest in stories of strong women and girls, and in the Tales of Wales. She hears the music of the spoken word, and respects the traditional cultures which speak to us through story."
+      "bio": "Fiona Collins is a storyteller telling traditional tales from around the world, with a special interest in stories of strong women and girls, and in the Tales of Wales. She hears the music of the spoken word, and respects the traditional cultures which speak to us through story.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752476896",
+          "cover": "",
+          "title": "Wrexham County Folk Tales",
+          "description": "The county borough of Wrexham is rich in folklore, with an abundance of tales to capture the wonders of the Welsh landscape and all its denizens, both real and imaginary: animal, human and even superhuman. This collection, which includes both traditional tales — passed down through generations by word of mouth — and archive material, brings to life the local legends, mysteries and stories of ordinary people doing extraordinary things that make Wales so magical. A speaker of both languages of Wales, the author has collected some unusual material sure to enchant both Welsh and non Welsh speakers. Beautifully illustrated by local artist Ed Fisher, these tales bring to life the ancient wisdom of Wrexham.",
+          "year": 2014,
+          "publication_url": "https://thehistorypress.co.uk/publication/wrexham-county-folk-tales"
+        },{
+          "publisher_id": "history-press",
+          "isbn": "9780750990493",
+          "cover": "",
+          "title": "Folk Tales for Bold Girls",
+          "description": "Do you think that legends are all about princes and princesses, knights and heroes, giants and monsters? Well, they aren't always. The stories in this book are about girls like you and girls you might know: clever, strong, brave and resourceful. Here you can read the story of Vasilisa, who wasn't afraid of the deep dark forest; Mollie Whuppie, who knew how to trick a giant; Tipingi, who was able to call on her friends to help her get out of trouble; Seren, who used her love of singing to help others; and many more fearless characters. Storyteller Fiona Collins has chosen the best of the old tales from all around the world and reworked them into new and exciting versions to be enjoyed by everyone, accompanied by magical illustrations by talented artist Ed Fisher.",
+          "year": 2019,
+          "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-for-bold-girls/"
+        },
+      {
+        "publisher_id": "history-press",
+        "isbn": "9780752451879",
+        "cover": "",
+        "title": "Denbighshire Folk Tales",
+        "description": "Wales is especially rich in the folklore of place, and this collection brings a new perspective to the history of Denbighshire, the oldest inhabited area of Wales. With hills, valleys, moorland and coast, this varied land has inspired many tales of ancient battles, strange creatures and curious customs. This compilation of stories from the ancient lore of the modern county of Denbighshire includes local legends, folk tales, stories of magic and mystery and tales of ordinary people doing extraordinary things. Discover dragons and devils, ghosts and giants, witches and cunning men, poets, heroes, saints, kings and queens and, of course, Y Tylwyth Teg, The Fair Folk. A speaker of both languages of Wales, the author has collected some unusual material which will be of particular interest to non-Welsh speakers, who will meet these tales for the first time here.With illustrations from local artist Ed Fisher complementing the tales, this volume will be enjoyed by old and young alike. Mae'na groeso cynnes Cymreig yma i bawb. There is a warm Welsh welcome here to all.",
+        "year": 2011,
+        "publication_url": "https://thehistorypress.co.uk/publication/denbighshire-folk-tales/"
+      },{
+        "publisher_id": "history-press",
+        "isbn": "9780750998901",
+        "cover": "",
+        "title": "Folk Tales of the Ever After",
+        "subtitle": "Stories about Death, Dying and Beyond",
+        "description": "There is a time and a season to all things, and death is an inevitable part of the circle of life.\n\n\n\nOral traditions from all over the world are full of stories giving shape to the very human wish to defy death — our own death and the deaths of others. Folk Tales of the Ever After is a collection of traditional tales from a range of cultures which is, by turns, funny, challenging and touching.\n\n\n\nFrom a man in Baghdad who tries to outrun Death, to Sir Lancelot's ride on the hangman's cart and an Ancient Sumerian ball game that leads to a trip to the underworld, storytellers Fiona and June invite you to share stories from their repertoire, and insights into their working practice, as a journey through the mysteries of death, dying,bereavement, loss, grief and the ever after.",
+        "year": 2023,
+        "publication_url": "https://thehistorypress.co.uk/publication/boggarts-trolls-and-tylwyth-teg/"
+      }]
     },
     "matt-vaughan": {
       "id": "matt-vaughan",
@@ -18660,7 +18765,6 @@
       "canonical": "monty-storyteller",
       "name": "Tony Hirst"
     },
-
     "monty-storyteller": {
       "id": "monty-storyteller",
       "name": "Monty Storyteller (Tony \"Monty\" Hirst)",
@@ -18677,7 +18781,18 @@
       "id": "carmel-page",
       "name": "Carmel Page",
       "facebook": "carmelcreatively",
-      "bio": "Author, Storyteller, Artist and Flying Teddy Bear Woman."
+      "bio": "Author, Storyteller, Artist and Flying Teddy Bear Woman.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750987653",
+          "cover": "",
+          "title": "Yorkshire Folk Tales for Children",
+          "description": "Where in Yorkshire can you walk on a dragon's backbone? Who goes dancing at the Spot Bottom Hops? Which very old story gives advice about loading a dishwasher? Which mischievous child invented Yorkshire pudding? And is it safe to offer a gift to a small-toothed dog? Yorkshire has a rich heritage of fantastical folk stories, traditional tales and words of wisdom handed down through generations. These tales are beautifully retold here for 7- to 11-year-old readers, written and illustrated by storyteller and artist Carmel Page — a southerner by birth but who has lived in Sheffield for so long that she now uses her backdoor as her frontdoor and has started to eat her dinner at lunchtime.",
+          "year": 2018,
+          "publication_url": "https://thehistorypress.co.uk/publication/yorkshire-folk-tales-for-children/"
+        }
+      ]
     },
     "p-d-brown": {
       "id": "p-d-brown",
@@ -18841,7 +18956,7 @@
           "performer_ids": [
             "hugh-lupton",
             "daniel-morden",
-            "nick hennessey"
+            "nick-hennessey"
           ],
           "description": "Classic tales from the British Isles, interspersed with harp music and song. Includes Gawain and the Green Knight, The Pardoner's Tale, Fairy Ointment, Tam Lin, The King Asleep Under The Hill, The Loathly Lady, Llyn y Fan Fach. Hugh Lupton / Daniel Morden & Nick Hennessey.",
           "buy_url": "https://burningshed.com/Hugh_Lupton_Daniel_Morden_and_Nick_Hennessey-The_Sleeping_King-CD"
@@ -18962,7 +19077,17 @@
       "name": "Henry Everett",
       "url": "https://www.henryeverett.com/",
       "instagram": "henryeverettstoryteller",
-      "bio": "Henry Everett is a storyteller, telling tales in the oral storytelling tradition, passed down through the generations. He tells traditional tales inspired by our connection to the land, of spirits of place and our human relationship with the magical landscape."
+      "bio": "Henry Everett is a storyteller, telling tales in the oral storytelling tradition, passed down through the generations. He tells traditional tales inspired by our connection to the land, of spirits of place and our human relationship with the magical landscape.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803996165",
+          "cover": "",
+          "title": "Pixie Folk Tales",
+          "description": "Pixies are recognised around the world as mischievous members of the fairy race, but their traditional stories dwell in South West England. Across Cornwall, Devon and Somerset, they have been loved and revered, avoided and feared for centuries.\n\n\n\nWithin these pages, you will find the collected tales of the Pixies, Piskeys, Knockers and Spriggans and many more of their magical kin. Their impish and unpredictable nature can help or hinder us, their human neighbours. Their stories call for playful kindness, magical thinking and careful respect for the living landscape around us.\n\n\n\nAllow the stories of the Pixies to charm you, rekindle your relationship with the land and embolden your connection to nature. But be warned: these tales are alive with Pixie magic! Expect enchantment and take care as you prepare to enter the wild places of Britain's South West.",
+          "year": 2025,
+          "publication_url": "https://thehistorypress.co.uk/publication/pixie-folk-tales/"
+        }]
     },
     "hannah-sneyd": {
       "id": "hannah-sneyd",
@@ -19097,7 +19222,18 @@
       "id": "amy-douglas",
       "name": "Amy Douglas",
       "url": "https://amydouglas.com/",
-      "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\nOver the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging."
+      "bio": "Amy Douglas is a vibrant professional storyteller with a passion for traditional stories and riddles.\n\n\n\nOver the past twenty years she has delved deep into the folklore of Britain, reveling in tales of the strange and macabre; memories of magic and otherworlds; proud recollections of folk history; stories to make you smile, sigh or shiver; stories that have been moulded by the land, weather and generations of tongues wagging.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752451558",
+          "cover": "",
+          "title": "Shropshire Folk Tales",
+          "description": "In places, Shropshire has traditional patchwork fields and hedgerows; in others, small villages and market towns with black and white half-timbered buildings. But it also has places that are still wild — hills where heather and bracken cling to the rocks while peewits call overhead and strange rock formations jut to the sky, casting their shadows over the countryside below. The thirty stories in this new collection have grown out of the county's diverse landscapes: tales of the strange and macabre; memories of magic and other worlds; proud recollections of folk history; stories to make you smile, sigh and shiver. Moulded by the land, weather and generations of tongues wagging, these traditional tales are full of Shropshire wit and wisdom, and will be enjoyed time and again.",
+          "year": 2011,
+          "publication_url": "https://thehistorypress.co.uk/publication/shropshire-folk-tales/"
+        }
+      ]
     },
     "jason-buck": {
       "id": "jason-buck",
@@ -19271,7 +19407,54 @@
       "id": "mike-oconnor",
       "name": "Mike O'Connor",
       "url": "https://www.lyngham.co.uk/mike_oconnor.html",
-      "bio": "Accomplished on the fiddle and accordion, Mike has a wealth of songs and stories.\n\n\n\nMike tells spell-binding stories, many with musical accompaniment, for both adult & schools audiences. His tales vary from 5 minute fireside tales to epics such as Return to Lyonesse, Tristan & Iseult, Imravoe, the Tales of the Holy Rood, & Loki. He is one of the few in the land capable of delivering such epic tales and sagas. He is the author of the best selling 'Cornish Folk Tales' published by History Press. In 2013, with Barbara Griggs he won a British Award for Storytelling Excellence for 'Return to Lyonesse'."
+      "bio": "Accomplished on the fiddle and accordion, Mike has a wealth of songs and stories.\n\n\n\nMike tells spell-binding stories, many with musical accompaniment, for both adult & schools audiences. His tales vary from 5 minute fireside tales to epics such as Return to Lyonesse, Tristan & Iseult, Imravoe, the Tales of the Holy Rood, & Loki. He is one of the few in the land capable of delivering such epic tales and sagas. He is the author of the best selling 'Cornish Folk Tales' published by History Press. In 2013, with Barbara Griggs he won a British Award for Storytelling Excellence for 'Return to Lyonesse'.",
+          "books": [
+            {
+              "publisher_id": "history-press",
+              "isbn": "9781803999661",
+              "cover": "",
+              "title": "The Little History of Storytelling in Cornwall",
+              "description": "Cornwall's storytelling tradition stretches back a thousand years. Before TV and radio, stories were told among the flickering shadows at the fireside. They whiled away the travellers' miles, long hours in the fields, and days at sea. They gladdened brief moments of relaxation for miners and bal-maidens. Travelling storytellers wandered from village to village swapping words for supper, and a rich local dialect brought the tales to life. Classic Cornish tales such as the Mermaid of Zennor and Jan Tregeagle are wonderfully entertaining, and collectively tell us much about Cornwall, its people, and its history.\n\n\n\nJoin accomplished storyteller, scholar and writer Mike O'Connor as he explores the 'when, where, and why' of Cornish folk tales and celebrates the rich traditions and cultural legacy of hwedhlow.",
+              "year": 2018,
+              "publication_url": "https://thehistorypress.co.uk/publication/the-little-history-of-storytelling-in-cornwall/"
+            },
+            {
+              "publisher_id": "history-press",
+              "isbn": "9780750998710",
+              "cover": "",
+              "title": "Fools and Wise Men",
+              "subtitle": "Folk Tales of Wisdom",
+              "description": "Before schooling was widely available, for most people the classroom was at the fireside, the field and the country lane, where the bards told their tales.\n\n\n\nMany such folk tales exist to convey life-lessons in an entertaining way. These stories are not the pontifications of ancient philosophers: they are the gleanings of countless storytellers, everyday men and women with hard-won life experiences and pockets full of folklore. The tales reflect the times and places of their origin, but have been handed down from generation to generation, evolving to meet changing times. Some are amusing; some are thought-provoking; all have been polished and honed for so long that their message slips, almost imperceptibly, into the mind.\n\n\n\nFools and Wise Men retells these stories for new generations — repaying our debts to the bards of old.",
+              "year": 2022,
+              "publication_url": "https://thehistorypress.co.uk/publication/fools-and-wise-men/"
+            },
+            {
+              "publisher_id": "history-press",
+              "isbn": "9780752450667",
+              "cover": "",
+              "title": "Cornish Folk Tales",
+              "description": "The ancient land of Cornwall is steeped in mysterious tradition, proud heritage and age-old folklore. Before books were widely available, wandering 'droll tellers' used to spread Cornish insight and humour to all parts of the Duchy — exchanging their tales for food and shelter. Anthony James was one such droll teller, and this collection follows him as he makes his way around Cornwall one glorious summer. Richly illustrated with hand-drawn images and woodcuts, Cornish Folk Tales will appeal to anyone captivated by this beautiful land and its resident kindly giants, mischievous piskeys, seductive mermaids, bold knights and barnacle-encrusted sea captains.",
+              "year": 2010,
+              "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales/"
+            },
+          {
+            "publisher_id": "history-press",
+            "isbn": "9780750984492",
+            "cover": "",
+            "title": "Cornish Folk Tales for Children",
+            "description": "Join Jamie, the son of a travelling droll teller, as he journeys across Cornwall, a land steeped in myth and legend. Along the way you will hear mysterious and exciting tales like what happened when Bodrugan took his soldiers to capture Richard Edgcumbe, why the ghost of Lady Emma was never seen again, what proper job King Arthur gave the Giant and how St Piran came to settle in Cornwall. These stories — specially chosen to be enjoyed by 7- to 11-year-old readers — sparkle with magic and explode with adventure. As old as the moors and as wild as the sea, they have been freshly re-told for today's readers by storyteller Mike O'Connor.",
+            "year": 2018,
+            "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales-for-children/"
+          },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750990783",
+          "cover": "",
+          "title": "Isles of Scilly Folk Tales",
+          "description": "Scilly has been its own unique land for centuries, separate from England and cut off from Cornwall by twenty-five miles of rough sea – yet until now its folk tales have been poorly documented. Let Anthony the droll-teller and his companions guide you on this voyage around the wonderful Isles of Scilly: a place of smugglers and shipwrecks, pirates and privateers, legends and long lost tales.",
+          "year": 2020,
+          "publication_url": "https://thehistorypress.co.uk/publication/isles-of-scilly-folk-tales/"
+        }]
     },
     "barbara-griggs": {
       "id": "barbara-griggs",
@@ -19526,7 +19709,7 @@
           "isbn": "9781803994239",
           "cover": "",
           "title": "Tree Folk",
-          "subtitle": "What is a folk tale, but a tangled woodland of words, where anything could happen? Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth. Take a fresh look at the tree folk you share your life with, and discover their stories.",
+          "description": "What is a folk tale, but a tangled woodland of words, where anything could happen? Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth. Take a fresh look at the tree folk you share your life with, and discover their stories.",
           "year": 2026,
           "buy_url": "https://uk.bookshop.org/p/books/tree-folk-tree-folk-tales-songs-and-lore-from-britain-and-ireland-lisa-schneidau/338da442ed54f521"
         }
@@ -19638,7 +19821,27 @@
       "id": "michael-dacre",
       "name": "Michael Dacre",
       "url": "https://www.facebook.com/michael.dacrepurr",
-      "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country."
+      "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752455051",
+          "cover": "",
+          "title": "Devonshire Folk Tales",
+          "description": "This collection of traditional stories and tales, many of which are published for the first time, will delight lovers of Devonshire folklore. Some of the stories have been gleaned from residents of the county, whilst others have been developed by the author and have evolved through countless tellings. All the tales within represent this large and diverse county throughout its long and distinguished history, from the founding of Britain itself by Brute the Trojan at Totnes, to recent reports of haunted roads and phantom hairy hands. Also included are giants, devils, witches, ghosts, fairies, spectral black dogs and a wide range of other supernatural phenomena, all exemplifying the vigorous and earthy nature of the Devon imagination down through the ages. It is a book of wonders, to terrify and intrigue, and leads the reader around this beautiful and fascinating county.",
+          "year": 2010,
+          "publication_url": "https://thehistorypress.co.uk/publication/devonshire-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752455051",
+          "cover": "",
+          "title": "Ancient Legends Retold: A Little Book of Robin Hood",
+          "description": "This collection of five tales and one play contains the definitive Robin Hood. They are the earliest ballads and play and still the best of the bunch. Robin Hood and the Monk is the earliest surviving manuscript, dated c.1450, and is considered the greatest of the ballads, though it was probably not sung, being described as a 'talkyng'; Robin Hood's Death is one of the most satisfying tragedies in the English language; while A Lytell Geste of Robyn Hode is a comprehensive account of the famous English outlaw - complete, unified and pointing quite clearly to the reign of Edward II as a probable time for an historical Robin Hood, despite the opinions of most of the experts.",
+          "year": 2013,
+          "publication_url": "https://thehistorypress.co.uk/publication/ancient-legends-retold-a-little-book-of-robin-hood/"
+        }
+      ]
     },
     "hannah-brailsford": {
       "id": "hannah-brailsford",
@@ -19668,7 +19871,18 @@
       "id": "peter-stevenson",
       "name": "Peter Stevenson",
       "url": "https://www.peterstevensonarts.co.uk/",
-      "bio": "Peter Stevenson is a storyteller, children's writer, book illustrator, folklorist, film maker, crankie maker, artist book maker, organiser of the annual 3 day Aberystwyth Storytelling Festival and Y Mabinogi Project in collaboration with Aberystwyth Arts Centre, and the Wales Appalachia Project, along with Stories@Medina, a storytelling club that encourages collaborations with visual artists, musicians, and puppeteers. He has illustrated, compiled and written many children's books, travelled the country with storytelling shows for adults that use hundreds of illustrations, crankies, and live music, has written four books of Welsh folk tales for the History Press."
+      "bio": "Peter Stevenson is a storyteller, children's writer, book illustrator, folklorist, film maker, crankie maker, artist book maker, organiser of the annual 3 day Aberystwyth Storytelling Festival and Y Mabinogi Project in collaboration with Aberystwyth Arts Centre, and the Wales Appalachia Project, along with Stories@Medina, a storytelling club that encourages collaborations with visual artists, musicians, and puppeteers. He has illustrated, compiled and written many children's books, travelled the country with storytelling shows for adults that use hundreds of illustrations, crankies, and live music, has written four books of Welsh folk tales for the History Press.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750995627",
+          "cover": "",
+          "title": "Boggarts, Trolls and Tylwyth Teg",
+          "subtitle": "Folk Tales of Hidden People and Lost Lands",
+          "description": "The Grimms called them The Quiet Folk, in Māori they are Patupaiarehe, in Wales Y Tylwyth Teg: hidden people who live unseen, speak their own languages and move around like migrants, shrouded from our eyes – like those who lived in the utopian world of Plant Rhys Ddwfn off the west Welsh coast, where this book begins.\n\n\n\nIn mythology, lost lands are coral castles beneath the sea, ancient forests where spirits live, and mountain swamps where trolls lurk. Strip away the mythology, and they become valleys and villages flooded to provide drinking water to neighbouring kingdoms, campsites where travellers are told they can't travel, and reservations where the rights of first nations people are ignored.\n\n\n\nThe folk tales in this book tell of these lost lands and hidden people, remembered through migrations, dreams and memories.",
+          "year": 2021,
+          "publication_url": "https://thehistorypress.co.uk/publication/boggarts-trolls-and-tylwyth-teg/"
+        }]
     },
     "jane-and-guy-lambourne": {
       "id": "jane-and-guy-lambourne",
@@ -19814,7 +20028,27 @@
       "id": "simon-heywood",
       "name": "Simon Heywood",
       "url": "https://shonaleigh.uk/about/simon-heywood/",
-      "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University's National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996."
+      "bio": "Simon Heywood has published poetry, translations fiction and non-fiction, and worked to international acclaim as a storyteller, musician, composer, and workshop leader, performing in pubs, clubs, cafes, festivals, parks, schools, libraries, village halls, cemeteries, theatres, arts centres, forests, living rooms, hospital wards, narrowboats, roundhouses and castles.\n\n\n\nHe completed a PhD on contemporary storytelling at Sheffield University's National Centre for English Cultural Tradition in 2001 and has lectured in creative writing at Derby University since 1996.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750961646",
+          "cover": "",
+          "title": "South Yorkshire Folk Tales",
+          "description": "With origins lost in the mists of time, these lively folk tales reflect the wisdom (and eccentricities) of South Yorkshire's county and people. Amongst the heroes and villains, giants and fairies, knights and highwaymen, are well-known figures, such as Robin Hood and the Dragon of Wantley, as well as lesser-known tales of mysterious goings-on at Firbeck Hall and Roche Abbey. These enchanting tales, many never before recorded in print, will bewitch readers and storytellers, young and old alike.",
+          "year": 2015,
+          "publication_url": "https://thehistorypress.co.uk/publication/south-yorkshire-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752490045",
+          "cover": "",
+          "title": "Ancient Legends Retold: The Legend of Vortigern",
+          "description": "'My name is Vortigern ... ' Generations before Arthur's birth, a British warlord looks back on his life: his rise from humble roots to shake the thrones of a dying empire; his stand against chaos amid the aftermath of Rome; his struggle with the greedy, embittered princes of church and kingdom; his loves and his losses, and his last encounter with his own mysterious destiny, on a mountain where the world we know is beginning to take shape before his eyes. Vortigern's voice speaks from the heart of a forgotten darkness, telling a story of courage and cowardice, glory and crime, tragedy and treason.",
+          "year": 2013,
+          "publication_url": "https://thehistorypress.co.uk/publication/ancient-legends-retold-the-legend-of-vortigern/"
+        }
+      ]
     },
     "minnie-wilkinson": {
       "id": "minnie-wilkinson",
@@ -19827,6 +20061,31 @@
       "name": "Dave Clark",
       "url": "https://www.sallyporttours.co.uk/team/",
       "bio": "Dave brings a wealth of experience and knowledge to our team, with over 40 years of service in the UK Civil Service. His career took him across the globe, working on diverse and impactful projects. As a qualified learning and development professional with diplomas in Archaeology, The Romans in Britain, and Genealogy, Dave has a passion for uncovering and sharing history.\n\n\n\nIn recent years, Dave has captivated audiences with engaging presentations on topics such as Pompeii and Herculaneum, the fascinating history of Fishbourne Roman Palace, and the intricate world of drug smuggling into the UK.\n\n\n\nDave's commitment to heritage and education extends to his time as a volunteer in visitor services at Fishbourne Roman Palace, where he delivered guided tours of the Collection's Discovery Centre and the Palace itself. He also led historical walks through Fishbourne Village and Chichester City, bringing local history to life for visitors.\n\n\n\nDave's expertise and storytelling skills make him a valued guide and presenter, offering unique insights and unforgettable experiences."
+    },
+    "pete-castle": {
+      "id": "pete-castle",
+      "name": "Pete Castle",
+      "url": "https://petecastle.co.uk/",
+      "bio": "'A storyteller who sings half his stories'\n\n\n\nPete Castle is a folk singer and storyteller based in Belper, Derbyshire. He works all over the country in folk clubs, on the storytelling circuit, in schools and libraries and with the wider public.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752453880",
+          "cover": "",
+          "title": "Derbyshire Folk Tales",
+          "description": "Passed down from generation to generation, many of Derbyshire's most popular folk tales are gathered together here for the first time. Ranging from stories specific to the region, such as ‘The Derby Ram', to others which are local versions of well-known classics, like ‘Beauty and the Beast', all of the tales in this collection are rooted in Derbyshire's past. Written to recreate the oral traditions that made these anecdotes popular, this book provides entertainment for all. Richly illustrated with original drawings, accounts of love, loss, heroes and villains are all brought to life through vivid descriptions that have survived for several centuries. These tales have been adapted to make them accessible, enjoyable and, at times, very relevant to contemporary readers.",
+          "year": 2010,
+          "publication_url": "https://thehistorypress.co.uk/publication/derbyshire-folk-tales/"
+        },
+      {
+        "publisher_id": "history-press",
+        "isbn": "9780752463773",
+        "cover": "",
+        "title": "Nottinghamshire Folk Tales",
+        "description": "Passed down from generation to generation, many of Nottinghamshire's most popular folk tales are gathered here together for the first time. In the popular imagination, Nottinghamshire means Sherwood Forest, outlaws, wicked sheriffs, wild beasts and Robin Hood. All these feature in this selection of folk tales compiled by storyteller Pete Castle, but there are also stories of the Men of Gotham; of fairies, witches, ghosts and vampires; as well as noble lords and thwarted lovers. These captivating stories of love, loss, heroes and villains have been written to recreate the oral tradition that made these anecdotes popular, and are brought to life through unique illustrations and vivid descriptions that have survived for several generations.",
+        "year": 2012,
+        "publication_url": "https://thehistorypress.co.uk/publication/nottinghamshire-folk-tales/"
+      }]
     },
     "pete-boyce": {
       "id": "pete-boyce",
@@ -19879,7 +20138,17 @@
       "id": "sally-tonge",
       "name": "Sally Tonge",
       "url": "https://www.saltonge.co.uk/",
-      "bio": "Sally Tonge is popular Shropshire based storyteller, musician and community artist. She works across the UK and beyond with listeners of all ages. She tells stories combined with music, and is especially skilled at working with young children, children with special and additional needs."
+      "bio": "Sally Tonge is popular Shropshire based storyteller, musician and community artist. She works across the UK and beyond with listeners of all ages. She tells stories combined with music, and is especially skilled at working with young children, children with special and additional needs.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750945103",
+          "cover": "",
+          "title": "Shropshire Ghost Stories",
+          "description": "Sally Tonge, well-known Shropshire storyteller, here retells some of the county's best ghost stories in her own inimitable style. From the 'Phantom Funeral of Ratlinghope' to the 'Bagbury Bull' and from the murderous 'Bloody Jack of Shrewsbury' to the eerie 'White Lady of Longnor': there is something here to frighton everyone. This fascinating introduction discusses and explains the recurring motifs in the tales, such as bottled ghosts, white ladies, encounters with the Devil, and also considers these stories' basis in historical fact. This book is illustrated with a selection of drawings and atmospheric photographs. Shropshire Ghost Stories is bound to be a popular addition to the county's bookshelves.",
+          "year": 2007,
+          "publication_url": "https://thehistorypress.co.uk/publication/shropshire-ghost-stories/"
+        }]
     },
     "polis-loizou": {
       "id": "polis-loizou",
@@ -19899,6 +20168,32 @@
       "name": "Dave Brookes",
       "url": "https://www.thewoollytellers.co.uk/",
       "bio": "A member of the Society for Storytelling with an aim to promote the ancient art of stroytelling.\n\n\n\nDavie's priority is entertainmaint. Whether you are a believer, a sceptic, or simply love a good story, his desire is to intrigue, delight and perhaps unsettle."
+    },
+    "chris-salisbury": {
+      "id": "chris-salisbury",
+      "name": "Chris Salisbury",
+      "url": "https://wildwise.co.uk/",
+      "bio": "Chris Salisbury founded WildWise in 1999 after many years working as an education officer for Devon Wildlife Trust. With a background in the theatre, a training in therapy and a career in environmental education he uses every creative means at his disposal to encourage people to enjoy and value the natural world. He has worked with Ray Mears and John Rhyder, Joseph Cornell and Steve van Metre, amongst many others. He is a course facilitator at Schumacher College, where he also directs the Call of the Wild Foundation programme. He is also a professional storyteller aka 'Spindle Wayfarer', and is the founder and Artistic Director for the Westcountry Storytelling Festival. Chris is also trained as a Be the Change facilitator and offers symposiums for interested groups.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803990392",
+          "cover": "",
+          "title": "Folk Tales of the Night",
+          "subtitle": "Stories for Campfires, Bedtime and Nocturnal Adventures",
+          "description": "Have you heard the tale of Black Annis, the witch-demon that lurks beneath a Leicester housing estate? Do you know the legend of the Hunting of the Great Bear, or how the crow brought daylight? Why should you be careful to never insult the moon?\n\n\n\nStar stories and creature tales, good-old-fashioned ghost stories together with traditional narratives about how the night became kindle the fires of our imagination and deepen our acquaintance with the dark in this compendium of stories to tell out loud.\n\n\n\nFiltered through the wild imaginations and indigenous tongues of storytellers from all over the world, this collection is rewritten and re-presented here by a master storyteller from the UK, who has been spinning nocturnal narratives around the campfire for three decades. This is a delicious midnight feast of 'tales from the dark side' to fascinate, terrify, enchant and inform about the night-time realm.",
+          "year": 2023,
+          "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-of-the-night/"
+        },
+      {
+        "publisher_id": "history-press",
+        "isbn": "9781803999814",
+        "cover": "",
+        "title": "Folk Tales of the Wolf",
+        "description": "Wolves have been hunted to extinction in many countries, clung on in isolated populations near human communities and thrived in remote wilderness: theirs is a story of adaption and survival that is not yet finished.\n\n\n\nOnce prevalent in Britain, the wolf has been much maligned and persecuted, but it has also been missed, and the ‘return of the wolf' in this compendium of tales mirrors the aspiration to reintroduce this ancient species to Britain's recovering wild places.\n\n\n\nThe wolf has wended its way into our collective imagination through traditional narratives around the world. Known as shapeshifter, this animal has weaved itself into our folklore for centuries; from the compelling protagonist and agent of change to the wily trickster and persecutor, and today as a totem of hope for the rewilding movement.\n\n\n\nStoryteller and outdoorsman Chris Salisbury ensures the legacy of this beloved creature lives on in an unforgettable collection of wolfish tales to tell out loud.",
+        "year": 2025,
+        "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-of-the-wolf/"
+      }]
     },
     "shonaleigh": {
       "id": "shonaleigh",
@@ -19922,7 +20217,36 @@
       "id": "colin-urwin",
       "name": "Colin Urwin",
       "url": "https://www.colinurwin.com/",
-      "bio": "Colin Urwin is Seanchaí to the Chief of the Antrim McDonnells Randal, 15th Earl of Antrim at Glenarm Castle. He is also a folksinger, songwriter, storyteller, author and workshop facilitator. For over 25 years he has been the caller and singer in the award-winning 'Haste to the Wedding' ceilidh band. He serves on the committee of the Storytellers of Ireland and the Glens of Antrim Historical Society and is the Storyteller in Residence at The Courthouse, Shared Space and Creative Hub, Bushmills.\n\n\n\nSteeped for a lifetime in the language, folklore and traditions of his beloved Glens of Antrim, Colin has long been influenced by traditional Irish and Scottish music, song and story. He is inspired by the people and places, the history and legends, and the sheer, rugged romance of the northeast coast of Ireland. From these he conjures up many of his beautiful ballads, magical rhyming monologues and delicately woven tales of wonder.\n\n\n\nHis rich and varied storytelling repertoire includes many time-honoured Irish and Scottish tales from around the Sea of Moyle, on which he always stamps his own distinctive mark. He is also well known for his humorous and sometimes poignant recitations after the long-established local County Antrim tradition."
+      "bio": "Colin Urwin is Seanchaí to the Chief of the Antrim McDonnells Randal, 15th Earl of Antrim at Glenarm Castle. He is also a folksinger, songwriter, storyteller, author and workshop facilitator. For over 25 years he has been the caller and singer in the award-winning 'Haste to the Wedding' ceilidh band. He serves on the committee of the Storytellers of Ireland and the Glens of Antrim Historical Society and is the Storyteller in Residence at The Courthouse, Shared Space and Creative Hub, Bushmills.\n\n\n\nSteeped for a lifetime in the language, folklore and traditions of his beloved Glens of Antrim, Colin has long been influenced by traditional Irish and Scottish music, song and story. He is inspired by the people and places, the history and legends, and the sheer, rugged romance of the northeast coast of Ireland. From these he conjures up many of his beautiful ballads, magical rhyming monologues and delicately woven tales of wonder.\n\n\n\nHis rich and varied storytelling repertoire includes many time-honoured Irish and Scottish tales from around the Sea of Moyle, on which he always stamps his own distinctive mark. He is also well known for his humorous and sometimes poignant recitations after the long-established local County Antrim tradition.",
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781837052394",
+          "cover": "",
+          "title": "Irish Folk Tales of Love",
+          "description": "Irish Folk Tales of Love is a beautiful, poignant, and sometimes comical gathering of stories of lust, longing, heartbreak and devotion from Ireland's ancient oral tradition. From doomed romances to crimes of passion, from cunning matchmakers to fairies who meddle in matters of the heart, these timeless tales reveal love in all its guises — tender and tragic, magical and mischievous, radiant and ruinous.\n\n\n\nWander along wild coasts, through enchanted glens, across windswept mountains, and into firelit cabins and shadowed castles where love triumphs, falters, and twists in unexpected ways. Whether bittersweet dalliance or clumsy courtship, these stories remind us that love, in its beauty and its folly, has always been at the heart of the human story. Perfect for romantics, dreamers, and lovers of lore, this collection celebrates the enduring mystery and music of Ireland's storytelling tradition.",
+          "year": 2027,
+          "publication_url": "https://thehistorypress.co.uk/publication/irish-folk-tales-of-love/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803997728",
+          "cover": "",
+          "title": "Irish Folk Tales of Coast and Sea",
+          "description": "A wild frontier of mighty headlands, sheer crags rising from the sea and miles of lonely golden sands — Ireland's coastline is foreboding, exhilarating and achingly beautiful.\n\n\n\nMen and women have lived and loved and died in this harsh but bountiful environment. Through it all they have told tales to entertain themselves, to pass on wisdom and to banish despair. It is little wonder that our richest folklore is woven into this island's rugged and romantic coastline.\n\n\n\nBrought together and reimagined by modern-day seanchaí Colin Urwin, this collection includes some of the most enchanting, strange and poignant folk tales to be found on this ancient isle.",
+          "year": 2027,
+          "publication_url": "https://thehistorypress.co.uk/publication/irish-folk-tales-of-coast-and-sea/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803999760",
+          "cover": "",
+          "title": "Dál Riada Folk Tales",
+          "description": "Founded fifteen centuries ago by the legendary Gaelic king Fergus Mór mac Eirc, Dál Riada was a most unusual ancient kingdom. From the Antrim Glens and Rathlin Island up through Kintyre, Argyll and the Inner Hebrides to the Isle of Skye, it was inhabited by Gaelic seafaring warriors and Viking raiders.\n\n\n\nWith great skill and boundless courage, they navigated around the many islands and countless miles of treacherous coastline. They fought mighty battles, endured wild ocean storms and met with whirlpools and whales. Their presence still echoes in the old place names, and their stories of strange sea monsters, witches and otherworldly creatures have been passed down through the generations. In this collection, storyteller and folklorist Colin Urwin reimagines a few of the very best.",
+          "year": 2025,
+          "publication_url": "https://thehistorypress.co.uk/publication/dal-riada-folk-tales/"
+        }
+      ]
     },
     "clare-murphy": {
       "id": "clare-murphy",
@@ -20461,6 +20785,46 @@
         {
           "story_name": "The Wassail Cup",
           "yt_url": "https://www.youtube.com/watch?v=U_jjYuUvMks"
+        }
+      ],
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752471273",
+          "cover": "",
+          "title": "Cumbrian Folk Tales",
+          "description": "These engaging folk tales from Cumbria were collected as fragments that the author has brought back to life. Shaped by the natural world, local customs and generations of chattering, these traditional tales reflect the unique Cumbrian wit and wisdom. Herein you will find intriguing accounts of Hunchback and the Swan, the Screaming Skulls of Calgarth, the Millom Hob Thross, Hughie the Graeme, Cumbrian Crack, and Billy Peascod's Harp. They will make you want to visit the places where they happened and meet some of the characters that feature in them. Including charming illustrations from the local artist Steven Gregg, this captivating collection will be enjoyed by readers time and again. Taffy Thomas has lived in Grasmere for well over thirty years, and is a highly experienced storyteller with a repertoire of more than 300 tales. In the 2001 New Year Honours List he was awarded the MBE for services to storytelling and charity, and in 2010 was appointed as the first UK Storyteller Laureate.",
+          "year": 2012,
+          "publication_url": "https://thehistorypress.co.uk/publication/cumbrian-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750955881",
+          "cover": "",
+          "title": "Midwinter Folk Tales",
+          "description": "In this enchanting new book, one of the country's most celebrated storytellers has gathered together traditional tales that have their roots in the cold and long, dark nights of midwinter. Herein you will find magical accounts of the Legend of Tinsel, the Christmas Cat and the New Year's Bell, with a number of wintery riddles to unpick while enjoying the festive season and welcoming in the New Year. With so many folk tales intrinsically linked to ancient seasonal customs, there are a few included here relating to traditions such as the Ottery St Mary Tar Barrels (Devon), the Viking 'Up Helly Aa' (Shetland) and Tom Bawcock's Eve (Cornwall). This is a book to curl up with in front of an open fire on long winter nights and to share and retell over a steaming mug of mulled wine.",
+          "year": 2014,
+          "publication_url": "https://thehistorypress.co.uk/publication/midwinter-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750981828",
+          "cover": "",
+          "title": "The Riddle in the Tale",
+          "subtitle": "Riddles and Riddle Folk Tales",
+          "description": "We have been fascinated by riddles for as long as we have had language — think of the legend of the sphinx in Greek mythology. This wonderful book includes both magical riddle tales and simple challenges, with clues and answers hidden in intricate illustrations. Discover how the farmer saved his daughter by solving the fairies' riddles or how the old hen-wife helped the two brothers solve the mystery of their father's will. Have a read — you'll be hooked.",
+          "year": 2017,
+          "publication_url": "https://thehistorypress.co.uk/publication/the-riddle-in-the-tale/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803994437",
+          "cover": "",
+          "title": "The Magpie's Nest",
+          "subtitle": "A Treasury of Bird Folk Tales",
+          "description": "From crowded train stations to quiet woods and from city centres to our own back gardens, birds remind us that nature is everywhere. But do you know which is the king of the birds? Has anyone ever told you how the brave swallow got its forked tail? And what of the owl, who was really a baker's daughter?\n\n\n\nTake a look inside The Magpie's Nest, where a hoard of stories, riddles and rhymes is waiting for you.\n\n\n\nSuitable for all ages and charmingly illustrated by Lakeland artist Becca Hall, this is an essential collection of stories for all who love the natural world.",
+          "year": 2023,
+          "publication_url": "https://thehistorypress.co.uk/publication/the-magpies-nest/"
         }
       ]
     },
