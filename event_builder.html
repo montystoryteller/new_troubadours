@@ -826,7 +826,11 @@
                         suggestions where you can; if you type one that isn't registered yet, it's added to the
                         top-level <code>publishers</code> registry (with the website, if you give one) and the book
                         saved with its <code>publisher_id</code>. Older books that only have a free-text publisher
-                        keep it as typed unless you change it.</div>
+                        keep it as typed unless you change it (to move one into the registry, type the website in
+                        "Publisher website" and save). Use "Publisher page link" for the book's own page on the
+                        publisher's site (<code>publication_url</code>) and "Buy link" for a shop; either or both.
+                        Add co-authors under "Other credited authors" — this performer is included automatically
+                        and the book appears on all of their profile pages.</div>
                 </div>
             </div>
 
@@ -836,7 +840,8 @@
                     <div id="perf-merch-field"></div>
                     <div class="field-hint">CDs, vinyl, downloads, T-shirts etc. (non-book items). For a joint
                         item (e.g. a duo CD) add the <em>other</em> credited performers — this performer is included
-                        automatically, and the item then appears on all of their profile pages.</div>
+                        automatically, and the item then appears on all of their profile pages. Label and catalogue number are
+                        for records released on a label.</div>
                 </div>
             </div>
 
@@ -4898,17 +4903,34 @@
                             <input type="url" class="bk-buy-url" placeholder="https://...">
                         </div>
                         <div class="subitem-field-group">
+                            <label class="subitem-field-label">Publisher page link (optional)</label>
+                            <input type="url" class="bk-publication-url" placeholder="the book's page on the publisher's site">
+                        </div>
+                        <div class="subitem-field-group">
                             <label class="subitem-field-label">Cover image (optional)</label>
                             <input type="text" class="bk-cover" placeholder="filename or URL">
                         </div>
                         <div class="subitem-field-group" style="grid-column: 1 / -1;">
                             <label class="subitem-field-label">Description</label>
                             <textarea class="bk-description" rows="3"></textarea>
+                        </div>
+                        <div class="subitem-field-group" style="grid-column: 1 / -1;">
+                            <label class="subitem-field-label">Other credited authors (co-authored books only)</label>
+                            <div class="bk-performers"></div>
                         </div>`;
+                    wrap._perfs = buildPerformerIdListField(wrap.querySelector(".bk-performers"), "Add another author");
                 },
             });
         }
-        function readBooksField(field) {
+        function bookRowPerfs(row) { return row.firstElementChild._perfs; }
+        function sameIdList(a, b) { return a.length === b.length && a.every((x, i) => x === b[i]); }
+        // Co-authors already on a loaded book: `performer_ids`, or the older `authors`.
+        function bookOtherAuthors(book, ownerId) {
+            const list = Array.isArray(book && book.performer_ids) ? book.performer_ids
+                : Array.isArray(book && book.authors) ? book.authors : [];
+            return list.filter((id, i) => id && id !== ownerId && list.indexOf(id) === i);
+        }
+        function readBooksField(field, ownerId) {
             const books = [];
             field.rows().forEach(row => {
                 const val = sel => row.querySelector(sel).value.trim();
@@ -4922,13 +4944,27 @@
                 setOrClear(rec, orig, "isbn", val(".bk-isbn").replace(/[\s-]+/g, ""));
                 setOrClear(rec, orig, "cover", val(".bk-cover"));
                 setOrClear(rec, orig, "buy_url", val(".bk-buy-url"));
+                setOrClear(rec, orig, "publication_url", val(".bk-publication-url"));
+                // Co-authors -> performer_ids. If the list is unchanged the loaded
+                // record (performer_ids or legacy `authors`) is left exactly as it was;
+                // if it was edited, it is saved as performer_ids and `authors` dropped.
+                const others = [...new Set(readPerformerIdListField(bookRowPerfs(row)).filter(id => id !== ownerId))];
+                if (!sameIdList(others, bookOtherAuthors(orig, ownerId))) {
+                    delete rec.authors;
+                    if (others.length) rec.performer_ids = [ownerId, ...others];
+                    else delete rec.performer_ids;
+                }
                 const pubName = val(".bk-publisher");
-                if (pubName !== (row._origPublisherName || "")) {
+                const pubUrl = val(".bk-publisher-url");
+                // A legacy free-text publisher (no publisher_id) plus a website typed
+                // in the box is the way to promote it into the registry.
+                const promoteLegacy = pubName && !rec.publisher_id && pubUrl;
+                if (pubName !== (row._origPublisherName || "") || promoteLegacy) {
                     if (!pubName) {
                         delete rec.publisher_id;
                         delete rec.publisher;
                     } else {
-                        rec.publisher_id = resolvePublisher(pubName, val(".bk-publisher-url"));
+                        rec.publisher_id = resolvePublisher(pubName, pubUrl);
                         delete rec.publisher;
                     }
                 } // unchanged: whatever the loaded record had (publisher_id or legacy publisher text) is kept as-is
@@ -4936,7 +4972,7 @@
             });
             return books;
         }
-        function populateBooksField(field, books) {
+        function populateBooksField(field, books, ownerId) {
             const items = Array.isArray(books) ? books : [];
             while (field.rows().length < Math.max(items.length, 1)) field.addRow();
             field.rows().forEach((row, i) => {
@@ -4949,7 +4985,9 @@
                 set(".bk-isbn", b && b.isbn);
                 set(".bk-cover", b && b.cover);
                 set(".bk-buy-url", b && b.buy_url);
+                set(".bk-publication-url", b && b.publication_url);
                 set(".bk-description", b ? decodeParagraphBreaksForEdit(b.description) : "");
+                populatePerformerIdListField(bookRowPerfs(row), bookOtherAuthors(b, ownerId));
                 set(".bk-publisher-url", "");
                 const pubName = b ? (b.publisher_id ? publisherNameFor(b.publisher_id) : (b.publisher || "")) : "";
                 row._origPublisherName = pubName;
@@ -4981,6 +5019,14 @@
                             <label class="subitem-field-label">Buy link</label>
                             <input type="url" class="mc-buy-url" placeholder="https://...">
                         </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Record label (optional)</label>
+                            <input type="text" class="mc-label" placeholder="e.g. Taith Records">
+                        </div>
+                        <div class="subitem-field-group">
+                            <label class="subitem-field-label">Catalogue number (optional)</label>
+                            <input type="text" class="mc-label-no" placeholder="e.g. TRCD00012">
+                        </div>
                         <div class="subitem-field-group" style="grid-column: 1 / -1;">
                             <label class="subitem-field-label">Description</label>
                             <textarea class="mc-description" rows="3"></textarea>
@@ -5009,6 +5055,8 @@
                 setOrClear(rec, orig, "description", encodeParagraphBreaks(row.querySelector(".mc-description").value));
                 setOrClear(rec, orig, "year", readYearInput(row.querySelector(".mc-year")));
                 setOrClear(rec, orig, "buy_url", val(".mc-buy-url"));
+                setOrClear(rec, orig, "label", val(".mc-label"));
+                setOrClear(rec, orig, "label_no", val(".mc-label-no"));
                 const others = readPerformerIdListField(merchRowPerfs(row)).filter(id => id !== ownerId);
                 if (others.length) rec.performer_ids = [ownerId, ...new Set(others)];
                 else delete rec.performer_ids;
@@ -5031,6 +5079,8 @@
                 set(".mc-type", m && m.type);
                 set(".mc-year", m && m.year);
                 set(".mc-buy-url", m && m.buy_url);
+                set(".mc-label", m && m.label);
+                set(".mc-label-no", m && m.label_no);
                 set(".mc-description", m ? decodeParagraphBreaksForEdit(m.description) : "");
                 const others = m && Array.isArray(m.performer_ids) ? m.performer_ids.filter(id => id !== ownerId) : [];
                 populatePerformerIdListField(merchRowPerfs(row), others);
@@ -5056,7 +5106,7 @@
             populateYoutubeVideosField(perfYoutubeVideos, record.youtube_videos);
             populatePodcastAppearancesField(perfPodcastAppearances, record.podcast_appearances);
             populatePerformerIdListField(perfMembersField, record.performer_ids);
-            populateBooksField(perfBooks, record.books);
+            populateBooksField(perfBooks, record.books, record.id);
             populateMerchField(perfMerch, record.merch, record.id);
         }
 
@@ -5114,7 +5164,7 @@
             if (podcastLinks) record.podcast = podcastLinks;
             if (youtubeVideos.length) record.youtube_videos = youtubeVideos;
             if (podcastAppearances.length) record.podcast_appearances = podcastAppearances;
-            const books = readBooksField(perfBooks);
+            const books = readBooksField(perfBooks, id);
             if (books.length) record.books = books;
             const merch = readMerchField(perfMerch, id);
             if (Object.keys(merch).length) record.merch = merch;

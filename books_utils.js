@@ -4,7 +4,9 @@
 // books_merch.html (the all-performers Books & Merch page).
 //
 // Data shapes — see events-schema.json → $defs.book / merchItem / publisher:
-//   performer.books   : array of book objects
+//   performer.books   : array of book objects. Co-authors come from
+//                       book.performer_ids (preferred) or the older book.authors;
+//                       links from book.buy_url and book.publication_url
 //   performer.merch   : OBJECT of merch items keyed by slug (joint items list
 //                       everyone credited in item.performer_ids)
 //   eventsData.publishers : registry keyed by publisher_id; a book points at it
@@ -15,7 +17,8 @@
 // ---------------------------------------------------------------------------
 
 // Where relative `book.cover` filenames are loaded from (absolute URLs are used
-// as-is). Every cover in the data is currently empty, so nothing loads yet.
+// as-is). Most covers in the data are empty, in which case the ISBN fallback
+// below is used.
 const BOOK_COVER_BASE = "./book_covers/";
 
 // Fallback for books with an ISBN but no `cover`: Open Library's Covers API
@@ -50,6 +53,14 @@ function merchTypeLabel(type) {
 // they reach the URL sanitiser, which would otherwise reject or mangle them.
 function cleanBuyUrl(url) {
   return (url || "").replace(/\s+/g, "");
+}
+
+// "Taith Records · TRCD00012" from merch item.label / item.label_no, or "".
+function merchLabelText(item) {
+  return [item?.label, item?.label_no]
+    .map((s) => (typeof s === "string" ? s.trim() : ""))
+    .filter(Boolean)
+    .join(" · ");
 }
 
 function bookSubtitleAndBlurb(book) {
@@ -210,7 +221,10 @@ function collectAllBooksAndMerch(performersLookup) {
 // ---------------------------------------------------------------------------
 
 function performerLink(id, performersLookup) {
-  const name = performersLookup[id]?.name || id;
+  // An id with no performer record (a typo in the data) is named but not
+  // linked, rather than linking to a page that can only say "not found".
+  if (!performersLookup[id]) return el("span", "bm-performer-link", id);
+  const name = performersLookup[id].name || id;
   const a = el("a", "bm-performer-link", name);
   a.href = `performers.html?performer=${encodeURIComponent(id)}`;
   return a;
@@ -270,10 +284,12 @@ function descriptionDropdown(text, label) {
 // ISBN; otherwise "" (placeholder).
 function coverSrc(book) {
   const cover = (book.cover || "").trim();
-  if (cover) {
-    return /^https?:\/\//i.test(cover)
-      ? cover
-      : BOOK_COVER_BASE + cover.replace(/[^a-zA-Z0-9._\-]/g, "");
+  // Only a URL or something that looks like an image filename counts; stray
+  // text in this field (one record has a subtitle there) falls through to the
+  // ISBN lookup instead of producing a broken local path.
+  if (/^https?:\/\//i.test(cover)) return cover;
+  if (/\.(jpe?g|png|gif|webp|avif)$/i.test(cover)) {
+    return BOOK_COVER_BASE + cover.replace(/[^a-zA-Z0-9._\-]/g, "");
   }
   const isbn = (book.isbn || "").replace(/[^0-9Xx]/g, "");
   return isbn ? `${OPEN_LIBRARY_COVER_BASE}${isbn}-M.jpg?default=false` : "";
@@ -346,10 +362,21 @@ function createBookCard(book, opts = {}) {
   const dd = descriptionDropdown(description, "About this book");
   if (dd) body.appendChild(dd);
 
-  const buy = buyLink(book.buy_url);
-  if (buy) {
+  // buy_url is the shop link; publication_url is the book's page on the
+  // publisher's site. Show both when both exist, and never the same URL twice.
+  const buyUrl = cleanBuyUrl(book.buy_url);
+  const pubUrl = cleanBuyUrl(book.publication_url);
+  const links = [];
+  if (buyUrl) links.push(buyLink(buyUrl));
+  if (pubUrl && pubUrl.replace(/\/+$/, "") !== buyUrl.replace(/\/+$/, "")) {
+    links.push(
+      buyLink(pubUrl, buyUrl ? "Publisher page →" : "Publisher page / more info →"),
+    );
+  }
+  const shown = links.filter(Boolean);
+  if (shown.length) {
     const actions = el("div", "bm-actions");
-    actions.appendChild(buy);
+    shown.forEach((a) => actions.appendChild(a));
     body.appendChild(actions);
   }
 
@@ -385,7 +412,8 @@ function createMerchCard(item, opts = {}) {
     body.appendChild(creditLine(creditPrefix, creditIds, performersLookup));
   }
   const year = bookYearNumber(item.year);
-  if (year) body.appendChild(el("div", "bm-meta", String(year)));
+  const metaBits = [merchLabelText(item), year ? String(year) : ""].filter(Boolean);
+  if (metaBits.length) body.appendChild(el("div", "bm-meta", metaBits.join(" · ")));
 
   const dd = descriptionDropdown((item.description || "").trim(), "About this item");
   if (dd) body.appendChild(dd);

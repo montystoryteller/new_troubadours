@@ -454,14 +454,14 @@
           "items": {
             "$ref": "#/$defs/book"
           },
-          "description": "Books by this performer. Rendered as a collapsible Books section on their profile page, and on books.html."
+          "description": "Books by this performer. Rendered as a collapsible Books section on their profile page, and on books_merch.html."
         },
         "merch": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/$defs/merchItem"
           },
-          "description": "Non-book merchandise (CDs etc.), keyed by an item slug. Rendered as a collapsible Merch section on the profile page of this performer and of anyone in an item's `performer_ids`, and on books.html."
+          "description": "Non-book merchandise (CDs etc.), keyed by an item slug. Rendered as a collapsible Merch section on the profile page of this performer and of anyone in an item's `performer_ids`, and on books_merch.html."
         }
       },
       "required": [
@@ -2096,7 +2096,7 @@
       ]
     },
     "book": {
-      "description": "A book by (or featuring) a performer, listed in `performer.books[]` and shown in the Books section of their profile page and on books.html. Publisher is identified either by `publisher_id` (a key in the top-level `publishers` registry — preferred) or, in older records, by a free-text `publisher` name. Only `title` is needed for an entry to be shown.",
+      "description": "A book by (or featuring) a performer, listed in `performer.books[]` and shown in the Books section of their profile page and on books_merch.html. Publisher is identified either by `publisher_id` (a key in the top-level `publishers` registry — preferred) or, in older records, by a free-text `publisher` name. Only `title` is needed for an entry to be shown. Credits: the record holding the book is the main (first) author; co-authors are listed in `performer_ids` (preferred) or the older `authors`, and the book is shown on each credited performer's page.",
       "type": "object",
       "properties": {
         "title": {
@@ -2123,11 +2123,11 @@
         },
         "cover": {
           "type": "string",
-          "description": "Cover image filename/URL. Currently always empty in the data; reserved for cover thumbnails."
+          "description": "Cover image filename (loaded from ./book_covers/) or absolute URL. Optional; when empty and `isbn` is set, the cover is fetched from Open Library by ISBN."
         },
         "publisher_id": {
           "type": "string",
-          "description": "Key into the top-level `publishers` registry. Preferred over `publisher`."
+          "description": "Key into the top-level `publishers` registry. Preferred over `publisher`. May be an empty string (treated as unset) for books with no publisher."
         },
         "publisher": {
           "type": "string",
@@ -2135,7 +2135,25 @@
         },
         "buy_url": {
           "type": "string",
-          "description": "Where to buy it — publisher page, Bookshop.org, Amazon, the performer's own shop, etc."
+          "description": "Where to buy it — Bookshop.org, Amazon, the performer's own shop, etc. Shown as the \"Buy / more info\" button."
+        },
+        "publication_url": {
+          "type": "string",
+          "description": "The book's own page on the publisher's website (e.g. a thehistorypress.co.uk/publication/… page). Shown as a \"Publisher page\" link; if `buy_url` is empty it is the only link shown."
+        },
+        "performer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Everyone credited on the book, when it has several authors (same convention as `merchItem.performer_ids`). The holding record is always credited and need not be repeated."
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Older equivalent of `performer_ids` for co-authored books; still read by the site. Prefer `performer_ids` for new records."
         }
       },
       "required": [
@@ -2149,7 +2167,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "description": "Free-text kind of item: \"cd\", \"vinyl\", \"download\", \"tshirt\", \"poster\", etc. Used for the badge and the type filter on books.html."
+          "description": "Free-text kind of item: \"cd\", \"vinyl\", \"download\", \"tshirt\", \"poster\", etc. Used for the badge and the type filter on books_merch.html."
         },
         "title": {
           "type": "string"
@@ -2167,12 +2185,20 @@
         "buy_url": {
           "type": "string"
         },
+        "label": {
+          "type": "string",
+          "description": "Record label the item was released on (e.g. \"Taith Records\"). Shown with `label_no` in the card's meta line."
+        },
+        "label_no": {
+          "type": "string",
+          "description": "The label's catalogue number (e.g. \"TRCD00012\")."
+        },
         "performer_ids": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Everyone credited on the item, when it is a collaboration. The record that holds the item should normally be listed here too."
+          "description": "Everyone credited on the item, when it is a collaboration. Each entry must be a key in `performers` (unknown ids are shown as plain text, not linked). The record that holds the item should normally be listed here too."
         }
       },
       "required": [
@@ -2181,7 +2207,7 @@
       "additionalProperties": true
     },
     "publisher": {
-      "description": "An entry in the top-level `publishers` registry, keyed by publisher_id. Books reference it via `book.publisher_id`, so a publisher's name and link live in one place. The event builder creates these automatically when a book is given a publisher name that isn't already registered.",
+      "description": "An entry in the top-level `publishers` registry, keyed by publisher_id. Books reference it via `book.publisher_id`, so a publisher's name and link live in one place. The event builder creates these automatically when a book is given a publisher name that isn't already registered. Books with only a legacy free-text `publisher` still work without an entry here.",
       "type": "object",
       "properties": {
         "publisher_id": {

@@ -93,6 +93,7 @@ function merchSearchText({ item, credited }) {
     item.title,
     item.description,
     merchTypeLabel(item.type),
+    merchLabelText(item),
     ...credited.map(performerName),
   ]
     .filter(Boolean)
@@ -113,8 +114,9 @@ function performerSummaries() {
       out.set(id, { id, books: 0, merch: 0, viaMerch: 0, merchTypes: new Map(), publishers: new Set() });
     return out.get(id);
   };
+  const known = (ids) => ids.filter((id) => performersLookup[id]);
   allBooks.forEach(({ credited, book }) =>
-    credited.forEach((id) => {
+    known(credited).forEach((id) => {
       const s = get(id);
       s.books += 1;
       const key = publisherKey(book);
@@ -122,7 +124,7 @@ function performerSummaries() {
     }),
   );
   allMerch.forEach(({ item, credited }) =>
-    credited.forEach((id) => {
+    known(credited).forEach((id) => {
       const s = get(id);
       const key = merchTypeKey(item);
       s.merch += 1;
