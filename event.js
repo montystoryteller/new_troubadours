@@ -1105,9 +1105,9 @@ function renderTodayEventsList() {
   if (!filtered.length) {
     const p = document.createElement("p");
     p.className = "today-events-empty";
-    p.textContent = todayEventsAll.length
+    p.innerHTML = todayEventsAll.length
       ? "No events match the selected filters."
-      : "No dated events found for today.";
+      : 'No dated events found for today. <a href="storyclub.html">Check out storyclubs instead.</a>';
     list.appendChild(p);
     return;
   }
