@@ -1,0 +1,51 @@
+#!/bin/bash
+# 1) Block the commit if a staged JSON feed is invalid.
+# 2) Bump ?v= on HTML references for any JS/CSS file being committed.
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+staged_all=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# ---- 1. JSON validity (checks the STAGED version, not your working copy) ----
+JSON_FILES="events_normalized.json"   # space-separated; add others if you like
+
+json_failed=0
+for f in $JSON_FILES; do
+  echo "$staged_all" | grep -qx "$f" || continue
+  git show ":$f" | python3 -c '
+import json, sys
+name = sys.argv[1]
+text = sys.stdin.read()
+try:
+    json.loads(text)
+except json.JSONDecodeError as e:
+    snippet = text[max(0, e.pos - 20):e.pos + 20].replace("\n", " ")
+    print(f"pre-commit: {name} is not valid JSON", file=sys.stderr)
+    print(f"  {e.msg} (line {e.lineno}, column {e.colno})", file=sys.stderr)
+    print(f"  near: ...{snippet}...", file=sys.stderr)
+    sys.exit(1)
+' "$f" || json_failed=1
+done
+
+if [ "$json_failed" -ne 0 ]; then
+  echo "pre-commit: commit blocked. Fix the JSON above (or use --no-verify)." >&2
+  exit 1
+fi
+
+# ---- 2. Cache-bust bump ----
+staged=$(echo "$staged_all" | grep -E '\.(js|css)$' || true)
+[ -z "$staged" ] && exit 0
+
+dirty_before=$(git diff --name-only -- '*.html')
+
+echo "$staged" | while IFS= read -r f; do
+  python3 ./updatejs -r "$(basename "$f")" > /dev/null
+done
+
+git diff --name-only -- '*.html' | while IFS= read -r h; do
+  if echo "$dirty_before" | grep -qx "$h"; then
+    echo "pre-commit: $h had unstaged edits, so it was bumped but NOT staged" >&2
+  else
+    git add "$h"
+  fi
+done
