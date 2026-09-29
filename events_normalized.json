@@ -18783,7 +18783,10 @@
           "type": "cd",
           "year": null,
           "title": "On Common Ground",
-          "performer_ids": ["hugh-lupton", "chris-wood"],
+          "performer_ids": [
+            "hugh-lupton",
+            "chris-wood"
+          ],
           "description": "The enclosure of John Clare.",
           "buy_url": "https://burningshed.com/Hugh_Lupton_and_Chris_Wood-On_Common_Ground-CD"
         }
@@ -18817,6 +18820,42 @@
           "description": "Norfolk is steeped in story. Whether we are treading fields, fens, beaches or streets, the landscape is pregnant with secret histories. The collective imagination of countless generations has populated the county with ghosts, saints, witches, pharisees, giants and supernatural beasts. Stories have evolved around historical characters, with Horatio Nelson, Oliver Cromwell, Anne Boleyn, Tom Paine and King Edmund becoming larger than life in folk memory. This book is a celebration of the deep connection between a place and its people.",
           "year": 2013,
           "buy_url": "https: //burningshed.com/hugh-lupton_norfolk-folk-tales_book"
+        },
+        {
+          "publisher_id": "",
+          "authors": ["hugh-lupton", "daniel-morden"],
+          "isbn": "",
+          "cover": "",
+          "title": "The Adventures of Achilles",
+          "description": "",
+          "year": null,
+          "buy_url": ""
+        },
+        {
+          "publisher_id": "",
+          "authors": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "isbn": "",
+          "cover": "",
+          "title": "Demeter and Persephone",
+          "description": "",
+          "year": null,
+          "buy_url": ""
+        },
+        {
+          "publisher_id": "",
+          "authors": [
+            "hugh-lupton",
+            "daniel-morden"
+          ],
+          "isbn": "",
+          "cover": "",
+          "title": "Orpheus and Eurydice",
+          "description": "",
+          "year": null,
+          "buy_url": ""
         }
       ]
     },
@@ -19067,7 +19106,62 @@
           "story_name": "Eddie Lenihan Part 2 @ The United Arts Club, Dublin, 5th December 2025",
           "yt_url": "https://www.youtube.com/watch?v=2QuAkLDxhQc"
         }
-      ]
+      ],
+      "books": [
+        {
+          "publisher": "Gill Books",
+          "isbn": "9780717136599",
+          "cover": "",
+          "title": "Meeting the Other Crowd",
+          "description": "'The Other Crowd', 'The Good People', 'The Wee Folk' and 'Them' are a few of the names given to the fairies by people in Ireland. Honoured for their gifts and feared for their wrath, the fairies remind us to respect both the world we live in and forces we cannot see.\n\n\n\nIn Meeting the Other Crowd, Eddie Lenihan presents a book about a hidden Ireland, a land of mysterious taboos, dangers, other worldly abductions, enchantments and much more. It is a world which most Irish people acknowledge exists, but which few of them, except the very oldest or professional folklorists, know much more about.\n\n\n\nEddie Lenihan opens our eyes to this invisible world with the passion and bluntness of a great storyteller. In doing so he provides one of the finest collections of Irish folklore in modern times.",
+          "year": 2003,
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        },
+        {
+          "publisher": "Mercier Press",
+          "isbn": "978-1856351973",
+          "cover": "",
+          "title": "Gruesome Irish Tales for Children",
+          "description": "Two terrifying tales about the darkness, fear and terror in the lives of Fionn MacCumhaill and Cúchulainn. These stories tell of the adventures and bravery of the ancient Irish heroes in the face of scary and spooky ordeals and challenges.",
+          "year": 1997,
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        },
+        {
+          "publisher": "Mercier Press",
+          "isbn": "9780853428206",
+          "cover": "",
+          "title": "Gruesome Irish Tales for Children",
+          "description": "It seems certain that as long as Biddy Early is remembered mystery and argument will surround her name.\n\n\n\nShe was a remarkable woman who possessed extraordinary powers and natural gifts of knowing the unknown.\n\n\n\nThe very mention of Biddy Earlys name in any part of Ireland, especially in County Clare, releases an astonishing amount of stories about her cures, her magic bottle, her gift of prophecy and her many other curious talents.",
+          "year": 1987,
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        }
+      ],
+      "merch": {
+        "six-terrible-women": {
+          "type": "cd",
+          "title": "Six Terrible Women",
+          "description": "The six women whose stories are recounted here are 'terrible' in the sense that, rightly or wrongly, many people were terrified of them. Whether they were good or bad in a moral sense I leave to those qualified to decide - or better still, to the individual listener!\n\n\n\nWhat is certain is that they were all remarkable in their own way and have been, accordingly, remembered down the generations.",
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        },
+        "fionn-maccumhail-dark-pool": {
+          "type": "cd",
+          "title": "Fionn MacCumhail and the Dark Pool - Double CD",
+          "description": "Edmund Lenihan, a Kerryman living in Clare, is a folklorist and a schoolteacher. Having listened to a large number of traditional storytellers he began to tell traditional stories himself. He achieved a reputation and a programme on the television, and then set about recording stories. This is a double CD re-issue of two stories that were previously only available on cassette. However, these are not traditional tales - Edmund has taken characters and situations from the tradition and cleverly composed his own stories around them. Perfect for children.",
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        },
+        "storyteller-1-and-2": {
+          "type": "cd",
+          "title": "Storyteller 1 & 2 - Double CD",
+          "description": "Vol 1: Eddie Lenihan turns for the first time away from his own stories and back to the traditional tales on which his own were based. However, while the stories are from the telling of others, they are not mere slavish reproductions. Each one, while staying with the traditional format, is invested with Lenihan?s native wit, and is told in a warm and original way. Vol 2: Six traditional stories form Clare and the Aran Islands, told by a master storyteller. Some are specifically Irish, while others have analogous versions in many countries. All of them are told sincerely, with wit and humour.",
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        },
+        "saint-patrick-was-a-gentleman": {
+          "type": "cd",
+          "title": "Saint Patrick was a Gentleman",
+          "description": "This is now available on CD for the first time. Eddie has been described as 'Ireland's Greatest Living Storyteller' 'Eddie's stories are not for the faint-hearted, but then good stories never are.' RTE Guide",
+          "buy_url": "https://eddielenihan.weebly.com/store.html"
+        }
+      }
     },
     "marion-leeper": {
       "id": "marion-leeper",
@@ -19829,6 +19923,62 @@
       "url": "",
       "bio": ""
     },
+    "devils-violin": {
+      "id": "devils-violin",
+      "performer_ids": [
+        "daniel-morden",
+        "sarah-moody",
+        "oliver-wilson-dickson"
+      ],
+      "name": "The Devil's Violin",
+      "url": "",
+      "troupe": true,
+      "bio": "Storyteller Daniel Morden tells tales against a musical backdrop provided by violinist Oliver Wilson-Dickson, and cellist Sarah Moody.",
+      "podcast": "Storytelling from The Devil's Violin",
+      "podcast_url": "https://podcasts.apple.com/gb/podcast/storytelling-from-the-devils-violin/id1516541391",
+      "merch": {
+        "the-devils-violin": {
+          "type": "cd",
+          "title": "The Devil's Violin",
+          "label": "Taith Records",
+          "label_no": "TRCD0002",
+          "description": "",
+          "buy_url": ""
+        },
+        "the-singing-bones": {
+          "type": "cd",
+          "title": "The Singing Bones",
+          "label": "Taith Records",
+          "label_no": "TRCD00012",
+          "description": "A burning tree\n\n\n\nA mysterious bird\n\n\n\nA sackful of secrets...\n\n\n\nFollowing on from the success of the Devil's Violin, The Devil's Violin Company bring you a brand new show:\n\n\n\nThe Singing Bones… A timeless tale of secrets and lies, of love and hate...\n\n\n\nA captivating storyteller tells a gripping, suspenseful story.\n\n\n\nViolin, accordion and cello accompany the tale with haunting melody.",
+          "buy_url": ""
+        },
+        "the-forbidden-door": {
+          "type": "cd",
+          "title": "The Forbidden Door",
+          "label": "Taith Records",
+          "label_no": "TRCD00019",
+          "description": "The Devil's Violin has been breathing new life into the ancient art of storytelling since 2006. What would you sacrifice for the one you love? Welcome to a cinema of the mind. With their visceral combination of live music and dynamic storytelling, The Devil's Violin weave an enchantment of melody and mystery. Don't open that door! As soon as the rule is laid down, we know it will be broken. Once the door is opened, then what? Adventures! All of us love a good tale, and this is a wonderful one. Expect love, loss, drama, danger, horror, humour, twists and trials. How far is too far? Acclaimed storyteller Daniel Morden is joined by virtuoso musicians Sarah Moody, Dylan Fowler and Oliver Wilson-Dickson. Drawing on influences from folk and world to jazz and classical, the music and story work as one, transporting you into the world of the imagination.",
+          "buy_url": ""
+        },
+        "love-like-salt": {
+          "type": "cd",
+          "title": "A Love Like Salt",
+          "label": "Taith Records",
+          "label_no": "TRCD00020",
+          "description": "How much do you love me?\n\n\n\nSlick and spellbinding, few theatrical experiences come close to this superbly crafted show which brings the ancient art of storytelling firmly into the 21st century.\n\n\n\nUnlocking forgotten folk tales that inspired some of English literature's greatest works — Shakespeare's King Lear and Chaucer's Franklin's Tale and Wife of Bath's Tale -The Devil's Violin takes them on a new voyage of discovery.\n\n\n\nAided by the dramatic, driving rhythms of a skilled and inventive strings and accordion trio, Daniel Morden — one of the UK's most compelling and applauded storytellers — lures the audience onto a rollercoaster ride in this haunting, hypnotic fusion of music and word.\n\n\n\nLove is put to the test in three tales as the audience is transported to King Arthur's Camelot, the Breton shores and the ancient Britain of King Lear.\n\n\n\nMeet a knight on a year-long quest to discover what women really want and enter a world where Cinderella meets Cordelia and 'Miss Mossy Coat' emerges from 'The Land of Ladles' to thrill a prince.\n\n\n\nAn alchemic experience that will have you on the edge of your seat, A Love Like Salt is a rich tapestry, peppered with magic and morals, villains and lovers, desire and disguise and even a man hellbent on selling his soul to win a woman. Three wonderfully engrossing tales drawn from the past and skillfully spun into gripping stories for the present.",
+          "buy_url": ""
+        },
+        "stolen": {
+          "type": "cd",
+          "title": "Stolen",
+          "label": "Taith Records",
+          "label_no": "TRCD00022",
+          "description": "A young prince falls endlessly down through the darkness.\n\n\n\nIn a field of giant poppies, a beautiful old woman is trapped in a cottage nestled in a huge claw.\n\n\n\nSaddled horses stand frozen in a dripping grey landscape, their missing riders lost to The Land of No Return.\n\n\n\nDaniel Morden's mesmeric tales of hope and adversity are accompanied by the exquisite strings of Oliver Wilson-Dickson and Sarah Moody.",
+          "buy_url": ""
+        }
+      }
+    },
     "laura-sampson-and-stacey-blythe": {
       "id": "laura-sampson-and-stacey-blythe",
       "performer_ids": [
@@ -19924,6 +20074,12 @@
         "sarah-moody"
       ],
       "bio": "Master-storyteller Hugh Lupton accompanied by acclaimed cellist Sarah Moody (ex-Devil's Violin)."
+    },
+    "oliver-wilson-dickson": {
+      "id": "oliver-wilson-dickson",
+      "name": "Oliver Wilson-Dickson",
+      "instagram": "oli.musician",
+      "bio": "Acclaimed fiddler and one time member of The Devil's Violin (wtih Daniel Morden and Sarah Moody (cello))."
     },
     "sarah-moody": {
       "id": "sarah-moody",
