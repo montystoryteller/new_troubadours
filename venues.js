@@ -785,7 +785,7 @@ setCanonical("venue");
   }
 
   // One H1 per page: the venue's own name is the H1 on its page.
-  setPageHeadingMode(true);
+  setPageHeadingMode(true, "venueName");
 
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {

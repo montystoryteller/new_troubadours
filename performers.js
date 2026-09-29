@@ -599,12 +599,18 @@ function demoteHeadingToH2(el) {
 
 function applyDirectoryHeadingMode() {
   promoteHeadingToH1(document.getElementById("pageHeading"));
+  // Null-safe: the performer name element doesn't exist once the directory
+  // has rendered, but a bfcache restore of a performer page can re-run this.
+  demoteHeadingToH2(document.getElementById("performerName"));
   const subheading = document.getElementById("pageSubheading");
   if (subheading) subheading.style.display = "";
 }
 
 function applyPerformerHeadingMode() {
   demoteHeadingToH2(document.getElementById("pageHeading"));
+  // #performerName is an <h2> in performers.html so the raw source has one
+  // <h1> only; it becomes the page's H1 here.
+  promoteHeadingToH1(document.getElementById("performerName"));
   const subheading = document.getElementById("pageSubheading");
   if (subheading) subheading.style.display = "none";
 }
