@@ -18,9 +18,6 @@
         "laura-sampson"
       ]
     },
-    "beestontales": {
-      "isClub": true
-    },
     "artsreach": {
       "promoter_id": "artsreach",
       "name": "Artsreach",
@@ -149,13 +146,22 @@
         "snake-stone-stories"
       ]
     },
+    "beestontales": {
+      "isClub": true
+    },
     "ropetackle-storytellers": {
+      "isClub": true
+    },
+    "storytellersnotts": {
       "isClub": true
     },
     "talestattledtold": {
       "isClub": true
     },
     "feastoffools": {
+      "isClub": true
+    },
+    "dragon-storytellers": {
       "isClub": true
     }
   },
@@ -2100,7 +2106,7 @@
         {
           "date": "19/03/2026",
           "time": "7.30pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£12.50",
           "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-19-mar-uncanny-146375",
           "venue_id": "the-cube-kingsdown",
@@ -2110,7 +2116,7 @@
           "date": "22/04/2026",
           "date_added": "02/04/2026",
           "time": "7pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£13.50",
           "ticket_url": "https://dice.fm/event/v39r5v-fairytales-for-grown-ups-uncanny-22nd-apr-folklore-hoxton-london-tickets",
           "venue_id": "folklore-hoxton",
@@ -2207,7 +2213,7 @@
           "venue_id": "hoxton-hall",
           "date_added": "26/08/2026",
           "time": "7.30pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£14.97",
           "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-mjeajyx?ref=montystoryteller.org",
           "description_prefix": "The Crick Crack Club presents\nDAUNTLESS — Grace O'Malley, Pirate Queen\nPerformance storytelling by Debs Newbold",
@@ -2423,7 +2429,7 @@
           "date": "30/04/2026",
           "time": "7pm",
           "date_added": "02/04/2026",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£15",
           "event_flyer": "",
           "ticket_url": "https://events.bl.uk/events/strange-girls-beautiful-monsters",
@@ -2479,7 +2485,7 @@
           "date": "07/11/2026",
           "date_added": "27/06/2026",
           "time": "7.30-10.30pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£14.43",
           "event_flyer": "",
           "ticket_url": "https://www.ticketsource.com/crickcrackclubstorytelling/t-njmyple?ref=montystoryteller.org",
@@ -2490,7 +2496,7 @@
           "date": "12/11/2026",
           "time": "7.30-10.30pm",
           "date_added": "27/06/2026",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£12.50",
           "event_flyer": "",
           "ticket_url": "https://crickcrackclub.com/crick-crack-events/how-not-to-die-long-ago-in-finland/",
@@ -2501,7 +2507,7 @@
           "date": "25/11/2026",
           "time": "Doors 7pm, 7.30-10.30pm",
           "date_added": "27/06/2026",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£13.50",
           "event_flyer": "",
           "ticket_url": "https://dice.fm/event/7dww56-fairytales-for-grown-ups-how-not-to-die-long-ago-in-finland-25th-nov-folklore-hoxton-london-tickets",
@@ -2512,7 +2518,7 @@
           "date": "26/11/2026",
           "time": "7.30pm",
           "date_added": "27/06/2026",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£13",
           "event_flyer": "",
           "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-how-not-to-die-long-ago-in-finland/",
@@ -4464,7 +4470,7 @@
         {
           "date": "04/03/2026",
           "time": "7.15-9.45pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£12, £10 concessions, £15 support the artist (+£1 booking fee)",
           "ticket_url": "https://tickets.storypickandmix.co.uk/events/thehouseofrumour/2014267",
           "isSpecial": true,
@@ -4476,7 +4482,7 @@
         {
           "date": "06/03/2026",
           "time": "7.30pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£12, £10 concessions",
           "ticket_url": "https://bridportandwestbay.co.uk/product/the-bodies-on-the-beach-a-preview-at-the-lyric-theatre-friday-06-march/",
           "isSpecial": true,
@@ -4488,7 +4494,7 @@
         {
           "date": "26/03/2026",
           "time": "7-9pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£10, £8 concessions",
           "ticket_url": "https://www.leicestermuseums.org/event-details/?id=606d1dc6-eacb-4f12-b7e8-1e29c82d14b3",
           "isSpecial": true,
@@ -4500,7 +4506,7 @@
         {
           "date": "18/04/2026",
           "time": "7-9pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£13 (+£0.90)",
           "ticket_url": "https://www.ticketsource.co.uk/whats-on/cranborne/cranborne-earthouse/bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill/e-kqxblv?ref=montystoryteller.org",
           "isSpecial": true,
@@ -4512,7 +4518,7 @@
         {
           "date": "23/04/2026",
           "time": "8-10.15pm",
-          "club": "crickcrack",
+          "promoter_id": "crickcrack",
           "price": "£12.50",
           "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/the-cube/thu-23-apr-bodies-on-the-beach-the-last-battles-of-fionn-maccumhaill-147990#e147990",
           "isSpecial": true,
@@ -5105,7 +5111,7 @@
           "time": "7.30-9:pm",
           "price": "Advance: £10/U16 £7.50;  on the door: £12.50/U16 £10",
           "ticket_url": "https://beaford.org/events/sirenswwho",
-          "promoter_id": "Beaford",
+          "promoter_id": "beaford",
           "isSpecial": true,
           "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261023-holy-trinity-church-westward-ho"
         },
@@ -6325,6 +6331,17 @@
       ]
     },
     {
+      "name": "Dragon Storytellers",
+      "schedule":"",
+      "time": "",
+      "link": "",
+      "facebook": "",
+      "club": "dragon-storytellers",
+      "description": "Dragon Storytellers, performing in the Welsh language, bilingually or in English.",
+      "isPromoter": true,
+      "venue_id": ""
+    },
+    {
       "name": "Feast of Fools",
       "schedule": "1st wednesday",
       "time": "7-9.30pm",
@@ -6680,6 +6697,7 @@
     {
       "name": "Sale",
       "schedule": "4th monday",
+      "club": "thebrooksale",
       "link": "https://www.thebrooksale.co.uk/",
       "facebook": "",
       "venue_id": "brook-pub-brooklands"
@@ -7313,8 +7331,8 @@
       "ticket_url": "https://dragontheatre.littleboxoffice.com/events/141010",
       "isSpecial": true,
       "venue_id": "dragon-theatre-barmouth",
-      "performer_id": "welsh-whisperers",
-      "eventId": "20251205-welsh-whisperers-dragon-theatre-barmouth"
+      "performer_id": "dragon-storytellers",
+      "eventId": "20251205-dragon-storytellers-dragon-theatre-barmouth"
     },
     {
       "name": "Tales of Winter Magic - evening storytelling and Mummers' play",
@@ -7665,7 +7683,7 @@
       "showname": "Gillian Brownson",
       "date": "17/01/2026",
       "time": "7-9pm",
-      "club": "welsh-whisperers",
+      "club": "dragon-storytellers",
       "price": "£8",
       "description": "Come and listen to stories about kings and queens, the Tylwyth Teg and fairies, dragons and monsters and ordinary people as well. Stories of Barmouth, Gwynedd and Wales, stories from long ago and tomorrow. The Dragon Storytellers will be joined by professional storyteller Gillian Brownson.",
       "event_flyer": "2026_01_17_welshwhisperers_brownson.jpg",
@@ -7825,7 +7843,7 @@
       "promoter_link": "http://nellphoenix.co.uk/",
       "date": "29/01/2026",
       "time": "7.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "",
       "description": "",
       "event_flyer": "",
@@ -8209,7 +8227,7 @@
       "showname": "Queen of Between",
       "date": "05/03/2026",
       "time": "6.30-8.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£20 / £17 concessions",
       "description": "What happens...\n\n\n\nWhen the goddess of childbirth crosses her legs?\n\n\n\nWhen you're bound above chaos with golden threads?\n\n\n\nWhen the weight of your grief means you can't walk on?\n\n\n\nWhen you're neither living or dead so you don't fit in?\n\n\n\nWhen you're... stuck?\n\n\n\nThat's when you need Hecate: Queen of Between, many-shaped and multi-tasking goddess of birth, death, witches, weasels, hellhounds, crossroads, thresholds and ghosts.\n\n\n\nBarking at her heels, Lucy Lill and Sarah Liisa Wilkinson take up their torches, jangle their keys and bring you stories of letting go, squeezing through and moving on.\n\n\n\nFor ages 16+\n\n\n\n75 mins, short interval, informal Q&A (optional!)",
       "promoter_link": "https://crickcrackclub.com/",
@@ -8415,7 +8433,7 @@
       "showname": "A Dance with the Minotaur's Sister",
       "date": "26/02/2026",
       "time": "7.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£12",
       "description": "Join storyteller Steph Brittain as she follows Ariadne's journey as it unravels through the maze of love, betrayal, loss, joy and the bulls and the bees. Before the thread and before the tangled and twisted maze, there was Ariadne full of life and rhythm. From a dance floor in the forest and the labyrinth's twisting and tangled passages to the starry skies of the Island of Naxos, Steph Brittain weaves an intricate tapestry of love, strength and courage.",
       "event_flyer": "",
@@ -8860,7 +8878,7 @@
       "showname": "Welsh Whisperers: Stories of Barmouth",
       "date": "18/04/2026",
       "time": "8-9.30pm",
-      "club": "welsh-whisperers",
+      "club": "dragon-storytellers",
       "price": "£8",
       "description": "A storytelling event with a focus on the history of Barmouth: its places, its people, its events. Everyone is invited to share a story, memory or bit of information about Barmouth in the far or recent past. Joining in with the Barmouth History Fest!",
       "event_flyer": "2026_04_18_welsh_whisperers_stories_barmouth.jpg",
@@ -8868,8 +8886,8 @@
       "isSpecial": true,
       "date_added": "16/04/2026",
       "venue_id": "dragon-theatre-barmouth",
-      "performer_id": "welsh-whisperers",
-      "eventId": "20260418-welsh-whisperers-dragon-theatre-barmouth"
+      "performer_id": "dragon-storytellers",
+      "eventId": "20260418-dragon-storytellers-dragon-theatre-barmouth"
     },
     {
       "name": "Faery Tale Blues [Monty + The AnyWhens]",
@@ -9109,7 +9127,7 @@
       "date": "16/05/2026",
       "date_added": "12/05/2026",
       "time": "7.30-10.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£13.90",
       "description": "Aerial artiste of the spoken word, Xanthe Gresham, dives headlong into the wild mythology of Persia, to perform sections of The Shahnameh - the epic masterpiece The Book of Kings - accompanied by the remarkable Iranian musician Arash Moradi.\n\n\n\nMagical horses, epic heroes, and consuming passions abound in this world of romance, lust, tragedy and war. Here fathers and sons may be strangers in battle; selfish Kings move others like chess pieces across the board for their own amusement; beauty can be both a gift and a curse, and strong women break free and conquer their fate.",
       "event_flyer": "",
@@ -9257,7 +9275,7 @@
       "date": "21/05/2026",
       "date_added": "02/04/2026",
       "time": "7.30-10.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£12.50",
       "description": "Four Crick Crack Club storytellers take to the stage for a night of gloriously rude folk and fairytales. This no-holds-barred evening of innuendo and bawdiness will peep beneath the petticoats of flirtation, raise a suggestive eyebrow at forbidden love, and take the urges of men and women firmly in hand.\n\n\n\nLowering the tone for your delight are the glint-toothed, unprecedented preacher man TUUP, the oh-so-knowing Sarah Liisa Wilkinson, the irreverent reverend Tim Ralphs, and the naughty-but-nice Nell Phoenix.\n\n\n\nExpect funny, saucy, and deliciously improper stories that stray below the belt.",
       "event_flyer": "",
@@ -9446,7 +9464,7 @@
       "date": "18/06/2026",
       "date_added": "02/04/2026",
       "time": "7.30-10.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£12.50",
       "description": "Aerial artiste of the spoken word, Xanthe Gresham, dives headlong into the wild mythology of Persia, to perform sections of The Shahnameh - the epic masterpiece The Book of Kings - accompanied by the remarkable Iranian musician Arash Moradi.\n\n\n\nMagical horses, epic heroes, and consuming passions abound in this world of romance, lust, tragedy and war. Here fathers and sons may be strangers in battle; selfish Kings move others like chess pieces across the board for their own amusement; beauty can be both a gift and a curse, and strong women break free and conquer their fate.",
       "event_flyer": "",
@@ -9607,7 +9625,7 @@
       "showname": "Welsh Whisperers: Stories of Barmouth",
       "date": "27/06/2026",
       "time": "7-9pm",
-      "club": "welsh-whisperers",
+      "club": "dragon-storytellers",
       "price": "£8",
       "description": "Stories from Barmouth and Wales for adults.\n\n\n\nJoin the Dragon Storytellers and listen to stories from Barmouth, Wales and beyond. You'll hear traditional folk tales, myths and local legends and get to know more about our beautiful country and the people and creatures that live there.\n\n\n\nThese stories are meant for an adult audience",
       "event_flyer": "2026_06_27_stories_barmouth_dragon_storytellers.jpg",
@@ -9771,7 +9789,7 @@
       "date": "11/07/2026",
       "date_added": "02/04/2026",
       "time": "7.30-10.30pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£13.90",
       "description": "Four Crick Crack Club storytellers take to the stage for a night of gloriously rude folk and fairytales. This no-holds-barred evening of innuendo and bawdiness will peep beneath the petticoats of flirtation, raise a suggestive eyebrow at forbidden love, and take the urges of men and women firmly in hand.\n\n\n\nLowering the tone for your delight are the glint-toothed, unprecedented preacher man TUUP, the oh-so-knowing Sarah Liisa Wilkinson, the irreverent reverend Tim Ralphs, and the naughty-but-nice Nell Phoenix.\n\n\n\nExpect funny, saucy, and deliciously improper stories that stray below the belt.",
       "event_flyer": "",
@@ -10081,7 +10099,7 @@
       "showname": "Folktales and Myths of North Wales",
       "date": "26/07/2026",
       "time": "7-9pm",
-      "club": "welsh-whisperers",
+      "club": "dragon-storytellers",
       "price": "£8",
       "description": "Come and listen to the stories of these mountains, lakes, fields and rivers and all that used to live there - and some still do!\n\n\n\nThe Dragon Storytellers will tell traditional stories about kings and queens, mystical beasts, otherworldly creatures and magical goings-on.\n\n\n\nStories will be told in English with a smattering of Welsh. They are intended for an adult audience.",
       "event_flyer": "2026_07_26_folktales_myths_nwales_dragon_ST.jpg",
@@ -10247,7 +10265,7 @@
       "venue_id": "the-master-shipwright-s-house-deptford",
       "performer_id": "ben-haggarty-steph-brittain",
       "date_added": "26/08/2026",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "time": "6pm",
       "description": "Join us for captivating tales of Fire & Love, accompanied by live music performances under the canopies of the Master Shipwright's House.\n\n\n\nLet the Crick Crack Club's master storytellers Ben Haggarty and Steph Brittain lure you into the deep waters of myth, epic and fairy tale for grown-ups. Discover the love we seek; a love that transcends; a love that burns; a love that heals; a love that dies; the love that entangles sex, death, loss and rebirth.\n\n\n\nThese unflinching, evocative & beautiful tales explore initiation, power, alchemy and the darkest magic of all.\n\n\n\nThe evening will be interspersed with enchanting music from composer Narotam Horn and musicians Anjana Suta, Laurence Harrison, Nicholas Hann & Special Guests.\n\n\n\nStep into the mythopoetic furnace. This is a place where rules aren't broken lightly.\n\n\n\nAs part of the Totally Thames Festival",
       "ticket_url": "https://www.eventbrite.co.uk/e/agni-amor-storytelling-live-music-evening-tickets-1994518665018",
@@ -10840,7 +10858,7 @@
       "performer_id": "nell-phoenix",
       "date_added": "26/08/2026",
       "time": "2pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£10.00 - £20.00",
       "description": "The Crick Crack Club presents a Storytelling Show with Nell Phoenix\n\n\n\nMyths and Legends from the Arctic Circle.\n\n\n\nGod forgets his socks.\n\n\n\nSkunk seeks revenge.\n\n\n\nGirl creates affordable housing — at the bottom of the ocean.\n\n\n\nAnd what happens when you race a rock?\n\n\n\nSuperb storyteller Nell Phoenix revels in the earthy humour and hair-raising horror of myths from the Arctic Circle. Feisty, fierce and funny these creation stories are full of tricksters, trouble-makers and barbarous beasts that stalk these icy wastelands beyond the cold, north wind.\n\n\n\nThese are stories where what happens next is almost certainly NOT what you'd expect.",
       "ticket_url": "https://www.jacksonslane.org.uk/events/thats-how-the-world-was-made-nell-phoenix/",
@@ -11058,7 +11076,7 @@
       "performer_id": "daniel-morden",
       "date_added": "26/08/2026",
       "time": "2pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£10.00 - £25.00",
       "description": "The Crick Crack Club presents a Storytelling Show with Daniel Morden\n\n\n\nAs Halloween approaches and the shadows stretch, the terrific Daniel Morden tells a classic Grimms' fairytale and other tales of strange and weird happenings.\n\n\n\nEverything you could hope for is here… dark forests, shadows & surprises, mysterious strangers, talking animals, goodies, baddies, booing, cheering, and a guest appearance by Mr B.L.Z. Bub himself!\n\n\n\nDANIEL MORDEN has enchanted audiences of all ages at festivals, theatres and schools across the UK and around the world, from the South Bank and the Barbican to Australia and the Arctic. He tells long ago once-upon-a-time stories of magic, and danger. In 2017 he was awarded the Hay Festival medal for his storytelling. Daniel is also well known to Haringey schools as the resident storyteller at Pendarren. Here's a chance to see what the fuss is about!",
       "ticket_url": "https://www.jacksonslane.org.uk/events/the-luck-child-and-other-strange-tales-daniel-morden/",
@@ -11411,7 +11429,7 @@
       ],
       "date_added": "26/08/2026",
       "time": "7-9pm",
-      "club": "crickcrack",
+      "promoter_id": "crickcrack",
       "price": "£10.00 - £25.00",
       "description": "The Crick Crack Club presents a Storytelling Night with Ben Haggarty, Sarah Liisa Wilkinson & Steph Brittain\n\n\n\nBaba Yaga — super-witch, ultimate hag, half-goddess, unpredictable, and more than a little cannibalistic. She lives in a hut perched at the top of a chicken's foot, guarded by a fence of human skulls.\n\n\n\nAllow extraordinary fairytale-tellers, Ben Haggarty, Sarah Liisa Wilkinson and Steph Brittain, to lure you into the enchanted realm of fairytales for grown-ups to encounter this dangerous deity of the dark woods — down there... deep beneath your feet.",
       "ticket_url": "https://www.jacksonslane.org.uk/events/baba-yaga-fairytales-for-grown-ups/",
@@ -11753,7 +11771,7 @@
         "23/10/2026",
         "20/11/2026",
         "15/01/2027",
-        "15/02/202"
+        "15/02/2027"
       ],
       "time": "7.30pm",
       "club": "",
@@ -18436,7 +18454,8 @@
           "description": "Folk tales have been passed down by word of mouth through generations of ordinary, extraordinary Cardiff people. Countless Cardiffians have made them, heard them, forgotten them, remembered them — and they have nearly always added their own twist on the way. Luckily for us, some of the storytellers wrote them down in books. These stories share common universal themes of kindness and courage rewarded, of human triumphs and human troubles. They celebrate the creative imagination of our ancestors, featuring marvellous animals, restless ghosts, horrible monsters and strange, other worldly beings. But all these stories are unique to one place — they all happened right here in Cardiff. Cardiff storyteller Cath Little has searched and researched, reimagined, remade and added her own twist to the tales. These are Cardiff Folk Tales and they belong to us all. Read them, tell them, add your own twist — then pass them on again.",
           "year": 2026,
           "publication_url": "https://thehistorypress.co.uk/publication/cardiff-folk-tales/"
-        }]
+        }
+      ]
     },
     "lizzie-bryant": {
       "id": "lizzie-bryant",
@@ -18654,12 +18673,6 @@
         }
       ]
     },
-    "welsh-whisperers": {
-      "id": "welsh-whisperers",
-      "name": "Welsh Whisperers",
-      "url": "",
-      "bio": "Memeners of the Dragon Storytellers, performing in the Welsh language, bilingually or in English."
-    },
     "red-phoenix-the-prize-old-mummers": {
       "id": "red-phoenix-the-prize-old-mummers",
       "name": "Red Phoenix | The Prize Old Mummers",
@@ -18698,7 +18711,8 @@
           "description": "Woven from the ancient fabric that is the landscape of the West Midlands and passed down through the generations, these stories from a modern county with a rich and varied history are brought together by local storyteller Cath Edwards. Here are mysterious tales and local legends. Here are witches and noodleheads, ghosts and magpies, mines and wishing trees. Retold in an engaging style, and stylishly illustrated with unique line drawings, these humorous, clever and enchanting folk tales are sure to be enjoyed and shared time and again.",
           "year": 2014,
           "publication_url": "https://thehistorypress.co.uk/publication/west-midlands-folk-tales/"
-        }]
+        }
+      ]
     },
     "fiona-collins": {
       "id": "fiona-collins",
@@ -18714,7 +18728,8 @@
           "description": "The county borough of Wrexham is rich in folklore, with an abundance of tales to capture the wonders of the Welsh landscape and all its denizens, both real and imaginary: animal, human and even superhuman. This collection, which includes both traditional tales — passed down through generations by word of mouth — and archive material, brings to life the local legends, mysteries and stories of ordinary people doing extraordinary things that make Wales so magical. A speaker of both languages of Wales, the author has collected some unusual material sure to enchant both Welsh and non Welsh speakers. Beautifully illustrated by local artist Ed Fisher, these tales bring to life the ancient wisdom of Wrexham.",
           "year": 2014,
           "publication_url": "https://thehistorypress.co.uk/publication/wrexham-county-folk-tales"
-        },{
+        },
+        {
           "publisher_id": "history-press",
           "isbn": "9780750990493",
           "cover": "",
@@ -18723,24 +18738,26 @@
           "year": 2019,
           "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-for-bold-girls/"
         },
-      {
-        "publisher_id": "history-press",
-        "isbn": "9780752451879",
-        "cover": "",
-        "title": "Denbighshire Folk Tales",
-        "description": "Wales is especially rich in the folklore of place, and this collection brings a new perspective to the history of Denbighshire, the oldest inhabited area of Wales. With hills, valleys, moorland and coast, this varied land has inspired many tales of ancient battles, strange creatures and curious customs. This compilation of stories from the ancient lore of the modern county of Denbighshire includes local legends, folk tales, stories of magic and mystery and tales of ordinary people doing extraordinary things. Discover dragons and devils, ghosts and giants, witches and cunning men, poets, heroes, saints, kings and queens and, of course, Y Tylwyth Teg, The Fair Folk. A speaker of both languages of Wales, the author has collected some unusual material which will be of particular interest to non-Welsh speakers, who will meet these tales for the first time here.With illustrations from local artist Ed Fisher complementing the tales, this volume will be enjoyed by old and young alike. Mae'na groeso cynnes Cymreig yma i bawb. There is a warm Welsh welcome here to all.",
-        "year": 2011,
-        "publication_url": "https://thehistorypress.co.uk/publication/denbighshire-folk-tales/"
-      },{
-        "publisher_id": "history-press",
-        "isbn": "9780750998901",
-        "cover": "",
-        "title": "Folk Tales of the Ever After",
-        "subtitle": "Stories about Death, Dying and Beyond",
-        "description": "There is a time and a season to all things, and death is an inevitable part of the circle of life.\n\n\n\nOral traditions from all over the world are full of stories giving shape to the very human wish to defy death — our own death and the deaths of others. Folk Tales of the Ever After is a collection of traditional tales from a range of cultures which is, by turns, funny, challenging and touching.\n\n\n\nFrom a man in Baghdad who tries to outrun Death, to Sir Lancelot's ride on the hangman's cart and an Ancient Sumerian ball game that leads to a trip to the underworld, storytellers Fiona and June invite you to share stories from their repertoire, and insights into their working practice, as a journey through the mysteries of death, dying,bereavement, loss, grief and the ever after.",
-        "year": 2023,
-        "publication_url": "https://thehistorypress.co.uk/publication/boggarts-trolls-and-tylwyth-teg/"
-      }]
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752451879",
+          "cover": "",
+          "title": "Denbighshire Folk Tales",
+          "description": "Wales is especially rich in the folklore of place, and this collection brings a new perspective to the history of Denbighshire, the oldest inhabited area of Wales. With hills, valleys, moorland and coast, this varied land has inspired many tales of ancient battles, strange creatures and curious customs. This compilation of stories from the ancient lore of the modern county of Denbighshire includes local legends, folk tales, stories of magic and mystery and tales of ordinary people doing extraordinary things. Discover dragons and devils, ghosts and giants, witches and cunning men, poets, heroes, saints, kings and queens and, of course, Y Tylwyth Teg, The Fair Folk. A speaker of both languages of Wales, the author has collected some unusual material which will be of particular interest to non-Welsh speakers, who will meet these tales for the first time here.With illustrations from local artist Ed Fisher complementing the tales, this volume will be enjoyed by old and young alike. Mae'na groeso cynnes Cymreig yma i bawb. There is a warm Welsh welcome here to all.",
+          "year": 2011,
+          "publication_url": "https://thehistorypress.co.uk/publication/denbighshire-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750998901",
+          "cover": "",
+          "title": "Folk Tales of the Ever After",
+          "subtitle": "Stories about Death, Dying and Beyond",
+          "description": "There is a time and a season to all things, and death is an inevitable part of the circle of life.\n\n\n\nOral traditions from all over the world are full of stories giving shape to the very human wish to defy death — our own death and the deaths of others. Folk Tales of the Ever After is a collection of traditional tales from a range of cultures which is, by turns, funny, challenging and touching.\n\n\n\nFrom a man in Baghdad who tries to outrun Death, to Sir Lancelot's ride on the hangman's cart and an Ancient Sumerian ball game that leads to a trip to the underworld, storytellers Fiona and June invite you to share stories from their repertoire, and insights into their working practice, as a journey through the mysteries of death, dying,bereavement, loss, grief and the ever after.",
+          "year": 2023,
+          "publication_url": "https://thehistorypress.co.uk/publication/boggarts-trolls-and-tylwyth-teg/"
+        }
+      ]
     },
     "matt-vaughan": {
       "id": "matt-vaughan",
@@ -19087,7 +19104,8 @@
           "description": "Pixies are recognised around the world as mischievous members of the fairy race, but their traditional stories dwell in South West England. Across Cornwall, Devon and Somerset, they have been loved and revered, avoided and feared for centuries.\n\n\n\nWithin these pages, you will find the collected tales of the Pixies, Piskeys, Knockers and Spriggans and many more of their magical kin. Their impish and unpredictable nature can help or hinder us, their human neighbours. Their stories call for playful kindness, magical thinking and careful respect for the living landscape around us.\n\n\n\nAllow the stories of the Pixies to charm you, rekindle your relationship with the land and embolden your connection to nature. But be warned: these tales are alive with Pixie magic! Expect enchantment and take care as you prepare to enter the wild places of Britain's South West.",
           "year": 2025,
           "publication_url": "https://thehistorypress.co.uk/publication/pixie-folk-tales/"
-        }]
+        }
+      ]
     },
     "hannah-sneyd": {
       "id": "hannah-sneyd",
@@ -19408,44 +19426,44 @@
       "name": "Mike O'Connor",
       "url": "https://www.lyngham.co.uk/mike_oconnor.html",
       "bio": "Accomplished on the fiddle and accordion, Mike has a wealth of songs and stories.\n\n\n\nMike tells spell-binding stories, many with musical accompaniment, for both adult & schools audiences. His tales vary from 5 minute fireside tales to epics such as Return to Lyonesse, Tristan & Iseult, Imravoe, the Tales of the Holy Rood, & Loki. He is one of the few in the land capable of delivering such epic tales and sagas. He is the author of the best selling 'Cornish Folk Tales' published by History Press. In 2013, with Barbara Griggs he won a British Award for Storytelling Excellence for 'Return to Lyonesse'.",
-          "books": [
-            {
-              "publisher_id": "history-press",
-              "isbn": "9781803999661",
-              "cover": "",
-              "title": "The Little History of Storytelling in Cornwall",
-              "description": "Cornwall's storytelling tradition stretches back a thousand years. Before TV and radio, stories were told among the flickering shadows at the fireside. They whiled away the travellers' miles, long hours in the fields, and days at sea. They gladdened brief moments of relaxation for miners and bal-maidens. Travelling storytellers wandered from village to village swapping words for supper, and a rich local dialect brought the tales to life. Classic Cornish tales such as the Mermaid of Zennor and Jan Tregeagle are wonderfully entertaining, and collectively tell us much about Cornwall, its people, and its history.\n\n\n\nJoin accomplished storyteller, scholar and writer Mike O'Connor as he explores the 'when, where, and why' of Cornish folk tales and celebrates the rich traditions and cultural legacy of hwedhlow.",
-              "year": 2018,
-              "publication_url": "https://thehistorypress.co.uk/publication/the-little-history-of-storytelling-in-cornwall/"
-            },
-            {
-              "publisher_id": "history-press",
-              "isbn": "9780750998710",
-              "cover": "",
-              "title": "Fools and Wise Men",
-              "subtitle": "Folk Tales of Wisdom",
-              "description": "Before schooling was widely available, for most people the classroom was at the fireside, the field and the country lane, where the bards told their tales.\n\n\n\nMany such folk tales exist to convey life-lessons in an entertaining way. These stories are not the pontifications of ancient philosophers: they are the gleanings of countless storytellers, everyday men and women with hard-won life experiences and pockets full of folklore. The tales reflect the times and places of their origin, but have been handed down from generation to generation, evolving to meet changing times. Some are amusing; some are thought-provoking; all have been polished and honed for so long that their message slips, almost imperceptibly, into the mind.\n\n\n\nFools and Wise Men retells these stories for new generations — repaying our debts to the bards of old.",
-              "year": 2022,
-              "publication_url": "https://thehistorypress.co.uk/publication/fools-and-wise-men/"
-            },
-            {
-              "publisher_id": "history-press",
-              "isbn": "9780752450667",
-              "cover": "",
-              "title": "Cornish Folk Tales",
-              "description": "The ancient land of Cornwall is steeped in mysterious tradition, proud heritage and age-old folklore. Before books were widely available, wandering 'droll tellers' used to spread Cornish insight and humour to all parts of the Duchy — exchanging their tales for food and shelter. Anthony James was one such droll teller, and this collection follows him as he makes his way around Cornwall one glorious summer. Richly illustrated with hand-drawn images and woodcuts, Cornish Folk Tales will appeal to anyone captivated by this beautiful land and its resident kindly giants, mischievous piskeys, seductive mermaids, bold knights and barnacle-encrusted sea captains.",
-              "year": 2010,
-              "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales/"
-            },
-          {
-            "publisher_id": "history-press",
-            "isbn": "9780750984492",
-            "cover": "",
-            "title": "Cornish Folk Tales for Children",
-            "description": "Join Jamie, the son of a travelling droll teller, as he journeys across Cornwall, a land steeped in myth and legend. Along the way you will hear mysterious and exciting tales like what happened when Bodrugan took his soldiers to capture Richard Edgcumbe, why the ghost of Lady Emma was never seen again, what proper job King Arthur gave the Giant and how St Piran came to settle in Cornwall. These stories — specially chosen to be enjoyed by 7- to 11-year-old readers — sparkle with magic and explode with adventure. As old as the moors and as wild as the sea, they have been freshly re-told for today's readers by storyteller Mike O'Connor.",
-            "year": 2018,
-            "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales-for-children/"
-          },
+      "books": [
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803999661",
+          "cover": "",
+          "title": "The Little History of Storytelling in Cornwall",
+          "description": "Cornwall's storytelling tradition stretches back a thousand years. Before TV and radio, stories were told among the flickering shadows at the fireside. They whiled away the travellers' miles, long hours in the fields, and days at sea. They gladdened brief moments of relaxation for miners and bal-maidens. Travelling storytellers wandered from village to village swapping words for supper, and a rich local dialect brought the tales to life. Classic Cornish tales such as the Mermaid of Zennor and Jan Tregeagle are wonderfully entertaining, and collectively tell us much about Cornwall, its people, and its history.\n\n\n\nJoin accomplished storyteller, scholar and writer Mike O'Connor as he explores the 'when, where, and why' of Cornish folk tales and celebrates the rich traditions and cultural legacy of hwedhlow.",
+          "year": 2018,
+          "publication_url": "https://thehistorypress.co.uk/publication/the-little-history-of-storytelling-in-cornwall/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750998710",
+          "cover": "",
+          "title": "Fools and Wise Men",
+          "subtitle": "Folk Tales of Wisdom",
+          "description": "Before schooling was widely available, for most people the classroom was at the fireside, the field and the country lane, where the bards told their tales.\n\n\n\nMany such folk tales exist to convey life-lessons in an entertaining way. These stories are not the pontifications of ancient philosophers: they are the gleanings of countless storytellers, everyday men and women with hard-won life experiences and pockets full of folklore. The tales reflect the times and places of their origin, but have been handed down from generation to generation, evolving to meet changing times. Some are amusing; some are thought-provoking; all have been polished and honed for so long that their message slips, almost imperceptibly, into the mind.\n\n\n\nFools and Wise Men retells these stories for new generations — repaying our debts to the bards of old.",
+          "year": 2022,
+          "publication_url": "https://thehistorypress.co.uk/publication/fools-and-wise-men/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752450667",
+          "cover": "",
+          "title": "Cornish Folk Tales",
+          "description": "The ancient land of Cornwall is steeped in mysterious tradition, proud heritage and age-old folklore. Before books were widely available, wandering 'droll tellers' used to spread Cornish insight and humour to all parts of the Duchy — exchanging their tales for food and shelter. Anthony James was one such droll teller, and this collection follows him as he makes his way around Cornwall one glorious summer. Richly illustrated with hand-drawn images and woodcuts, Cornish Folk Tales will appeal to anyone captivated by this beautiful land and its resident kindly giants, mischievous piskeys, seductive mermaids, bold knights and barnacle-encrusted sea captains.",
+          "year": 2010,
+          "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales/"
+        },
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780750984492",
+          "cover": "",
+          "title": "Cornish Folk Tales for Children",
+          "description": "Join Jamie, the son of a travelling droll teller, as he journeys across Cornwall, a land steeped in myth and legend. Along the way you will hear mysterious and exciting tales like what happened when Bodrugan took his soldiers to capture Richard Edgcumbe, why the ghost of Lady Emma was never seen again, what proper job King Arthur gave the Giant and how St Piran came to settle in Cornwall. These stories — specially chosen to be enjoyed by 7- to 11-year-old readers — sparkle with magic and explode with adventure. As old as the moors and as wild as the sea, they have been freshly re-told for today's readers by storyteller Mike O'Connor.",
+          "year": 2018,
+          "publication_url": "https://thehistorypress.co.uk/publication/cornish-folk-tales-for-children/"
+        },
         {
           "publisher_id": "history-press",
           "isbn": "9780750990783",
@@ -19454,7 +19472,8 @@
           "description": "Scilly has been its own unique land for centuries, separate from England and cut off from Cornwall by twenty-five miles of rough sea – yet until now its folk tales have been poorly documented. Let Anthony the droll-teller and his companions guide you on this voyage around the wonderful Isles of Scilly: a place of smugglers and shipwrecks, pirates and privateers, legends and long lost tales.",
           "year": 2020,
           "publication_url": "https://thehistorypress.co.uk/publication/isles-of-scilly-folk-tales/"
-        }]
+        }
+      ]
     },
     "barbara-griggs": {
       "id": "barbara-griggs",
@@ -19882,7 +19901,8 @@
           "description": "The Grimms called them The Quiet Folk, in Māori they are Patupaiarehe, in Wales Y Tylwyth Teg: hidden people who live unseen, speak their own languages and move around like migrants, shrouded from our eyes – like those who lived in the utopian world of Plant Rhys Ddwfn off the west Welsh coast, where this book begins.\n\n\n\nIn mythology, lost lands are coral castles beneath the sea, ancient forests where spirits live, and mountain swamps where trolls lurk. Strip away the mythology, and they become valleys and villages flooded to provide drinking water to neighbouring kingdoms, campsites where travellers are told they can't travel, and reservations where the rights of first nations people are ignored.\n\n\n\nThe folk tales in this book tell of these lost lands and hidden people, remembered through migrations, dreams and memories.",
           "year": 2021,
           "publication_url": "https://thehistorypress.co.uk/publication/boggarts-trolls-and-tylwyth-teg/"
-        }]
+        }
+      ]
     },
     "jane-and-guy-lambourne": {
       "id": "jane-and-guy-lambourne",
@@ -20077,15 +20097,16 @@
           "year": 2010,
           "publication_url": "https://thehistorypress.co.uk/publication/derbyshire-folk-tales/"
         },
-      {
-        "publisher_id": "history-press",
-        "isbn": "9780752463773",
-        "cover": "",
-        "title": "Nottinghamshire Folk Tales",
-        "description": "Passed down from generation to generation, many of Nottinghamshire's most popular folk tales are gathered here together for the first time. In the popular imagination, Nottinghamshire means Sherwood Forest, outlaws, wicked sheriffs, wild beasts and Robin Hood. All these feature in this selection of folk tales compiled by storyteller Pete Castle, but there are also stories of the Men of Gotham; of fairies, witches, ghosts and vampires; as well as noble lords and thwarted lovers. These captivating stories of love, loss, heroes and villains have been written to recreate the oral tradition that made these anecdotes popular, and are brought to life through unique illustrations and vivid descriptions that have survived for several generations.",
-        "year": 2012,
-        "publication_url": "https://thehistorypress.co.uk/publication/nottinghamshire-folk-tales/"
-      }]
+        {
+          "publisher_id": "history-press",
+          "isbn": "9780752463773",
+          "cover": "",
+          "title": "Nottinghamshire Folk Tales",
+          "description": "Passed down from generation to generation, many of Nottinghamshire's most popular folk tales are gathered here together for the first time. In the popular imagination, Nottinghamshire means Sherwood Forest, outlaws, wicked sheriffs, wild beasts and Robin Hood. All these feature in this selection of folk tales compiled by storyteller Pete Castle, but there are also stories of the Men of Gotham; of fairies, witches, ghosts and vampires; as well as noble lords and thwarted lovers. These captivating stories of love, loss, heroes and villains have been written to recreate the oral tradition that made these anecdotes popular, and are brought to life through unique illustrations and vivid descriptions that have survived for several generations.",
+          "year": 2012,
+          "publication_url": "https://thehistorypress.co.uk/publication/nottinghamshire-folk-tales/"
+        }
+      ]
     },
     "pete-boyce": {
       "id": "pete-boyce",
@@ -20148,7 +20169,8 @@
           "description": "Sally Tonge, well-known Shropshire storyteller, here retells some of the county's best ghost stories in her own inimitable style. From the 'Phantom Funeral of Ratlinghope' to the 'Bagbury Bull' and from the murderous 'Bloody Jack of Shrewsbury' to the eerie 'White Lady of Longnor': there is something here to frighton everyone. This fascinating introduction discusses and explains the recurring motifs in the tales, such as bottled ghosts, white ladies, encounters with the Devil, and also considers these stories' basis in historical fact. This book is illustrated with a selection of drawings and atmospheric photographs. Shropshire Ghost Stories is bound to be a popular addition to the county's bookshelves.",
           "year": 2007,
           "publication_url": "https://thehistorypress.co.uk/publication/shropshire-ghost-stories/"
-        }]
+        }
+      ]
     },
     "polis-loizou": {
       "id": "polis-loizou",
@@ -20185,15 +20207,16 @@
           "year": 2023,
           "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-of-the-night/"
         },
-      {
-        "publisher_id": "history-press",
-        "isbn": "9781803999814",
-        "cover": "",
-        "title": "Folk Tales of the Wolf",
-        "description": "Wolves have been hunted to extinction in many countries, clung on in isolated populations near human communities and thrived in remote wilderness: theirs is a story of adaption and survival that is not yet finished.\n\n\n\nOnce prevalent in Britain, the wolf has been much maligned and persecuted, but it has also been missed, and the ‘return of the wolf' in this compendium of tales mirrors the aspiration to reintroduce this ancient species to Britain's recovering wild places.\n\n\n\nThe wolf has wended its way into our collective imagination through traditional narratives around the world. Known as shapeshifter, this animal has weaved itself into our folklore for centuries; from the compelling protagonist and agent of change to the wily trickster and persecutor, and today as a totem of hope for the rewilding movement.\n\n\n\nStoryteller and outdoorsman Chris Salisbury ensures the legacy of this beloved creature lives on in an unforgettable collection of wolfish tales to tell out loud.",
-        "year": 2025,
-        "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-of-the-wolf/"
-      }]
+        {
+          "publisher_id": "history-press",
+          "isbn": "9781803999814",
+          "cover": "",
+          "title": "Folk Tales of the Wolf",
+          "description": "Wolves have been hunted to extinction in many countries, clung on in isolated populations near human communities and thrived in remote wilderness: theirs is a story of adaption and survival that is not yet finished.\n\n\n\nOnce prevalent in Britain, the wolf has been much maligned and persecuted, but it has also been missed, and the ‘return of the wolf' in this compendium of tales mirrors the aspiration to reintroduce this ancient species to Britain's recovering wild places.\n\n\n\nThe wolf has wended its way into our collective imagination through traditional narratives around the world. Known as shapeshifter, this animal has weaved itself into our folklore for centuries; from the compelling protagonist and agent of change to the wily trickster and persecutor, and today as a totem of hope for the rewilding movement.\n\n\n\nStoryteller and outdoorsman Chris Salisbury ensures the legacy of this beloved creature lives on in an unforgettable collection of wolfish tales to tell out loud.",
+          "year": 2025,
+          "publication_url": "https://thehistorypress.co.uk/publication/folk-tales-of-the-wolf/"
+        }
+      ]
     },
     "shonaleigh": {
       "id": "shonaleigh",
