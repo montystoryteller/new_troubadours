@@ -129,10 +129,12 @@ function normalisedUrl(url) {
 //   hit-fresh | hit-stale-refreshing | hit-stale
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
-function logGate(request, tier, normUrl, outcome) {
+//   forced-rendered | forced-failed  (tier "forced": updatecache / prewarm / debug ping)
+function logGate(request, tier, normUrl, outcome, extra = {}) {
   console.log({
     evt: "gate",
     outcome,
+    ...extra,
     tier,
     ua: (request.headers.get("user-agent") || "").slice(0, 60),
     page: normUrl.pathname + normUrl.search,
@@ -329,9 +331,15 @@ export default {
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
       const result = await refresh(env, key, normUrl.toString(), 3, "forced");
       if (result.html) {
+        logGate(request, "forced", normUrl, "forced-rendered");
         return htmlResponse(result.html, { "cache-control": "no-store" });
       }
       const markedStale = await markStale(env, key);
+      logGate(request, "forced", normUrl, "forced-failed", {
+        status: result.status,
+        quotaExhausted: result.quotaExhausted,
+        markedStale,
+      });
       return new Response("render failed", {
         status: result.status === 429 ? 429 : 502,
         headers: {
