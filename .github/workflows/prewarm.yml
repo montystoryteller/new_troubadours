@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       full_refresh:
-        description: "Purge and re-render everything (ignore freshness)"
+        description: "Re-render everything, ignoring freshness (old snapshots are kept if a render fails)"
         type: boolean
         default: false
 
@@ -21,10 +21,16 @@ jobs:
       # Max browser renders per run. The free plan allows only 10 browser-minutes
       # per day in total, so keep this modest (raise it on the paid plan). Anything left over
       # is still stale tomorrow and gets picked up then.
-      MAX_RENDERS: "60"
-      # Skip pages whose snapshot is younger than this (seconds). 20h so a
-      # daily run refreshes everything that was rendered on the previous run.
-      REFRESH_AFTER: "72000"
+      MAX_RENDERS: "40"
+      # Skip pages whose snapshot is younger than this (seconds).
+      # Base pages (no ?args) are re-rendered about every other day; the many
+      # ?arg pages on a slower cycle. Tune ARG_REFRESH_AFTER to your budget:
+      # roughly  cycle_days = number_of_pages / MAX_RENDERS.
+      BASE_REFRESH_AFTER: "158400"   # 44h
+      ARG_REFRESH_AFTER: "432000"    # 5 days
+      # Seconds to wait between browser renders. 15 on the free plan; 1-2 on
+      # Workers Paid (limits are far higher there).
+      RENDER_GAP: "15"
       FULL_REFRESH: ${{ inputs.full_refresh }}
 
     steps:
@@ -48,18 +54,25 @@ jobs:
             grep -v '^\s*$' prewarm-urls.txt | grep -v '^#' >> "$all" || true
           fi
 
-          # Always include the base pages
+          # Base pages (no args) go FIRST so they get the daily render budget
+          # before any ?arg pages. Their prerendered HTML links to the arg pages.
+          base=$(mktemp)
           for p in "" index.html event_guide.html tour_guide.html storyclub.html \
                    performers.html venues.html festival.html flyers.html media.html \
                    promoters.html books_merch.html stats.html; do
-            echo "$SITE/$p" >> "$all"
+            echo "$SITE/$p" >> "$base"
           done
 
-          mapfile -t urls < <(sort -u "$all")
+          # Base pages first, then everything else in RANDOM order. Skipped-because-fresh
+          # pages don't count toward MAX_RENDERS, so shuffling means every page gets
+          # its turn over the following days instead of the same first N always
+          # winning and the rest starving.
+          mapfile -t urls < <(cat "$base" <(shuf "$all") | awk '!seen[$0]++')
           echo "Total URLs: ${#urls[@]}"
 
           full="${FULL_REFRESH:-false}"
           renders=0
+          rl=0
           failed=()
 
           for url in "${urls[@]}"; do
@@ -69,10 +82,10 @@ jobs:
             fi
 
             if [ "$full" = "true" ]; then
-              curl -s -o /dev/null -H "x-purge-cache: ${SECRET}" --max-time 10 "$url" || true
               extra=()
             else
-              extra=(-H "x-only-if-older-than: ${REFRESH_AFTER}")
+              if [[ "$url" == *\?* ]]; then after="$ARG_REFRESH_AFTER"; else after="$BASE_REFRESH_AFTER"; fi
+              extra=(-H "x-only-if-older-than: ${after}")
             fi
 
             hdrs=$(mktemp)
@@ -96,6 +109,18 @@ jobs:
             fi
 
             renders=$((renders + 1))
+
+            # The quota message text isn't reliable, so also stop after
+            # several consecutive 429s instead of sleeping through them all.
+            if [ "$status" = "429" ]; then
+              rl=$((rl + 1))
+              if [ "$rl" -ge 5 ]; then
+                echo "🛑 5 consecutive 429s: Browser Run is limited or out of quota. Stopping; the next run retries."
+                exit 0
+              fi
+            else
+              rl=0
+            fi
             if [ "$status" = "200" ] && [ "$prerendered" = "true" ]; then
               echo "✅ rendered ($renders): $url"
             else
@@ -103,7 +128,7 @@ jobs:
               failed+=("$url")
             fi
 
-            sleep 15                        # free plan: ~1 Quick Action per 10s
+            sleep "$RENDER_GAP"
           done
 
           echo ""
