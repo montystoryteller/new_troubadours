@@ -1635,6 +1635,10 @@
           "type": "string",
           "description": "Note the plural name — distinct from specificEvent/musicEvent/poetryEvent's singular `ticket_url`. Deliberately NOT one of the fields applyClubInheritance() (shared_utils.js) copies onto events at this club: a guest night's booking page/capacity is often different from the club's own, so it's left for each event to set explicitly rather than defaulted."
         },
+        "video_trailer": {
+          "$ref": "#/$defs/youtubeUrl",
+          "description": "Club-level YouTube trailer/promo video, shown inline in the header of the club's page in storyclub.html (after the About section). Not inherited by events at this club — specificEvents/show_dates carry their own video_trailer."
+        },
         "email": {
           "type": "string"
         },

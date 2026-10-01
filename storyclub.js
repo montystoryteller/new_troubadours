@@ -659,6 +659,24 @@ async function renderPage(data, clubId) {
     header.appendChild(about);
   }
 
+  // Optional video trailer (YouTube only — getYouTubeEmbedUrl() validates and
+  // converts to a youtube-nocookie.com /embed/ URL, returning null for
+  // anything else). Shown inline under the About section, as on the tour
+  // page. loading="lazy" defers the iframe until it nears the viewport so
+  // it can't delay the club's text content.
+  const clubEmbedUrl = getYouTubeEmbedUrl(clubRecord.video_trailer);
+  if (clubEmbedUrl) {
+    const trailer = document.createElement("div");
+    trailer.className = "club-trailer";
+    const { wrapper, iframe } = createVideoTrailerEmbed(
+      `${clubRecord.name} trailer`,
+    );
+    iframe.loading = "lazy";
+    iframe.src = clubEmbedUrl;
+    trailer.appendChild(wrapper);
+    header.appendChild(trailer);
+  }
+
   if (clubRecord.club_flyer) {
     const img = document.createElement("img");
     img.src = `./storyclub_assets/club_flyers/${sanitizeFlyerPath(clubRecord.club_flyer)}`;

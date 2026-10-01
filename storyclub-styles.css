@@ -620,3 +620,14 @@
 .club-list-grid .event-link svg {
     color: black;
 }
+
+/* Club-level video trailer, shown inline in the club header (reuses the
+   16:9 .event-video-wrapper sizing from above, but allows it to be wider). */
+.club-trailer {
+    margin-top: 14px;
+    max-width: 560px;
+}
+
+.club-trailer .event-video-wrapper {
+    max-width: 100%;
+}
