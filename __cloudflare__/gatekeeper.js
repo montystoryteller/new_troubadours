@@ -130,6 +130,7 @@ function normalisedUrl(url) {
 //   hit-fresh | hit-stale-refreshing | hit-stale
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
+//   miss-origin-kv-error  (KV read threw; served the origin page, no render attempted)
 //   forced-rendered | forced-failed  (tier "forced": updatecache / prewarm / debug ping)
 function botName(request) {
   const ua = request.headers.get("user-agent") || "";
@@ -370,10 +371,19 @@ export default {
 
     // Serve from KV when we can. If the snapshot is stale, serve it anyway
     // and refresh in the background.
-    const [raw, { soft, hard }] = await Promise.all([
-      env.RENDER_CACHE.get(key, "json"),
-      getEpochs(env),
-    ]);
+    // A KV failure must never break the page: fall back to the origin and
+    // don't spend a scarce render while KV is misbehaving.
+    let raw, soft, hard;
+    try {
+      [raw, { soft, hard }] = await Promise.all([
+        env.RENDER_CACHE.get(key, "json"),
+        getEpochs(env),
+      ]);
+    } catch (err) {
+      console.log("KV read failed", String(err), key);
+      logGate(request, tier, normUrl, "miss-origin-kv-error");
+      return fetch(request);
+    }
     const entry = raw?.html && raw.ts >= hard ? raw : null;
     if (entry) {
       const stale =
