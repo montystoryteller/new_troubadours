@@ -55,15 +55,16 @@ const ONLY_IF_OLDER_HEADER = "x-only-if-older-than";
 // Everything else is dropped from the cache key and the render URL, notably
 // UI-state params (q, types, time, start/end, zoom/lat/lng, open, date, v...),
 // which have unlimited combinations and would burn render quota for nothing.
-// Pages not listed here never carry params. Verify the two guessed filenames
-// (event_guide, tour_guide) against your real pages.
+// Pages not listed here never carry params. Filenames were checked against the
+// links in the page scripts (e.g. event.html?event=, tour_guide.html?tour=).
 const PARAMS_BY_PATH = {
   "/storyclub": ["club"],
   "/performers": ["performer"],
   "/venues": ["venue"],
   "/promoters": ["promoter"],
   "/festival": ["festival"],
-  "/event_guide": ["event", "event_id"],
+  "/event": ["event", "event_id"], // event.html?event=... (one page per event)
+  // /event_guide (the calendar listing) takes only UI-state params, so none kept.
   "/tour_guide": ["tour", "performer"],
   "/flyers": ["tour"],
   "/media": ["series"],
@@ -130,14 +131,31 @@ function normalisedUrl(url) {
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
 //   forced-rendered | forced-failed  (tier "forced": updatecache / prewarm / debug ping)
+function botName(request) {
+  const ua = request.headers.get("user-agent") || "";
+  const m = ua.match(RENDER_BOT_RE) || ua.match(CACHE_ONLY_BOT_RE);
+  return m ? m[0].toLowerCase() : "";
+}
+
 function logGate(request, tier, normUrl, outcome, extra = {}) {
+  const page = normUrl.pathname + normUrl.search;
+  const rawUrl = new URL(request.url);
+  const raw = rawUrl.pathname + rawUrl.search;
+  const bot = botName(request);
   console.log({
+    // "message" is what the Workers Logs list row displays.
+    message: `gate ${outcome} [${bot || tier}] ${page}`,
     evt: "gate",
     outcome,
-    ...extra,
     tier,
-    ua: (request.headers.get("user-agent") || "").slice(0, 60),
-    page: normUrl.pathname + normUrl.search,
+    bot,
+    page,
+    // Original path+query as requested, only when normalisation changed it.
+    // If a page you care about shows up here with its params stripped, add the
+    // param to PARAMS_BY_PATH.
+    ...(raw !== page ? { raw } : {}),
+    ...extra,
+    ua: (request.headers.get("user-agent") || "").slice(0, 200),
   });
 }
 
