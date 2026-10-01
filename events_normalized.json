@@ -6332,7 +6332,7 @@
     },
     {
       "name": "Dragon Storytellers",
-      "schedule":"",
+      "schedule": "",
       "time": "",
       "link": "",
       "facebook": "",
@@ -6449,10 +6449,14 @@
       "name": "The Plough Storytelling Circle (North Devon)",
       "schedule": "1st thursday",
       "time": "7.30pm",
+      "description": "The Plough Storytelling Circle is a lively, forum for listening to and telling stories. Folk tales, mythology, modern stories, personal stories. All told in the time-honoured way of the oral tradition storyteller - from memory.\n\n\n\nAnyone and everyone is welcome to tell a tale or just to listen, and we also enjoy occasional music and poetry. It is a supportive and friendly environment for beginners and more experienced storytellers to try out stories and hone their skills. And stories would be nothing without people to listen to them.",
       "link": "https://www.theploughartscentre.org.uk/",
       "facebook": "https://www.facebook.com/ploughstorytelling",
       "email": "storytelling.plough@gmail.com",
       "club": "plough-story-circle",
+      "tickets_url": "https://www.theploughartscentre.org.uk/event/plough-storytelling-circle-0",
+      "video_trailer": "https://www.youtube.com/watch?v=wY3-ZmWK5oY",
+      "price": "£2.50 incl. refreshments and cake",
       "venue_id": "st-annes-arts-community-centre-barnstaple"
     },
     {
@@ -11149,6 +11153,21 @@
       "eventId": "20261021-jason-buck-the-old-cold-store-nottingham"
     },
     {
+      "name": "Feral: Stories from the Wild SIde [Stephe Harrop]",
+      "showname": "Feral: Stories from the Wild SIde",
+      "date": "21/10/2026",
+      "venue_id": "lock-91-bar-manchester",
+      "performer_id": "stephe-harrop",
+      "eventId": "20261021-stephe-harrop-lock-91-bar-manchester",
+      "date_added": "01/10/2026",
+      "time": "Doors 7pm, start 7.30pm",
+      "club": "stinginthetale",
+      "price": "£8 / £6",
+      "description": "Feral is a darkly lyrical tangle of traditional northern tales, packed with shape-shifters, hungry hearts, and strange loves.\n\n\n\nThe snarl of wildness inside the gentlest soul. A sudden burst of chaos that upends everything.\nFeral is the soul-deep knowing that, Stephe is a storyteller, researcher and sometimes, we need to escape our writer, who shares fierce and funny civilised selves & start running free.\n\n\n\nshows across the Uk. She especially loves telling the folklore of the Anglo-Scottish Borders, and salvaged stories from the two kingdoms' historic and mythic pasts.\n\n\n\nSo skip that scheduled meeting; chuck away your phone; slip out of your shoes and step onto the twisting path.",
+      "event_flyer": "2026_10_21_harrop_sting-in-tale.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
       "showname": "Story, song and crankie evenings",
       "date": "23/10/2026",
@@ -11169,6 +11188,23 @@
         "michael-dacre",
         "wendy-dacre"
       ]
+    },
+    {
+      "name": "Darkness and Love [Peter Findlay]",
+      "showname": "Darkness and Love",
+      "date": "24/10/2026",
+      "venue_id": "sunshine-rooms-findhorn",
+      "performer_id": "peter-findlay",
+      "eventId": "20261024-peter-findlay-sunshine-rooms-findhorn",
+      "date_added": "01/10/2026",
+      "time": "4pm",
+      "price": "£8-12.50 (u16. £12.50, bursareis £5)",
+      "description": "The darkness of the top stair on the way to bed was a terrifying place as a child: familiar shapes shifting in the gloom and the feeling of shadowy fingers pressing in on me while my Parents shouted up to me that there was nothing to fear. This childhood darkness and others will be threaded through a tapestry of tales from around the world with music by Gay Taaffe and special community guests (to be announced).\n\n\n\nPerfect for anyone who hungers a ghoulish touch as the days darken or a burst of imaginative colour as the nights lengthen.\n\n\n\n50% of proceeeds to The Talebearers Bursary Fund",
+      "age_rating": "8+",
+      "min_age": 8,
+      "event_flyer": "2026_10_24_findhorn_darkness_and_love.jpg",
+      "ticket_url": "https://www.tickettailor.com/events/weavingwordsandwonder/2437444",
+      "isSpecial": true
     },
     {
       "name": "Darkness & Love",
@@ -11798,6 +11834,21 @@
       "price": "£10",
       "isSpecial": true,
       "eventId": "20270226-gauri-raje-town-hall-bishops-castle"
+    },
+    {
+      "name": "The Dragon's Whisper [Owen Staton]",
+      "showname": "The Dragon's Whisper",
+      "date": "28/02/2027",
+      "venue_id": "bigg-theatre-biggleswade",
+      "performer_id": "owen-staton",
+      "eventId": "20270228-owen-staton-bigg-theatre-biggleswade",
+      "date_added": "01/10/2026",
+      "time": "Doors 2.30pm, start 3pm",
+      "price": "£13.50 (+ £1.35 fees)",
+      "description": "An evening of Welsh folktales and legends.\n\n\n\nStep into a world of ancient mountains, mysterious lakes and stories whispered through generations.\n\n\n\nDragons Whisper brings storyteller Owen Staton (Time between Times storytelling — Weird in the Wade) to The BIGG Theatre in Biggleswade for an enchanting journey into the folklore and legends of Wales.\n\n\n\nFrom dragons and fairies to restless spirits, doomed lovers and strange encounters beneath the moonlit Welsh hills, these are tales filled with wonder, mystery, humour and a little darkness.\n\n\n\nWith Owen's warm and atmospheric storytelling, prepare to leave the everyday world behind and enter the Time Between Times — where old stories still breathe, and the dragons are never far away.",
+      "event_flyer": "2027_02_28_staton_dragons_whisper_biggleswade.jpg",
+      "ticket_url": "https://biggtheatre.ticketsolve.com/ticketbooth/shows/1173694453",
+      "isSpecial": true
     },
     {
       "name": "Beowulf [Joshua Crisp]",
@@ -17386,6 +17437,19 @@
         -2.36041
       ]
     },
+    "bigg-theatre-biggleswade": {
+      "id": "bigg-theatre-biggleswade",
+      "name": "Bigg Theatre, Biggleswade",
+      "full_address": "The BIGG Theatre, 36 High Street , Biggleswade, SG18 0JL",
+      "city": "Biggleswade",
+      "postcode": "SG18 0JL",
+      "url": "https://www.thebiggtheatre.co.uk/",
+      "description": "Located at 36 High Street in the heart of Biggleswade, The BIGG Theatre is a vibrant arts venue and community hub, bringing people together through live performance, creativity and culture. Our flexible performance space hosts a diverse programme of events, entertainment and artistic experiences.\n\n\n\nOur foyer coffee shop and bar is open 6 days a week, serving single origin specialty coffee, a selection of locally-sourced cakes, craft beers, and premium wines. We also have a gallery wall showcasing local artists.",
+      "latlon": [
+        52.08675,
+        -0.2644
+      ]
+    },
     "bomba-exeter": {
       "id": "bomba-exeter",
       "name": "Bomba, Exeter",
@@ -18537,6 +18601,11 @@
       "name": "Sarah Rundle",
       "url": "https://www.sarahrundle.co.uk/",
       "bio": "Sarah Rundle is a professional storyteller based in west London. She trained in community storytelling in South Cheshire, and in acting at Drama Studio London. Over the last nineeen years, Sarah has performed at a diverse range of venues, from museums and theatres, to pubs, cafés, and a Saxon longhouse."
+    },
+    "peter-findlay": {
+      "id": "peter-findlay",
+      "name": "Peter Findlay",
+      "facebook": "peter.findlay1"
     },
     "janet-crouch": {
       "id": "janet-crouch",
