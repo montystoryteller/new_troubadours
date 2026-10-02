@@ -11387,6 +11387,22 @@
       "isSpecial": true
     },
     {
+      "name": "Gothic Storytelling [Maria Buckley Whatton]",
+      "showname": "Gothic Storytelling",
+      "date": "29/10/2026",
+      "venue_id": "leek-library",
+      "performer_id": "maria-whatton",
+      "eventId": "20261029-maria-whatton-leek-library",
+      "date_added": "02/10/2026",
+      "time": "Doors 6.30pm, start 7pm",
+      "price": "£10 (+ £1)",
+      "description": "A spine-tingling evening of dark, Irish traditional tales to celebrate Samhain - Celtic Halloween.",
+      "age_rating": "16+",
+      "min_age": 16,
+      "ticket_url": "https://wegottickets.com/f/27940",
+      "isSpecial": true
+    },
+    {
       "name": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books [Holly Medland & Merl Fluin]",
       "showname": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books",
       "date": "29/10/2026",
@@ -13308,6 +13324,18 @@
       "latlon": [
         53.1057745,
         -2.0189963
+      ]
+    },
+    "leek-library": {
+      "id": "leek-library",
+      "name": "Leek Library",
+      "full_address": "Leek Library, Nicholson Institutem Stockwell St, Leek, ST13 6DW",
+      "city": "Leek",
+      "postcode": "ST13 6DW",
+      "url": "https://www.staffordshire.gov.uk/libraries/find-library/leek-library",
+      "latlon": [
+        53.10729,
+        -2.02368
       ]
     },
     "brook-pub-brooklands": {
