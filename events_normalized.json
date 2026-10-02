@@ -9118,6 +9118,39 @@
       "eventId": "20260511-niall-moorjani-ropetackle-arts-centre-shoreham"
     },
     {
+      "name": "Love Knot [Giles Abbott]",
+      "showname": "Love Knot",
+      "date": "12/05/2026",
+      "time": "Doors 7pm, start 7.30pm",
+      "club": "lichfieldST",
+      "price": "£7",
+      "description": "This month, Lichfield Storytellers welcomes back the simply fabulous Giles Abbott who will be bringing us a twisted knot of tales about true love and passion in his show, 'Love Knot'. He will also be enticing members of our audience to assist in the story-making! Giles has been sharing stories professionally for over twenty years, delighting audiences with his charismatic presence, rich voice and poetic flair for language. Please join us for what promises to be an evening of stories of passion and of true love.",
+      "promoter_link": "",
+      "event_flyer": "",
+      "fb_event": 1978893812714310,
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "kings-head-lichfield",
+      "performer_id": "giles-abbott",
+      "eventId": "20260512-giles-abbott-kings-head-lichfield"
+    },
+    {
+      "name": "Cân y Dŵr - The Song of Water [Ragged Storytelling Collective]",
+      "showname": "Cân y Dŵr - The Song of Water",
+      "date": "14/05/2026",
+      "time": "7pm",
+      "club": "cardiffSC",
+      "price": "£9.90 / £7.70",
+      "description": "The Ragged storytelling collective present our new show Cân y Dŵr - The Song of Water. Mixing folk-ritual with documentary, story with music, puppetry with poetry, Cân y Dŵr flows between mad science, mythology, folklore and history, with grief, anger, love and reverence for the waters that bring us life.",
+      "event_flyer": "2026_05_14_ragged_llanover.jpg",
+      "ticket_url": "https://wegottickets.com/af/671/event/19157",
+      "isSpecial": true,
+      "date_added": "12/05/2026",
+      "venue_id": "llanover-hall-arts-center-cardiff",
+      "performer_id": "ragged-storytelling-collective",
+      "eventId": "20260514-ragged-storytelling-collective-llanover-hall-arts-center-cardiff"
+    },
+    {
       "name": "Two Tales: Mumming, Puppetry & Storytelling [The Roving Jewel]",
       "showname": "Two Tales: Mumming, Puppetry & Storytelling",
       "date": "15/05/2026",
@@ -9135,22 +9168,6 @@
       "age_rating": "12+",
       "min_age": 12,
       "eventId": "20260515-roving-jewel-mugwort-and-mistletoe"
-    },
-    {
-      "name": "Cân y Dŵr - The Song of Water [Ragged Storytelling Collective]",
-      "showname": "Cân y Dŵr - The Song of Water",
-      "date": "14/05/2026",
-      "time": "7pm",
-      "club": "cardiffSC",
-      "price": "£9.90 / £7.70",
-      "description": "The Ragged storytelling collective present our new show Cân y Dŵr - The Song of Water. Mixing folk-ritual with documentary, story with music, puppetry with poetry, Cân y Dŵr flows between mad science, mythology, folklore and history, with grief, anger, love and reverence for the waters that bring us life.",
-      "event_flyer": "2026_05_14_ragged_llanover.jpg",
-      "ticket_url": "https://wegottickets.com/af/671/event/19157",
-      "isSpecial": true,
-      "date_added": "12/05/2026",
-      "venue_id": "llanover-hall-arts-center-cardiff",
-      "performer_id": "ragged-storytelling-collective",
-      "eventId": "20260514-ragged-storytelling-collective-llanover-hall-arts-center-cardiff"
     },
     {
       "name": "The Shahnameh — Book of Kings [Xanthe Gresham]",
