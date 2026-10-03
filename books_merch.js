@@ -3,12 +3,14 @@
 //
 // Same pattern as promoters.html:
 //   no query arg      : tabbed directory. Tabs: Performers (tiles), Publishers
-//                       (tiles), Everything (searchable list of all items).
+//                       (tiles), Everything (searchable list of all items,
+//                       grouped by performer), Titles A–Z (the same items as
+//                       one flat alphabetical list with a letter jump bar).
 //                       Choosing a tile navigates to that tile's own page.
 //   ?performer=<id>   : only items by / crediting that performer.
 //   ?publisher=<key>  : only books from that publisher (a registry id, or
 //                       "name:<name>" for books with only free-text publisher).
-//   ?view=performers|publishers|all : which tab the directory opens on.
+//   ?view=performers|publishers|all|titles : which tab the directory opens on.
 // Scoped pages carry a back link to the directory.
 //
 // Card markup and the data collectors live in books_utils.js.
@@ -25,8 +27,9 @@ let scopeGroupIds = new Set(); // groups the scoped performer belongs to
 let scopePublisherKey = null;
 let currentView = "performers";
 
-const VIEWS = ["performers", "publishers", "all"];
-const filters = { kind: "all", q: "", publisher: "", type: "" };
+const VIEWS = ["performers", "publishers", "all", "titles"];
+// inDesc: whether the search box also looks in descriptions / blurbs.
+const filters = { kind: "all", q: "", publisher: "", type: "", inDesc: true };
 
 function publisherKey(book) {
   return bookPublisherKey(book, publishers);
@@ -64,13 +67,13 @@ function countMerchTypes(entries) {
   return counts;
 }
 
-function bookSearchText({ credited, book }) {
+function bookSearchText({ credited, book }, includeDesc = true) {
   const { subtitle, description } = bookSubtitleAndBlurb(book);
   const pub = bookPublisherInfo(book, publishers);
   return [
     book.title,
     subtitle,
-    description,
+    includeDesc ? description : "",
     pub?.name,
     book.isbn,
     ...credited.map(performerName),
@@ -88,10 +91,10 @@ function merchInPerformerScope({ credited }) {
   );
 }
 
-function merchSearchText({ item, credited }) {
+function merchSearchText({ item, credited }, includeDesc = true) {
   return [
     item.title,
-    item.description,
+    includeDesc ? item.description : "",
     merchTypeLabel(item.type),
     merchLabelText(item),
     ...credited.map(performerName),
@@ -243,7 +246,7 @@ function visibleBooks() {
       return false;
     if (filters.publisher && publisherKey(entry.book) !== filters.publisher)
       return false;
-    if (q && !bookSearchText(entry).includes(q)) return false;
+    if (q && !bookSearchText(entry, filters.inDesc).includes(q)) return false;
     return true;
   });
 }
@@ -260,7 +263,7 @@ function visibleMerch() {
       merchTypeKey(entry.item) !== filters.type
     )
       return false;
-    if (q && !merchSearchText(entry).includes(q)) return false;
+    if (q && !merchSearchText(entry, filters.inDesc).includes(q)) return false;
     return true;
   });
 }
@@ -299,6 +302,13 @@ function renderGroups() {
     );
     return;
   }
+
+  // Titles A–Z tab: one flat alphabetical list instead of performer groups.
+  if (currentView === "titles" && !scopePerformerId && !scopePublisherKey) {
+    renderTitles(container, books, merch);
+    return;
+  }
+  hideLetterNav();
 
   // Group by the performer record that holds the item (a joint CD is listed
   // once, with its other credits shown on the card).
@@ -383,6 +393,146 @@ function renderGroups() {
 }
 
 // ---------------------------------------------------------------------------
+// Titles A–Z view
+// ---------------------------------------------------------------------------
+
+// Sort/section key for a title: lower-case, accents and leading punctuation
+// dropped, and a leading "The" / "A" / "An" ignored ("The Sea Road" -> "sea road").
+function titleSortKey(title) {
+  let t = (title || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/^[^a-z0-9]+/, "");
+  const stripped = t.replace(/^(the|an|a)\s+/, "");
+  if (stripped) t = stripped;
+  return t;
+}
+
+// "A"–"Z", or "#" for titles starting with a digit or something else.
+function titleLetter(title) {
+  const ch = titleSortKey(title).charAt(0).toUpperCase();
+  return ch >= "A" && ch <= "Z" ? ch : "#";
+}
+
+function compareTitleEntries(a, b) {
+  return (
+    titleSortKey(a.title).localeCompare(titleSortKey(b.title), "en", {
+      numeric: true,
+    }) ||
+    (a.title || "").localeCompare(b.title || "") ||
+    (bookYearNumber(b.year) ?? -1) - (bookYearNumber(a.year) ?? -1)
+  );
+}
+
+function hideLetterNav() {
+  const nav = document.getElementById("letterNav");
+  nav.style.display = "none";
+  nav.innerHTML = "";
+}
+
+function renderLetterNav(letters) {
+  const nav = document.getElementById("letterNav");
+  nav.innerHTML = "";
+  if (letters.length < 2) {
+    nav.style.display = "none";
+    return;
+  }
+  const present = new Set(letters);
+  const all = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "#"];
+  all.forEach((letter) => {
+    if (present.has(letter)) {
+      const a = el("a", "", letter);
+      a.href = `#letter-${letter === "#" ? "other" : letter}`;
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        document
+          .getElementById(`letter-${letter === "#" ? "other" : letter}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      nav.appendChild(a);
+    } else {
+      const span = el("span", "bm-letter-off", letter);
+      span.setAttribute("aria-hidden", "true");
+      nav.appendChild(span);
+    }
+  });
+  nav.style.display = "";
+}
+
+function buildTitleCard(entry) {
+  if (entry.kind === "book") {
+    return createBookCard(entry.book, {
+      publishers,
+      performersLookup,
+      creditIds: entry.credited,
+      creditPrefix: "by ",
+    });
+  }
+  return createMerchCard(entry.item, {
+    performersLookup,
+    creditIds: entry.credited,
+    creditPrefix: "by ",
+  });
+}
+
+function titleSection(heading, id, entries) {
+  const section = el("section", "books-group");
+  const h = el("h3", "books-group-heading", heading);
+  if (id) h.id = id;
+  section.appendChild(h);
+  const list = el("div", "bm-list");
+  entries.forEach((entry) => list.appendChild(buildTitleCard(entry)));
+  section.appendChild(list);
+  return section;
+}
+
+function renderTitles(container, books, merch) {
+  const entries = [
+    ...books.map((e) => ({ ...e, kind: "book", title: e.book.title, year: e.book.year })),
+    ...merch.map((e) => ({ ...e, kind: "merch", title: e.item.title, year: e.item.year })),
+  ].sort(compareTitleEntries);
+
+  // With a search that also looks in descriptions, separate real title hits
+  // from items that merely mention the term, so "storyteller" doesn't bury
+  // the book actually called that.
+  const q = filters.q;
+  if (q && filters.inDesc) {
+    const titleHits = entries.filter((e) => e.title.toLowerCase().includes(q));
+    const descHits = entries.filter((e) => !e.title.toLowerCase().includes(q));
+    if (titleHits.length && descHits.length) {
+      hideLetterNav();
+      container.appendChild(titleSection("Title matches", "", titleHits));
+      container.appendChild(
+        titleSection("Mentioned in descriptions, credits or publisher", "", descHits),
+      );
+      return;
+    }
+  }
+
+  const byLetter = new Map();
+  entries.forEach((entry) => {
+    const letter = titleLetter(entry.title);
+    if (!byLetter.has(letter)) byLetter.set(letter, []);
+    byLetter.get(letter).push(entry);
+  });
+  // Entries are already sorted, so letters come out A–Z; "#" goes last.
+  const letters = [...byLetter.keys()].sort((a, b) =>
+    a === "#" ? 1 : b === "#" ? -1 : a.localeCompare(b),
+  );
+  renderLetterNav(letters);
+  letters.forEach((letter) =>
+    container.appendChild(
+      titleSection(
+        letter,
+        `letter-${letter === "#" ? "other" : letter}`,
+        byLetter.get(letter),
+      ),
+    ),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Controls (search / kind / publisher / type)
 // ---------------------------------------------------------------------------
 
@@ -450,6 +600,15 @@ function initControls() {
     filters.q = e.target.value.trim().toLowerCase();
     renderGroups();
   });
+  document.querySelectorAll("#searchInToggle button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filters.inDesc = btn.dataset.scope === "all";
+      document
+        .querySelectorAll("#searchInToggle button")
+        .forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      renderGroups();
+    });
+  });
   document.querySelectorAll("#kindToggle button").forEach((btn) => {
     btn.addEventListener("click", () => {
       filters.kind = btn.dataset.kind;
@@ -476,15 +635,17 @@ function showView(view, updateUrl = true) {
 
   const tiles = document.getElementById("tilesPanel");
   const list = document.getElementById("everythingPanel");
-  tiles.style.display = currentView === "all" ? "none" : "";
-  list.style.display = currentView === "all" ? "" : "none";
+  const listView = currentView === "all" || currentView === "titles";
+  tiles.style.display = listView ? "none" : "";
+  list.style.display = listView ? "" : "none";
 
-  if (currentView !== "all") {
+  if (!listView) {
     tiles.innerHTML = "";
     tiles.setAttribute("aria-labelledby", `tab-${currentView}`);
     if (currentView === "performers") renderPerformerTiles(tiles);
     else renderPublisherTiles(tiles);
   } else {
+    list.setAttribute("aria-labelledby", `tab-${currentView}`);
     renderGroups();
   }
 

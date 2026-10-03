@@ -413,3 +413,48 @@
         max-width: none;
     }
 }
+
+/* ---------- Titles A–Z: letter jump bar ---------- */
+
+.bm-letters {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 8px 12px;
+    margin: 0 0 14px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bm-letters a,
+.bm-letters .bm-letter-off {
+    min-width: 26px;
+    padding: 3px 4px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.bm-letters a {
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.bm-letters a:hover,
+.bm-letters a:focus-visible {
+    background: var(--theme-green-bg);
+}
+
+.bm-letters .bm-letter-off {
+    color: #bdbdbd;
+}
+
+/* Keep the letter heading clear of the sticky bar when jumped to */
+.books-group-heading[id] {
+    scroll-margin-top: 64px;
+}
