@@ -11595,6 +11595,21 @@
       "isSpecial": true
     },
     {
+      "name": "Christmas Ghost Talk & Spooky Stories with Supper [Marc Tuckey]",
+      "showname": "Christmas Ghost Talk & Spooky Stories with Supper",
+      "date": "01/12/2026",
+      "venue_id": "chine-inn-shanklin",
+      "performer_id": "marc-tuckey",
+      "date_added": "04/10/2026",
+      "time": "6-10pm",
+      "price": "£27.50 / £19.95",
+      "event_flyer": "2026_12_01_tuckey_calbourne.png",
+      "description": "The Isle of Wight is known for its dark past, and this offering promises to showcase the historically sinister and spooky side.\n\n\n\nFollowing a sold out Halloween supper, renowned ghost hunter and storyteller Marc Tuckey will once again be taking over The Sun in Calbourne on Tuesday 1st December for an evening of spine-tingling Christmas stories, eerie encounters and fascinating tales from some of the Isle's creepiest corners.\n\n\n\nThe Island may look idyllic by day…but scratch beneath the surface and there's a much darker story to tell.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to sinister snippets of Island history, Marc will shine a light into some of the places, people and events that have given the Isle of Wight its wonderfully spooky reputation.\n\n\n\nAnd what better way to settle in for an evening of ghostly tales than with a hearty Two-Course Supper from the talented kitchen team at The Sun?\n\n\n\nYou will tuck into:\n\n\n\n* Shepherds Pie or Fish & Chips followed by a Seasonal Crumble\n\n\n\nArrive from 6.00pm to enjoy your supper, before the lights go down and Marc takes to the floor at 7.30pm to begin his chilling collection of Ghost Talks & Spooky Stories.\n\n\n\nAnd the setting couldn't be more perfect.\n\n\n\nNestled in the picturesque rural village of Calbourne, The Sun is a much-loved country pub combining traditional character, cosy surroundings and seriously good food — the ideal place to gather before venturing into the darker side of Island folklore.\n\n\n\nSo grab your bravest friends, settle in for supper, and prepare to hear some tales that might make you think twice about walking home alone.",
+      "ticket_url": "https://www.thepriceiswight.co.uk/product/the-sun-christmas-ghost-talk/",
+      "isSpecial": true,
+      "eventId": "20261201-marc-tuckey-sun-inn-shanklin"
+    },
+    {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
       "showname": "Midwinter Open Tellers' Night [Feast of Fools]",
       "date": "02/12/2026",
@@ -12911,13 +12926,27 @@
         -1.17552
       ]
     },
+    "sun-inn-shanklin": {
+      "id": "sun-inn-shanklin",
+      "name": "Sun Inn, Calbourne",
+      "city": "Calbourne",
+      "postcode": "PO30 4JA",
+      "full_address": "The Sun, Sun Hill, Calbourne, Newport Road, Isle of Wight, PO30 4JA",
+      "url": "https://www.thesunatcalbourne.com/",
+      "facebook": "suninncalbourne",
+      "instagram": "https://www.instagram.com/thesunatcalbourne",
+      "latlon": [
+        50.62592,
+        -1.17813
+      ]
+    },
     "chine-inn-shanklin": {
       "id": "chine-inn-shanklin",
       "name": "Chine Inn, Shanklin",
       "city": "Shanklin",
       "postcode": "PO37 6BW",
       "full_address": "Chine Inn, 1 Chine Avenue, Shanklin, Isle of Wight, PO37 6BW",
-      "url": "albionpalace.co.uk",
+      "url": "https://thechineinn.co.uk/",
       "latlon": [
         50.62592,
         -1.17813
