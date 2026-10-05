@@ -62,6 +62,9 @@ message.
 ./updatecache --list-performers          list performers without a KV index entry
 ./updatecache --list-venues              list venues without a KV index entry
 ./updatecache --list-storyclubs          list storyclubs without a KV index entry
+./updatecache --list-festivals
+./updatecache --list-promoters
+./updatecache --list-booksmerch
 ./updatecache --performer tis-tales
 ./updatecache --promoter some-promoter another-promoter
 ./updatecache --booksmerch N
