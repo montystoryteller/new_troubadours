@@ -35,3 +35,5 @@ miss-origin-no-render	plain origin page	no snapshot, and this bot never triggers
 ./updatecache --purge-only page	Deletes that one snapshot.	None
 
 ./updatecache --hard-purge-all	Every existing snapshot counts as missing. It asks you to type YES first.	None
+
+## updatecache docs
