@@ -4,11 +4,18 @@
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
+#        ./updatecache --list-festivals            same, for festival.html?festival=
+#        ./updatecache --list-promoters            same, for promoters.html?promoter=
+#        ./updatecache --list-booksmerch           same, for books_merch.html?performer=
+#                                                  (render with --festival / --promoter / --booksmerch [N])
 #        ./updatecache --performer [N]             render N (default 1) uncached performers
 #        ./updatecache --venue [N]                 render N (default 1) uncached venues
 #        ./updatecache --storyclub [N]             render N (default 1) uncached story clubs
 #                                                  one KV lookup, then N renders NT_DELAY seconds
 #                                                  apart (default 12); stops if the daily quota runs out
+#        ./updatecache --performer tis-tales       render just that key (works for every type above;
+#                                                  several keys allowed; always re-renders, no KV
+#                                                  lookup; spaces ok: --performer 'Jane Doe')
 #        ./updatecache mypage.html                 refresh NOW (default)
 #        ./updatecache 'performers.html?performer=abc'
 #        ./updatecache https://newtroubadours.org/venues?venue=xyz
@@ -84,11 +91,43 @@ if [ "$1" = "--sync-keys" ]; then
   exit 0
 fi
 
+# Force-render one URL and print the status headers. Returns 1 if the daily
+# browser quota is exhausted (so callers can stop).
+#   render_one <url> <n>
+render_one() {
+  local url="$1" n="$2" result
+  echo "[$n] === $url"
+  result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
+    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
+  echo "$result"
+  case "$result" in
+    *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; return 1 ;;
+  esac
+  return 0
+}
+
 # Render ONE random page of a given type that has no snapshot yet.
 # With LIST_ONLY=1 it instead prints every uncached key and exits.
+# With explicit keys (KEYS_GIVEN) it renders just those, with no KV lookup.
 #   fill_one <page> <param> <default-jq> <jq-env-override>
 fill_one() {
   local page="$1" param="$2" default_jq="$3" jq_override="$4"
+
+  # Explicit keys given (e.g. ./updatecache --performer tis-tales): render just
+  # those. No KV lookup, and it re-renders even if a snapshot already exists.
+  if [ "${LIST_ONLY:-0}" != "1" ] && [ ${#KEYS_GIVEN[@]} -gt 0 ]; then
+    command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+    local k enc n=0
+    for k in "${KEYS_GIVEN[@]}"; do
+      [ $n -gt 0 ] && sleep "$DELAY"
+      n=$((n + 1))
+      # Raw keys are URL-encoded here ("Jane Doe" -> Jane%20Doe); a key that
+      # already contains a % is assumed to be encoded and used as given.
+      if [[ "$k" == *%* ]]; then enc="$k"; else enc=$(jq -rn --arg k "$k" '$k|@uri'); fi
+      render_one "https://$HOST/$page.html?$param=$enc" "$n" || break
+    done
+    exit 0
+  fi
 
   # Paste the 32-char id from `npx wrangler kv namespace list`
   # (title: newtroubadours-render-cache). Can be overridden via the environment.
@@ -141,14 +180,7 @@ fill_one() {
     [ $i -gt 0 ] && sleep "$DELAY"
     i=$((i + 1))
     key="${key//+/%20}"   # back to %20 for the request URL (a literal + is already %2B)
-    local url="https://$HOST/$page.html?$param=$key"
-    echo "[$i] === $url"
-    result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
-      | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
-    echo "$result"
-    case "$result" in
-      *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; break ;;
-    esac
+    render_one "https://$HOST/$page.html?$param=$key" "$i" || break
   done <<< "$keys"
   exit 0
 }
@@ -156,27 +188,45 @@ fill_one() {
 # Optional count after --performer / --venue / --storyclub: how many pages to
 # render in one run (default 1). Seconds between renders: NT_DELAY (default 12).
 COUNT=1
-if [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -ge 1 ]; then COUNT="$2"; fi
+KEYS_GIVEN=()
+if [[ "$2" =~ ^[0-9]+$ ]]; then
+  [ "$2" -ge 1 ] && COUNT="$2"
+elif [ -n "$2" ]; then
+  KEYS_GIVEN=("${@:2}")   # anything non-numeric after the type option = explicit key(s)
+fi
 DELAY="${NT_DELAY:-12}"
 
-if [ "$1" = "--list-performers" ]; then
-  LIST_ONLY=1
-  fill_one performers performer '.performers | keys[]' NT_KEYS_JQ_PERFORMER
-fi
+# Page types: fill_one <page> <url param> <default jq filter> <jq override env var>
+# NOTE: booksmerch assumes performers carry "books" / "merch" fields in the JSON;
+# only performers with at least one of them are listed. Override with
+# NT_KEYS_JQ_BOOKSMERCH if your field names differ.
+dispatch() {
+  case "$1" in
+    performer)  fill_one performers performer '.performers | keys[]' NT_KEYS_JQ_PERFORMER ;;
+    venue)      fill_one venues venue '.venues | keys[]' NT_KEYS_JQ_VENUE ;;
+    storyclub)  fill_one storyclub club '[.clubs[].club] | unique | .[]' NT_KEYS_JQ_STORYCLUB ;;
+    festival)   fill_one festival festival '.festivals | keys[]' NT_KEYS_JQ_FESTIVAL ;;
+    promoter)   fill_one promoters promoter '.promoters | keys[]' NT_KEYS_JQ_PROMOTER ;;
+    booksmerch) fill_one books_merch performer \
+      '.performers | to_entries[] | select(((.value.books // []) | length) > 0 or ((.value.merch // []) | length) > 0) | .key' \
+      NT_KEYS_JQ_BOOKSMERCH ;;
+  esac
+}
 
-if [ "$1" = "--list-venues" ]; then
-  LIST_ONLY=1
-  fill_one venues venue '.venues | keys[]' NT_KEYS_JQ_VENUE
-fi
-
-if [ "$1" = "--list-storyclubs" ]; then
-  LIST_ONLY=1
-  fill_one storyclub club '[.clubs[].club] | unique | .[]' NT_KEYS_JQ_STORYCLUB
-fi
-
-[ "$1" = "--performer" ] && fill_one performers performer '.performers | keys[]' NT_KEYS_JQ_PERFORMER
-[ "$1" = "--venue" ]     && fill_one venues venue         '.venues | keys[]'     NT_KEYS_JQ_VENUE
-[ "$1" = "--storyclub" ] && fill_one storyclub club       '[.clubs[].club] | unique | .[]' NT_KEYS_JQ_STORYCLUB
+case "$1" in
+  --list-performers) LIST_ONLY=1; dispatch performer ;;
+  --list-venues)     LIST_ONLY=1; dispatch venue ;;
+  --list-storyclubs) LIST_ONLY=1; dispatch storyclub ;;
+  --list-festivals)  LIST_ONLY=1; dispatch festival ;;
+  --list-promoters)  LIST_ONLY=1; dispatch promoter ;;
+  --list-booksmerch) LIST_ONLY=1; dispatch booksmerch ;;
+  --performer)  dispatch performer ;;
+  --venue)      dispatch venue ;;
+  --storyclub)  dispatch storyclub ;;
+  --festival)   dispatch festival ;;
+  --promoter)   dispatch promoter ;;
+  --booksmerch) dispatch booksmerch ;;
+esac
 
 STALE_ONLY=0
 if [ "$1" = "--stale" ]; then STALE_ONLY=1; shift; fi
@@ -189,7 +239,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-performers | --list-venues | --list-storyclubs | --performer | --venue | --storyclub] [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
   exit 1
 fi
 
