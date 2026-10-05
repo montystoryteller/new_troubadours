@@ -26,7 +26,8 @@ const ASSET_EXTENSION_RE =
   /\.(js|mjs|css|png|jpe?g|gif|svg|webp|ico|avif|woff2?|ttf|eot|json|xml|txt|map|mp4|webm|pdf)$/i;
 
 // A snapshot younger than this is served as-is. Older ones are STILL served,
-// and a render-tier bot request also triggers one background refresh.
+// and a render-tier bot request may trigger one background refresh, but only
+// if it wins the global render cooldown (see LOCK_KEY below).
 const FRESH_SECONDS = 60 * 60 * 48; // refresh-if-requested after ~2 days
 // Keep entries much longer than the freshness window: if a snapshot expired,
 // there would be nothing to serve and a scarce live render would be needed.
@@ -37,7 +38,7 @@ const DEBUG_HEADER = "x-force-render";
 const PURGE_HEADER = "x-purge-cache";
 // Invalidation levels, from gentlest to harshest:
 //  - mark-stale (one page): keep the snapshot, set its age to "ancient". It is
-//    still served, and refreshed by the next prewarm / render-tier bot request.
+//    still served, and refreshed by the next prewarm run or render-tier bot request.
 //  - soft purge (all pages): every snapshot older than `soft` counts as stale.
 //  - hard purge (one page): delete the snapshot.
 //  - hard purge (all pages): every snapshot older than `hard` counts as missing
@@ -73,6 +74,88 @@ const PARAMS_BY_PATH = {
 // event.js treats ?event_id= as an alias and rewrites it to ?event=.
 const PARAM_ALIASES = { event_id: "event" };
 const MAX_PARAM_VALUE_LENGTH = 200;
+
+// Global render cooldown for crawler-triggered renders (cache misses AND
+// stale-snapshot refreshes). Browser Run's rate limit is account-wide (~1
+// render per 10s on the free plan), and bots like Bing fetch many different
+// URLs in bursts. Before a bot-triggered render we check for this key; if
+// present we skip the render (misses get the origin page, stale hits just keep
+// the old snapshot), otherwise we set it (KV's minimum TTL is 60s) and render.
+// So at most about one crawler render per minute, leaving the other slots for
+// the prewarm.
+// KV is eventually consistent, so two simultaneous requests can still both
+// pass; this reduces collisions, it does not eliminate them.
+const LOCK_KEY = "lock:render";
+const LOCK_TTL_SECONDS = 60;
+
+// Try to claim the global crawler-render slot. Returns true if this request
+// may render. If KV can't tell us, say no (protect the quota).
+async function claimRenderSlot(env) {
+  try {
+    if (await env.RENDER_CACHE.get(LOCK_KEY)) return false;
+    await env.RENDER_CACHE.put(LOCK_KEY, "1", {
+      expirationTtl: LOCK_TTL_SECONDS,
+    });
+    return true;
+  } catch (err) {
+    console.log("render lock failed", String(err));
+    return false;
+  }
+}
+
+// ── known-page check ─────────────────────────────────────────
+// Crawlers (and typos) request pages like storyclub.html?club=nonexistent. Each
+// one would burn a scarce render on a page that has no content. Before a
+// crawler-triggered render we check the key against a small index stored in
+// KV under KEYS_KEY (~20 KB: lists of valid performer/venue/club/... keys),
+// built by `./updatecache --sync-keys` from events_normalized.json.
+// Cost: only on the crawler render path (never for humans or snapshot hits),
+// one KV read per isolate per 5 minutes thanks to the in-memory copy below.
+// Fails OPEN: if the index is missing or unreadable, rendering is allowed.
+const KEYS_KEY = "meta:keys";
+// POST the index JSON with this header (value = DEBUG_SECRET) to replace it.
+// Used by the daily prewarm Action and `updatecache --sync-keys`.
+const SYNC_KEYS_HEADER = "x-sync-keys";
+const KEYS_MEMORY_MS = 5 * 60 * 1000;
+// path (no .html) -> { url param -> index list name }
+const KEY_CHECKS = {
+  "/performers": { performer: "performers" },
+  "/venues": { venue: "venues" },
+  "/storyclub": { club: "clubs" },
+  "/promoters": { promoter: "promoters" },
+  "/festival": { festival: "festivals" },
+  "/tour_guide": { tour: "tours", performer: "performers" },
+};
+let keyIndex = null; // { at, sets: { performers: Set, ... } }
+
+async function loadKeyIndex(env) {
+  if (keyIndex && Date.now() - keyIndex.at < KEYS_MEMORY_MS) return keyIndex;
+  const raw = await env.RENDER_CACHE.get(KEYS_KEY, "json");
+  const sets = {};
+  for (const [name, list] of Object.entries(raw || {})) {
+    if (Array.isArray(list)) sets[name] = new Set(list);
+  }
+  keyIndex = { at: Date.now(), sets }; // cache "no index" too, so we don't re-read
+  return keyIndex;
+}
+
+// True if the page is fine to render (or we can't tell); false only when the
+// page carries a key that is definitely not in the index.
+async function isKnownPage(env, normUrl) {
+  const checks = KEY_CHECKS[normUrl.pathname.replace(/\.html$/, "")];
+  if (!checks) return true;
+  try {
+    const { sets } = await loadKeyIndex(env);
+    for (const [param, listName] of Object.entries(checks)) {
+      const value = normUrl.searchParams.get(param);
+      if (value === null) continue;
+      if (sets[listName] && !sets[listName].has(value)) return false;
+    }
+  } catch (err) {
+    console.log("key index failed", String(err));
+  }
+  return true;
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -128,7 +211,11 @@ function normalisedUrl(url) {
 // One structured log line per bot request saying what the bot actually got.
 // Pair it with "render failed <why> ..." lines (same rayId) to see the full story.
 //   hit-fresh | hit-stale-refreshing | hit-stale
+//   (hit-stale = served stale without refreshing: cache-only bot, or the
+//   render cooldown was busy)
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
+//   miss-origin-render-busy  (global render cooldown active; served the origin page)
+//   miss-origin-unknown-key  (page key not in the meta:keys index; no render spent)
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
 //   miss-origin-kv-error  (KV read threw; served the origin page, no render attempted)
 //   forced-rendered | forced-failed  (tier "forced": updatecache / prewarm / debug ping)
@@ -272,6 +359,35 @@ export default {
     const normUrl = normalisedUrl(url);
     const key = cacheKeyFor(normUrl);
 
+    // Replace the valid-key index. Body: {"performers":[...],"venues":[...],...}
+    // Every list must be a non-empty array of strings (an empty list would make
+    // every page of that type look unknown).
+    if (isAuthorized(request, env, SYNC_KEYS_HEADER)) {
+      try {
+        const idx = await request.json();
+        const clean = {};
+        for (const [name, list] of Object.entries(idx || {})) {
+          if (
+            !Array.isArray(list) ||
+            list.length === 0 ||
+            !list.every((x) => typeof x === "string")
+          ) {
+            throw new Error(`"${name}" must be a non-empty array of strings`);
+          }
+          clean[name] = list;
+        }
+        if (Object.keys(clean).length === 0) throw new Error("no lists given");
+        await env.RENDER_CACHE.put(KEYS_KEY, JSON.stringify(clean));
+        keyIndex = null; // this isolate re-reads on next use
+        const counts = Object.entries(clean)
+          .map(([k, v]) => `${k}: ${v.length}`)
+          .join(", ");
+        return new Response(`Key index updated (${counts})`, { status: 200 });
+      } catch (err) {
+        return new Response(`Bad key index: ${err.message}`, { status: 400 });
+      }
+    }
+
     // Soft purge everything: mark all snapshots stale, delete nothing.
     if (isAuthorized(request, env, SOFT_PURGE_HEADER)) {
       const e = await getEpochs(env);
@@ -370,7 +486,8 @@ export default {
     }
 
     // Serve from KV when we can. If the snapshot is stale, serve it anyway
-    // and refresh in the background.
+    // and refresh in the background (render-tier bots only, and only if they
+    // win the global render cooldown).
     // A KV failure must never break the page: fall back to the origin and
     // don't spend a scarce render while KV is misbehaving.
     let raw, soft, hard;
@@ -388,16 +505,17 @@ export default {
     if (entry) {
       const stale =
         entry.ts < soft || Date.now() - entry.ts > FRESH_SECONDS * 1000;
-      logGate(
-        request,
-        tier,
-        normUrl,
-        !stale ? "hit-fresh" : tier === "render" ? "hit-stale-refreshing" : "hit-stale",
-      );
-      // Only render-tier bots may spend a render refreshing a stale snapshot.
-      if (stale && tier === "render") {
+      let outcome = stale ? "hit-stale" : "hit-fresh";
+      if (
+        stale &&
+        tier === "render" &&
+        (await isKnownPage(env, normUrl)) &&
+        (await claimRenderSlot(env))
+      ) {
+        outcome = "hit-stale-refreshing";
         ctx.waitUntil(refresh(env, key, normUrl.toString(), 1, "bg-refresh"));
       }
+      logGate(request, tier, normUrl, outcome);
       return htmlResponse(entry.html, {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
         "x-prerender-stale": stale ? "true" : "false",
@@ -410,6 +528,19 @@ export default {
     // Cache-only bots (e.g. Googlebot) never trigger a render.
     if (tier !== "render") {
       logGate(request, tier, normUrl, "miss-origin-no-render");
+      return fetch(request);
+    }
+
+    // Don't spend a render on a page whose key doesn't exist.
+    if (!(await isKnownPage(env, normUrl))) {
+      logGate(request, tier, normUrl, "miss-origin-unknown-key");
+      return fetch(request);
+    }
+
+    // Global cooldown: skip the render if another crawler render started
+    // within the last minute.
+    if (!(await claimRenderSlot(env))) {
+      logGate(request, tier, normUrl, "miss-origin-render-busy");
       return fetch(request);
     }
 
