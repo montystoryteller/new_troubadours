@@ -36,6 +36,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Rebuild the valid-key index the gatekeeper uses to skip renders for
+      # pages that don't exist (e.g. storyclub.html?club=nonexistent).
+      # Uses no browser time (one KV write). A failure here never blocks the
+      # prewarm: the previous index simply stays in place.
+      - name: Sync valid-key index
+        continue-on-error: true
+        shell: bash
+        run: |
+          if [ -z "$SECRET" ]; then
+            echo "❌ CLOUDFLARE_SECRET is not configured."
+            exit 1
+          fi
+
+          index=""
+          for name in events_normalized events_normalised; do
+            index=$(curl -sf --max-time 30 "$SITE/$name.json" | jq -c '{
+              performers: (.performers | keys),
+              venues: (.venues | keys),
+              promoters: (.promoters | keys),
+              festivals: (.festivals | keys),
+              tours: (.tours | keys),
+              clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
+                      | map(select(. != "" and . != "other")) | unique)
+            }' 2>/dev/null) && [ -n "$index" ] && break
+            index=""
+          done
+
+          if [ -z "$index" ]; then
+            echo "Could not build the key index; leaving the old one in place."
+            exit 1
+          fi
+
+          curl -s --max-time 30 -w "  [HTTP %{http_code}]\n" -X POST \
+            -H "x-sync-keys: ${SECRET}" --data "$index" "$SITE/"
+
       - name: Build URL list and prewarm
         shell: bash
         run: |
