@@ -4,6 +4,21 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "storymuseum": {
+      "promoter_id": "storymuseum",
+      "isVenue": true,
+      "name": "The Story Museum",
+      "ticketing_url": ""
+    },
+    "adversecamber": {
+      "promoter_id": "adversecamber",
+      "name": "Adverse Camber",
+      "description": "People are hard-wired for stories. Stories tell us about our deepest motivations and desires, what justice and injustice look and feel like, and who we want to be.  We all tell stories, all the time — for fun, to share experiences, to create bonds and connect.\n\n\n\nExperiencing richly imagined stories told live, together with other people, whether ancient myth, real life experience, or new textures of possibility, is a joyous and vivid experience.  It plunges you deep into lives of others and returns you safely home - changed.\n\n\n\nAdverse Camber is an independent production company and registered charity, powered by a dynamic team of freelance creative producers, artists and associates. We were founded in 2006 with the ambition to create more access to and more ambitious artistic support for storytelling.",
+      "promoter_link": "https://www.adversecamber.org/",
+      "instagram": "adversecamberontour",
+      "facebook": "adversecamberstories",
+      "ticketing_url": ""
+    },
     "south-london-storytelling": {
       "promoter_id": "south-london-storytelling",
       "name": "South London Storytelling",
@@ -2565,7 +2580,7 @@
         {
           "date": "26/03/2026",
           "time": "7.30pm",
-          "club": "storymuseum",
+          "promoter_id": "storymuseum",
           "price": "£12",
           "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-the-mighty-goddess",
           "venue_id": "the-story-museum-oxford",
@@ -4565,7 +4580,7 @@
       ],
       "isMusic": false,
       "isSpecial": true,
-      "club": "adversecamber",
+      "promoter_id": "adversecamber",
       "tour_dates": [
         {
           "date": "21/03/2026",
@@ -10568,7 +10583,7 @@
       "performer_id": "snake-stone-stories",
       "date_added": "11/09/2026",
       "time": "11-12.30",
-      "club": "snake-stone-stories",
+      "promoter_id": "snake-stone-stories",
       "price": "£5 (+ £1.13)",
       "description": "A guided walk around the beautiful and historic Royal William Yard with story and song from history and folklore\n\n\n\nSnake Stone Stories present a story walk around the historic Royal William Yard as part of their READ-WRITE-YAP festival.\n\n\n\nThe walk takes us around the beautiful site with stories from history and folklore dotted around the route.\n\n\n\nThere will be tales of magic and mystery, sea creatures and silliness, dogs and devils. Something for everyone!\n\n\n\nSnake Stone Stories is led by professional storytellers and theatre makers Daisy Higman, Jon Nash and Fynn Roberts.",
       "event_flyer": "2026_09_20_snakestone_william_yard.jpg",
