@@ -4797,6 +4797,7 @@
           "time": "7.30pm",
           "price": "",
           "ticket_url": "",
+          "isCancelled": true,
           "fb_event": 947507117783005,
           "venue_id": "quay-arts-newport",
           "eventId": "T-jason-buck-slaine-horned-god-2026-20261015-quay-arts-newport"
