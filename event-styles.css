@@ -113,6 +113,31 @@
     margin-top: 2px;
 }
 
+/* Cancelled dates stay searchable (so people can see they were listed)
+   but are visibly struck through, matching shared-styles.css's
+   .event-date-cancelled / .event-badge-cancelled treatment. */
+.event-search-result-cancelled {
+    opacity: 0.75;
+}
+
+.event-search-result-cancelled .event-search-result-date,
+.event-search-result-cancelled .event-search-result-title {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.event-search-result-cancelled .event-badge {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.event-search-more {
+    display: block;
+    margin: 12px auto 0;
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
 @media (max-width: 500px) {
     .event-search-result-row {
         flex-direction: column;

@@ -451,6 +451,8 @@ function searchIndexEntry({
   href,
   kindLabel,
   category,
+  isCancelled,
+  isSoldOut,
 }) {
   const performerName = performerNames.join(", ") || null;
   const searchText = [
@@ -477,6 +479,8 @@ function searchIndexEntry({
     href,
     kindLabel,
     category,
+    isCancelled: !!isCancelled,
+    isSoldOut: !!isSoldOut,
     searchText,
   };
 }
@@ -517,6 +521,8 @@ function buildSearchIndex() {
                 ? "Music"
                 : "Poetry",
           category,
+          isCancelled: e.isCancelled,
+          isSoldOut: e.isSoldOut,
         }),
       );
     });
@@ -544,6 +550,8 @@ function buildSearchIndex() {
           href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
           kindLabel: "Tour date",
           category,
+          isCancelled: td.isCancelled,
+          isSoldOut: td.isSoldOut,
         }),
       );
     });
@@ -567,6 +575,8 @@ function buildSearchIndex() {
           // separate opt-in category (matching renderEventRow's comment on
           // the same point).
           category: "story",
+          isCancelled: sd.isCancelled,
+          isSoldOut: sd.isSoldOut,
         }),
       );
     });
@@ -643,20 +653,32 @@ function searchEventIndex(term, index, today) {
   return index
     .filter((e) => matchesEventSearchTimeFilter(e.date, today))
     .filter((e) => activeCategories.has(e.category))
-    .filter((e) => e.searchText.includes(term));
+    .filter((e) => e.searchText.includes(term))
+    .sort(compareSearchResults());
+}
+
+// Result ordering. Upcoming: earliest first (chronological ascending).
+// Previous and All: most recent first (reverse chronological).
+function compareSearchResults() {
+  return eventSearchTimeFilter === "upcoming"
+    ? (a, b) => a.date - b.date
+    : (a, b) => b.date - a.date;
 }
 
 // How many rows the below-the-filters panel shows before truncating. The
 // dropdown itself is disabled on this page (see initSearchBox() below), so
 // this is the only cap that matters here.
-const SEARCH_RESULTS_PANEL_MAX = 30;
+const SEARCH_RESULTS_PANEL_MAX = 30; // rows shown initially
+const SEARCH_RESULTS_PANEL_STEP = 10; // extra rows per "Show more" click
+let searchResultsVisible = SEARCH_RESULTS_PANEL_MAX;
 
 // Persistent, scrollable list of the current search matches, shown below
 // the search filters (see #eventSearchResultsSection in event.html) —
 // unlike the dropdown, it doesn't close on blur, so it stays put while
 // skimming on mobile. Reuses the exact same filtering as the dropdown
 // (searchEventIndex above); only how it's rendered differs.
-function renderSearchResultsList(term, index, today) {
+function renderSearchResultsList(term, index, today, keepVisible = false) {
+  if (!keepVisible) searchResultsVisible = SEARCH_RESULTS_PANEL_MAX;
   const section = document.getElementById("eventSearchResultsSection");
   const countEl = document.getElementById("eventSearchResultsCount");
   const list = document.getElementById("eventSearchResultsList");
@@ -681,13 +703,14 @@ function renderSearchResultsList(term, index, today) {
   }
 
   countEl.textContent =
-    matches.length > SEARCH_RESULTS_PANEL_MAX
-      ? `Showing ${SEARCH_RESULTS_PANEL_MAX} of ${matches.length} matching events — narrow your search to see more.`
+    matches.length > searchResultsVisible
+      ? `Showing ${searchResultsVisible} of ${matches.length} matching events.`
       : `${matches.length} matching event${matches.length === 1 ? "" : "s"}`;
 
-  matches.slice(0, SEARCH_RESULTS_PANEL_MAX).forEach((entry) => {
+  matches.slice(0, searchResultsVisible).forEach((entry) => {
     const row = document.createElement("a");
     row.className = "event-search-result-row";
+    if (entry.isCancelled) row.classList.add("event-search-result-cancelled");
     row.href = entry.href;
 
     const dateCol = document.createElement("div");
@@ -701,6 +724,16 @@ function renderSearchResultsList(term, index, today) {
     const title = document.createElement("div");
     title.className = "event-search-result-title";
     title.textContent = entry.displayName;
+    [
+      [entry.isCancelled, "Cancelled", "event-badge-cancelled"],
+      [!entry.isCancelled && entry.isSoldOut, "Sold out", "event-badge-sold-out"],
+    ].forEach(([show, text, cls]) => {
+      if (!show) return;
+      const badge = document.createElement("span");
+      badge.className = `event-badge ${cls}`;
+      badge.textContent = text;
+      title.appendChild(badge);
+    });
     detail.appendChild(title);
 
     const metaParts = [
@@ -721,6 +754,19 @@ function renderSearchResultsList(term, index, today) {
 
     list.appendChild(row);
   });
+
+  const remaining = matches.length - searchResultsVisible;
+  if (remaining > 0) {
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "event-search-more";
+    more.textContent = `Show ${Math.min(SEARCH_RESULTS_PANEL_STEP, remaining)} more`;
+    more.addEventListener("click", () => {
+      searchResultsVisible += SEARCH_RESULTS_PANEL_STEP;
+      renderSearchResultsList(term, index, today, true);
+    });
+    list.appendChild(more);
+  }
 }
 
 // Story/Music/Poetry checkboxes, shown under the search box. Initial state
