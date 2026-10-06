@@ -57,6 +57,7 @@ message.
 ./updatecache --hard-purge-all           treat every snapshot as missing
 ./updatecache --performer                render one uncached performer page, with optional no. of updates
 ./updatecache --venue                    render one uncached venue page, with optional no. of updates
+./updatecache --promoter                 # render 1 random uncached promoter
 ./updatecache --storyclub                render one uncached story club page, with optional no. of updates
 ./updatecache --sync-keys                rebuild the valid-key index
 ./updatecache --list-performers          list performers without a KV index entry
@@ -69,6 +70,10 @@ message.
 ./updatecache --promoter some-promoter another-promoter
 ./updatecache --booksmerch N
 ./updatecache --performer 'Jane Doe'
+./updatecache --status
+./updatecache --staleness        # report, per page type, against the gatekeeper's rules
+./updatecache --list-stale 20    # the 20 stalest pages as URLs, oldest first
+./updatecache $(./updatecache --list-stale 20)   # refresh them
 ```
 
 `NT_DELAY=10 ./updatecache --performer 20`

@@ -2,12 +2,16 @@
 # updatecache - re-render the prerender snapshot for one or more pages
 # Usage: ./updatecache --sync-keys                 rebuild the valid-key index (after data changes)
 #        ./updatecache --status                    cached / uncached / total counts for every page type
+#        ./updatecache --staleness                 how fresh/stale the stored snapshots are, against the gatekeeper's policy
+#        ./updatecache --list-stale [N]            the N stalest pages (default 20) as URLs, oldest first; refresh them with
+#                                                  ./updatecache $(./updatecache --list-stale 20)
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
 #        ./updatecache --list-festivals            same, for festival.html?festival=
 #        ./updatecache --list-promoters            same, for promoters.html?promoter=
 #        ./updatecache --list-booksmerch           same, for books_merch.html?performer=
+#        ./updatecache --list-events               same, for event.html?event=<eventId>  (render with --event [N] / --event <id>)
 #        ./updatecache --list-repertoire           same, for tour_guide.html?performer=<p>&tour=rep:<show>
 #                                                  (render with --festival / --promoter / --booksmerch / --repertoire [N];
 #                                                  for repertoire a key is the show id, e.g. --repertoire debs-newbold-dauntless)
@@ -231,9 +235,13 @@ fill_one() {
   [ -n "$all" ] || { echo "No $param keys found; set $jq_override to the right jq filter" >&2; exit 1; }
 
   local kvjson
+  read_epochs
   kvjson=$(kv_list_json "$prefix") || exit 1
+  # Snapshots older than the last hard purge are treated as missing by the
+  # gatekeeper, so they count as uncached here too.
   cached=$(printf '%s\n' "$kvjson" \
-    | jq -r --arg p "$prefix" '.[].name | ltrimstr($p)' \
+    | jq -r --arg p "$prefix" --argjson hard "$EPOCH_HARD" --argjson ttl "$TTL_MS" \
+        "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name | ltrimstr($p)' \
     | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
 
   if [ "${LIST_ONLY:-0}" = "1" ]; then
@@ -274,6 +282,10 @@ JQ_STORYCLUB='[.clubs[].club] | unique | .[]'
 JQ_FESTIVAL='.festivals | keys[]'
 JQ_PROMOTER='.promoters | keys[]'
 JQ_BOOKSMERCH='.performers | to_entries[] | select(((.value.books // []) | length) > 0 or ((.value.merch // []) | length) > 0) | .key'
+# Event pages are event.html?event=<eventId>. Every "eventId" string anywhere in the JSON
+# counts (regular events and repertoire show_dates alike), so this doesn't depend on where
+# events live. If your ids sit under another field name, set NT_KEYS_JQ_EVENT.
+JQ_EVENT='[.. | objects | .eventId? | strings | select(. != "")] | unique | .[]'
 # Repertoire pages are tour_guide.html?performer=<performer>&tour=rep:<show>. Each key in
 # .repertoire_shows is a show id; its performer is the longest performer id that is a
 # prefix of it (e.g. debs-newbold-dauntless -> debs-newbold). Shows with no matching
@@ -312,8 +324,11 @@ status_all() {
   done
   [ -n "$STATUS_JSON" ] || { echo "Could not fetch the events JSON (set NT_EVENTS_JSON?)" >&2; exit 1; }
   local statusjson
+  read_epochs
   statusjson=$(kv_list_json "render:https://$HOST/") || exit 1
-  STATUS_NAMES=$(printf '%s\n' "$statusjson" | jq -r '.[].name')
+  STATUS_NAMES=$(printf '%s\n' "$statusjson" \
+    | jq -r --argjson hard "$EPOCH_HARD" --argjson ttl "$TTL_MS" \
+        "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name')
   printf '%-12s %7s %9s %7s %7s\n' type cached uncached total orphans
   status_row performers  performers  performer "$JQ_PERFORMER"   NT_KEYS_JQ_PERFORMER
   status_row venues      venues      venue     "$JQ_VENUE"       NT_KEYS_JQ_VENUE
@@ -322,7 +337,166 @@ status_all() {
   status_row promoters   promoters   promoter  "$JQ_PROMOTER"    NT_KEYS_JQ_PROMOTER
   status_row booksmerch  books_merch performer "$JQ_BOOKSMERCH"  NT_KEYS_JQ_BOOKSMERCH
   status_row repertoire  tour_guide  performer "$JQ_REPERTOIRE"  NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A"
-  echo "(orphans = snapshots whose key is no longer in the JSON; 'cached' counts any stored snapshot, stale or not)" >&2
+  status_row events      event       event     "$JQ_EVENT"       NT_KEYS_JQ_EVENT
+  echo "(orphans = snapshots whose key is no longer in the JSON; 'cached' counts any stored snapshot, stale or not,"
+  echo " but not ones older than the last hard purge, which the gatekeeper treats as missing; see --staleness)" >&2
+  exit 0
+}
+
+# ── staleness report ────────────────────────────────────────────────────────
+# Mirrors the gatekeeper's policy (gatekeeper.js): a snapshot is STALE when its ts is
+# older than FRESH_SECONDS (48h) or older than the soft-purge epoch, and counts as
+# MISSING when its ts is older than the hard-purge epoch (both live in the KV key
+# meta:epochs). The gatekeeper stores ts as KV metadata and sets a KV expiry on every
+# write, so ONE key listing gives every page's age and expiry with no per-key reads.
+FRESH_HOURS="${NT_FRESH_HOURS:-48}"            # gatekeeper FRESH_SECONDS, in hours
+TTL_DAYS="${NT_TTL_DAYS:-14}"                  # gatekeeper KV_TTL_SECONDS, in days
+TTL_MS=$(( TTL_DAYS * 86400000 ))
+EXPIRY_WARN_HOURS="${NT_EXPIRY_WARN_HOURS:-48}"
+# A snapshot's age: the ts the gatekeeper stored as KV metadata or, when the key listing has
+# no metadata (snapshots written before the gatekeeper stored it), the write time implied by
+# the KV expiry: every write sets expirationTtl = KV_TTL_SECONDS, so written = expiry - TTL.
+# entry_est is true when the age had to be derived from the expiry. Needs --argjson ttl.
+JQ_TS_DEF='def entry_ts: (.metadata.ts // (if .expiration != null then (.expiration * 1000 - $ttl) else null end));
+  def entry_est: ((.metadata.ts == null) and (.expiration != null));
+  '
+EPOCH_SOFT=0; EPOCH_HARD=0; EPOCH_NOTE=""; EPOCHS_READ=""
+
+# Read the purge epochs ({"soft":ms,"hard":ms}; 0 = never purged). One KV read per run.
+read_epochs() {
+  [ -n "$EPOCHS_READ" ] && return 0
+  EPOCHS_READ=1
+  command -v jq >/dev/null || return 0
+  local out
+  out=$(npx wrangler kv key get meta:epochs --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null \
+        | awk '/^\{/ { s = 1 } s { print } s && /\}$/ { exit }')
+  if [ -n "$out" ] && printf '%s' "$out" | jq -e 'type == "object"' >/dev/null 2>&1; then
+    EPOCH_SOFT=$(printf '%s' "$out" | jq -r '(.soft // 0) | floor')
+    EPOCH_HARD=$(printf '%s' "$out" | jq -r '(.hard // 0) | floor')
+  else
+    EPOCH_NOTE="no meta:epochs found (never purged), or it could not be read"
+  fi
+}
+
+fmt_epoch() {
+  if [ "$1" -gt 0 ] 2>/dev/null; then
+    jq -rn --argjson ms "$1" '$ms / 1000 | floor | strftime("%Y-%m-%d %H:%M UTC")'
+  else
+    echo "never"
+  fi
+}
+
+# One row per page type, same classification as the gatekeeper:
+#   invalid = ts older than the hard purge (served as missing)
+#   stale   = ts older than the soft purge or older than the fresh window
+#   fresh   = everything else
+#   est     = age estimated from the KV expiry (the listing has no ts metadata)
+#   unk     = neither ts metadata nor an expiry, so no age at all
+JQ_STALE_ROWS='
+  def kind:
+    (.name | ltrimstr($base)) as $r
+    | ($r | split("?")[0]) as $path
+    | if $path == "/tour_guide.html" and ($r | test("tour=rep%3A")) then $path + " (rep)" else $path end;
+  [ .[] | select(.name | startswith($base))
+        | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null) } ]
+  | group_by(.kind)[]
+  | . as $g
+  | [ $g[0].kind,
+      ($g | length),
+      ([ $g[] | select(.ts != null and .ts >= $hard and .ts >= $soft and ($now - .ts) <= $fresh) ] | length),
+      ([ $g[] | select(.ts != null and .ts >= $hard and (.ts < $soft or ($now - .ts) > $fresh)) ] | length),
+      ([ $g[] | select(.ts != null and .ts < $hard) ] | length),
+      ([ $g[] | select(.est) ] | length),
+      ([ $g[] | select(.ts == null) ] | length),
+      ([ $g[] | select(.ts != null and .ts > 0 and .ts >= $hard) | ($now - .ts) ] | max // -1),
+      ([ $g[] | select(.exp != null and (.exp * 1000 - $now) < $soon) ] | length)
+    ] | @tsv'
+
+# marked-stale (ts=0), soft-purged, aged-out, hard-purged, expiring soon, total stored, age estimated
+JQ_STALE_BREAKDOWN='
+  [ .[] | select(.name | startswith($base)) | entry_ts | select(. != null) ] as $t
+  | [ ([ $t[] | select(. == 0 and . >= $hard) ] | length),
+      ([ $t[] | select(. > 0 and . >= $hard and . < $soft) ] | length),
+      ([ $t[] | select(. > 0 and . >= $hard and . >= $soft and ($now - .) > $fresh) ] | length),
+      ([ $t[] | select(. < $hard) ] | length),
+      ([ .[] | select(.name | startswith($base)) | select(.expiration != null and (.expiration * 1000 - $now) < $soon) ] | length),
+      ([ .[] | select(.name | startswith($base)) ] | length),
+      ([ .[] | select(.name | startswith($base)) | select(entry_est) ] | length)
+    ] | @tsv'
+
+staleness_report() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  read_epochs
+  local now_ms=$(( $(date +%s) * 1000 ))
+  local fresh_ms=$(( FRESH_HOURS * 3600000 )) soon_ms=$(( EXPIRY_WARN_HOURS * 3600000 ))
+  local json rows marked softp aged invalid expiring stored est stale
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  local args=(--arg base "render:https://$HOST" --argjson now "$now_ms" --argjson fresh "$fresh_ms"
+              --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" --argjson soon "$soon_ms"
+              --argjson ttl "$TTL_MS")
+  rows=$(printf '%s\n' "$json" | jq -r "${args[@]}" "$JQ_TS_DEF $JQ_STALE_ROWS")
+  [ -n "$rows" ] || { echo "No snapshots are stored under render:https://$HOST/"; exit 0; }
+  read -r marked softp aged invalid expiring stored est \
+    <<< "$(printf '%s\n' "$json" | jq -r "${args[@]}" "$JQ_TS_DEF $JQ_STALE_BREAKDOWN")"
+  stale=$(( marked + softp + aged ))
+
+  echo "Gatekeeper policy (from gatekeeper.js; set NT_FRESH_HOURS / NT_TTL_DAYS if you change the constants):"
+  printf '  %-13s %s\n' "fresh window" "${FRESH_HOURS}h: older snapshots are still served, flagged stale"
+  printf '  %-13s %s\n' "KV expiry" "${TTL_DAYS}d after the last write: then the page counts as uncached"
+  printf '  %-13s %s\n' "soft purge" "$(fmt_epoch "$EPOCH_SOFT"): snapshots older than this count as stale"
+  printf '  %-13s %s\n' "hard purge" "$(fmt_epoch "$EPOCH_HARD"): snapshots older than this count as missing"
+  [ -n "$EPOCH_NOTE" ] && echo "  ($EPOCH_NOTE)"
+  echo
+  printf '%s\n' "$rows" | awk -F'\t' -v warn="$EXPIRY_WARN_HOURS" '
+    function age(ms) { if (ms < 0) return "-"; if (ms >= 86400000) return sprintf("%.1fd", ms / 86400000); return sprintf("%.1fh", ms / 3600000) }
+    BEGIN { mx = -1; printf "%-24s %6s %6s %6s %7s %5s %4s %7s %8s\n", "page", "stored", "fresh", "stale", "invalid", "est", "unk", "oldest", "exp<" warn "h" }
+    NF { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d\n", $1, $2, $3, $4, $5, $6, $7, age($8), $9
+         for (i = 2; i <= 7; i++) t[i] += $i; t[9] += $9; if ($8 + 0 > mx) mx = $8 + 0 }
+    END { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d\n", "TOTAL", t[2], t[3], t[4], t[5], t[6], t[7], age(mx), t[9] }'
+  echo "(est = age estimated from the KV expiry; unk = no age available; oldest ignores marked-stale pages)"
+  echo
+  echo "Stale: $stale of $stored  (aged past ${FRESH_HOURS}h: $aged, soft-purged: $softp, marked stale with ts=0: $marked)"
+  if [ "$est" -gt 0 ]; then
+    echo "Ages: $est of $stored are estimated from the KV expiry (written = expiry - ${TTL_DAYS}d) because the key"
+    echo "  listing has no ts metadata for them. That is accurate for pages the gatekeeper wrote, but a page marked"
+    echo "  stale (ts=0) can only be spotted where its metadata is present."
+  fi
+  echo "Invalid (hard-purged, served as missing): $invalid.   Expiring within ${EXPIRY_WARN_HOURS}h: $expiring"
+  awk -v n="$(( stale + invalid ))" 'BEGIN { printf "Refreshing all %d stale/invalid pages = about %d x 2s = %.1f min of browser time (free plan: 10 min/day, shared with crawlers).\n", n, n, n * 2 / 60 }'
+  echo
+  echo "How the gatekeeper treats them:"
+  echo "  - Stale snapshots are still served to bots (x-prerender-stale: true); nothing is lost while they wait."
+  echo "  - A stale page is refreshed only when a render-tier bot (Bing, DuckDuckGo, Apple, social-preview bots)"
+  echo "    requests that exact page, its key is in the meta:keys index, and it wins the one-per-minute render"
+  echo "    slot; or when you (or a prewarm) force-render it. Googlebot, Yandex, Baidu and Yahoo never trigger one."
+  echo "  - Invalid pages are treated as missing: bots get the plain origin page until the page is re-rendered."
+  echo "  - Marking a page stale (--stale, or a failed forced render) sets ts=0 but restarts its ${TTL_DAYS}d KV expiry."
+  echo "  - List the worst offenders with: ./updatecache --list-stale 20"
+  exit 0
+}
+
+# --list-stale [N]: the N stalest pages (default 20), oldest first, as full URLs.
+# "Stale" = needs a refresh: stale by the gatekeeper's policy, or hard-purged. Feed the
+# list straight back in:  ./updatecache $(./updatecache --list-stale 20)
+list_stale() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local n=20
+  [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && n="$1"
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  read_epochs
+  local now_ms=$(( $(date +%s) * 1000 )) fresh_ms=$(( FRESH_HOURS * 3600000 )) json all
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson now "$now_ms" \
+      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" \
+      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+      [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
+            | select(.ts != null)
+            | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
+      | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
+  [ -n "$all" ] || { echo "No stale snapshots." >&2; exit 0; }
+  echo "$(printf '%s\n' "$all" | wc -l | tr -d ' ') snapshot(s) need a refresh; listing the oldest $n." >&2
+  printf '%s\n' "$all" | head -n "$n"
   exit 0
 }
 
@@ -350,6 +524,7 @@ dispatch() {
     promoter)   fill_one promoters promoter "$JQ_PROMOTER" NT_KEYS_JQ_PROMOTER ;;
     booksmerch) fill_one books_merch performer "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH ;;
     repertoire) fill_one tour_guide performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A" ;;
+    event)      fill_one event event "$JQ_EVENT" NT_KEYS_JQ_EVENT ;;
   esac
 }
 
@@ -361,7 +536,10 @@ case "$1" in
   --list-promoters|--list-promoter)    LIST_ONLY=1; dispatch promoter ;;
   --list-booksmerch)                   LIST_ONLY=1; dispatch booksmerch ;;
   --list-repertoire|--list-repertoires) LIST_ONLY=1; dispatch repertoire ;;
+  --list-events|--list-event)          LIST_ONLY=1; dispatch event ;;
   --status)                            status_all ;;
+  --staleness)                         staleness_report ;;
+  --list-stale)                        list_stale "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
   --storyclub|--storyclubs)            dispatch storyclub ;;
@@ -369,6 +547,7 @@ case "$1" in
   --promoter|--promoters)              dispatch promoter ;;
   --booksmerch)                        dispatch booksmerch ;;
   --repertoire|--repertoires)          dispatch repertoire ;;
+  --event|--events)                    dispatch event ;;
   --stale|--purge|--purge-only)        ;;   # handled below
   --*) echo "Unknown option: $1 (see the usage notes at the top of this script)" >&2; exit 1 ;;
 esac
@@ -384,7 +563,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
   exit 1
 fi
 
@@ -418,10 +597,13 @@ for page in "$@"; do
 
   [ $PURGE_ONLY -eq 1 ] && continue
 
-  echo -n "Refresh: "
   # Forced render can retry 3x with ~12s gaps, so allow a long timeout
-  curl -s --max-time 120 -o /dev/null \
+  result=$(curl -s --max-time 120 -o /dev/null \
     -D - -w "" \
     -H "x-force-render: $SECRET" "$URL" \
-    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -
+    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
+  echo "Refresh: $result"
+  case "$result" in
+    *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; break ;;
+  esac
 done
