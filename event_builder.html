@@ -1445,6 +1445,28 @@
             </div>
 
             <div class="enrich-section">
+                <h3>🔗 Orphaned club, promoter, venue &amp; performer ids</h3>
+                <p class="field-hint">
+                    Report only. Walks every record in the loaded file and checks that each id it carries points at
+                    something that exists: <code>club</code> / <code>club_event</code> against
+                    <code>clubs[].club</code>; <code>promoter_id</code> / <code>promoter</code> against the
+                    <code>promoters</code> registry (or a club flagged <code>isPromoter</code>);
+                    <code>venue_id</code> and <code>promoter_venues</code> against <code>venues</code>; and
+                    <code>performer_id</code>, <code>performer_ids</code>, <code>other_performer_ids</code>,
+                    <code>support_performer_ids</code>, <code>host_performer_id</code>, <code>host_id</code>,
+                    <code>promoter_artists</code> and club <code>feature_slots</code> against
+                    <code>performers</code> — including nested ones in tour dates, show dates, festival schedules
+                    and club alternate locations. Each orphan lists where it's used, a "did you mean" guess, and a
+                    note if the same id exists in a different registry (usually the right id in the wrong field).
+                    <code>TBC</code>/<code>TBA</code> are listed separately as placeholders rather than errors.
+                    Also flags malformed <code>feature_slots</code>, and promoters marked <code>isVenue</code>
+                    that can't be tied to a venue record. Free-text performer names are not checked.
+                </p>
+                <button class="btn-add-batch" id="enrich-orphan-scan-btn" disabled>Scan for orphaned ids</button>
+                <div id="enrich-orphan-results"></div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>📅 Unparseable or implausible dates</h3>
                 <p class="field-hint">
                     Checks every date string against events, tours, and repertoire shows — each event's own
@@ -6255,6 +6277,7 @@
                 document.getElementById("enrich-dupe-scan-btn").disabled = false;
                 document.getElementById("enrich-promoter-scan-btn").disabled = false;
                 document.getElementById("enrich-promoter-fill-scan-btn").disabled = false;
+                document.getElementById("enrich-orphan-scan-btn").disabled = false;
                 document.getElementById("enrich-datequality-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
@@ -6273,6 +6296,7 @@
                 document.getElementById("enrich-dupe-scan-btn").disabled = true;
                 document.getElementById("enrich-promoter-scan-btn").disabled = true;
                 document.getElementById("enrich-promoter-fill-scan-btn").disabled = true;
+                document.getElementById("enrich-orphan-scan-btn").disabled = true;
                 document.getElementById("enrich-datequality-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
@@ -6779,6 +6803,278 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "promoter");
+        });
+
+        // -- Orphaned references (club / promoter / venue / performer) --------
+        // Report only. Walks every record in the loaded file and checks that
+        // each id it carries actually exists in the registry it points at:
+        //   club        → clubs[].club
+        //   promoter    → promoters{} keys (plus any club flagged isPromoter,
+        //                 which promoters.js's buildPromoterRegistry() also
+        //                 treats as a promoter with no record needed)
+        //   venue       → venues{} keys
+        //   performer   → performers{} keys
+        // Fields are recognised by NAME wherever they turn up in the tree,
+        // so nested ones (tour_dates[], show_dates[], festival schedule[],
+        // club alternate_locations{}) are covered without listing each
+        // bucket. Free-text fields such as a festival schedule's `performer`
+        // ("Led by Sharon Jacksties") are deliberately not checked.
+        const ORPHAN_REF_FIELDS = {
+            club: "club", club_event: "club",
+            promoter_id: "promoter", promoter: "promoter",
+            venue_id: "venue", promoter_venues: "venue",
+            performer_id: "performer", performer_ids: "performer",
+            other_performer_ids: "performer", support_performer_ids: "performer",
+            host_performer_id: "performer", host_id: "performer",
+            promoter_artists: "performer",
+        };
+        const ORPHAN_KIND_LABELS = { club: "Club", promoter: "Promoter", venue: "Venue", performer: "Performer" };
+        const ORPHAN_PLACEHOLDER_RE = /^(tbc|tba)$/i;
+        // Top-level keys that hold no references to the four registries.
+        const ORPHAN_SKIP_TOP_LEVEL = new Set(["affiliate_ids", "venues", "publishers", "story_walk_details"]);
+
+        function orphanNorm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+        function orphanLevenshtein(a, b) {
+            const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+            for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+            for (let i = 1; i <= a.length; i++) {
+                for (let j = 1; j <= b.length; j++) {
+                    dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                }
+            }
+            return dp[a.length][b.length];
+        }
+        // "Did you mean": same letters ignoring case/punctuation, one id
+        // being a prefix of the other, or a couple of typos away.
+        function orphanSuggest(id, candidates) {
+            const n = orphanNorm(id);
+            if (!n) return [];
+            const scored = [];
+            candidates.forEach(c => {
+                const cn = orphanNorm(c);
+                if (!cn) return;
+                let score = null;
+                if (cn === n) score = 0;
+                else if (Math.min(cn.length, n.length) >= 5 && (cn.startsWith(n) || n.startsWith(cn))) score = 1;
+                else if (n.length >= 5) { const d = orphanLevenshtein(n, cn); if (d <= 2) score = 1 + d; }
+                if (score !== null) scored.push([score, c]);
+            });
+            return scored.sort((a, b) => a[0] - b[0]).slice(0, 3).map(s => s[1]);
+        }
+
+        function collectOrphanRefs(data) {
+            const refs = [];
+            const structural = [];
+            const DATE_RE = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+            const push = (kind, id, field, where) => refs.push({ kind, id: id.trim(), field, where });
+
+            const walk = (node, base, sub, skipKeys) => {
+                if (Array.isArray(node)) {
+                    node.forEach((v, i) => walk(v, base, `${sub}[${i}]`, null));
+                    return;
+                }
+                if (!node || typeof node !== "object") return;
+                Object.entries(node).forEach(([k, v]) => {
+                    if (skipKeys && skipKeys.has(k)) return;
+                    const subPath = sub ? `${sub}.${k}` : k;
+                    const where = `${base} › ${subPath}`;
+                    if (k === "feature_slots" && Array.isArray(v)) {
+                        // Expected shape: [[DD/MM/YYYY, performer_id], ...].
+                        v.forEach((slot, i) => {
+                            if (Array.isArray(slot) && slot.length === 2 && typeof slot[1] === "string") {
+                                if (slot[1].trim()) push("performer", slot[1], "feature_slots", `${where}[${i}]`);
+                            } else if (typeof slot === "string") {
+                                // A flat list of strings instead of pairs: still check any
+                                // non-date string as an id, and flag the shape itself.
+                                if (!DATE_RE.test(slot.trim()) && slot.trim()) push("performer", slot, "feature_slots (flat)", `${where}[${i}]`);
+                            } else {
+                                structural.push({ where: `${where}[${i}]`, issue: `entry is ${JSON.stringify(slot)}, not a [date, performer_id] pair` });
+                                // Still check any id-looking strings inside it.
+                                if (Array.isArray(slot)) slot.forEach((x, j) => {
+                                    if (typeof x === "string" && x.trim() && !DATE_RE.test(x.trim())) push("performer", x, "feature_slots (malformed)", `${where}[${i}][${j}]`);
+                                });
+                            }
+                        });
+                        if (v.some(s => typeof s === "string")) {
+                            structural.push({ where, issue: `feature_slots holds bare strings (${JSON.stringify(v)}) rather than [date, performer_id] pairs, so the site's s[0]/s[1] lookups will not match these` });
+                        }
+                        return;
+                    }
+                    const kind = ORPHAN_REF_FIELDS[k];
+                    if (kind) {
+                        (Array.isArray(v) ? v : [v]).forEach((x, i) => {
+                            if (typeof x === "string" && x.trim()) push(kind, x, k, Array.isArray(v) ? `${where}[${i}]` : where);
+                        });
+                        return;
+                    }
+                    walk(v, base, subPath, null);
+                });
+            };
+
+            Object.entries(data).forEach(([bucket, coll]) => {
+                if (ORPHAN_SKIP_TOP_LEVEL.has(bucket) || !coll || typeof coll !== "object") return;
+                // A promoter's own promoter_id is its registry key, not a reference.
+                const skip = bucket === "promoters" ? new Set(["promoter_id"]) : null;
+                if (Array.isArray(coll)) {
+                    coll.forEach((rec, i) => {
+                        const nm = rec && (rec.name || rec.showname || rec.club);
+                        walk(rec, `${bucket}[${i}]${nm ? ` "${nm}"` : ""}`, "", skip);
+                    });
+                } else {
+                    Object.entries(coll).forEach(([key, rec]) => {
+                        if (rec && typeof rec === "object") walk(rec, `${bucket}.${key}`, "", skip);
+                    });
+                }
+            });
+            return { refs, structural };
+        }
+
+        function scanOrphanReferences(data) {
+            const clubIds = new Set((data.clubs || []).map(c => c && c.club).filter(Boolean));
+            const promoterIds = new Set(Object.keys(data.promoters || {}));
+            (data.clubs || []).forEach(c => { if (c && c.club && c.isPromoter) promoterIds.add(c.club); });
+            const venueIds = new Set(Object.keys(data.venues || {}));
+            const performerIds = new Set(Object.keys(data.performers || {}));
+            const registries = { club: clubIds, promoter: promoterIds, venue: venueIds, performer: performerIds };
+
+            const { refs, structural } = collectOrphanRefs(data);
+            const result = { summary: {}, orphans: { club: [], promoter: [], venue: [], performer: [] }, placeholders: [], structural, venueFlags: [] };
+
+            Object.keys(registries).forEach(kind => {
+                const ofKind = refs.filter(r => r.kind === kind);
+                const byId = new Map();
+                ofKind.forEach(r => {
+                    if (registries[kind].has(r.id)) return;
+                    if (!byId.has(r.id)) byId.set(r.id, []);
+                    byId.get(r.id).push(r);
+                });
+                let orphanRefCount = 0;
+                byId.forEach((list, id) => {
+                    orphanRefCount += list.length;
+                    if (ORPHAN_PLACEHOLDER_RE.test(id)) {
+                        result.placeholders.push({ kind, id, refs: list });
+                        return;
+                    }
+                    // Same id sitting in a different registry usually means
+                    // the right id was put in the wrong field.
+                    const elsewhere = Object.keys(registries).filter(k => k !== kind && registries[k].has(id));
+                    const suggestions = orphanSuggest(id, [...registries[kind]]);
+                    // Nothing close in the right registry? Look in the others and say which.
+                    if (!suggestions.length) {
+                        Object.keys(registries).filter(k => k !== kind).forEach(k => {
+                            orphanSuggest(id, [...registries[k]]).forEach(c => suggestions.push(`${c} (${k})`));
+                        });
+                    }
+                    result.orphans[kind].push({ id, refs: list, suggestions: suggestions.slice(0, 3), elsewhere });
+                });
+                result.orphans[kind].sort((a, b) => b.refs.length - a.refs.length || a.id.localeCompare(b.id));
+                result.summary[kind] = {
+                    checked: ofKind.length,
+                    distinct: new Set(ofKind.map(r => r.id)).size,
+                    orphanIds: result.orphans[kind].length,
+                    orphanRefs: orphanRefCount - result.placeholders.filter(p => p.kind === kind).reduce((n, p) => n + p.refs.length, 0),
+                };
+            });
+
+            // A promoter flagged isVenue is meant to take its venue details
+            // from a venues record. Which record? There is no pointer field in
+            // the schema, so work out the best candidate and report whether
+            // one exists at all (an explicit venue_id on the promoter is
+            // checked by the walk above like any other venue_id).
+            Object.entries(data.promoters || {}).forEach(([id, p]) => {
+                if (!p || !p.isVenue) return;
+                const pid = p.promoter_id || id;
+                const listed = Array.isArray(p.promoter_venues) ? p.promoter_venues : [];
+                if (p.venue_id) return;
+                if (venueIds.has(pid)) return;
+                if (listed.length === 1 && venueIds.has(listed[0])) return;
+                const guesses = orphanSuggest(pid, [...venueIds])
+                    .concat([...venueIds].filter(v => orphanNorm(data.venues[v].name || "") === orphanNorm(p.name || "") && p.name));
+                result.venueFlags.push({ id, name: p.name || id, guesses: [...new Set(guesses)] });
+            });
+            return result;
+        }
+
+        document.getElementById("enrich-orphan-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-orphan-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const r = scanOrphanReferences(enrichedData);
+            const esc = escapeHtml;
+            const MAX_WHERE = 5;
+            const addHeader = text => {
+                const h = document.createElement("div");
+                h.className = "enrich-result-group-header";
+                h.textContent = text;
+                resultsEl.appendChild(h);
+            };
+            const addRow = (title, idLabel, detailsHtml) => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${esc(title)}${idLabel ? ` <span style="font-weight:normal;color:#999;">${esc(idLabel)}</span>` : ""}</div>
+                        <div class="enrich-result-reasons">${detailsHtml}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            };
+            const whereList = refs => {
+                const shown = refs.slice(0, MAX_WHERE).map(x => `${esc(x.where)}`).join("<br>");
+                return shown + (refs.length > MAX_WHERE ? `<br>…and ${refs.length - MAX_WHERE} more` : "");
+            };
+
+            let problems = 0;
+            const summaryBits = [];
+            Object.keys(ORPHAN_KIND_LABELS).forEach(kind => {
+                const s = r.summary[kind];
+                summaryBits.push(`${ORPHAN_KIND_LABELS[kind].toLowerCase()}: ${s.checked} references to ${s.distinct} ids, ${s.orphanIds} orphaned`);
+            });
+            const summary = document.createElement("div");
+            summary.className = "field-hint";
+            summary.textContent = `Checked — ${summaryBits.join(" · ")}.`;
+            resultsEl.appendChild(summary);
+
+            Object.entries(ORPHAN_KIND_LABELS).forEach(([kind, label]) => {
+                const list = r.orphans[kind];
+                if (!list.length) return;
+                const refCount = list.reduce((n, o) => n + o.refs.length, 0);
+                addHeader(`${label} ids with no matching ${kind === "club" ? "club (clubs[].club)" : kind === "promoter" ? "promoter (promoters key)" : kind === "venue" ? "venue (venues key)" : "performer (performers key)"} — ${list.length} id${list.length === 1 ? "" : "s"}, ${refCount} reference${refCount === 1 ? "" : "s"}`);
+                list.forEach(o => {
+                    problems++;
+                    const bits = [];
+                    if (o.suggestions.length) bits.push(`<strong>Did you mean:</strong> ${o.suggestions.map(esc).join(", ")}`);
+                    if (o.elsewhere.length) bits.push(`<strong>Note:</strong> this id does exist as a ${o.elsewhere.join(" / ")} id — possibly the wrong field`);
+                    bits.push(whereList(o.refs));
+                    addRow(o.id, `(${o.refs.length} reference${o.refs.length === 1 ? "" : "s"})`, bits.join("<br>"));
+                });
+            });
+
+            if (r.placeholders.length) {
+                addHeader("Placeholder values (TBC / TBA) — not counted as orphans above");
+                r.placeholders.forEach(p => addRow(p.id, `(${p.kind}, ${p.refs.length} reference${p.refs.length === 1 ? "" : "s"})`, whereList(p.refs)));
+            }
+            if (r.structural.length) {
+                addHeader(`Malformed reference data — ${r.structural.length}`);
+                r.structural.forEach(s => { problems++; addRow(s.where, "", esc(s.issue)); });
+            }
+            if (r.venueFlags.length) {
+                addHeader("Promoters flagged isVenue with no resolvable venue");
+                r.venueFlags.forEach(v => {
+                    problems++;
+                    addRow(v.name, `(${v.id})`, `isVenue is set, but there is no <code>venue_id</code> on the promoter, no <code>venues</code> key called "${esc(v.id)}", and no single <code>promoter_venues</code> entry to fall back on.` +
+                        (v.guesses.length ? `<br><strong>Possible venue:</strong> ${v.guesses.map(esc).join(", ")}` : ""));
+                });
+            }
+
+            if (!problems && !r.placeholders.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No orphaned club, promoter, venue or performer ids found.</div>';
+                return;
+            }
+            addResultsCollapseToggle(resultsEl, problems + r.placeholders.length, "finding");
         });
 
         // -- Unparseable or implausible dates --------------------------------
