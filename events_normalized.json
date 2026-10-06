@@ -6,6 +6,7 @@
   "promoters": {
     "storymuseum": {
       "promoter_id": "storymuseum",
+      "venue_id": "the-story-museum-oxford",
       "isVenue": true,
       "name": "The Story Museum",
       "ticketing_url": ""
