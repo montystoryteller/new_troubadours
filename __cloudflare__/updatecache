@@ -2,6 +2,8 @@
 # updatecache - re-render the prerender snapshot for one or more pages
 # Usage: ./updatecache --sync-keys                 rebuild the valid-key index (after data changes)
 #        ./updatecache --status                    cached / uncached / total counts for every page type
+#        ./updatecache --inspect promoter some-key why does the gatekeeper see / not see this page? (JSON, worker key index,
+#                                                  exact and look-alike KV keys, fresh/stale/missing verdict)
 #        ./updatecache --staleness                 how fresh/stale the stored snapshots are, against the gatekeeper's policy
 #        ./updatecache --list-stale [N]            the N stalest pages (default 20) as URLs, oldest first; refresh them with
 #                                                  ./updatecache $(./updatecache --list-stale 20)
@@ -84,7 +86,7 @@ if [ "$1" = "--sync-keys" ]; then
   index=""
   for name in events_normalized events_normalised; do
     json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
-    index=$(curl -sf "$json_url" | jq -c '{
+    index=$(curl -sf --max-time 60 "$json_url" | jq -c '{
       performers: (.performers | keys),
       venues: (.venues | keys),
       promoters: (.promoters | keys),
@@ -101,38 +103,73 @@ if [ "$1" = "--sync-keys" ]; then
   exit 0
 fi
 
-# List the KV keys under a prefix and print them as a JSON array. wrangler can fail
-# on its first call (expired login token being refreshed, npx install notice, a
-# transient network error) or print noise before the JSON, so: capture stderr,
-# start parsing at the first line that begins the JSON array, require a valid array,
-# and retry. If every attempt fails, stop and show wrangler's own error instead of
-# carrying on with an empty "cached" set (which would make every page look
-# uncached and waste renders on pages that already have snapshots).
+# Progress line on stderr, only when stderr is a terminal (so pipes and $(...) stay clean).
+note() { if [ -t 2 ]; then echo "$*" >&2; fi; }
+
+# Run a command with a time limit (no GNU timeout needed, so it works on macOS). Its stdin is
+# /dev/null, so npx/wrangler can never sit waiting for an answer to a prompt. Returns the
+# command's status, or 128+ if it was killed for taking longer than SECS seconds.
+#   run_with_timeout <secs> <command> [args...]
+run_with_timeout() {
+  local secs="$1" pid wd rc
+  shift
+  "$@" </dev/null &
+  pid=$!
+  ( sleep "$secs"; pkill -P "$pid" 2>/dev/null; kill "$pid" 2>/dev/null; sleep 2; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  wd=$!
+  wait "$pid" 2>/dev/null
+  rc=$?
+  { kill "$wd"; wait "$wd"; } 2>/dev/null
+  return $rc
+}
+
+# List the KV keys under a prefix and print them as a JSON array. wrangler can fail on its
+# first call (expired login token being refreshed, npx install notice, a transient network
+# error) or print noise before the JSON, so: start parsing at the first line that begins the
+# JSON array, require a valid array, and retry. Each attempt is time-limited (NT_KV_TIMEOUT,
+# default 60s) and wrangler's own messages stay visible on your terminal. If every attempt
+# fails, stop instead of carrying on with an empty "cached" set (which would make every page
+# look uncached and waste renders on pages that already have snapshots).
 #   kv_list_json <prefix>
 kv_list_json() {
-  local prefix="$1" attempt out errfile outfile
-  errfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-kv-err.XXXXXX")
+  local prefix="$1" attempt out outfile rc secs="${NT_KV_TIMEOUT:-60}"
   outfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-kv-out.XXXXXX")
+  note "Listing KV snapshots with wrangler (each attempt gives up after ${secs}s)..."
   for attempt in 1 2 3; do
-    npx wrangler kv key list --namespace-id "$NT_KV_NAMESPACE_ID" --remote \
-      --prefix "$prefix" >"$outfile" 2>"$errfile"
+    run_with_timeout "$secs" npx wrangler kv key list --namespace-id "$NT_KV_NAMESPACE_ID" --remote \
+      --prefix "$prefix" >"$outfile"
+    rc=$?
     # Keep only the JSON array: from the first line starting with "[" to its end
     # (a one-line "[...]", or a pretty-printed array closed by a line starting "]").
-    # Text before or after it (banners, notices) is dropped.
     out=$(awk '/^\[/ { s = 1 } s { print } s && (/^\]/ || /^\[.*\]$/) { exit }' "$outfile")
     if [ -n "$out" ] && printf '%s' "$out" | jq -e 'type == "array"' >/dev/null 2>&1; then
-      rm -f "$errfile" "$outfile"
+      rm -f "$outfile"
       printf '%s\n' "$out"
       return 0
     fi
-    [ $attempt -lt 3 ] && { echo "KV lookup failed (attempt $attempt of 3); retrying..." >&2; sleep 3; }
+    if [ "$rc" -ge 128 ]; then
+      echo "wrangler did not answer within ${secs}s (attempt $attempt of 3)." >&2
+    elif [ $attempt -lt 3 ]; then
+      echo "KV lookup failed (attempt $attempt of 3); retrying..." >&2
+    fi
+    [ $attempt -lt 3 ] && sleep 3
   done
   echo "KV lookup failed after 3 attempts; stopping so nothing is rendered by mistake." >&2
-  if [ -s "$errfile" ]; then echo "--- wrangler stderr (last 15 lines):" >&2; tail -n 15 "$errfile" >&2; fi
   if [ -s "$outfile" ]; then echo "--- wrangler stdout (first 10 lines):" >&2; head -n 10 "$outfile" >&2; fi
-  rm -f "$errfile" "$outfile"
-  echo "Try: npx wrangler whoami   (or: npx wrangler login), then run this again." >&2
+  rm -f "$outfile"
+  echo "If wrangler printed nothing above, run it by hand to see what it wants:" >&2
+  echo "  npx wrangler kv key list --namespace-id $NT_KV_NAMESPACE_ID --remote | head" >&2
+  echo "(npx wrangler whoami, or npx wrangler login, if it is an authentication problem)" >&2
   return 1
+}
+
+# Event ids carry their date as YYYYMMDD (e.g. R-some-show-20261112-some-venue). Reads ids on
+# stdin and prints "YYYYMMDD<TAB>id" for those dated today or later (the upcoming ones).
+upcoming_dated() {
+  local today
+  today=$(date +%Y%m%d)
+  awk -v t="$today" 'match($0, /(^|-)(19|20)[0-9][0-9](0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(-|$)/) {
+    s = substr($0, RSTART, RLENGTH); gsub(/-/, "", s); if (s >= t) printf "%s\t%s\n", s, $0 }'
 }
 
 # Force-render one URL and print the status headers. Returns 1 if the daily
@@ -161,6 +198,8 @@ fill_one() {
   # tag is a fixed string that picks this type's snapshots out of the shared page
   # (used for repertoire pages, which live on tour_guide.html next to real tours).
   local rawmode="${5:-0}" tag="${6:-}"
+  # prefer_upcoming=1 (events): uncached ids whose date is today or later come first.
+  local prefer_upcoming="${7:-0}"
   local what="$param"; [ "$rawmode" = "1" ] && what="repertoire"
 
   # Explicit keys given (e.g. ./updatecache --performer tis-tales): render just
@@ -172,7 +211,7 @@ fill_one() {
     if [ "${NT_NO_CHECK:-0}" != "1" ] || [ "$rawmode" = "1" ]; then
       for vname in events_normalized events_normalised; do
         vurl="${NT_EVENTS_JSON:-https://$HOST/$vname.json}"
-        valid=$(curl -sf "$vurl" | jq -r "${!jq_override:-$default_jq}" 2>/dev/null)
+        valid=$(curl -sf --max-time 60 "$vurl" | jq -r "${!jq_override:-$default_jq}" 2>/dev/null)
         [ -n "$valid" ] && break
       done
       [ -n "$valid" ] || { echo "Could not load the valid $param keys; nothing rendered. (NT_NO_CHECK=1 skips the check.)" >&2; exit 1; }
@@ -223,12 +262,13 @@ fill_one() {
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 
   local all cached key name json_url
+  note "Fetching the events JSON..."
   for name in events_normalized events_normalised; do
     json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
     # The worker builds its KV keys with URLSearchParams, which encodes a space as
     # "+", leaves "*" alone and encodes "~" as %7E (jq's @uri does the opposite).
     # Convert so these keys match the stored KV key names exactly.
-    all=$(curl -sf "$json_url" | jq -r "$jq_keys $uri_filter" 2>/dev/null \
+    all=$(curl -sf --max-time 60 "$json_url" | jq -r "$jq_keys $uri_filter" 2>/dev/null \
       | sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/%2A/*/g' | sort -u)
     [ -n "$all" ] && break
   done
@@ -244,12 +284,30 @@ fill_one() {
         "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name | ltrimstr($p)' \
     | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
 
+  local missing up_dated up_ids rest_ids nup=0 upnote=""
+  missing=$(comm -23 <(echo "$all") <(echo "$cached"))
+  if [ -n "$missing" ] && [ "$prefer_upcoming" = "1" ]; then
+    up_dated=$(printf '%s\n' "$missing" | upcoming_dated)
+    nup=$(printf '%s' "$up_dated" | grep -c .)
+    up_ids=$(printf '%s' "$up_dated" | cut -f2-)
+    if [ "$nup" -gt 0 ]; then
+      rest_ids=$(comm -23 <(printf '%s\n' "$missing" | sort) <(printf '%s\n' "$up_ids" | sort))
+    else
+      rest_ids="$missing"
+    fi
+    upnote=" ($nup upcoming)"
+  fi
+
   if [ "${LIST_ONLY:-0}" = "1" ]; then
-    local missing
-    missing=$(comm -23 <(echo "$all") <(echo "$cached"))
     if [ -n "$missing" ]; then
-      echo "$missing"
-      echo "$(echo "$missing" | wc -l | tr -d ' ') of $(echo "$all" | wc -l | tr -d ' ') $what pages have no snapshot." >&2
+      if [ "$prefer_upcoming" = "1" ]; then
+        # Upcoming first, soonest first, then the rest.
+        { [ "$nup" -gt 0 ] && printf '%s\n' "$up_dated" | sort | cut -f2-
+          [ -n "$rest_ids" ] && printf '%s\n' "$rest_ids"; }
+      else
+        echo "$missing"
+      fi
+      echo "$(echo "$missing" | wc -l | tr -d ' ') of $(echo "$all" | wc -l | tr -d ' ') $what pages have no snapshot$upnote." >&2
     else
       echo "All $what pages already have snapshots." >&2
     fi
@@ -258,12 +316,18 @@ fill_one() {
 
   # One KV lookup above; now render up to COUNT random uncached pages from it,
   # spaced DELAY seconds apart (free-plan Browser Run allows ~1 render per 10s).
-  local missing keys total result i=0
-  missing=$(comm -23 <(echo "$all") <(echo "$cached"))
+  # For events, random upcoming ones first, then random others.
+  local keys total result i=0
   [ -n "$missing" ] || { echo "All $what pages already have snapshots."; exit 0; }
   total=$(echo "$missing" | wc -l | tr -d ' ')
-  keys=$(echo "$missing" | shuf -n "$COUNT")
-  echo "$total $what pages have no snapshot; rendering up to $COUNT (one every ${DELAY}s)."
+  if [ "$prefer_upcoming" = "1" ]; then
+    keys=$({ [ "$nup" -gt 0 ] && printf '%s\n' "$up_ids" | shuf
+             [ -n "$rest_ids" ] && printf '%s\n' "$rest_ids" | shuf; } | head -n "$COUNT")
+    echo "$total $what pages have no snapshot$upnote; rendering up to $COUNT, upcoming first (one every ${DELAY}s)."
+  else
+    keys=$(echo "$missing" | shuf -n "$COUNT")
+    echo "$total $what pages have no snapshot; rendering up to $COUNT (one every ${DELAY}s)."
+  fi
 
   while IFS= read -r key; do
     [ $i -gt 0 ] && sleep "$DELAY"
@@ -319,7 +383,7 @@ status_all() {
   STATUS_JSON=""
   for name in events_normalized events_normalised; do
     json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
-    STATUS_JSON=$(curl -sf "$json_url") && [ -n "$STATUS_JSON" ] && break
+    STATUS_JSON=$(curl -sf --max-time 60 "$json_url") && [ -n "$STATUS_JSON" ] && break
     STATUS_JSON=""
   done
   [ -n "$STATUS_JSON" ] || { echo "Could not fetch the events JSON (set NT_EVENTS_JSON?)" >&2; exit 1; }
@@ -368,7 +432,9 @@ read_epochs() {
   EPOCHS_READ=1
   command -v jq >/dev/null || return 0
   local out
-  out=$(npx wrangler kv key get meta:epochs --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null \
+  note "Reading the purge epochs..."
+  out=$(run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key get meta:epochs \
+          --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null \
         | awk '/^\{/ { s = 1 } s { print } s && /\}$/ { exit }')
   if [ -n "$out" ] && printf '%s' "$out" | jq -e 'type == "object"' >/dev/null 2>&1; then
     EPOCH_SOFT=$(printf '%s' "$out" | jq -r '(.soft // 0) | floor')
@@ -500,6 +566,133 @@ list_stale() {
   exit 0
 }
 
+# --inspect <type> <key>: why does the gatekeeper see (or not see) this page? Checks, in order:
+# 1. is the key in the events JSON (what --list-*, --status and the render options use),
+# 2. is it in the worker's meta:keys index (what lets crawlers trigger a render),
+# 3. which snapshots exist in KV for it, including look-alike keys (other host, path or letter
+#    case) that the gatekeeper would never read, because it looks up one exact key.
+inspect_key() {
+  local page="$1" param="$2" index_name="$3" default_jq="$4" jq_override="$5" key="$6" cmd="$7"
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local jq_keys="${!jq_override:-$default_jq}" raw="$key" enc expected name vurl valid="" near idx
+  local json rows exact_state others needle now_ms
+  [[ "$key" == *%* ]] && raw=$(printf '%b' "${key//%/\\x}")
+  # The KV key the gatekeeper builds (URLSearchParams encoding: space = +, ~ = %7E).
+  enc=$(jq -rn --arg k "$raw" '$k | @uri' | sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/%2A/*/g')
+  expected="render:https://$HOST/$page.html?$param=$enc"
+  echo "Page:   https://$HOST/$page.html?$param=$enc"
+  echo "KV key: $expected"
+  echo
+
+  # 1. events JSON
+  for name in events_normalized events_normalised; do
+    vurl="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
+    valid=$(curl -sf --max-time 60 "$vurl" | jq -r "$jq_keys" 2>/dev/null)
+    [ -n "$valid" ] && break
+  done
+  if [ -z "$valid" ]; then
+    echo "1. events JSON: could not load the $param keys (set NT_EVENTS_JSON?)"
+  elif printf '%s\n' "$valid" | grep -Fxq -- "$raw"; then
+    echo "1. events JSON: yes, '$raw' is a known $param key"
+  else
+    near=$(printf '%s\n' "$valid" | grep -Fix -- "$raw" | head -n 1)
+    if [ -n "$near" ]; then
+      echo "1. events JSON: NO exact match, but '$near' differs only by letter case"
+    else
+      echo "1. events JSON: NO, '$raw' is not one of the $param keys, so $0 --status/--list-*/$cmd never look at it"
+    fi
+  fi
+
+  # 2. the worker's valid-key index
+  if [ -n "$index_name" ]; then
+    note "Reading the worker's key index..."
+    idx=$(run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key get meta:keys \
+            --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null \
+          | awk '/^\{/ { s = 1 } s { print }')
+    if ! printf '%s' "$idx" | jq -e 'type == "object"' >/dev/null 2>&1; then
+      echo "2. worker key index (meta:keys): not found or unreadable, so the worker ALLOWS crawler renders of any key (run $0 --sync-keys)"
+    elif ! printf '%s' "$idx" | jq -e --arg n "$index_name" 'has($n)' >/dev/null 2>&1; then
+      echo "2. worker key index: has no '$index_name' list, so crawler renders of any key are allowed (run $0 --sync-keys)"
+    elif printf '%s' "$idx" | jq -e --arg n "$index_name" --arg k "$raw" '.[$n] | any(. == $k)' >/dev/null 2>&1; then
+      echo "2. worker key index: yes, crawlers may trigger a render of it"
+    else
+      echo "2. worker key index: NO, crawler requests get miss-origin-unknown-key and are never rendered (run $0 --sync-keys if it is new)"
+    fi
+  else
+    echo "2. worker key index: the worker has no key check for this page type, so crawler renders are always allowed"
+  fi
+
+  # 3. snapshots in KV (any host, path or letter case)
+  read_epochs
+  now_ms=$(( $(date +%s) * 1000 ))
+  json=$(kv_list_json "render:") || exit 1
+  needle=$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')
+  rows=$(printf '%s\n' "$json" | jq -r --arg n "$needle" --arg exp "$expected" --argjson now "$now_ms" \
+      --argjson ttl "$TTL_MS" --argjson fresh "$(( FRESH_HOURS * 3600000 ))" \
+      --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" "$JQ_TS_DEF"'
+    def r1: ((. * 10 | round) / 10);
+    .[]
+    | select((.name | ascii_downcase) | contains($n))
+    | entry_ts as $ts
+    | (if $ts == null then "unknown"
+       elif $ts < $hard then "invalid"
+       elif ($ts < $soft or ($now - $ts) > $fresh) then "stale"
+       else "fresh" end) as $state
+    | [ (if .name == $exp then "EXACT" else "other" end),
+        $state,
+        ( (.name | ltrimstr("render:"))
+          + "  |  " + (if $ts == null then "age unknown"
+                       else "written " + ((($now - $ts) / 3600000) | r1 | tostring) + "h ago" + (if entry_est then " (est. from expiry)" else "" end) end)
+          + "  |  " + ((.metadata.bytes // "?") | tostring) + " bytes"
+          + "  |  " + (if .expiration == null then "no expiry"
+                       else "expires in " + ((((.expiration * 1000) - $now) / 86400000) | r1 | tostring) + "d" end)
+          + "  |  " + $state ) ]
+    | @tsv')
+  echo "3. snapshots in KV whose key contains '$raw' (any host, path or letter case):"
+  if [ -z "$rows" ]; then
+    echo "   none"
+  else
+    printf '%s\n' "$rows" | awk -F'\t' '{ printf "   %s%s\n", ($1 == "EXACT" ? "[exact key]  " : "[look-alike] "), $3 }'
+  fi
+  exact_state=$(printf '%s\n' "$rows" | awk -F'\t' '$1 == "EXACT" { print $2; exit }')
+  others=$(printf '%s\n' "$rows" | awk -F'\t' '$1 == "other"' | grep -c .)
+  echo
+  case "$exact_state" in
+    fresh)   echo "Verdict: a fresh snapshot exists under the exact key, so a bot request is a hit." ;;
+    stale)   echo "Verdict: the exact key is present but stale: bots are served it, and a render-tier bot may trigger a refresh." ;;
+    invalid) echo "Verdict: the exact key is present but older than the last hard purge, so the gatekeeper treats it as MISSING." ;;
+    unknown) echo "Verdict: the exact key is present but its age is unknown." ;;
+    *)
+      if [ "$others" -gt 0 ]; then
+        echo "Verdict: nothing under the exact key. The gatekeeper reads only that key, so a request that arrives with a"
+        echo "different host, path or letter case misses even though a look-alike snapshot exists."
+      else
+        echo "Verdict: no snapshot under any key, so a bot request is a miss. Render it with: $0 $cmd '$raw'"
+      fi ;;
+  esac
+  echo "(KV changes can take up to about a minute to show at other locations, and a recent 'not found' can be cached briefly.)"
+  exit 0
+}
+
+inspect_cmd() {
+  local type="${1:-}" key="${2:-}"
+  if [ -z "$type" ] || [ -z "$key" ]; then
+    echo "Usage: $0 --inspect <performer|venue|storyclub|festival|promoter|event|booksmerch> <key>" >&2
+    exit 1
+  fi
+  case "$type" in
+    performer|performers) inspect_key performers performer performers "$JQ_PERFORMER" NT_KEYS_JQ_PERFORMER "$key" --performer ;;
+    venue|venues)         inspect_key venues venue venues "$JQ_VENUE" NT_KEYS_JQ_VENUE "$key" --venue ;;
+    storyclub|storyclubs) inspect_key storyclub club clubs "$JQ_STORYCLUB" NT_KEYS_JQ_STORYCLUB "$key" --storyclub ;;
+    festival|festivals)   inspect_key festival festival festivals "$JQ_FESTIVAL" NT_KEYS_JQ_FESTIVAL "$key" --festival ;;
+    promoter|promoters)   inspect_key promoters promoter promoters "$JQ_PROMOTER" NT_KEYS_JQ_PROMOTER "$key" --promoter ;;
+    event|events)         inspect_key event event "" "$JQ_EVENT" NT_KEYS_JQ_EVENT "$key" --event ;;
+    booksmerch)           inspect_key books_merch performer "" "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH "$key" --booksmerch ;;
+    *) echo "Unknown type '$type' (performer venue storyclub festival promoter event booksmerch)" >&2; exit 1 ;;
+  esac
+}
+
 # Optional count after --performer / --venue / --storyclub: how many pages to
 # render in one run (default 1). Seconds between renders: NT_DELAY (default 12).
 COUNT=1
@@ -524,7 +717,7 @@ dispatch() {
     promoter)   fill_one promoters promoter "$JQ_PROMOTER" NT_KEYS_JQ_PROMOTER ;;
     booksmerch) fill_one books_merch performer "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH ;;
     repertoire) fill_one tour_guide performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A" ;;
-    event)      fill_one event event "$JQ_EVENT" NT_KEYS_JQ_EVENT ;;
+    event)      fill_one event event "$JQ_EVENT" NT_KEYS_JQ_EVENT 0 "" 1 ;;
   esac
 }
 
@@ -539,6 +732,7 @@ case "$1" in
   --list-events|--list-event)          LIST_ONLY=1; dispatch event ;;
   --status)                            status_all ;;
   --staleness)                         staleness_report ;;
+  --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
