@@ -1,13 +1,16 @@
 #!/bin/bash
 # updatecache - re-render the prerender snapshot for one or more pages
 # Usage: ./updatecache --sync-keys                 rebuild the valid-key index (after data changes)
+#        ./updatecache --status                    cached / uncached / total counts for every page type
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
 #        ./updatecache --list-festivals            same, for festival.html?festival=
 #        ./updatecache --list-promoters            same, for promoters.html?promoter=
 #        ./updatecache --list-booksmerch           same, for books_merch.html?performer=
-#                                                  (render with --festival / --promoter / --booksmerch [N])
+#        ./updatecache --list-repertoire           same, for tour_guide.html?performer=<p>&tour=rep:<show>
+#                                                  (render with --festival / --promoter / --booksmerch / --repertoire [N];
+#                                                  for repertoire a key is the show id, e.g. --repertoire debs-newbold-dauntless)
 #        ./updatecache --performer [N]             render N (default 1) uncached performers
 #        ./updatecache --venue [N]                 render N (default 1) uncached venues
 #        ./updatecache --storyclub [N]             render N (default 1) uncached story clubs
@@ -15,7 +18,10 @@
 #                                                  apart (default 12); stops if the daily quota runs out
 #        ./updatecache --performer tis-tales       render just that key (works for every type above;
 #                                                  several keys allowed; always re-renders, no KV
-#                                                  lookup; spaces ok: --performer 'Jane Doe')
+#                                                  lookup; spaces ok: --performer 'Jane Doe').
+#                                                  Keys not in the events JSON are skipped, not
+#                                                  rendered (NT_NO_CHECK=1 disables the check).
+#                                                  Plural forms work too: --festivals 5
 #        ./updatecache mypage.html                 refresh NOW (default)
 #        ./updatecache 'performers.html?performer=abc'
 #        ./updatecache https://newtroubadours.org/venues?venue=xyz
@@ -79,7 +85,7 @@ if [ "$1" = "--sync-keys" ]; then
       venues: (.venues | keys),
       promoters: (.promoters | keys),
       festivals: (.festivals | keys),
-      tours: (.tours | keys),
+      tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | map("rep:" + .))),
       clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
               | map(select(. != "" and . != "other")) | unique)
     }' 2>/dev/null) && [ -n "$index" ] && break
@@ -90,6 +96,40 @@ if [ "$1" = "--sync-keys" ]; then
     --data "$index" "https://$HOST/"
   exit 0
 fi
+
+# List the KV keys under a prefix and print them as a JSON array. wrangler can fail
+# on its first call (expired login token being refreshed, npx install notice, a
+# transient network error) or print noise before the JSON, so: capture stderr,
+# start parsing at the first line that begins the JSON array, require a valid array,
+# and retry. If every attempt fails, stop and show wrangler's own error instead of
+# carrying on with an empty "cached" set (which would make every page look
+# uncached and waste renders on pages that already have snapshots).
+#   kv_list_json <prefix>
+kv_list_json() {
+  local prefix="$1" attempt out errfile outfile
+  errfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-kv-err.XXXXXX")
+  outfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-kv-out.XXXXXX")
+  for attempt in 1 2 3; do
+    npx wrangler kv key list --namespace-id "$NT_KV_NAMESPACE_ID" --remote \
+      --prefix "$prefix" >"$outfile" 2>"$errfile"
+    # Keep only the JSON array: from the first line starting with "[" to its end
+    # (a one-line "[...]", or a pretty-printed array closed by a line starting "]").
+    # Text before or after it (banners, notices) is dropped.
+    out=$(awk '/^\[/ { s = 1 } s { print } s && (/^\]/ || /^\[.*\]$/) { exit }' "$outfile")
+    if [ -n "$out" ] && printf '%s' "$out" | jq -e 'type == "array"' >/dev/null 2>&1; then
+      rm -f "$errfile" "$outfile"
+      printf '%s\n' "$out"
+      return 0
+    fi
+    [ $attempt -lt 3 ] && { echo "KV lookup failed (attempt $attempt of 3); retrying..." >&2; sleep 3; }
+  done
+  echo "KV lookup failed after 3 attempts; stopping so nothing is rendered by mistake." >&2
+  if [ -s "$errfile" ]; then echo "--- wrangler stderr (last 15 lines):" >&2; tail -n 15 "$errfile" >&2; fi
+  if [ -s "$outfile" ]; then echo "--- wrangler stdout (first 10 lines):" >&2; head -n 10 "$outfile" >&2; fi
+  rm -f "$errfile" "$outfile"
+  echo "Try: npx wrangler whoami   (or: npx wrangler login), then run this again." >&2
+  return 1
+}
 
 # Force-render one URL and print the status headers. Returns 1 if the daily
 # browser quota is exhausted (so callers can stop).
@@ -112,20 +152,57 @@ render_one() {
 #   fill_one <page> <param> <default-jq> <jq-env-override>
 fill_one() {
   local page="$1" param="$2" default_jq="$3" jq_override="$4"
+  # Optional: rawmode=1 means the jq filter outputs complete, already-encoded
+  # query tails ("performer-id&tour=rep%3Ashow-id") instead of single keys, and
+  # tag is a fixed string that picks this type's snapshots out of the shared page
+  # (used for repertoire pages, which live on tour_guide.html next to real tours).
+  local rawmode="${5:-0}" tag="${6:-}"
+  local what="$param"; [ "$rawmode" = "1" ] && what="repertoire"
 
   # Explicit keys given (e.g. ./updatecache --performer tis-tales): render just
-  # those. No KV lookup, and it re-renders even if a snapshot already exists.
+  # those, after checking each is a real key in the events JSON (unknown keys
+  # are skipped and no render is spent). Re-renders even if a snapshot exists.
   if [ "${LIST_ONLY:-0}" != "1" ] && [ ${#KEYS_GIVEN[@]} -gt 0 ]; then
     command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-    local k enc n=0
+    local k raw enc valid="" n=0 skipped=0 vname vurl ok hint
+    if [ "${NT_NO_CHECK:-0}" != "1" ] || [ "$rawmode" = "1" ]; then
+      for vname in events_normalized events_normalised; do
+        vurl="${NT_EVENTS_JSON:-https://$HOST/$vname.json}"
+        valid=$(curl -sf "$vurl" | jq -r "${!jq_override:-$default_jq}" 2>/dev/null)
+        [ -n "$valid" ] && break
+      done
+      [ -n "$valid" ] || { echo "Could not load the valid $param keys; nothing rendered. (NT_NO_CHECK=1 skips the check.)" >&2; exit 1; }
+    fi
     for k in "${KEYS_GIVEN[@]}"; do
+      # Compare the decoded key: a key containing % is treated as URL-encoded.
+      if [[ "$k" == *%* ]]; then raw=$(printf '%b' "${k//%/\\x}"); else raw="$k"; fi
+      ok=1; enc=""
+      if [ "$rawmode" = "1" ]; then
+        # Composite keys: the key given is the show id (a leading "rep:" is
+        # fine); find its full "performer&tour=..." query in the valid list.
+        raw="${raw#rep:}"
+        enc=$(printf '%s\n' "$valid" | awk -v s="${tag}$(jq -rn --arg k "$raw" '$k|@uri')" \
+          'length($0) >= length(s) && substr($0, length($0) - length(s) + 1) == s { print; exit }')
+        [ -n "$enc" ] || ok=0
+      elif [ "${NT_NO_CHECK:-0}" != "1" ] && ! printf '%s\n' "$valid" | grep -Fxq -- "$raw"; then
+        ok=0
+      fi
+      if [ $ok -eq 0 ]; then
+        hint=" (NT_NO_CHECK=1 to render anyway)"; [ "$rawmode" = "1" ] && hint=""
+        echo "Skipping '$k': not a known key for $page.html$hint." >&2
+        skipped=$((skipped + 1))
+        continue
+      fi
       [ $n -gt 0 ] && sleep "$DELAY"
       n=$((n + 1))
       # Raw keys are URL-encoded here ("Jane Doe" -> Jane%20Doe); a key that
       # already contains a % is assumed to be encoded and used as given.
-      if [[ "$k" == *%* ]]; then enc="$k"; else enc=$(jq -rn --arg k "$k" '$k|@uri'); fi
+      if [ "$rawmode" != "1" ]; then
+        if [[ "$k" == *%* ]]; then enc="$k"; else enc=$(jq -rn --arg k "$k" '$k|@uri'); fi
+      fi
       render_one "https://$HOST/$page.html?$param=$enc" "$n" || break
     done
+    [ $skipped -gt 0 ] && echo "$skipped key(s) skipped as invalid." >&2
     exit 0
   fi
 
@@ -138,6 +215,7 @@ fill_one() {
   # jq filter that outputs one key per line. ADJUST to your JSON shape.
   local jq_keys="${!jq_override:-$default_jq}"
   local prefix="render:https://$HOST/$page.html?$param="
+  local uri_filter="| @uri"; [ "$rawmode" = "1" ] && uri_filter=""
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
 
   local all cached key name json_url
@@ -146,23 +224,26 @@ fill_one() {
     # The worker builds its KV keys with URLSearchParams, which encodes a space as
     # "+", leaves "*" alone and encodes "~" as %7E (jq's @uri does the opposite).
     # Convert so these keys match the stored KV key names exactly.
-    all=$(curl -sf "$json_url" | jq -r "$jq_keys | @uri" 2>/dev/null \
+    all=$(curl -sf "$json_url" | jq -r "$jq_keys $uri_filter" 2>/dev/null \
       | sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/%2A/*/g' | sort -u)
     [ -n "$all" ] && break
   done
   [ -n "$all" ] || { echo "No $param keys found; set $jq_override to the right jq filter" >&2; exit 1; }
 
-  cached=$(npx wrangler kv key list --namespace-id "$NT_KV_NAMESPACE_ID" --remote --prefix "$prefix" \
-    | jq -r --arg p "$prefix" '.[].name | ltrimstr($p)' | sort -u)
+  local kvjson
+  kvjson=$(kv_list_json "$prefix") || exit 1
+  cached=$(printf '%s\n' "$kvjson" \
+    | jq -r --arg p "$prefix" '.[].name | ltrimstr($p)' \
+    | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
 
   if [ "${LIST_ONLY:-0}" = "1" ]; then
     local missing
     missing=$(comm -23 <(echo "$all") <(echo "$cached"))
     if [ -n "$missing" ]; then
       echo "$missing"
-      echo "$(echo "$missing" | wc -l | tr -d ' ') of $(echo "$all" | wc -l | tr -d ' ') $param pages have no snapshot." >&2
+      echo "$(echo "$missing" | wc -l | tr -d ' ') of $(echo "$all" | wc -l | tr -d ' ') $what pages have no snapshot." >&2
     else
-      echo "All $param pages already have snapshots." >&2
+      echo "All $what pages already have snapshots." >&2
     fi
     exit 0
   fi
@@ -171,10 +252,10 @@ fill_one() {
   # spaced DELAY seconds apart (free-plan Browser Run allows ~1 render per 10s).
   local missing keys total result i=0
   missing=$(comm -23 <(echo "$all") <(echo "$cached"))
-  [ -n "$missing" ] || { echo "All $param pages already have snapshots."; exit 0; }
+  [ -n "$missing" ] || { echo "All $what pages already have snapshots."; exit 0; }
   total=$(echo "$missing" | wc -l | tr -d ' ')
   keys=$(echo "$missing" | shuf -n "$COUNT")
-  echo "$total $param pages have no snapshot; rendering up to $COUNT (one every ${DELAY}s)."
+  echo "$total $what pages have no snapshot; rendering up to $COUNT (one every ${DELAY}s)."
 
   while IFS= read -r key; do
     [ $i -gt 0 ] && sleep "$DELAY"
@@ -182,6 +263,66 @@ fill_one() {
     key="${key//+/%20}"   # back to %20 for the request URL (a literal + is already %2B)
     render_one "https://$HOST/$page.html?$param=$key" "$i" || break
   done <<< "$keys"
+  exit 0
+}
+
+# jq filters that list each page type's keys in events_normalized.json
+# (each can be overridden with NT_KEYS_JQ_<TYPE>, e.g. NT_KEYS_JQ_BOOKSMERCH).
+JQ_PERFORMER='.performers | keys[]'
+JQ_VENUE='.venues | keys[]'
+JQ_STORYCLUB='[.clubs[].club] | unique | .[]'
+JQ_FESTIVAL='.festivals | keys[]'
+JQ_PROMOTER='.promoters | keys[]'
+JQ_BOOKSMERCH='.performers | to_entries[] | select(((.value.books // []) | length) > 0 or ((.value.merch // []) | length) > 0) | .key'
+# Repertoire pages are tour_guide.html?performer=<performer>&tour=rep:<show>. Each key in
+# .repertoire_shows is a show id; its performer is the longest performer id that is a
+# prefix of it (e.g. debs-newbold-dauntless -> debs-newbold). Shows with no matching
+# performer are left out. The output is the complete, already-encoded query tail.
+JQ_REPERTOIRE='(.performers | keys) as $p | (.repertoire_shows // {} | keys[]) as $k | ([$p[] | . as $x | select($k | startswith($x + "-"))] | sort_by(length) | last) as $perf | select($perf != null) | "\($perf | @uri)&tour=\("rep:" + $k | @uri)"'
+
+# --status: cached / uncached counts for every page type. One download of the
+# events JSON and ONE KV listing; no renders, no browser time.
+#   status_row <label> <page> <param> <default-jq> <jq-env-override>
+status_row() {
+  local label="$1" page="$2" param="$3" default_jq="$4" jq_override="$5"
+  local rawmode="${6:-0}" tag="${7:-}" uri_filter="| @uri"; [ "$rawmode" = "1" ] && uri_filter=""
+  local jq_keys="${!jq_override:-$default_jq}"
+  local prefix="render:https://$HOST/$page.html?$param="
+  local all cached nall ncached nextra
+  all=$(echo "$STATUS_JSON" | jq -r "$jq_keys $uri_filter" 2>/dev/null \
+    | sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/%2A/*/g' | sort -u)
+  cached=$(echo "$STATUS_NAMES" \
+    | awk -v p="$prefix" 'index($0, p) == 1 { print substr($0, length(p) + 1) }' \
+    | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
+  nall=$(echo "$all" | grep -c .)
+  ncached=$(comm -12 <(echo "$all") <(echo "$cached") | grep -c .)
+  nextra=$(comm -13 <(echo "$all") <(echo "$cached") | grep -c .)
+  printf '%-12s %7s %9s %7s %7s\n' "$label" "$ncached" "$((nall - ncached))" "$nall" "$nextra"
+}
+
+status_all() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local name json_url
+  STATUS_JSON=""
+  for name in events_normalized events_normalised; do
+    json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
+    STATUS_JSON=$(curl -sf "$json_url") && [ -n "$STATUS_JSON" ] && break
+    STATUS_JSON=""
+  done
+  [ -n "$STATUS_JSON" ] || { echo "Could not fetch the events JSON (set NT_EVENTS_JSON?)" >&2; exit 1; }
+  local statusjson
+  statusjson=$(kv_list_json "render:https://$HOST/") || exit 1
+  STATUS_NAMES=$(printf '%s\n' "$statusjson" | jq -r '.[].name')
+  printf '%-12s %7s %9s %7s %7s\n' type cached uncached total orphans
+  status_row performers  performers  performer "$JQ_PERFORMER"   NT_KEYS_JQ_PERFORMER
+  status_row venues      venues      venue     "$JQ_VENUE"       NT_KEYS_JQ_VENUE
+  status_row storyclubs  storyclub   club      "$JQ_STORYCLUB"   NT_KEYS_JQ_STORYCLUB
+  status_row festivals   festival    festival  "$JQ_FESTIVAL"    NT_KEYS_JQ_FESTIVAL
+  status_row promoters   promoters   promoter  "$JQ_PROMOTER"    NT_KEYS_JQ_PROMOTER
+  status_row booksmerch  books_merch performer "$JQ_BOOKSMERCH"  NT_KEYS_JQ_BOOKSMERCH
+  status_row repertoire  tour_guide  performer "$JQ_REPERTOIRE"  NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A"
+  echo "(orphans = snapshots whose key is no longer in the JSON; 'cached' counts any stored snapshot, stale or not)" >&2
   exit 0
 }
 
@@ -202,30 +343,34 @@ DELAY="${NT_DELAY:-12}"
 # NT_KEYS_JQ_BOOKSMERCH if your field names differ.
 dispatch() {
   case "$1" in
-    performer)  fill_one performers performer '.performers | keys[]' NT_KEYS_JQ_PERFORMER ;;
-    venue)      fill_one venues venue '.venues | keys[]' NT_KEYS_JQ_VENUE ;;
-    storyclub)  fill_one storyclub club '[.clubs[].club] | unique | .[]' NT_KEYS_JQ_STORYCLUB ;;
-    festival)   fill_one festival festival '.festivals | keys[]' NT_KEYS_JQ_FESTIVAL ;;
-    promoter)   fill_one promoters promoter '.promoters | keys[]' NT_KEYS_JQ_PROMOTER ;;
-    booksmerch) fill_one books_merch performer \
-      '.performers | to_entries[] | select(((.value.books // []) | length) > 0 or ((.value.merch // []) | length) > 0) | .key' \
-      NT_KEYS_JQ_BOOKSMERCH ;;
+    performer)  fill_one performers performer "$JQ_PERFORMER" NT_KEYS_JQ_PERFORMER ;;
+    venue)      fill_one venues venue "$JQ_VENUE" NT_KEYS_JQ_VENUE ;;
+    storyclub)  fill_one storyclub club "$JQ_STORYCLUB" NT_KEYS_JQ_STORYCLUB ;;
+    festival)   fill_one festival festival "$JQ_FESTIVAL" NT_KEYS_JQ_FESTIVAL ;;
+    promoter)   fill_one promoters promoter "$JQ_PROMOTER" NT_KEYS_JQ_PROMOTER ;;
+    booksmerch) fill_one books_merch performer "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH ;;
+    repertoire) fill_one tour_guide performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A" ;;
   esac
 }
 
 case "$1" in
-  --list-performers) LIST_ONLY=1; dispatch performer ;;
-  --list-venues)     LIST_ONLY=1; dispatch venue ;;
-  --list-storyclubs) LIST_ONLY=1; dispatch storyclub ;;
-  --list-festivals)  LIST_ONLY=1; dispatch festival ;;
-  --list-promoters)  LIST_ONLY=1; dispatch promoter ;;
-  --list-booksmerch) LIST_ONLY=1; dispatch booksmerch ;;
-  --performer)  dispatch performer ;;
-  --venue)      dispatch venue ;;
-  --storyclub)  dispatch storyclub ;;
-  --festival)   dispatch festival ;;
-  --promoter)   dispatch promoter ;;
-  --booksmerch) dispatch booksmerch ;;
+  --list-performers|--list-performer)  LIST_ONLY=1; dispatch performer ;;
+  --list-venues|--list-venue)          LIST_ONLY=1; dispatch venue ;;
+  --list-storyclubs|--list-storyclub)  LIST_ONLY=1; dispatch storyclub ;;
+  --list-festivals|--list-festival)    LIST_ONLY=1; dispatch festival ;;
+  --list-promoters|--list-promoter)    LIST_ONLY=1; dispatch promoter ;;
+  --list-booksmerch)                   LIST_ONLY=1; dispatch booksmerch ;;
+  --list-repertoire|--list-repertoires) LIST_ONLY=1; dispatch repertoire ;;
+  --status)                            status_all ;;
+  --performer|--performers)            dispatch performer ;;
+  --venue|--venues)                    dispatch venue ;;
+  --storyclub|--storyclubs)            dispatch storyclub ;;
+  --festival|--festivals)              dispatch festival ;;
+  --promoter|--promoters)              dispatch promoter ;;
+  --booksmerch)                        dispatch booksmerch ;;
+  --repertoire|--repertoires)          dispatch repertoire ;;
+  --stale|--purge|--purge-only)        ;;   # handled below
+  --*) echo "Unknown option: $1 (see the usage notes at the top of this script)" >&2; exit 1 ;;
 esac
 
 STALE_ONLY=0
@@ -239,7 +384,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
   exit 1
 fi
 
