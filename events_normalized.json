@@ -4,12 +4,27 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "butserancient": {
+      "promoter_id": "butserancient",
+      "venue_id": "butser-ancient-farm-hampshire",
+      "isVenue": true,
+      "name": "Butser Ancient Farm",
+      "ticketing_url": ""
+    },
     "storymuseum": {
       "promoter_id": "storymuseum",
       "venue_id": "the-story-museum-oxford",
       "isVenue": true,
       "name": "The Story Museum",
       "ticketing_url": ""
+    },
+    "artemisStorytelling": {
+      "promoter_id": "artemisStorytelling",
+      "isVenue": true,
+      "name": "Artemis Storytelling",
+      "ticketing_url": "",
+      "description": "Artemis Storytelling is organised and hosted by storyteller & Bard of Exeter 2026 Katy Cawkwell",
+      "url": "https: //artemis-storytelling.co.uk/"
     },
     "adversecamber": {
       "promoter_id": "adversecamber",
@@ -4442,7 +4457,7 @@
       ],
       "isMusic": false,
       "isSpecial": true,
-      "club": "artsreachdorset",
+      "promoter_id": "artsreach",
       "tour_dates": [
         {
           "date": "14/11/2025",
@@ -7386,7 +7401,7 @@
       "showname": "Tales of Winter Magic - evening storytelling and Mummers' play",
       "date": "05/12/2025",
       "time": "7-9pm",
-      "club": "butserancient",
+      "promoter_id": "butserancient",
       "price": "£19.50",
       "description": "",
       "event_flyer": "",
@@ -7944,10 +7959,10 @@
       "ticket_url": "https://wegottickets.com/af/671/event/662417",
       "isSpecial": true,
       "venue_id": "the-stables-at-the-bull-hotel-stony",
-      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
+      "performer_id": "lynette-hill-stephen-hobbs-rebecca-lachance-pete-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
       "age_rating": "16+",
       "min_age": 16,
-      "eventId": "20260201-lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley-the-stables-at-the-bull-hotel-stony"
+      "eventId": "20260201-lynette-hill-stephen-hobbs-rebecca-lachance-pete-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley-the-stables-at-the-bull-hotel-stony"
     },
     {
       "name": "Tales from Pixieland [Henry Everett]",
@@ -8125,7 +8140,7 @@
       "showname": "Queen of Between",
       "date": "29/01/2026",
       "time": "7pm",
-      "club": "artemisStorytelling",
+      "promoer_id": "artemisStorytelling",
       "price": "£15.40 / £13.20",
       "description": "What happens...\n\n\n\nWhen the goddess of childbirth crosses her legs?\n\n\n\nWhen you're bound above chaos with golden threads?\n\n\n\nWhen the weight of your grief means you can't walk on?\n\n\n\nWhen you're neither living or dead so you don't fit in?\n\n\n\nWhen you're... stuck?\n\n\n\nThat's when you need Hecate: Queen of Between, many-shaped and multi-tasking goddess of birth, death, witches, weasels, hellhounds, crossroads, thresholds and ghosts.\n\n\n\nBarking at her heels, Lucy Lill and Sarah Liisa Wilkinson take up their torches, jangle their keys and bring you stories of letting go, squeezing through and moving on.\n\n\n\nFor ages 16+\n\n\n\n75 mins, short interval, informal Q&A (optional!)",
       "promoter_link": "https://www.artemis-storytelling.co.uk/performances",
@@ -8358,7 +8373,7 @@
       "promoter_link": "http://nellphoenix.co.uk/",
       "date": "27/03/2026",
       "time": "7-9.45pm",
-      "club": "artemisStorytelling",
+      "promoter_id": "artemisStorytelling",
       "price": "£14",
       "description": "At the northerly point of north, it gets very, very cold. In this snow-blinding place the weirdest, wildest stories are told...\n\n\n\nNell Phoenix revels in the earthy humour and passions of Arctic stories, peopled with unconventional families, the desperate and lonely-hearted, and elderly relatives whose attempts to assist are misguided, to say the least.\n\n\n\nThis is a place where what happens next is probably not what you'd expect — and some images will stay with you forever...\n\n\n\nAge Guidance 18+",
       "event_flyer": "",
@@ -18884,7 +18899,9 @@
       "id": "katy-cawkwell",
       "name": "Katy Cawkwell",
       "url": "https://katycawkwell.co.uk/",
-      "bio": "Katy Cawkwell has been working as a professional storyteller since 1996 in venues across the UK and beyond.\n\n\n\nShe creates contemporary, dramatic performances for adult audiences, based on traditional narratives. Her shows have appeared in a wide range of venues: major theatres (inc. Barbican Pit Theatre, Soho Theatre, Derby Guildhall), storytelling clubs and nine international storytelling festivals (inc. a 2 week tour of India in 2016). Katy was one of four storytellers shortlisted for the Arts Foundation Storytelling Fellowship and has featured on Radio 3 (The Verb) and Radio 4 (The Storytellers)."
+      "bio": "Katy Cawkwell has been working as a professional storyteller since 1996 in venues across the UK and beyond.\n\n\n\nShe creates contemporary, dramatic performances for adult audiences, based on traditional narratives. Her shows have appeared in a wide range of venues: major theatres (inc. Barbican Pit Theatre, Soho Theatre, Derby Guildhall), storytelling clubs and nine international storytelling festivals (inc. a 2 week tour of India in 2016). Katy was one of four storytellers shortlisted for the Arts Foundation Storytelling Fellowship and has featured on Radio 3 (The Verb) and Radio 4 (The Storytellers).",
+      "isPromoter": true,
+      "promoter_id": "artemisStorytelling"
     },
     "kersti-stabi": {
       "id": "kersti-stabi",
@@ -19724,12 +19741,12 @@
       "url": "https://thatsanotherstory.co.uk/",
       "bio": "Sue has been telling tales for hundreds of years (Well, that's a tall tale if ever there was one!) She lives on the Isle of Wight and has told tales sheltering from storms in caves, sandblasted by beach debris, on the top deck of buses and ferries, and in many other strange ( and not so strange) places. She has helped countless children create their own stories inspired by local treasures ( both human and artefact) and is one of the organisers of the Somewhen Storytelling Festival.\n\n\n\nShe loves passing on the story gems that have come her way, intent on keeping alive the oral tradition. Folk tales, nursery tales, tales of wonder and tales to inspire or scare the pants off you — she will share them all. Just make sure you pass them on too.\n\n\n\nFounder of the Island Storytellers, and member of 'Tis Tales, Sue's has a story for every occasion, entertaining families, schools groups and adults alike, in workshops, on story walks, and in performance settings."
     },
-    "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley": {
-      "id": "lynette-hill-stephen-hobbs-rebecca-lachance-peter-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
+    "lynette-hill-stephen-hobbs-rebecca-lachance-pete-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley": {
+      "id": "lynette-hill-stephen-hobbs-rebecca-lachance-pete-boyce-2026-bard-of-stony-stratford-gill-and-patrick-larley",
       "performer_ids": [
         "lynette-hill",
         "stephen-hobbs",
-        "peter-boyce"
+        "pete-boyce"
       ],
       "name": "Lynette Hill, Stephen Hobbs, Rebecca LaChance, Peter Boyce, 2026 Bard of Stony Stratford, Gill and Patrick Larley",
       "url": "",
@@ -20562,6 +20579,10 @@
       "name": "Tamar Eluned Williams & Jordan Price Williams",
       "url": "",
       "bio": ""
+    },
+    "storytellersnotts": {
+      "id": "storytellersnotts",
+      "isClub": true
     },
     "devils-violin": {
       "id": "devils-violin",
