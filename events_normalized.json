@@ -11061,6 +11061,23 @@
       "eventId": "20261007-lynette-hill-quaker-meeting-house-northampton"
     },
     {
+      "name": "Fragments [Danielle Free]",
+      "showname": "Fragments",
+      "date": "10/10/2026",
+      "venue_id": "holy-trinity-church-much-wenlock",
+      "performer_id": "danielle-free",
+      "eventId": "20261010-danielle-free-holy-trinity-church-much-wenlock",
+      "date_added": "07/10/2026",
+      "time": "4.30-5.30pm",
+      "price": "£5",
+      "description": "FRAGMENTS\n\n\n\nA storytelling show commissioned by Get A Word In Edgeways Storytelling . Saturday 10th October. 4:30pm - 5:30pm.\n\n\n\nI performed this as a work-in-progress last month and it went SO brilliantly, and with a few helpful bits of feedback from a gorgeous audience, I'm looking forward to performing it at the festival on the 10th October at 4:30pm IN MILBURGA'S ACTUAL CHURCH!!!\n\n\n\nI'd like to be able to tell you what to expect, but who knows what'll happen in such a miraculous, old building.\n\n\n\nBring a cushion to sit on (pews can be quite uncomfortable) and bring an open mind - Milburga is a saint BUT before that she was a woman, a daughter, a sister, a friend, and she had an unbelievably cool ancestry.\n\n\n\nThis isn't a lecture or a talk, it's a bloomin' labour of love that's taken months and months to research and passion to create.\n\n\n\nCome and find me after the show so I can nerd out about everything I learned about Anglo-Saxon history that I wasn't actually able to include in the show else it would have been a lecture (but a really interesting one tbf).",
+      "age_rating": "14+",
+      "min_age": 14,
+      "event_flyer": "2026_10_10_danielle_free_fragments.jpg",
+      "ticket_url": "https://gawiefest.co.uk",
+      "isSpecial": true
+    },
+    {
       "name": "When The Gentlemen Go By — Stories & Songs of South Coast Smuggling [Alastair K. Daniel]",
       "showname": "When The Gentlemen Go By — Stories & Songs of South Coast Smuggling",
       "date": "12/10/2026",
@@ -13651,6 +13668,18 @@
       "latlon": [
         52.1952318,
         0.1086743
+      ]
+    },
+    "holy-trinity-church-much-wenlock": {
+      "id": "holy-trinity-church-much-wenlock",
+      "name": "Holy Trinity Church, Much Wenlock",
+      "full_address": "Holy Trinity Church, 5 Wilmore St, Much Wenlock, TF13 6HR",
+      "city": "Much Wenlock",
+      "postcode": "TF13 6HR",
+      "url": "https://www.muchwenlockchurch.co.uk/",
+      "latlon": [
+        52.59601,
+        -2.55741
       ]
     },
     "the-victoria-swindon": {
@@ -18993,6 +19022,9 @@
     "tony-hirst": {
       "canonical": "monty-storyteller",
       "name": "Tony Hirst"
+    },
+    "tony-monty-hirst": {
+      "same_as": "monty-storyteller"
     },
     "monty-storyteller": {
       "id": "monty-storyteller",
