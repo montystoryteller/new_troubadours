@@ -747,13 +747,13 @@ function resolveEventId(record, date) {
  * buildStructuredEventId() above) or a repertoire/touring-show date (see
  * SHOW_EVENT_ID_PREFIX below). Distinct from tour_display.js's own
  * REPERTOIRE_ID_PREFIX / event.js's TOUR_GUIDE_REPERTOIRE_ID_PREFIX
- * ("rep:") — that constant disambiguates the *?tour= query value*
- * tour_guide.html expects (a real tour id vs. a synthetic "rep:<tsId>"
+ * ("R-"; formerly the DEPRECATED "rep:") — that constant disambiguates the *?tour= query value*
+ * tour_guide.html expects (a real tour id vs. a synthetic "R-<tsId>"
  * one); this constant disambiguates an *eventId's own namespace* so
  * event.js's resolver knows which pool to search without having to try
  * every pool for every incoming id. The two are related ("this is a
  * repertoire show") but serve different consumers and are kept as two
- * separate constants rather than reusing "rep:" verbatim inside a
+ * separate constants rather than reusing that ?tour= prefix verbatim inside a
  * hyphen-delimited id.
  */
 const TOUR_EVENT_ID_PREFIX = "T-";

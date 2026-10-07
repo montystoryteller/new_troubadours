@@ -75,6 +75,24 @@ const PARAMS_BY_PATH = {
 const PARAM_ALIASES = { event_id: "event" };
 const MAX_PARAM_VALUE_LENGTH = 200;
 
+// Repertoire shows are addressed as tour_guide.html?tour=R-<show>. The old form
+// tour=rep:<show> is DEPRECATED: it is folded into the "R-" form here so both
+// share ONE snapshot/cache key, one render URL and one known-key check (the
+// Cloudflare 301 normally catches it first; this is the belt-and-braces layer).
+// Remove LEGACY_REPERTOIRE_TOUR_PREFIX handling once the 301 has been live a while.
+const REPERTOIRE_TOUR_PREFIX = "R-";
+const LEGACY_REPERTOIRE_TOUR_PREFIX = "rep:";
+function canonicalParamValue(pagePath, name, value) {
+  if (
+    pagePath === "/tour_guide" &&
+    name === "tour" &&
+    value.startsWith(LEGACY_REPERTOIRE_TOUR_PREFIX)
+  ) {
+    return REPERTOIRE_TOUR_PREFIX + value.slice(LEGACY_REPERTOIRE_TOUR_PREFIX.length);
+  }
+  return value;
+}
+
 // Global render cooldown for crawler-triggered renders (cache misses AND
 // stale-snapshot refreshes). Browser Run's rate limit is account-wide (~1
 // render per 10s on the free plan), and bots like Bing fetch many different
@@ -197,12 +215,11 @@ function injectPrerenderBadge(html) {
 // ?club=a and ?club=b do not.
 function normalisedUrl(url) {
   const out = new URL(url.origin + url.pathname);
-  const allowed = new Set(
-    PARAMS_BY_PATH[url.pathname.replace(/\.html$/, "")] || [],
-  );
+  const pagePath = url.pathname.replace(/\.html$/, "");
+  const allowed = new Set(PARAMS_BY_PATH[pagePath] || []);
   const pairs = [...url.searchParams]
     .filter(([k, v]) => allowed.has(k) && v.length <= MAX_PARAM_VALUE_LENGTH)
-    .map(([k, v]) => [PARAM_ALIASES[k] || k, v])
+    .map(([k, v]) => [PARAM_ALIASES[k] || k, canonicalParamValue(pagePath, k, v)])
     .sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
   for (const [k, v] of pairs) out.searchParams.append(k, v);
   return out;

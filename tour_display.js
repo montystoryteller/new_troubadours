@@ -3,7 +3,7 @@ let markers = [];
 let eventsData = null;
 let venuesLookup = {};
 let performersLookup = {};
-let toursLookup = {}; // combined: real tours + synthetic "rep:<id>" entries for repertoire shows — see buildCombinedToursLookup()
+let toursLookup = {}; // combined: real tours + synthetic "R-<id>" entries for repertoire shows — see buildCombinedToursLookup()
 let repertoireShowsLookup = {};
 let currentTour = null; // Store current tour for map filtering
 let currentTourId = null; // Its toursLookup key — createTourDateElement() needs this (not just the object) to build a per-date permalink id
@@ -90,8 +90,9 @@ function ensureMapInitialized() {
 // tours. Rather than duplicating every function below into a parallel
 // "repertoire" version, each repertoire show is adapted into the same
 // tour-shaped object (repertoireShowAsTourShape()) and merged into
-// toursLookup under a synthetic id prefixed "rep:" (so it can never
-// collide with a real tour id). Everything else in this file — dropdowns,
+// toursLookup under a synthetic id prefixed "R-" (so it can never
+// collide with a real tour id — real tour ids are plain slugs). "R-" matches
+// the event-id scheme: T-<tour>-<date>-<venue> / R-<show>-<date>-<venue>. Everything else in this file — dropdowns,
 // the Now Touring/Upcoming/Past panels, the map, the dates list, flyer
 // galleries — reads that combined toursLookup and never needs to know
 // which kind of record it's actually looking at.
@@ -100,7 +101,27 @@ function ensureMapInitialized() {
 // the shared eventsData.tours object other pages/reloads rely on.
 // ---------------------------------------------------------------------------
 
-const REPERTOIRE_ID_PREFIX = "rep:";
+const REPERTOIRE_ID_PREFIX = "R-";
+
+// DEPRECATED: repertoire shows used to be keyed "rep:<showId>" (URLs like
+// tour_guide.html?tour=rep%3A<showId>). The canonical prefix is now "R-".
+// The old form is still ACCEPTED on input so existing links, bookmarks and
+// crawler-held URLs keep working, but it is never generated any more, and
+// normaliseTourId() rewrites it to "R-" (the address bar is replaced too, so
+// canonical link/share badge always show the new form). Safe to delete once
+// the Cloudflare 301 (rep: -> R-) has been live long enough.
+const LEGACY_REPERTOIRE_ID_PREFIX = "rep:";
+
+/**
+ * Maps a ?tour= value to the canonical key used in toursLookup:
+ * "rep:<id>" (DEPRECATED) -> "R-<id>"; anything else is returned untouched.
+ */
+function normaliseTourId(id) {
+  if (typeof id === "string" && id.startsWith(LEGACY_REPERTOIRE_ID_PREFIX)) {
+    return REPERTOIRE_ID_PREFIX + id.slice(LEGACY_REPERTOIRE_ID_PREFIX.length);
+  }
+  return id;
+}
 
 function repertoireShowAsTourShape(showId, show) {
   return {
@@ -496,14 +517,16 @@ function populatePerformerDropdown() {
  * Each id is run through the same troupe/combined-billing expansion
  * used for the tour page's own performer links (getTourLinkPerformerIds()),
  * resolved to a display name, and deduplicated.
- * @param {string} repId - the "rep:<showId>" key from toursLookup
+ * @param {string} repId - the "R-<showId>" key from toursLookup (legacy "rep:<showId>" also tolerated)
  * @param {object} tour - the repertoire show's tour-shaped object
  * @returns {string[]} deduplicated, alphabetically sorted performer names
  */
 function getRepertoireShowPerformerNames(repId, tour) {
   const showId = repId.startsWith(REPERTOIRE_ID_PREFIX)
     ? repId.slice(REPERTOIRE_ID_PREFIX.length)
-    : repId;
+    : repId.startsWith(LEGACY_REPERTOIRE_ID_PREFIX) // DEPRECATED fallback
+      ? repId.slice(LEGACY_REPERTOIRE_ID_PREFIX.length)
+      : repId;
 
   const ids = getTourLinkPerformerIds(tour);
   Object.values(toursLookup).forEach((t) => {
@@ -734,8 +757,26 @@ function handleTourChange() {
 
 function getTourURLParams() {
   const params = new URLSearchParams(window.location.search);
+  const rawTourId = params.get("tour");
+  const tourId = normaliseTourId(rawTourId);
+
+  // DEPRECATED "rep:" link: swap the address bar to the "R-" form in place
+  // (no new history entry) so canonical/share links use the new scheme.
+  if (rawTourId && tourId !== rawTourId) {
+    try {
+      params.set("tour", tourId);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${window.location.pathname}?${params.toString()}${window.location.hash}`,
+      );
+    } catch (e) {
+      /* non-fatal: lookup below still works via the normalised id */
+    }
+  }
+
   return {
-    tourId: params.get("tour"),
+    tourId,
     performerId: params.get("performer"),
     cacheBuster: params.get("v"),
   };

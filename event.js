@@ -311,7 +311,7 @@ function buildEventRecordFromTourDate(tourId, tour, tourDate) {
 
 // Same normalization as buildEventRecordFromTourDate(), for a repertoire/
 // touring-show date. `_sourceTourId` is built with the same
-// "rep:"-prefixed form tour_guide.html's own ?tour= param expects (see
+// "R-"-prefixed form tour_guide.html's own ?tour= param expects (see
 // TOUR_GUIDE_REPERTOIRE_ID_PREFIX above), so the "part of X" link this
 // produces points at the right entry in tour_guide.html's combined
 // tour+repertoire selector.
@@ -430,11 +430,13 @@ function performerNamesOf(entity) {
 }
 
 // A repertoire show is browsed on tour_guide.html by merging it into that
-// page's own toursLookup under a synthetic "rep:<id>" key — see
+// page's own toursLookup under a synthetic "R-<id>" key — see
 // tour_display.js's buildCombinedToursLookup()/REPERTOIRE_ID_PREFIX. There's
 // no separate repertoire-show page, so a search result for one of its dates
 // links here with the same prefixed id, exactly as tour_guide.html expects.
-const TOUR_GUIDE_REPERTOIRE_ID_PREFIX = "rep:";
+// (Previously "rep:" — that form is DEPRECATED. tour_display.js still accepts it
+// on incoming ?tour= links and rewrites it to "R-", but nothing here generates it.)
+const TOUR_GUIDE_REPERTOIRE_ID_PREFIX = "R-";
 
 // Builds one search-index entry with a common shape, regardless of which
 // record type it came from — buildSearchIndex()'s sections below each just
@@ -489,7 +491,7 @@ function searchIndexEntry({
 // repertoire show dates — each dated occurrence becomes its own entry, with
 // its own venue, its own navigation target (an event.html permalink for a
 // flat event; the shared tour_guide.html?tour= page, real or synthetic
-// "rep:" id, for a tour/repertoire date, matching how those are already
+// "R-" id, for a tour/repertoire date, matching how those are already
 // browsed there), and its own story/music/poetry category for the Story/
 // Music/Poetry checkboxes. Festivals aren't indexed yet — a further step.
 const FLAT_SEARCH_SOURCES = [

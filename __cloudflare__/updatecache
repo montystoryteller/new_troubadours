@@ -14,9 +14,10 @@
 #        ./updatecache --list-promoters            same, for promoters.html?promoter=
 #        ./updatecache --list-booksmerch           same, for books_merch.html?performer=
 #        ./updatecache --list-events               same, for event.html?event=<eventId>  (render with --event [N] / --event <id>)
-#        ./updatecache --list-repertoire           same, for tour_guide.html?performer=<p>&tour=rep:<show>
+#        ./updatecache --list-repertoire           same, for tour_guide.html?performer=<p>&tour=R-<show>
 #                                                  (render with --festival / --promoter / --booksmerch / --repertoire [N];
-#                                                  for repertoire a key is the show id, e.g. --repertoire debs-newbold-dauntless)
+#                                                  for repertoire a key is the show id, e.g. --repertoire debs-newbold-dauntless;
+#                                                  a leading "R-" is fine, and the DEPRECATED "rep:" prefix is still tolerated)
 #        ./updatecache --performer [N]             render N (default 1) uncached performers
 #        ./updatecache --venue [N]                 render N (default 1) uncached venues
 #        ./updatecache --storyclub [N]             render N (default 1) uncached story clubs
@@ -91,9 +92,12 @@ if [ "$1" = "--sync-keys" ]; then
       venues: (.venues | keys),
       promoters: (.promoters | keys),
       festivals: (.festivals | keys),
-      tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | map("rep:" + .))),
+      # "R-" is the canonical repertoire prefix. "rep:" is DEPRECATED but kept in the index so any
+      # stray legacy ?tour=rep:... request is not treated as an unknown key during the transition
+      # (drop the second map once the Cloudflare 301 rep: -> R- has been live a while).
+      tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | (map("R-" + .) + map("rep:" + .)))),
       clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
-              | map(select(. != "" and . != "other")) | unique)
+              | map(select(type == "string" and . != "" and . != "other")) | unique)
     }' 2>/dev/null) && [ -n "$index" ] && break
     index=""
   done
@@ -194,7 +198,7 @@ render_one() {
 fill_one() {
   local page="$1" param="$2" default_jq="$3" jq_override="$4"
   # Optional: rawmode=1 means the jq filter outputs complete, already-encoded
-  # query tails ("performer-id&tour=rep%3Ashow-id") instead of single keys, and
+  # query tails ("performer-id&tour=R-show-id") instead of single keys, and
   # tag is a fixed string that picks this type's snapshots out of the shared page
   # (used for repertoire pages, which live on tour_guide.html next to real tours).
   local rawmode="${5:-0}" tag="${6:-}"
@@ -221,9 +225,10 @@ fill_one() {
       if [[ "$k" == *%* ]]; then raw=$(printf '%b' "${k//%/\\x}"); else raw="$k"; fi
       ok=1; enc=""
       if [ "$rawmode" = "1" ]; then
-        # Composite keys: the key given is the show id (a leading "rep:" is
-        # fine); find its full "performer&tour=..." query in the valid list.
-        raw="${raw#rep:}"
+        # Composite keys: the key given is the show id (a leading "R-" is
+        # fine, as is the DEPRECATED "rep:"); find its full "performer&tour=..." query
+        # in the valid list.
+        if [[ "$raw" == R-* ]]; then raw="${raw#R-}"; else raw="${raw#rep:}"; fi
         enc=$(printf '%s\n' "$valid" | awk -v s="${tag}$(jq -rn --arg k "$raw" '$k|@uri')" \
           'length($0) >= length(s) && substr($0, length($0) - length(s) + 1) == s { print; exit }')
         [ -n "$enc" ] || ok=0
@@ -350,11 +355,11 @@ JQ_BOOKSMERCH='.performers | to_entries[] | select(((.value.books // []) | lengt
 # counts (regular events and repertoire show_dates alike), so this doesn't depend on where
 # events live. If your ids sit under another field name, set NT_KEYS_JQ_EVENT.
 JQ_EVENT='[.. | objects | .eventId? | strings | select(. != "")] | unique | .[]'
-# Repertoire pages are tour_guide.html?performer=<performer>&tour=rep:<show>. Each key in
+# Repertoire pages are tour_guide.html?performer=<performer>&tour=R-<show>. Each key in
 # .repertoire_shows is a show id; its performer is the longest performer id that is a
 # prefix of it (e.g. debs-newbold-dauntless -> debs-newbold). Shows with no matching
 # performer are left out. The output is the complete, already-encoded query tail.
-JQ_REPERTOIRE='(.performers | keys) as $p | (.repertoire_shows // {} | keys[]) as $k | ([$p[] | . as $x | select($k | startswith($x + "-"))] | sort_by(length) | last) as $perf | select($perf != null) | "\($perf | @uri)&tour=\("rep:" + $k | @uri)"'
+JQ_REPERTOIRE='(.performers | keys) as $p | (.repertoire_shows // {} | keys[]) as $k | ([$p[] | . as $x | select($k | startswith($x + "-"))] | sort_by(length) | last) as $perf | select($perf != null) | "\($perf | @uri)&tour=\("R-" + $k | @uri)"'
 
 # --status: cached / uncached counts for every page type. One download of the
 # events JSON and ONE KV listing; no renders, no browser time.
@@ -400,7 +405,7 @@ status_all() {
   status_row festivals   festival    festival  "$JQ_FESTIVAL"    NT_KEYS_JQ_FESTIVAL
   status_row promoters   promoters   promoter  "$JQ_PROMOTER"    NT_KEYS_JQ_PROMOTER
   status_row booksmerch  books_merch performer "$JQ_BOOKSMERCH"  NT_KEYS_JQ_BOOKSMERCH
-  status_row repertoire  tour_guide  performer "$JQ_REPERTOIRE"  NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A"
+  status_row repertoire  tour_guide  performer "$JQ_REPERTOIRE"  NT_KEYS_JQ_REPERTOIRE 1 "&tour=R-"
   status_row events      event       event     "$JQ_EVENT"       NT_KEYS_JQ_EVENT
   echo "(orphans = snapshots whose key is no longer in the JSON; 'cached' counts any stored snapshot, stale or not,"
   echo " but not ones older than the last hard purge, which the gatekeeper treats as missing; see --staleness)" >&2
@@ -462,7 +467,7 @@ JQ_STALE_ROWS='
   def kind:
     (.name | ltrimstr($base)) as $r
     | ($r | split("?")[0]) as $path
-    | if $path == "/tour_guide.html" and ($r | test("tour=rep%3A")) then $path + " (rep)" else $path end;
+    | if $path == "/tour_guide.html" and ($r | test("tour=(R-|rep%3A)")) then $path + " (rep)" else $path end;
   [ .[] | select(.name | startswith($base))
         | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null) } ]
   | group_by(.kind)[]
@@ -716,7 +721,7 @@ dispatch() {
     festival)   fill_one festival festival "$JQ_FESTIVAL" NT_KEYS_JQ_FESTIVAL ;;
     promoter)   fill_one promoters promoter "$JQ_PROMOTER" NT_KEYS_JQ_PROMOTER ;;
     booksmerch) fill_one books_merch performer "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH ;;
-    repertoire) fill_one tour_guide performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=rep%3A" ;;
+    repertoire) fill_one tour_guide performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=R-" ;;
     event)      fill_one event event "$JQ_EVENT" NT_KEYS_JQ_EVENT 0 "" 1 ;;
   esac
 }

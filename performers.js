@@ -4,6 +4,11 @@
 
 const BASE_FLYER = "./storyclub_assets/event_flyers/";
 
+// ?tour= value prefix tour_guide.html uses for a repertoire show (must match
+// tour_display.js's REPERTOIRE_ID_PREFIX). Was "rep:" — DEPRECATED; the old
+// form is still accepted by tour_guide.html but must not be generated here.
+const TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX = "R-";
+
 function sanitizeFlyerName(name) {
   if (!name) return "";
   return name.replace(/[^a-zA-Z0-9._\-]/g, "");
@@ -1281,7 +1286,7 @@ function renderUpcomingSection(
       items.push({
         date: d,
         title: ts.showname || ts.name,
-        href: `tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`,
+        href: `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX + tsId)}`,
         time: sd.time || null,
         venueId: sd.venue_id,
         ticketUrl: sd.ticket_url,
@@ -3436,12 +3441,12 @@ function renderTouringShowCard(container, tsId, ts) {
 
   // View show link — the Touring Shows page (tour_display.js) treats a
   // repertoire show as just another browsable item, under a synthetic id
-  // "rep:<showId>" (see repertoireShowAsTourShape() there) so it can't
+  // "R-<showId>" (see repertoireShowAsTourShape() there) so it can't
   // collide with a real tour id.
   const footer = document.createElement("div");
   footer.className = "listing-card-footer";
   const viewLink = document.createElement("a");
-  viewLink.href = `tour_guide.html?tour=${encodeURIComponent("rep:" + tsId)}`;
+  viewLink.href = `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX + tsId)}`;
   viewLink.className = "listing-view-link";
   viewLink.textContent = "View full show →";
   footer.appendChild(viewLink);
