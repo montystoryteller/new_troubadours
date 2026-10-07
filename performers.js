@@ -481,6 +481,18 @@ setCanonical("performer");
   displayDataLastUpdated(loaded.lastUpdateTime);
   initNavFeedback();
 
+  // An old/alternate id (performer record with `same_as`) — send the visitor
+  // to the canonical performer's page. location.replace() keeps the alias
+  // out of the history, so Back doesn't bounce straight into the redirect.
+  // Other query params are preserved.
+  const canonicalId = resolvePerformerAlias(performerId);
+  if (canonicalId && canonicalId !== performerId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("performer", canonicalId);
+    window.location.replace(url.toString());
+    return;
+  }
+
   performer = performersLookup[performerId];
   if (!performer) {
     showNotFound();

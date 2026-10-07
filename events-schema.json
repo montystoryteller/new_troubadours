@@ -445,6 +445,13 @@
           "type": "string",
           "description": "Link to the performer's YouTube channel (as opposed to `youtube_videos`, which lists individual videos)."
         },
+        "same_as": {
+          "type": "string",
+          "description": "Marks this performer id as an alternate/old id for another performer: the value is the canonical performer id (a key in `performers`). A record may consist of nothing but this field, e.g. \"tony-monty-hirst\": { \"same_as\": \"monty-storyteller\" }. Handled once at load time by applyPerformerAliases() in shared_utils.js: every reference to the alias id elsewhere in the data (performer_id, performer_ids, other_performer_ids, support_performer_ids, headliner, host_id, promoter_artists, feature_slots) is rewritten to the canonical id, the stub record is dropped from the performers registry (so it never appears in directory listings), and performers.html?performer=<alias> redirects to the canonical page via resolvePerformerAlias(). Chains are followed (a -> b -> c); a same_as pointing at an unknown id is ignored with a console warning. Other fields on an alias record are ignored.",
+          "examples": [
+            "monty-storyteller"
+          ]
+        },
         "podcastX": {
           "type": "string",
           "description": "[TO DO — looks like a stray/disabled copy of `podcast`: one record (owen-staton) has a podbean URL under this name, so it is not read as a podcast link. Confirm whether it should be renamed to `podcast`.]"
@@ -464,8 +471,17 @@
           "description": "Non-book merchandise (CDs etc.), keyed by an item slug. Rendered as a collapsible Merch section on the profile page of this performer and of anyone in an item's `performer_ids`, and on books_merch.html."
         }
       },
-      "required": [
-        "name"
+      "anyOf": [
+        {
+          "required": [
+            "name"
+          ]
+        },
+        {
+          "required": [
+            "same_as"
+          ]
+        }
       ],
       "additionalProperties": true
     },

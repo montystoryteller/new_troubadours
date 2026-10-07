@@ -758,6 +758,18 @@ setCanonical(
   allBooks = all.books;
   allMerch = all.merch;
 
+  // An old/alternate performer id (record with `same_as`) — redirect to the
+  // canonical performer's page, keeping any other query params.
+  if (scopePerformerId) {
+    const canonicalId = resolvePerformerAlias(scopePerformerId);
+    if (canonicalId && canonicalId !== scopePerformerId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("performer", canonicalId);
+      window.location.replace(url.toString());
+      return;
+    }
+  }
+
   if (scopePerformerId && !performersLookup[scopePerformerId])
     return showNotFound();
   if (scopePerformerId)

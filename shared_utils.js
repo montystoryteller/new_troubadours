@@ -1937,6 +1937,7 @@ async function loadEventsData(cacheBuster) {
             data;
           applyRepertoireInheritance(eventsData);
           applyClubInheritance(eventsData);
+          applyPerformerAliases(eventsData, { performersLookup, toursLookup });
           const podcastsLookup = buildPodcastsLookup(eventsData);
           console.log(`✓ Loaded events data from cache`);
           console.log(`  - ${Object.keys(venuesLookup).length} venues`);
@@ -1981,6 +1982,7 @@ async function loadEventsData(cacheBuster) {
     }
     applyRepertoireInheritance(eventsData);
     applyClubInheritance(eventsData);
+    applyPerformerAliases(eventsData);
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
     const performersLookup = eventsData.performers || {};
@@ -2053,6 +2055,7 @@ function handleEventsLoadFailure(reason) {
       const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
       applyClubInheritance(eventsData);
+      applyPerformerAliases(eventsData, { performersLookup, toursLookup });
       const podcastsLookup = buildPodcastsLookup(eventsData);
       console.warn(
         `⚠ Live events feed failed — falling back to stale cached data${reason ? `: ${reason}` : ""}`,
@@ -2269,6 +2272,138 @@ function applyClubInheritance(eventsData) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Performer aliases (performer.same_as)
+// ---------------------------------------------------------------------------
+
+/**
+ * alias performer id -> canonical performer id, built by
+ * applyPerformerAliases() when the events data loads. Empty when the data
+ * has no `same_as` records, in which case everything below is a no-op.
+ * @type {Object<string,string>}
+ */
+let performerAliasMap = {};
+
+// Keys that hold a single performer id / a list of performer ids anywhere
+// in events_normalized.json (tours, tour_dates, show_dates, events, festival
+// line-ups, podcast items, promoters, ...). `aliases` is deliberately NOT
+// here: on a troupe record it lists lineup-config ids, not alternate ids.
+const PERFORMER_REF_KEYS = ["performer_id", "headliner", "host_id"];
+const PERFORMER_REF_LIST_KEYS = [
+  "performer_ids",
+  "other_performer_ids",
+  "support_performer_ids",
+  "promoter_artists",
+  "ids",
+];
+
+/**
+ * The canonical performer id for `id`: follows `same_as` chains (guarding
+ * against cycles) and returns `id` unchanged when it isn't an alias.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolvePerformerAlias(id) {
+  let cur = id;
+  const seen = new Set();
+  while (cur && performerAliasMap[cur] && !seen.has(cur)) {
+    seen.add(cur);
+    cur = performerAliasMap[cur];
+  }
+  return cur;
+}
+
+/**
+ * A performer record of the form `{ "same_as": "<other-performer-id>" }`
+ * (see events-schema.json -> $defs.performer.same_as) says "this id is just
+ * another id for that performer". Rather than making every page cope with a
+ * nameless stub record, this runs once at load time and:
+ *   1. records alias -> canonical in performerAliasMap (also persisted on
+ *      eventsData.performer_aliases, so it survives the localStorage cache,
+ *      which stores the already-processed data);
+ *   2. rewrites every performer reference in the data (performer_id,
+ *      performer_ids, other_performer_ids, support_performer_ids,
+ *      headliner, host_id, promoter_artists, feature_slots) from alias to
+ *      canonical id, so events filed under the old id show up on the
+ *      canonical performer's page / venue listings / stats;
+ *   3. removes the stub records from the performers registry, so directory
+ *      listings and name sorts never see a record with no name.
+ * Pages that receive an old id in a URL (?performer=<alias>) can then use
+ * resolvePerformerAlias() to redirect. An alias whose target doesn't exist
+ * is left alone (with a console warning) rather than orphaning its events.
+ * Idempotent, and a no-op when no record has same_as.
+ * @param {object} eventsData
+ * @param {{performersLookup?: object, toursLookup?: object}} [lookups] -
+ *   extra lookup objects that are separate copies of eventsData.performers /
+ *   eventsData.tours (as they are when loaded back from the localStorage
+ *   cache), so they get the same treatment.
+ */
+function applyPerformerAliases(eventsData, lookups = {}) {
+  const registries = [eventsData?.performers, lookups.performersLookup].filter(
+    Boolean,
+  );
+  const map = { ...(eventsData?.performer_aliases || {}) };
+
+  registries.forEach((reg) => {
+    Object.entries(reg).forEach(([id, rec]) => {
+      if (!rec || typeof rec.same_as !== "string" || !rec.same_as.trim()) return;
+      const target = rec.same_as.trim();
+      if (target === id) return;
+      const targetRec = registries.some((r) => r[target]);
+      if (!targetRec && !map[target]) {
+        console.warn(
+          `Performer "${id}" has same_as "${target}", which isn't a known performer — ignoring`,
+        );
+        return;
+      }
+      map[id] = target;
+    });
+  });
+
+  if (Object.keys(map).length === 0) return;
+  performerAliasMap = map;
+  if (eventsData) eventsData.performer_aliases = map;
+
+  const canon = (id) => (typeof id === "string" ? resolvePerformerAlias(id) : id);
+
+  function rewrite(node) {
+    if (Array.isArray(node)) {
+      node.forEach(rewrite);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    PERFORMER_REF_KEYS.forEach((k) => {
+      if (typeof node[k] === "string") node[k] = canon(node[k]);
+    });
+    PERFORMER_REF_LIST_KEYS.forEach((k) => {
+      if (Array.isArray(node[k])) {
+        node[k] = [...new Set(node[k].map(canon))];
+      }
+    });
+    if (Array.isArray(node.feature_slots)) {
+      node.feature_slots.forEach((slot) => {
+        if (Array.isArray(slot) && slot.length > 1) slot[1] = canon(slot[1]);
+      });
+    }
+    Object.keys(node).forEach((k) => {
+      if (k === "performer_aliases") return;
+      rewrite(node[k]);
+    });
+  }
+
+  // Remove stubs first so the walk doesn't bother with them, then rewrite
+  // references everywhere (including a separate toursLookup copy).
+  registries.forEach((reg) => {
+    Object.keys(map).forEach((alias) => {
+      if (reg[alias] && reg[alias].same_as) delete reg[alias];
+    });
+  });
+  rewrite(eventsData);
+  if (lookups.toursLookup && lookups.toursLookup !== eventsData?.tours) {
+    rewrite(lookups.toursLookup);
+  }
+}
+
 /**
  * Combine a per-date `description_prefix` (see events-schema.json →
  * $defs.tourDate.description_prefix / $defs.showDate.description_prefix)
@@ -2378,6 +2513,7 @@ async function checkForNewerEventsDataBackground() {
       }
       applyRepertoireInheritance(eventsData);
       applyClubInheritance(eventsData);
+      applyPerformerAliases(eventsData);
       const toursLookup = eventsData.tours || {};
       const venuesLookup = eventsData.venues || {};
       const performersLookup = eventsData.performers || {};
