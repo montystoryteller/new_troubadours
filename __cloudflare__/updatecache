@@ -7,6 +7,11 @@
 #        ./updatecache --staleness                 how fresh/stale the stored snapshots are, against the gatekeeper's policy
 #        ./updatecache --list-stale [N]            the N stalest pages (default 20) as URLs, oldest first; refresh them with
 #                                                  ./updatecache $(./updatecache --list-stale 20)
+#        ./updatecache --list-recent [H]           snapshots WRITTEN in the last H hours (default 12) as URLs, newest first.
+#                                                  Use after a bad deploy; save the list BEFORE purging, it vanishes once deleted:
+#                                                    ./updatecache --list-recent 12 > recent.txt
+#                                                    ./updatecache --purge-only $(cat recent.txt)   clear them
+#                                                    ./updatecache $(cat recent.txt)                force re-render them
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
@@ -571,6 +576,29 @@ list_stale() {
   exit 0
 }
 
+# --list-recent [H]: snapshots written in the last H hours (default 12), newest first, as full
+# URLs. For cleaning up after a bad deploy: save the list, then --purge-only and/or re-render it.
+# The write time is the ts the gatekeeper stored as KV metadata, or the time implied by the KV
+# expiry when there is no metadata. Pages marked stale (ts=0) are not included.
+list_recent() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local hours=12
+  [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && hours="$1"
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local now_ms=$(( $(date +%s) * 1000 )) json all
+  local cutoff_ms=$(( now_ms - hours * 3600000 ))
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson cutoff "$cutoff_ms" \
+      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+      [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
+            | select(.ts != null and .ts >= $cutoff) ]
+      | sort_by(.ts) | reverse | .[] | .name | ltrimstr("render:")')
+  [ -n "$all" ] || { echo "No snapshots were written in the last ${hours}h." >&2; exit 0; }
+  echo "$(printf '%s\n' "$all" | wc -l | tr -d ' ') snapshot(s) written in the last ${hours}h." >&2
+  printf '%s\n' "$all"
+  exit 0
+}
+
 # --inspect <type> <key>: why does the gatekeeper see (or not see) this page? Checks, in order:
 # 1. is the key in the events JSON (what --list-*, --status and the render options use),
 # 2. is it in the worker's meta:keys index (what lets crawlers trigger a render),
@@ -739,6 +767,7 @@ case "$1" in
   --staleness)                         staleness_report ;;
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
+  --list-recent)                       list_recent "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
   --storyclub|--storyclubs)            dispatch storyclub ;;
