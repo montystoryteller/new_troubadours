@@ -20,8 +20,8 @@
          ensureMapInitialized()), so a slow or unreachable cdnjs request can
          never delay the page's text content or first paint. The preconnect
          above just warms the connection up in the background. -->
-    <link rel="stylesheet" href="shared-styles.css?v=202609250051">
-    <link rel="stylesheet" href="events-styles.css?v=202609250051">
+    <link rel="stylesheet" href="shared-styles.css?v=202610080944">
+    <link rel="stylesheet" href="events-styles.css?v=202610080944">
 </head>
 
 <body class="page-events">
@@ -154,7 +154,8 @@
     <div class="layout-container">
         <div id="map-container">
             <div id="map">
-                <p class="loading-state">Loading map…</p>
+                <p class="loading-state">Loading map… <strong>[Hard refresh this page it is seems to be taking too
+                        long…]</strong< /p>
             </div>
         </div>
         <div class="events-list">
@@ -173,7 +174,8 @@
                 </label>
             </div>
             <div id="eventsList">
-                <p class="loading-state">Loading events…</p>
+                <p class="loading-state">Loading events… <strong>[Hard refresh this page it is seems to be taking too
+                        long…]</strong< /p>
             </div>
         </div>
     </div>
@@ -297,9 +299,9 @@
         <p id="dataLastUpdated"><em></em></p>
     </div>
 
-    <script src="recurrence-engine.js?v=202609272353"></script>
-    <script src="shared_utils.js?v=202610071218"></script>
-    <script src="event_display.js?v=202609272353"></script>
+    <script src="recurrence-engine.js?v=202610080944"></script>
+    <script src="shared_utils.js?v=202610080944"></script>
+    <script src="event_display.js?v=202610080945"></script>
 </body>
 
 </html>

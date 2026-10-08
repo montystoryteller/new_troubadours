@@ -456,7 +456,6 @@ function buildTypeLegend(programme) {
   return legend;
 }
 
-
 function renderClashfinder() {
   const fest = currentFestival?.record;
   if (!fest) return;
@@ -1776,7 +1775,7 @@ setCanonical("festival");
     document.getElementById("festivalBackLinkWrap").style.display = "";
   } else {
     const loadingHTML =
-      '<p class="festival-panel-placeholder">Loading festivals…</p>';
+      '<p class="festival-panel-placeholder">Loading festivals…  <strong>[Hard refresh this page it is seems to be taking too long…]</strong</p>';
     panelBodyIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = loadingHTML;

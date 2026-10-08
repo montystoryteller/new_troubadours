@@ -557,7 +557,10 @@ function createEventData(baseEvent, date, eventType) {
     eventData.alternate_locations = baseEvent.alternate_locations || null;
     eventData.exceptions = baseEvent.exceptions || null;
     eventData.club_flyer = baseEvent.club_flyer || null;
-    eventData.club_dated_flyers = findDatedClubFlyers(baseEvent.club_flyers, date);
+    eventData.club_dated_flyers = findDatedClubFlyers(
+      baseEvent.club_flyers,
+      date,
+    );
     eventData.feature_slots = baseEvent.feature_slots || null;
 
     if (eventType === "folk") {
@@ -2962,7 +2965,7 @@ function refreshEventsData() {
   const eventsListEl = document.getElementById("eventsList");
   if (eventsListEl) {
     eventsListEl.innerHTML =
-      '<div class="new-events-placeholder">Loading events…</div>';
+      '<div class="new-events-placeholder">Loading events… <strong>[Hard refresh this page it is seems to be taking too long…]</strong</div>';
   }
 
   const result = await loadEventsData(forcedRefresh ? Date.now() : null);

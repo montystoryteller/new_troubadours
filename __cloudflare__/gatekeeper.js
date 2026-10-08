@@ -5,6 +5,7 @@
 // for a prerendered snapshot, stores it in KV (global, unlike caches.default),
 // serves stale snapshots while refreshing in the background, and falls back
 // to the normal origin page (never a 503) if rendering fails.
+// Also serves /sitemap.xml, generated from the meta:keys index in KV.
 //
 // Required bindings:
 //   RENDERER      service binding -> renderer worker
@@ -197,17 +198,33 @@ function looksLikeHtmlRequest(request, url) {
   return true;
 }
 
-function injectPrerenderBadge(html) {
-  const badge = `
-<div id="cf-prerender-badge" style="position:fixed;bottom:12px;right:12px;z-index:999999;
-  background:#f6821f;color:#fff;font:600 12px/1.4 system-ui,sans-serif;
-  padding:6px 10px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.25);
-  pointer-events:none;">
-  ⚡ Prerendered by Cloudflare
-</div>`;
-  return html.includes("</body>")
-    ? html.replace("</body>", `${badge}</body>`)
-    : html + badge;
+// Invisible marker recording that this HTML is a prerendered snapshot, and when
+// it was made. Visible to scripts (document.documentElement.dataset.prerendered)
+// and in saved source / Bing's live-test output, but not to visitors. The page
+// JS is deliberately NOT told to skip its own render: a live re-render on top
+// of the snapshot is fine.
+function markPrerendered(html) {
+  if (html.includes("data-prerendered=")) return html; // idempotent
+  const stamp = new Date().toISOString();
+  let out = html.replace(
+    /<html(\s[^>]*)?>/i,
+    (m, attrs = "") => `<html${attrs} data-prerendered="${stamp}">`,
+  );
+  if (/<\/head>/i.test(out)) {
+    out = out.replace(
+      /<\/head>/i,
+      `<meta name="prerendered" content="cloudflare ${stamp}"></head>`,
+    );
+  }
+  return out;
+}
+
+// Snapshots stored before this change carry the old visible badge. Strip it at
+// serve time (no render quota needed). Safe to delete once every snapshot has
+// been refreshed or has expired (KV_TTL_SECONDS, 14 days).
+function stripLegacyBadge(html) {
+  if (!html.includes("cf-prerender-badge")) return html;
+  return html.replace(/\s*<div id="cf-prerender-badge"[\s\S]*?<\/div>/, "");
 }
 
 // Canonical form of the URL: path plus the identity params for that page,
@@ -298,7 +315,7 @@ async function renderOnce(env, targetUrl, why = "?") {
         quotaExhausted: /time limit exceeded/i.test(body),
       };
     }
-    return { html: injectPrerenderBadge(await res.text()) };
+    return { html: markPrerendered(await res.text()) };
   } catch (err) {
     console.log("render threw", why, String(err), targetUrl);
     return { html: null, status: 0, quotaExhausted: false };
@@ -370,9 +387,83 @@ const htmlResponse = (html, extra = {}) =>
     },
   });
 
+// ── sitemap ──────────────────────────────────────────────────
+// GET /sitemap.xml is generated from the meta:keys index (the same lists that
+// gate renders), so it always matches the set of valid pages and needs no build
+// step. URLs use the same form the site links to and canonicalises on:
+// <page>.html?<param>=<key>. No <lastmod> is emitted: a wrong one is worse than
+// none. Event pages are not in the key index, so they are not listed.
+// NOTE: this route overrides any static sitemap.xml in the repo.
+const SITE_ORIGIN = "https://newtroubadours.org";
+const SITEMAP_ENTRIES = [
+  // [index list name, page path, url param]
+  ["performers", "/performers.html", "performer"],
+  ["venues", "/venues.html", "venue"],
+  ["clubs", "/storyclub.html", "club"],
+  ["promoters", "/promoters.html", "promoter"],
+  ["festivals", "/festival.html", "festival"],
+  ["tours", "/tour_guide.html", "tour"],
+];
+const SITEMAP_MAX_URLS = 50000; // protocol limit per file
+const SITEMAP_CACHE_SECONDS = 60 * 60 * 6;
+
+const xmlEscape = (str) =>
+  str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+
+async function sitemapResponse(request, env) {
+  let idx;
+  try {
+    idx = await env.RENDER_CACHE.get(KEYS_KEY, "json");
+  } catch (err) {
+    console.log("sitemap: key index read failed", String(err));
+  }
+  if (!idx) {
+    return new Response("sitemap unavailable", {
+      status: 503,
+      headers: { "retry-after": "300", "cache-control": "no-store" },
+    });
+  }
+  const urls = [`${SITE_ORIGIN}/`];
+  for (const [name, path, param] of SITEMAP_ENTRIES) {
+    const list = Array.isArray(idx[name]) ? [...idx[name]].sort() : [];
+    for (const key of list) {
+      urls.push(`${SITE_ORIGIN}${path}?${param}=${encodeURIComponent(key)}`);
+    }
+  }
+  if (urls.length > SITEMAP_MAX_URLS) {
+    console.log("sitemap truncated", urls.length);
+    urls.length = SITEMAP_MAX_URLS;
+  }
+  const body =
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    urls.map((u) => `  <url><loc>${xmlEscape(u)}</loc></url>`).join("\n") +
+    "\n</urlset>\n";
+  return new Response(request.method === "HEAD" ? null : body, {
+    headers: {
+      "content-type": "application/xml; charset=utf-8",
+      "cache-control": `public, max-age=${SITEMAP_CACHE_SECONDS}`,
+      "x-sitemap-urls": String(urls.length),
+    },
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (
+      url.pathname === "/sitemap.xml" &&
+      (request.method === "GET" || request.method === "HEAD")
+    ) {
+      return sitemapResponse(request, env);
+    }
+
     const normUrl = normalisedUrl(url);
     const key = cacheKeyFor(normUrl);
 
@@ -533,9 +624,10 @@ export default {
         ctx.waitUntil(refresh(env, key, normUrl.toString(), 1, "bg-refresh"));
       }
       logGate(request, tier, normUrl, outcome);
-      return htmlResponse(entry.html, {
+      return htmlResponse(stripLegacyBadge(entry.html), {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
         "x-prerender-stale": stale ? "true" : "false",
+        "x-prerender-ts": String(entry.ts),
       });
     }
 

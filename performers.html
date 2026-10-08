@@ -10,9 +10,9 @@
         content="performer information, storytellers, UK storytellers, UK storytelling events, UK storytellers directory, storytellers directory, directory of storytellers, traditional storytellers, UK spoken word artists, UK poets, acoustic singer, protest singer, folk singer">
     <title>UK Storytellers, Punk Poets & Acoustic Musicians — New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
-    <link rel="stylesheet" href="shared-styles.css?v=202609250051">
-    <link rel="stylesheet" href="performers-styles.css?v=202609251115">
-    <link rel="stylesheet" href="books_merch-styles.css?v=202610032234">
+    <link rel="stylesheet" href="shared-styles.css?v=202610080944">
+    <link rel="stylesheet" href="performers-styles.css?v=202610080944">
+    <link rel="stylesheet" href="books_merch-styles.css?v=202610080944">
 </head>
 
 <body class="page-performer">
@@ -37,156 +37,159 @@
     <h2 id="pageSubheading">Directory of UK based traditional storytellers, punk poets, and acoustic musicians in the
         UK.</h2>
 
-    <div id="loadingState" class="loading-state">Loading performer…</div>
-    <div id="notFoundState" class="not-found-state" style="display:none;">
-        <p>Performer not found. <a href="event_guide.html">Return to events calendar.</a></p>
-    </div>
-
-    <div id="performerContent" style="display:none;">
-
-        <div class="page-header">
-            <a href="performers.html" class="back-link">← All Performers</a>
-        </div>
-
-        <div class="performer-hero">
-            <div class="performer-hero-main">
-                <div class="performer-avatar" id="performerAvatar"></div>
-                <div class="performer-hero-text">
-                    <h2 id="performerName"></h2>
-                    <div id="performerBadges" class="performer-hero-badges"></div>
-                    <div id="performerWebsite" class="performer-website"></div>
-                    <div id="performerGroups"></div>
-                </div>
+    <div id="loadingState" class="loading-state">Loading performer… <strong>[Hard refresh this page it is seems to be
+            taking too long…]</strong< /div>
+            <div id="notFoundState" class="not-found-state" style="display:none;">
+                <p>Performer not found. <a href="event_guide.html">Return to events calendar.</a></p>
             </div>
-            <div id="performerBio" class="performer-bio"></div>
-        </div>
 
-        <div id="upcomingSection" class="content-section upcoming-section" style="display:none;">
-            <h3 class="section-heading" id="upcomingHeading">Coming up</h3>
-            <div id="upcomingList"></div>
-        </div>
+            <div id="performerContent" style="display:none;">
 
-        <div class="stats-row" id="statsRow"></div>
+                <div class="page-header">
+                    <a href="performers.html" class="back-link">← All Performers</a>
+                </div>
 
-        <details class="perf-flyer-gallery" id="perfGallerySection" style="display:none;">
-            <summary class="perf-flyer-gallery-summary">
-                🖼 Flyers
-                <span class="perf-flyer-gallery-hint" id="perfGalleryHint">click to expand</span>
-            </summary>
-            <div class="perf-flyer-strip" id="perfGalleryStrip"></div>
-        </details>
+                <div class="performer-hero">
+                    <div class="performer-hero-main">
+                        <div class="performer-avatar" id="performerAvatar"></div>
+                        <div class="performer-hero-text">
+                            <h2 id="performerName"></h2>
+                            <div id="performerBadges" class="performer-hero-badges"></div>
+                            <div id="performerWebsite" class="performer-website"></div>
+                            <div id="performerGroups"></div>
+                        </div>
+                    </div>
+                    <div id="performerBio" class="performer-bio"></div>
+                </div>
 
-        <details class="perf-collapsible-section" id="perfPodcastSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                🎙 Podcasts
-                <span class="perf-collapsible-hint" id="perfPodcastHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfPodcastList"></div>
-        </details>
+                <div id="upcomingSection" class="content-section upcoming-section" style="display:none;">
+                    <h3 class="section-heading" id="upcomingHeading">Coming up</h3>
+                    <div id="upcomingList"></div>
+                </div>
 
-        <details class="perf-collapsible-section" id="perfPodcastAppearancesSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                🎧 Podcast Appearances
-                <span class="perf-collapsible-hint" id="perfPodcastAppearancesHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfPodcastAppearancesList"></div>
-        </details>
+                <div class="stats-row" id="statsRow"></div>
 
-        <details class="perf-collapsible-section" id="perfVideosSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                🎥 Videos
-                <span class="perf-collapsible-hint" id="perfVideosHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfVideosList"></div>
-        </details>
+                <details class="perf-flyer-gallery" id="perfGallerySection" style="display:none;">
+                    <summary class="perf-flyer-gallery-summary">
+                        🖼 Flyers
+                        <span class="perf-flyer-gallery-hint" id="perfGalleryHint">click to expand</span>
+                    </summary>
+                    <div class="perf-flyer-strip" id="perfGalleryStrip"></div>
+                </details>
 
-        <details class="perf-collapsible-section" id="perfBooksSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                📚 Books
-                <span class="perf-collapsible-hint" id="perfBooksHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfBooksList"></div>
-        </details>
+                <details class="perf-collapsible-section" id="perfPodcastSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        🎙 Podcasts
+                        <span class="perf-collapsible-hint" id="perfPodcastHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfPodcastList"></div>
+                </details>
 
-        <details class="perf-collapsible-section" id="perfMerchSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                🛍 Merch
-                <span class="perf-collapsible-hint" id="perfMerchHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfMerchList"></div>
-        </details>
+                <details class="perf-collapsible-section" id="perfPodcastAppearancesSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        🎧 Podcast Appearances
+                        <span class="perf-collapsible-hint" id="perfPodcastAppearancesHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfPodcastAppearancesList"></div>
+                </details>
 
-        <details class="perf-collapsible-section" id="perfCollaboratorsSection" style="display:none;">
-            <summary class="perf-collapsible-summary">
-                🤝 Collaborators
-                <span class="perf-collapsible-hint" id="perfCollaboratorsHint">click to expand</span>
-            </summary>
-            <div class="perf-collapsible-list" id="perfCollaboratorsList"></div>
-        </details>
+                <details class="perf-collapsible-section" id="perfVideosSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        🎥 Videos
+                        <span class="perf-collapsible-hint" id="perfVideosHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfVideosList"></div>
+                </details>
 
-        <div id="toursSection" class="content-section" style="display:none;">
-            <h3 class="section-heading">Tours</h3>
-            <div id="toursList"></div>
-        </div>
+                <details class="perf-collapsible-section" id="perfBooksSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        📚 Books
+                        <span class="perf-collapsible-hint" id="perfBooksHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfBooksList"></div>
+                </details>
 
-        <div id="touringShowsSection" class="content-section" style="display:none;">
-            <h3 class="section-heading">Repertoire</h3>
-            <div id="touringShowsList"></div>
-        </div>
+                <details class="perf-collapsible-section" id="perfMerchSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        🛍 Merch
+                        <span class="perf-collapsible-hint" id="perfMerchHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfMerchList"></div>
+                </details>
 
-        <div id="storyWalksSection" class="content-section" style="display:none;">
-            <h3 class="section-heading">Story Walks</h3>
-            <div id="storyWalksList"></div>
-        </div>
+                <details class="perf-collapsible-section" id="perfCollaboratorsSection" style="display:none;">
+                    <summary class="perf-collapsible-summary">
+                        🤝 Collaborators
+                        <span class="perf-collapsible-hint" id="perfCollaboratorsHint">click to expand</span>
+                    </summary>
+                    <div class="perf-collapsible-list" id="perfCollaboratorsList"></div>
+                </details>
 
-        <div id="eventsSection" class="content-section" style="display:none;">
-            <h3 class="section-heading" id="eventsSectionHeading">Other appearances</h3>
-            <div id="eventsList"></div>
-        </div>
+                <div id="toursSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Tours</h3>
+                    <div id="toursList"></div>
+                </div>
 
-        <div id="festivalsSection" class="content-section" style="display:none;">
-            <h3 class="section-heading">Festivals</h3>
-            <div id="festivalsList"></div>
-        </div>
+                <div id="touringShowsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Repertoire</h3>
+                    <div id="touringShowsList"></div>
+                </div>
 
-    </div>
+                <div id="storyWalksSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Story Walks</h3>
+                    <div id="storyWalksList"></div>
+                </div>
 
-    <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
+                <div id="eventsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading" id="eventsSectionHeading">Other appearances</h3>
+                    <div id="eventsList"></div>
+                </div>
+
+                <div id="festivalsSection" class="content-section" style="display:none;">
+                    <h3 class="section-heading">Festivals</h3>
+                    <div id="festivalsList"></div>
+                </div>
+
+            </div>
+
+            <!-- "Find/See … on New Troubadours" badge — populated by renderShareBadge()
          (shared_utils.js) once a real performer is on screen; empty (and hidden)
          otherwise. -->
-    <div id="shareBadge" class="share-badge"></div>
+            <div id="shareBadge" class="share-badge"></div>
 
-    <div class="about" id="colophon">
-        <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired by <a
-                    href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a list</a> of
-                storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
-                Saturday, November 29th, 2025.</em></p>
-        <p><strong>All data
-                is manually sourced and manually added to the site, primarily sourced from primary (performer,
-                ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
-        <p><em>For corrections, additions, removals, etc., email: <code>montystoryteller AT gmail DOT com</code></em>
-        </p>
-        <p><em>Book covers, where shown, are provided by <a href="https://openlibrary.org/"
-                    target="_blank" rel="noopener noreferrer">Open Library</a>.</em></p>
-        <p id="dataLastUpdated"><em></em></p>
-    </div>
+            <div class="about" id="colophon">
+                <p><em>Website code hacked together by Tony Hirst in conversation with <code>Claude.ai</code>, inspired
+                        by <a href="https://www.facebook.com/groups/societyforstorytelling/posts/10172947366465461/">a
+                            list</a> of
+                        storytelling club dates posted by Peter Giles to the Society for Storytelling Facebook group on
+                        Saturday, November 29th, 2025.</em></p>
+                <p><strong>All data
+                        is manually sourced and manually added to the site, primarily sourced from primary (performer,
+                        ticketing, group) websites as well as secondary sources (Facebook groups etc.).</strong></p>
+                <p><em>For corrections, additions, removals, etc., email:
+                        <code>montystoryteller AT gmail DOT com</code></em>
+                </p>
+                <p><em>Book covers, where shown, are provided by <a href="https://openlibrary.org/" target="_blank"
+                            rel="noopener noreferrer">Open Library</a>.</em></p>
+                <p id="dataLastUpdated"><em></em></p>
+            </div>
 
-    <!-- Performer-page flyer lightbox -->
-    <div id="perfFlyerLightbox" role="dialog" aria-modal="true">
-        <button class="pf-nav" id="pfPrev" aria-label="Previous">&#8249;</button>
-        <div class="pf-inner">
-            <button class="pf-close" id="pfClose" aria-label="Close">×</button>
-            <img id="pfImg" src="" alt="">
-            <div class="pf-caption" id="pfCaption"></div>
-        </div>
-        <button class="pf-nav" id="pfNext" aria-label="Next">&#8250;</button>
-    </div>
+            <!-- Performer-page flyer lightbox -->
+            <div id="perfFlyerLightbox" role="dialog" aria-modal="true">
+                <button class="pf-nav" id="pfPrev" aria-label="Previous">&#8249;</button>
+                <div class="pf-inner">
+                    <button class="pf-close" id="pfClose" aria-label="Close">×</button>
+                    <img id="pfImg" src="" alt="">
+                    <div class="pf-caption" id="pfCaption"></div>
+                </div>
+                <button class="pf-nav" id="pfNext" aria-label="Next">&#8250;</button>
+            </div>
 
-    <script src="recurrence-engine.js?v=202609272353"></script>
-    <script src="shared_utils.js?v=202610071218"></script>
-    <script src="podcast_utils.js?v=202609272353"></script>
-    <script src="books_utils.js?v=202609300036"></script>
-    <script src="performers.js?v=202610071218"></script>
+            <script src="recurrence-engine.js?v=202610080944"></script>
+            <script src="shared_utils.js?v=202610080944"></script>
+            <script src="podcast_utils.js?v=202610080944"></script>
+            <script src="books_utils.js?v=202610080944"></script>
+            <script src="performers.js?v=202610080944"></script>
 
 </body>
 

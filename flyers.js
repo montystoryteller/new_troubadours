@@ -678,7 +678,11 @@ async function loadFlyers() {
     seen.add(key);
     const v = ven(e.venue_id);
     const clubTonight = scheduleMatchesDate(e.schedule, now, e.exceptions);
-    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow, e.exceptions);
+    const clubTomorrow = scheduleMatchesDate(
+      e.schedule,
+      tomorrow,
+      e.exceptions,
+    );
     items.push({
       flyer,
       flyerBase: "club",
@@ -715,7 +719,11 @@ async function loadFlyers() {
     if (!extraFlyers.length || !e.club) continue;
     const v = ven(e.venue_id);
     const clubTonight = scheduleMatchesDate(e.schedule, now, e.exceptions);
-    const clubTomorrow = scheduleMatchesDate(e.schedule, tomorrow, e.exceptions);
+    const clubTomorrow = scheduleMatchesDate(
+      e.schedule,
+      tomorrow,
+      e.exceptions,
+    );
     for (const rawFlyer of extraFlyers) {
       const flyer = rawFlyer?.trim();
       if (!flyer) continue;
@@ -1492,7 +1500,7 @@ function renderAll() {
   // Show spinner only if no cache exists
   if (!getSchedulesCache()) {
     document.getElementById("page-content").innerHTML =
-      '<p class="status-message status-message--loading">Loading flyers…</p>';
+      '<p class="status-message status-message--loading">Loading flyers…  <strong>[Hard refresh this page it is seems to be taking too long…]</strong</p>';
   }
 
   try {

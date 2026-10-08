@@ -186,7 +186,7 @@ setCanonical("club");
   const cachedSchedules = getSchedulesCache();
   if (!cachedSchedules) {
     document.getElementById("page-content").innerHTML =
-      '<p class="status-message status-message--loading">Loading clubs…</p>';
+      '<p class="status-message status-message--loading">Loading Story Clubs… <strong>[Hard refresh this page it is seems to be taking too long…]</strong</p>';
   }
 
   // Defer heavy computation (schedule calculations, filtering, sorting) to background

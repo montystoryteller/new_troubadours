@@ -23,9 +23,7 @@ let currentPromoter = null; // { key, record }
  */
 function getPromoterDisplayName(id, promoter) {
   if (promoter?.name) return promoter.name;
-  return id
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return id.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // Minimal, self-contained date resolution for festivals linked from a
@@ -233,7 +231,11 @@ function buildPromoterRegistry(data) {
         [club.venue_id],
         refs.venues,
       ),
-      promoter_artists: uniq(rec.promoter_artists || [], featured, refs.performers),
+      promoter_artists: uniq(
+        rec.promoter_artists || [],
+        featured,
+        refs.performers,
+      ),
       _club: club,
     };
   });
@@ -403,7 +405,8 @@ function collectPromoterEvents(promoterId, promoter) {
   ].forEach(([bucket, type, category]) => {
     expandDateOrDates((eventsData[bucket] || []).filter(mine)).forEach((e) => {
       const date = parseDateString(e.date);
-      if (date) out.push(withVenue({ type, date, data: e, category }, e.venue_id));
+      if (date)
+        out.push(withVenue({ type, date, data: e, category }, e.venue_id));
     });
   });
 
@@ -457,7 +460,11 @@ function collectPromoterEvents(promoterId, promoter) {
   const to = new Date(from);
   to.setMonth(to.getMonth() + PROMOTER_RECURRING_MONTHS_AHEAD);
   (eventsData.clubs || [])
-    .filter((c) => c.schedule && (c.promoter_id === promoterId || (clubId && c.club === clubId)))
+    .filter(
+      (c) =>
+        c.schedule &&
+        (c.promoter_id === promoterId || (clubId && c.club === clubId)),
+    )
     .forEach((rec) => {
       RecurrenceEngine.scheduledOccurrencesInRange(
         rec.schedule,
@@ -468,7 +475,12 @@ function collectPromoterEvents(promoterId, promoter) {
         if (occ.status === "cancelled" || occ.status === "moved_from") return;
         out.push(
           withVenue(
-            { type: "club", date: occ.date, data: { club: rec }, category: "story" },
+            {
+              type: "club",
+              date: occ.date,
+              data: { club: rec },
+              category: "story",
+            },
             resolveClubVenueId(rec, occ.date),
           ),
         );
@@ -488,14 +500,20 @@ function renderPromoterEvents(promoterId, promoter) {
 
   const today = getTodayMidnight();
   const all = collectPromoterEvents(promoterId, promoter);
-  const upcoming = all.filter((e) => e.date >= today).sort((a, b) => a.date - b.date);
-  const past = all.filter((e) => e.date < today).sort((a, b) => b.date - a.date);
+  const upcoming = all
+    .filter((e) => e.date >= today)
+    .sort((a, b) => a.date - b.date);
+  const past = all
+    .filter((e) => e.date < today)
+    .sort((a, b) => b.date - a.date);
 
   section.style.display = all.length ? "" : "none";
   if (!all.length) return;
 
   if (upcoming.length) {
-    upcoming.forEach((e) => renderEventRow(upcomingEl, e, false, { showVenue: true }));
+    upcoming.forEach((e) =>
+      renderEventRow(upcomingEl, e, false, { showVenue: true }),
+    );
   } else {
     const note = document.createElement("p");
     note.className = "promoter-empty-note";
@@ -619,7 +637,9 @@ function renderPromoterStages(promoter) {
     // A few stage records (e.g. "knockerdown-inn") don't have a name field
     // yet — stage.name would be undefined there, not just falsy-and-empty,
     // so fall back to a humanized id rather than showing "undefined".
-    name.textContent = stage ? stage.name || getPromoterDisplayName(stageId, stage) : stageId;
+    name.textContent = stage
+      ? stage.name || getPromoterDisplayName(stageId, stage)
+      : stageId;
     row.appendChild(name);
 
     if (stage) {
@@ -904,7 +924,7 @@ setCanonical("promoter");
 
   if (!promoterId) {
     document.getElementById("allPromotersBody").innerHTML =
-      '<p class="promoter-panel-placeholder">Loading promoters…</p>';
+      '<p class="promoter-panel-placeholder">Loading promoters… <strong>[Hard refresh this page it is seems to be taking too long…]</strong</p>';
   }
 
   const result = await loadEventsData(
