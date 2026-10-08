@@ -6621,11 +6621,12 @@
     },
     {
       "name": "Dartmoor Storytellers",
-      "schedule": "2nd wednesday",
+      "schedule": "3rd monday",
       "time": "8-9.30pm",
       "facebook": "https://www.facebook.com/groups/1689129511376075",
       "club": "dartmoorStorytellers",
-      "venue_id": "chagford-inn"
+      "venue_id": "chagford-inn",
+      "exceptions": ["23/11/2026", "28/12/2026"]
     },
     {
       "name": "A Bit Crack Storytelling",
