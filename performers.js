@@ -106,6 +106,16 @@ function renderAllPerformers() {
   // so you can find "Cinderella" and land on the performer who does it.
   const perfIndex = Object.entries(performersLookup)
     .filter(([, p]) => !isTroupeConfig(p))
+    .filter(([pid, p]) => {
+      if (!p || typeof p.name !== "string" || !p.name.trim()) {
+        console.warn(
+          `Performer "${pid}" has no name — skipping in directory`,
+          p,
+        );
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => a[1].name.localeCompare(b[1].name))
     .map(([pid, p]) => {
       const aliasIds = new Set([pid, ...(p.aliases || [])]);
