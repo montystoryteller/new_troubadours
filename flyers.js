@@ -1509,6 +1509,7 @@ function renderAll() {
     console.error("flyers.html boot error:", e);
     document.getElementById("page-content").innerHTML =
       `<p class="status-message status-message--error">Could not load events data.<br><small>${e.message}</small></p>`;
+    PageHealth.markFailed(`could not load events data (${e.message})`);
     return;
   }
 
@@ -1518,5 +1519,6 @@ function renderAll() {
     renderAll(); // also renders/filters video trailers — see isItemTypeVisible/isItemTourVisible
     // Mark as cached — valid until date/month boundary crosses
     setSchedulesCache({ computed: true });
+    PageHealth.markReady({ contentId: "page-content" });
   }, 0);
 })();

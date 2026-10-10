@@ -2667,8 +2667,11 @@ function showThisWeek() {
   const weekStart = getWeekStart(today);
   const weekEnd = getWeekEnd(weekStart);
   updateDateInputs(weekStart, weekEnd);
-  displayEvents(weekStart, weekEnd);
+  const rendered = displayEvents(weekStart, weekEnd);
   setActiveMode("thisWeek");
+  // Returned so init can wait for the first render (callers that ignore it
+  // behave exactly as before).
+  return rendered;
 }
 
 function showWeek(weeksAhead = 1) {
@@ -2975,6 +2978,7 @@ function refreshEventsData() {
       eventsListEl.innerHTML =
         '<div class="no-events">Couldn\'t load events data. Please try refreshing the page.</div>';
     }
+    PageHealth.markFailed("events data failed to load");
     return;
   }
   eventsData = result.eventsData;
@@ -3098,7 +3102,7 @@ function refreshEventsData() {
       // preferences (or the hardcoded defaults, on a first-ever visit)
       // before the first render.
       applyStoredOrDefaultFilterPrefs();
-      showThisWeek();
+      await showThisWeek();
     }
 
     // Clear spinner if it was shown
@@ -3108,6 +3112,15 @@ function refreshEventsData() {
 
     // Mark events as computed and cached for the day
     setSchedulesCache({ computed: true });
+    PageHealth.markReady({
+      contentId: "eventsList",
+      checks: [
+        [
+          "still showing a loading message",
+          () => !document.querySelector("#eventsList .loading-state, #eventsList .new-events-placeholder"),
+        ],
+      ],
+    });
 
     // List is built — now bring in the map (markers for everything already
     // displayed are drawn as soon as it exists).

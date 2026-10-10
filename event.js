@@ -981,6 +981,7 @@ let initialSearchTerm = "";
     }
     document.getElementById("loadingState").style.display = "none";
     showTodayEvents();
+    PageHealth.markReady({ contentId: "todayEventsState" });
     return;
   }
 
@@ -992,6 +993,15 @@ let initialSearchTerm = "";
     renderPage();
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("eventContent").style.display = "";
+    PageHealth.markReady({
+      contentId: "eventContent",
+      checks: [
+        [
+          "event name is empty",
+          () => document.getElementById("eventName").textContent.trim().length > 0,
+        ],
+      ],
+    });
 
     const hostVenue = venuesLookup[eventRecord.venue_id] || null;
     if (hostVenue && hasLatlon(hostVenue)) {

@@ -31,6 +31,289 @@ const ICON_SVG = {
 };
 
 // ---------------------------------------------------------------------------
+// Page health LED
+//
+// A small status dot in the colophon showing whether THIS PAGE rendered
+// properly (separate from the events-feed LED, which only reports on the
+// data feed):
+//   grey   — still loading (pulses; text changes to "stuck?" after STALL_MS)
+//   green  — page script ran, content rendered, no JS errors
+//   amber  — rendered, but with a warning (stale cached feed, or the page
+//            fell into its "not found" state)
+//   red    — a JS error / failed script load / failed render check
+//
+// Starts listening for errors as soon as shared_utils.js loads (it's loaded
+// before each page's own script), so errors thrown by the page script are
+// caught too. Each page calls PageHealth.markReady({...}) once it has
+// rendered; showNotFound() calls markNotFound() itself.
+//
+// Quick "does this page work" check, for DevTools or an automated
+// headless/prerender run:
+//   document.documentElement.dataset.pageHealth   // "loading"|"ok"|"warn"|"error"
+//   PageHealth.report()                           // { status, errors, problems, warnings, readyMs }
+// e.g. wait for  html[data-page-health="ok"]  before snapshotting a page.
+// ---------------------------------------------------------------------------
+
+const PageHealth = (() => {
+  const STALL_MS = 15000;
+  const MAX_ERRORS = 10;
+  const startedAt = performance.now();
+
+  const errors = []; // uncaught JS errors / failed script/css loads
+  let problems = []; // failed render checks from markReady()
+  let warnings = []; // non-fatal: stale feed, not-found state
+  let ready = false;
+  let stalled = false;
+  let readyMs = null;
+  let led = null;
+  let textEl = null;
+  let panel = null;
+
+  function status() {
+    if (errors.length > 0 || problems.length > 0) return "error";
+    if (!ready) return "loading";
+    return warnings.length > 0 ? "warn" : "ok";
+  }
+
+  function summaryText(s) {
+    if (s === "loading")
+      return stalled
+        ? "Page health: still loading… (stuck?)"
+        : "Page health: loading…";
+    if (s === "ok")
+      return `Page health: OK${readyMs != null ? ` (rendered in ${(readyMs / 1000).toFixed(1)}s)` : ""}`;
+    if (s === "warn") return "Page health: rendered with warnings";
+    return "Page health: problem — click for details";
+  }
+
+  function render() {
+    const s = status();
+    document.documentElement.setAttribute("data-page-health", s);
+    if (!led) return;
+
+    led.className = `page-health-led page-health-${s}${s === "loading" && stalled ? " page-health-stalled" : ""}`;
+    const text = summaryText(s);
+    textEl.textContent = text;
+    led.title = text;
+    led.setAttribute("aria-label", text);
+
+    const lines = [
+      ...errors.map((m) => `JS error: ${m}`),
+      ...problems.map((m) => `Check failed: ${m}`),
+      ...warnings.map((m) => `Warning: ${m}`),
+    ];
+    panel.textContent = lines.join("\n");
+    const clickable = lines.length > 0;
+    led.classList.toggle("page-health-led-clickable", clickable);
+    if (clickable) {
+      led.setAttribute("tabindex", "0");
+      led.setAttribute("role", "button");
+    } else {
+      led.removeAttribute("tabindex");
+      led.setAttribute("role", "img");
+      panel.style.display = "none";
+    }
+    led.setAttribute(
+      "aria-expanded",
+      clickable ? String(panel.style.display !== "none") : "false",
+    );
+  }
+
+  function mount() {
+    if (led) return;
+    const host = document.getElementById("colophon") || document.body;
+    const row = document.createElement("p");
+    row.id = "pageHealth";
+    row.className = "page-health";
+
+    led = document.createElement("span");
+    textEl = document.createElement("span");
+    textEl.className = "page-health-text";
+    panel = document.createElement("span");
+    panel.className = "page-health-message";
+    panel.style.display = "none";
+
+    const toggle = () => {
+      if (!led.classList.contains("page-health-led-clickable")) return;
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+      led.setAttribute("aria-expanded", String(panel.style.display !== "none"));
+    };
+    led.addEventListener("click", toggle);
+    led.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    row.appendChild(led);
+    row.appendChild(textEl);
+    row.appendChild(panel);
+    host.appendChild(row);
+    render();
+  }
+
+  function recordError(message) {
+    if (errors.length < MAX_ERRORS) errors.push(message);
+    render();
+  }
+
+  // Capture phase so failed <script>/<link> loads (which don't bubble) are
+  // seen too. Failed <img> loads are deliberately ignored — flyers/covers
+  // handle their own missing-image states.
+  window.addEventListener(
+    "error",
+    (e) => {
+      const t = e.target;
+      if (t && t !== window && t.tagName) {
+        if (
+          t.tagName === "SCRIPT" ||
+          (t.tagName === "LINK" && t.rel === "stylesheet")
+        ) {
+          recordError(
+            `failed to load ${t.tagName.toLowerCase()} ${t.src || t.href}`,
+          );
+        }
+        return;
+      }
+      const where = e.filename
+        ? ` (${String(e.filename).split("/").pop().split("?")[0]}:${e.lineno})`
+        : "";
+      recordError(`${e.message || "Script error"}${where}`);
+    },
+    true,
+  );
+
+  window.addEventListener("unhandledrejection", (e) => {
+    const r = e.reason;
+    recordError(
+      `unhandled promise rejection: ${(r && r.message) || String(r)}`,
+    );
+  });
+
+  function feedWarnings() {
+    const out = [];
+    if (typeof dataHealthStatus !== "undefined") {
+      if (dataHealthStatus.status === "stale-cache")
+        out.push("events feed unavailable — showing a stale cached copy");
+    }
+    return out;
+  }
+
+  /**
+   * Call once the page believes it has finished rendering. Runs sanity
+   * checks and settles the LED. Safe to call again (re-evaluates).
+   * @param {object} [options]
+   * @param {string} [options.contentId] - id of the main content container;
+   *   must be visible and non-empty.
+   * @param {Array<[string, () => boolean]>} [options.checks] - extra
+   *   [description, test] pairs; a falsy/throwing test is a failed check.
+   */
+  function markReady({ contentId, checks = [] } = {}) {
+    const found = [];
+
+    ["loadingState", "loadingMsg"].forEach((id) => {
+      const loading = document.getElementById(id);
+      if (loading && loading.offsetParent !== null)
+        found.push("loading message is still showing");
+    });
+
+    if (contentId) {
+      const c = document.getElementById(contentId);
+      if (!c) found.push(`#${contentId} is missing`);
+      else if (c.offsetParent === null) found.push(`#${contentId} is hidden`);
+      else if (c.children.length === 0) found.push(`#${contentId} is empty`);
+    }
+
+    if (!document.querySelector(".site-nav a"))
+      found.push("site navigation is missing");
+
+    checks.forEach(([label, test]) => {
+      try {
+        if (!test()) found.push(label);
+      } catch (e) {
+        found.push(`${label} (${e.message})`);
+      }
+    });
+
+    problems = found;
+    warnings = feedWarnings();
+    ready = true;
+    if (readyMs == null) readyMs = performance.now() - startedAt;
+    render();
+    console.log(
+      `[page-health] ${status()} after ${Math.round(readyMs)}ms`,
+      { errors: [...errors], problems, warnings },
+    );
+  }
+
+  /**
+   * The page ended up in its "not found" state (unknown id, or the events
+   * data failed to load). Not a JS fault, so amber unless the feed itself
+   * failed outright, which is red.
+   */
+  function markNotFound() {
+    problems =
+      typeof dataHealthStatus !== "undefined" &&
+      dataHealthStatus.status === "error"
+        ? ["events data failed to load"]
+        : [];
+    warnings = ["page showed its 'not found' state"];
+    ready = true;
+    if (readyMs == null) readyMs = performance.now() - startedAt;
+    render();
+  }
+
+  /**
+   * The page could not render at all (e.g. the events data failed to load
+   * and the page showed its own error message). Always red.
+   */
+  function markFailed(message) {
+    problems = [message || "page failed to render"];
+    warnings = [];
+    ready = true;
+    if (readyMs == null) readyMs = performance.now() - startedAt;
+    render();
+  }
+
+  const stallTimer = setTimeout(() => {
+    if (ready) return;
+    stalled = true;
+    console.warn(
+      `[page-health] still not ready after ${STALL_MS / 1000}s — page may be stuck loading`,
+    );
+    render();
+  }, STALL_MS);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
+  }
+  render();
+
+  return {
+    markReady,
+    markNotFound,
+    markFailed,
+    get status() {
+      return status();
+    },
+    report() {
+      return {
+        status: status(),
+        errors: [...errors],
+        problems: [...problems],
+        warnings: [...warnings],
+        readyMs,
+      };
+    },
+  };
+})();
+
+window.PageHealth = PageHealth;
+
+// ---------------------------------------------------------------------------
 // Presentation Helper
 // ---------------------------------------------------------------------------
 
@@ -1527,7 +1810,7 @@ function simpleList(panel, items) {
 
 function showNotFound() {
   document.getElementById("loadingState").style.display = "none";
-  document.getElementById("notFoundState").style.display = "";
+  document.getElementById("notFoundState").style.display = "";  PageHealth.markNotFound();
 }
 
 /**

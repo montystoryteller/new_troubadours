@@ -503,6 +503,7 @@ function applyFilter() {
   if (!loaded) {
     document.getElementById("loadingMsg").textContent =
       "Could not load events data — please try again shortly.";
+    PageHealth.markFailed("events data failed to load");
     return;
   }
   const performersLookup = loaded.performersLookup;
@@ -561,4 +562,12 @@ function applyFilter() {
   document.getElementById("loadingMsg").style.display = "none";
   applyFilter();
   document.getElementById("mediaSearch").addEventListener("input", applyFilter);
+  PageHealth.markReady({
+    checks: [
+      [
+        "no media groups rendered",
+        () => document.querySelectorAll(".media-group-details").length > 0,
+      ],
+    ],
+  });
 })();

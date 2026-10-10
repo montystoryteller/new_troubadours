@@ -761,6 +761,15 @@ setCanonical("venue");
       document.getElementById("loadingState").style.display = "none";
       document.getElementById("venueContent").style.display = "";
       preloadLeafletWhenIdle();
+      PageHealth.markReady({
+        contentId: "venueContent",
+        checks: [
+          [
+            "venue list has no cards",
+            () => document.querySelectorAll(".venue-list-card").length > 0,
+          ],
+        ],
+      });
     }, 0);
     return;
   }
@@ -793,6 +802,15 @@ setCanonical("venue");
     renderShareBadge("venue", venueId);
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("venueContent").style.display = "";
+    PageHealth.markReady({
+      contentId: "venueContent",
+      checks: [
+        [
+          "venue name is empty",
+          () => document.getElementById("venueName").textContent.trim().length > 0,
+        ],
+      ],
+    });
     if (hasLatlon(venue)) {
       loadLeaflet()
         .then(() => {

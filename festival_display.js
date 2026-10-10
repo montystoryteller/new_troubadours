@@ -1800,6 +1800,7 @@ setCanonical("festival");
             '<p class="not-found">Could not load events data. Please try refreshing the page.</p>';
       });
     }
+    PageHealth.markFailed("events data failed to load");
     return;
   }
 
@@ -1818,6 +1819,11 @@ setCanonical("festival");
     // synchronously — none of it needs the map (displayFestival() shows
     // #festivalNotFound itself if the id is unknown).
     displayFestival(festivalId);
+    if (currentFestival) {
+      PageHealth.markReady({ contentId: "festivalContent" });
+    } else {
+      PageHealth.markNotFound();
+    }
 
     // Map is enhancement, not the text content this page needs indexed —
     // load it in the background so it never blocks the above.
@@ -1830,6 +1836,7 @@ setCanonical("festival");
   setTimeout(() => {
     populateFestivalDropdown();
     renderFestivalPanels();
+    PageHealth.markReady({ contentId: "festivalBrowseState" });
     // Not needed until a festival is picked, so loaded after the panels.
     ensureMapInitialized();
   }, 0);

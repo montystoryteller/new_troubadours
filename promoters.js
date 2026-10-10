@@ -808,6 +808,7 @@ function displayPromoter(promoterId) {
     document.getElementById("promoterContent").style.display = "none";
     document.getElementById("promoterNotFound").style.display = "block";
     renderShareBadge("promoter", null);
+    PageHealth.markNotFound();
     return;
   }
 
@@ -887,6 +888,7 @@ function displayPromoter(promoterId) {
   renderPromoterStages(promoter);
   renderPromoterVenues(promoter);
   renderPromoterArtists(promoter);
+  PageHealth.markReady({ contentId: "promoterContent" });
 }
 
 // ---------------------------------------------------------------------------
@@ -941,6 +943,7 @@ setCanonical("promoter");
     } else {
       document.getElementById("allPromotersBody").innerHTML = msg;
     }
+    PageHealth.markFailed("events data failed to load");
     return;
   }
 
@@ -961,6 +964,15 @@ setCanonical("promoter");
     } else {
       populatePromoterDropdown();
       renderPromotersOverview();
+      PageHealth.markReady({
+        contentId: "allPromotersBody",
+        checks: [
+          [
+            "no promoter cards rendered",
+            () => document.querySelectorAll(".promoter-overview-card").length > 0,
+          ],
+        ],
+      });
     }
   }, 0);
 })();

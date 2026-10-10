@@ -473,6 +473,15 @@ setCanonical("performer");
       renderAllPerformers();
       document.getElementById("loadingState").style.display = "none";
       document.getElementById("performerContent").style.display = "";
+      PageHealth.markReady({
+        contentId: "performerContent",
+        checks: [
+          [
+            "performer list has no rows",
+            () => document.querySelectorAll(".simple-list-row").length > 0,
+          ],
+        ],
+      });
     }, 0);
     return;
   }
@@ -515,6 +524,15 @@ setCanonical("performer");
     renderShareBadge("performer", performerId);
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("performerContent").style.display = "";
+  PageHealth.markReady({
+      contentId: "performerContent",
+      checks: [
+        [
+          "performer name is empty",
+          () => document.getElementById("performerName").textContent.trim().length > 0,
+        ],
+      ],
+    });
   }, 0);
 })();
 

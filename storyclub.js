@@ -171,6 +171,7 @@ setCanonical("club");
   if (!result) {
     document.getElementById("page-content").innerHTML =
       '<p class="not-found">Could not load events data.</p>';
+    PageHealth.markFailed("events data failed to load");
     return;
   }
   const data = result.eventsData;
@@ -193,6 +194,19 @@ setCanonical("club");
   // This allows the browser to render the loading state or cached data first
   setTimeout(async () => {
     await renderPage(data, clubId);
+    if (document.querySelector("#page-content .not-found")) {
+      PageHealth.markNotFound();
+    } else {
+      PageHealth.markReady({
+        contentId: "page-content",
+        checks: [
+          [
+            "still showing a loading message",
+            () => !document.querySelector("#page-content .status-message--loading"),
+          ],
+        ],
+      });
+    }
     // Mark schedules as cached — valid until date/month boundary crosses
     setSchedulesCache({ computed: true });
   }, 0);

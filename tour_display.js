@@ -2059,6 +2059,15 @@ function renderBrowseLandingPanels() {
   // The map isn't needed until a tour is actually picked, so it's loaded
   // here too — after the panels/dropdowns above, never before them.
   ensureMapInitialized();
+  PageHealth.markReady({
+    contentId: "tourBrowseState",
+    checks: [
+      [
+        "still showing a loading message",
+        () => !document.querySelector("#tourBrowseState .upcoming-tours-placeholder, #tourBrowseState .loading-state"),
+      ],
+    ],
+  });
 }
 
 // The reverse of what singleTourMode/displayTour() do when showing one
@@ -2130,6 +2139,7 @@ setCanonical("tour");
         },
       );
     }
+    PageHealth.markFailed("events data failed to load");
     return;
   }
 
@@ -2162,11 +2172,13 @@ setCanonical("tour");
       // line below even starts loading Leaflet.
       console.log("Loading tour from URL:", urlParams.tourId);
       displayTour(urlParams.tourId);
+      PageHealth.markReady({ contentId: "tourContent" });
     } else {
       console.warn(
         `tour_guide.html: tour "${urlParams.tourId}" not found.`,
       );
       document.getElementById("tourNotFoundState").style.display = "";
+      PageHealth.markNotFound();
     }
 
     // Map is enhancement, not the text content this page needs indexed —

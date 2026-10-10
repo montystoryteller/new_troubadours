@@ -792,4 +792,5 @@ setCanonical(
 
   document.getElementById("loadingState").style.display = "none";
   document.getElementById("booksContent").style.display = "";
+  PageHealth.markReady({ contentId: "booksContent" });
 })();
