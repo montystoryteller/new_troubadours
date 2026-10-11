@@ -22,6 +22,49 @@ let eventsData = null;
 let venuesLookup = {};
 let performersLookup = {};
 let toursLookup = {};
+
+/**
+ * Lines like "Convenor of: Island Storytellers" / "Regular teller at: …" for
+ * a performer, worked out from clubs[].convenor (string or list of
+ * performer ids) and clubs[].regular_tellers. Each club links to its
+ * storyclub.html page. The two roles are independent, so a club can appear
+ * under both. Returns an array of elements (empty if none).
+ * @param {string} performerId
+ * @returns {HTMLElement[]}
+ */
+function clubRoleLines(performerId) {
+  const clubs = (eventsData && eventsData.clubs) || [];
+  const asList = (v) => (Array.isArray(v) ? v : v ? [v] : []);
+  const convenes = [];
+  const tells = [];
+  clubs.forEach((c) => {
+    if (!c || !c.club) return;
+    // Independent roles: someone can be both convenor and a regular teller
+    // of the same club, and both lines are shown.
+    if (asList(c.convenor).includes(performerId)) convenes.push(c);
+    if (asList(c.regular_tellers).includes(performerId)) tells.push(c);
+  });
+  const build = (label, list) => {
+    if (!list.length) return null;
+    const div = document.createElement("div");
+    div.className = "performer-club-roles";
+    const strong = document.createElement("strong");
+    strong.textContent = `${label}: `;
+    div.appendChild(strong);
+    list.forEach((c, i) => {
+      if (i > 0) div.appendChild(document.createTextNode(", "));
+      const a = document.createElement("a");
+      a.href = `storyclub.html?club=${encodeURIComponent(c.club)}`;
+      a.textContent = c.name || c.club;
+      div.appendChild(a);
+    });
+    return div;
+  };
+  return [
+    build("Convenor of", convenes),
+    build("Regular teller at", tells),
+  ].filter(Boolean);
+}
 let podcastsLookup = {};
 let performerId = null;
 let performer = null;
@@ -873,12 +916,14 @@ function renderPerformer() {
     let href;
     if (kind === "facebook") {
       href = normaliseFacebookUrl(url);
+    } else if (kind === "facebook_group") {
+      href = normaliseFacebookGroupUrl(url);
     } else if (kind === "instagram") {
       href = normaliseInstagramUrl(url);
     } else {
       href = sanitizeUrl(url);
-      if (!href) return;
     }
+    if (!href || href === "#") return;
     if (websiteDiv.children.length > 0)
       websiteDiv.appendChild(document.createTextNode(" · "));
     const a = document.createElement("a");
@@ -897,7 +942,7 @@ function renderPerformer() {
     "website",
   );
   addPerformerLink(performer.facebook, "Facebook", "facebook");
-  addPerformerLink(performer.facebook_group, "Facebook Page", "facebook");
+  addPerformerLink(performer.facebook_group, "Facebook group", "facebook_group");
   addPerformerLink(performer.instagram, "Instagram", "instagram");
   // Groups this performer belongs to ("Also performs as: …"), from the groups'
   // own performer_ids — see groupIdsForMember() in books_utils.js.
@@ -905,6 +950,9 @@ function renderPerformer() {
   groupsDiv.innerHTML = "";
   const groupsLine = collaborationsLine(performerId, performersLookup);
   if (groupsLine) groupsDiv.appendChild(groupsLine);
+  // Story clubs this performer convenes / is a regular teller at — the
+  // reverse of clubs[].convenor / clubs[].regular_tellers.
+  clubRoleLines(performerId).forEach((line) => groupsDiv.appendChild(line));
 
   // Podcast(s) get their own collapsible section further down the page
   // (see renderPodcastSection) rather than a link here, since performer.podcast

@@ -6127,7 +6127,6 @@
       "name": "Birmingham Storytelling Cafe",
       "schedule": "3rd wednesday",
       "link": "https://www.birminghamstorytellingcafe.co.uk/",
-      "facebook": "https://www.facebook.com/groups/BirminghamStorytellingcafe",
       "facebook_group": "BirminghamStorytellingcafe",
       "club": "birminghamSCafe",
       "venue_id": "kitchen-garden-cafe-birmingham"
@@ -6153,7 +6152,6 @@
       "name": "Beeston Tales",
       "schedule": "3rd wednesday",
       "time": "7.30-10pm",
-      "facebook": "https://www.facebook.com/groups/beestontales",
       "facebook_group": "beestontales",
       "description": "Beeston Tales is a monthly storytelling club night happening Beeston. Hosted by Tim Ralphs and Mike Payton, the club features themed nights, renowned guests and all the best of the most ancient and human artform.",
       "club": "beestontales",
@@ -6192,7 +6190,7 @@
     {
       "name": "Matlock Storytelling Cafe",
       "schedule": "1st friday",
-      "facebook": "https://www.facebook.com/MatlockStorytellingCafe",
+      "facebook": "MatlockStorytellingCafe",
       "club": "matlockSCafe",
       "tickets_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/",
       "venue_id": "imperial-rooms-matlock"
@@ -6209,7 +6207,7 @@
       "name": "Hebden Bridge Shaggydog storytellers",
       "schedule": "last friday",
       "time": "7.30pm",
-      "facebook": "https://www.facebook.com/TheShaggyDogStorytellers",
+      "facebook": "TheShaggyDogStorytellers",
       "club": "shaggydogstorytellers",
       "venue_id": "stubbing-wharf-hebden"
     },
@@ -6272,7 +6270,7 @@
       "schedule": "",
       "description": "Settle Stories is a rural arts charity based in Settle, North Yorkshire. Since 2010, we have used storytelling to build empathy, strengthen communities, and inspire curiosity. Founded by Sita Brand with the Storytelling Festival in the rural Yorkshire Dales, Settle Stories has scaled from 16 events in year one to engaging over 200,000 people worldwide to date. Operating from The Joinery in the Yorkshire Dales, we exemplify what the Hodge Review calls for: professional excellence originating from an underserved rural area, using digital infrastructure to extend access nationally and internationally while maintaining a strong local presence. This growth was accelerated by pioneering digital storytelling during the COVID-19 pandemic, demonstrating that world-class arts infrastructure extends beyond city limits. Our rural base is a strategic advantage, not a constraint; it positions us to solve the 'touring crisis' identified in the Hodge Review through hybrid delivery from unusual cultural locations. We are an Arts Council England National Portfolio",
       "link": "https://settlestories.org.uk/",
-      "facebook": "https://www.facebook.com/SettleStories",
+      "facebook": "SettleStories",
       "time": "",
       "club": "settle-stories",
       "tickets_url": "https://www.ticketsource.com/settle-stories/"
@@ -6281,7 +6279,7 @@
       "name": "Haworth storytelling circle",
       "schedule": "1st thursday",
       "venue_id": "fleece-inn-haworth",
-      "facebook": "https://www.facebook.com/HaworthStorytellingCircle",
+      "facebook": "HaworthStorytellingCircle",
       "time": "8pm",
       "club": "HaworthStorytellingCircle"
     },
@@ -6303,7 +6301,7 @@
     {
       "name": "Grampian Association of Storytellers - GAS",
       "schedule": "1st friday",
-      "facebook": "https://www.facebook.com/grampianassocationofstorytellers/",
+      "facebook": "grampianassocationofstorytellers",
       "club": "grampiangas",
       "venue_id": "various"
     },
@@ -6311,7 +6309,7 @@
       "name": "Cambridge Storytellers",
       "schedule": "2nd sunday",
       "link": "https://www.cambridgestorytellers.com/",
-      "facebook": "https://www.facebook.com/CambridgeStorytellers",
+      "facebook": "CambridgeStorytellers",
       "club": "cambridgestorytellers",
       "geocode_missing": true,
       "venue_id": "special-events-only"
@@ -6329,7 +6327,7 @@
       "name": "Storytelling Ambassadors",
       "schedule": "3rd friday",
       "link": "https://www.avcmatters.org/storytelling",
-      "facebook": "https://www.facebook.com/StorytellingAmbassadorsFordingbridge",
+      "facebook": "StorytellingAmbassadorsFordingbridge",
       "time": "7.30pm",
       "club": "storytellingambassadors",
       "email": "Storytellingambassadors-info@yahoo.com",
@@ -6370,7 +6368,7 @@
       "schedule": "",
       "time": "",
       "link": "",
-      "facebook": "https://www.facebook.com/DebWinterStories",
+      "facebook": "DebWinterStories",
       "club": "pembrokeshirestorytelling",
       "venue_id": "peppers-hub-fishguard"
     },
@@ -6388,7 +6386,7 @@
       "schedule": "",
       "time": "",
       "link": "",
-      "facebook": "https://www.facebook.com/ArmstrongStorytellingTrust",
+      "facebook": "ArmstrongStorytellingTrust",
       "club": "bangor-yarnspinners",
       "venue_id": ""
     },
@@ -6397,7 +6395,7 @@
       "schedule": "3rd friday",
       "time": "7.30pm for an 8pm start. £10 per person",
       "link": "https://www.b-l-a-s-t.co.uk/",
-      "facebook": "https://www.facebook.com/BLASTstorytelling",
+      "facebook": "BLASTstorytelling",
       "club": "blast",
       "venue_id": "town-hall-bishops-castle"
     },
@@ -6416,14 +6414,13 @@
       "schedule": "2nd thursday",
       "time": "7-9pm",
       "link": "https://tistales.org.uk/island-storytellers/",
-      "facebook": "https://www.facebook.com/groups/islandstorytellers",
+      "facebook_group": "islandstorytellers",
       "convenor": "sue-bailey",
       "regular_tellers": [
         "sue-bailey",
         "holly-medland",
         "merl-fluin"
       ],
-      "facebook_group": "islandstorytellers",
       "club": "islandstorytellers",
       "venue_id": "fig-tree-shanklin"
     },
@@ -6502,7 +6499,7 @@
       "schedule": "1st wednesday",
       "time": "7-9.30pm",
       "link": "https://www.storyfeast.uk/",
-      "facebook": "https://www.facebook.com/StorytellingFeast",
+      "facebook": "StorytellingFeast",
       "club": "feastoffools",
       "description": "The Feast of Fools encourages oral storytelling in Northampton, bringing excellent professional storytellers, and providing a platform for local storytellers, and musicians.",
       "isPromoter": true,
@@ -6607,7 +6604,7 @@
       "time": "7.30pm",
       "description": "The Plough Storytelling Circle is a lively, forum for listening to and telling stories. Folk tales, mythology, modern stories, personal stories. All told in the time-honoured way of the oral tradition storyteller - from memory.\n\n\n\nAnyone and everyone is welcome to tell a tale or just to listen, and we also enjoy occasional music and poetry. It is a supportive and friendly environment for beginners and more experienced storytellers to try out stories and hone their skills. And stories would be nothing without people to listen to them.",
       "link": "https://www.theploughartscentre.org.uk/",
-      "facebook": "https://www.facebook.com/ploughstorytelling",
+      "facebook": "ploughstorytelling",
       "email": "storytelling.plough@gmail.com",
       "club": "plough-story-circle",
       "tickets_url": "https://www.theploughartscentre.org.uk/event/plough-storytelling-circle-0",
@@ -6628,7 +6625,7 @@
       "name": "Lichfield storytellers",
       "schedule": "2nd tuesday",
       "time": "7pm",
-      "facebook": "https://www.facebook.com/lichfieldstorytellers",
+      "facebook": "lichfieldstorytellers",
       "email": "lichfieldstorytellers@gmail.com",
       "club": "lichfieldST",
       "venue_id": "kings-head-lichfield",
@@ -6660,7 +6657,6 @@
       "name": "Guesthouse storytellers, Newhaven",
       "schedule": "2nd tuesday",
       "time": "7.30pm",
-      "facebook": "https://www.facebook.com/groups/guesthousestorytellers",
       "facebook_group": "guesthousestorytellers",
       "club": "guesthouseST",
       "exceptions": [
@@ -6681,7 +6677,7 @@
       "name": "The Storytellers of Nottingham",
       "schedule": "2nd wednesday (even months) | 2nd thursday (odd months)",
       "time": "7.30-9.30pm",
-      "facebook": "https://www.facebook.com/storytellersofnottingham",
+      "facebook": "storytellersofnottingham",
       "club": "storytellersnotts",
       "price": "£5",
       "alternate_locations": {
@@ -6701,7 +6697,6 @@
       "name": "Southampton Story Club",
       "schedule": "1st thursday",
       "time": "8-10pm",
-      "facebook": "https://www.facebook.com/groups/southamptonstories",
       "facebook_group": "southamptonstories",
       "club": "southamptonSC",
       "venue_id": "guide-dog-pub-southampton"
@@ -6719,7 +6714,6 @@
       "name": "Sarum Story club [online?]",
       "schedule": "3rd tuesday",
       "location": "",
-      "facebook": "https://www.facebook.com/groups/sarumstoryclub",
       "facebook_group": "sarumstoryclub",
       "club": "sarumSC",
       "geocode_missing": true
@@ -6758,7 +6752,7 @@
       "schedule": "1st friday",
       "link": "https://www.abitcrack.com/",
       "time": "7.30-9",
-      "facebook": "https://www.facebook.com/ABitCrack",
+      "facebook": "ABitCrack",
       "club": "abitcrack",
       "venue_id": "the-chillingham-arms",
       "feature_slots": [
@@ -6810,7 +6804,7 @@
       "name": "Brighton Telltales",
       "schedule": "1st wednesday",
       "time": "7pm",
-      "facebook": "https://www.facebook.com/brightontelltales",
+      "facebook": "brightontelltales",
       "club": "brightontelltales",
       "club_flyer": "brighton_telltales_flyer.jpg",
       "venue_id": "the-yellow-book-brighton"
@@ -6853,14 +6847,14 @@
       "link": "https://talesatthetavern.co.uk/",
       "club": "talesatthetavern",
       "description": "Open-mic slots of up 10 mins (approx) for performers, on a first come first served basis. To book a slot or find out more, contact Laura or Niall.\n\n\n\n*NEW: Sometimes, we give some space to tellers with something longer form to test. Also bookable in advance.\n\n\n\nAs well as amazing stories and general joy, the Tavern does great food and drinks, and is a lovely welcoming place to be.",
-      "facebook": "https://www.facebook.com/talesatthetavern/",
+      "facebook": "talesatthetavern",
       "venue_id": "london-hospital-tavern"
     },
     {
       "name": "Leek storytellers",
       "schedule": "2nd wednesday",
       "time": "7pm",
-      "facebook": "https://www.facebook.com/leekstorytellers",
+      "facebook": "leekstorytellers",
       "email": "Fernandfables@gmail.com",
       "club": "leekstorytellers",
       "club_flyer": "leekstorytellers_flyer.jpg",
@@ -6877,7 +6871,6 @@
     {
       "name": "Much Wenlock, Salop - words at the edge",
       "schedule": "2nd monday",
-      "facebook": "https://www.facebook.com/groups/wordsattheedge",
       "facebook_group": "wordsattheedge",
       "club": "wordsattheedge",
       "venue_id": "town-hall-bishops-castle"
@@ -6886,7 +6879,7 @@
       "name": "Manchester - Sting in the Tale",
       "schedule": "3rd wednesday",
       "time": "7pm",
-      "facebook": "https://www.facebook.com/astinginthetaleclub",
+      "facebook": "astinginthetaleclub",
       "email": "astinginthetaleclub@gmail.com",
       "club": "stinginthetale",
       "venue_id": "lock-91-bar-manchester",
@@ -6910,7 +6903,7 @@
       "name": "Heads & Tales Storytelling Club, Ringwood",
       "schedule": "3rd thursday",
       "club": "heads-and-tales",
-      "facebook": "https://www.facebook.com/HeadsAndTalesCafe",
+      "facebook": "HeadsAndTalesCafe",
       "venue_id": "the-elm-tree-ringwood"
     },
     {
@@ -6924,7 +6917,7 @@
       "name": "Tales & Tunes",
       "schedule": "last thursday",
       "time": "7pm",
-      "facebook": "https://www.facebook.com/thepitatnewstead",
+      "facebook": "thepitatnewstead",
       "club": "taleasandtunesthepit",
       "venue_id": "the-pit-at-newstead"
     },
@@ -6933,7 +6926,6 @@
       "schedule": "first wednesday",
       "time": "7-8.30pm",
       "venue_id": "climate-shop-cafe-aberystwyth",
-      "facebook": "https://www.facebook.com/groups/aberfables",
       "facebook_group": "aberfables",
       "club": "aberystwythfables"
     },
@@ -7261,7 +7253,6 @@
       "leader": "Sally Pomme Clayton",
       "date": "06/12/2025",
       "cost": "£40",
-      "link": "https://www.facebook.com/ABitCrack",
       "facebook": "ABitCrack",
       "club": "abitcrack",
       "course_flyer": "2025_12_06_abitcrack_pomme_24storyseeds.jpg",
@@ -12916,8 +12907,8 @@
       "id": "teach-siamsa-finuge",
       "name": "Teach Siamsa Finuge",
       "full_address": "Teach Siamsa Finuge, Finuge, Lixnaw V92 WE22 Kerry",
-      "facebook": "https://www.facebook.com/teachsiamsafinuge/",
-      "instagram": "https://www.instagram.com/teachsiamsa/",
+      "facebook": "teachsiamsafinuge",
+      "instagram": "teachsiamsa",
       "description": "Teach Siamsa Finuge. Centre for Folk Arts & Culture. Established 1974",
       "latlon": [
         52.4247,
@@ -14181,7 +14172,7 @@
       "name": "Moorforge Viking Settlement. Wigton",
       "city": "Wigton",
       "postcode": "CA7 2RA",
-      "facebook": "https://www.facebook.com/Moorforge/",
+      "facebook": "Moorforge",
       "full_address": "Moorforge Viking Settlement, Moor House, Gilcrux, CA7 2RA",
       "url": "https://earthouse.org.uk/",
       "latlon": [
@@ -14315,7 +14306,7 @@
       "city": "Teignmouth",
       "postcode": "TQ14 8DZ",
       "full_address": "The Folk Preservation Society, Teignmouth, TQ14 8DZ",
-      "url": "https://www.facebook.com/folk.preservation.society",
+      "facebook": "folk.preservation.society",
       "latlon": [
         50.5468543,
         -3.4975078
@@ -14579,7 +14570,7 @@
       "city": "Sheffield",
       "postcode": "S3 8BT",
       "full_address": "Alder, Percy Street, Neepsend, Sheffield, S3 8BT",
-      "url": "https://www.facebook.com/AlderBarSheff",
+      "facebook": "AlderBarSheff",
       "latlon": [
         53.39193,
         -1.47608
@@ -14699,7 +14690,7 @@
       "city": "Cardiff",
       "postcode": "CF24 2FN",
       "full_address": "University of South Wales, Cardiff Campus (CAB218), Cardiff CF24 2FN",
-      "url": "https://www.facebook.com/folk.preservation.society",
+      "facebook": "folk.preservation.society",
       "latlon": [
         51.4787,
         -3.17023
@@ -15247,7 +15238,7 @@
       "full_address": "Castle Inn, 28 Prospect Place, Swindon, SN1 3LQ",
       "city": "Swindon",
       "postcode": "SN1 3LQ",
-      "url": "https://www.facebook.com/swindonoldtownpublichouse/",
+      "facebook": "swindonoldtownpublichouse/",
       "description": "A great little back street pub with all the goodies & lovely Courtyard Garden. Live Music, A Great range of Beers, Wines & Spirits.",
       "latlon": [
         51.5551,
@@ -15945,7 +15936,7 @@
       "city": "Glastonbury",
       "postcode": "BA6 9DX",
       "full_address": "Avalon Club, Glastonbury, BA6 9DX",
-      "url": "https://www.facebook.com/AvalonConstitutionalClub",
+      "facebook": "AvalonConstitutionalClub",
       "latlon": [
         51.147672,
         -2.7147963
@@ -16562,7 +16553,7 @@
       "city": "Kettering",
       "postcode": "NN14 3AA",
       "full_address": "Grafton Underwood Village Hall, Kettering, NN14 3AA",
-      "url": "https://www.facebook.com/graftonunderwoodvillagehall/?locale=en_GB",
+      "facebook": "graftonunderwoodvillagehall",
       "latlon": [
         52.41267,
         -0.64358
@@ -17802,7 +17793,7 @@
       "city": "Warminster",
       "postcode": "BA12 6JE",
       "full_address": "Butt of Sherry, Castle Street, Mere, Warminster, BA12 6JE",
-      "url": "https://www.facebook.com/officialbuttofsherry",
+      "facebook": "officialbuttofsherry",
       "latlon": [
         51.09041,
         -2.26999
@@ -18091,7 +18082,7 @@
       "city": "Weston-super-Mare",
       "postcode": "BS23 1HP",
       "full_address": "Brit Bar, 118 High Street, Weston-super-Mare, BS23 1HP",
-      "url": "https://www.facebook.com/TheBritBar",
+      "facebook": "TheBritBar",
       "latlon": [
         51.3505,
         -2.97884
@@ -18451,7 +18442,7 @@
       "city": "Wolverhampton",
       "postcode": "WV1 3NX",
       "full_address": "The Giffard Arms, 64 Victoria Street, Wolverhampton, WV1 3NX",
-      "url": "https://www.facebook.com/GiffardArms",
+      "facebook": "GiffardArms",
       "latlon": [
         52.58539,
         -2.12948
@@ -19033,7 +19024,7 @@
     "island-storytellers": {
       "id": "island-storytellers",
       "name": "Island Storytellers",
-      "url": "https://www.facebook.com/groups/Islandstorytellers",
+      "facebook_group": "Islandstorytellers",
       "bio": "Informal story telling group on the Isle of Wight."
     },
     "james-canvin": {
@@ -19068,7 +19059,6 @@
     "sef-townsend": {
       "id": "sef-townsend",
       "name": "Sef Townsend",
-      "url": "https://www.facebook.com/sef.townsend",
       "facebook": "sef.townsend",
       "bio": "Sef Townsend draws on his personal experience of living and working on all five continents; and on reminiscence and language support work in immigrant and refugee communities to inform his workshops in participatory storytelling and music.\n\n\n\nHe has been running Arts projects with people in exile and immigrant communities since 1995. Through storytelling, song and 'join-in' music games he emphasises the use of traditional material from the participants' original backgrounds, and promote work that enables other cultures to be seen as an invaluable resource contributing to a shared diversity in the wider community."
     },
@@ -19148,7 +19138,6 @@
     "janet-crouch": {
       "id": "janet-crouch",
       "name": "Janet Crouch",
-      "url": "https://www.facebook.com/janet.crouch.9849",
       "facebook": "janet.crouch.9849",
       "bio": "Janet has been telling stories from the 1970's, promoting story for adults in a variety of organisations such as luncheon clubs, dementia groups, the U3A, the WI, and folk clubs.\n\n\n\nShe was privileged to tell stories at the First International Storytelling Festival in Marrakech with tellers from the UK, Morocco, Canada, USA, Finland, Ireland, and Colombia too.\n\n\n\nThis event is intended for ages 16 and older."
     },
@@ -19161,13 +19150,13 @@
     "peter-chand": {
       "id": "peter-chand",
       "name": "Peter Chand",
-      "url": "https://www.facebook.com/peterchand",
+      "facebook": "peterchand",
       "bio": "Peter Chand Storyteller - Tales from India"
     },
     "caravan-of-storytellers": {
       "id": "caravan-of-storytellers",
       "name": "Caravan of Storytellers",
-      "url": "https://www.facebook.com/caravanof.storytellers",
+      "facebook": "caravanof.storytellers",
       "bio": ""
     },
     "dave-tonge": {
@@ -20211,14 +20200,12 @@
     "colin-rowan": {
       "id": "colin-rowan",
       "name": "Colin Rowan",
-      "url": "https://www.facebook.com/astinginthetaleclub",
       "facebook": "astinginthetaleclub",
       "bio": "Storyteller."
     },
     "iris-skipworth": {
       "id": "iris-skipworth",
       "name": "Iris Skipworth",
-      "url": "https://www.facebook.com/astinginthetaleclub",
       "facebook": "astinginthetaleclub",
       "bio": "Professional storyteller."
     },
@@ -20278,7 +20265,7 @@
     "lynette-hill": {
       "id": "lynette-hil",
       "name": "Lynette Hill",
-      "url": "https://www.facebook.com/lynettehilluk",
+      "facebook": "lynettehilluk",
       "bio": "Lynette Hill is a Milton Keynes-based writer and performance storyteller who served as 2023 Bard of Stony Stratford. She has been telling tales comic, spooky and historic at festivals, schools, care homes and multi-faith events in Buckinghamshire, Northamptonshire and beyond since 2015.\n\n\n\nShe founded and hosts Bletchley's monthly storytelling show for grownups, Tales Tattled & Told and is the author of the fantasy novel series The Glass Singers. A former newspaper reporter, she has written for The Washington Post, the Public Medical News and other print and online media outlets.\n\n\n\nYou can also catch her at 2 pm on most Tuesdays telling Tall Tales at the Hospital on Milton Keynes Hospital radio."
     },
     "liz-weir": {
@@ -20451,7 +20438,7 @@
     "michael-dacre": {
       "id": "michael-dacre",
       "name": "Michael Dacre",
-      "url": "https://www.facebook.com/michael.dacrepurr",
+      "facebook": "michael.dacrepurr",
       "bio": "Michale Dacre, professional storyteller specialising in traditional tales and legends from the West Country.",
       "books": [
         {
@@ -20587,7 +20574,7 @@
     "gerry-donlon-bards-aloud": {
       "id": "gerry-donlon-bards-aloud",
       "name": "Gerry Donlon (Bards Aloud)",
-      "url": "https://www.facebook.com/bards.aloud"
+      "facebook": "bards.aloud"
     },
     "gemma-garwood": {
       "id": "gemma-garwood",
@@ -20749,7 +20736,7 @@
       "name": "Jane Lambourne",
       "bio": "Local teller with Tales Tattled and Told.",
       "url": "https://wassledine.co.uk/storytelling-old/countryside-events/",
-      "facebook": "https://www.facebook.com/wassledine.stories/"
+      "facebook": "wassledine.stories"
     },
     "bea-ferguson": {
       "id": "bea-ferguson",
@@ -21337,7 +21324,8 @@
       "id": "bassie-gracie",
       "name": "Bassie Gracie",
       "poet": true,
-      "url": "https://www.facebook.com/bassiegracie",
+      "facebook": "bassiegracie",
+      "instagram": "bassiegracie",
       "bio": "In her own words, \"'I'm Grace, I play the bass, people take photos of my face, I do poetry but I struggle with rhymes.\""
     },
     "nick-parker": {
@@ -21566,7 +21554,7 @@
     "andy-johnson": {
       "id": "andy-johnson",
       "name": "Andy Johnson",
-      "url": "https://www.facebook.com/1955andy",
+      "facebook": "1955andy",
       "bio": "Storyteller (and retired librarian), living in Liverpool."
     },
     "ailsa-dixon": {

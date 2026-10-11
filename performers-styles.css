@@ -8,11 +8,11 @@
     /* --theme-green/--theme-green-border/--theme-green-border-alt removed —
        duplicates of shared-styles.css's :root. These three are genuinely
        new here (not defined anywhere else) and are kept.
-       Note: --theme-green-bg-alt's value (rgb(8, 10, 8), near-black) looks
-       out of step with the other --theme-green-bg-* values here (all pale
-       greens) — worth double-checking this wasn't a data-entry mistake,
-       left as-is since that's a content question, not a duplication one. */
-    --theme-green-bg-alt: rgb(8, 10, 8);
+       Note: --theme-green-bg-alt was rgb(8, 10, 8) (near-black), which made
+       the member chips on compound-performer pages dark with dark-green text;
+       corrected to a pale green in line with the other --theme-green-bg-*
+       values. */
+    --theme-green-bg-alt: #f1f8e9;
     --theme-green-bg-hover: #dcedc8;
     --theme-green-bg-light: #f9fdf9;
 }
@@ -1118,8 +1118,8 @@ details.perf-nested-details[open]>.perf-nested-summary::before {
     margin-top: 2px;
 }
 
-
-   it's from (e.g. "World Storytelling Cafe") and, separately, its format
+/* Video appearance badges: which source/series a video is from
+   (e.g. "World Storytelling Cafe") and, separately, its format
    (e.g. "interview", "telling") — see collectPerformerVideoAppearances()
    in performers.js. */
 .perf-video-badges {
@@ -1734,4 +1734,21 @@ details.event-row-desc[open] > .event-row-desc-summary::before {
         grid-template-columns: 5.2em minmax(0, 1fr);
         gap: 8px;
     }
+}
+
+/* "Convenor of: …" / "Regular teller at: …" lines under the performer's
+   links — see clubRoleLines() in performers.js. */
+.performer-club-roles {
+    font-size: 14px;
+    margin-top: 6px;
+    color: #444;
+}
+
+.performer-club-roles a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.performer-club-roles a:hover {
+    text-decoration: underline;
 }

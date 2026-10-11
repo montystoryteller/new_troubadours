@@ -323,7 +323,12 @@
           "type": "string"
         },
         "facebook": {
-          "type": "string"
+          "type": "string",
+          "description": "Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "instagram": {
           "type": "string"
@@ -412,10 +417,12 @@
           "type": "string"
         },
         "facebook": {
-          "type": "string"
+          "type": "string",
+          "description": "Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
         },
         "facebook_group": {
-          "type": "string"
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "instagram": {
           "type": "string"
@@ -1637,9 +1644,34 @@
             "maxItems": 2
           }
         },
+        "convenor": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ],
+          "description": "Who runs this club night: a performer_id (key into the top-level `performers` object) or a list of them. Shown on the club page as 'Convenor' / 'Convenors', linking to each performer's page. Unknown ids are skipped with a console warning."
+        },
+        "regular_tellers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Performer_ids (keys into the top-level `performers` object) of the club's regular tellers/performers. Shown on the club page as 'Regular tellers', each linking to the performer's page. Unknown ids are skipped with a console warning. Distinct from `feature_slots`, which are dated guest bookings."
+        },
         "facebook": {
           "type": "string",
-          "description": "Also serves as the default `facebook` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `facebook` blank — see applyClubInheritance() in shared_utils.js."
+          "description": "Also serves as the default `facebook` for any specificEvent/musicEvent/poetryEvent that references this club via `club` AND sets `inheritClubData: true`, when that record leaves its own `facebook` blank — see applyClubInheritance() in shared_utils.js. Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "instagram": {
           "type": "string"
@@ -1747,7 +1779,11 @@
         },
         "facebook": {
           "type": "string",
-          "description": "Facebook page/profile URL."
+          "description": "Facebook page/profile URL. Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "email": {
           "type": "string"
@@ -1795,7 +1831,12 @@
           "type": "string"
         },
         "facebook": {
-          "type": "string"
+          "type": "string",
+          "description": "Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "description": {
           "type": "string"
@@ -2026,7 +2067,11 @@
         },
         "facebook": {
           "type": "string",
-          "description": "Facebook page/group URL — or, for one entry, a bare page name ('musicaltraditionsclub') rather than a full URL."
+          "description": "Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "tickets_url": {
           "type": "string"
@@ -2056,6 +2101,14 @@
         },
         "venue_id": {
           "type": "string"
+        },
+        "facebook": {
+          "type": "string",
+          "description": "Facebook page: a bare handle/page name, a full https://www.facebook.com/... URL, or markdown \"[Name](url)\". Normalised by normaliseFacebookUrl() in shared_utils.js. A /groups/ URL here is automatically treated as a group. For a group, prefer `facebook_group`; a record may have both and both are shown."
+        },
+        "facebook_group": {
+          "type": "string",
+          "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         }
       },
       "required": [

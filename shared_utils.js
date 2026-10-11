@@ -27,6 +27,8 @@ const ICON_SVG = {
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>',
   facebook:
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877f2"/><path d="M16.5 8H14c-.3 0-.5.2-.5.5V10H16l-.3 2.5H13.5V19h-2.5v-6.5H9V10h2V8.5C11 6.6 12.3 5.5 14 5.5c.8 0 2.5.1 2.5.1V8z" fill="#ffffff"/></svg>',
+  facebook_group:
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877f2"/><circle cx="12" cy="9" r="2.6" fill="#ffffff"/><circle cx="7.6" cy="10.2" r="1.9" fill="#ffffff"/><circle cx="16.4" cy="10.2" r="1.9" fill="#ffffff"/><path d="M12 12.6c-2.3 0-4.2 1.3-4.2 3.1v1.2h8.4v-1.2c0-1.8-1.9-3.1-4.2-3.1z" fill="#ffffff"/><path d="M7.6 12.4c-1.6 0-3 .9-3 2.2v1h2.4v-.9c0-.9.4-1.7 1.1-2.3-.1 0-.3 0-.5 0zM16.4 12.4c-.2 0-.4 0-.5 0 .7.6 1.1 1.4 1.1 2.3v.9h2.4v-1c0-1.3-1.4-2.2-3-2.2z" fill="#ffffff"/></svg>',
   link: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2H14V6M14 2L8 8M12 9V13C12 13.55 11.55 14 11 14H3C2.45 14 2 13.55 2 13V5C2 4.45 2.45 4 3 4H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
@@ -822,7 +824,69 @@ function escapeHtml(text) {
  * @returns {string}
  */
 function normaliseFacebookUrl(fb) {
-  return fb.startsWith("http") ? fb : `https://facebook.com/${fb}`;
+  if (!fb) return "#";
+  const raw = unwrapMarkdownLink(fb).replace(/^@/, "");
+  const url = /^https?:\/\//i.test(raw)
+    ? raw
+    : `https://facebook.com/${raw.replace(/^\/+/, "")}`;
+  return sanitizeUrl(url) || "#";
+}
+
+/** Labels for the two kinds of Facebook link. */
+const FACEBOOK_LINK_LABELS = {
+  facebook: "Facebook",
+  facebook_group: "Facebook group",
+};
+
+/**
+ * If `s` is a markdown link "[text](url)", return the url; otherwise the
+ * trimmed string unchanged.
+ */
+function unwrapMarkdownLink(s) {
+  const t = String(s || "").trim();
+  const m = t.match(/^\[[^\]]*\]\(([^)\s]+)\)$/);
+  return m ? m[1] : t;
+}
+
+/**
+ * Normalise a Facebook GROUP reference to a sanitized full URL. Accepts a
+ * bare handle/id, "groups/Handle", a full https://www.facebook.com/groups/...
+ * URL, or markdown "[Handle](https://www.facebook.com/groups/Handle)".
+ * @returns {string} sanitized URL, or "#" if unusable.
+ */
+function normaliseFacebookGroupUrl(fg) {
+  if (!fg) return "#";
+  const raw = unwrapMarkdownLink(fg);
+  const url = /^https?:\/\//i.test(raw)
+    ? raw
+    : `https://facebook.com/groups/${raw.replace(/^\/+/, "").replace(/^groups\//i, "")}`;
+  return sanitizeUrl(url) || "#";
+}
+
+/**
+ * Build the list of Facebook links for a record: its page (.facebook)
+ * and/or group (.facebook_group). A .facebook value that is really a
+ * /groups/ URL is treated as a group. Duplicates and unusable values are
+ * dropped.
+ * @param {{facebook?: string, facebook_group?: string}} obj
+ * @returns {{kind: 'facebook'|'facebook_group', href: string}[]}
+ */
+function facebookLinkSpecs(obj) {
+  const out = [];
+  const seen = new Set();
+  const add = (kind, href) => {
+    const key = href.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/+$/, "").toLowerCase();
+    if (!href || href === "#" || seen.has(key)) return;
+    seen.add(key);
+    out.push({ kind, href });
+  };
+  if (obj?.facebook) {
+    const href = normaliseFacebookUrl(obj.facebook);
+    add(/\/groups\//i.test(href) ? "facebook_group" : "facebook", href);
+  }
+  if (obj?.facebook_group)
+    add("facebook_group", normaliseFacebookGroupUrl(obj.facebook_group));
+  return out;
 }
 
 /**
@@ -1817,9 +1881,19 @@ function showNotFound() {
  * Append a social/contact icon link to a container element.
  * Does nothing if the URL is absent or fails sanitization.
  * @param {HTMLElement} container
- * @param {'website'|'email'|'facebook'} type
+ * @param {'website'|'email'|'facebook'|'facebook_group'} type
  * @param {string} url
  */
+const ICON_META = {
+  website: { cls: "event-website", title: "Website" },
+  email: { cls: "event-email", title: "Email" },
+  facebook: { cls: "event-facebook", title: "Facebook" },
+  facebook_group: {
+    cls: "event-facebook event-facebook-group",
+    title: "Facebook group",
+  },
+};
+
 function createIcon(container, type, url) {
   if (!url) return;
   const safeUrl = sanitizeUrl(url);
@@ -1828,8 +1902,13 @@ function createIcon(container, type, url) {
   link.href = safeUrl;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.className = `event-${type}`;
-  link.title = String(type).charAt(0).toUpperCase() + String(type).slice(1);
+  const meta = ICON_META[type] || {
+    cls: `event-${type}`,
+    title: String(type).charAt(0).toUpperCase() + String(type).slice(1),
+  };
+  link.className = meta.cls;
+  link.title = meta.title;
+  link.setAttribute("aria-label", meta.title);
   link.onclick = (e) => e.stopPropagation();
   link.innerHTML = ICON_SVG[type];
   container.appendChild(link);
@@ -1844,8 +1923,9 @@ function createIcon(container, type, url) {
 function appendContactIcons(container, obj) {
   if (obj.url) createIcon(container, "website", obj.url);
   if (obj.email) createIcon(container, "email", `mailto:${obj.email}`);
-  if (obj.facebook)
-    createIcon(container, "facebook", normaliseFacebookUrl(obj.facebook));
+  facebookLinkSpecs(obj).forEach(({ kind, href }) =>
+    createIcon(container, kind, href),
+  );
 }
 
 /**

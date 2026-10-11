@@ -1270,6 +1270,18 @@
                 file with only those accepted additions folded in — everything else is untouched.
             </div>
 
+            <div class="enrich-section" id="enrich-health-section">
+                <h3>🩺 Health check</h3>
+                <p class="field-hint">
+                    Runs every scanner below over the loaded file and counts what each one reports, so you can see
+                    where to look first. It uses the same scanners as the sections underneath — each row links to its
+                    section, where the results and any apply buttons are. Nothing is changed. Re-run it after applying
+                    fixes to see what's left.
+                </p>
+                <button class="btn-add-batch" id="enrich-health-btn" disabled>Run health check</button>
+                <div id="enrich-health-results"></div>
+            </div>
+
             <div class="enrich-section">
                 <h3>🧹 Formatting cleanup</h3>
                 <p class="field-hint">
@@ -1521,7 +1533,8 @@
             <div class="enrich-section">
                 <h3>🆔 Missing event IDs</h3>
                 <p class="field-hint">
-                    Scans event/music/poetry records with no <code>eventId</code> set and suggests one using
+                    Scans single-date event/music/poetry records with no <code>eventId</code> set (multi-night
+                    records are skipped — see the Clashing event IDs check below) and suggests one using
                     the new <code>yyyymmdd-performerId-venueId</code> generator (<code>buildStructuredEventId()</code>
                     in shared_utils.js) — e.g. <code>20260315-daniel-morden-kings-arms</code>. That generated
                     form isn't guaranteed unique: two different records for the same performer at the same
@@ -1551,7 +1564,11 @@
             <div class="enrich-section">
                 <h3>⚠️ Clashing event IDs</h3>
                 <p class="field-hint">
-                    Report only — this doesn't fix anything, it just tells you where to look. Works out the
+                    Mostly a report — it tells you where to look. The one thing it can fix: nights of a single
+                    multi-night record that all share one explicit <code>eventId</code> (every night then has the
+                    same permalink, so event.html always opens the first). Those rows get a tickbox to remove the
+                    explicit id so each night is generated its own; it's ticked by default only when the explicit id
+                    is exactly what would be generated for the first night, so no existing link changes. Works out the
                     id each event/music/poetry record would actually resolve to on event.html (its own
                     <code>eventId</code> if it has one, otherwise the generated
                     <code>yyyymmdd-performerId-venueId</code>
@@ -1569,6 +1586,27 @@
                 <button class="btn-add-batch" id="enrich-eventid-clash-scan-btn" disabled>Scan for clashing
                     event IDs</button>
                 <div id="enrich-eventid-clash-results"></div>
+                <div class="btn-row" id="enrich-eventid-clash-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-eventid-clash-apply-btn">Remove explicit eventId
+                        from checked multi-night records</button>
+                </div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>🔑 Duplicated keys in records</h3>
+                <p class="field-hint">
+                    Reads the <em>original text</em> of the loaded file and lists any object that has the
+                    same key more than once — in every record, at any depth (e.g. a venue with
+                    <code>facebook_group</code> written twice, or two venues sharing one id). JSON
+                    technically allows this but <code>JSON.parse()</code> silently keeps only the
+                    <em>last</em> value and throws the others away, so it's invisible everywhere else.
+                    Each hit says whether the repeated values are identical (harmless, just delete one) or
+                    different (the later one is what the site uses today — check it's the one you want).
+                    This is a read-only report: fix the file by hand. Note it checks the file as loaded;
+                    the "download enriched" file is re-serialised and so never contains duplicate keys.
+                </p>
+                <button class="btn-add-batch" id="enrich-dupkeys-scan-btn" disabled>Scan for duplicated keys</button>
+                <div id="enrich-dupkeys-results"></div>
             </div>
 
             <div class="enrich-section">
@@ -1703,7 +1741,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202610080944"></script>
     <script src="recurrence-engine.js?v=202610080944"></script>
-    <script src="shared_utils.js?v=202610110019"></script>
+    <script src="shared_utils.js?v=202610111600"></script>
     <script src="shared_guessers.js?v=202610080944"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
@@ -3925,7 +3963,15 @@
             const supportIds = readPerformerIdListField(evSupportPerformersField).filter((id, i, a) => !evMainIds.has(id) && a.indexOf(id) === i);
             if (supportIds.length) record.support_performer_ids = supportIds;
             const eventIdInput = document.getElementById("ev-event-id").value.trim();
-            if (eventIdInput) {
+            // A multi-date record that still carries the id this builder would generate
+            // for its FIRST night (typically: a single-date event that later had a date
+            // added) is dropped here — kept, it would give every night the same
+            // permalink. Dropping it leaves the first night's id unchanged (the
+            // runtime regenerates the identical string) and gives the other nights
+            // their own. A hand-typed, different id is still honoured.
+            const firstNight = dates.length > 1 ? parseDateString(dates[0]) : null;
+            const isAutoFirstNightId = !!(eventIdInput && firstNight && buildStructuredEventId(record, firstNight) === eventIdInput);
+            if (eventIdInput && !isAutoFirstNightId) {
                 record.eventId = eventIdInput;
             } else if (dates.length === 1) {
                 // Single date — safe to generate and store a real,
@@ -6034,6 +6080,9 @@
         // (postcodes) or a report (duplicates) — neither writes back to the
         // loaded data automatically.
         let enrichedData = null;
+        // Raw text of the loaded file — JSON.parse() silently keeps only the last of any
+        // duplicated key, so the duplicate-key scanner has to read the original text.
+        let enrichedRawText = null;
 
         function extractUKPostcode(text) {
             if (!text) return null;
@@ -6254,6 +6303,210 @@
             resultsEl.appendChild(rowsWrap);
         }
 
+        // Summary shown after a file is loaded: size, every top-level collection
+        // with its record count, extra counts for nested dates, and a warning if
+        // the file doesn't look like an events file. Built with textContent only.
+        function renderLoadReport(statusEl, file, charCount, data) {
+            const LABELS = {
+                venues: "venues", promoters: "promoters", performers: "performers",
+                festivals: "festivals", clubs: "clubs", tours: "tours",
+                repertoire_shows: "repertoire shows", specificEvents: "specific events",
+                musicEvents: "music events", poetryEvents: "poetry events",
+            };
+            const countOf = v => Array.isArray(v) ? v.length
+                : (v && typeof v === "object") ? Object.keys(v).length : null;
+            const records = c => Array.isArray(c) ? c : (c && typeof c === "object") ? Object.values(c) : [];
+            const sumDates = (coll, field) => records(coll).reduce(
+                (n, r) => n + (r && Array.isArray(r[field]) ? r[field].length : 0), 0);
+            const kb = charCount / 1024;
+            const size = kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${Math.round(kb)} KB`;
+
+            statusEl.textContent = "";
+            const head = document.createElement("div");
+            head.textContent = `Loaded "${file.name}" (${size}).`;
+            statusEl.appendChild(head);
+
+            if (!data || typeof data !== "object" || Array.isArray(data)) {
+                const w = document.createElement("div");
+                w.style.color = "#b45309";
+                w.textContent = "⚠ The top level isn't an object, so this doesn't look like an events file.";
+                statusEl.appendChild(w);
+                return;
+            }
+            const known = [], other = [];
+            Object.keys(data).forEach(k => {
+                const n = countOf(data[k]);
+                (k in LABELS ? known : other).push({ k, n, v: data[k] });
+            });
+            const fmt = ({ k, n, v }) => {
+                if (n === null) return `${k}: ${JSON.stringify(v)}`;
+                let t = `${n} ${LABELS[k] || k}`;
+                if (k === "tours") t += ` (${sumDates(v, "tour_dates")} dates)`;
+                if (k === "repertoire_shows") t += ` (${sumDates(v, "show_dates")} dates)`;
+                return t;
+            };
+            if (known.length) {
+                const line = document.createElement("div");
+                line.textContent = known.map(fmt).join(" · ");
+                statusEl.appendChild(line);
+            }
+            if (other.length) {
+                const line = document.createElement("div");
+                line.textContent = `Other top-level keys: ${other.map(fmt).join(" · ")}`;
+                statusEl.appendChild(line);
+            }
+            const missing = Object.keys(LABELS).filter(k => !(k in data));
+            if (!known.length) {
+                const w = document.createElement("div");
+                w.style.color = "#b45309";
+                w.textContent = "⚠ None of the expected collections (venues, tours, events…) were found — check this is the right file.";
+                statusEl.appendChild(w);
+            } else if (missing.length) {
+                const line = document.createElement("div");
+                line.style.color = "#999";
+                line.textContent = `Not present: ${missing.map(k => LABELS[k]).join(", ")}`;
+                statusEl.appendChild(line);
+            }
+        }
+
+        // ── Health check ────────────────────────────────────────────────
+        // Runs each existing scanner by clicking its own button (so counts always
+        // match what that section shows) and counts the .enrich-result-row
+        // elements it rendered. Scanners are run one per tick so the page stays
+        // responsive on a big file. A scanner whose results box is still empty
+        // afterwards is reported as "couldn't run" rather than as all-clear.
+        const HEALTH_CHECKS = [
+            { group: "Problems", label: "Duplicated keys in records", btn: "enrich-dupkeys-scan-btn", boxes: ["enrich-dupkeys-results"] },
+            { group: "Problems", label: "Clashing event IDs", btn: "enrich-eventid-clash-scan-btn", boxes: ["enrich-eventid-clash-results"] },
+            { group: "Problems", label: "Orphaned club/promoter/venue/performer ids", btn: "enrich-orphan-scan-btn", boxes: ["enrich-orphan-results"] },
+            { group: "Problems", label: "Unparseable or implausible dates", btn: "enrich-datequality-scan-btn", boxes: ["enrich-datequality-results"] },
+            { group: "Problems", label: "Missing or malformed coordinates", btn: "enrich-latlon-scan-btn", boxes: ["enrich-latlon-results"] },
+            { group: "Problems", label: "Missing postcodes", btn: "enrich-postcode-scan-btn", boxes: ["enrich-postcode-results", "enrich-postcode-unresolved"] },
+            { group: "Problems", label: "Possible duplicate venues", btn: "enrich-dupe-scan-btn", boxes: ["enrich-dupe-results"] },
+            { group: "Gaps to fill", label: "Missing event IDs", btn: "enrich-eventid-scan-btn", boxes: ["enrich-eventid-results"] },
+            { group: "Gaps to fill", label: "Missing tour & show date event IDs", btn: "enrich-tourdate-eventid-scan-btn", boxes: ["enrich-tourdate-eventid-results"] },
+            { group: "Gaps to fill", label: "Missing descriptions & bios", btn: "enrich-description-scan-btn", boxes: ["enrich-description-results"] },
+            { group: "Gaps to fill", label: "Promoter venue/performer references", btn: "enrich-promoter-scan-btn", boxes: ["enrich-promoter-results"] },
+            { group: "Gaps to fill", label: "Missing promoter venues & artists", btn: "enrich-promoter-fill-scan-btn", boxes: ["enrich-promoter-fill-results"] },
+            { group: "Suggestions", label: "Formatting cleanup", btn: "enrich-format-scan-btn", boxes: ["enrich-format-results"] },
+            { group: "Suggestions", label: "Possible structured pricing", btn: "enrich-price-scan-btn", boxes: ["enrich-price-results"] },
+            { group: "Suggestions", label: "Suggested venue types", btn: "enrich-venuetype-scan-btn", boxes: ["enrich-venuetype-results"] },
+            { group: "Suggestions", label: "Possible age ratings", btn: "enrich-age-scan-btn", boxes: ["enrich-age-results"] },
+        ];
+        let healthRunToken = 0;
+
+        function runHealthCheck() {
+            const token = ++healthRunToken;
+            const out = document.getElementById("enrich-health-results");
+            const runBtn = document.getElementById("enrich-health-btn");
+            out.textContent = "";
+            if (!enrichedData) {
+                out.textContent = "Load a file first.";
+                return;
+            }
+            runBtn.disabled = true;
+            const progress = document.createElement("div");
+            progress.className = "field-hint";
+            out.appendChild(progress);
+            const results = [];
+            let idx = 0;
+            const step = () => {
+                if (token !== healthRunToken) return; // a newer run or a new file took over
+                if (idx >= HEALTH_CHECKS.length) {
+                    runBtn.disabled = false;
+                    runBtn.textContent = "Re-run health check";
+                    renderHealthResults(out, progress, results);
+                    return;
+                }
+                const c = HEALTH_CHECKS[idx++];
+                progress.textContent = `Checking ${idx}/${HEALTH_CHECKS.length}: ${c.label}…`;
+                const res = { c, state: "error", count: 0 };
+                try {
+                    const scanBtn = document.getElementById(c.btn);
+                    const main = document.getElementById(c.boxes[0]);
+                    if (scanBtn.disabled) {
+                        res.state = "skipped";
+                    } else {
+                        scanBtn.click();
+                        // An exception inside the scanner's own click handler isn't thrown
+                        // back to us, so an untouched results box is the tell-tale.
+                        if (!main.children.length) {
+                            res.state = "error";
+                        } else {
+                            res.count = c.boxes.reduce((n, id) =>
+                                n + document.getElementById(id).querySelectorAll(".enrich-result-row").length, 0);
+                            const nothingToScan = !res.count && /\bto scan\b/i.test(main.textContent);
+                            res.state = nothingToScan ? "na" : "ok";
+                        }
+                    }
+                } catch (e) { res.state = "error"; }
+                results.push(res);
+                setTimeout(step, 0);
+            };
+            setTimeout(step, 0);
+        }
+
+        function renderHealthResults(out, progress, results) {
+            out.textContent = "";
+            const problems = results.filter(r => r.c.group === "Problems" && r.state === "ok")
+                .reduce((n, r) => n + r.count, 0);
+            const failed = results.filter(r => r.state === "error").length;
+            const summary = document.createElement("div");
+            summary.style.cssText = "margin:8px 0;font-weight:600;";
+            summary.textContent = problems
+                ? `⚠ ${problems} problem item${problems === 1 ? "" : "s"} found across the checks below.`
+                : "✓ No problems found.";
+            out.appendChild(summary);
+            if (failed) {
+                const f = document.createElement("div");
+                f.style.color = "#b45309";
+                f.textContent = `${failed} check${failed === 1 ? "" : "s"} couldn't run — see the browser console, or run that scanner's own button.`;
+                out.appendChild(f);
+            }
+            let lastGroup = null;
+            results.forEach(r => {
+                if (r.c.group !== lastGroup) {
+                    lastGroup = r.c.group;
+                    const h = document.createElement("div");
+                    h.className = "enrich-result-group-header";
+                    h.textContent = lastGroup;
+                    out.appendChild(h);
+                }
+                const row = document.createElement("div");
+                row.style.cssText = "display:flex;gap:8px;align-items:baseline;padding:2px 0;";
+                const icon = document.createElement("span");
+                icon.style.cssText = "width:1.2em;text-align:center;";
+                const link = document.createElement("a");
+                link.href = "#";
+                link.textContent = r.c.label;
+                link.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    const sec = document.getElementById(r.c.btn).closest(".enrich-section");
+                    if (!sec) return;
+                    sec.scrollIntoView({ behavior: "smooth", block: "start" });
+                    const prev = sec.style.background;
+                    sec.style.background = "#fff8dc";
+                    setTimeout(() => { sec.style.background = prev; }, 1500);
+                });
+                const note = document.createElement("span");
+                note.style.color = "#777";
+                if (r.state === "ok" && r.count) {
+                    icon.textContent = "⚠"; note.textContent = `${r.count} item${r.count === 1 ? "" : "s"}`;
+                } else if (r.state === "ok") {
+                    icon.textContent = "✓"; icon.style.color = "#2e7d32"; note.textContent = "nothing found";
+                } else if (r.state === "na") {
+                    icon.textContent = "–"; note.textContent = "nothing to scan in this file";
+                } else {
+                    icon.textContent = "✕"; icon.style.color = "#b45309";
+                    note.textContent = r.state === "skipped" ? "not run" : "couldn't run";
+                }
+                row.append(icon, link, note);
+                out.appendChild(row);
+            });
+        }
+
+        document.getElementById("enrich-health-btn").addEventListener("click", runHealthCheck);
+
         document.getElementById("enrich-file-input").addEventListener("change", async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -6261,8 +6514,8 @@
             try {
                 const text = await file.text();
                 enrichedData = JSON.parse(text);
-                const venueCount = Object.keys(enrichedData.venues || {}).length;
-                statusEl.textContent = `Loaded ${venueCount} venues from "${file.name}".`;
+                enrichedRawText = text;
+                renderLoadReport(statusEl, file, file.size, enrichedData);
                 // updatedEvents/updatedTours/updatedRepertoireShows are all
                 // derived from *this* loaded file (updatedEvents by array
                 // position, the other two by key) — stale against whatever
@@ -6286,9 +6539,13 @@
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = false;
                 document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-description-scan-btn").disabled = false;
+                document.getElementById("enrich-dupkeys-scan-btn").disabled = false;
+                document.getElementById("enrich-health-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
+                runHealthCheck();
             } catch (err) {
                 enrichedData = null;
+                enrichedRawText = null;
                 statusEl.textContent = `Couldn't read that file as JSON: ${err.message}`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = true;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
@@ -6305,6 +6562,10 @@
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = true;
                 document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-description-scan-btn").disabled = true;
+                document.getElementById("enrich-dupkeys-scan-btn").disabled = true;
+                document.getElementById("enrich-health-btn").disabled = true;
+                healthRunToken++;
+                document.getElementById("enrich-health-results").textContent = "";
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
         });
@@ -7665,9 +7926,15 @@
             });
 
             const found = [];
+            // Multi-night records (a .date array of 2+) are skipped: an explicit
+            // eventId is shared by every night of a record, but the generated id
+            // bakes in the date — writing one night's id onto the record gives every
+            // night the same permalink. Each night already gets its own id at runtime.
+            let skippedMultiNight = 0;
             buckets.forEach(([bucketName, list]) => {
                 (list || []).forEach((ev, index) => {
                     if (ev.eventId) return;
+                    if (Array.isArray(ev.date) && ev.date.length > 1) { skippedMultiNight++; return; }
                     const dateStr = Array.isArray(ev.date) ? ev.date[0] : ev.date;
                     const date = parseDateString(dateStr);
                     if (!date) return; // unparsable date — the date-quality checker above is the place to fix that first
@@ -7684,8 +7951,11 @@
                     });
                 });
             });
+            const multiNightNote = skippedMultiNight
+                ? ` ${skippedMultiNight} multi-night record${skippedMultiNight === 1 ? "" : "s"} skipped — each night gets its own generated id, so none is needed.`
+                : "";
             if (!found.length) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No specific/music/poetry events missing an eventId (with a resolvable date).</div>';
+                resultsEl.innerHTML = `<div class="enrich-empty">No specific/music/poetry events missing an eventId (with a resolvable date).${multiNightNote}</div>`;
                 actionsEl.style.display = "none";
                 return;
             }
@@ -7727,6 +7997,12 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, found.length, "event");
+            if (multiNightNote) {
+                const note = document.createElement("div");
+                note.className = "field-hint";
+                note.textContent = multiNightNote.trim();
+                resultsEl.appendChild(note);
+            }
             actionsEl.style.display = "";
         });
 
@@ -7790,7 +8066,9 @@
         // -- Clashing event IDs (report only) -----------------------------------
         document.getElementById("enrich-eventid-clash-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-eventid-clash-results");
+            const clashActionsEl = document.getElementById("enrich-eventid-clash-actions");
             resultsEl.innerHTML = "";
+            clashActionsEl.style.display = "none";
             if (!enrichedData) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
                 return;
@@ -7819,6 +8097,10 @@
                             name: ev.showname || ev.name || "(untitled)",
                             dateStr,
                             explicit: !!ev.eventId,
+                            multiNight: Array.isArray(ev.date) && ev.date.length > 1,
+                            firstNightId: ev.eventId && Array.isArray(ev.date) && ev.date.length > 1
+                                ? (() => { const d0 = parseDateString(ev.date[0]); return d0 ? buildStructuredEventId(ev, d0) : null; })()
+                                : null,
                             id: resolveEventId(ev, date),
                         });
                     });
@@ -7848,13 +8130,23 @@
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
                 const anyExplicit = occs.some(o => o.explicit);
+                // Fixable: every night in the group is the same multi-night record whose own
+                // explicit eventId is the shared id.
+                const sameRecord = occs.every(o => o.bucket === occs[0].bucket && o.index === occs[0].index);
+                const fixable = sameRecord && occs[0].multiNight && occs[0].explicit;
+                const safeFix = fixable && occs[0].firstNightId === id;
+                if (fixable) { row.dataset.bucket = occs[0].bucket; row.dataset.index = occs[0].index; }
                 const list = occs
                     .map(o => `${o.name} <span style="font-weight:normal;color:#999;">(${o.bucket}[${o.index}], ${o.dateStr}${o.explicit ? ", explicit eventId" : ", generated"})</span>`)
                     .join(" &nbsp;↔&nbsp; ");
                 row.innerHTML = `
+                    ${fixable ? `<input type="checkbox" class="enrich-clash-fix-check" ${safeFix ? "checked" : ""}>` : ""}
                     <div class="enrich-result-main">
                         <div class="enrich-result-name"><code>${id}</code></div>
                         <div class="enrich-result-detail">${list}</div>
+                        ${fixable ? `<div class="enrich-result-reasons">${safeFix
+                            ? "Fix available: this one record's nights share an explicit eventId that matches the id generated for its first night — removing it keeps that link working and gives each other night its own id."
+                            : "Fix available, but check first: the explicit eventId isn't the one that would be generated for the first night, so removing it changes that night's permalink. Left unticked."}</div>` : ""}
                         <div class="enrich-result-reasons" style="color:#c62828;">
                             ${anyExplicit
                         ? "⚠ At least one of these has this eventId set explicitly — these records/nights are indistinguishable by permalink until you edit one to a unique eventId."
@@ -7864,6 +8156,30 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, clashes.length, "clash");
+            if (resultsEl.querySelector(".enrich-clash-fix-check")) clashActionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-eventid-clash-apply-btn").addEventListener("click", () => {
+            const rows = [...document.querySelectorAll("#enrich-eventid-clash-results .enrich-result-row")]
+                .filter(r => r.querySelector(".enrich-clash-fix-check")?.checked);
+            let applied = 0;
+            const done = new Set();
+            rows.forEach(row => {
+                const key = `${row.dataset.bucket}#${row.dataset.index}`;
+                if (done.has(key)) return;
+                done.add(key);
+                const arr = enrichedData && enrichedData[row.dataset.bucket];
+                const ev = arr && arr[parseInt(row.dataset.index, 10)];
+                if (!ev || !ev.eventId) return;
+                delete ev.eventId;
+                delete updatedEvents[key];
+                updatedEvents[key] = JSON.parse(JSON.stringify(ev));
+                applied++;
+            });
+            if (!applied) { alert("No rows checked."); return; }
+            alert(`Removed the explicit eventId from ${applied} multi-night record(s) in the loaded data and added them to the batch below. Each night now resolves to its own generated id. Use "Download full enriched JSON" above for the whole file.`);
+            markEnrichedDataDirty();
+            refreshBatchSummary();
         });
 
         // -- Missing tour/show date event IDs (writes into loaded data ---------
@@ -8053,6 +8369,154 @@
             { key: "poetryEvents", label: "Poetry events", isDict: false, field: "description", name: r => r.showname || r.name },
             { key: "performers", label: "Performers (bio)", isDict: true, field: "bio", name: r => r.name },
         ];
+
+
+        // ── Duplicated-key scanner ────────────────────────────────────────
+        // A small, tolerant JSON reader over the raw text that — unlike
+        // JSON.parse — notices repeated keys within one object. Only called
+        // on text JSON.parse already accepted, so it can assume valid syntax.
+        function scanDuplicateKeys(text) {
+            let i = 0;
+            const found = [];
+            const ws = () => { while (i < text.length && " \t\r\n".includes(text[i])) i++; };
+            // Newline offsets built once; lineOf is then a binary search. (It used to
+            // rescan the text from the start for every key — quadratic, which froze
+            // the page on a big file.)
+            const nl = [];
+            for (let k = text.indexOf("\n"); k !== -1; k = text.indexOf("\n", k + 1)) nl.push(k);
+            const lineOf = pos => {
+                let lo = 0, hi = nl.length;
+                while (lo < hi) { const mid = (lo + hi) >> 1; if (nl[mid] < pos) lo = mid + 1; else hi = mid; }
+                return lo + 1;
+            };
+            function readString() {
+                const start = i++;
+                while (i < text.length && text[i] !== '"') i += text[i] === "\\" ? 2 : 1;
+                i++;
+                return JSON.parse(text.slice(start, i));
+            }
+            function readValue(path) {
+                ws();
+                const c = text[i];
+                if (c === "{") return readObject(path);
+                if (c === "[") return readArray(path);
+                if (c === '"') { readString(); return; }
+                while (i < text.length && !",}] \t\r\n".includes(text[i])) i++;
+            }
+            function readArray(path) {
+                i++; ws();
+                let n = 0;
+                if (text[i] === "]") { i++; return; }
+                for (;;) {
+                    readValue(`${path}[${n++}]`); ws();
+                    if (text[i] === ",") { i++; continue; }
+                    i++; return;
+                }
+            }
+            function readObject(path) {
+                i++; ws();
+                const seen = new Map(); // key -> [{ raw, line }]
+                if (text[i] === "}") { i++; return; }
+                for (;;) {
+                    ws();
+                    const keyPos = i;
+                    const key = readString();
+                    ws(); i++; // ':'
+                    ws();
+                    const valStart = i;
+                    readValue(path ? `${path}.${key}` : key);
+                    // Only remember offsets here; the text/line are worked out below,
+                    // and only for keys that really are duplicated.
+                    if (!seen.has(key)) seen.set(key, []);
+                    seen.get(key).push({ valStart, valEnd: i, keyPos });
+                    ws();
+                    if (text[i] === ",") { i++; continue; }
+                    i++; break;
+                }
+                seen.forEach((list, key) => {
+                    if (list.length > 1) {
+                        list.forEach(x => {
+                            x.raw = text.slice(x.valStart, x.valEnd).replace(/\s+/g, " ").trim();
+                            x.line = lineOf(x.keyPos);
+                        });
+                        found.push({
+                            path: path ? `${path}.${key}` : key,
+                            parent: path,
+                            key,
+                            count: list.length,
+                            lines: list.map(x => x.line),
+                            identical: list.every(x => x.raw === list[0].raw),
+                            values: list.map(x => x.raw),
+                        });
+                    }
+                });
+            }
+            readValue("");
+            return found;
+        }
+
+        document.getElementById("enrich-dupkeys-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-dupkeys-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData || enrichedRawText == null) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const esc = escapeHtml;
+            let hits;
+            try { hits = scanDuplicateKeys(enrichedRawText); }
+            catch (err) {
+                resultsEl.innerHTML = `<div class="enrich-empty">Couldn't scan the file text: ${esc(err.message)}</div>`;
+                return;
+            }
+            if (!hits.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">✓ No duplicated keys found in any record.</div>';
+                return;
+            }
+            // Group by the record the key sits in: the first two path segments
+            // (e.g. "venues.fig-tree-shanklin", "clubs[12]", "events[3]").
+            const recordOf = parent => {
+                const m = parent.match(/^([^.\[]+)(\[\d+\]|\.[^.\[]+)?/);
+                return m ? m[0] : parent || "(top level)";
+            };
+            const resolve = rec => {
+                try {
+                    const m = rec.match(/^([^.\[]+)(?:\[(\d+)\]|\.(.+))?$/);
+                    const coll = enrichedData[m[1]];
+                    const r = m[2] !== undefined ? coll[+m[2]] : m[3] !== undefined ? coll[m[3]] : null;
+                    return r && (r.name || r.club || r.title || r.id) || "";
+                } catch (e) { return ""; }
+            };
+            const groups = new Map();
+            hits.forEach(h => {
+                const rec = recordOf(h.parent === "" ? h.key : h.parent);
+                if (!groups.has(rec)) groups.set(rec, []);
+                groups.get(rec).push(h);
+            });
+            const summary = document.createElement("div");
+            summary.className = "field-hint";
+            const diff = hits.filter(h => !h.identical).length;
+            summary.textContent = `${hits.length} duplicated key${hits.length === 1 ? "" : "s"} in ${groups.size} record${groups.size === 1 ? "" : "s"} — ${diff} with differing values, ${hits.length - diff} identical.`;
+            resultsEl.appendChild(summary);
+            const clip = v => v.length > 80 ? v.slice(0, 77) + "…" : v;
+            [...groups.entries()].forEach(([rec, list]) => {
+                const label = resolve(rec);
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${esc(label || rec)} <span style="font-weight:normal;color:#999;">${esc(label ? rec : "")}</span></div>
+                        <div class="enrich-result-reasons">${list.map(h => {
+                            const rel = h.path.startsWith(rec) ? h.path.slice(rec.length).replace(/^\./, "") || h.key : h.path;
+                            const vals = h.identical
+                                ? `same value each time: <code>${esc(clip(h.values[0]))}</code>`
+                                : `<strong>different values</strong> (last one wins): ${h.values.map((v, k) => `<code>${esc(clip(v))}</code> <span style="color:#999;">(line ${h.lines[k]})</span>`).join(" → ")}`;
+                            return `<code>${esc(rel)}</code> ×${h.count} — ${vals}`;
+                        }).join("<br>")}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+        });
 
         document.getElementById("enrich-description-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-description-results");

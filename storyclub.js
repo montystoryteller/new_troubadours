@@ -133,10 +133,7 @@ function icon(svg, href, cls, title) {
   return a;
 }
 
-function normaliseFacebook(fb) {
-  if (!fb) return null;
-  return fb.startsWith("http") ? fb : `https://facebook.com/${fb}`;
-}
+// Facebook page/group links: use facebookLinkSpecs() from shared_utils.js.
 
 // Mirrors getMonthParity()/resolveEventVenue() in event_display.js — a
 // club with `alternate_locations` rotates venues by calendar-month parity
@@ -621,16 +618,18 @@ async function renderPage(data, clubId) {
       ),
     );
   }
-  if (clubRecord.facebook) {
+  facebookLinkSpecs(clubRecord).forEach(({ kind, href }) => {
     iconsRow.appendChild(
       icon(
-        ICON_SVG.facebook,
-        normaliseFacebook(clubRecord.facebook),
-        "event-facebook",
-        "Facebook",
+        ICON_SVG[kind],
+        href,
+        kind === "facebook_group"
+          ? "event-facebook event-facebook-group"
+          : "event-facebook",
+        FACEBOOK_LINK_LABELS[kind],
       ),
     );
-  }
+  });
   if (iconsRow.children.length) header.appendChild(iconsRow);
 
   // A club that is also a promoter has its own page in the promoters directory.
@@ -642,6 +641,50 @@ async function renderPage(data, clubId) {
     pl.style.cssText = "display:inline-block;margin:6px 0;font-size:0.9em;";
     header.appendChild(pl);
   }
+
+  // Convenor(s) and regular tellers: performer ids (convenor may be a single
+  // string or a list). Each links to the performer's page; ids that don't
+  // resolve to a performers record are skipped with a console warning.
+  function performerRoleLine(label, ids) {
+    const list = (Array.isArray(ids) ? ids : ids ? [ids] : []).filter(
+      (id) => typeof id === "string" && id.trim(),
+    );
+    const known = [];
+    list.forEach((id) => {
+      if (performers[id]) known.push(id);
+      else console.warn(`${clubRecord.name}: unknown performer id "${id}" in ${label}`);
+    });
+    if (!known.length) return null;
+    const div = document.createElement("div");
+    div.className = "club-performer-role";
+    div.style.cssText = "margin:6px 0;font-size:0.95em;";
+    const strong = document.createElement("strong");
+    strong.textContent = `${label}: `;
+    div.appendChild(strong);
+    known.forEach((id, i) => {
+      if (i > 0) div.appendChild(document.createTextNode(", "));
+      const a = document.createElement("a");
+      a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+      a.textContent = performers[id].name || id;
+      div.appendChild(a);
+    });
+    return div;
+  }
+  const convenorList = Array.isArray(clubRecord.convenor)
+    ? clubRecord.convenor
+    : clubRecord.convenor
+      ? [clubRecord.convenor]
+      : [];
+  const convenorEl = performerRoleLine(
+    convenorList.length > 1 ? "Convenors" : "Convenor",
+    convenorList,
+  );
+  if (convenorEl) header.appendChild(convenorEl);
+  const tellersEl = performerRoleLine(
+    "Regular tellers",
+    clubRecord.regular_tellers,
+  );
+  if (tellersEl) header.appendChild(tellersEl);
 
   const hasGroupDesc = clubRecord.description && clubRecord.description.trim();
 
@@ -2000,19 +2043,18 @@ async function renderDirectory(data) {
           a.onclick = (e) => e.stopPropagation();
           meta.appendChild(a);
         }
-        if (c.facebook) {
-          const fbHref = c.facebook.startsWith("http")
-            ? c.facebook
-            : `https://facebook.com/${c.facebook}`;
+        facebookLinkSpecs(c).forEach(({ kind, href }) => {
           const a = icon(
-            ICON_SVG.facebook,
-            fbHref,
-            "event-facebook",
-            "Facebook",
+            ICON_SVG[kind],
+            href,
+            kind === "facebook_group"
+              ? "event-facebook event-facebook-group"
+              : "event-facebook",
+            FACEBOOK_LINK_LABELS[kind],
           );
           a.onclick = (e) => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
           meta.appendChild(a);
-        }
+        });
         if (c.email) {
           const a = icon(
             ICON_SVG.email,

@@ -861,16 +861,16 @@ function renderVenue() {
     a.textContent = "Email";
     linksDiv.appendChild(a);
   }
-  if (venue.facebook) {
+  facebookLinkSpecs(venue).forEach(({ kind, href }) => {
     if (linksDiv.children.length > 0)
       linksDiv.appendChild(document.createTextNode(" · "));
     const a = document.createElement("a");
-    a.href = normaliseFacebookUrl(venue.facebook);
+    a.href = href;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
-    a.textContent = "Facebook";
+    a.textContent = FACEBOOK_LINK_LABELS[kind];
     linksDiv.appendChild(a);
-  }
+  });
   if (venue.instagram) {
     if (linksDiv.children.length > 0)
       linksDiv.appendChild(document.createTextNode(" · "));
@@ -1306,16 +1306,16 @@ function renderRegularClub(container, event, type, forVenueId) {
     a.textContent = "Website";
     links.appendChild(a);
   }
-  if (event.facebook) {
+  facebookLinkSpecs(event).forEach(({ kind, href }) => {
     if (links.children.length > 0)
       links.appendChild(document.createTextNode(" · "));
     const a = document.createElement("a");
-    a.href = normaliseFacebookUrl(event.facebook);
+    a.href = href;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
-    a.textContent = "Facebook";
+    a.textContent = FACEBOOK_LINK_LABELS[kind];
     links.appendChild(a);
-  }
+  });
   if (event.email) {
     if (links.children.length > 0)
       links.appendChild(document.createTextNode(" · "));
