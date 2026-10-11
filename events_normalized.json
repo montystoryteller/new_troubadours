@@ -6626,7 +6626,10 @@
       "facebook": "https://www.facebook.com/groups/1689129511376075",
       "club": "dartmoorStorytellers",
       "venue_id": "chagford-inn",
-      "exceptions": ["23/11/2026", "28/12/2026"]
+      "exceptions": [
+        "23/11/2026",
+        "28/12/2026"
+      ]
     },
     {
       "name": "A Bit Crack Storytelling",
@@ -11539,6 +11542,32 @@
       "eventId": "20261104-baden-prince-quaker-meeting-house-northampton"
     },
     {
+      "name": "Irish Legends & Living Stories [Eddie Lenihan]",
+      "showname": "Irish Legends & Living Stories",
+      "date": "",
+      "venue_id": "teach-siamsa-finuge",
+      "performer_id": "eddie-lenihan",
+      "time": "8pm",
+      "price": "€15 + fee",
+      "description": "One of Ireland’s most celebrated traditional storytellers, Eddie Lenihan, brings his rich world of folklore, myth and memory to Finuge Join us at Teach Siamsa this Samhain for a special evening of Irish storytelling, folklore, myth and memory with one of Ireland’s most celebrated traditional storytellers, Eddie Lenihan.\n\n\n\nDrawing on more than 40 years of collecting and preserving Ireland’s oral traditions, Eddie brings to life the old tales, strange happenings and enduring legends that have shaped the Irish imagination for generations.\n\n\n\nFrom fairy lore and haunted places to unforgettable characters, local traditions and mysterious happenings, his storytelling combines history, humour and mystery in equal measure.\n\n\n\nA renowned author, broadcaster and lecturer, Eddie is one of Ireland’s few remaining practising seanchaithe – traditional lore keepers and storytellers. His acclaimed works include In Search of Biddy Early, The Devil is an Irishman and Defiant Irish Women.\n\n\n\nAn atmospheric Samhain evening of fireside storytelling, wit, folklore and wonder from a true master of the craft.\n\n\n\nUnsuitable for children under 12.",
+      "event_flyer": "2026_11_06_lenihan.jpg",
+      "ticket_url": "https://www.eventbrite.com/e/irish-legends-living-stories-with-eddie-lenihan-tickets-1998886655796",
+      "isSpecial": true
+    },
+    {
+      "name": "Beyond the Veil — Samhain Storytelling [Henry Everett and Hannah Sneyd]",
+      "showname": "Beyond the Veil — Samhain Storytelling",
+      "date": "08/11/2026",
+      "venue_id": "moor-imagination-collective-buckfastleigh",
+      "performer_id": "henry-everett-and-hannah-sneyd",
+      "eventId": "20261108-henry-everett-and-hannah-sneyd-moor-imagination-collective-buckfastleigh",
+      "date_added": "11/10/2026",
+      "time": "5-7pm",
+      "description": "Henry Everett and Hannah Sneyd return to the @moorimaginationcollective ! This time marking the season of Samhain with spooky and scintillating tales old and new.\n\n\n\nSamahain (usually pronounced Sow-wane) is an ancient Gaelic harvest festival which later merged with All-Hallows Eve to become known as Halloween. They'll be tracing its ancient origins and sharing stories of the weird and wonderful beings found Beyond the Veil...",
+      "event_flyer": "2026_11_08_everett_sneyd_mic.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "Gutted — Stories From East Anglia [Ropetackle Storytellers]",
       "showname": "Gutted — Stories From East Anglia",
       "date": "09/11/2026",
@@ -11554,6 +11583,23 @@
       "venue_id": "ropetackle-arts-centre-shoreham",
       "performer_id": "minnie-wilkinson",
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
+    },
+    {
+      "name": "The Selkie Who Stayed & Other Tales [Hannah Sneyd]",
+      "showname": "The Selkie Who Stayed & Other Tales",
+      "date": "13/11/2026",
+      "venue_id": "calstock-arts",
+      "performer_id": "hannah-sneyd",
+      "eventId": "20261113-hannah-sneyd-calstock-arts",
+      "date_added": "11/10/2026",
+      "time": "Doors/bar 7pm, start 8pm",
+      "price": "£10 in advance (£12 on door) £5 students",
+      "description": "A selkie woman comes ashore to dance under moonlight and finds herself caught in the arms of a sailor. Captivated by love, she chooses to stay, surrendering her bond with the ocean for the promise of family life.\n\n\n\nBut what does it really mean to stay? As the years pass, she is tethered to a growing child, weighed down by domestic routine, and slowly estranged from her own wild self. Where once she swam vast oceans, she now migrates between the washing machine, the oven, and the school gate – an unwitting tradwife. Torn between loyalty and longing, depression and quiet rage, our selkie must reckon with the cost of staying and the near-impossibility of leaving.\n\n\n\nHilarious, heartfelt and darkly intimate, The Selkie Who Stayed reshapes the classic Selkie myth for the age of consent.\n\n\n\nThe night will open with Tales of Freyja – a collection of stories of the fierce Norse Goddess.",
+      "age_rating": "12+",
+      "min_age": 12,
+      "event_flyer": "2026_11_13_sneyd_selkie.jpg",
+      "ticket_url": "https://calstockarts.org/event/november-13-a-new-story-telling-show-with-hannah-snyed/",
+      "isSpecial": true
     },
     {
       "name": "Greek Myths and Legends [Maria Credali]",
@@ -11613,6 +11659,21 @@
         "michael-dacre",
         "wendy-dacre"
       ]
+    },
+    {
+      "name": "Dumnonian Tales [Martin Shaw]",
+      "showname": "Dumnonian Tales",
+      "date": "19/11/2026",
+      "venue_id": "st-lawrence-chapel-ashburton",
+      "performer_id": "martin-shaw",
+      "eventId": "20261119-martin-shaw-st-lawrence-chapel-ashburton",
+      "date_added": "11/10/2026",
+      "time": "7.30-10pm",
+      "price": "£25 (£18)",
+      "description": "A night of West Country stories rarely told.\n\n\n\nFor one night only, master storyteller Martin Shaw brings tales from Devon and Cornwall to St Lawrence Chapel, Ashburton. Join us to enjoy previously unheard stories, from nearby Bovey Tracey and distant Zennor, in the enchanting setting of this intimate, historic chapel. A limited number of guaranteed front row tickets are available for this magical evening.\n\n\n\nMartin is a great friend of Field System, and has generously offered this special night of storytelling as a fundraiser for our gallery. Recently, the threat of closure has loomed over us, thanks to funding rejections, uncommonly challenging trading conditions and unexpected business costs. His kindness, and yours in buying tickets, will go a long way to help us to continue as a home for culture, creativity and community in Ashburton.\n\n\n\nFundraising for Field System.",
+      "event_flyer": "2026_11_19_shaw_ashburton.jpg",
+      "ticket_url": "https://fieldsystem.co.uk/events-2-1/rjhv8eifbu94pbqcjjnuw3tzqmp9mo",
+      "isSpecial": true
     },
     {
       "name": "Marion Leeper & Lynette Hill [ + Tales Tattled & Told tellers]",
@@ -12698,6 +12759,18 @@
         -7.11108
       ]
     },
+    "teach-siamsa-finuge": {
+      "id": "teach-siamsa-finuge",
+      "name": "Teach Siamsa Finuge",
+      "full_address": "Teach Siamsa Finuge, Finuge, Lixnaw V92 WE22 Kerry",
+      "facebook": "https://www.facebook.com/teachsiamsafinuge/",
+      "instagram": "https://www.instagram.com/teachsiamsa/",
+      "description": "Teach Siamsa Finuge. Centre for Folk Arts & Culture. Established 1974",
+      "latlon": [
+        52.4247,
+        -9.5356
+      ]
+    },
     "the-braid-ballymena": {
       "id": "the-braid-ballymena",
       "name": "The Braid, Ballymena",
@@ -13513,6 +13586,32 @@
       "latlon": [
         51.5013851,
         -0.2849707
+      ]
+    },
+    "st-lawrence-chapel-ashburton": {
+      "id": "st-lawrence-chapel-ashburton",
+      "name": "St Lawrence Chapel, Ashburton",
+      "full_address": "St Lawrence Chapel, St Lawrence Lane, Ashburton, TQ13 7DD",
+      "city": "Ashburton",
+      "postcode": "TQ13 7DD",
+      "url": "https://www.stlawrencechapel.org.uk/",
+      "description": "The historic Chapel is a unique and important Grade ll* Listed building, situated in St. Lawrence Lane in the heart of Ashburton. Originally a Chantry Chapel and subsequently for over 600 years a Grammar School, St. Lawrence Chapel is now an important Heritage, Cultural and Community Centre, owned and managed by the Guild of St. Lawrence.",
+      "latlon": [
+        50.51514,
+        -3.75452
+      ]
+    },
+    "calstock-arts": {
+      "id": "calstock-arts",
+      "name": "Calstock Arts,",
+      "full_address": "Calstock Arts, The Old Chapel, Sand Lane, Calstock, PL18 9QX",
+      "city": "Calstock",
+      "postcode": "PL18 9QX",
+      "url": "https://calstockarts.org/",
+      "description": "alstock Arts is a community arts centre located in a beautifully converted chapel on the banks of the River Tamar.\n\n\n\nCalstock Arts programmes a wide range of events including folk, jazz, classical music, comedy, film, theatre, children’s events, talks and exhibitions. There is a fully licensed bar up on the gallery.",
+      "latlon": [
+        50.49692,
+        -4.20879
       ]
     },
     "the-elm-tree-ringwood": {
