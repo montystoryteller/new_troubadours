@@ -2657,6 +2657,64 @@
     }
   },
   "tours": {
+    "mexican-dave-mexican-dave": {
+      "tour_name": "Mexican Dave — Autumn/Winter Tour 2026",
+      "tour_dates": [
+        {
+          "date": "27/09/2026",
+          "venue_id": "toms-tap-brewhouse",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261027-tom-s-tap-brewhouse"
+        },
+        {
+          "date": "22/10/2026",
+          "venue_id": "castle-inn-swindon",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261022-castle-inn-swindon"
+        },
+        {
+          "date": "23/10/2026",
+          "venue_id": "barn-ells-bar-truro",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261023-barn-ell-s-bar-truro"
+        },
+        {
+          "date": "24/10/2026",
+          "venue_id": "cider-box-bristol",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261024-cider-box-bristol"
+        },
+        {
+          "date": "04/11/2026",
+          "venue_id": "cafe-kino-bristol",
+          "isSpecial": true,
+          "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/cafe-kino/wed-4-nov-black-guy-fawkes-mexican-dave-emilia-slade-162574#/e162574",
+          "eventId": "T-mexican-dave-mexican-dave-20261104-cafe-kino-bristol"
+        },
+        {
+          "date": "06/11/2026",
+          "venue_id": "bitterns-station-bunker178-southampton",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261106-bitterns-station-bunker178-southampton"
+        },
+        {
+          "date": "14/11/2026",
+          "venue_id": "bodega-nottingham",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261114-bodega-nottingham"
+        },
+        {
+          "date": "05/12/2026",
+          "venue_id": "the-croft-bristol",
+          "isSpecial": true,
+          "eventId": "T-mexican-dave-mexican-dave-20261205-bodega-nottingham"
+        }
+      ],
+      "name": "Mexican Dave",
+      "performer_id": "mexican-dave",
+      "touring_event_flyer": "tour_mexican_dave_autumn-winter-2026.jpg",
+      "isMusic": true
+    },
     "hannah-moore-winter-calling": {
       "tour_name": "Winter Calling — Stories and Songs for the Turning of the Year",
       "tour_dates": [
@@ -15168,6 +15226,84 @@
       "latlon": [
         51.91427,
         -2.58428
+      ]
+    },
+    "toms-tap-brewhouse": {
+      "id": "toms-tap-brewhouse",
+      "name": "Tom's Tap & Brewhouse",
+      "full_address": "Tom's Tap & Brewhouse ,5 Thomas St, Crewe, CW1 2BD",
+      "city": "Crewe",
+      "postcode": "CW1 2BD",
+      "url": "https://www.tomstap.co.uk/",
+      "description": "Tom's Tap and Brewhouse is an independent brewery located in Crewe, dedicated to crafting exceptional beers and fostering a welcoming community environment. Our diverse selection of locally brewed beers, paired with offerings from renowned breweries, creates an inviting atmosphere for all beer lover",
+      "latlon": [
+        53.10042,
+        -2.4384
+      ]
+    },
+    "castle-inn-swindon": {
+      "id": "castle-inn-swindon",
+      "name": "Castle Inn, Swindon",
+      "full_address": "Castle Inn, 28 Prospect Place, Swindon, SN1 3LQ",
+      "city": "Swindon",
+      "postcode": "SN1 3LQ",
+      "url": "https://www.facebook.com/swindonoldtownpublichouse/",
+      "description": "A great little back street pub with all the goodies & lovely Courtyard Garden. Live Music, A Great range of Beers, Wines & Spirits.",
+      "latlon": [
+        51.5551,
+        -1.77948
+      ]
+    },
+    "barn-ells-bar-truro": {
+      "id": "barn-ells-bar-truro",
+      "name": "Barn & Ell's Bar, Truro",
+      "full_address": "Barn & Ell's Bar, Wheal Busy Ln, Chacewater, Truro, TR4 8NU",
+      "city": "Truro",
+      "postcode": "TR4 8NU",
+      "url": "https://www.facebook.com/groups/1346959472602866/",
+      "description": "The Barn and Ell's Bar is in Wheal Busy, between Blackwater and Chacewater in Cornish mining country.\nWe try our best to make it a very relaxed environment with comfy sofas, log fires and the best artists, both local and from afar.\nWe host events that are for members of this group. These are not ticketed, money is collected via a \" chip in the hat\", were a hat is passed around and all money collected is given to the artists.\nIn essence, this is a private party, open to friends of The Barn and Ell's Bar. 😊\nThere is no parking outside the barn, however there is parking at the Wheal Busy Mine about 5 minutes walk away. We specifically ask people to park here as anyone who comes down would soon be blocked in as you then would not be able to turn around, so please park as stated at Wheal busy mine xx Anyone with mobility issues please contact us and we'll try and accommodate. Unfortunately we are an old barn and as such are not wheelchair friendly, due to steps.",
+      "latlon": [
+        50.2637,
+        -5.17492
+      ]
+    },
+    "the-croft-bristol": {
+      "id": "the-croft-bristol",
+      "name": "The Croft, Bristol",
+      "venue_type": "Live music venue",
+      "city": "Bristol",
+      "postcode": "BS1 3RW",
+      "full_address": "The Croft, 117-119 Stokes Croft, Bristol, BS1 3RW",
+      "url": "https://www.thecroftbristol.co.uk/",
+      "description": "Bristol's Legendary Music Venue, Powered by World Famous Dive Bars.\n\n\n\nThe Croft has returned. After closing as The Crofters Rights in August 2024, Bristol's legendary music venue is back under its original name, operated by World Famous Dive Bars – the team behind Mothers' Ruin, the Colosseum, the Crown and the Greyhound.\n\n\n\nFrom punk to electronic, indie to experimental, if it's happening in Bristol's music scene, it's happening at The Croft.",
+      "latlon": [
+        51.46373,
+        -2.59001
+      ]
+    },
+    "cider-box-bristol": {
+      "id": "cider-box-bristol",
+      "name": "Cider Box, Bristol",
+      "full_address": "Cider Box Tap Room, Arch 5, Silverthorne Lane, Bristol, BS2 0QD",
+      "city": "Bristol",
+      "postcode": "BS2 0QD",
+      "url": "https://www.theciderbox.com/",
+      "latlon": [
+        51.45068,
+        -2.5711
+      ]
+    },
+    "cafe-kino-bristol": {
+      "id": "cafe-kino-bristol",
+      "name": "Cafe Kino, Bristol",
+      "full_address": "Cafe Kino, 108, Stokes Croft Bristol, BS1 3RU",
+      "city": "108 Stokes Croft Bristol",
+      "postcode": "BS1 3RU",
+      "url": "https://www.cafekino.coop/",
+      "description": "We host a dynamic and exciting range of events in our basement space. Contact our events team at events@cafekino.coop with any inquiries.",
+      "latlon": [
+        51.46416,
+        -2.58945
       ]
     },
     "the-cube-kingsdown": {
