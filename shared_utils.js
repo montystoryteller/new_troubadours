@@ -2300,6 +2300,7 @@ async function loadEventsData(cacheBuster) {
             data;
           applyRepertoireInheritance(eventsData);
           applyClubInheritance(eventsData);
+          applyDatesAlias(eventsData);
           applyPerformerAliases(eventsData, { performersLookup, toursLookup });
           const podcastsLookup = buildPodcastsLookup(eventsData);
           console.log(`✓ Loaded events data from cache`);
@@ -2345,6 +2346,7 @@ async function loadEventsData(cacheBuster) {
     }
     applyRepertoireInheritance(eventsData);
     applyClubInheritance(eventsData);
+    applyDatesAlias(eventsData);
     applyPerformerAliases(eventsData);
     const toursLookup = eventsData.tours || {};
     const venuesLookup = eventsData.venues || {};
@@ -2418,6 +2420,7 @@ function handleEventsLoadFailure(reason) {
       const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
       applyClubInheritance(eventsData);
+      applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData, { performersLookup, toursLookup });
       const podcastsLookup = buildPodcastsLookup(eventsData);
       console.warn(
@@ -2551,6 +2554,44 @@ function applyRepertoireInheritance(eventsData) {
       tour.tour_description = rep.description;
     }
   });
+}
+
+/**
+ * `dates` on a flat event is, per events-schema.json, the full list of a
+ * series whose individual nights are each their own record (every record's
+ * own night is in `date`; the list is informational). Such records must be
+ * left exactly as they are — expanding them would turn N records into N×N
+ * events.
+ *
+ * But a record that has `dates` and NO `date` of its own (blank, "" or []) has
+ * no date at all as far as every page is concerned — it showed as "Date TBC"
+ * and was dropped from event.html search. For that case only, this copies
+ * `dates` into `date` once at load time, so the normal multi-date shape
+ * applies and expandDateOrDates() gives each night its own record and its own
+ * generated id (yyyymmdd-performerId-venueId, or T-/R- for tour/show dates).
+ * The source data is never modified on disk; only the loaded copy is
+ * reshaped. Records with a populated `datetimes` list are left alone (that
+ * field already takes precedence). Idempotent. Applies to specific/music/
+ * poetry events and to tour_dates / show_dates rows.
+ * @param {object} eventsData
+ */
+function applyDatesAlias(eventsData) {
+  const fix = (rec) => {
+    if (!rec || typeof rec !== "object") return;
+    if (!Array.isArray(rec.dates) || rec.dates.length === 0) return;
+    if (Array.isArray(rec.datetimes) && rec.datetimes.length > 0) return;
+    if (!isBlankValue(rec.date)) return; // has its own date: `dates` is informational
+    rec.date = rec.dates.length === 1 ? rec.dates[0] : [...rec.dates];
+  };
+  ["specificEvents", "musicEvents", "poetryEvents"].forEach((key) =>
+    (eventsData?.[key] || []).forEach(fix),
+  );
+  Object.values(eventsData?.tours || {}).forEach((t) =>
+    (t?.tour_dates || []).forEach(fix),
+  );
+  Object.values(eventsData?.repertoire_shows || {}).forEach((ts) =>
+    (ts?.show_dates || []).forEach(fix),
+  );
 }
 
 // Fields copied from a recurringClubEvent onto a specificEvent/musicEvent/
@@ -2876,6 +2917,7 @@ async function checkForNewerEventsDataBackground() {
       }
       applyRepertoireInheritance(eventsData);
       applyClubInheritance(eventsData);
+      applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData);
       const toursLookup = eventsData.tours || {};
       const venuesLookup = eventsData.venues || {};

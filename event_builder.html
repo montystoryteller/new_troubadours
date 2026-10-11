@@ -322,12 +322,12 @@
                         it'll be saved on the record as a real <code>eventId</code>, not left for the page to
                         work out later. That generated form isn't guaranteed unique (e.g. the same performer
                         at the same venue twice in one day), so type your own here instead if that could
-                        apply. For a <strong>multi-date</strong> event (several dates above), leave this
-                        blank too — a shared id here would apply to every one of those dates at once, so each
-                        night instead gets its own id worked out individually when the page loads; only fill
-                        this in by hand for a multi-date event if you specifically need to pin one id across
-                        all its nights. The Enrich tab's "Missing event IDs" checker can backfill this for
-                        existing records, and "Clashing event IDs" reports any that collide.
+                        apply. For a <strong>multi-date</strong> event (several dates above) nothing is
+                        saved here: an id stored on the record would be shared by every night, so each night
+                        instead gets its own id worked out when the page loads, and anything typed in this box is
+                        ignored. The Enrich tab's "Missing event IDs" checker can backfill single-date records,
+                        "Multi-date records with an explicit eventId" lists leftovers to clean up, and "Clashing
+                        event IDs" reports any that collide.
                     </div>
                 </div>
             </div>
@@ -1564,11 +1564,7 @@
             <div class="enrich-section">
                 <h3>⚠️ Clashing event IDs</h3>
                 <p class="field-hint">
-                    Mostly a report — it tells you where to look. The one thing it can fix: nights of a single
-                    multi-night record that all share one explicit <code>eventId</code> (every night then has the
-                    same permalink, so event.html always opens the first). Those rows get a tickbox to remove the
-                    explicit id so each night is generated its own; it's ticked by default only when the explicit id
-                    is exactly what would be generated for the first night, so no existing link changes. Works out the
+                    Report only — this doesn't fix anything, it just tells you where to look. Works out the
                     id each event/music/poetry record would actually resolve to on event.html (its own
                     <code>eventId</code> if it has one, otherwise the generated
                     <code>yyyymmdd-performerId-venueId</code>
@@ -1577,18 +1573,38 @@
                     every night but a generated one isn't), then lists any id shared by more than one
                     record/night. A clash where at least one side has an explicit <code>eventId</code> is a
                     real, already-saved collision — those two records are indistinguishable by permalink
-                    right now and one needs a hand-edited, unique <code>eventId</code>. A clash where
-                    <em>every</em> side is only a generated fallback (no explicit <code>eventId</code> set on
-                    either) is the same case the "Missing event IDs" checker above already flags and can
-                    suggest a starting id for — this scanner just gives you the same picture as a standalone
-                    check, e.g. after hand-editing the file outside the event builder.
+                    right now and one needs a hand-edited, unique <code>eventId</code>. (Nights of one
+                    multi-date record that share its explicit id are cleaned up by the "Multi-date records"
+                    check below.) A clash where <em>every</em> side is only a generated fallback (no explicit
+                    <code>eventId</code> set on either) is the same case the "Missing event IDs" checker above
+                    already flags and can suggest a starting id for — this scanner just gives you the same
+                    picture as a standalone check, e.g. after hand-editing the file outside the event builder.
                 </p>
                 <button class="btn-add-batch" id="enrich-eventid-clash-scan-btn" disabled>Scan for clashing
                     event IDs</button>
                 <div id="enrich-eventid-clash-results"></div>
-                <div class="btn-row" id="enrich-eventid-clash-actions" style="display:none;">
-                    <button class="btn-secondary-action" id="enrich-eventid-clash-apply-btn">Remove explicit eventId
-                        from checked multi-night records</button>
+            </div>
+
+            <div class="enrich-section">
+                <h3>🗓️ Multi-date records with an explicit eventId</h3>
+                <p class="field-hint">
+                    The convention: a record with <strong>several dates</strong> (<code>"date": ["25/07/2026",
+                    "26/07/2026"]</code>, or a tour/show date entry written that way) carries <strong>no</strong>
+                    <code>eventId</code> — each night then gets its own <code>yyyymmdd-performerId-venueId</code> id
+                    (or <code>T-</code>/<code>R-</code> id for tour/show dates) worked out when the page loads.
+                    An id stored on such a record is shared by <em>every</em> night, so all of them get the same
+                    permalink and event.html can only ever open the first. This lists them. Ticking a row and
+                    applying removes the id. It's ticked by default only when the stored id is exactly what would
+                    be generated for the first night — then the first night's link doesn't change, and the other
+                    nights simply get their own. A different (hand-written) id is left unticked, since removing it
+                    would change the first night's permalink.
+                </p>
+                <button class="btn-add-batch" id="enrich-multidate-eventid-scan-btn" disabled>Scan for multi-date
+                    records with an eventId</button>
+                <div id="enrich-multidate-eventid-results"></div>
+                <div class="btn-row" id="enrich-multidate-eventid-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-multidate-eventid-apply-btn">Remove eventId from
+                        checked records</button>
                 </div>
             </div>
 
@@ -1607,6 +1623,25 @@
                 </p>
                 <button class="btn-add-batch" id="enrich-dupkeys-scan-btn" disabled>Scan for duplicated keys</button>
                 <div id="enrich-dupkeys-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>📆 Duplicate &amp; inconsistent dates</h3>
+                <p class="field-hint">
+                    Report only. Looks for date mistakes the other checkers can't see because each date is
+                    individually valid: (1) a <code>dates</code> list that disagrees with the records built
+                    from it — dates missing, or one date repeated (e.g. a run of five nights that ends up as
+                    18 Sep, 23 Oct, 23 Oct, 15 Jan, 15 Jan); a record carrying both <code>date</code> and
+                    <code>dates</code> at once (nothing on the site reads <code>dates</code>; use one
+                    <code>date</code> array); (2) the same date repeated inside one date array; (3) two
+                    tour/show date entries with the same date, venue and time; (4) the same event (name, date
+                    and venue) listed more than once across specific, music and poetry events; (5) one
+                    odd-weekday date in a series where most dates fall on the same weekday (e.g. four Fridays
+                    and a Monday) — often a typo. Weekday hits are only a prompt to double-check.
+                </p>
+                <button class="btn-add-batch" id="enrich-dateconsistency-scan-btn" disabled>Scan for duplicate
+                    &amp; inconsistent dates</button>
+                <div id="enrich-dateconsistency-results"></div>
             </div>
 
             <div class="enrich-section">
@@ -1741,7 +1776,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202610080944"></script>
     <script src="recurrence-engine.js?v=202610080944"></script>
-    <script src="shared_utils.js?v=202610111600"></script>
+    <script src="shared_utils.js?v=202610112220"></script>
     <script src="shared_guessers.js?v=202610080944"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
@@ -3963,15 +3998,10 @@
             const supportIds = readPerformerIdListField(evSupportPerformersField).filter((id, i, a) => !evMainIds.has(id) && a.indexOf(id) === i);
             if (supportIds.length) record.support_performer_ids = supportIds;
             const eventIdInput = document.getElementById("ev-event-id").value.trim();
-            // A multi-date record that still carries the id this builder would generate
-            // for its FIRST night (typically: a single-date event that later had a date
-            // added) is dropped here — kept, it would give every night the same
-            // permalink. Dropping it leaves the first night's id unchanged (the
-            // runtime regenerates the identical string) and gives the other nights
-            // their own. A hand-typed, different id is still honoured.
-            const firstNight = dates.length > 1 ? parseDateString(dates[0]) : null;
-            const isAutoFirstNightId = !!(eventIdInput && firstNight && buildStructuredEventId(record, firstNight) === eventIdInput);
-            if (eventIdInput && !isAutoFirstNightId) {
+            // Convention: a multi-date record carries no eventId (every night would
+            // share it); each night is generated its own at page load. So an id is
+            // only saved for a single-date event.
+            if (eventIdInput && dates.length === 1) {
                 record.eventId = eventIdInput;
             } else if (dates.length === 1) {
                 // Single date — safe to generate and store a real,
@@ -6378,6 +6408,8 @@
         const HEALTH_CHECKS = [
             { group: "Problems", label: "Duplicated keys in records", btn: "enrich-dupkeys-scan-btn", boxes: ["enrich-dupkeys-results"] },
             { group: "Problems", label: "Clashing event IDs", btn: "enrich-eventid-clash-scan-btn", boxes: ["enrich-eventid-clash-results"] },
+            { group: "Problems", label: "Duplicate & inconsistent dates", btn: "enrich-dateconsistency-scan-btn", boxes: ["enrich-dateconsistency-results"] },
+            { group: "Problems", label: "Multi-date records with an explicit eventId", btn: "enrich-multidate-eventid-scan-btn", boxes: ["enrich-multidate-eventid-results"] },
             { group: "Problems", label: "Orphaned club/promoter/venue/performer ids", btn: "enrich-orphan-scan-btn", boxes: ["enrich-orphan-results"] },
             { group: "Problems", label: "Unparseable or implausible dates", btn: "enrich-datequality-scan-btn", boxes: ["enrich-datequality-results"] },
             { group: "Problems", label: "Missing or malformed coordinates", btn: "enrich-latlon-scan-btn", boxes: ["enrich-latlon-results"] },
@@ -6541,6 +6573,8 @@
                 document.getElementById("enrich-description-scan-btn").disabled = false;
                 document.getElementById("enrich-dupkeys-scan-btn").disabled = false;
                 document.getElementById("enrich-health-btn").disabled = false;
+                document.getElementById("enrich-multidate-eventid-scan-btn").disabled = false;
+                document.getElementById("enrich-dateconsistency-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
                 runHealthCheck();
             } catch (err) {
@@ -6564,6 +6598,8 @@
                 document.getElementById("enrich-description-scan-btn").disabled = true;
                 document.getElementById("enrich-dupkeys-scan-btn").disabled = true;
                 document.getElementById("enrich-health-btn").disabled = true;
+                document.getElementById("enrich-multidate-eventid-scan-btn").disabled = true;
+                document.getElementById("enrich-dateconsistency-scan-btn").disabled = true;
                 healthRunToken++;
                 document.getElementById("enrich-health-results").textContent = "";
                 document.getElementById("enrich-download-all-btn").disabled = true;
@@ -7348,6 +7384,7 @@
         // object / array of such objects (a tour_dates/show_dates-style row
         // handed in whole) — unwrapping one level rather than mislabeling a
         // perfectly good nested date as "empty" or crashing on it.
+        const dateIsBlank = v => v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0);
         function checkDateString(dateStr) {
             if (dateStr && typeof dateStr === "object" && !Array.isArray(dateStr)) {
                 if (typeof dateStr.date === "string") return checkDateString(dateStr.date);
@@ -7422,6 +7459,12 @@
                     // datetimes[] entries themselves aren't yet covered by
                     // this scan or its Apply flow.)
                     if (Array.isArray(ev.datetimes) && ev.datetimes.length > 0) return;
+                    // Same for a populated `dates` list with NO `date`:
+                    // shared_utils.js's applyDatesAlias() uses it in place of
+                    // `date`, so a blank `date` there is correct, not an error.
+                    // (With a `date` set, `dates` is just the series' informational list.)
+                    // (Fixes here write to `date`, so skip rather than offer them.)
+                    if (Array.isArray(ev.dates) && ev.dates.length > 0 && dateIsBlank(ev.date)) return;
                     findDateIssues(ev.date).forEach(issue => {
                         found.push({
                             kind: "event", bucket: bucketName, index,
@@ -8066,9 +8109,7 @@
         // -- Clashing event IDs (report only) -----------------------------------
         document.getElementById("enrich-eventid-clash-scan-btn").addEventListener("click", () => {
             const resultsEl = document.getElementById("enrich-eventid-clash-results");
-            const clashActionsEl = document.getElementById("enrich-eventid-clash-actions");
             resultsEl.innerHTML = "";
-            clashActionsEl.style.display = "none";
             if (!enrichedData) {
                 resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
                 return;
@@ -8087,7 +8128,11 @@
             const occurrences = [];
             buckets.forEach(([bucketName, list]) => {
                 (list || []).forEach((ev, index) => {
-                    const dates = Array.isArray(ev.date) ? ev.date : [ev.date];
+                    // `dates` (when populated) is what the site uses — see
+                    // applyDatesAlias() in shared_utils.js — so check those nights.
+                    const dates = Array.isArray(ev.dates) && ev.dates.length > 0 && dateIsBlank(ev.date) && !(Array.isArray(ev.datetimes) && ev.datetimes.length > 0)
+                        ? ev.dates
+                        : (Array.isArray(ev.date) ? ev.date : [ev.date]);
                     dates.forEach(dateStr => {
                         const date = parseDateString(dateStr);
                         if (!date) return; // unparsable date — the date-quality checker above is the place to fix that first
@@ -8097,10 +8142,6 @@
                             name: ev.showname || ev.name || "(untitled)",
                             dateStr,
                             explicit: !!ev.eventId,
-                            multiNight: Array.isArray(ev.date) && ev.date.length > 1,
-                            firstNightId: ev.eventId && Array.isArray(ev.date) && ev.date.length > 1
-                                ? (() => { const d0 = parseDateString(ev.date[0]); return d0 ? buildStructuredEventId(ev, d0) : null; })()
-                                : null,
                             id: resolveEventId(ev, date),
                         });
                     });
@@ -8130,23 +8171,13 @@
                 const row = document.createElement("div");
                 row.className = "enrich-result-row";
                 const anyExplicit = occs.some(o => o.explicit);
-                // Fixable: every night in the group is the same multi-night record whose own
-                // explicit eventId is the shared id.
-                const sameRecord = occs.every(o => o.bucket === occs[0].bucket && o.index === occs[0].index);
-                const fixable = sameRecord && occs[0].multiNight && occs[0].explicit;
-                const safeFix = fixable && occs[0].firstNightId === id;
-                if (fixable) { row.dataset.bucket = occs[0].bucket; row.dataset.index = occs[0].index; }
                 const list = occs
                     .map(o => `${o.name} <span style="font-weight:normal;color:#999;">(${o.bucket}[${o.index}], ${o.dateStr}${o.explicit ? ", explicit eventId" : ", generated"})</span>`)
                     .join(" &nbsp;↔&nbsp; ");
                 row.innerHTML = `
-                    ${fixable ? `<input type="checkbox" class="enrich-clash-fix-check" ${safeFix ? "checked" : ""}>` : ""}
                     <div class="enrich-result-main">
                         <div class="enrich-result-name"><code>${id}</code></div>
                         <div class="enrich-result-detail">${list}</div>
-                        ${fixable ? `<div class="enrich-result-reasons">${safeFix
-                            ? "Fix available: this one record's nights share an explicit eventId that matches the id generated for its first night — removing it keeps that link working and gives each other night its own id."
-                            : "Fix available, but check first: the explicit eventId isn't the one that would be generated for the first night, so removing it changes that night's permalink. Left unticked."}</div>` : ""}
                         <div class="enrich-result-reasons" style="color:#c62828;">
                             ${anyExplicit
                         ? "⚠ At least one of these has this eventId set explicitly — these records/nights are indistinguishable by permalink until you edit one to a unique eventId."
@@ -8156,28 +8187,304 @@
                 resultsEl.appendChild(row);
             });
             addResultsCollapseToggle(resultsEl, clashes.length, "clash");
-            if (resultsEl.querySelector(".enrich-clash-fix-check")) clashActionsEl.style.display = "";
         });
 
-        document.getElementById("enrich-eventid-clash-apply-btn").addEventListener("click", () => {
-            const rows = [...document.querySelectorAll("#enrich-eventid-clash-results .enrich-result-row")]
-                .filter(r => r.querySelector(".enrich-clash-fix-check")?.checked);
+        // -- Duplicate & inconsistent dates ---------------------------------------
+        // Pure function (no DOM) so it can be tested on its own. Returns
+        // [{ severity: "error"|"check", where, name, problem, detail }].
+        // BEGIN findDateConsistencyIssues
+        function findDateConsistencyIssues(data) {
+            const out = [];
+            const add = (severity, where, name, problem, detail) =>
+                out.push({ severity, where, name, problem, detail });
+            const norm = s => String(s || "").trim().toLowerCase();
+            const DOW_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            // A date field is a string, an array of strings, or (tour/show
+            // rows) objects with .date — flatten to a plain list of strings.
+            const dateList = v => (Array.isArray(v) ? v : [v])
+                .map(x => (x && typeof x === "object") ? x.date : x)
+                .filter(x => typeof x === "string" && x.trim())
+                .map(x => x.trim());
+            const repeats = list => {
+                const c = {};
+                list.forEach(x => { c[x] = (c[x] || 0) + 1; });
+                return Object.keys(c).filter(k => c[k] > 1);
+            };
+            // Needs 4+ dates, where most (>=60%) share a weekday but not all.
+            const weekdayOutliers = list => {
+                const days = list.map(s => {
+                    const d = parseDateString(s);
+                    return d ? { s, dow: d.getDay() } : null;
+                }).filter(Boolean);
+                if (days.length < 4) return null;
+                const counts = {};
+                days.forEach(x => { counts[x.dow] = (counts[x.dow] || 0) + 1; });
+                const [topDow, topN] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+                if (topN === days.length || topN / days.length < 0.6) return null;
+                return { common: Number(topDow), odd: days.filter(x => x.dow !== Number(topDow)) };
+            };
+            const checkWeekdays = (severityWhere, name, list) => {
+                const w = weekdayOutliers(list);
+                if (!w) return;
+                add("check", severityWhere, name, "Odd weekday in a series",
+                    `Most dates are ${DOW_FULL[w.common]}s, but ${w.odd.map(x => `${x.s} is a ${DOW_FULL[x.dow]}`).join(", ")}. Typo?`);
+            };
+
+            // ── Flat events (specific / music / poetry) ──────────────────
+            const flat = [];
+            ["specificEvents", "musicEvents", "poetryEvents"].forEach(bucket => {
+                (data[bucket] || []).forEach((ev, index) => flat.push({ bucket, index, ev, where: `${bucket}[${index}]` }));
+            });
+
+            flat.forEach(({ ev, where }) => {
+                const name = ev.showname || ev.name || "(untitled)";
+                const own = dateList(ev.date);
+                const rep = repeats(own);
+                if (rep.length) add("error", where, name, "Same date repeated in its date list", `Repeated: ${rep.join(", ")}`);
+                if (ev.dates !== undefined) {
+                    const dl = dateList(ev.dates);
+                    const drep = repeats(dl);
+                    if (drep.length) add("error", where, name, "Same date repeated in its `dates` list", `Repeated: ${drep.join(", ")}`);
+                    if (own.length && !own.every(d => dl.includes(d)))
+                        add("error", where, name, "`date` isn't one of the dates in `dates`",
+                            `date: ${own.join(", ")} — dates: ${dl.join(", ")}`);
+                    // Weekday check for a `dates` series runs once per series, below.
+                } else {
+                    checkWeekdays(where, name, own);
+                }
+            });
+
+            // Records built from a `dates` list: group the sibling records
+            // (same name + venue) and compare what they carry with the list.
+            const seriesGroups = {};
+            flat.filter(f => f.ev.dates !== undefined).forEach(f => {
+                const key = `${norm(f.ev.name || f.ev.showname)}|${norm(f.ev.venue_id)}`;
+                (seriesGroups[key] = seriesGroups[key] || []).push(f);
+            });
+            Object.values(seriesGroups).forEach(group => {
+                const name = group[0].ev.showname || group[0].ev.name || "(untitled)";
+                const where = group.map(g => g.where).join(", ");
+                const allDates = [];
+                group.forEach(g => dateList(g.ev.dates).forEach(d => { if (!allDates.includes(d)) allDates.push(d); }));
+                checkWeekdays(where, name, allDates);
+                if (group.length === 1) {
+                    const f = group[0];
+                    // One record carrying `dates`. With no `date` the site
+                    // expands `dates` itself (applyDatesAlias() in
+                    // shared_utils.js) — fine. With a `date`, `dates` is the
+                    // informational series list (see events-schema.json), so
+                    // `date` should be one of its entries.
+                    const dl = dateList(f.ev.dates);
+                    const own = dateList(f.ev.date);
+                    if (own.length > 0 && !own.every(d => dl.includes(d)))
+                        add("error", where, name, "`date` isn't in the `dates` list",
+                            `date is ${own.join(", ")} but \`dates\` lists ${dl.join(", ")}.`);
+                    return;
+                }
+                const expected = new Set();
+                group.forEach(g => dateList(g.ev.dates).forEach(d => expected.add(d)));
+                const actual = [];
+                group.forEach(g => dateList(g.ev.date).forEach(d => actual.push(d)));
+                const missing = [...expected].filter(d => !actual.includes(d));
+                const extra = [...new Set(actual)].filter(d => !expected.has(d));
+                const rep = repeats(actual);
+                if (missing.length || extra.length || rep.length) {
+                    const parts = [];
+                    if (missing.length) parts.push(`missing: ${missing.join(", ")}`);
+                    if (rep.length) parts.push(`repeated: ${rep.join(", ")}`);
+                    if (extra.length) parts.push(`not in \`dates\`: ${extra.join(", ")}`);
+                    add("error", where, name, "Records don't match their `dates` list",
+                        `${group.length} records for ${expected.size} dates — ${parts.join("; ")}. Records carry: ${actual.join(", ")}.`);
+                }
+            });
+
+            // Same event listed more than once (name + date + venue), across
+            // all three buckets. Records with `dates` are reported above.
+            const seen = {};
+            flat.filter(f => f.ev.dates === undefined).forEach(({ ev, where }) => {
+                dateList(ev.date).forEach(d => {
+                    const key = `${norm(ev.showname || ev.name)}|${d}|${norm(ev.venue_id)}`;
+                    (seen[key] = seen[key] || []).push({ where, ev, d });
+                });
+            });
+            Object.values(seen).filter(g => g.length > 1).forEach(g => {
+                const ev = g[0].ev;
+                add("error", g.map(x => x.where).join(", "), ev.showname || ev.name || "(untitled)",
+                    "Same event listed more than once",
+                    `${g.length} records with the same name, date (${g[0].d}) and venue (${ev.venue_id || "none"}).`);
+            });
+
+            // ── Tours / repertoire shows ────────────────────────────────
+            [["tours", "tour_dates"], ["repertoire_shows", "show_dates"]].forEach(([dictName, field]) => {
+                Object.entries(data[dictName] || {}).forEach(([key, rec]) => {
+                    const name = rec.tour_name || rec.showname || rec.name || key;
+                    const rows = rec[field] || [];
+                    const byKey = {};
+                    rows.forEach((row, i) => {
+                        const where = `${dictName}.${key}.${field}[${i}]`;
+                        const list = dateList(row.date);
+                        const rep = repeats(list);
+                        if (rep.length) add("error", where, name, "Same date repeated in its date list", `Repeated: ${rep.join(", ")}`);
+                        checkWeekdays(where, name, list);
+                        list.forEach(d => {
+                            const k = `${d}|${norm(row.venue_id)}|${norm(row.time)}`;
+                            (byKey[k] = byKey[k] || []).push({ where, d, row });
+                        });
+                    });
+                    Object.values(byKey).filter(g => g.length > 1 && new Set(g.map(x => x.where)).size > 1).forEach(g => {
+                        add("error", g.map(x => x.where).join(", "), name, "Same date, venue and time listed more than once",
+                            `${g[0].d} at ${g[0].row.venue_id || "no venue"}${g[0].row.time ? `, ${g[0].row.time}` : ""} appears ${g.length} times. If it's a genuine second show, give the times different values.`);
+                    });
+                });
+            });
+
+            return out;
+        }
+        // END findDateConsistencyIssues
+
+        document.getElementById("enrich-dateconsistency-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-dateconsistency-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const esc = escapeHtml;
+            const issues = findDateConsistencyIssues(enrichedData);
+            if (!issues.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No duplicate or inconsistent dates found.</div>';
+                return;
+            }
+            // Real errors first, "check this" prompts after.
+            issues.sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "error" ? -1 : 1));
+            issues.forEach(i => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                const colour = i.severity === "error" ? "#c62828" : "#b26a00";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${esc(i.name)} <span style="font-weight:normal;color:#999;">(${esc(i.where)})</span></div>
+                        <div class="enrich-result-detail"><strong>${esc(i.problem)}</strong></div>
+                        <div class="enrich-result-reasons" style="color:${colour};">${i.severity === "error" ? "⚠" : "?"} ${esc(i.detail)}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, issues.length, "date issue");
+        });
+
+        // -- Multi-date records with an explicit eventId ------------------------
+        // Flat events (specific/music/poetry) plus tour_dates / show_dates
+        // entries written with a `date` array. Removal writes into the loaded
+        // copy and snapshots the record into the batch the same way the other
+        // checkers do (flat events by bucket#index, tours/shows by key).
+        document.getElementById("enrich-multidate-eventid-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-multidate-eventid-results");
+            const actionsEl = document.getElementById("enrich-multidate-eventid-actions");
+            resultsEl.innerHTML = "";
+            actionsEl.style.display = "none";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const isMulti = d => d && Array.isArray(d.date) && d.date.length > 1;
+            const found = [];
+            [["specificEvents"], ["musicEvents"], ["poetryEvents"]].forEach(([bucket]) => {
+                (enrichedData[bucket] || []).forEach((ev, index) => {
+                    if (!ev.eventId || !isMulti(ev)) return;
+                    const d0 = parseDateString(ev.date[0]);
+                    found.push({
+                        src: "flat", bucket, index,
+                        name: ev.showname || ev.name || "(untitled)",
+                        where: `${bucket}[${index}]`,
+                        dates: ev.date.join(", "),
+                        eventId: ev.eventId,
+                        safe: !!d0 && buildStructuredEventId(ev, d0) === ev.eventId,
+                    });
+                });
+            });
+            [
+                { kind: "tour", label: "tour", dict: enrichedData.tours || {}, datesField: "tour_dates", buildId: buildTourDateEventId, nameOf: r => r.tour_name || r.name || "(untitled)" },
+                { kind: "show", label: "show", dict: enrichedData.repertoire_shows || {}, datesField: "show_dates", buildId: buildShowDateEventId, nameOf: r => r.showname || r.name || "(untitled)" },
+            ].forEach(({ kind, label, dict, datesField, buildId, nameOf }) => {
+                Object.entries(dict).forEach(([key, record]) => {
+                    (record[datesField] || []).forEach((d, dateIndex) => {
+                        if (!d.eventId || !isMulti(d)) return;
+                        found.push({
+                            src: "dated", kind, key, datesField, dateIndex,
+                            name: nameOf(record),
+                            where: `${label} ${key}, ${datesField}[${dateIndex}]`,
+                            dates: d.date.join(", "),
+                            eventId: d.eventId,
+                            safe: buildId(key, d) === d.eventId,
+                        });
+                    });
+                });
+            });
+            if (!found.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">✓ No multi-date records carry an explicit eventId.</div>';
+                return;
+            }
+            const esc = escapeHtml;
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.dataset.src = f.src;
+                if (f.src === "flat") { row.dataset.bucket = f.bucket; row.dataset.index = f.index; }
+                else { row.dataset.kind = f.kind; row.dataset.key = f.key; row.dataset.datesField = f.datesField; row.dataset.dateIndex = f.dateIndex; }
+                row.innerHTML = `
+                    <input type="checkbox" class="enrich-multidate-check" ${f.safe ? "checked" : ""}>
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${esc(f.name)} <span style="font-weight:normal;color:#999;">(${esc(f.where)}; ${esc(f.dates)})</span></div>
+                        <div class="enrich-result-detail"><code>${esc(f.eventId)}</code></div>
+                        <div class="enrich-result-reasons">${f.safe
+                            ? "Same as the id generated for the first night — removing it changes no existing link, and the later nights get their own ids."
+                            : "⚠ Not the id that would be generated for the first night — removing it changes that night's permalink (old links to it stop working). Left unticked."}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+            addResultsCollapseToggle(resultsEl, found.length, "record");
+            actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-multidate-eventid-apply-btn").addEventListener("click", () => {
+            const rows = [...document.querySelectorAll("#enrich-multidate-eventid-results .enrich-result-row")]
+                .filter(r => r.querySelector(".enrich-multidate-check")?.checked);
             let applied = 0;
-            const done = new Set();
+            const touchedDated = new Set();
+            const touchedFlat = new Set();
             rows.forEach(row => {
-                const key = `${row.dataset.bucket}#${row.dataset.index}`;
-                if (done.has(key)) return;
-                done.add(key);
-                const arr = enrichedData && enrichedData[row.dataset.bucket];
-                const ev = arr && arr[parseInt(row.dataset.index, 10)];
-                if (!ev || !ev.eventId) return;
-                delete ev.eventId;
-                delete updatedEvents[key];
-                updatedEvents[key] = JSON.parse(JSON.stringify(ev));
-                applied++;
+                if (row.dataset.src === "flat") {
+                    const key = `${row.dataset.bucket}#${row.dataset.index}`;
+                    const arr = enrichedData && enrichedData[row.dataset.bucket];
+                    const ev = arr && arr[parseInt(row.dataset.index, 10)];
+                    if (!ev || !ev.eventId) return;
+                    delete ev.eventId;
+                    touchedFlat.add(key);
+                    delete updatedEvents[key];
+                    updatedEvents[key] = JSON.parse(JSON.stringify(ev));
+                    applied++;
+                } else {
+                    const { kind, key, datesField, dateIndex } = row.dataset;
+                    const dict = kind === "tour" ? enrichedData?.tours : enrichedData?.repertoire_shows;
+                    const record = dict && dict[key];
+                    const entry = record && record[datesField] && record[datesField][parseInt(dateIndex, 10)];
+                    if (!entry || !entry.eventId) return;
+                    delete entry.eventId;
+                    touchedDated.add(`${kind}:${key}`);
+                    applied++;
+                }
+            });
+            touchedDated.forEach(token => {
+                const [kind, key] = token.split(":");
+                const dict = kind === "tour" ? enrichedData?.tours : enrichedData?.repertoire_shows;
+                const batch = kind === "tour" ? updatedTours : updatedRepertoireShows;
+                const record = dict && dict[key];
+                if (!record) return;
+                delete batch[key];
+                batch[key] = JSON.parse(JSON.stringify(record));
             });
             if (!applied) { alert("No rows checked."); return; }
-            alert(`Removed the explicit eventId from ${applied} multi-night record(s) in the loaded data and added them to the batch below. Each night now resolves to its own generated id. Use "Download full enriched JSON" above for the whole file.`);
+            alert(`Removed the eventId from ${applied} multi-date entr${applied === 1 ? "y" : "ies"} in the loaded data and added the affected record(s) to the batch below. Each night now gets its own generated id. Use "Download full enriched JSON" above for the whole file.`);
             markEnrichedDataDirty();
             refreshBatchSummary();
         });
@@ -8216,10 +8523,12 @@
             });
 
             const found = [];
+            let skippedMultiDate = 0; // multi-date entries: each night is generated its own id, none to store
             pools.forEach(({ kind, label, dict, datesField, buildId, nameOf }) => {
                 Object.entries(dict).forEach(([key, record]) => {
                     (record[datesField] || []).forEach((d, dateIndex) => {
                         if (d.eventId) return;
+                        if (Array.isArray(d.date) && d.date.length > 1) { skippedMultiDate++; return; }
                         const suggestedId = buildId(key, d);
                         if (!suggestedId) return; // unparsable date — the date-quality checker above is the place to fix that first
                         found.push({
@@ -8239,7 +8548,7 @@
                 });
             });
             if (!found.length) {
-                resultsEl.innerHTML = '<div class="enrich-empty">No tour/show dates missing an eventId (with a resolvable date).</div>';
+                resultsEl.innerHTML = `<div class="enrich-empty">No tour/show dates missing an eventId (with a resolvable date).${skippedMultiDate ? ` ${skippedMultiDate} multi-date entr${skippedMultiDate === 1 ? "y" : "ies"} skipped — each night is generated its own id.` : ""}</div>`;
                 actionsEl.style.display = "none";
                 return;
             }

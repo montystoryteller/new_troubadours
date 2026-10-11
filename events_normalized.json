@@ -3819,8 +3819,7 @@
             "10/11/2026",
             "11/11/2026",
             "12/11/2026",
-            "13/11/2026",
-            "10/11/2026"
+            "13/11/2026"
           ],
           "isSpecial": true,
           "venue_id": "lion-and-unicorn-theatre",
@@ -4214,14 +4213,6 @@
           "isSpecial": true,
           "venue_id": "ferring-village-hall",
           "eventId": "T-greg-chapman-discovery-witchcraft-20260919-ferring-village-hall"
-        },
-        {
-          "date": "20/09/2026",
-          "time": "7.30pm",
-          "price": "£14",
-          "ticket_url": "https://www.ticketsource.co.uk/booking/select/rjyqdaobnwoe?ref=montystoryteller.org",
-          "isSpecial": true,
-          "venue_id": "capel-le-ferne-village-hall"
         },
         {
           "date": "20/09/2026",
@@ -7914,7 +7905,7 @@
       "performer_id": "amy-douglas-jason-buck",
       "age_rating": "12+",
       "min_age": 12,
-      "eventId": "20260131-amy-douglas-jason-buck-hotel-indigo-clerkenwell-london"
+      "eventId": "20260131-amy-douglas-jason-buck-hotel-indigo-clerkenwell-london-dark-tales"
     },
     {
       "name": "Myth, Magic and Mischief (age 5+) [Amy Douglas and Jason Buck]",
@@ -7930,7 +7921,8 @@
       "venue_id": "hotel-indigo-clerkenwell-london",
       "performer_id": "amy-douglas-jason-buck",
       "age_rating": "5+",
-      "min_age": 5
+      "min_age": 5,
+      "eventId": "20260131-amy-douglas-jason-buck-hotel-indigo-clerkenwell-london-myth-magic"
     },
     {
       "name": "Myth, Magic and Mischief (age 5+) [Amy Douglas and Jason Buck]",
@@ -9742,8 +9734,7 @@
       "venue_id": "barnstaple-guildhall",
       "performer_id": "suited-storytellers",
       "age_rating": "12+",
-      "min_age": 12,
-      "eventId": "20260625-suited-storytellers-barnstaple-guildhall"
+      "min_age": 12
     },
     {
       "name": "The Fern Flower [Jane & Guy Lambourne]",
@@ -10193,8 +10184,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "monty-the-anywhens",
-      "wider_event": "ventnor-fringe-2026",
-      "eventId": "20260723-monty-the-anywhens-bijou-ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "Deliver Us From Evil [Aaron Oliver]",
@@ -10281,8 +10271,7 @@
       "date_added": "02/06/2026",
       "venue_id": "bijou-ventnor-fringe",
       "performer_id": "holly-medland",
-      "wider_event": "ventnor-fringe-2026",
-      "eventId": "20260725-holly-medland-bijou-ventnor-fringe"
+      "wider_event": "ventnor-fringe-2026"
     },
     {
       "name": "Folktales and Myths of North Wales [Dragon Storytellers]",
@@ -10665,8 +10654,7 @@
       "isSpecial": true,
       "date_added": "27/06/2026",
       "venue_id": "wardrobe-theatre-bristol",
-      "performer_id": "clare-murphy",
-      "eventId": "20260915-clare-murphy-wardrobe-theatre-bristol"
+      "performer_id": "clare-murphy"
     },
     {
       "name": "Uncaged — A Story from the Wild [Michael Harvey]",
@@ -10735,31 +10723,6 @@
       "eventId": "20260918-jason-buck-moorforge-viking-settlement-wigton"
     },
     {
-      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
-      "showname": "Story, song and crankie evenings",
-      "date": "18/09/2026",
-      "dates": [
-        "18/09/2026",
-        "23/10/2026",
-        "20/11/2026",
-        "15/01/2027",
-        "15/02/2027"
-      ],
-      "time": "7.30pm",
-      "club": "",
-      "price": "Small donation to cover room hire",
-      "event_flyer": "",
-      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
-      "isSpecial": true,
-      "date_added": "07/09/2026",
-      "venue_id": "north-tawton-community-centre",
-      "performer_ids": [
-        "michael-dacre",
-        "wendy-dacre"
-      ],
-      "eventId": "20260918-michael-dacre-north-tawton-community-centre"
-    },
-    {
       "name": "Love Don't Come Easy [Dawn Ellis & Tom Morley]",
       "showname": "Love Don't Come Easy",
       "date": "18/09/2026",
@@ -10790,6 +10753,29 @@
       "date_added": "26/08/2026",
       "isSpecial": true,
       "eventId": "20260918-dave-tonge-sandwich-mediaeval-centre"
+    },
+    {
+      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
+      "showname": "Story, song and crankie evenings",
+      "dates": [
+        "18/09/2026",
+        "23/10/2026",
+        "20/11/2026",
+        "15/01/2027",
+        "19/02/2027"
+      ],
+      "time": "7.30pm",
+      "club": "",
+      "price": "Small donation to cover room hire",
+      "event_flyer": "",
+      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
+      "isSpecial": true,
+      "date_added": "07/09/2026",
+      "venue_id": "north-tawton-community-centre",
+      "performer_ids": [
+        "michael-dacre",
+        "wendy-dacre"
+      ]
     },
     {
       "name": "A Celebration of Bletchley's history [Tales Tattled & Told tellers]",
@@ -11121,20 +11107,6 @@
       "name": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland [Lisa Schneidau]",
       "showname": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland",
       "date": "07/10/2026",
-      "time": "7pm",
-      "price": "£20",
-      "description": "Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nJoin storyteller Lisa Schneidau for an evening of dark tales of oak and yew, rowan and blackthorn, as we wander through the greenwood in our imaginations. After all what is a folk tale, but a tangled woodland of words, where anything could happen?",
-      "ticket_url": "https://arundells.org/events/tree-folk-tales/",
-      "isSpecial": true,
-      "venue_id": "arundells-salisbury",
-      "date_added": "04/09/2026",
-      "performer_id": "lisa-schneidau",
-      "eventId": "20261007-lisa-schneidau-arundells-salisbury"
-    },
-    {
-      "name": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland [Lisa Schneidau]",
-      "showname": "The Greenwood Bough: Tree Folk Tales from Britain and Ireland",
-      "date": "07/10/2026",
       "venue_id": "arundells-salisbury",
       "performer_id": "lisa-schneidau",
       "eventId": "20261007-lisa-schneidau-arundells-salisbury",
@@ -11394,28 +11366,6 @@
       "description": "The nights are getting longer and darker. Halloween is fast approaching and the lines between the world of the living and the dead are blurring. This month, the Cafe Crew will be getting into the spirit of the season by dimming the lights and telling tales of ghosts. The dead have many tales to tell and much unfinished business to settle. Join us, if you dare!\n\n\n\nBirmingham Storytelling Café is a place of magic and mischief, where you can sit back and be whisked away to a world of wonderful stories that will amuse and enrich you.",
       "ticket_url": "https://wegottickets.com/f/29419",
       "isSpecial": true
-    },
-    {
-      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
-      "showname": "Story, song and crankie evenings",
-      "date": "23/10/2026",
-      "dates": [
-        "18/09/2026",
-        "23/10/2026",
-        "20/11/2026",
-        "15/01/2027",
-        "15/02/2027"
-      ],
-      "time": "7.30pm",
-      "price": "Small donation to cover room hire",
-      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
-      "isSpecial": true,
-      "date_added": "07/09/2026",
-      "venue_id": "north-tawton-community-centre",
-      "performer_ids": [
-        "michael-dacre",
-        "wendy-dacre"
-      ]
     },
     {
       "name": "Darkness and Love [Peter Findlay]",
@@ -11780,30 +11730,6 @@
       "eventId": "20261119-ben-haggarty-jacksons-lane-london"
     },
     {
-      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
-      "showname": "Story, song and crankie evenings",
-      "date": "23/10/2026",
-      "dates": [
-        "18/09/2026",
-        "23/10/2026",
-        "20/11/2026",
-        "15/01/2027",
-        "15/02/2027"
-      ],
-      "time": "7.30pm",
-      "club": "",
-      "price": "Small donation to cover room hire",
-      "event_flyer": "",
-      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
-      "isSpecial": true,
-      "date_added": "07/09/2026",
-      "venue_id": "north-tawton-community-centre",
-      "performer_ids": [
-        "michael-dacre",
-        "wendy-dacre"
-      ]
-    },
-    {
       "name": "Dumnonian Tales [Martin Shaw]",
       "showname": "Dumnonian Tales",
       "date": "19/11/2026",
@@ -12062,30 +11988,6 @@
       "eventId": "20270115-claire-mace-town-hall-bishops-castle"
     },
     {
-      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
-      "showname": "Story, song and crankie evenings",
-      "date": "15/01/2027",
-      "dates": [
-        "18/09/2026",
-        "23/10/2026",
-        "20/11/2026",
-        "15/01/2027",
-        "15/02/2027"
-      ],
-      "time": "7.30pm",
-      "club": "",
-      "price": "Small donation to cover room hire",
-      "event_flyer": "",
-      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
-      "isSpecial": true,
-      "date_added": "07/09/2026",
-      "venue_id": "north-tawton-community-centre",
-      "performer_ids": [
-        "michael-dacre",
-        "wendy-dacre"
-      ]
-    },
-    {
       "name": "Jane Lambourne [ + Tales Tattled & Told tellers]",
       "showname": "Jane Lambourne",
       "date": "16/01/2027",
@@ -12135,30 +12037,6 @@
       "age_rating": "16+",
       "min_age": 16,
       "eventId": "20270207-stephen-hobbs-rectory-cottages-bletchley"
-    },
-    {
-      "name": "Story, song and crankie evenings [Michael & Wendy Dacre]",
-      "showname": "Story, song and crankie evenings",
-      "date": "15/01/2027",
-      "dates": [
-        "18/09/2026",
-        "23/10/2026",
-        "20/11/2026",
-        "15/01/2027",
-        "15/02/2027"
-      ],
-      "time": "7.30pm",
-      "club": "",
-      "price": "Small donation to cover room hire",
-      "event_flyer": "",
-      "description": "Informal tellings of old tales about the nature of storytelling, and a silly crankie (moving panorama story) made for the East Anglian Storytelling Festival this midsummer.\n\n\n\nThere'll be a little display of crankie rolls too, as an enticement and invitation to all to help make a community crankie together over the wintertime.\n\n\n\nWhat is a crankie? Come and find out!\n\n\n\nYou are welcome to bring your own drinks, and there will be cake!\n\n\n\nPlease bring a small cash donation to help towards room hire.",
-      "isSpecial": true,
-      "date_added": "07/09/2026",
-      "venue_id": "north-tawton-community-centre",
-      "performer_ids": [
-        "michael-dacre",
-        "wendy-dacre"
-      ]
     },
     {
       "name": "Fire & Ice Stories from a life on two continents [Gauri Raje]",

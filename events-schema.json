@@ -1277,7 +1277,7 @@
             "type": "string",
             "pattern": "^\\d{2}/\\d{2}/\\d{4}$"
           },
-          "description": "Full list of dates in a series of which THIS record is one date (each record's own date is in `date`). In current data, 5 records for one series each carry the whole 5-date list here while `date` holds just that record's night. Informational — `date` is what date-driven code reads."
+          "description": "The full list of dates in a series. Two uses. (1) With a `date` also set — the per-night-record convention — this record is ONE night of the series: its own night is in `date`, and several records for one series each carry the same whole list here. It is then informational only; `date` is what date-driven code reads, and `date` should be one of the entries. (2) With NO `date` (blank, \"\" or omitted) — one record standing for every night — applyDatesAlias() (shared_utils.js) copies this list into `date` at load time, so each night is displayed and gets its own generated id (yyyymmdd-performerId-venueId). Don't set an explicit `eventId` on a record used this way: it would be shared by every night."
         },
         "isStoryWalk": {
           "type": "boolean",
@@ -1289,8 +1289,12 @@
         }
       },
       "required": [
-        "name",
-        "date"
+        "name"
+      ],
+      "anyOf": [
+        { "required": ["date"] },
+        { "required": ["dates"] },
+        { "required": ["datetimes"] }
       ],
       "additionalProperties": true
     },
