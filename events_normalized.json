@@ -135,7 +135,7 @@
         "lyric-theatre-bridport",
         "next-door-at-theatre-deli-ec3a",
         "pavilion-british-library",
-        "the-master-shipwright-s-house-deptford"
+        "the-master-shipwrights-house-deptford"
       ],
       "promoter_artists": [
         "debs-newbold",
@@ -2664,7 +2664,7 @@
           "date": "27/09/2026",
           "venue_id": "toms-tap-brewhouse",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261027-tom-s-tap-brewhouse"
+          "eventId": "T-mexican-dave-mexican-dave-20261027-toms-tap-brewhouse"
         },
         {
           "date": "22/10/2026",
@@ -4064,7 +4064,7 @@
           "date": "26/04/2026",
           "time": "7.30pm",
           "price": "£14",
-          "ticket_url": "https://www.ticketsource.co.uk/witchcraft/gladstone-village-hall-neston-greg-chapman-s-discovery-of-witchcraft/e-ogavpd?ref=montystoryteller.org",
+          "ticket_url": "https://www.ticketsource.co.uk/witchcraft/gladstone-village-hall-neston-greg-chapmans-discovery-of-witchcraft/e-ogavpd?ref=montystoryteller.org",
           "isSpecial": true,
           "venue_id": "gladstone-village-hall",
           "isSoldOut": true,
@@ -5309,7 +5309,7 @@
         },
         {
           "date": "13/11/2026",
-          "venue_id": "st-michael-s-church-kingsteignton",
+          "venue_id": "st-michaels-church-kingsteignton",
           "time": "7pm",
           "price": "£20.00 + £1.68 booking fee",
           "ticket_url": "https://www.ticketsource.com/soundofthesirens",
@@ -5319,7 +5319,7 @@
             "devnent"
           ],
           "isDoubleHeadline": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261113-st-michael-s-church-kingsteignton"
+          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261113-st-michaels-church-kingsteignton"
         },
         {
           "date": "14/11/2026",
@@ -10452,7 +10452,7 @@
       "name": "Agni & Amor: Tales of Love and Fire [Ben Haggarty & Steph Brittain]",
       "showname": "Agni & Amor: Tales of Love and Fire",
       "date": "30/08/2026",
-      "venue_id": "the-master-shipwright-s-house-deptford",
+      "venue_id": "the-master-shipwrights-house-deptford",
       "performer_id": "ben-haggarty-steph-brittain",
       "date_added": "26/08/2026",
       "promoter_id": "crickcrack",
@@ -10460,7 +10460,7 @@
       "description": "Join us for captivating tales of Fire & Love, accompanied by live music performances under the canopies of the Master Shipwright's House.\n\n\n\nLet the Crick Crack Club's master storytellers Ben Haggarty and Steph Brittain lure you into the deep waters of myth, epic and fairy tale for grown-ups. Discover the love we seek; a love that transcends; a love that burns; a love that heals; a love that dies; the love that entangles sex, death, loss and rebirth.\n\n\n\nThese unflinching, evocative & beautiful tales explore initiation, power, alchemy and the darkest magic of all.\n\n\n\nThe evening will be interspersed with enchanting music from composer Narotam Horn and musicians Anjana Suta, Laurence Harrison, Nicholas Hann & Special Guests.\n\n\n\nStep into the mythopoetic furnace. This is a place where rules aren't broken lightly.\n\n\n\nAs part of the Totally Thames Festival",
       "ticket_url": "https://www.eventbrite.co.uk/e/agni-amor-storytelling-live-music-evening-tickets-1994518665018",
       "isSpecial": true,
-      "eventId": "20260830-ben-haggarty-steph-brittain-the-master-shipwright-s-house-deptford"
+      "eventId": "20260830-ben-haggarty-steph-brittain-the-master-shipwrights-house-deptford"
     },
     {
       "name": "Wayland the Smith & Other Stories [Andy Johnson]",
@@ -11343,7 +11343,7 @@
       "date": "20/10/2026",
       "venue_id": "horse-groom-st-leonards-on-sea",
       "performer_id": "kate-corkery",
-      "eventId": "20261020-kate-corkery-horse-groom-st-leonard-s-on-sea",
+      "eventId": "20261020-kate-corkery-horse-groom-st-leonards-on-sea",
       "date_added": "11/10/2026",
       "time": "7pm",
       "ticket_url": "https://www.hastingsstoryfest.org.uk/2026",
@@ -18148,8 +18148,8 @@
         -3.69041
       ]
     },
-    "the-master-shipwright-s-house-deptford": {
-      "id": "the-master-shipwright-s-house-deptford",
+    "the-master-shipwrights-house-deptford": {
+      "id": "the-master-shipwrights-house-deptford",
       "name": "The Master Shipwright's House, Deptford",
       "city": "London",
       "postcode": "SE8 3JF",
@@ -18863,8 +18863,8 @@
         -3.19575
       ]
     },
-    "st-michael-s-church-kingsteignton": {
-      "id": "st-michael-s-church-kingsteignton",
+    "st-michaels-church-kingsteignton": {
+      "id": "st-michaels-church-kingsteignton",
       "name": "St Michael's Church, Kingsteignton",
       "full_address": "St Michael's Church, Church Street, Kingsteignton, TQ12 3BQ",
       "city": "Kingsteignton, Newton Abbot",
