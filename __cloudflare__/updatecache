@@ -789,7 +789,8 @@ dispatch() {
 # Delta against what the worker already knows: the OLD key index (meta:keys in KV) is read
 # BEFORE it is replaced, and every key in the new events JSON that wasn't in it is a new page.
 #   performers, venues, promoters, festivals, story clubs and repertoire shows come from
-#   meta:keys; events aren't in that index, so their ids are kept in a second KV key,
+#   meta:keys; pages of the performers/venues/clubs/promoters of any NEW event are re-rendered too (and so IndexNow'd);
+#   events aren't in that index, so their ids are kept in a second KV key,
 #   meta:delta-events (written by --delta; seeded on the first run, no events are "new" then).
 # Plain (non-repertoire) tour pages have no known URL pattern here and are not rendered.
 # New pages are remembered in a pending file (NT_PENDING_FILE, default ~/.updatecache-pending)
@@ -852,16 +853,18 @@ delta_cmd() {
   ' > "$dt/urls.txt"
 
   # New repertoire shows (R-<show>): need the performer, found the same way as --list-repertoire
-  local newR sufs tails
+  local newR tails
   newR=$(jq -nc --slurpfile o "$dt/old.json" --slurpfile n "$dt/new.json" '
     ($o[0]) as $o | ($n[0]) as $n
     | [(($n.tours // []) - ($o.tours // []))[] | select(startswith("R-"))]')
   if [ "$newR" != "[]" ]; then
-    sufs=$(printf '%s' "$newR" | jq -r '.[] | "&tour=" + @uri')
+    printf '%s' "$newR" | jq -r '.[] | "&tour=" + @uri' > "$dt/sufs.txt"
     tails=$(jq -r "${NT_KEYS_JQ_REPERTOIRE:-$JQ_REPERTOIRE}" "$dt/events.json" 2>/dev/null)
-    printf '%s\n' "$tails" | awk -v list="$sufs" '
-      BEGIN { n = split(list, a, "\n"); for (i = 1; i <= n; i++) if (a[i] != "") w[a[i]] = 1 }
+    # suffix list goes in via a file (BSD/macOS awk rejects newlines in -v values)
+    printf '%s\n' "$tails" | awk '
+      NR == FNR { if ($0 != "") w[$0] = 1; next }
       { for (s in w) if (length($0) >= length(s) && substr($0, length($0) - length(s) + 1) == s) { print; next } }' \
+      "$dt/sufs.txt" - \
       | sed "s#^#https://$HOST/tour_guide.html?performer=#" >> "$dt/urls.txt"
   fi
   local skipped_tours
@@ -871,11 +874,61 @@ delta_cmd() {
 
   # New events: baseline is the id list stored in KV by the previous --delta run
   jq -c "[ ${NT_KEYS_JQ_EVENT:-$JQ_EVENT} ]" "$dt/events.json" > "$dt/ev_new.json" 2>/dev/null || echo '[]' > "$dt/ev_new.json"
+  : > "$dt/rel_urls.txt"
   local ev_note="" ev_seeded=1
   if kv_get_json meta:delta-events array > "$dt/ev_old.json"; then
     ev_seeded=0
     local ids up rest
     ids=$(jq -nr --slurpfile o "$dt/ev_old.json" --slurpfile n "$dt/ev_new.json" '(($n[0]) - ($o[0]))[]')
+    if [ -n "$ids" ]; then
+      # Performer and venue pages of each NEW event list that event, so they are refreshed too.
+      # Follows the schema: performer_id / performer_ids / support_performer_ids / other_performer_ids
+      # and venue_id are read from the event AND its parents (tours[k], repertoire_shows[k]); a blank
+      # venue falls back to the club's venue_id when inheritClubData is true. The event's club (club /
+      # club_event) and promoter (promoter_id / legacy promoter) pages are included too, and a club that
+      # is also a promoter (isPromoter, or a promoters entry with the same key) pings its promoter page.
+      # Unknown keys are dropped.
+      # Override with NT_KEYS_JQ_EVENT_LINKS: a jq filter run on the events JSON that gets $ids
+      # (array of new event ids) and $h (https://host) and prints full page URLs.
+      local links_jq
+      if [ -n "${NT_KEYS_JQ_EVENT_LINKS:-}" ]; then
+        links_jq="$NT_KEYS_JQ_EVENT_LINKS"
+      else
+        # (read -d '' rather than a heredoc inside $(...): bash 3.2 on macOS chokes on that)
+        read -r -d '' links_jq <<'JQEND'
+def perfs: [ (.performer_id? | strings),
+             ((.performer_ids?, .support_performer_ids?, .other_performer_ids?) | arrays | .[] | strings) ];
+. as $root
+| (.performers | keys | map({(.): true}) | add // {}) as $pks
+| (.venues | keys | map({(.): true}) | add // {}) as $vks
+| ($ids[0] | map({(.): true}) | add // {}) as $set
+| ((.clubs // []) | map(select((.club // "") != "") | {(.club): (.venue_id // "")}) | add // {}) as $clubv
+| ((.clubs // []) | map(select((.club // "") != "") | {(.club): true}) | add // {}) as $clubs
+| (((.promoters // {}) | keys | map({(.): true}) | add // {})
+   + ((.clubs // []) | map(select(.isPromoter == true and (.club // "") != "") | {(.club): true}) | add // {})) as $prom
+| [ paths(type == "object" and ((.eventId // null) | type) == "string") as $p
+    | getpath($p) as $e
+    | select($set[$e.eventId] == true)
+    | ([range(0; ($p | length) + 1) as $k | $root | getpath($p[0:$k])] | map(select(type == "object"))) as $chain
+    | ([$chain[] | perfs[]] | unique | map(select($pks[.] == true))) as $pp
+    | ([$chain[] | (.venue_id? | strings) | select(. != "")] | unique) as $v0
+    | (if ($v0 | length) > 0 then $v0
+       elif (($e.inheritClubData? // false) == true) then [ $clubv[($e.club? // $e.club_event? // "")] // empty | select(. != "") ]
+       else [] end) as $vv
+    | ([$chain[] | (.club?, .club_event?) | strings | select(. != "")] | unique | map(select($clubs[.] == true))) as $cc
+    | (([$chain[] | (.promoter_id?, .promoter?) | strings | select(. != "")] + $cc) | unique | map(select($prom[.] == true))) as $pr
+    | ($pp[] | "\($h)/performers.html?performer=\(@uri)"),
+      ($vv[] | select($vks[.] == true) | "\($h)/venues.html?venue=\(@uri)"),
+      ($cc[] | "\($h)/storyclub.html?club=\(@uri)"),
+      ($pr[] | "\($h)/promoters.html?promoter=\(@uri)") ]
+| unique | .[]
+JQEND
+      fi
+      printf '%s\n' "$ids" | jq -Rn '[inputs]' > "$dt/newids.json"
+      jq -r --arg h "https://$HOST" --slurpfile ids "$dt/newids.json" "$links_jq" "$dt/events.json" \
+        > "$dt/rel_urls.txt" 2>/dev/null || : > "$dt/rel_urls.txt"
+      [ -s "$dt/rel_urls.txt" ] || ev_note="New events found, but no performer/venue keys could be matched in the JSON (set NT_KEYS_JQ_EVENT_LINKS)."
+    fi
     if [ -n "$ids" ]; then
       up=$(printf '%s\n' "$ids" | upcoming_dated | sort | cut -f2-)
       rest=$(comm -23 <(printf '%s\n' "$ids" | sort) <(printf '%s\n' "$up" | sort))
@@ -890,14 +943,17 @@ delta_cmd() {
   fi
 
   # pending (earlier failures / quota leftovers) first, then new pages, then new events
-  { [ -s "$pending" ] && cat "$pending"; cat "$dt/urls.txt" "$dt/ev_urls.txt"; } \
+  { [ -s "$pending" ] && cat "$pending"; cat "$dt/urls.txt" "$dt/rel_urls.txt" "$dt/ev_urls.txt"; } \
     | awk 'NF && !seen[$0]++' > "$dt/all.txt"
   local n_pending=0 n_new total
   [ -s "$pending" ] && n_pending=$(grep -c . "$pending")
   n_new=$(( $(grep -c . "$dt/urls.txt") + $(grep -c . "$dt/ev_urls.txt") ))
   total=$(grep -c . "$dt/all.txt")
 
+  local n_rel
+  n_rel=$(grep -c . "$dt/rel_urls.txt")
   echo "$n_new new page(s) vs the worker's index, $n_pending still pending from earlier; $total to render." >&2
+  [ "$n_rel" -gt 0 ] && echo "($n_rel performer/venue/club/promoter page(s) are included because new events were added to them.)" >&2
   [ "${skipped_tours:-0}" -gt 0 ] && echo "($skipped_tours new plain tour key(s) not rendered: no URL pattern known here.)" >&2
   [ -n "$ev_note" ] && echo "$ev_note" >&2
 
