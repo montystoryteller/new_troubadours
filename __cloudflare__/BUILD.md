@@ -37,3 +37,10 @@ miss-origin-no-render	plain origin page	no snapshot, and this bot never triggers
 ./updatecache --hard-purge-all	Every existing snapshot counts as missing. It asks you to type YES first.	None
 
 ## updatecache docs
+
+On updating events json:
+
+./updatecache --list-new          # dry run: print the new-page URLs, change nothing
+./updatecache --delta             # sync keys, render new pages, keep leftovers pending
+./updatecache --delta 40          # same, but render at most 40 this run
+./updatecache --delta --indexnow  # also send the pages that rendered to indexnow.sh

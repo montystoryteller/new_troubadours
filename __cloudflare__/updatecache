@@ -1,6 +1,13 @@
 #!/bin/bash
 # updatecache - re-render the prerender snapshot for one or more pages
-# Usage: ./updatecache --sync-keys                 rebuild the valid-key index (after data changes)
+# Usage: ./updatecache --delta [N] [--indexnow]    AFTER uploading a new events JSON: diff it against the worker's
+#                                                  current key index (meta:keys, read before it is replaced), sync the
+#                                                  index, render ONLY the new pages (N max; upcoming events first),
+#                                                  and with --indexnow submit rendered pages (also from earlier runs
+#                                                  that you didn't submit). Pages that didn't
+#                                                  render (quota, errors) stay in ~/.updatecache-pending for next time.
+#        ./updatecache --list-new                  the same delta as URLs, changing nothing (dry run)
+#        ./updatecache --sync-keys                 rebuild the valid-key index only (after data changes)
 #        ./updatecache --status                    cached / uncached / total counts for every page type
 #        ./updatecache --inspect promoter some-key why does the gatekeeper see / not see this page? (JSON, worker key index,
 #                                                  exact and look-alike KV keys, fresh/stale/missing verdict)
@@ -85,14 +92,9 @@ if [ "$1" = "--hard-purge-all" ]; then
   exit 0
 fi
 
-# --sync-keys: rebuild the valid-key index (meta:keys) the gatekeeper uses to
-# skip renders for pages that don't exist. Run after events_normalized.json changes.
-if [ "$1" = "--sync-keys" ]; then
-  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-  index=""
-  for name in events_normalized events_normalised; do
-    json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
-    index=$(curl -sf --max-time 60 "$json_url" | jq -c '{
+# Build the valid-key index (what the gatekeeper stores as meta:keys) from the events JSON on stdin.
+build_index() {
+  jq -c '{
       performers: (.performers | keys),
       venues: (.venues | keys),
       promoters: (.promoters | keys),
@@ -103,12 +105,34 @@ if [ "$1" = "--sync-keys" ]; then
       tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | (map("R-" + .) + map("rep:" + .)))),
       clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
               | map(select(type == "string" and . != "" and . != "other")) | unique)
-    }' 2>/dev/null) && [ -n "$index" ] && break
-    index=""
+    }'
+}
+
+# Download the events JSON to <outfile> and build the index from it into NEW_INDEX.
+# Tries events_normalized.json, then events_normalised.json (or NT_EVENTS_JSON).
+#   load_events_and_index <outfile>
+load_events_and_index() {
+  local name json_url
+  NEW_INDEX=""
+  for name in events_normalized events_normalised; do
+    json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
+    curl -sf --max-time 60 -o "$1" "$json_url" || continue
+    NEW_INDEX=$(build_index < "$1" 2>/dev/null) && [ -n "$NEW_INDEX" ] && return 0
+    NEW_INDEX=""
   done
-  [ -n "$index" ] || { echo "Could not build the key index (set NT_EVENTS_JSON?)" >&2; exit 1; }
+  return 1
+}
+
+# --sync-keys: rebuild the valid-key index (meta:keys) the gatekeeper uses to
+# skip renders for pages that don't exist. Run after events_normalized.json changes.
+# (--delta does this for you, and also renders the new pages: see below.)
+if [ "$1" = "--sync-keys" ]; then
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  tmpjson=$(mktemp "${TMPDIR:-/tmp}/updatecache-json.XXXXXX")
+  load_events_and_index "$tmpjson" || { rm -f "$tmpjson"; echo "Could not build the key index (set NT_EVENTS_JSON?)" >&2; exit 1; }
+  rm -f "$tmpjson"
   curl -s -w "  [HTTP %{http_code}]\n" -X POST -H "x-sync-keys: $SECRET" \
-    --data "$index" "https://$HOST/"
+    --data "$NEW_INDEX" "https://$HOST/"
   exit 0
 fi
 
@@ -190,6 +214,13 @@ render_one() {
   result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
     | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
   echo "$result"
+  # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit)
+  if [ -n "${RENDERED_FILE:-}" ]; then
+    case "$result" in
+      *x-quota-exhausted*|*x-marked-stale*) ;;
+      *" 200"*) printf '%s\n' "$url" >> "$RENDERED_FILE" ;;
+    esac
+  fi
   case "$result" in
     *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; return 1 ;;
   esac
@@ -754,6 +785,187 @@ dispatch() {
   esac
 }
 
+# ── --list-new / --delta ───────────────────────────────────────────────────
+# Delta against what the worker already knows: the OLD key index (meta:keys in KV) is read
+# BEFORE it is replaced, and every key in the new events JSON that wasn't in it is a new page.
+#   performers, venues, promoters, festivals, story clubs and repertoire shows come from
+#   meta:keys; events aren't in that index, so their ids are kept in a second KV key,
+#   meta:delta-events (written by --delta; seeded on the first run, no events are "new" then).
+# Plain (non-repertoire) tour pages have no known URL pattern here and are not rendered.
+# New pages are remembered in a pending file (NT_PENDING_FILE, default ~/.updatecache-pending)
+# until they have rendered successfully, so a quota stop or failed render never loses them.
+#   delta_cmd <list|run> [N] [--indexnow]
+kv_get_json() {   # <kv-key> <object|array>: print the stored JSON value, retrying like kv_list_json
+  local key="$1" want="$2" attempt out
+  for attempt in 1 2 3; do
+    out=$(run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key get "$key" \
+            --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null | awk '/^[\[{]/ { s = 1 } s { print }')
+    if printf '%s' "$out" | jq -e --arg w "$want" 'type == $w' >/dev/null 2>&1; then
+      printf '%s\n' "$out"; return 0
+    fi
+    [ $attempt -lt 3 ] && sleep 3
+  done
+  return 1
+}
+
+delta_cmd() {
+  local mode="$1"; shift
+  local limit=0 do_idx=0 a
+  for a in "$@"; do
+    case "$a" in
+      --indexnow) do_idx=1 ;;
+      ''|*[!0-9]*) echo "Unknown argument '$a' (usage: --delta [N] [--indexnow] | --list-new)" >&2; exit 1 ;;
+      *) limit="$a" ;;
+    esac
+  done
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local pending="${NT_PENDING_FILE:-$HOME/.updatecache-pending}"
+  DT=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-delta.XXXXXX")
+  trap 'rm -rf "$DT"' EXIT
+  local dt="$DT"
+
+  note "Fetching the new events JSON..."
+  load_events_and_index "$dt/events.json" || { echo "Could not fetch/parse the events JSON (set NT_EVENTS_JSON?)" >&2; exit 1; }
+  printf '%s\n' "$NEW_INDEX" > "$dt/new.json"
+
+  note "Reading the worker's current key index (the baseline)..."
+  if ! kv_get_json meta:keys object > "$dt/old.json"; then
+    if [ "${NT_DELTA_ALL:-0}" = "1" ]; then
+      echo '{}' > "$dt/old.json"
+    else
+      echo "Could not read meta:keys from KV, so there is no baseline to diff against." >&2
+      echo "Check 'npx wrangler whoami'. NT_DELTA_ALL=1 treats EVERY page as new." >&2
+      exit 1
+    fi
+  fi
+
+  # New keys per type, as full URLs
+  jq -nr --arg h "https://$HOST" --slurpfile o "$dt/old.json" --slurpfile n "$dt/new.json" '
+    ($o[0]) as $o | ($n[0]) as $n
+    | def d(t): (($n[t] // []) - ($o[t] // []))[];
+      (d("performers") | "\($h)/performers.html?performer=\(@uri)"),
+      (d("venues")     | "\($h)/venues.html?venue=\(@uri)"),
+      (d("promoters")  | "\($h)/promoters.html?promoter=\(@uri)"),
+      (d("festivals")  | "\($h)/festival.html?festival=\(@uri)"),
+      (d("clubs")      | "\($h)/storyclub.html?club=\(@uri)")
+  ' > "$dt/urls.txt"
+
+  # New repertoire shows (R-<show>): need the performer, found the same way as --list-repertoire
+  local newR sufs tails
+  newR=$(jq -nc --slurpfile o "$dt/old.json" --slurpfile n "$dt/new.json" '
+    ($o[0]) as $o | ($n[0]) as $n
+    | [(($n.tours // []) - ($o.tours // []))[] | select(startswith("R-"))]')
+  if [ "$newR" != "[]" ]; then
+    sufs=$(printf '%s' "$newR" | jq -r '.[] | "&tour=" + @uri')
+    tails=$(jq -r "${NT_KEYS_JQ_REPERTOIRE:-$JQ_REPERTOIRE}" "$dt/events.json" 2>/dev/null)
+    printf '%s\n' "$tails" | awk -v list="$sufs" '
+      BEGIN { n = split(list, a, "\n"); for (i = 1; i <= n; i++) if (a[i] != "") w[a[i]] = 1 }
+      { for (s in w) if (length($0) >= length(s) && substr($0, length($0) - length(s) + 1) == s) { print; next } }' \
+      | sed "s#^#https://$HOST/tour_guide.html?performer=#" >> "$dt/urls.txt"
+  fi
+  local skipped_tours
+  skipped_tours=$(jq -nr --slurpfile o "$dt/old.json" --slurpfile n "$dt/new.json" '
+    ($o[0]) as $o | ($n[0]) as $n
+    | [(($n.tours // []) - ($o.tours // []))[] | select((startswith("R-") or startswith("rep:")) | not)] | length')
+
+  # New events: baseline is the id list stored in KV by the previous --delta run
+  jq -c "[ ${NT_KEYS_JQ_EVENT:-$JQ_EVENT} ]" "$dt/events.json" > "$dt/ev_new.json" 2>/dev/null || echo '[]' > "$dt/ev_new.json"
+  local ev_note="" ev_seeded=1
+  if kv_get_json meta:delta-events array > "$dt/ev_old.json"; then
+    ev_seeded=0
+    local ids up rest
+    ids=$(jq -nr --slurpfile o "$dt/ev_old.json" --slurpfile n "$dt/ev_new.json" '(($n[0]) - ($o[0]))[]')
+    if [ -n "$ids" ]; then
+      up=$(printf '%s\n' "$ids" | upcoming_dated | sort | cut -f2-)
+      rest=$(comm -23 <(printf '%s\n' "$ids" | sort) <(printf '%s\n' "$up" | sort))
+      { [ -n "$up" ] && printf '%s\n' "$up"; [ -n "$rest" ] && printf '%s\n' "$rest"; } \
+        | jq -Rr --arg h "https://$HOST" '"\($h)/event.html?event=\(@uri)"' > "$dt/ev_urls.txt"
+    else
+      : > "$dt/ev_urls.txt"
+    fi
+  else
+    : > "$dt/ev_urls.txt"
+    ev_note="No event baseline in KV yet (meta:delta-events): events are not diffed this run; use --event N for them. It is seeded by --delta."
+  fi
+
+  # pending (earlier failures / quota leftovers) first, then new pages, then new events
+  { [ -s "$pending" ] && cat "$pending"; cat "$dt/urls.txt" "$dt/ev_urls.txt"; } \
+    | awk 'NF && !seen[$0]++' > "$dt/all.txt"
+  local n_pending=0 n_new total
+  [ -s "$pending" ] && n_pending=$(grep -c . "$pending")
+  n_new=$(( $(grep -c . "$dt/urls.txt") + $(grep -c . "$dt/ev_urls.txt") ))
+  total=$(grep -c . "$dt/all.txt")
+
+  echo "$n_new new page(s) vs the worker's index, $n_pending still pending from earlier; $total to render." >&2
+  [ "${skipped_tours:-0}" -gt 0 ] && echo "($skipped_tours new plain tour key(s) not rendered: no URL pattern known here.)" >&2
+  [ -n "$ev_note" ] && echo "$ev_note" >&2
+
+  if [ "$mode" = "list" ]; then
+    cat "$dt/all.txt"
+    echo "(list only: nothing was changed. ./updatecache --delta renders them and updates the index.)" >&2
+    exit 0
+  fi
+
+  # 1. remember the work BEFORE the baseline moves, so nothing is lost if we stop early
+  cp "$dt/all.txt" "$pending"
+  # 2. replace the worker's index (same call as --sync-keys)
+  local code
+  code=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "x-sync-keys: $SECRET" \
+           --data-binary @"$dt/new.json" "https://$HOST/")
+  case "$code" in
+    2??) echo "Key index synced [HTTP $code]." ;;
+    *) echo "Key index sync FAILED [HTTP $code]; nothing rendered. Pending list kept in $pending." >&2; exit 1 ;;
+  esac
+  # 3. move the event baseline
+  if ! run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key put meta:delta-events \
+         --path "$dt/ev_new.json" --namespace-id "$NT_KV_NAMESPACE_ID" --remote >/dev/null 2>&1; then
+    echo "Warning: could not store meta:delta-events; the next --delta may list the same events again." >&2
+  elif [ $ev_seeded -eq 1 ]; then
+    echo "Event baseline seeded ($(jq length "$dt/ev_new.json") ids)."
+  fi
+
+  # 4. render, NT_DELAY apart, stop at the quota or after N
+  : > "$dt/ok.txt"
+  RENDERED_FILE="$dt/ok.txt"
+  local i=0 url
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    [ "$limit" -gt 0 ] && [ $i -ge "$limit" ] && break
+    [ $i -gt 0 ] && sleep "$DELAY"
+    i=$((i + 1))
+    render_one "$url" "$i" || break
+  done < "$dt/all.txt"
+  unset RENDERED_FILE
+
+  # 5. what did not render stays pending
+  grep -vxFf "$dt/ok.txt" "$dt/all.txt" > "$pending" || true
+  local n_ok n_left
+  n_ok=$(grep -c . "$dt/ok.txt"); n_left=$(grep -c . "$pending")
+  echo "Rendered OK: $n_ok. Still pending: $n_left$( [ "$n_left" -gt 0 ] && echo " (in $pending; run ./updatecache --delta again, e.g. after the quota resets)")."
+
+  # 6. rendered pages wait in an "unsubmitted" list until IndexNow has accepted them, so
+  #    --indexnow can be run in this run OR a later one (a second --delta finds nothing new)
+  local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}"
+  [ -s "$dt/ok.txt" ] && { cat "$dt/ok.txt" >> "$unsub"; awk 'NF && !seen[$0]++' "$unsub" > "$dt/unsub.tmp" && mv "$dt/unsub.tmp" "$unsub"; }
+  local n_unsub=0
+  [ -s "$unsub" ] && n_unsub=$(grep -c . "$unsub")
+  if [ $do_idx -eq 1 ]; then
+    if [ "$n_unsub" -gt 0 ]; then
+      if bash "$(cd "$(dirname "$0")" && pwd)/indexnow.sh" -f "$unsub"; then
+        : > "$unsub"
+      else
+        echo "IndexNow did not accept everything; the $n_unsub URL(s) stay in $unsub for the next --delta --indexnow." >&2
+      fi
+    else
+      echo "Nothing waiting to be sent to IndexNow."
+    fi
+  elif [ "$n_unsub" -gt 0 ]; then
+    echo "$n_unsub rendered URL(s) waiting for IndexNow (in $unsub). Send them any time with: ./updatecache --delta --indexnow"
+  fi
+  exit 0
+}
+
 case "$1" in
   --list-performers|--list-performer)  LIST_ONLY=1; dispatch performer ;;
   --list-venues|--list-venue)          LIST_ONLY=1; dispatch venue ;;
@@ -776,6 +988,8 @@ case "$1" in
   --booksmerch)                        dispatch booksmerch ;;
   --repertoire|--repertoires)          dispatch repertoire ;;
   --event|--events)                    dispatch event ;;
+  --delta)                             delta_cmd run "${@:2}" ;;
+  --list-new)                          delta_cmd list "${@:2}" ;;
   --stale|--purge|--purge-only)        ;;   # handled below
   --*) echo "Unknown option: $1 (see the usage notes at the top of this script)" >&2; exit 1 ;;
 esac
