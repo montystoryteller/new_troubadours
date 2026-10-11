@@ -1945,6 +1945,36 @@
     }
   },
   "repertoire_shows": {
+    "carmel-page-attercliffe-stupid-club": {
+      "name": "The Attercliffe Stupid Club [Carmel Page]",
+      "showname": "The Attercliffe Stupid Club",
+      "show_dates": [
+        {
+          "date": "04/09/2026",
+          "time": "7.30pm-10pm",
+          "club": "matlockSCafe",
+          "price": "£8 + bf",
+          "fb_event": 1736294141031850,
+          "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2370161",
+          "event_flyer": "",
+          "description": "New Season of Matlock Storytelling Cafe starts on Friday 4th September\n\n\n\nOh we have missed you. How have you been? The summer is slipping by, the heat haze is waning and we are finding our way back to the familiar boards of Matlock's Imperial Rooms buzzing with anticipation for a new season of stories. We may or may not put our shoes back on but we will be ready to welcome you back with Stories, soup and caaake.\n\n\n\nOur first session back holds something slightly different in its thrall. We'll have our resident tellers sharing a tale or two and we also have 'Something With Teddy Bears'...\n\n\n\nThe Attercliffe Stupid Club\n\n\n\nCarmel Page, who co runs Sheffield's Story Forge has been let loose this summer. She travelled North by the light of the stars and found herself over the border in a very strange land (made stranger by her being there). She is just back from a run at the Edinburgh Festival Fringe, where she gained a hat and many followers with her Political and Absurdist performance of Attercliffe Stupid\n\n\n\nAttercliffe Stupid Club is relaunching. Storyteller Carmel Page tells the funny and true(ish) history of this outrageous Victorian club whose satirical members were like an early version of Count Binface. During a time of terrorism in Sheffield they were frequently mentioned in the Houses of Parliament. They only got forgotten because the members always read their minutes backwards, rescinded them and burnt them on the fire. Are you stupid enough to join the club?\n\n\n\nBeware, ethical conundrums and Teddy Bear Fights with the audience.\n\n\n\nWe will be live and in the room but alas not streaming via Zoom this month. Our lovely tech team are away on their 30th wedding anniversary, Congratulations to Mat and Niki.\n\n\n\nWe are delighted to tell you that soup, cakes, teas coffees etc are available from our kitchen. We do still operate with good old fashioned cash, kerching! so bring your purse to cross our palms with silver. All monies from the kitchen help to fund our ongoing story nights. You are still most welcome to bring a bottle of something cheeky with you.\n\n\n\nWe urge you to book in advance, if you are able as tickets often sell out.\n\n\n\nTo help our more technically challenged friends we have a very small number of tickets available on the door. We suggest you arrive early if you wish to secure one of these pay in person tickets.\n\n\n\nWe at Matlock Storytelling Cafe are embracing our quest; to bring top quality performances to adult audiences.\n\n\n\nGrab a ticket, turn off your phone and join us on a journey.\n\n\n\nThe doors opens at 7.00pm, stories 7.30-10\n\n\n\nTickets are £8 (plus a small booking fee)\n\n\n\nWe are also trialing some cheaper tickets for younger folk and those who identify as skint .Please self select.",
+          "venue_id": "imperial-rooms-matlock",
+          "eventId": "R-carmel-page-20260904-imperial-rooms-matlock"
+        },
+        {
+          "date": "15/10/2026",
+          "time": "7pm",
+          "price": "Free",
+          "event_flyer": "2026_10_15_carmel_page_attercliffe_walkley.webp",
+          "fb_event": 2009734033020543,
+          "venue_id": "walkley-carnegie-library",
+          "eventId": "R-carmel-page-20261015-walkley-carnegie-library"
+        }
+      ],
+      "description": "As performed at the Edinburgh Festival Fringe, where Carmel Page gained a hat and many followers with her Political and Absurdist performance of Attercliffe Stupid\n\n\n\nAttercliffe Stupid Club is relaunching. Storyteller Carmel Page tells the funny and true(ish) history of this outrageous Victorian club whose satirical members were like an early version of Count Binface. During a time of terrorism in Sheffield they were frequently mentioned in the Houses of Parliament. They only got forgotten because the members always read their minutes backwards, rescinded them and burnt them on the fire. Are you stupid enough to join the club?",
+      "performer_id": "carmel-page",
+      "isSpecial": true
+    },
     "charlotte-mooney-comb": {
       "name": "Comb [Charlotte Mooney]",
       "showname": "Comb",
@@ -10383,23 +10413,6 @@
       "eventId": "20260904-chris-adriaanse-the-chillingham-arms"
     },
     {
-      "name": "The Attercliffe Stupid Club [Carmel Page]",
-      "showname": "The Attercliffe Stupid Club",
-      "date": "04/09/2026",
-      "time": "7.30pm-10pm",
-      "club": "matlockSCafe",
-      "price": "£8 + bf",
-      "description": "New Season of Matlock Storytelling Cafe starts on Friday 4th September\n\n\n\nOh we have missed you. How have you been? The summer is slipping by, the heat haze is waning and we are finding our way back to the familiar boards of Matlock's Imperial Rooms buzzing with anticipation for a new season of stories. We may or may not put our shoes back on but we will be ready to welcome you back with Stories, soup and caaake.\n\n\n\nOur first session back holds something slightly different in its thrall. We'll have our resident tellers sharing a tale or two and we also have 'Something With Teddy Bears'...\n\n\n\nThe Attercliffe Stupid Club\n\n\n\nCarmel Page, who co runs Sheffield's Story Forge has been let loose this summer. She travelled North by the light of the stars and found herself over the border in a very strange land (made stranger by her being there). She is just back from a run at the Edinburgh Festival Fringe, where she gained a hat and many followers with her Political and Absurdist performance of Attercliffe Stupid\n\n\n\nAttercliffe Stupid Club is relaunching. Storyteller Carmel Page tells the funny and true(ish) history of this outrageous Victorian club whose satirical members were like an early version of Count Binface. During a time of terrorism in Sheffield they were frequently mentioned in the Houses of Parliament. They only got forgotten because the members always read their minutes backwards, rescinded them and burnt them on the fire. Are you stupid enough to join the club?\n\n\n\nBeware, ethical conundrums and Teddy Bear Fights with the audience.\n\n\n\nWe will be live and in the room but alas not streaming via Zoom this month. Our lovely tech team are away on their 30th wedding anniversary, Congratulations to Mat and Niki.\n\n\n\nWe are delighted to tell you that soup, cakes, teas coffees etc are available from our kitchen. We do still operate with good old fashioned cash, kerching! so bring your purse to cross our palms with silver. All monies from the kitchen help to fund our ongoing story nights. You are still most welcome to bring a bottle of something cheeky with you.\n\n\n\nWe urge you to book in advance, if you are able as tickets often sell out.\n\n\n\nTo help our more technically challenged friends we have a very small number of tickets available on the door. We suggest you arrive early if you wish to secure one of these pay in person tickets.\n\n\n\nWe at Matlock Storytelling Cafe are embracing our quest; to bring top quality performances to adult audiences.\n\n\n\nGrab a ticket, turn off your phone and join us on a journey.\n\n\n\nThe doors opens at 7.00pm, stories 7.30-10\n\n\n\nTickets are £8 (plus a small booking fee)\n\n\n\nWe are also trialing some cheaper tickets for younger folk and those who identify as skint .Please self select.",
-      "fb_event": 1736294141031850,
-      "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2370161",
-      "isSpecial": true,
-      "event_flyer": "",
-      "venue_id": "imperial-rooms-matlock",
-      "performer_id": "carmel-page",
-      "date_added": "24/08/2026",
-      "eventId": "20260904-carmel-page-imperial-rooms-matlock"
-    },
-    {
       "name": "Storytelling, Nature and Irish Folklore [Eddie Lenihan]",
       "showname": "Storytelling, Nature and Irish Folklore",
       "date": "05/09/2026",
@@ -15901,6 +15914,20 @@
         -0.12754
       ]
     },
+    "walkley-carnegie-library": {
+      "id": "walkley-carnegie-library",
+      "name": "Walkley Carnegie Library",
+      "city": "Sheffield",
+      "postcode": "S6 3TD",
+      "description": "Walkley Library is  a landmark in the area, standing at the junction of Walkley Road and South Road on a busy crossroads. Over a hundred years old, the library is a thriving place, run by volunteers who really care about the library, its books and the community. The library gives the chance for anyone, no matter what age, to love reading and read books for free, from picture books to thrillers and Booker Prize winners. Walkley Library also puts on events, including singing for tiny tots, craft groups, author events and second hand book sales.\n\n\n\nThe building is the only surviving Carnegie Library in Sheffield. Carnegie libraries were funded by a self-made millionaire called Andrew Carnegie, who believed that libraries could help people through education, the way he'd been helped himself. Many Carnegie libraries were beautiful, ornate buildings, which is why Walkley Library is a Grade II listed building, including its boundary walls and the commemorative plaque in front of the library.",
+      "full_address": "Walkley Carnegie Library, 403 South Road, Walkley, Sheffield, S6 3TD",
+      "url": "https://www.walkleylibrary.org.uk/",
+      "email": "",
+      "latlon": [
+        53.39475,
+        -1.50279
+      ]
+    },
     "rylstone-gardens": {
       "id": "rylstone-gardens",
       "name": "Rylstone Gardens, Shanklin",
@@ -15908,7 +15935,7 @@
       "postcode": "PO37 6RG",
       "full_address": "Rylstone Gardens, 11 Popham Road, Shanklin, Isle of Wight, PO37 6RG",
       "url": "https://visitshanklin.co.uk/things-to-do/the-rylstone-gardens/",
-      "email": "i",
+      "email": "",
       "latlon": [
         50.62429,
         -1.17595
