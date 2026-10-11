@@ -11368,6 +11368,21 @@
       "isSpecial": true
     },
     {
+      "name": "Tales of Mystery [Ensemble evening]",
+      "showname": "Tales of Mystery",
+      "date": "23/10/2026",
+      "time": "7.30pm",
+      "club": "threeheadsinawell",
+      "price": "£10 full price in-person; £7 concession in-person; £6 online)",
+      "description": "On Friday 23 October, Surrey Story Tellers comes together for its annual ensemble evening of tales spooky, scary, magical, or mysterious - it is almost halloween after all.\n\n\n\nThis month, we are in-person and online, so come along and get your ticket on the door, or pre-book.",
+      "event_flyer": "2026_10_23_three_heads_ensemble.jpg",
+      "ticket_url": "",
+      "isSpecial": true,
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "date_added": "11/10/2026",
+      "eventId": "20261023-threeheadsinawell-st-johns-church-hall-worcester-park"
+    },
+    {
       "name": "Darkness and Love [Peter Findlay]",
       "showname": "Darkness and Love",
       "date": "24/10/2026",
@@ -11642,7 +11657,7 @@
       "performer_id": "eddie-lenihan",
       "time": "8pm",
       "price": "€15 + fee",
-      "description": "One of Ireland’s most celebrated traditional storytellers, Eddie Lenihan, brings his rich world of folklore, myth and memory to Finuge Join us at Teach Siamsa this Samhain for a special evening of Irish storytelling, folklore, myth and memory with one of Ireland’s most celebrated traditional storytellers, Eddie Lenihan.\n\n\n\nDrawing on more than 40 years of collecting and preserving Ireland’s oral traditions, Eddie brings to life the old tales, strange happenings and enduring legends that have shaped the Irish imagination for generations.\n\n\n\nFrom fairy lore and haunted places to unforgettable characters, local traditions and mysterious happenings, his storytelling combines history, humour and mystery in equal measure.\n\n\n\nA renowned author, broadcaster and lecturer, Eddie is one of Ireland’s few remaining practising seanchaithe – traditional lore keepers and storytellers. His acclaimed works include In Search of Biddy Early, The Devil is an Irishman and Defiant Irish Women.\n\n\n\nAn atmospheric Samhain evening of fireside storytelling, wit, folklore and wonder from a true master of the craft.\n\n\n\nUnsuitable for children under 12.",
+      "description": "One of Ireland's most celebrated traditional storytellers, Eddie Lenihan, brings his rich world of folklore, myth and memory to Finuge Join us at Teach Siamsa this Samhain for a special evening of Irish storytelling, folklore, myth and memory with one of Ireland's most celebrated traditional storytellers, Eddie Lenihan.\n\n\n\nDrawing on more than 40 years of collecting and preserving Ireland's oral traditions, Eddie brings to life the old tales, strange happenings and enduring legends that have shaped the Irish imagination for generations.\n\n\n\nFrom fairy lore and haunted places to unforgettable characters, local traditions and mysterious happenings, his storytelling combines history, humour and mystery in equal measure.\n\n\n\nA renowned author, broadcaster and lecturer, Eddie is one of Ireland's few remaining practising seanchaithe — traditional lore keepers and storytellers. His acclaimed works include In Search of Biddy Early, The Devil is an Irishman and Defiant Irish Women.\n\n\n\nAn atmospheric Samhain evening of fireside storytelling, wit, folklore and wonder from a true master of the craft.\n\n\n\nUnsuitable for children under 12.",
       "event_flyer": "2026_11_06_lenihan.jpg",
       "ticket_url": "https://www.eventbrite.com/e/irish-legends-living-stories-with-eddie-lenihan-tickets-1998886655796",
       "isSpecial": true
@@ -20866,6 +20881,10 @@
     },
     "storytellersnotts": {
       "id": "storytellersnotts",
+      "isClub": true
+    },
+    "threeheadsinawell": {
+      "id": "threeheadsinawell",
       "isClub": true
     },
     "birminghamSCafe": {
