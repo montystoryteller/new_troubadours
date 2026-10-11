@@ -236,8 +236,18 @@ render_one() {
   result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
     | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health)' | tr -d '\r' | paste -sd' ' -)
   echo "$result"
-  # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit)
+  # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit,
+  # and a healthy page). Only those are IndexNow'd; the rest stay pending and are retried next run.
+  # Health comes from the gatekeeper's x-page-health header (absent = not checked = treated as fine):
+  # error / loading / missing / stalled / 404 / notfound block it, and so does a "warn" whose reason
+  # says the page showed its "not found" state. Other warnings are allowed.
   if [ -n "${RENDERED_FILE:-}" ]; then
+    local health
+    health=$(printf '%s' "$result" | sed -n 's/.*x-page-health: \([A-Za-z0-9\/]*\).*/\1/p')
+    case "$health" in
+      error|loading|missing|stalled|404|notfound) echo "  ⚠ not recorded as rendered (page health: $health): will stay pending, and won't be sent to IndexNow." >&2; return 0 ;;
+      warn) case "$result" in *"not found"*) echo "  ⚠ not recorded as rendered (the page showed its 'not found' state): stays pending, not sent to IndexNow." >&2; return 0 ;; esac ;;
+    esac
     case "$result" in
       *x-quota-exhausted*|*x-marked-stale*) ;;
       *" 200"*) printf '%s\n' "$url" >> "$RENDERED_FILE" ;;
@@ -975,9 +985,22 @@ def perfs: [ (.performer_id? | strings),
     | ($pp[] | "\($h)/performers.html?performer=\(@uri)"),
       ($vv[] | select($vks[.] == true) | "\($h)/venues.html?venue=\(@uri)"),
       ($cc[] | "\($h)/storyclub.html?club=\(@uri)"),
-      ($pr[] | "\($h)/promoters.html?promoter=\(@uri)") ]
-| unique | .[]
+      ($pr[] | "\($h)/promoters.html?promoter=\(@uri)") ] as $first
+# New TOUR / REPERTOIRE dates: their T-/R- ids are generated (no eventId field), so match them by
+# regenerating the id. Pings the performer(s) of the tour/show (and of the date) and the date's venue.
+| def gid($pre; $k): (.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $dd | "\($pre)\($k)-\($dd)-\(vid)");
+  [ ( ((.tours // {}) | to_entries[] | {pre: "T-", k: .key, t: .value, ds: (.value.tour_dates // [])}),
+      ((.repertoire_shows // {}) | to_entries[] | {pre: "R-", k: .key, t: .value, ds: (.value.show_dates // [])}) )
+    | . as $g | $g.ds[] | . as $d
+    | select($set[($d | gid($g.pre; $g.k))] == true)
+    | ([$g.t, $d] | map(select(type == "object"))) as $chain
+    | ([$chain[] | perfs[]] | unique | map(select($pks[.] == true))) as $pp
+    | ([$d.venue_id? // empty | strings | select(. != "")]) as $vv
+    | ($pp[] | "\($h)/performers.html?performer=\(@uri)"),
+      ($vv[] | select($vks[.] == true) | "\($h)/venues.html?venue=\(@uri)") ] as $second
+| ($first + $second) | unique | .[]
 JQEND
+        links_jq="$JQ_TOUR_DEFS"$'\n'"$links_jq"
       fi
       printf '%s\n' "$ids" | jq -Rn '[inputs]' > "$dt/newids.json"
       jq -r --arg h "https://$HOST" --slurpfile ids "$dt/newids.json" "$links_jq" "$dt/events.json" \
