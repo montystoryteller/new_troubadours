@@ -295,6 +295,17 @@
         }
       ]
     },
+    "east-anglian-storytelling-festival-2027": {
+      "name": "East Anglian Storytelling Festival 2027",
+      "short_name": "EASF 2027",
+      "start_date": "21/05/2027",
+      "end_date": "23/05/2027",
+      "primary_type": "storytelling",
+      "venue_id": "food-museum-stowmarket",
+      "ticket_url": "",
+      "description": "Step into summer at our small, friendly folklore and storytelling festival. Where myths and legends spring to life, the fun is hands-on, and traditional stories come straight from the heart.\n\n\n\nWatch wonderful wordsmiths weave their magic in rustic barns and leafy glades. Let the kids’ imaginations run wild at interactive storytelling sessions. Relax with live music, enjoy delicious food and drink, or take a stroll through our beautiful grounds.\n\n\n\nReady to have a go yourself? Try fun new skills at our storytelling and craft workshops. Or tell us a tale at a story-round or late-night campfire session.Whatever you choose, you'll find a warm-hearted community ready to welcome you.\n\n\n\nSo, come for the day. Come for an evening. Camp out under the stars with us and stay the whole weekend.\n\n\n\nWe can't wait for you to join us.",
+      "website": "https://www.eastanglianstorytellingfestival.co.uk/"
+    },
     "east-anglian-storytelling-festival-2026": {
       "name": "East Anglian Storytelling Festival",
       "short_name": "EASF 2026",
@@ -903,13 +914,21 @@
         }
       ]
     },
+    "FATE-2027": {
+      "name": "Festival at the Edge 2027",
+      "short_name": "FATE 2027",
+      "start_date": "16/07/2027",
+      "end_date": "18/07/2027",
+      "primary_type": "storytelling",
+      "venue_id": "bromyard-town-football-club"
+    },
     "FATE-2026": {
       "name": "Festival at the Edge",
       "short_name": "FATE 2026",
       "start_date": "17/07/2026",
       "end_date": "19/07/2026",
       "primary_type": "storytelling",
-      "venue_id": "TBC",
+      "venue_id": "bromyard-town-football-club",
       "ticket_url": "",
       "website": "",
       "facebook": "",
@@ -6340,6 +6359,12 @@
       "time": "7-9pm",
       "link": "https://tistales.org.uk/island-storytellers/",
       "facebook": "https://www.facebook.com/groups/islandstorytellers",
+      "convenor": "sue-bailey",
+      "regular_tellers": [
+        "sue-bailey",
+        "holly-medland",
+        "merl-fluin"
+      ],
       "facebook_group": "islandstorytellers",
       "club": "islandstorytellers",
       "venue_id": "fig-tree-shanklin"
@@ -6387,6 +6412,7 @@
       "time": "7.30pm",
       "facebook": "lynettehilluk",
       "club": "talestattledtold",
+      "convenor": "lynette-hill",
       "description": "Traditional tales from local and visiting tellers in Bletchley.",
       "venue_id": "rectory-cottages-bletchley",
       "isPromoter": true,
@@ -6656,6 +6682,14 @@
       "facebook": "https://www.facebook.com/groups/1689129511376075",
       "club": "dartmoorStorytellers",
       "venue_id": "chagford-inn",
+      "convenor": "lisa-schneidau",
+      "regular_tellers": [
+        "lisa-schneidau",
+        "michael-dacre",
+        "wendy-dacre",
+        "henry-everett",
+        "shane-ibbs"
+      ],
       "exceptions": [
         "23/11/2026",
         "28/12/2026"
@@ -11255,6 +11289,18 @@
       "eventId": "20261019-jason-buck-the-hop-sun-tap-microbrewery-haywards"
     },
     {
+      "name": "Stories from the Other Side [Kate Corkery]",
+      "showname": "Stories from the Other Side",
+      "date": "20/10/2026",
+      "venue_id": "horse-groom-st-leonards-on-sea",
+      "performer_id": "kate-corkery",
+      "eventId": "20261020-kate-corkery-horse-groom-st-leonard-s-on-sea",
+      "date_added": "11/10/2026",
+      "time": "7pm",
+      "ticket_url": "https://www.hastingsstoryfest.org.uk/2026",
+      "isSpecial": true
+    },
+    {
       "name": "Icelandic Ghost Stories [Jason Buck]",
       "showname": "Icelandic Ghost Stories",
       "date": "21/10/2026",
@@ -11272,7 +11318,7 @@
     },
     {
       "name": "Feral: Stories from the Wild SIde [Stephe Harrop]",
-      "showname": "Feral: Stories from the Wild SIde",
+      "showname": "Feral: Stories from the Wild Side",
       "date": "21/10/2026",
       "venue_id": "lock-91-bar-manchester",
       "performer_id": "stephe-harrop",
@@ -11283,6 +11329,21 @@
       "price": "£8 / £6",
       "description": "Feral is a darkly lyrical tangle of traditional northern tales, packed with shape-shifters, hungry hearts, and strange loves.\n\n\n\nThe snarl of wildness inside the gentlest soul. A sudden burst of chaos that upends everything.\nFeral is the soul-deep knowing that, Stephe is a storyteller, researcher and sometimes, we need to escape our writer, who shares fierce and funny civilised selves & start running free.\n\n\n\nshows across the Uk. She especially loves telling the folklore of the Anglo-Scottish Borders, and salvaged stories from the two kingdoms' historic and mythic pasts.\n\n\n\nSo skip that scheduled meeting; chuck away your phone; slip out of your shoes and step onto the twisting path.",
       "event_flyer": "2026_10_21_harrop_sting-in-tale.jpg",
+      "isSpecial": true
+    },
+    {
+      "name": "There's a Ghost in Our House — Tales for Hallowe'en [Cafe Crew]",
+      "showname": "There's a Ghost in Our House — Tales for Hallowe'en",
+      "date": "21/10/2026",
+      "venue_id": "kitchen-garden-cafe-birmingham",
+      "eventId": "20261021-birminghamSCafe-kitchen-garden-cafe-birmingham",
+      "date_added": "11/10/2026",
+      "time": "Doors 6.30pm, start 7.30pm",
+      "club": "birminghamSCafe",
+      "performer_id": "birminghamSCafe",
+      "price": "£0 (+ £1)",
+      "description": "The nights are getting longer and darker. Halloween is fast approaching and the lines between the world of the living and the dead are blurring. This month, the Cafe Crew will be getting into the spirit of the season by dimming the lights and telling tales of ghosts. The dead have many tales to tell and much unfinished business to settle. Join us, if you dare!\n\n\n\nBirmingham Storytelling Café is a place of magic and mischief, where you can sit back and be whisked away to a world of wonderful stories that will amuse and enrich you.",
+      "ticket_url": "https://wegottickets.com/f/29419",
       "isSpecial": true
     },
     {
@@ -11555,9 +11616,29 @@
       "eventId": "20261104-baden-prince-quaker-meeting-house-northampton"
     },
     {
+      "name": "Twenty Years a Teller [Peter Chand]",
+      "showname": "Twenty Years a Teller",
+      "date": "06/11/2026",
+      "time": "7.30pm-10pm",
+      "club": "matlockSCafe",
+      "price": "£8 (+ £1) live, £6.50 (+ bf) zoom",
+      "description": "Twenty Years a Teller by Peter Chand.\n\n\n\nLeaving the cruel world of retail management behind him to become a full-time storyteller, Peter entered the deep dark forest of the Arts. As a working-class lad from Wolverhampton who came from a Punjabi family and spoke unlike any other storyteller he had ever seen- things didn’t look too bright. That's the thing with stories though, the really interesting ones at least. They have the power to surprise you…\n\n\n\nPeter Chand brings some of his favourite and most cherished stories collected over the last two decades as a storyteller to Matlock Storytelling Café. Love. Life. Death and many a subject in between will be covered for certain. Followed by an informal Q&A session with one of Europe’s most esteemed and powerful storytellers and educators.\n\n\n\nWe are delighted to tell you that soup, cakes, teas coffees etc are available from our kitchen. We do still operate with good old fashioned cash, kerching! so bring your purse to cross our palms with silver.\n\n\n\nYou are most welcome to bring a bottle of something cheeky or a soft drink with you.\n\n\n\nAll monies from the kitchen help to fund our ongoing story nights so PLEASE leave any other snack items at home.",
+      "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2455680",
+      "isSpecial": true,
+      "event_flyer": "",
+      "fb_event": 1608809504313848,
+      "venue_id": "imperial-rooms-matlock",
+      "performer_id": "peter-chand",
+      "date_added": "11/10/2026",
+      "age_rating": "12+",
+      "min_age": 12,
+      "eventId": "20261106-peter-chand-imperial-rooms-matlock"
+    },
+    {
       "name": "Irish Legends & Living Stories [Eddie Lenihan]",
       "showname": "Irish Legends & Living Stories",
-      "date": "",
+      "date": "06/11/2026",
+      "date_added": "10/10/2026",
       "venue_id": "teach-siamsa-finuge",
       "performer_id": "eddie-lenihan",
       "time": "8pm",
@@ -11607,7 +11688,7 @@
       "date_added": "11/10/2026",
       "time": "Doors/bar 7pm, start 8pm",
       "price": "£10 in advance (£12 on door) £5 students",
-      "description": "A selkie woman comes ashore to dance under moonlight and finds herself caught in the arms of a sailor. Captivated by love, she chooses to stay, surrendering her bond with the ocean for the promise of family life.\n\n\n\nBut what does it really mean to stay? As the years pass, she is tethered to a growing child, weighed down by domestic routine, and slowly estranged from her own wild self. Where once she swam vast oceans, she now migrates between the washing machine, the oven, and the school gate – an unwitting tradwife. Torn between loyalty and longing, depression and quiet rage, our selkie must reckon with the cost of staying and the near-impossibility of leaving.\n\n\n\nHilarious, heartfelt and darkly intimate, The Selkie Who Stayed reshapes the classic Selkie myth for the age of consent.\n\n\n\nThe night will open with Tales of Freyja – a collection of stories of the fierce Norse Goddess.",
+      "description": "A selkie woman comes ashore to dance under moonlight and finds herself caught in the arms of a sailor. Captivated by love, she chooses to stay, surrendering her bond with the ocean for the promise of family life.\n\n\n\nBut what does it really mean to stay? As the years pass, she is tethered to a growing child, weighed down by domestic routine, and slowly estranged from her own wild self. Where once she swam vast oceans, she now migrates between the washing machine, the oven, and the school gate — an unwitting tradwife. Torn between loyalty and longing, depression and quiet rage, our selkie must reckon with the cost of staying and the near-impossibility of leaving.\n\n\n\nHilarious, heartfelt and darkly intimate, The Selkie Who Stayed reshapes the classic Selkie myth for the age of consent.\n\n\n\nThe night will open with Tales of Freyja – a collection of stories of the fierce Norse Goddess.",
       "age_rating": "12+",
       "min_age": 12,
       "event_flyer": "2026_11_13_sneyd_selkie.jpg",
@@ -11973,12 +12054,13 @@
       "eventId": "20270116-jane-lambourne-rectory-cottages-bletchley"
     },
     {
-      "name": "Feast of Fools [feat. Lisa Schneidau]",
-      "showname": "Feast of Fools [feat. Lisa Schneidau]",
+      "name": "Tales of Trees [Lisa Schneidau]",
+      "showname": "Tales of Trees",
       "date": "03/02/2027",
       "time": "7pm",
       "club": "feastoffools",
       "price": "",
+      "fb_event": 958804160592935,
       "description": "",
       "ticket_url": "",
       "isSpecial": true,
@@ -13637,6 +13719,18 @@
       "latlon": [
         50.8432908,
         -1.7697368
+      ]
+    },
+    "bromyard-town-football-club": {
+      "id": "bromyard-town-football-club",
+      "name": "Bromyward Town Football Club",
+      "city": "Bromyard",
+      "postcode": "HR7 4NT",
+      "full_address": "Bromyward Town FC, Stourport Road, Bromyard, HR7 4NT",
+      "url": "",
+      "latlon": [
+        52.1925,
+        -2.49775
       ]
     },
     "the-station-pub-sutton": {
@@ -18436,6 +18530,17 @@
         -1.4035
       ]
     },
+    "horse-groom-st-leonards-on-sea": {
+      "id": "horse-groom-st-leonards-on-sea",
+      "name": "Horse & Groom, St Leonard's-on-Sea",
+      "full_address": "Horse & Groom, 4 Mercatoria, St. Leonards on Sea, Hastings, TN38 0EB",
+      "city": "Hastings",
+      "postcode": "TN38 0EB",
+      "latlon": [
+        50.85181,
+        0.5571
+      ]
+    },
     "the-cove-hastings": {
       "id": "the-cove-hastings",
       "name": "The Cove, Hastings",
@@ -20591,6 +20696,29 @@
         }
       ]
     },
+    "kate-corkery": {
+      "id": "kate-corkery",
+      "name": "Kate Corkery",
+      "bio": "KATE CORKERY is an internationally acclaimed storyteller, delighting audiences from South America to China with Irish myths, legends and folk tales. She has won a Fringe First Award for her work as a storyteller in residence at the Irish Cultural Centre in London and an Outstanding Performance of the Year for her story Sweet Shop on the Shore. Born and bred in Cork, she is now based in London.",
+      "type": "storyteller",
+      "facebook": "kate.corkery.7",
+      "youtube_videos": [
+        {
+          "story_name": "St Bridgid's Day",
+          "yt_url": "https://www.youtube.com/watch?v=AujvDe_Pb_E"
+        }
+      ],
+      "books": [
+        {
+          "title": "Cork Folk Tales",
+          "description": "As the home of the famous Blarney Stone it is perhaps not surprising that the stories of County Cork could fill many libraries. Among its vast archive of myth and legend are tales of the Goddess Cliona, The Hag of Beara and the Giant Mac Mahon and the epic story of St Finbarr who bashed Louie, a fiery serpent, from the lake at Goughan Barra, its wriggling tail forming the course of the River Lee. These tales and more, drawn from historical sources and newly recorded local reminiscences, have been brought to life here by professional storyteller and Cork native Kate Corkery. This collection is a heady mix of bloodthirsty, funny, passionate and moving stories. It will take you into a remarkable world where you can let your imagination run wild.",
+          "year": 2017,
+          "isbn": "9781845885182",
+          "buy_url": "https://thehistorypress.co.uk/publication/cork-folk-tales/",
+          "publisher_id": "history-press"
+        }
+      ]
+    },
     "shonaleigh": {
       "id": "shonaleigh",
       "name": "Shonaleigh",
@@ -20737,6 +20865,11 @@
     },
     "storytellersnotts": {
       "id": "storytellersnotts",
+      "isClub": true
+    },
+    "birminghamSCafe": {
+      "id": "birminghamSCafe",
+      "name": "Cafe Crew",
       "isClub": true
     },
     "devils-violin": {
