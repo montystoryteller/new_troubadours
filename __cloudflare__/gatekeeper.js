@@ -293,6 +293,121 @@ async function getEpochs(env) {
   }
 }
 
+
+// ── page health (LOG-ONLY for now) ───────────────────────────
+// Pages that carry the PageHealth LED (shared_utils.js) set
+// <html data-page-health="loading|ok|warn|error"> and put any JS errors / failed
+// render checks in a hidden .page-health-message span. A prerendered snapshot
+// contains both, so we can tell from the HTML alone whether the page really
+// rendered. Nothing here changes what is stored or served: it only
+//   - logs one "render-health" line per render (Workers Logs), and
+//   - writes a small `health:<day>:<page>` KV key (metadata only needs a key
+//     listing) for each page whose render was NOT ok, once per page per day,
+//   - records the status on stored snapshots (entry.health + KV metadata.health)
+//     and on x-page-health response headers.
+// Pages without PageHealth (index, stats, the tool pages) report "n/a".
+// "404" = the site's 404.html was rendered (a bot asked for a path that doesn't exist).
+// KV keys here start with "health:" on purpose: updatecache only ever lists the
+// "render:" prefix, and the other bookkeeping keys are meta:* and lock:*.
+const HEALTH_PAGES = new Set([
+  "/event_guide",
+  "/event",
+  "/storyclub",
+  "/performers",
+  "/venues",
+  "/promoters",
+  "/festival",
+  "/tour_guide",
+  "/flyers",
+  "/media",
+  "/books_merch",
+]);
+const HEALTH_KEY_PREFIX = "health:";
+const HEALTH_TTL_SECONDS = 60 * 60 * 24 * 7; // keep the problem log for a week
+
+const decodeEntities = (s) =>
+  s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0*39;/g, "'")
+    .replace(/&amp;/g, "&");
+
+// -> { status, reason, record } ; never throws.
+//   status: ok | warn | error | loading | missing | 404 | n/a
+//   record: true when the render is worth writing to the KV problem log
+function analyseHealth(html, pathname) {
+  try {
+    const path = String(pathname || "").replace(/\.html$/, "");
+    const m = html.match(/<html\b[^>]*?\sdata-page-health="([a-z-]+)"/i);
+    let status;
+    if (m) status = m[1].toLowerCase();
+    else if (HEALTH_PAGES.has(path)) status = "missing"; // PageHealth never ran
+    else if (/<title>\s*Page not found/i.test(html)) status = "404";
+    else status = "n/a";
+
+    let reason = "";
+    if (status !== "ok" && status !== "n/a") {
+      const r = html.match(/class="page-health-message"[^>]*>([\s\S]*?)<\/span>/i);
+      if (r) reason = decodeEntities(r[1]).trim();
+      if (!reason && status === "missing")
+        reason = "no data-page-health attribute (shared_utils.js / PageHealth did not run)";
+    }
+    reason = reason.replace(/\s*\n\s*/g, " | ").slice(0, 300);
+    return { status, reason, record: status !== "ok" && status !== "n/a" };
+  } catch (err) {
+    return { status: "n/a", reason: "", record: false };
+  }
+}
+
+// Header-safe (printable ASCII only).
+const headerSafe = (s) => String(s || "").replace(/[^\x20-\x7e]/g, "?").slice(0, 200);
+
+function logRenderHealth(why, targetUrl, health) {
+  try {
+    const u = new URL(targetUrl);
+    const page = u.pathname + u.search;
+    console.log({
+      message: `render-health ${health.status} [${why}] ${page}`,
+      evt: "render-health",
+      status: health.status,
+      why,
+      page,
+      ...(health.reason ? { reason: health.reason } : {}),
+    });
+  } catch {
+    /* logging only */
+  }
+}
+
+// One KV key per page per day (deduped with a read, so a page that fails on
+// every render costs one write a day, not one per render). The details live in
+// the key's METADATA, so `wrangler kv key list --prefix health:` shows them with
+// no per-key reads. Errors are swallowed: this must never affect a render.
+async function recordHealth(env, targetUrl, health, why) {
+  try {
+    const u = new URL(targetUrl);
+    const page = u.pathname + u.search;
+    const day = new Date().toISOString().slice(0, 10);
+    const key = (HEALTH_KEY_PREFIX + day + ":" + encodeURIComponent(page)).slice(0, 450);
+    const existing = await env.RENDER_CACHE.get(key, "json");
+    if (existing && existing.status === health.status) return;
+    const record = {
+      at: new Date().toISOString(),
+      status: health.status,
+      why,
+      page: page.slice(0, 300),
+      reason: health.reason,
+    };
+    await env.RENDER_CACHE.put(key, JSON.stringify(record), {
+      expirationTtl: HEALTH_TTL_SECONDS,
+      metadata: record, // well under KV's 1 KB metadata limit
+    });
+  } catch (err) {
+    console.log("health log failed", String(err));
+  }
+}
+
 // Browser Run (free plan) allows roughly one Quick Action request per 10s and
 // 10 browser-minutes per day, account-wide. So retries must wait >10s, and
 // crawler-triggered renders should NOT retry at all: retries from crawlers
@@ -315,7 +430,16 @@ async function renderOnce(env, targetUrl, why = "?") {
         quotaExhausted: /time limit exceeded/i.test(body),
       };
     }
-    return { html: markPrerendered(await res.text()) };
+    const html = markPrerendered(await res.text());
+    let health = { status: "n/a", reason: "", record: false };
+    try {
+      health = analyseHealth(html, new URL(targetUrl).pathname);
+      logRenderHealth(why, targetUrl, health);
+      if (health.record) await recordHealth(env, targetUrl, health, why);
+    } catch {
+      /* health reporting must never affect the render result */
+    }
+    return { html, health };
   } catch (err) {
     console.log("render threw", why, String(err), targetUrl);
     return { html: null, status: 0, quotaExhausted: false };
@@ -340,7 +464,11 @@ async function renderWithRetry(env, targetUrl, attempts = 1, why = "?") {
 async function putEntry(env, key, entry) {
   await env.RENDER_CACHE.put(key, JSON.stringify(entry), {
     expirationTtl: KV_TTL_SECONDS,
-    metadata: { ts: entry.ts, bytes: entry.html.length },
+    metadata: {
+      ts: entry.ts,
+      bytes: entry.html.length,
+      ...(entry.health ? { health: entry.health } : {}),
+    },
   });
 }
 
@@ -348,7 +476,17 @@ async function storeSnapshot(env, key, html) {
   // Never let a KV failure (e.g. the free plan's 1,000 writes/day limit) break
   // the response: the freshly rendered HTML is still served, just not stored.
   try {
-    await putEntry(env, key, { html, ts: Date.now() });
+    let health;
+    try {
+      health = analyseHealth(html, new URL(key.slice("render:".length)).pathname).status;
+    } catch {
+      health = undefined;
+    }
+    await putEntry(env, key, {
+      html,
+      ts: Date.now(),
+      ...(health ? { health } : {}),
+    });
   } catch (err) {
     console.log("KV put failed", String(err), key);
   }
@@ -392,7 +530,7 @@ const htmlResponse = (html, extra = {}) =>
 // gate renders), so it always matches the set of valid pages and needs no build
 // step. URLs use the same form the site links to and canonicalises on:
 // <page>.html?<param>=<key>. No <lastmod> is emitted: a wrong one is worse than
-// none. Event pages are not in the key index, so they are not listed.
+// none. Event pages (index list "events": last 30 days onward, built by updatecache/the prewarm Action) are listed too.
 // NOTE: this route overrides any static sitemap.xml in the repo.
 const SITE_ORIGIN = "https://newtroubadours.org";
 const SITEMAP_ENTRIES = [
@@ -403,6 +541,9 @@ const SITEMAP_ENTRIES = [
   ["promoters", "/promoters.html", "promoter"],
   ["festivals", "/festival.html", "festival"],
   ["tours", "/tour_guide.html", "tour"],
+  // Event ids (event.html?event=...), already limited to the last 30 days onward by the index builder. Sitemap only: NOT in KEY_CHECKS,
+  // so every other event page still renders for crawlers exactly as before.
+  ["events", "/event.html", "event"],
 ];
 const SITEMAP_MAX_URLS = 50000; // protocol limit per file
 const SITEMAP_CACHE_SECONDS = 60 * 60 * 6;
@@ -574,8 +715,20 @@ export default {
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
       const result = await refresh(env, key, normUrl.toString(), 3, "forced");
       if (result.html) {
-        logGate(request, "forced", normUrl, "forced-rendered");
-        return htmlResponse(result.html, { "cache-control": "no-store" });
+        logGate(request, "forced", normUrl, "forced-rendered", {
+          health: result.health?.status,
+        });
+        return htmlResponse(result.html, {
+          "cache-control": "no-store",
+          ...(result.health
+            ? {
+                "x-page-health": result.health.status,
+                ...(result.health.reason
+                  ? { "x-page-health-reason": headerSafe(result.health.reason) }
+                  : {}),
+              }
+            : {}),
+        });
       }
       const markedStale = await markStale(env, key);
       logGate(request, "forced", normUrl, "forced-failed", {
@@ -628,6 +781,7 @@ export default {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
         "x-prerender-stale": stale ? "true" : "false",
         "x-prerender-ts": String(entry.ts),
+        ...(entry.health ? { "x-page-health": entry.health } : {}),
       });
     }
 
@@ -653,9 +807,9 @@ export default {
       return fetch(request);
     }
 
-    const { html } = await renderWithRetry(env, normUrl.toString(), 1, "miss");
+    const { html, health } = await renderWithRetry(env, normUrl.toString(), 1, "miss");
     if (html) {
-      logGate(request, tier, normUrl, "miss-rendered");
+      logGate(request, tier, normUrl, "miss-rendered", { health: health?.status });
       ctx.waitUntil(storeSnapshot(env, key, html));
       return htmlResponse(html, {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,

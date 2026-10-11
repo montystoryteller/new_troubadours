@@ -51,12 +51,27 @@ jobs:
 
           index=""
           for name in events_normalized events_normalised; do
-            index=$(curl -sf --max-time 30 "$SITE/$name.json" | jq -c '{
+            index=$(curl -sf --max-time 30 "$SITE/$name.json" | jq -c '
+            # same definitions as ./updatecache (JQ_TOUR_DEFS): generated T-/R- ids; events = sitemap list, last 30 days onward
+            def pad: tostring | if length < 2 then "0" + . else . end;
+            def ymd: (if type == "array" then .[0] else . end) | select(type == "string") | split("/") | select(length == 3) | map(tonumber? // empty) | select(length == 3) | "\(.[2])\(.[1] | pad)\(.[0] | pad)";
+            def vid: ((.venue_id // "") | if . == "" then "unknown-venue" else . end);
+            def tourevents:
+              ((.tours // {}) | to_entries[] | .key as $k | (.value.tour_dates // [])[]
+                 | ((.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $d | "T-\($k)-\($d)-\(vid)"))),
+              ((.repertoire_shows // {}) | to_entries[] | .key as $k | (.value.show_dates // [])[]
+                 | ((.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $d | "R-\($k)-\($d)-\(vid)")));
+            def allevents: (.. | objects | .eventId? | strings | select(. != "")), tourevents;
+            # yyyymmdd inside an id (T-/R-/structured ids), or from a legacy <name>-<epoch ms> id; empty if none
+            def evdate: (capture("(^|-)(?<d>20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(-|$)").d) // (capture("-(?<ms>[0-9]{12,14})$").ms | tonumber / 1000 | floor | strftime("%Y%m%d"));
+            {
               performers: (.performers | keys),
               venues: (.venues | keys),
               promoters: (.promoters | keys),
               festivals: (.festivals | keys),
-              tours: (.tours | keys),
+              # "R-" = repertoire shows (tour_guide.html?tour=R-<show>); same as updatecache --sync-keys
+              tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | map("R-" + .))),
+              events: ([allevents] | unique | map(select((evdate // "99999999") >= (now - 2592000 | strftime("%Y%m%d"))))),
               clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
                       | map(select(. != "" and . != "other")) | unique)
             }' 2>/dev/null) && [ -n "$index" ] && break
@@ -109,6 +124,7 @@ jobs:
           renders=0
           rl=0
           failed=()
+          unhealthy=()
 
           for url in "${urls[@]}"; do
             if [ "$renders" -ge "$MAX_RENDERS" ]; then
@@ -131,6 +147,10 @@ jobs:
             prerendered=$(grep -i '^x-prerendered:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             skipped=$(grep -i '^x-prerender-skipped:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             quota=$(grep -i '^x-quota-exhausted:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            # Page health as seen in the prerendered snapshot (gatekeeper header; empty on an
+            # older gatekeeper). LOG ONLY for now: an unhealthy render is reported, not failed.
+            health=$(grep -i '^x-page-health:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            hreason=$(grep -i '^x-page-health-reason:' "$hdrs" | tail -n 1 | tr -d '\r' | cut -d' ' -f2- || true)
             rm -f "$hdrs"
 
             if [ "$quota" = "true" ]; then
@@ -157,7 +177,13 @@ jobs:
               rl=0
             fi
             if [ "$status" = "200" ] && [ "$prerendered" = "true" ]; then
-              echo "✅ rendered ($renders): $url"
+              case "$health" in
+                ""|ok|n/a) echo "✅ rendered ($renders): $url" ;;
+                *)
+                  echo "⚠️  rendered ($renders) but page health is '$health': $url${hreason:+  --  $hreason}"
+                  echo "::warning::page health '$health': $url${hreason:+ -- $hreason}"
+                  unhealthy+=("$url [$health]") ;;
+              esac
             else
               echo "❌ failed (HTTP $status): $url"
               failed+=("$url")
@@ -167,7 +193,11 @@ jobs:
           done
 
           echo ""
-          echo "Rendered this run: $renders, failed: ${#failed[@]}"
+          echo "Rendered this run: $renders, failed: ${#failed[@]}, rendered-but-unhealthy: ${#unhealthy[@]}"
+          if [ ${#unhealthy[@]} -gt 0 ]; then
+            echo "Unhealthy renders (see ./updatecache --health for the reasons):"
+            printf '  %s\n' "${unhealthy[@]}"
+          fi
           if [ ${#failed[@]} -gt 0 ]; then
             printf '  %s\n' "${failed[@]}"
             # Failed pages stay stale, so tomorrow's run retries them.

@@ -19,6 +19,9 @@
 #                                                    ./updatecache --list-recent 12 > recent.txt
 #                                                    ./updatecache --purge-only $(cat recent.txt)   clear them
 #                                                    ./updatecache $(cat recent.txt)                force re-render them
+#        ./updatecache --health [DAYS]             renders the gatekeeper logged as NOT healthy in the last DAYS
+#                                                  (default 7): error / loading / missing / warn / 404, with the reason
+#                                                  (reads the health:* keys; one KV listing, no renders)
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
@@ -92,9 +95,25 @@ if [ "$1" = "--hard-purge-all" ]; then
   exit 0
 fi
 
+# Tour and repertoire-show dates (T-<tour>-yyyymmdd-<venue> / R-<show>-yyyymmdd-<venue>) mostly have NO eventId in the
+# JSON: the site generates the id (shared_utils.js buildTourDateEventId / buildShowDateEventId). JQ_TOUR_DEFS
+# reproduces that (an explicit eventId wins), so those pages are listed, rendered and put in the sitemap too.
+JQ_TOUR_DEFS='def pad: tostring | if length < 2 then "0" + . else . end;
+def ymd: (if type == "array" then .[0] else . end) | select(type == "string") | split("/") | select(length == 3) | map(tonumber? // empty) | select(length == 3) | "\(.[2])\(.[1] | pad)\(.[0] | pad)";
+def vid: ((.venue_id // "") | if . == "" then "unknown-venue" else . end);
+def tourevents:
+  ((.tours // {}) | to_entries[] | .key as $k | (.value.tour_dates // [])[]
+     | ((.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $d | "T-\($k)-\($d)-\(vid)"))),
+  ((.repertoire_shows // {}) | to_entries[] | .key as $k | (.value.show_dates // [])[]
+     | ((.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $d | "R-\($k)-\($d)-\(vid)")));
+def allevents: (.. | objects | .eventId? | strings | select(. != "")), tourevents;
+# yyyymmdd inside an id (T-/R-/structured ids), or from a legacy <name>-<epoch ms> id; empty if none
+def evdate: (capture("(^|-)(?<d>20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(-|$)").d) // (capture("-(?<ms>[0-9]{12,14})$").ms | tonumber / 1000 | floor | strftime("%Y%m%d"));'
+
 # Build the valid-key index (what the gatekeeper stores as meta:keys) from the events JSON on stdin.
 build_index() {
-  jq -c '{
+  jq -c "$JQ_TOUR_DEFS"'
+    {
       performers: (.performers | keys),
       venues: (.venues | keys),
       promoters: (.promoters | keys),
@@ -103,6 +122,9 @@ build_index() {
       # stray legacy ?tour=rep:... request is not treated as an unknown key during the transition
       # (drop the second map once the Cloudflare 301 rep: -> R- has been live a while).
       tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | (map("R-" + .) + map("rep:" + .)))),
+      # events: event ids (event.html?event=...) for the SITEMAP only (not a render gate): every event
+      # dated within the last NT_SITEMAP_EVENT_DAYS (30) days or later; ids with no readable date are kept.
+      events: ([allevents] | unique | map(select((evdate // "99999999") >= (now - 2592000 | strftime("%Y%m%d"))))),
       clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
               | map(select(type == "string" and . != "" and . != "other")) | unique)
     }'
@@ -212,7 +234,7 @@ render_one() {
   local url="$1" n="$2" result
   echo "[$n] === $url"
   result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
-    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
+    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health)' | tr -d '\r' | paste -sd' ' -)
   echo "$result"
   # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit)
   if [ -n "${RENDERED_FILE:-}" ]; then
@@ -390,7 +412,8 @@ JQ_BOOKSMERCH='.performers | to_entries[] | select(((.value.books // []) | lengt
 # Event pages are event.html?event=<eventId>. Every "eventId" string anywhere in the JSON
 # counts (regular events and repertoire show_dates alike), so this doesn't depend on where
 # events live. If your ids sit under another field name, set NT_KEYS_JQ_EVENT.
-JQ_EVENT='[.. | objects | .eventId? | strings | select(. != "")] | unique | .[]'
+# (JQ_TOUR_DEFS is defined near the top, above build_index.)
+JQ_EVENT="$JQ_TOUR_DEFS"' [allevents] | unique | .[]'
 # Repertoire pages are tour_guide.html?performer=<performer>&tour=R-<show>. Each key in
 # .repertoire_shows is a show id; its performer is the longest performer id that is a
 # prefix of it (e.g. debs-newbold-dauntless -> debs-newbold). Shows with no matching
@@ -757,6 +780,38 @@ inspect_cmd() {
   esac
 }
 
+# --health [DAYS]: renders the gatekeeper flagged as unhealthy. The gatekeeper writes one
+# health:<day>:<page> key per page per day (only when the render was not "ok") with the details in
+# the key's metadata, so one key listing is enough. Pages without a health LED (index, stats,
+# the tool pages) are never logged, except "404" (bots asking for paths that don't exist).
+#   status: error = a JS error / failed check on the page; loading = never finished rendering;
+#           missing = the page's health script never ran; warn = rendered with a warning
+#           (e.g. its "not found" state); 404 = the 404 page was rendered.
+health_report() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local days=7 json rows
+  [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && days="$1"
+  json=$(kv_list_json "health:") || exit 1
+  rows=$(printf '%s\n' "$json" | jq -r --argjson d "$days" '
+    (now - ($d * 86400) | todate) as $cut
+    | [ .[] | select((.metadata.at // "") >= $cut) ]
+    | sort_by(.metadata.at) | reverse | .[]
+    | [ (.metadata.at // "?"), (.metadata.status // "?"), (.metadata.why // "?"),
+        (.metadata.page // .name), (.metadata.reason // "") ] | @tsv')
+  if [ -z "$rows" ]; then
+    echo "No unhealthy renders logged in the last ${days} day(s)."
+    echo "(The log only has renders from after the gatekeeper's health logging was deployed; entries expire after 7 days.)"
+    exit 0
+  fi
+  printf '%s\n' "$rows" | awk -F'\t' '
+    BEGIN { printf "%-17s %-8s %-11s %s\n", "when (UTC)", "status", "trigger", "page  --  reason" }
+    { n[$2]++; t = substr($1, 1, 16); sub("T", " ", t)
+      printf "%-17s %-8s %-11s %s%s\n", t, $2, $3, $4, ($5 != "" ? "  --  " $5 : "") }
+    END { s = ""; for (k in n) s = s sprintf("%s: %d  ", k, n[k]); printf "\n%s\n", s }'
+  exit 0
+}
+
 # Optional count after --performer / --venue / --storyclub: how many pages to
 # render in one run (default 1). Seconds between renders: NT_DELAY (default 12).
 COUNT=1
@@ -1036,6 +1091,7 @@ case "$1" in
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
   --list-recent)                       list_recent "${2:-}" ;;
+  --health)                            health_report "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
   --storyclub|--storyclubs)            dispatch storyclub ;;
@@ -1099,7 +1155,7 @@ for page in "$@"; do
   result=$(curl -s --max-time 120 -o /dev/null \
     -D - -w "" \
     -H "x-force-render: $SECRET" "$URL" \
-    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale)' | tr -d '\r' | paste -sd' ' -)
+    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health)' | tr -d '\r' | paste -sd' ' -)
   echo "Refresh: $result"
   case "$result" in
     *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; break ;;
