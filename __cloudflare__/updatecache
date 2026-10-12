@@ -20,6 +20,8 @@
 #                                                    ./updatecache --refresh-stale performer 20
 #                                                    ./updatecache --refresh-stale 10          (any page type)
 #                                                  "Stale" is as in --list-stale (aged out, soft-purged, marked stale, hard-purged).
+#                                                  Pages with no health "ok" flag (error/missing/unflagged old snapshots, or in the
+#                                                  gatekeeper problem log) are rendered first; NT_NO_HEALTH_PRIORITY=1 disables that.
 #                                                  Add --indexnow to also submit the pages that rendered OK to IndexNow (same
 #                                                  waiting list and indexnow.sh as --delta --indexnow); without it nothing is pinged.
 #        ./updatecache --list-recent [H]         snapshots WRITTEN in the last H hours (default 12) as URLs, newest first.
@@ -267,6 +269,31 @@ render_one() {
   return 0
 }
 
+# Pages the gatekeeper recently logged as NOT healthy: the health:* keys that --health reads (it logs
+# only renders that were not "ok": error / loading / missing / warn / 404). Prints a JSON object
+# {"<page path?query>": <logged-at, ms>} with the latest entry per page, or {} if there is nothing or
+# the log can't be read (then no prioritising happens, nothing else changes). Pages are normalised
+# (scheme/host/leading slash removed, "+" -> %20) so they can be matched against page URLs.
+# NT_HEALTH_DAYS = how far back to look (default 7, the log's own expiry); NT_NO_HEALTH_PRIORITY=1
+# switches the whole feature off. Used by fill_one() and refresh_stale().
+unhealthy_pages_json() {
+  if [ "${NT_NO_HEALTH_PRIORITY:-0}" = "1" ]; then echo '{}'; return 0; fi
+  local hj out days="${NT_HEALTH_DAYS:-7}"
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  note "Reading the health log (to render pages whose last render was not healthy first)..."
+  hj=$(kv_list_json "health:") || { echo "Could not read the health log; not prioritising unhealthy pages." >&2; echo '{}'; return 0; }
+  out=$(printf '%s\n' "$hj" | jq -c --argjson d "$days" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    def ms: ((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) * 1000;
+    ((now - ($d * 86400)) * 1000) as $cut
+    | [ .[] | select((.metadata.status // "") != "ok")
+            | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm), at: ms }
+            | select(.at >= $cut and .p != "") ]
+    | reduce .[] as $e ({}; .[$e.p] = ([(.[$e.p] // 0), $e.at] | max))' 2>/dev/null)
+  [ -n "$out" ] || out='{}'
+  printf '%s\n' "$out"
+}
+
 # Render ONE random page of a given type that has no snapshot yet.
 # With LIST_ONLY=1 it instead prints every uncached key and exits.
 # With explicit keys (KEYS_GIVEN) it renders just those, with no KV lookup.
@@ -365,7 +392,7 @@ fill_one() {
         "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name | ltrimstr($p)' \
     | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
 
-  local missing up_dated up_ids rest_ids nup=0 upnote=""
+  local missing up_dated up_ids rest_ids nup=0 upnote="" bad_ids="" other_ids="" nbad=0
   missing=$(comm -23 <(echo "$all") <(echo "$cached"))
   if [ -n "$missing" ] && [ "$prefer_upcoming" = "1" ]; then
     up_dated=$(printf '%s\n' "$missing" | upcoming_dated)
@@ -379,14 +406,38 @@ fill_one() {
     upnote=" ($nup upcoming)"
   fi
 
+  # Then (after upcoming events, which only the events type has) pages whose last render the
+  # gatekeeper logged as NOT healthy: they are the ones most worth re-rendering. See
+  # unhealthy_pages_json(). Everything else follows, still in random order.
+  local pool hfile bnote=""
+  pool="$missing"; [ "$prefer_upcoming" = "1" ] && pool="$rest_ids"
+  other_ids="$pool"
+  if [ -n "$pool" ]; then
+    hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-health.XXXXXX")
+    unhealthy_pages_json | jq -r 'keys[]' > "$hfile" 2>/dev/null
+    if [ -s "$hfile" ]; then
+      bad_ids=$(printf '%s\n' "$pool" | awk -v pre="$page.html?$param=" \
+        'NR == FNR { h[$0] = 1; next } { k = $0; gsub(/\+/, "%20", k); if ((pre k) in h) print $0 }' "$hfile" -)
+      if [ -n "$bad_ids" ]; then
+        other_ids=$(comm -23 <(printf '%s\n' "$pool" | sort) <(printf '%s\n' "$bad_ids" | sort))
+        nbad=$(printf '%s\n' "$bad_ids" | grep -c .)
+        bnote=" "
+      fi
+    fi
+    rm -f "$hfile"
+  fi
+  upnote="${upnote}${bnote}"
+
   if [ "${LIST_ONLY:-0}" = "1" ]; then
     if [ -n "$missing" ]; then
       if [ "$prefer_upcoming" = "1" ]; then
-        # Upcoming first, soonest first, then the rest.
+        # Upcoming first, soonest first, then not-ok health, then the rest.
         { [ "$nup" -gt 0 ] && printf '%s\n' "$up_dated" | sort | cut -f2-
-          [ -n "$rest_ids" ] && printf '%s\n' "$rest_ids"; }
+          [ -n "$bad_ids" ] && printf '%s\n' "$bad_ids"
+          [ -n "$other_ids" ] && printf '%s\n' "$other_ids"; }
       else
-        echo "$missing"
+        { [ -n "$bad_ids" ] && printf '%s\n' "$bad_ids"
+          [ -n "$other_ids" ] && printf '%s\n' "$other_ids"; }
       fi
       echo "$(echo "$missing" | wc -l | tr -d ' ') of $(echo "$all" | wc -l | tr -d ' ') $what pages have no snapshot$upnote." >&2
     else
@@ -403,11 +454,13 @@ fill_one() {
   total=$(echo "$missing" | wc -l | tr -d ' ')
   if [ "$prefer_upcoming" = "1" ]; then
     keys=$({ [ "$nup" -gt 0 ] && printf '%s\n' "$up_ids" | shuf
-             [ -n "$rest_ids" ] && printf '%s\n' "$rest_ids" | shuf; } | head -n "$COUNT")
-    echo "$total $what pages have no snapshot$upnote; rendering up to $COUNT, upcoming first (one every ${DELAY}s)."
+             [ -n "$bad_ids" ] && printf '%s\n' "$bad_ids" | shuf
+             [ -n "$other_ids" ] && printf '%s\n' "$other_ids" | shuf; } | head -n "$COUNT")
+    echo "$total $what pages have no snapshot$upnote; rendering up to $COUNT, upcoming first, then not-ok health (one every ${DELAY}s)."
   else
-    keys=$(echo "$missing" | shuf -n "$COUNT")
-    echo "$total $what pages have no snapshot; rendering up to $COUNT (one every ${DELAY}s)."
+    keys=$({ [ -n "$bad_ids" ] && printf '%s\n' "$bad_ids" | shuf
+             [ -n "$other_ids" ] && printf '%s\n' "$other_ids" | shuf; } | head -n "$COUNT")
+    echo "$total $what pages have no snapshot$upnote; rendering up to $COUNT$( [ "$nbad" -gt 0 ] && echo ", not-ok health first") (one every ${DELAY}s)."
   fi
 
   while IFS= read -r key; do
@@ -546,7 +599,7 @@ JQ_STALE_ROWS='
     | ($r | split("?")[0]) as $path
     | if $path == "/tour_guide.html" and ($r | test("tour=(R-|rep%3A)")) then $path + " (rep)" else $path end;
   [ .[] | select(.name | startswith($base))
-        | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null) } ]
+        | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null), h: (.metadata.health // "") } ]
   | group_by(.kind)[]
   | . as $g
   | [ $g[0].kind,
@@ -557,7 +610,11 @@ JQ_STALE_ROWS='
       ([ $g[] | select(.est) ] | length),
       ([ $g[] | select(.ts == null) ] | length),
       ([ $g[] | select(.ts != null and .ts > 0 and .ts >= $hard) | ($now - .ts) ] | max // -1),
-      ([ $g[] | select(.exp != null and (.exp * 1000 - $now) < $soon) ] | length)
+      ([ $g[] | select(.exp != null and (.exp * 1000 - $now) < $soon) ] | length),
+      ([ $g[] | select(.h == "ok") ] | length),
+      ([ $g[] | select(.h != "" and .h != "ok" and .h != "n/a") ] | length),
+      ([ $g[] | select(.h == "") ] | length),
+      ([ $g[] | select(.h == "n/a") ] | length)
     ] | @tsv'
 
 # marked-stale (ts=0), soft-purged, aged-out, hard-purged, expiring soon, total stored, age estimated
@@ -598,11 +655,14 @@ staleness_report() {
   echo
   printf '%s\n' "$rows" | awk -F'\t' -v warn="$EXPIRY_WARN_HOURS" '
     function age(ms) { if (ms < 0) return "-"; if (ms >= 86400000) return sprintf("%.1fd", ms / 86400000); return sprintf("%.1fh", ms / 3600000) }
-    BEGIN { mx = -1; printf "%-24s %6s %6s %6s %7s %5s %4s %7s %8s\n", "page", "stored", "fresh", "stale", "invalid", "est", "unk", "oldest", "exp<" warn "h" }
-    NF { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d\n", $1, $2, $3, $4, $5, $6, $7, age($8), $9
-         for (i = 2; i <= 7; i++) t[i] += $i; t[9] += $9; if ($8 + 0 > mx) mx = $8 + 0 }
-    END { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d\n", "TOTAL", t[2], t[3], t[4], t[5], t[6], t[7], age(mx), t[9] }'
-  echo "(est = age estimated from the KV expiry; unk = no age available; oldest ignores marked-stale pages)"
+    BEGIN { mx = -1; printf "%-24s %6s %6s %6s %7s %5s %4s %7s %8s %6s %6s %6s %5s\n", "page", "stored", "fresh", "stale", "invalid", "est", "unk", "oldest", "exp<" warn "h", "ok", "notok", "noflag", "n/a" }
+    NF { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d\n", $1, $2, $3, $4, $5, $6, $7, age($8), $9, $10, $11, $12, $13
+         for (i = 2; i <= 7; i++) t[i] += $i; t[9] += $9; t[10] += $10; t[11] += $11; t[12] += $12; t[13] += $13; if ($8 + 0 > mx) mx = $8 + 0 }
+    END { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d\n", "TOTAL", t[2], t[3], t[4], t[5], t[6], t[7], age(mx), t[9], t[10], t[11], t[12], t[13] }'
+  echo "(est = age estimated from the KV expiry; unk = no age available; oldest ignores marked-stale pages;
+ ok / notok / noflag = the page-health the gatekeeper stored with the snapshot: ok, error|warn|loading|missing|404,
+ or no flag because it was written before health was recorded; n/a = pages without a health LED, such as the
+ home page, index.html and stats.html, which are fine and never flagged)"
   echo
   echo "Stale: $stale of $stored  (aged past ${FRESH_HOURS}h: $aged, soft-purged: $softp, marked stale with ts=0: $marked)"
   if [ "$est" -gt 0 ]; then
@@ -611,6 +671,15 @@ staleness_report() {
     echo "  stale (ts=0) can only be spotted where its metadata is present."
   fi
   echo "Invalid (hard-purged, served as missing): $invalid.   Expiring within ${EXPIRY_WARN_HOURS}h: $expiring"
+  # Pages whose last logged render was not healthy (the log only holds non-ok renders), how many are
+  # stored here and how many of those are also stale. These are refreshed first by --refresh-stale.
+  local hbad hstored hstale
+  hbad=$(unhealthy_pages_json)
+  read -r hstored hstale <<< "$(printf '%s\n' "$json" | jq -r --argjson bad "$hbad" "${args[@]}" "$JQ_TS_DEF"'
+    def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
+    [ .[] | select(.name | startswith($base)) | select($bad[pg] != null) ] as $b
+    | "\($b | length) \([ $b[] | entry_ts as $t | select($t != null and ($t < $hard or $t < $soft or ($now - $t) > $fresh)) ] | length)"' 2>/dev/null)"
+  echo "Not-ok health (last ${NT_HEALTH_DAYS:-7}d log): $(printf '%s' "$hbad" | jq 'length') pages logged; ${hstored:-?} have a stored snapshot, ${hstale:-?} of those are stale"
   awk -v n="$(( stale + invalid ))" 'BEGIN { printf "Refreshing all %d stale/invalid pages = about %d x 2s = %.1f min of browser time (free plan: 10 min/day, shared with crawlers).\n", n, n, n * 2 / 60 }'
   echo
   echo "How the gatekeeper treats them:"
@@ -635,9 +704,10 @@ list_stale() {
   read_epochs
   local now_ms=$(( $(date +%s) * 1000 )) fresh_ms=$(( FRESH_HOURS * 3600000 )) json all
   json=$(kv_list_json "render:https://$HOST/") || exit 1
-  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson now "$now_ms" \
-      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" \
-      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+  local jqargs=(--arg base "render:https://$HOST" --argjson now "$now_ms"
+      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD"
+      --argjson ttl "$TTL_MS")
+  all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
       [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
             | select(.ts != null)
             | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
@@ -682,22 +752,55 @@ refresh_stale() {
   read_epochs
   local now_ms=$(( $(date +%s) * 1000 )) fresh_ms=$(( FRESH_HOURS * 3600000 )) json all picks total count url i=0
   json=$(kv_list_json "render:https://$HOST/") || exit 1
-  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson now "$now_ms" \
-      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" \
-      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+  local jqargs=(--arg base "render:https://$HOST" --argjson now "$now_ms"
+      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD"
+      --argjson ttl "$TTL_MS")
+  all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
       [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
             | select(.ts != null)
             | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
       | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
   [ -n "$all" ] || { echo "No stale snapshots." >&2; exit 0; }
+  # Stale snapshots with no page-health "ok" flag in their own KV metadata (the gatekeeper stores
+  # metadata.health on every snapshot it writes: ok|warn|error|loading|missing|404|n/a). Snapshots
+  # written before it did so have no flag at all, and count as "not ok" until they are re-rendered.
+  # "n/a" (home page, index, stats: no health LED) is fine and is not prioritised.
+  local snapbad
+  snapbad=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
+      .[] | select(.name | startswith($base)) | select((.metadata.health // "") as $h | $h != "ok" and $h != "n/a")
+          | select(entry_ts != null)
+          | select(entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh)
+          | .name | ltrimstr("render:")')
   if [ -n "$pat" ]; then
     all=$(printf '%s\n' "$all" | grep -E -- "$pat")
     [ -n "$all" ] || { echo "No stale ${type} snapshots." >&2; exit 0; }
   fi
   total=$(printf '%s\n' "$all" | wc -l | tr -d ' ')
-  picks=$(printf '%s\n' "$all" | shuf -n "$n")
+  # Stale pages whose last render the gatekeeper logged as not healthy come first (random among
+  # themselves), then the other stale pages at random. NT_NO_HEALTH_PRIORITY=1 turns this off.
+  local hfile bad="" rest="$all" nbad=0
+  hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-health.XXXXXX")
+  unhealthy_pages_json | jq -r 'keys[]' > "$hfile" 2>/dev/null
+  if [ -s "$hfile" ]; then
+    bad=$(printf '%s\n' "$all" | awk -v pre="https://$HOST/" \
+      'NR == FNR { h[$0] = 1; next } { k = $0; sub(pre, "", k); gsub(/\+/, "%20", k); if (k in h) print $0 }' "$hfile" -)
+    if [ -n "$bad" ]; then
+      rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$bad"))
+      nbad=$(printf '%s\n' "$bad" | grep -c .)
+    fi
+  fi
+  rm -f "$hfile"
+  # union of the two sources (snapshot metadata and the problem log), restricted to the chosen type
+  if [ -n "$pat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -E -- "$pat"); fi
+  if [ -n "$snapbad" ]; then
+    bad=$(printf '%s\n%s\n' "$bad" "$snapbad" | grep . | sort -u)
+    rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$bad"))
+    nbad=$(printf '%s\n' "$bad" | grep -c .)
+  fi
+  picks=$({ [ -n "$bad" ] && printf '%s\n' "$bad" | shuf
+            [ -n "$rest" ] && printf '%s\n' "$rest" | shuf; } | head -n "$n")
   count=$(printf '%s\n' "$picks" | wc -l | tr -d ' ')
-  echo "$total stale ${type:-page}(s); rendering $count at random (one every ${DELAY}s)."
+  echo "$total stale ${type:-page}(s), $nbad without a health \"ok\" flag; rendering $count, those first, then random (one every ${DELAY}s)."
 
   # --indexnow: remember which URLs rendered OK (render_one records HTTP 200, not marked stale, no
   # quota hit, healthy page) so only those are submitted, exactly as --delta does.

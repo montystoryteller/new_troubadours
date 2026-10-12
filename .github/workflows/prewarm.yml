@@ -26,7 +26,7 @@ jobs:
       # Base pages (no ?args) are re-rendered about every other day; the many
       # ?arg pages on a slower cycle. Tune ARG_REFRESH_AFTER to your budget:
       # roughly  cycle_days = number_of_pages / MAX_RENDERS.
-      BASE_REFRESH_AFTER: "158400"   # 44h
+      BASE_REFRESH_AFTER: "79200"   # 22h
       ARG_REFRESH_AFTER: "432000"    # 5 days
       # Seconds to wait between browser renders. 15 on the free plan; 1-2 on
       # Workers Paid (limits are far higher there).
