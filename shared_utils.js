@@ -3589,6 +3589,42 @@ function createCollapsibleMap(
   return handle;
 }
 
+/**
+ * Append a town/city to a name for use in <title> and meta text, e.g.
+ * "The Moth Club" + "Bath" -> "The Moth Club, Bath". Returns the name
+ * unchanged if there's no town, or if the name already contains it
+ * (so "Bath Story Club" doesn't become "Bath Story Club, Bath").
+ * @param {string} name
+ * @param {string|null|undefined} town
+ * @returns {string}
+ */
+function nameWithTown(name, town) {
+  if (!town || !town.trim()) return name;
+  if (name.toLowerCase().includes(town.trim().toLowerCase())) return name;
+  return `${name}, ${town.trim()}`;
+}
+
+/**
+ * Shorten free text (a bio or description) to a meta-description-sized
+ * snippet: collapses whitespace, strips simple HTML tags, and cuts at the
+ * end of the first sentence if that fits, otherwise at a word boundary
+ * with an ellipsis.
+ * @param {string|null|undefined} text
+ * @param {number} [max=110]
+ * @returns {string} empty string if there's no text
+ */
+function metaSnippet(text, max = 110) {
+  const clean = String(text || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!clean) return "";
+  const firstSentence = clean.match(/^.*?[.!?](?=\s|$)/);
+  if (firstSentence && firstSentence[0].length <= max) return firstSentence[0];
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max).replace(/\s+\S*$/, "") + "…";
+}
+
 // Update meta
 function updateMeta(metaName, extraContent, separator = " — ") {
   let meta = document.querySelector(`meta[name="${metaName}"]`);

@@ -1224,12 +1224,27 @@ function renderPage() {
     ev.performer ||
     null;
 
+  const titleTown = venuesLookup[ev.venue_id]?.city || null;
   const perfName = performerForTitle
-    ? `${name} — ${performerForTitle} — New Troubadours`
-    : `${name} — New Troubadours`;
+    ? `${name} — ${performerForTitle}${titleTown ? ` — ${titleTown}` : ""} — New Troubadours`
+    : `${nameWithTown(name, titleTown)} — New Troubadours`;
   document.title = perfName;
   document.getElementById("eventName").textContent = name;
-  updateMeta("description", perfName, " — ");
+  const descVenue = venuesLookup[ev.venue_id];
+  setMetaDescription(
+    [
+      performerForTitle ? `${name} with ${performerForTitle}` : name,
+      [
+        descVenue && nameWithTown(descVenue.name, titleTown),
+        [ev._date && formatDate(ev._date), ev.time].filter(Boolean).join(", "),
+      ]
+        .filter(Boolean)
+        .join(" — "),
+      "Tickets and details.",
+    ]
+      .filter(Boolean)
+      .join(" — "),
+  );
   prependMetaKeyword(perfName);
 
   const metaParts = [formatDate(ev._date), ev.time || null, ev.price || null]

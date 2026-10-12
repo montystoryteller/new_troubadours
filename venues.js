@@ -830,10 +830,13 @@ setCanonical("venue");
 // ---------------------------------------------------------------------------
 
 function renderVenue() {
-  document.title = `${venue.name} — New Troubadours`;
+  const venueTitle = nameWithTown(venue.name, venue.city);
+  document.title = `${venueTitle} — New Troubadours`;
 
-  updateMeta("description", venue.name, " — ");
-  prependMetaKeyword(venue.name);
+  setMetaDescription(
+    `${venueTitle} — upcoming storytelling and live events, with dates, map and venue details.`,
+  );
+  prependMetaKeyword(venueTitle);
 
   document.getElementById("venueName").textContent = venue.name;
 

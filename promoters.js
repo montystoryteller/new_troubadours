@@ -818,7 +818,12 @@ function displayPromoter(promoterId) {
 
   const displayName = getPromoterDisplayName(promoterId, promoter);
   document.title = `${displayName} — Grass Roots Scene`;
-  updateMeta("description", displayName, " — ");
+  setMetaDescription(
+    `${displayName} — ${
+      metaSnippet(promoter.description) ||
+      "live storytelling events: upcoming dates, venues and map."
+    }`,
+  );
   updateMeta("keywords", displayName, ", ");
 
   const titleEl = document.getElementById("promoterTitle");

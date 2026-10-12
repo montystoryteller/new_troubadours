@@ -778,7 +778,12 @@ function isPastFlatEvent(event) {
 function renderPerformer() {
   document.title = `${performer.name} — New Troubadours`;
 
-  updateMeta("description", performer.name, " — ");
+  setMetaDescription(
+    `${performer.name} — ${
+      metaSnippet(performer.bio) ||
+      "upcoming performances, tours and festival appearances."
+    }`,
+  );
   prependMetaKeyword(performer.name);
 
   applyPerformerHeadingMode();

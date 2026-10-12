@@ -832,7 +832,15 @@ function displayTour(tourId) {
   // session (browse-mode clicks, Back/Forward via the popstate handler
   // below), and updateMeta()'s prepend behaviour would otherwise grow the
   // tag by one more "Tour name — " fragment on every single switch.
-  setMetaDescription(`${tour.tour_name || tour.name} — ${DEFAULT_META_DESCRIPTION}`);
+  // The site-wide default description is generic boilerplate, so build a
+  // tour-specific one instead (falling back to the default only if the
+  // tour has no description text of its own).
+  setMetaDescription(
+    `${tour.tour_name || tour.name} — ${
+      metaSnippet(tour.tour_description) ||
+      "tour dates, venues and map."
+    }`,
+  );
   prependMetaKeyword(tour.tour_name || tour.name);
 
   // Switch into the same "clean" single-tour view that ?tour=<id> gets on

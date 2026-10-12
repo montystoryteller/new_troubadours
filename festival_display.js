@@ -992,10 +992,28 @@ function displayFestival(festivalId) {
   // (whether reached via ?festival= on load or by picking from browse
   // mode's dropdown), and the static page heading drops to H2.
   setPageHeadingMode(true, "festivalTitle");
-  document.title = `${fest.name} — New Troubadours`;
+  const metaVenue = venuesLookup[fest.venue_id] || {};
+  const festTitle = nameWithTown(fest.name, metaVenue.city);
+  document.title = `${festTitle} — New Troubadours`;
 
-  updateMeta("description", fest.name, " — ");
-  prependMetaKeyword(fest.name);
+  // setMetaDescription() (not updateMeta()) because displayFestival() can
+  // run repeatedly in one page session (browse-mode dropdown), and
+  // updateMeta()'s prepend would grow the tag on every switch.
+  const metaStart = parseDateString(fest.start_date);
+  const metaEnd = parseDateString(fest.end_date);
+  const metaFmt = { day: "numeric", month: "long", year: "numeric" };
+  const metaDates =
+    metaStart && metaEnd && metaStart.toDateString() !== metaEnd.toDateString()
+      ? `${metaStart.toLocaleDateString("en-GB", metaFmt)} to ${metaEnd.toLocaleDateString("en-GB", metaFmt)}`
+      : metaStart
+        ? metaStart.toLocaleDateString("en-GB", metaFmt)
+        : "";
+  setMetaDescription(
+    [festTitle, metaDates, "Programme, venue and map."]
+      .filter(Boolean)
+      .join(" — "),
+  );
+  prependMetaKeyword(festTitle);
 
   if (map) map.invalidateSize();
 

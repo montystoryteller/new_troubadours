@@ -479,10 +479,26 @@ async function renderPage(data, clubId) {
   }
 
   // ── Render ─────────────────────────────────────────────────────────
-  document.title = `${clubRecord.name} — New Troubadours`;
+  const clubTitle = nameWithTown(clubRecord.name, venue && venue.city);
+  document.title = `${clubTitle} — New Troubadours`;
 
-  updateMeta("description", clubRecord.name, " — ");
-  prependMetaKeyword(clubRecord.name);
+  const clubSched = scheduleLabel(clubRecord.schedule);
+  setMetaDescription(
+    [
+      clubTitle,
+      [
+        clubSched &&
+          clubSched + (clubRecord.time ? ` at ${clubRecord.time}` : ""),
+        venue && `venue: ${venue.name}`,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      "Next dates, guests and map.",
+    ]
+      .filter(Boolean)
+      .join(" — "),
+  );
+  prependMetaKeyword(clubTitle);
 
   const root = document.getElementById("page-content");
   root.innerHTML = "";
