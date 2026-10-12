@@ -5251,7 +5251,7 @@
         }
       ]
     },
-    "sound-of-the-sirens-sound-of-the-sirens": {
+    "sound-of-the-sirens-autumn-winter-2026": {
       "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
       "tour_dates": [
         {
@@ -5262,14 +5262,14 @@
           "ticket_url": "https://beaford.org/events/sirenswwho",
           "promoter_id": "beaford",
           "isSpecial": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261023-holy-trinity-church-westward-ho"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261023-holy-trinity-church-westward-ho"
         },
         {
           "date": "24/10/2026",
           "venue_id": "bluebird-cafe-wedmore",
           "ticket_url": "https://www.bluebirdcafewedmore.com/eventsandshows",
           "isSpecial": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261024-bluebird-cafe-wedmore"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261024-bluebird-cafe-wedmore"
         },
         {
           "date": "30/10/2026",
@@ -5279,7 +5279,7 @@
           "ticket_url": "https://beaford.org/events/sirenswooly",
           "promoter_id": "beaford",
           "isSpecial": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261030-village-hall-woolacombe"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261030-village-hall-woolacombe"
         },
         {
           "date": "07/11/2026",
@@ -5296,7 +5296,7 @@
             "fieldlily"
           ],
           "isDoubleHeadline": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261107-the-beehive-honiton"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261107-the-beehive-honiton"
         },
         {
           "date": "13/11/2026",
@@ -5310,14 +5310,14 @@
             "devnent"
           ],
           "isDoubleHeadline": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261113-st-michaels-church-kingsteignton"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261113-st-michaels-church-kingsteignton"
         },
         {
           "date": "14/11/2026",
           "venue_id": "railway-inn-winchester",
           "ticket_url": "https://ffsfest.com/tickets/",
           "isSpecial": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261114-railway-inn-winchester"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261114-railway-inn-winchester"
         },
         {
           "date": "20/11/2026",
@@ -5329,7 +5329,7 @@
           "other_performer_ids": [
             "rob-clamp"
           ],
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261120-harwell-village-hall"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261120-harwell-village-hall"
         },
         {
           "date": "21/11/2026",
@@ -5342,7 +5342,7 @@
             "samantics"
           ],
           "isDoubleHeadline": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261121-wrington-memorial-hall"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261121-wrington-memorial-hall"
         },
         {
           "date": "28/11/2026",
@@ -5351,7 +5351,7 @@
           "price": "£14.30",
           "ticket_url": "https://www.ents24.com/newstead-events/the-pit-at-newstead/sound-of-the-sirens/7475445",
           "isSpecial": true,
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261128-the-pit-at-newstead"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261128-the-pit-at-newstead"
         },
         {
           "date": "05/12/2026",
@@ -5362,7 +5362,7 @@
           "isSpecial": true,
           "event_flyer": "2026_12_05_gaz_sirens_fleece.webp",
           "headliner": "gaz-brookfield-and-the-company-of-thieves",
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261205-the-fleece-bristol"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261205-the-fleece-bristol"
         },
         {
           "date": "06/12/2026",
@@ -5372,7 +5372,7 @@
           "ticket_url": "https://exeterphoenix.org.uk/events/mind-over-mayhem/",
           "isSpecial": true,
           "headliner": "tom-robinson",
-          "eventId": "T-sound-of-the-sirens-sound-of-the-sirens-20261206-exeter-phoenix"
+          "eventId": "T-sound-of-the-sirens-autumn-winter-2026-20261206-exeter-phoenix"
         }
       ],
       "name": "Sound of the Sirens",
