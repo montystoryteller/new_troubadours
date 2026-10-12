@@ -9,6 +9,16 @@
 #        ./updatecache --list-new                  the same delta as URLs, changing nothing (dry run)
 #        ./updatecache --sync-keys                 rebuild the valid-key index only (after data changes)
 #        ./updatecache --status                    cached / uncached / total counts for every page type
+#        ./updatecache --count-missing             hits / misses table: every URL in https://newtroubadours.org/sitemap.xml PLUS the base
+#                                                  pages (index.html, performers.html, ... the same list prewarm.yml renders first),
+#                                                  per page type: how many have a snapshot in KV and how many don't
+#                                                  (renders nothing, no browser time). NT_NO_BASE=1 leaves the base pages out.
+#        ./updatecache --list-missing              the same table, and prints the missing URLs (one per line, request-ready)
+#        ./updatecache --fill-missing [N]          force-render N (default 1) pages with no snapshot: missing base pages first,
+#                                                  then RANDOM missing sitemap URLs; NT_DELAY seconds apart; stops if the daily
+#                                                  quota runs out. The sitemap is built by the worker from meta:keys, so run
+#                                                  --delta / --sync-keys first if the data changed. (--status compares against the
+#                                                  events JSON instead; this checks exactly the URLs crawlers are told about.)
 #        ./updatecache --inspect promoter some-key why does the gatekeeper see / not see this page? (JSON, worker key index,
 #                                                  exact and look-alike KV keys, fresh/stale/missing verdict)
 #        ./updatecache --staleness                 how fresh/stale the stored snapshots are, against the gatekeeper's policy
@@ -1024,6 +1034,133 @@ health_report() {
   exit 0
 }
 
+# ── sitemap gap check ──────────────────────────────────────────────────────
+# The sitemap is the list of pages crawlers are TOLD about (the worker generates it from meta:keys), so it
+# is the right yardstick for "does every page a bot can find have a snapshot in KV?". The base pages
+# (no ?args: index.html, performers.html, ...) are not in the sitemap, so they are added to the check.
+# These helpers compare both with the KV listing, exactly as the gatekeeper will look pages up.
+
+# Same list as prewarm.yml renders first. "" is the home page.
+BASE_PAGES=(
+  "" index.html event_guide.html tour_guide.html storyclub.html performers.html venues.html
+  festival.html flyers.html media.html promoters.html books_merch.html stats.html
+)
+
+# The sitemap's URLs, one per line, XML-unescaped. The legacy tour=rep:<show> form is folded into
+# tour=R-<show>, as the gatekeeper does, so both share one snapshot.
+sitemap_urls() {
+  curl -sf --max-time 30 "https://$HOST/sitemap.xml" \
+    | grep -o '<loc>[^<]*</loc>' \
+    | sed -e 's/<loc>//' -e 's/<\/loc>//' \
+          -e 's/&lt;/</g' -e 's/&gt;/>/g' -e 's/&quot;/"/g' -e "s/&apos;/'/g" -e 's/&amp;/\&/g' \
+    | sed -e 's/tour=rep%3A/tour=R-/'
+}
+
+# stdin: URLs (sitemap style, encodeURIComponent). stdout: the same URLs in the form the gatekeeper stores
+# them under (URLSearchParams encoding: space = +, ~ = %7E, and ! ' ( ) are percent-encoded).
+sitemap_kvform() {
+  sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/!/%21/g' -e "s/'/%27/g" -e 's/(/%28/g' -e 's/)/%29/g'
+}
+
+# Checks the base pages + sitemap URLs against KV. Writes the URLs with no usable snapshot to <missing-file>
+# (base pages first) and one "<page type><TAB>hit|miss" line per URL to <table-file>; sets SM_TOTAL / SM_MISSING.
+# (Call it directly, not inside $(...), so the variables survive.) Snapshots older than the last hard
+# purge count as missing, as in --status.
+sitemap_gap() {
+  local out="$1" tab="$2" tmp kvjson p
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  tmp=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-sitemap.XXXXXX")
+  note "Fetching sitemap.xml..."
+  sitemap_urls > "$tmp/sm.txt"
+  if [ ! -s "$tmp/sm.txt" ]; then
+    rm -rf "$tmp"
+    echo "Could not read any URLs from https://$HOST/sitemap.xml (a 503 there means the worker has no key index: run $0 --sync-keys)." >&2
+    exit 1
+  fi
+  : > "$tmp/base.txt"
+  if [ "${NT_NO_BASE:-0}" != "1" ]; then
+    for p in "${BASE_PAGES[@]}"; do echo "https://$HOST/$p" >> "$tmp/base.txt"; done
+  fi
+  cat "$tmp/base.txt" "$tmp/sm.txt" | awk 'NF && !seen[$0]++' > "$tmp/urls.txt"
+  # <KV key name><TAB><request URL>
+  paste -d'\t' <(sitemap_kvform < "$tmp/urls.txt" | sed 's#^#render:#') "$tmp/urls.txt" > "$tmp/pairs.txt"
+  read_epochs
+  kvjson=$(kv_list_json "render:https://$HOST/") || { rm -rf "$tmp"; exit 1; }
+  printf '%s\n' "$kvjson" \
+    | jq -r --argjson hard "$EPOCH_HARD" --argjson ttl "$TTL_MS" \
+        "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name' | sort -u > "$tmp/cached.txt"
+  : > "$out"; : > "$tab"
+  awk -F'\t' -v miss="$out" -v tab="$tab" '
+    NR == FNR { c[$0] = 1; next }
+    {
+      u = $2; sub(/^https?:\/\/[^\/]+/, "", u); n = split(u, a, "?")
+      if (n < 2) t = "base pages (no args)"
+      else {
+        t = a[1]
+        if (t == "/tour_guide.html" && a[2] ~ /tour=R-/) t = t " (repertoire)"
+      }
+      if ($1 in c) print t "\thit" >> tab
+      else { print t "\tmiss" >> tab; print $2 >> miss }
+    }' "$tmp/cached.txt" "$tmp/pairs.txt"
+  SM_TOTAL=$(grep -c . "$tmp/urls.txt")
+  SM_MISSING=$(grep -c . "$out")
+  rm -rf "$tmp"
+}
+
+# The hits / misses table (stdout), from the table file written by sitemap_gap.
+sitemap_table() {
+  local tab="$1"
+  printf '%-34s %8s %6s %6s %5s\n' "page type" "in list" "hit" "miss" "hit%"
+  awk -F'\t' '{ t[$1]++; if ($2 == "hit") h[$1]++; else m[$1]++ }
+    END { for (k in t) printf "%s\t%d\t%d\t%d\n", k, t[k], h[k] + 0, m[k] + 0 }' "$tab" \
+    | sort -t$'\t' -k1,1 \
+    | awk -F'\t' '{ printf "%-34s %8d %6d %6d %4d%%\n", $1, $2, $3, $4, ($2 ? int($3 * 100 / $2 + 0.5) : 0) }'
+  awk -F'\t' '{ n++; if ($2 == "hit") h++ }
+    END { printf "%-34s %8d %6d %6d %4d%%\n", "TOTAL", n, h + 0, n - h, (n ? int(h * 100 / n + 0.5) : 0) }' "$tab"
+}
+
+# --list-missing / --count-missing: report only, nothing is rendered.
+#   list_missing <0|1>   (1 = table only, don't print the URLs)
+list_missing() {
+  local counts_only="${1:-0}" tmp tab
+  tmp=$(mktemp "${TMPDIR:-/tmp}/updatecache-missing.XXXXXX")
+  tab=$(mktemp "${TMPDIR:-/tmp}/updatecache-table.XXXXXX")
+  sitemap_gap "$tmp" "$tab"
+  [ "$counts_only" = "1" ] || cat "$tmp"
+  if [ "$counts_only" = "1" ]; then sitemap_table "$tab"; else sitemap_table "$tab" >&2; fi
+  if [ "$SM_MISSING" -gt 0 ]; then
+    echo "Render some with: $0 --fill-missing N" >&2
+  else
+    echo "Every listed page has a snapshot." >&2
+  fi
+  rm -f "$tmp" "$tab"
+  exit 0
+}
+
+# --fill-missing [N]: force-render N pages with no snapshot, NT_DELAY seconds apart. Missing base pages
+# come first (all pages link from them), then random missing sitemap URLs.
+fill_missing() {
+  local tmp tab picks url i=0
+  tmp=$(mktemp "${TMPDIR:-/tmp}/updatecache-missing.XXXXXX")
+  tab=$(mktemp "${TMPDIR:-/tmp}/updatecache-table.XXXXXX")
+  sitemap_gap "$tmp" "$tab"
+  if [ "$SM_MISSING" -eq 0 ]; then
+    echo "All $SM_TOTAL listed pages already have snapshots."
+    rm -f "$tmp" "$tab"; exit 0
+  fi
+  echo "$SM_MISSING of $SM_TOTAL listed pages have no snapshot; rendering up to $COUNT (base pages first, then random; one every ${DELAY}s)."
+  picks=$({ grep -v '?' "$tmp" | shuf; grep '?' "$tmp" | shuf; } | head -n "$COUNT")
+  rm -f "$tmp" "$tab"
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    [ $i -gt 0 ] && sleep "$DELAY"
+    i=$((i + 1))
+    render_one "$url" "$i" || break
+  done <<< "$picks"
+  exit 0
+}
+
 # Optional count after --performer / --venue / --storyclub: how many pages to
 # render in one run (default 1). Seconds between renders: NT_DELAY (default 12).
 COUNT=1
@@ -1312,6 +1449,9 @@ case "$1" in
   --list-repertoire|--list-repertoires) LIST_ONLY=1; dispatch repertoire ;;
   --list-events|--list-event)          LIST_ONLY=1; dispatch event ;;
   --status)                            status_all ;;
+  --list-missing)                      list_missing 0 ;;
+  --count-missing)                     list_missing 1 ;;
+  --fill-missing)                      fill_missing ;;
   --staleness)                         staleness_report ;;
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
@@ -1343,7 +1483,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--indexnow])" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--indexnow])" >&2
   exit 1
 fi
 
