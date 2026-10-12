@@ -32,7 +32,7 @@ const ASSET_EXTENSION_RE =
 const FRESH_SECONDS = 60 * 60 * 48; // refresh-if-requested after ~2 days
 // Keep entries much longer than the freshness window: if a snapshot expired,
 // there would be nothing to serve and a scarce live render would be needed.
-const KV_TTL_SECONDS = 60 * 60 * 24 * 14; // keep stale copies for 2 weeks
+const KV_TTL_SECONDS = 60 * 60 * 24 * 90; // keep stale copies for 90 days (safety net; the prewarm rotation refreshes every page well within this)
 const CLIENT_MAX_AGE_SECONDS = 60 * 60;
 
 const DEBUG_HEADER = "x-force-render";
@@ -221,7 +221,7 @@ function markPrerendered(html) {
 
 // Snapshots stored before this change carry the old visible badge. Strip it at
 // serve time (no render quota needed). Safe to delete once every snapshot has
-// been refreshed or has expired (KV_TTL_SECONDS, 14 days).
+// been refreshed or has expired (KV_TTL_SECONDS, 90 days).
 function stripLegacyBadge(html) {
   if (!html.includes("cf-prerender-badge")) return html;
   return html.replace(/\s*<div id="cf-prerender-badge"[\s\S]*?<\/div>/, "");

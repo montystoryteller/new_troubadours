@@ -113,11 +113,27 @@ jobs:
             echo "$SITE/$p" >> "$base"
           done
 
-          # Base pages first, then everything else in RANDOM order. Skipped-because-fresh
-          # pages don't count toward MAX_RENDERS, so shuffling means every page gets
-          # its turn over the following days instead of the same first N always
-          # winning and the rest starving.
-          mapfile -t urls < <(cat "$base" <(shuf "$all") | awk '!seen[$0]++')
+          # Base pages first, then everything else in a ROTATING order: the sorted list is
+          # started from a different offset each day (UTC day number x pages-per-day), so
+          # every page gets a render slot at least once every ~N/(MAX_RENDERS - base pages)
+          # days, instead of a random tail of pages going many weeks unrefreshed. Pages that
+          # are already fresh (e.g. refreshed by a bot) are skipped without using a render,
+          # so the run just carries on further down the list. The offset advances by fewer
+          # than the renders actually available (base pages use some of the budget), so
+          # consecutive days overlap rather than leave gaps.
+          nbase=$(grep -c . "$base")
+          step=$(( MAX_RENDERS - nbase )); [ "$step" -ge 1 ] || step=1
+          sorted=$(mktemp)
+          sort -u "$all" > "$sorted"
+          n=$(grep -c . "$sorted" || true)
+          off=0
+          if [ "${n:-0}" -gt 0 ]; then
+            off=$(( ( $(date -u +%s) / 86400 * step ) % n ))
+          fi
+          rotated=$(mktemp)
+          awk -v o="$off" '{ a[NR] = $0 } END { for (i = 1; i <= NR; i++) print a[(i + o - 1) % NR + 1] }' "$sorted" > "$rotated"
+          echo "Rotation: $n pages, starting at offset $off (step $step per day)"
+          mapfile -t urls < <(cat "$base" "$rotated" | awk '!seen[$0]++')
           echo "Total URLs: ${#urls[@]}"
 
           full="${FULL_REFRESH:-false}"

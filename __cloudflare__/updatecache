@@ -549,7 +549,7 @@ status_all() {
 # meta:epochs). The gatekeeper stores ts as KV metadata and sets a KV expiry on every
 # write, so ONE key listing gives every page's age and expiry with no per-key reads.
 FRESH_HOURS="${NT_FRESH_HOURS:-48}"            # gatekeeper FRESH_SECONDS, in hours
-TTL_DAYS="${NT_TTL_DAYS:-14}"                  # gatekeeper KV_TTL_SECONDS, in days
+TTL_DAYS="${NT_TTL_DAYS:-90}"                  # gatekeeper KV_TTL_SECONDS, in days
 TTL_MS=$(( TTL_DAYS * 86400000 ))
 EXPIRY_WARN_HOURS="${NT_EXPIRY_WARN_HOURS:-48}"
 # A snapshot's age: the ts the gatekeeper stored as KV metadata or, when the key listing has
