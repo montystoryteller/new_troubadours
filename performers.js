@@ -561,6 +561,33 @@ setCanonical("performer");
     return;
   }
 
+  // A performer record flagged isClub is just a pointer to a story club —
+  // send the visitor to the club's own page. Uses the record's optional
+  // `club` field if the club slug differs from the performer id. Only
+  // redirects when a matching clubs[] record exists, so a bad slug falls
+  // through to the guard below rather than redirecting to a dead page.
+  // location.replace() keeps this page out of the history, so Back doesn't
+  // bounce straight into the redirect.
+  if (performer.isClub) {
+    const clubSlug = performer.club || performerId;
+    if ((eventsData.clubs || []).some((c) => c && c.club === clubSlug)) {
+      const url = new URL("storyclub.html", window.location.href);
+      url.search = "";
+      url.searchParams.set("club", clubSlug);
+      window.location.replace(url.toString());
+      return;
+    }
+  }
+
+  // renderPerformer() assumes every performer has a name (title, meta
+  // keywords, avatar initials). A stub record without one would throw
+  // part-way through rendering, so treat it as not found instead.
+  if (typeof performer.name !== "string" || !performer.name.trim()) {
+    console.warn(`Performer "${performerId}" has no name`, performer);
+    showNotFound();
+    return;
+  }
+
   // Defer heavy rendering to background to allow loading state to display
   setTimeout(() => {
     renderPerformer();
