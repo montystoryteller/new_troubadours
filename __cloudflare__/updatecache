@@ -14,7 +14,15 @@
 #        ./updatecache --staleness                 how fresh/stale the stored snapshots are, against the gatekeeper's policy
 #        ./updatecache --list-stale [N]            the N stalest pages (default 20) as URLs, oldest first; refresh them with
 #                                                  ./updatecache $(./updatecache --list-stale 20)
-#        ./updatecache --list-recent [H]           snapshots WRITTEN in the last H hours (default 12) as URLs, newest first.
+#        ./updatecache --refresh-stale [N] [type]  force-render N RANDOM stale pages (default 20), optionally only of one type
+#                                                  (performer venue storyclub festival promoter booksmerch repertoire event),
+#                                                  NT_DELAY seconds apart; stops if the daily quota runs out. Examples:
+#                                                    ./updatecache --refresh-stale performer 20
+#                                                    ./updatecache --refresh-stale 10          (any page type)
+#                                                  "Stale" is as in --list-stale (aged out, soft-purged, marked stale, hard-purged).
+#                                                  Add --indexnow to also submit the pages that rendered OK to IndexNow (same
+#                                                  waiting list and indexnow.sh as --delta --indexnow); without it nothing is pinged.
+#        ./updatecache --list-recent [H]         snapshots WRITTEN in the last H hours (default 12) as URLs, newest first.
 #                                                  Use after a bad deploy; save the list BEFORE purging, it vanishes once deleted:
 #                                                    ./updatecache --list-recent 12 > recent.txt
 #                                                    ./updatecache --purge-only $(cat recent.txt)   clear them
@@ -640,6 +648,97 @@ list_stale() {
   exit 0
 }
 
+# --refresh-stale [N] [type]: force-render N RANDOM stale pages (default 20), optionally only of one
+# type. Same definition of "stale" as list_stale() above (kept as its own copy of that query so
+# list_stale is untouched). The arguments can come in either order: a number is N, a word is the type.
+#   type: performer venue storyclub festival promoter booksmerch repertoire event (none = any page)
+# Renders are NT_DELAY seconds apart (default 12) and stop if the daily browser quota runs out; a
+# failed render keeps the old snapshot (and marks it stale), so a rerun just tries again.
+refresh_stale() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local n=20 type="" pat="" a do_idx=0
+  for a in "$@"; do
+    if [ "$a" = "--indexnow" ]; then
+      do_idx=1
+    elif [[ "$a" =~ ^[0-9]+$ ]]; then
+      [ "$a" -ge 1 ] && n="$a"
+    elif [ -n "$a" ]; then
+      type="$a"
+    fi
+  done
+  case "$type" in
+    "")                       pat="" ;;
+    performer|performers)     pat='/performers\.html\?performer=' ;;
+    venue|venues)             pat='/venues\.html\?venue=' ;;
+    storyclub|storyclubs)     pat='/storyclub\.html\?club=' ;;
+    festival|festivals)       pat='/festival\.html\?festival=' ;;
+    promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
+    booksmerch)               pat='/books_merch\.html\?performer=' ;;
+    repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
+    event|events)             pat='/event\.html\?event=' ;;
+    *) echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire event)" >&2; exit 1 ;;
+  esac
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  read_epochs
+  local now_ms=$(( $(date +%s) * 1000 )) fresh_ms=$(( FRESH_HOURS * 3600000 )) json all picks total count url i=0
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson now "$now_ms" \
+      --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD" \
+      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+      [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
+            | select(.ts != null)
+            | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
+      | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
+  [ -n "$all" ] || { echo "No stale snapshots." >&2; exit 0; }
+  if [ -n "$pat" ]; then
+    all=$(printf '%s\n' "$all" | grep -E -- "$pat")
+    [ -n "$all" ] || { echo "No stale ${type} snapshots." >&2; exit 0; }
+  fi
+  total=$(printf '%s\n' "$all" | wc -l | tr -d ' ')
+  picks=$(printf '%s\n' "$all" | shuf -n "$n")
+  count=$(printf '%s\n' "$picks" | wc -l | tr -d ' ')
+  echo "$total stale ${type:-page}(s); rendering $count at random (one every ${DELAY}s)."
+
+  # --indexnow: remember which URLs rendered OK (render_one records HTTP 200, not marked stale, no
+  # quota hit, healthy page) so only those are submitted, exactly as --delta does.
+  local okfile=""
+  if [ $do_idx -eq 1 ]; then
+    okfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-refresh.XXXXXX")
+    trap 'rm -f "$okfile"' EXIT
+    RENDERED_FILE="$okfile"
+  fi
+
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    [ $i -gt 0 ] && sleep "$DELAY"
+    i=$((i + 1))
+    url="${url//+/%20}"   # KV keys store a space as +; back to %20 for the request URL (a literal + is already %2B)
+    render_one "$url" "$i" || break
+  done <<< "$picks"
+  unset RENDERED_FILE
+
+  if [ $do_idx -eq 1 ]; then
+    # Same waiting list --delta uses, so URLs left over from an earlier --delta whose IndexNow call
+    # failed are sent now too, and a failed submission here stays queued for the next --indexnow run.
+    local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}" tmp n_unsub=0
+    if [ -s "$okfile" ]; then
+      tmp=$(mktemp "${TMPDIR:-/tmp}/updatecache-unsub.XXXXXX")
+      cat "$unsub" "$okfile" 2>/dev/null | awk 'NF && !seen[$0]++' > "$tmp" && mv "$tmp" "$unsub"
+    fi
+    [ -s "$unsub" ] && n_unsub=$(grep -c . "$unsub")
+    if [ "$n_unsub" -gt 0 ]; then
+      if bash "$(cd "$(dirname "$0")" && pwd)/indexnow.sh" -f "$unsub"; then
+        : > "$unsub"
+      else
+        echo "IndexNow did not accept everything; the $n_unsub URL(s) stay in $unsub for the next --indexnow run." >&2
+      fi
+    else
+      echo "Nothing waiting to be sent to IndexNow."
+    fi
+  fi
+  exit 0
+}
+
 # --list-recent [H]: snapshots written in the last H hours (default 12), newest first, as full
 # URLs. For cleaning up after a bad deploy: save the list, then --purge-only and/or re-render it.
 # The write time is the ts the gatekeeper stored as KV metadata, or the time implied by the KV
@@ -1113,6 +1212,7 @@ case "$1" in
   --staleness)                         staleness_report ;;
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
+  --refresh-stale)                     refresh_stale "${@:2}" ;;
   --list-recent)                       list_recent "${2:-}" ;;
   --health)                            health_report "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
@@ -1140,7 +1240,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all)" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--indexnow])" >&2
   exit 1
 fi
 
