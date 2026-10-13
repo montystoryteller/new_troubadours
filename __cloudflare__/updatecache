@@ -42,6 +42,13 @@
 #                                                    ./updatecache --list-recent 12 > recent.txt
 #                                                    ./updatecache --purge-only $(cat recent.txt)   clear them
 #                                                    ./updatecache $(cat recent.txt)                force re-render them
+#        ./updatecache --list-cached [file] [type] every snapshot URL in the cache, sorted, one per line: written to
+#                                                  [file] if given (else printed), optionally only one page type
+#                                                  (performer venue storyclub festival promoter booksmerch repertoire event):
+#                                                    ./updatecache --list-cached cached-urls.txt
+#                                                    ./updatecache --list-cached venues-cached.txt venue
+#                                                  Stale pages are included; ones the gatekeeper treats as missing are not (older
+#                                                  than the last hard purge, which also catches marked-stale pages after one).
 #        ./updatecache --health [DAYS]             renders the gatekeeper logged as NOT healthy in the last DAYS
 #                                                  (default 7): error / loading / missing / warn / 404, with the reason
 #                                                  (reads the health:* keys; one KV listing, no renders)
@@ -945,6 +952,54 @@ refresh_stale() {
   exit 0
 }
 
+# --list-cached [file] [type]: every snapshot URL in the cache, sorted, one per line. With a file
+# name they are written there (a one-line count is printed); without one they go to stdout. A type
+# word (same ones as --refresh-stale) limits it to that page type. Stale snapshots ARE included
+# (they are still served); snapshots whose stored time is older than the last hard purge are NOT,
+# because the gatekeeper treats those as missing (the same rule --status uses). NOTE: a page marked
+# stale has its stored time set to 0, so once a hard purge has ever happened, marked-stale pages
+# fall under that rule too and are left out (as the gatekeeper also treats them as missing).
+list_cached() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local out="" type="" pat="" a all n json
+  for a in "$@"; do
+    case "$a" in
+      performer|performers|venue|venues|storyclub|storyclubs|festival|festivals|promoter|promoters|booksmerch|repertoire|repertoires|event|events) type="$a" ;;
+      *) out="$a" ;;
+    esac
+  done
+  case "$type" in
+    "")                       pat="" ;;
+    performer|performers)     pat='/performers\.html\?performer=' ;;
+    venue|venues)             pat='/venues\.html\?venue=' ;;
+    storyclub|storyclubs)     pat='/storyclub\.html\?club=' ;;
+    festival|festivals)       pat='/festival\.html\?festival=' ;;
+    promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
+    booksmerch)               pat='/books_merch\.html\?' ;;
+    repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
+    event|events)             pat='/event\.html\?event=' ;;
+  esac
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  read_epochs
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  all=$(printf '%s\n' "$json" | jq -r --arg base "render:https://$HOST" --argjson hard "$EPOCH_HARD" \
+      --argjson ttl "$TTL_MS" "$JQ_TS_DEF"'
+      .[] | select(.name | startswith($base))
+          | select((entry_ts // $hard) >= $hard)
+          | .name | ltrimstr("render:")' | sort)
+  if [ -n "$pat" ]; then all=$(printf '%s\n' "$all" | grep -E -- "$pat"); fi
+  n=$(printf '%s\n' "$all" | grep -c .)
+  if [ "$n" -eq 0 ]; then echo "No cached ${type:-page} snapshots." >&2; exit 0; fi
+  if [ -n "$out" ]; then
+    printf '%s\n' "$all" > "$out" || { echo "Could not write $out" >&2; exit 1; }
+    echo "$n cached URL(s) written to $out"
+  else
+    printf '%s\n' "$all"
+    echo "$n cached URL(s)." >&2
+  fi
+  exit 0
+}
+
 # --list-recent [H]: snapshots written in the last H hours (default 12), newest first, as full
 # URLs. For cleaning up after a bad deploy: save the list, then --purge-only and/or re-render it.
 # The write time is the ts the gatekeeper stored as KV metadata, or the time implied by the KV
@@ -1558,6 +1613,7 @@ case "$1" in
   --list-stale)                        list_stale "${2:-}" ;;
   --refresh-stale)                     refresh_stale "${@:2}" ;;
   --list-recent)                       list_recent "${2:-}" ;;
+  --list-cached)                       list_cached "${@:2}" ;;
   --health)                            health_report "${2:-}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
