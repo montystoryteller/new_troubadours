@@ -4,6 +4,12 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "mid-border-arts": {
+      "promoter_id": "mid-border-arts",
+      "name": "Mid Border Arts",
+      "description": "For more than 40 years we have promoted arts and educational activities, integrating them into the community of Presteigne and the surrounding area of mid Wales and the borders.",
+      "promoter_link": "https://www.midborderarts.com/"
+    },
     "butserancient": {
       "promoter_id": "butserancient",
       "venue_id": "butser-ancient-farm-hampshire",
@@ -2256,6 +2262,16 @@
           "ticket_url": "https://artsreach.co.uk/event/when-the-morning-stars",
           "date_added": "24/09/2026",
           "eventId": "R-hugh-lupton-sarah-moody-morning-stars-20261018-burton-bradstock-village-hall"
+        },
+        {
+          "date": "04/12/2026",
+          "venue_id": "the-chillingham-arms",
+          "time": "7pm",
+          "price": "£8",
+          "promoter_id": "abitcrack",
+          "event_url": "https://www.abitcrack.com/event/when-the-morning-stars-sang-the-angels-shouted-for-joy-hugh-lupton-and-sarah-moody/",
+          "date_added": "13/10/2026",
+          "eventId": "R-hugh-lupton-sarah-moody-morning-stars-20261204-the-chillingham-arms"
         }
       ],
       "performer_ids": [
@@ -2652,6 +2668,14 @@
           "ticket_url": "https://www.storymuseum.org.uk/whats-on/crick-crack-the-mighty-goddess",
           "venue_id": "the-story-museum-oxford",
           "eventId": "R-sally-pomme-clayton-mighty-goddess-20260326-the-story-museum-oxford"
+        },
+        {
+          "date": "27/11/2026",
+          "time": "7.30pm",
+          "price": "£15",
+          "ticket_url": "https://billetto.co.uk/e/the-mighty-goddess-stories-songs-spells-tickets-1988176",
+          "venue_id": "tom-thumb-theatre",
+          "eventId": "R-sally-pomme-clayton-mighty-goddess-20261127-tom-thumb-theatre"
         }
       ]
     }
@@ -11426,16 +11450,38 @@
       "isSpecial": true
     },
     {
-      "name": "Darkness & Love",
-      "showname": "Darkness & Love",
+      "name": "The Conditions For Courage — An Evening of Celtic Tales [Danielle Free]",
+      "showname": "The Conditions For Courage — An Evening of Celtic Tales",
       "date": "24/10/2026",
-      "venue_id": "sunshine-rooms-findhorn",
-      "eventId": "20261024-unknown-performer-sunshine-rooms-findhorn",
-      "date_added": "25/09/2026",
-      "time": "4-5pm",
-      "price": "£10 (+ £1.50) [£5-£14.50]",
-      "description": "Stories for dark days and long nights with Peter Findlay. Featuring Gay Taffe on the gongs and musical guests for three very different stories.\n\n\n\n50% of proceeds will go to the Talebearers Bursary Fund for budding bards aged between 10 and 14 years.",
-      "ticket_url": "https://www.tickettailor.com/events/weavingwordsandwonder/2437444",
+      "venue_id": "park-in-the-past",
+      "performer_id": "danielle-free",
+      "eventId": "20261024-danielle-free-park-in-the-past",
+      "date_added": "13/10/2026",
+      "time": "7pm",
+      "price": "£12 (+ £0.55)",
+      "description": "Join us this October for an atmospheric evening of Celtic tales, ancient folklore, myth and magic, brought to life by the remarkable Danielle Free.\n\n\n\nThree women. Three acts of defiance. One untold history.\n\n\n\nDanielle reclaims the lives of three remarkable European Celtic women: Chiomara, who turned her captor's arrogance into a deadly trap; Camma, a Priestess of Artemis who outwitted her husband's killer; and Eponina, who defied the Roman Empire all in the name of love. Untangling their stories from ancient agendas and Roman propaganda, 'The Conditions For Courage' reveals the very real women behind the stereotype, women who risked everything in the face of personal adversity.\n\n\n\nThere are no fairy tale endings here.\n\n\n\nExpect powerful, gritty stories of women who defied expectations in the name of love, loyalty, respect and revenge. History is retold. Her story is reclaimed. Courage is redefined.\n\n\n\nNow, Danielle brings her storytelling to Park in the Past for a special evening created especially for the Earth House. Come and hear stories the way they were meant to be told.\n\n\n\nNo screens. No pages to turn. Just firelight, stories and an audience gathered together in a beautiful Celtic Earth House as ancient tales are brought back to life.\n\n\n\n16+ years old only. Anyone under 18 years old must be accompanied by an adult.",
+      "age_rating": "16+",
+      "min_age": 16,
+      "event_flyer": "2026_10_24_danielle_free_celtic.jpeg",
+      "ticket_url": "https://parkinthepast.org.uk/events/an-evening-of-celtic-tales-with-danielle-free/",
+      "facebook": "1580171293297104",
+      "isSpecial": true
+    },
+    {
+      "name": "Dark Tales From The Woods [Daniel Morden]",
+      "showname": "Dark Tales From The Woods",
+      "date": "25/10/2026",
+      "venue_id": "assembly-rooms-presteigne",
+      "performer_id": "daniel-morden",
+      "eventId": "20261025-daniel-morden-assembly-rooms-presteigne",
+      "date_added": "13/10/2026",
+      "time": "Doors 3pm, start 3.30pm",
+      "promoter_id": "mid-border-arts",
+      "price": "£10 (+ £1) / £5 (+ £0.50)",
+      "description": "As the year tilts toward winter and the clocks go back, join award-winning author/storyteller Daniel Morden for an afternoon steeped in folklore. Hear tales gathered from misty hills, moonlit crossroads, and the timeless storytelling traditions of these islands.\n\n\n\nThese are stories for all ages — rich with wonder, threaded with mystery, and alive with the spirit of Hallowe’en. Bring your curiosity, your imagination and expect to be charmed, chilled and thrilled by a great yarn well told. Let the old tales keep you company as the light slips away.\n\n\n\nSuitable for anyone over 7 with a stout heart. 8+ (under-14s must be accompanied by an adult)",
+      "age_rating": "7+",
+      "min_age": 7,
+      "ticket_url": "https://wegottickets.com/f/20822/",
       "isSpecial": true
     },
     {
@@ -11485,6 +11531,7 @@
       "description": "With Halloween creeping ever closer, renowned ghost hunter and storyteller Marc Tuckey is heading to The Chine Inn in Shanklin on Tuesday 27th October 2026 for an evening packed with spine-tingling stories, eerie encounters and fascinating tales from some of the Island's most haunted and mysterious locations.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to strange sightings, sinister snippets of Island history and stories of the people and places that refuse to be forgotten, Marc will delve into the darker side of the Isle of Wight.\n\n\n\nAnd, of course, what better way to enjoy an evening of spooky storytelling than with a hearty Two-Course Supper?",
       "ticket_url": "https://www.thepriceiswight.co.uk/product/the-chine-inn-ghost-talks",
       "isSpecial": true,
+      "isDinner": true,
       "eventId": "20261027-marc-tuckey-chine-in-shanklin"
     },
     {
@@ -11899,6 +11946,7 @@
       "description": "The Isle of Wight is known for its dark past, and this offering promises to showcase the historically sinister and spooky side.\n\n\n\nFollowing a sold out Halloween supper, renowned ghost hunter and storyteller Marc Tuckey will once again be taking over The Sun in Calbourne on Tuesday 1st December for an evening of spine-tingling Christmas stories, eerie encounters and fascinating tales from some of the Isle's creepiest corners.\n\n\n\nThe Island may look idyllic by day…but scratch beneath the surface and there's a much darker story to tell.\n\n\n\nFrom ghostly goings-on and unexplained phenomena to sinister snippets of Island history, Marc will shine a light into some of the places, people and events that have given the Isle of Wight its wonderfully spooky reputation.\n\n\n\nAnd what better way to settle in for an evening of ghostly tales than with a hearty Two-Course Supper from the talented kitchen team at The Sun?\n\n\n\nYou will tuck into:\n\n\n\n* Shepherds Pie or Fish & Chips followed by a Seasonal Crumble\n\n\n\nArrive from 6.00pm to enjoy your supper, before the lights go down and Marc takes to the floor at 7.30pm to begin his chilling collection of Ghost Talks & Spooky Stories.\n\n\n\nAnd the setting couldn't be more perfect.\n\n\n\nNestled in the picturesque rural village of Calbourne, The Sun is a much-loved country pub combining traditional character, cosy surroundings and seriously good food — the ideal place to gather before venturing into the darker side of Island folklore.\n\n\n\nSo grab your bravest friends, settle in for supper, and prepare to hear some tales that might make you think twice about walking home alone.",
       "ticket_url": "https://www.thepriceiswight.co.uk/product/the-sun-christmas-ghost-talk/",
       "isSpecial": true,
+      "isDinner": true,
       "eventId": "20261201-marc-tuckey-sun-inn-shanklin"
     },
     {
@@ -13219,6 +13267,19 @@
       "latlon": [
         50.70051,
         -1.29359
+      ]
+    },
+    "tom-thumb-theatre": {
+      "id": "tom-thumb-theatre",
+      "name": "Tom Thumb Theatre",
+      "venue_type": "Theatre",
+      "city": "Margate",
+      "postcode": "CT9 2LB",
+      "full_address": "Tom Thumb Theatre, 2A Eastern Esplanade, Cliftonville, Margate, CT9 2LB",
+      "facebook": "tomthumbtheatre",
+      "latlon": [
+        51.39106,
+        1.3995
       ]
     },
     "white-lion-norwich": {
@@ -18423,6 +18484,13 @@
         51.1563,
         0.26013
       ]
+    },
+    "assembly-rooms-presteigne": {
+      "id": "assembly-rooms-presteigne",
+      "name": "Assembly Rooms, Presteigne",
+      "full_address": "The Assembly Rooms, Broad Street Presteigne, LD8 2AD",
+      "city": "Broad Street Presteigne",
+      "postcode": "LD8 2AD"
     },
     "late-lounge-rhyl": {
       "id": "late-lounge-rhyl",
