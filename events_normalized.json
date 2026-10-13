@@ -11436,6 +11436,22 @@
       "eventId": "20261026-jason-buck-cafe-9-sheffield"
     },
     {
+      "name": "Horror Folktales [Daniel Morden]",
+      "showname": "Horror Folktales",
+      "date": "27/10/2026",
+      "venue_id": "meadow-street-community-garden-treforest",
+      "performer_id": "daniel-morden",
+      "eventId": "20261027-daniel-morden-meadow-street-community-garden-treforest",
+      "date_added": "13/10/2026",
+      "time": "Doors 6.30pm, start 7pm",
+      "price": "£5 (+ £1.13)",
+      "description": "Gather around the fire as AWARD-WINNING storyteller and author Daniel Morden tells thrillers and chillers!\n\n\n\nGather around the fire as AWARD-WINNING storyteller and author Daniel Morden tells thrillers and chillers! \"Gruesome, hypnotic and fantastical\" THE TIMES\n\n\n\nThis event is strictly for those aged 16+ as the tales will be seriously scary!\n\n\n\nArrival from 6:30pm\n\n\n\nTelling starts at 7pm\n\n\n\nHot drinks included with your ticket!\n\n\n\nWrap up warm as this is an outdoor event set to take place in the immersive surroundings of our open sided woodland shelter. Feel free to bring a blanket. In the event of extremely wet and windy weather we will roll down the sides of the shelter. You may wish to bring a torch as most of the site will be unlit.\n\n\n\nThere is some on-site parking. Further parking space is available in the lane and on street.\n\n\n\nSeating will be on a first come first served basis and there will also be standing room. If a seat is an access requirement for you please let us know in advance and we will reserve one.\n\n\n\nMeadow Street Community Garden and Woodland can be found at the end of Meadow Street in Treforest, past the houses and down the lane, through the second gates on the left, nextdoor to the tin plate allotments.",
+      "age_rating": "16+",
+      "min_age": 16,
+      "ticket_url": "https://www.eventbrite.co.uk/e/horror-folktales-with-daniel-morden-tickets-2002540177578",
+      "isSpecial": true
+    },
+    {
       "name": "Historic Halloween Ghost Talk with Supper [Marc Tuckey]",
       "showname": "Historic Halloween Ghost Talk with Supper",
       "date": "27/10/2026",
@@ -11605,6 +11621,22 @@
       "description": "The exhibits are cursed. The displays are sinister. The curators seem to be hiding something… and what's behind that locked door?\n\n\n\nJoin Holly Medland and Merl Fluin for a dark night of live storytelling. Spine-chilling tales for Halloween with more than a whiff of the macabre, in the atmospheric setting of Babushka Books.\nDoors open 7pm for a 7:30pm start\n\n\n\nSuitable for age 16+\n\n\n\nTickets £10 including snacks and drinks\n\n\n\nAdvance booking is essential: phone 07511220038 or 01983 652880",
       "isSpecial": true,
       "eventId": "20261029-holly-medland-babushka-books-shanklin"
+    },
+    {
+      "name": "Haunting Tales for Dark Nights [Christine Genders]",
+      "showname": "Haunting Tales for Dark Nights",
+      "date": "30/10/2026",
+      "venue_id": "samuel-johnson-birtplace-museum-lichfield",
+      "performer_id": "christine-genders",
+      "eventId": "20261030-christine-genders-samuel-johnson-birtplace-museum-lichfield",
+      "date_added": "13/10/2026",
+      "time": "7-8pm",
+      "price": "£12",
+      "description": "Local Lichfield storyteller Christine Genders presents a deliciously chilling collection of stories.\n\n\n\nJoin us for tales of ghosts, hauntings, and mysterious occurrences. Creepy, poignant, even funny – just don’t walk home alone!\n\n\n\nThis event is not suitable for children under the age of 14. Children under 16 must be accompanied by an adult.",
+      "age_rating": "14+",
+      "min_age": 14,
+      "ticket_url": "https://www.eventbrite.co.uk/e/haunting-tales-for-dark-nights-tickets-1997681060829",
+      "isSpecial": true
     },
     {
       "name": "Macabre Tales, Sinister Stories [Tony \"Monty\" Hirst]",
@@ -14520,7 +14552,7 @@
       "city": "Bury Saint Edmunds",
       "postcode": "IP30 9BX",
       "url": "https://suffolkcommunitylibraries.co.uk/libraries/elmswell/",
-      "description": "https://www.facebook.com/ElmswellLibrary/",
+      "facebook": "ElmswellLibrary",
       "latlon": [
         52.23445,
         0.9141
@@ -14717,6 +14749,19 @@
       "latlon": [
         52.68533,
         -1.83315
+      ]
+    },
+    "samuel-johnson-birtplace-museum-lichfield": {
+      "id": "samuel-johnson-birtplace-museum-lichfield",
+      "name": "Samuel Johnson Birtplace Museum, Lichfield",
+      "full_address": "Samuel Johnson Birthplace Museum, Breadmarket Street, Lichfield, WS13 6LG",
+      "city": "Lichfield",
+      "postcode": "WS13 6LG",
+      "url": "http://www.samueljohnsonbirthplace.org.uk/",
+      "description": "The family home of writer Samuel Johnson (1709-1784), best known as the author of A Dictionary of the English Language (1755), Dr Samuel Johnson was also a playwright, poet, journalist, editor, critic, and biographer.\n\n\n\nJohnson spent the first 27 years of his life in this atmospheric trader’s townhouse, now a museum with a stunning collection of Johnson treasures.\n\n\n\nVisitors can explore five floors which tell the story of Johnson’s life from childhood to national celebrity. See Johnson’s famous English dictionary, try hands-on activities, play historical dress up, and follow family trails.",
+      "latlon": [
+        52.6835,
+        -1.8277
       ]
     },
     "bargemans-rest-newport": {
@@ -14957,6 +15002,20 @@
       "latlon": [
         52.41521,
         -4.06336
+      ]
+    },
+    "meadow-street-community-garden-treforest": {
+      "id": "meadow-street-community-garden-treforest",
+      "name": "Meadow Street Community Garden, Treforest",
+      "full_address": "Meadow Street Community Garden, Treforest, Pontypridd, CF37 1UD",
+      "city": "Pontypridd",
+      "postcode": "CF37 1UD",
+      "facebook": "meadowstreetcommunity",
+      "url": "https://www.pontypriddtowncouncil.gov.uk/meadow-street-community-garden-and-woodland",
+      "description": "A safe and welcoming place where people from all walks of life can come and enjoy the benefits of nature, and homegrown produce and have opportunities to share and learn new skills.",
+      "latlon": [
+        51.58485,
+        -3.31787
       ]
     },
     "pontardawe-arts-centre": {
@@ -20775,6 +20834,13 @@
       "bio": "Justine de Mierre has been working in live performance for over a quarter of a century now, finding her way through acting, comedy, improvisation and storytelling – but wherever I roam it’s always about stories.\n\n\n\nOver the years as a teller Justine has told at festivals, events and schools across the country, created story play sessions for under 5s, created adults-only pub nights and been involved in story projects with prisoners and trained librarians in multi-sensory storytelling. She's told stories and run workshops at many festivals including Cambridge Folk Festival, Folk East, Bath Literary Festival, Edinburgh Literary Festival, Hay Festival and The National Centre for the Folk Arts.",
       "facebook": "justinedemierre",
       "instagram": "justinedemierre"
+    },
+    "christine-genders": {
+      "id": "christine-genders",
+      "name": "Christine Genders",
+      "url": "https://hazeltwig.org.uk/the-collective/christine-genders/",
+      "bio": "Christine Genders is a story teller, teacher, director and performer.\n\n\n\nShe collects and tells traditional stories from around the world as well as developing new stories from historic events.",
+      "facebook": "ChristineGendersStoryteller"
     },
     "shonaleigh": {
       "id": "shonaleigh",
