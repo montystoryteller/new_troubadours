@@ -6951,6 +6951,11 @@
       "format": "telling",
       "items": [
         {
+          "performer_id": "justine-de-mierre",
+          "title": "Debut performance from Justine de Mierre",
+          "yt_url": "https://www.youtube.com/watch?v=YUzvhX4XvQw"
+        },
+        {
           "performer_id": "maria-credali",
           "title": "Debut Performance from Maria Credali",
           "yt_url": "https://www.youtube.com/watch?v=I8cr7XJEwBA"
@@ -11569,6 +11574,21 @@
       "isSpecial": true
     },
     {
+      "name": "Darklove — Storytelling for Adults [Justine de Mierre]",
+      "showname": "Storytelling for Adults",
+      "date": "29/10/2026",
+      "venue_id": "elmswell-library",
+      "performer_id": "justine-de-mierre",
+      "eventId": "20261029-justine-de-mierre-elmswell-library",
+      "date_added": "13/10/2026",
+      "time": "6-8pm",
+      "price": "Free",
+      "description": "Join storyteller Justine de Mierre for Darklove, a collection of stories drawn from across the world, exploring the darker side of love - funny, strange, sometimes sinister and occasionally downright disturbing. Tales of love, lust, obsession, murder and everything in between, with a few laughs and the occasional shiver along the way.\n\n\n\nIt's Halloween tales strictly for the grown-ups with a good sprinkling of magic, skeletons, ghosts, ghouls, demons and a memorable descent into hell - everything you could want to set you up for the season.\n\n\n\nFree to attend, no booking required. Suitable for over 16s.\n\n\n\nThis event has been funded through Mid Suffolk District Councillors Locality Grants.",
+      "age_rating": "Over 16s",
+      "min_age": 16,
+      "isSpecial": true
+    },
+    {
       "name": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books [Holly Medland & Merl Fluin]",
       "showname": "Tales from a Haunted Museum: Halloween Storytelling at Babushka Books",
       "date": "29/10/2026",
@@ -14491,6 +14511,19 @@
       "latlon": [
         51.5231,
         -0.10437
+      ]
+    },
+    "elmswell-library": {
+      "id": "elmswell-library",
+      "name": "Elmswell Library",
+      "full_address": "Elmswell Library, Cooks Road, Bury Saint Edmunds, IP30 9BX",
+      "city": "Bury Saint Edmunds",
+      "postcode": "IP30 9BX",
+      "url": "https://suffolkcommunitylibraries.co.uk/libraries/elmswell/",
+      "description": "https://www.facebook.com/ElmswellLibrary/",
+      "latlon": [
+        52.23445,
+        0.9141
       ]
     },
     "the-hold-ipswich": {
@@ -20734,6 +20767,14 @@
           "publisher_id": "history-press"
         }
       ]
+    },
+    "justine-de-mierre": {
+      "id": "justine-de-mierre",
+      "name": "Justine de Mierre",
+      "url": "https://www.sowhatsthestory.co.uk/",
+      "bio": "Justine de Mierre has been working in live performance for over a quarter of a century now, finding her way through acting, comedy, improvisation and storytelling – but wherever I roam it’s always about stories.\n\n\n\nOver the years as a teller Justine has told at festivals, events and schools across the country, created story play sessions for under 5s, created adults-only pub nights and been involved in story projects with prisoners and trained librarians in multi-sensory storytelling. She's told stories and run workshops at many festivals including Cambridge Folk Festival, Folk East, Bath Literary Festival, Edinburgh Literary Festival, Hay Festival and The National Centre for the Folk Arts.",
+      "facebook": "justinedemierre",
+      "instagram": "justinedemierre"
     },
     "shonaleigh": {
       "id": "shonaleigh",
