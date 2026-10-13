@@ -5404,6 +5404,83 @@
       "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
       "isMusic": true
     },
+    "jess-silk-spring-tour-2027": {
+      "tour_name": "Jess Silk Spring Tour 2027",
+      "tour_dates": [
+        {
+          "date": "21/03/2027",
+          "venue_id": "the-old-cold-store-nottingham",
+          "other_performer_ids": [
+            "joe-solo",
+            "matt-johnson"
+          ],
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270321-the-old-cold-store-nottingham"
+        },
+        {
+          "date": "02/04/2027",
+          "venue_id": "hot-box-chelmsford",
+          "other_performer_ids": [
+            "the-skraelings"
+          ],
+          "event_flyer": "2027_04_02_jess_silk_hotbox.jpg",
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270402-hot-box-chelmsford"
+        },
+        {
+          "date": "03/04/2027",
+          "venue_id": "riff-factory-stoke",
+          "other_performer_ids": [
+            "sam-draisey"
+          ],
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270403-riff-factory-stoke"
+        },
+        {
+          "date": "04/04/2027",
+          "venue_id": "foxtails-chorley",
+          "other_performer_ids": [
+            "harrison-rimmer"
+          ],
+          "isSpecial": true,
+          "isSoldOut": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270404-foxtails-chorley"
+        },
+        {
+          "date": "09/04/2027",
+          "venue_id": "the-chester-tavern-kidderminster",
+          "other_performer_ids": [
+            "matt-johnson"
+          ],
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270409-the-chester-tavern-kidderminster"
+        },
+        {
+          "date": "16/04/2027",
+          "venue_id": "feniton-sports-social-club",
+          "other_performer_ids": [
+            "matt-johnson",
+            "liam-goodman"
+          ],
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270416-feniton-sports-social-club"
+        },
+        {
+          "date": "17/04/2027",
+          "venue_id": "avalon-club-glastonbury",
+          "other_performer_ids": [
+            "matt-johnson",
+            "joe-solo"
+          ],
+          "isSpecial": true,
+          "eventId": "T-jess-silk-spring-tour-2027-20270417-avalon-club-glastonbury"
+        }
+      ],
+      "name": "Jess Silk Spring Tour 2027",
+      "performer_id": "jess-silk",
+      "touring_event_flyer": "tour_jess_silk_spring_2027.jpg",
+      "isMusic": true
+    },
     "jess-silk-matt-johnson-dashboard-jesus-2026": {
       "name": "Jess Silk + Matt Johnson — The Dashboard Jesus Tour",
       "tour_name": "Dashboard Jesus Tour",
@@ -16071,12 +16148,14 @@
       "name": "Avalon Club",
       "city": "Glastonbury",
       "postcode": "BA6 9DX",
-      "full_address": "Avalon Club, Glastonbury, BA6 9DX",
+      "full_address": "Avalon Constitutional Club, Glastonbury, BA6 9DX",
       "facebook": "AvalonConstitutionalClub",
       "latlon": [
         51.147672,
         -2.7147963
-      ]
+      ],
+      "url": "https://www.facebook.com/AvalonConstitutionalClub",
+      "description": "A friendly local social club in the centre of Glastonbury. With bar, snooker room, pool, skittle alley and a fully equipped function room for hire."
     },
     "unicorn-theatre-abingdon": {
       "id": "unicorn-theatre-abingdon",
@@ -17789,6 +17868,19 @@
       "latlon": [
         51.53096,
         -3.29764
+      ]
+    },
+    "hot-box-chelmsford": {
+      "id": "hot-box-chelmsford",
+      "name": "Hot Box, Chelmsford",
+      "full_address": "Hot Box Live, 28-29 Viaduct Road, Chelmsford, CM1 1TS",
+      "city": "Chelmsford",
+      "postcode": "CM1 1TS",
+      "url": "https://hotboxlive.co.uk/",
+      "description": "Chelmsford’s grassroots music venue\nA not-for-profit home for live music and community, under the railway arches: “Bands, DJs, open mics, comedy, drag, poetry, quizzes, dominoes, chess, gaming, community groups, whatever floats your boat; if it brings people together, it belongs here” — Dave Hughes, Hot Box Team.\n\n\n\nUnder 2 minutes’ walk from Chelmsford train station, under 1 minute from the bus station and 15 seconds from the taxi rank.",
+      "latlon": [
+        51.73541,
+        0.46652
       ]
     },
     "acanteen-chelmsford": {
@@ -21020,6 +21112,24 @@
       "url": "https://www.sophiesnell.co.uk/",
       "bio": "After gaining an MA in Mediaeval History at St Andrews University, Sophie qualified as a Chartered Accountant and for many years worked in international finance, latterly as Finance Director for a large multinational IT company. After taking a break to raise a family, she returned to work as a non-executive director for a regional building society whilst at the same time developing her interest in storytelling, performance and literature.\n\n\n\nOver several years, Sophie trained and worked with a number of high profile UK and European storytellers. In 2009, she set up as a full-time storyteller",
       "facebook": "sophiesnellstoryteller"
+    },
+    "the-skraelings": {
+      "id": "the-skraelings",
+      "name": "The Skraelings",
+      "url": "https://theskraelings.bandcamp.com/",
+      "bio": "Good Medicine\n\n\n\nWestern World\n\n\n\nabout\nThe Skraelings image\nThe Skraelings\nChelmsford, UK\nTHE SKRAELINGS are a 5-piece Essex-based band of noise deliverers with roots in the 70s punk explosion.\n\n\n\nEstablished in 1990, they blazed a three year trail across the stages of squatted parties and free festivals before summoning themselves into the timely now."
+    },
+    "harrison-rimmer": {
+      "id": "harrison-rimmer",
+      "name": "Harrison Rimmer",
+      "url": "https://harrisonrimmer.com/",
+      "bio": "Singer songwriter hailing from Fleetwood & grown in York."
+    },
+    "liam-goodman": {
+      "id": "liam-goodman",
+      "name": "Liam Goodman",
+      "instagram": "liamgoodmanmusic",
+      "bio": "'Just a guy with a guitar'. Folk musician from Bristol."
     },
     "shonaleigh": {
       "id": "shonaleigh",
