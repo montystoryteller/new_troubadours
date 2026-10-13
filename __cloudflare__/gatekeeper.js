@@ -91,7 +91,9 @@ function canonicalParamValue(pagePath, name, value) {
     name === "tour" &&
     value.startsWith(LEGACY_REPERTOIRE_TOUR_PREFIX)
   ) {
-    return REPERTOIRE_TOUR_PREFIX + value.slice(LEGACY_REPERTOIRE_TOUR_PREFIX.length);
+    return (
+      REPERTOIRE_TOUR_PREFIX + value.slice(LEGACY_REPERTOIRE_TOUR_PREFIX.length)
+    );
   }
   return value;
 }
@@ -131,7 +133,8 @@ function nextUtcMidnightMs() {
 // Fails OPEN (false) if KV can't be read: the per-minute render lock and the
 // renderer's own limits still protect the quota in that case.
 async function isQuotaExhausted(env) {
-  if (quotaMemory && Date.now() < quotaMemory.until) return quotaMemory.exhausted;
+  if (quotaMemory && Date.now() < quotaMemory.until)
+    return quotaMemory.exhausted;
   try {
     const flagged = !!(await env.RENDER_CACHE.get(QUOTA_KEY));
     quotaMemory = flagged
@@ -293,7 +296,10 @@ function normalisedUrl(url) {
   const allowed = new Set(PARAMS_BY_PATH[pagePath] || []);
   const pairs = [...url.searchParams]
     .filter(([k, v]) => allowed.has(k) && v.length <= MAX_PARAM_VALUE_LENGTH)
-    .map(([k, v]) => [PARAM_ALIASES[k] || k, canonicalParamValue(pagePath, k, v)])
+    .map(([k, v]) => [
+      PARAM_ALIASES[k] || k,
+      canonicalParamValue(pagePath, k, v),
+    ])
     .sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
   for (const [k, v] of pairs) out.searchParams.append(k, v);
   return out;
@@ -353,7 +359,6 @@ async function getEpochs(env) {
   }
 }
 
-
 // ── page health (LOG-ONLY for now) ───────────────────────────
 // Pages that carry the PageHealth LED (shared_utils.js) set
 // <html data-page-health="loading|ok|warn|error"> and put any JS errors / failed
@@ -402,16 +407,20 @@ function analyseHealth(html, pathname) {
     const m = html.match(/<html\b[^>]*?\sdata-page-health="([a-z-]+)"/i);
     let status;
     if (m) status = m[1].toLowerCase();
-    else if (HEALTH_PAGES.has(path)) status = "missing"; // PageHealth never ran
+    else if (HEALTH_PAGES.has(path))
+      status = "missing"; // PageHealth never ran
     else if (/<title>\s*Page not found/i.test(html)) status = "404";
     else status = "n/a";
 
     let reason = "";
     if (status !== "ok" && status !== "n/a") {
-      const r = html.match(/class="page-health-message"[^>]*>([\s\S]*?)<\/span>/i);
+      const r = html.match(
+        /class="page-health-message"[^>]*>([\s\S]*?)<\/span>/i,
+      );
       if (r) reason = decodeEntities(r[1]).trim();
       if (!reason && status === "missing")
-        reason = "no data-page-health attribute (shared_utils.js / PageHealth did not run)";
+        reason =
+          "no data-page-health attribute (shared_utils.js / PageHealth did not run)";
     }
     reason = reason.replace(/\s*\n\s*/g, " | ").slice(0, 300);
     return { status, reason, record: status !== "ok" && status !== "n/a" };
@@ -421,7 +430,10 @@ function analyseHealth(html, pathname) {
 }
 
 // Header-safe (printable ASCII only).
-const headerSafe = (s) => String(s || "").replace(/[^\x20-\x7e]/g, "?").slice(0, 200);
+const headerSafe = (s) =>
+  String(s || "")
+    .replace(/[^\x20-\x7e]/g, "?")
+    .slice(0, 200);
 
 function logRenderHealth(why, targetUrl, health) {
   try {
@@ -449,7 +461,12 @@ async function recordHealth(env, targetUrl, health, why) {
     const u = new URL(targetUrl);
     const page = u.pathname + u.search;
     const day = new Date().toISOString().slice(0, 10);
-    const key = (HEALTH_KEY_PREFIX + day + ":" + encodeURIComponent(page)).slice(0, 450);
+    const key = (
+      HEALTH_KEY_PREFIX +
+      day +
+      ":" +
+      encodeURIComponent(page)
+    ).slice(0, 450);
     const existing = await env.RENDER_CACHE.get(key, "json");
     if (existing && existing.status === health.status) return;
     const record = {
@@ -474,7 +491,6 @@ async function recordHealth(env, targetUrl, health, why) {
 // would steal the few slots the scheduled prewarm needs.
 const RETRY_BASE_MS = 12000;
 
-// Returns {html} on success, or {html: null, status, quotaExhausted}.
 async function renderOnce(env, targetUrl, why = "?") {
   const renderUrl = new URL("https://renderer/");
   renderUrl.searchParams.set("url", targetUrl);
@@ -483,11 +499,15 @@ async function renderOnce(env, targetUrl, why = "?") {
     if (!res.ok) {
       const body = (await res.text()).slice(0, 300);
       console.log("render failed", why, res.status, body, targetUrl);
-      // Daily browser-time cap: no point retrying until tomorrow (UTC), so
-      // remember it (see the daily quota flag above).
-      const quotaExhausted = /time limit exceeded/i.test(body);
+
+      const quotaExhausted =
+        res.status === 429 ||
+        /time limit exceeded|rate limit exceeded|code["']?\s*:\s*2001|browser run failed with 429/i.test(
+          body,
+        );
+
       if (quotaExhausted) await markQuotaExhausted(env);
-      return { html: null, status: res.status, quotaExhausted };
+      return { html: null, status: res.status, quotaExhausted, health: null };
     }
     const html = markPrerendered(await res.text());
     let health = { status: "n/a", reason: "", record: false };
@@ -498,15 +518,15 @@ async function renderOnce(env, targetUrl, why = "?") {
     } catch {
       /* health reporting must never affect the render result */
     }
-    return { html, health };
+    return { html, status: 200, quotaExhausted: false, health };
   } catch (err) {
     console.log("render threw", why, String(err), targetUrl);
-    return { html: null, status: 0, quotaExhausted: false };
+    return { html: null, status: 0, quotaExhausted: false, health: null };
   }
 }
 
 async function renderWithRetry(env, targetUrl, attempts = 1, why = "?") {
-  let result = { html: null, status: 0, quotaExhausted: false };
+  let result = { html: null, status: 0, quotaExhausted: false, health: null };
   for (let i = 0; i < attempts; i++) {
     result = await renderOnce(env, targetUrl, why);
     if (result.html || result.quotaExhausted) return result;
@@ -537,7 +557,10 @@ async function storeSnapshot(env, key, html) {
   try {
     let health;
     try {
-      health = analyseHealth(html, new URL(key.slice("render:".length)).pathname).status;
+      health = analyseHealth(
+        html,
+        new URL(key.slice("render:".length)).pathname,
+      ).status;
     } catch {
       health = undefined;
     }
@@ -803,7 +826,9 @@ export default {
       }
       // Skip the markStale write when the quota is gone: it can't be retried
       // today anyway, and the snapshot's real age already decides tomorrow's refresh.
-      const markedStale = result.quotaExhausted ? false : await markStale(env, key);
+      const markedStale = result.quotaExhausted
+        ? false
+        : await markStale(env, key);
       logGate(request, "forced", normUrl, "forced-failed", {
         status: result.status,
         quotaExhausted: result.quotaExhausted,
@@ -886,9 +911,16 @@ export default {
       return fetch(request);
     }
 
-    const { html, health } = await renderWithRetry(env, normUrl.toString(), 1, "miss");
+    const { html, health } = await renderWithRetry(
+      env,
+      normUrl.toString(),
+      1,
+      "miss",
+    );
     if (html) {
-      logGate(request, tier, normUrl, "miss-rendered", { health: health?.status });
+      logGate(request, tier, normUrl, "miss-rendered", {
+        health: health?.status,
+      });
       ctx.waitUntil(storeSnapshot(env, key, html));
       return htmlResponse(html, {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
