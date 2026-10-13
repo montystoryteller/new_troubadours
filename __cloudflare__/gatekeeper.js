@@ -5,8 +5,11 @@
 // for a prerendered snapshot, stores it in KV (global, unlike caches.default),
 // serves stale snapshots while refreshing in the background, and falls back
 // to the normal origin page (never a 503) if rendering fails.
-// When Browser Run's daily quota is exhausted, all rendering pauses until the
-// next UTC midnight (flag in KV under lock:quota).
+// When Browser Run returns a 429, all rendering pauses: 2 min for the first 429 of
+// the day, 20 min for the second, 60 for the third, 4.5 h for the fourth, 8 h for the
+// fifth, then until just past UTC midnight; any step that would overshoot midnight is
+// capped there (flag in KV under lock:quota, count under lock:strikes). A successful
+// render resets the count; "time limit exceeded" (daily cap) goes straight to midnight.
 // Also serves /sitemap.xml, generated from the meta:keys index in KV.
 //
 // Required bindings:
@@ -125,8 +128,23 @@ const LOCK_TTL_SECONDS = 60;
 // get an immediate 429 + x-quota-exhausted without launching a browser or
 // spending a KV write on markStale.
 // A short in-memory copy avoids a KV read on every request in the same isolate.
+//
+// Escalating pause (replaces the old "any 429 = paused until midnight"): a 429 can be
+// a short burst clash (the ~1 render per 10s limit) OR the daily cap, and the status
+// code alone doesn't say which. So each 429 earns a pause that grows with the number
+// of 429s seen today (PAUSE_LADDER_MINUTES); once the ladder runs out, or the body
+// says "time limit exceeded" (unambiguously the daily cap), the pause runs to just
+// past UTC midnight. Any successful render resets the count and lifts the pause.
+//   lock:quota   value = pause-end as epoch ms; key expires when the pause ends
+//   lock:strikes value = number of 429s today; key expires at UTC midnight
 const QUOTA_KEY = "lock:quota";
-const QUOTA_NOT_EXHAUSTED_MEMORY_MS = 60 * 1000;
+const STRIKES_KEY = "lock:strikes";
+// 1st..5th 429 today: 2 min, 20 min, 1 h, 4.5 h, 8 h. Each is capped at just past UTC
+// midnight (whichever comes first), and the 6th 429 goes straight to midnight.
+const PAUSE_LADDER_MINUTES = [2, 20, 60, 270, 480];
+const RESUME_PAST_MIDNIGHT_MS = 60 * 1000; // resume a minute after the quota resets
+// Short, so a pause set by another isolate is noticed quickly (the shortest pause is 2 min).
+const QUOTA_NOT_EXHAUSTED_MEMORY_MS = 20 * 1000;
 let quotaMemory = null; // { until: ms, exhausted: bool }
 
 function nextUtcMidnightMs() {
@@ -135,40 +153,122 @@ function nextUtcMidnightMs() {
   return d.getTime();
 }
 
-// Fails OPEN (false) if KV can't be read: the per-minute render lock and the
+// Epoch ms when renders may resume, or 0 if not paused. `fresh` skips the
+// in-memory copy (used before counting a new 429, so a burst counts once).
+// Fails OPEN (0) if KV can't be read: the per-minute render lock and the
 // renderer's own limits still protect the quota in that case.
-async function isQuotaExhausted(env) {
-  if (quotaMemory && Date.now() < quotaMemory.until)
-    return quotaMemory.exhausted;
+async function getPauseUntil(env, fresh = false) {
+  const now = Date.now();
+  if (!fresh && quotaMemory && now < quotaMemory.until)
+    return quotaMemory.exhausted ? quotaMemory.until : 0;
   try {
-    const flagged = !!(await env.RENDER_CACHE.get(QUOTA_KEY));
-    quotaMemory = flagged
-      ? { until: nextUtcMidnightMs(), exhausted: true }
-      : { until: Date.now() + QUOTA_NOT_EXHAUSTED_MEMORY_MS, exhausted: false };
-    return flagged;
+    const v = await env.RENDER_CACHE.get(QUOTA_KEY);
+    let until = 0;
+    if (v) {
+      // Legacy flag value "1" (old code): paused until the next UTC midnight.
+      const n = Number(v);
+      until = n > 1e12 ? n : nextUtcMidnightMs();
+    }
+    if (until > now) {
+      quotaMemory = { until, exhausted: true };
+      return until;
+    }
+    quotaMemory = { until: now + QUOTA_NOT_EXHAUSTED_MEMORY_MS, exhausted: false };
+    return 0;
   } catch (err) {
     console.log("quota flag read failed", String(err));
-    return false;
+    return 0;
   }
 }
 
-async function markQuotaExhausted(env) {
-  const midnight = nextUtcMidnightMs();
-  quotaMemory = { until: midnight, exhausted: true }; // this isolate knows immediately
+// "Paused" covers both a short back-off and the daily cap (name kept for the call sites).
+async function isQuotaExhausted(env) {
+  return (await getPauseUntil(env)) > 0;
+}
+
+// True when a pause lasts to the quota reset (so callers should stop for the day).
+const isDailyPause = (until) => until >= nextUtcMidnightMs();
+
+// Called on every 429 / limit response. Returns the pause-end (epoch ms).
+// `definitive` = the body said the DAILY cap is used up: skip the ladder.
+async function markRenderLimited(env, definitive = false) {
+  const now = Date.now();
+  const resumeAt = nextUtcMidnightMs() + RESUME_PAST_MIDNIGHT_MS;
+  // Already paused (e.g. several in-flight renders all got 429): this is the
+  // same incident, so don't count it again. A definitive daily signal still upgrades it.
+  const existing = await getPauseUntil(env, true);
+  if (existing && (!definitive || existing >= resumeAt)) return existing;
+
+  let strikes = 0;
+  try {
+    strikes = Number(await env.RENDER_CACHE.get(STRIKES_KEY)) || 0;
+  } catch (err) {
+    console.log("strike count read failed", String(err));
+  }
+  strikes += 1;
+  const stepMin = PAUSE_LADDER_MINUTES[strikes - 1];
+  const until =
+    definitive || stepMin === undefined
+      ? resumeAt
+      : Math.min(now + stepMin * 60 * 1000, resumeAt);
+  quotaMemory = { until, exhausted: true }; // this isolate knows immediately
   try {
     // KV needs an expiration at least 60s in the future.
-    const expiresAt = Math.max(midnight, Date.now() + 61 * 1000);
-    await env.RENDER_CACHE.put(QUOTA_KEY, "1", {
-      expiration: Math.floor(expiresAt / 1000),
-    });
-    console.log({
-      message: "render quota exhausted; renders paused until UTC midnight",
-      evt: "quota-exhausted",
-      resumesAt: new Date(midnight).toISOString(),
-    });
+    await Promise.all([
+      env.RENDER_CACHE.put(QUOTA_KEY, String(until), {
+        expiration: Math.floor(Math.max(until, now + 61 * 1000) / 1000),
+      }),
+      env.RENDER_CACHE.put(STRIKES_KEY, String(strikes), {
+        expiration: Math.floor(
+          Math.max(nextUtcMidnightMs(), now + 61 * 1000) / 1000,
+        ),
+      }),
+    ]);
   } catch (err) {
     console.log("quota flag write failed", String(err));
   }
+  console.log({
+    message: `render limited (429 #${strikes} today); renders paused until ${new Date(until).toISOString()}`,
+    evt: "render-paused",
+    strikes,
+    definitive,
+    daily: isDailyPause(until),
+    resumesAt: new Date(until).toISOString(),
+  });
+  return until;
+}
+
+// A render succeeded, so Browser Run is clearly working: reset today's 429 count
+// and lift any pause. Reads first so the usual case (nothing set) costs no writes.
+async function clearRenderLimits(env) {
+  quotaMemory = { until: Date.now() + QUOTA_NOT_EXHAUSTED_MEMORY_MS, exhausted: false };
+  try {
+    const [strikes, paused] = await Promise.all([
+      env.RENDER_CACHE.get(STRIKES_KEY),
+      env.RENDER_CACHE.get(QUOTA_KEY),
+    ]);
+    const ops = [];
+    if (strikes !== null) ops.push(env.RENDER_CACHE.delete(STRIKES_KEY));
+    if (paused !== null) ops.push(env.RENDER_CACHE.delete(QUOTA_KEY));
+    if (ops.length) {
+      await Promise.all(ops);
+      console.log({ message: "render succeeded; 429 count reset", evt: "render-limits-cleared" });
+    }
+  } catch (err) {
+    console.log("clear render limits failed", String(err));
+  }
+}
+
+// Response headers for a refused/failed forced render while paused. x-quota-exhausted is
+// sent ONLY for a pause that lasts to the daily reset; a short back-off carries
+// x-render-paused (seconds) + retry-after so callers can wait and try again.
+function pauseHeaders(until) {
+  const secs = Math.max(1, Math.ceil((until - Date.now()) / 1000));
+  return {
+    "retry-after": String(secs),
+    "x-render-paused": String(secs),
+    ...(isDailyPause(until) ? { "x-quota-exhausted": "true" } : {}),
+  };
 }
 
 // Try to claim the global crawler-render slot. Returns true if this request
@@ -505,15 +605,27 @@ async function renderOnce(env, targetUrl, why = "?") {
       const body = (await res.text()).slice(0, 300);
       console.log("render failed", why, res.status, body, targetUrl);
 
-      const quotaExhausted =
+      // "time limit exceeded" is the daily browser-time cap: pause to midnight at once.
+      // Any other 429 / rate-limit body may just be a burst clash, so it climbs the ladder.
+      const dailyCap = /time limit exceeded/i.test(body);
+      const limited =
+        dailyCap ||
         res.status === 429 ||
-        /time limit exceeded|rate limit exceeded|code["']?\s*:\s*2001|browser run failed with 429/i.test(
+        /rate limit exceeded|code["']?\s*:\s*2001|browser run failed with 429/i.test(
           body,
         );
 
-      if (quotaExhausted) await markQuotaExhausted(env);
-      return { html: null, status: res.status, quotaExhausted, health: null };
+      // quotaExhausted now means "limited, renders paused"; pausedUntil says for how long.
+      const pausedUntil = limited ? await markRenderLimited(env, dailyCap) : 0;
+      return {
+        html: null,
+        status: res.status,
+        quotaExhausted: limited,
+        pausedUntil,
+        health: null,
+      };
     }
+    await clearRenderLimits(env);
     const html = markPrerendered(await res.text());
     let health = { status: "n/a", reason: "", record: false };
     try {
@@ -523,15 +635,15 @@ async function renderOnce(env, targetUrl, why = "?") {
     } catch {
       /* health reporting must never affect the render result */
     }
-    return { html, status: 200, quotaExhausted: false, health };
+    return { html, status: 200, quotaExhausted: false, pausedUntil: 0, health };
   } catch (err) {
     console.log("render threw", why, String(err), targetUrl);
-    return { html: null, status: 0, quotaExhausted: false, health: null };
+    return { html: null, status: 0, quotaExhausted: false, pausedUntil: 0, health: null };
   }
 }
 
 async function renderWithRetry(env, targetUrl, attempts = 1, why = "?") {
-  let result = { html: null, status: 0, quotaExhausted: false, health: null };
+  let result = { html: null, status: 0, quotaExhausted: false, pausedUntil: 0, health: null };
   for (let i = 0; i < attempts; i++) {
     result = await renderOnce(env, targetUrl, why);
     if (result.html || result.quotaExhausted) return result;
@@ -886,15 +998,20 @@ export default {
       }
       // Quota already known to be used up: fail fast, no browser launch and no
       // markStale write. The caller should stop until the next UTC day.
-      if (await isQuotaExhausted(env)) {
-        logGate(request, "forced", normUrl, "forced-skipped-quota");
-        return new Response("render quota exhausted until UTC midnight", {
-          status: 429,
-          headers: {
-            "cache-control": "no-store",
-            "x-quota-exhausted": "true",
-          },
+      const pausedUntil = await getPauseUntil(env);
+      if (pausedUntil) {
+        logGate(request, "forced", normUrl, "forced-skipped-quota", {
+          resumesAt: new Date(pausedUntil).toISOString(),
         });
+        return new Response(
+          isDailyPause(pausedUntil)
+            ? "render quota exhausted until UTC midnight"
+            : "renders paused briefly after a 429; retry after the pause",
+          {
+            status: 429,
+            headers: { "cache-control": "no-store", ...pauseHeaders(pausedUntil) },
+          },
+        );
       }
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
       const result = await refresh(env, key, normUrl.toString(), 3, "forced");
@@ -920,22 +1037,25 @@ export default {
             : {}),
         });
       }
-      // Skip the markStale write when the quota is gone: it can't be retried
-      // today anyway, and the snapshot's real age already decides tomorrow's refresh.
-      const markedStale = result.quotaExhausted
-        ? false
-        : await markStale(env, key);
+      // Skip the markStale write only when the pause lasts to the daily reset: it can't be
+      // retried today anyway, and the snapshot's real age already decides tomorrow's refresh.
+      // After a short back-off the page is worth marking so a later run retries it.
+      const dailyPause = result.pausedUntil && isDailyPause(result.pausedUntil);
+      const markedStale = dailyPause ? false : await markStale(env, key);
       logGate(request, "forced", normUrl, "forced-failed", {
         status: result.status,
         quotaExhausted: result.quotaExhausted,
+        ...(result.pausedUntil
+          ? { resumesAt: new Date(result.pausedUntil).toISOString() }
+          : {}),
         markedStale,
       });
       return new Response("render failed", {
-        status: result.status === 429 ? 429 : 502,
+        status: result.quotaExhausted || result.status === 429 ? 429 : 502,
         headers: {
           "cache-control": "no-store",
           ...(markedStale ? { "x-marked-stale": "true" } : {}),
-          ...(result.quotaExhausted ? { "x-quota-exhausted": "true" } : {}),
+          ...(result.pausedUntil ? pauseHeaders(result.pausedUntil) : {}),
         },
       });
     }
