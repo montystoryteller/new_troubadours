@@ -21585,8 +21585,17 @@
     "andy-harrop-smith": {
       "id": "andy-harrop-smith",
       "name": "Andy Harrop Smith",
-      "url": "",
-      "bio": ""
+      "bio": "Andy Harrop-Smith, storyteller: Andy has been telling stories for over 20 years, and has told tales to toddlers and spun stories to seniors from Aberystwyth to Edinburgh. He’s appeared at festivals, National Trust properties, museums, haunted houses and was a ‘storyteller in residence’ for Harry Potter Tours. Andy specialises in fun-folk tales from around the World, some will make you laugh, others will make you think.",
+      "youtube_videos": [
+        {
+          "story_name": "Twenty Noses - Spirits Move Me",
+          "yt_url": "https://www.youtube.com/watch?v=5NUuGAJGLTY"
+        },
+        {
+          "story_name": "A History of the Giants of Shropshire",
+          "yt_url": "https://www.youtube.com/watch?v=EeRjFB0uOJI"
+        }
+      ]
     },
     "andy-johnson": {
       "id": "andy-johnson",
