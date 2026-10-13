@@ -6401,6 +6401,12 @@
       "description": "The Forest of Dean's monthly open mic spokenword cabaret."
     },
     {
+      "name": "London Dreamtine",
+      "link": "https://londondreamtime.com/",
+      "convenor": "vanessa-woolf",
+      "club": "londondreamtime"
+    },
+    {
       "name": "Island Storytellers, Isle of Wight",
       "schedule": "2nd thursday",
       "time": "7-9pm",
@@ -7640,7 +7646,6 @@
       "showname": "Once Upon an Oddity: Deliciously Strange Tales for Winter Nights",
       "date": "12/12/2025",
       "time": "7.30pm",
-      "club": "wondermonger",
       "price": "Pay What You Feel",
       "description": "Mark Fraser is an itinerant storyteller, traversing the land with his original tales and weird stories. Join him for a selection of the odd, ghastly and vaguely unsettling tales from his own brain and around the world. A dark hour of devilish deeds and strange characters, just perfect for a dark winter's evening. A writer, an artist and the master of the bizarre story, Mark brings twenty years of storytelling experience to Wonder Monger at Cambridge Junction.",
       "event_flyer": "",
@@ -7806,7 +7811,6 @@
       "showname": "Arnside Sailing Club — Storyteller",
       "date": "21/12/2025",
       "time": "3.30-5.00pm",
-      "club": "other",
       "price": "£12 / £10 / £8",
       "description": "On the Sunday before Christmas, an afternoon show with Nick Hennessey, an internationally acclaimed storyteller, playwright, folk singer, song writer, harpist and musician. He has performed at venues such as the South Bank, Barbican, Royal Albert Hall and festivals worldwide. He has broadcast on Radio 4 and his music played on Radio 3. Nick has a particular interest in the story telling tradition of Finland. He will take you to the snow filled forests of the Far North, the darkness of the winter night and the warmth of the winter fire, travelling by song, story and music.",
       "event_flyer": "",
