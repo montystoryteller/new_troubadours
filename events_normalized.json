@@ -11270,6 +11270,23 @@
       "eventId": "20261017-daniel-morden-jacksons-lane-london"
     },
     {
+      "name": "Pwyll & Rhiannon's Feast",
+      "showname": "Pwyll & Rhiannon's Feast",
+      "date": "17/10/2026",
+      "venue_id": "snowdownia-hub",
+      "eventId": "20261017-unknown-performer-snowdownia-hub",
+      "date_added": "13/10/2026",
+      "time": "5-10pm",
+      "price": "From £30",
+      "description": "As dusk falls, take your place at the castle’s feasting table for an exclusive four-course immersive dining experience inspired by the Welsh Legend of the first branch of The Mabinogion.\n\n\n\nAn evening of exquisite food, folklore, storytelling, traditional music and song, unfolding by candlelight.\n\n\n\nPlaces are strictly limited. Secure your seat before the table is full.\n\n\n\nTake your place and immerse yourself in this famous Welsh legend, brought to life through story, traditional music, song and and four course feast. The evening will be spoken mainly in English with Welsh woven amoungst the stories.\n\n\n\nLet the feast begin.",
+      "event_flyer": "2026_10_17_pwyll_rhiannon_feast.webp",
+      "ticket_url": "https://www.trybooking.com/uk/event/123073",
+      "fb_event": "928169439967832",
+      "isSoldOut": true,
+      "isSpecial": true,
+      "isDinner": true
+    },
+    {
       "name": "Dark Fairy Tales for the Season of Mists [Jason Buck]",
       "showname": "Dark Fairy Tales for the Season of Mists",
       "date": "17/10/2026",
@@ -13454,6 +13471,32 @@
       "latlon": [
         54.661,
         -5.66129
+      ]
+    },
+    "snowdownia-hub": {
+      "id": "snowdownia-hub",
+      "name": "Snowdownia Hub",
+      "full_address": "Snowdownia Hub, Hafod Gwenllian, Dolwyddelan , LL25 0JF",
+      "city": "Dolwyddelan",
+      "postcode": "LL25 0JF",
+      "url": "https://www.snowdoniahub.co.uk/",
+      "description": "Four acres of woodland, river and mountains in the heart of Eryri. Come to think, reconnect, spend time together or simply escape for a few days.",
+      "latlon": [
+        53.03989,
+        -3.91427
+      ]
+    },
+    "park-in-the-past": {
+      "id": "park-in-the-past",
+      "name": "Park in the Past",
+      "full_address": "Park in the Past, Fagl Lane, Hope, Wrexham, LL12 9HB",
+      "city": "Wrexham",
+      "postcode": "LL12 9HB",
+      "url": "https://parkinthepast.org.uk/",
+      "description": "Where the past comes alive, conservation thrives, and exciting activities await, in the tranquil heart of Flintshire.",
+      "latlon": [
+        53.11948,
+        -3.04656
       ]
     },
     "snowden-mountain-railway": {
