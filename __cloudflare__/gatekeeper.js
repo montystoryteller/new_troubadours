@@ -841,6 +841,11 @@ async function sitemapResponse(request, env) {
   for (const [name, path, param] of SITEMAP_ENTRIES) {
     const list = Array.isArray(idx[name]) ? [...idx[name]].sort() : [];
     for (const key of list) {
+      // The index still carries the DEPRECATED tour=rep:<show> keys alongside
+      // R-<show> (so legacy requests aren't "unknown"); they are not canonical,
+      // so keep them out of the sitemap. Remove with the rep: handling above.
+      if (name === "tours" && key.startsWith(LEGACY_REPERTOIRE_TOUR_PREFIX))
+        continue;
       const lm = lastmods[`${path}?${param}=${key}`];
       urls.push({
         loc: `${SITE_ORIGIN}${path}?${param}=${encodeURIComponent(key)}`,
