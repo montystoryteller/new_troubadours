@@ -11519,6 +11519,22 @@
       "eventId": "20261028-jason-buck-merlins-cafe-bar-birmingham"
     },
     {
+      "name": "Far Ago! [Daniel Morden]",
+      "showname": "Far Ago!",
+      "date": "28/10/2026",
+      "venue_id": "malvern-theatres",
+      "performer_id": "daniel-morden",
+      "eventId": "20261028-daniel-morden-malvern-theatres",
+      "date_added": "13/10/2026",
+      "time": "10.30am / 1pm / 3pm",
+      "price": "£5",
+      "description": "If you love long-ago stories of epic journeys, mysterious strangers and talking animals, packed with sudden jumps, cliffhangers and shocking twists, then this is the show for you! Suitable for children 7 and above and brave adults.\n\n\n\nSuitable for ages 7+ (all children must be accompanied by a paying adult).",
+      "age_rating": "7+",
+      "min_age": 7,
+      "ticket_url": "https://malvern-theatres.co.uk/event/daniel-morden-far-ago/",
+      "isSpecial": true
+    },
+    {
       "name": "The Ghost Light [Owen Staton]",
       "showname": "The Ghost Light",
       "date": "28/10/2026",
@@ -18580,6 +18596,19 @@
       "latlon": [
         51.91681,
         -0.66283
+      ]
+    },
+    "malvern-theatres": {
+      "id": "malvern-theatres",
+      "name": "Malvern Theatres",
+      "full_address": "Malvern Theatres, Grange Rd, Great Malvern, Malvern, WR14 3HB",
+      "city": "Malvern",
+      "postcode": "WR14 3HB",
+      "url": "https://malvern-theatres.co.uk/",
+      "description": "Nestled at the foot of the Malvern Hills, an area of natural beauty (AONB), Malvern Theatres is an excellent location for your conference and hiring needs with its modern open plan feel, flexible spaces and town-centre location with good commuting links.\n\n\n\nMalvern Theatres has several spaces of varying size which can accommodate a range of events including celebrations, meetings, receptions, conferencing and more. With two entrances, one on Grange Road and one looking out on to Priory Park all of the spaces are accessible with a lift operating between the theatre stalls, circle and box office levels.",
+      "latlon": [
+        52.11039,
+        -2.32698
       ]
     },
     "frog-fiddle-cheltenham": {
