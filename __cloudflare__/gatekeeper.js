@@ -5,6 +5,8 @@
 // for a prerendered snapshot, stores it in KV (global, unlike caches.default),
 // serves stale snapshots while refreshing in the background, and falls back
 // to the normal origin page (never a 503) if rendering fails.
+// When Browser Run's daily quota is exhausted, all rendering pauses until the
+// next UTC midnight (flag in KV under lock:quota).
 // Also serves /sitemap.xml, generated from the meta:keys index in KV.
 //
 // Required bindings:
@@ -107,10 +109,65 @@ function canonicalParamValue(pagePath, name, value) {
 const LOCK_KEY = "lock:render";
 const LOCK_TTL_SECONDS = 60;
 
+// ── daily quota flag ─────────────────────────────────────────
+// When the renderer reports the daily browser-time cap is used up ("time limit
+// exceeded"), there is no point trying again until the quota resets at UTC
+// midnight. We record that in KV (key expires at the next UTC midnight) so ALL
+// render paths stop calling the renderer: crawler misses go to the origin page,
+// stale snapshots keep being served unrefreshed, and forced/prewarm requests
+// get an immediate 429 + x-quota-exhausted without launching a browser or
+// spending a KV write on markStale.
+// A short in-memory copy avoids a KV read on every request in the same isolate.
+const QUOTA_KEY = "lock:quota";
+const QUOTA_NOT_EXHAUSTED_MEMORY_MS = 60 * 1000;
+let quotaMemory = null; // { until: ms, exhausted: bool }
+
+function nextUtcMidnightMs() {
+  const d = new Date();
+  d.setUTCHours(24, 0, 0, 0);
+  return d.getTime();
+}
+
+// Fails OPEN (false) if KV can't be read: the per-minute render lock and the
+// renderer's own limits still protect the quota in that case.
+async function isQuotaExhausted(env) {
+  if (quotaMemory && Date.now() < quotaMemory.until) return quotaMemory.exhausted;
+  try {
+    const flagged = !!(await env.RENDER_CACHE.get(QUOTA_KEY));
+    quotaMemory = flagged
+      ? { until: nextUtcMidnightMs(), exhausted: true }
+      : { until: Date.now() + QUOTA_NOT_EXHAUSTED_MEMORY_MS, exhausted: false };
+    return flagged;
+  } catch (err) {
+    console.log("quota flag read failed", String(err));
+    return false;
+  }
+}
+
+async function markQuotaExhausted(env) {
+  const midnight = nextUtcMidnightMs();
+  quotaMemory = { until: midnight, exhausted: true }; // this isolate knows immediately
+  try {
+    // KV needs an expiration at least 60s in the future.
+    const expiresAt = Math.max(midnight, Date.now() + 61 * 1000);
+    await env.RENDER_CACHE.put(QUOTA_KEY, "1", {
+      expiration: Math.floor(expiresAt / 1000),
+    });
+    console.log({
+      message: "render quota exhausted; renders paused until UTC midnight",
+      evt: "quota-exhausted",
+      resumesAt: new Date(midnight).toISOString(),
+    });
+  } catch (err) {
+    console.log("quota flag write failed", String(err));
+  }
+}
+
 // Try to claim the global crawler-render slot. Returns true if this request
 // may render. If KV can't tell us, say no (protect the quota).
 async function claimRenderSlot(env) {
   try {
+    if (await isQuotaExhausted(env)) return false;
     if (await env.RENDER_CACHE.get(LOCK_KEY)) return false;
     await env.RENDER_CACHE.put(LOCK_KEY, "1", {
       expirationTtl: LOCK_TTL_SECONDS,
@@ -249,6 +306,9 @@ function normalisedUrl(url) {
 //   render cooldown was busy)
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
 //   miss-origin-render-busy  (global render cooldown active; served the origin page)
+//   miss-origin-quota-exhausted  (daily browser quota used up; served the origin page)
+//   hit-stale-quota-exhausted  (stale snapshot served; refresh skipped because the daily quota is used up)
+//   forced-skipped-quota  (forced/prewarm request refused with 429, no render attempted)
 //   miss-origin-unknown-key  (page key not in the meta:keys index; no render spent)
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
 //   miss-origin-kv-error  (KV read threw; served the origin page, no render attempted)
@@ -423,12 +483,11 @@ async function renderOnce(env, targetUrl, why = "?") {
     if (!res.ok) {
       const body = (await res.text()).slice(0, 300);
       console.log("render failed", why, res.status, body, targetUrl);
-      return {
-        html: null,
-        status: res.status,
-        // Daily browser-time cap: no point retrying until tomorrow (UTC).
-        quotaExhausted: /time limit exceeded/i.test(body),
-      };
+      // Daily browser-time cap: no point retrying until tomorrow (UTC), so
+      // remember it (see the daily quota flag above).
+      const quotaExhausted = /time limit exceeded/i.test(body);
+      if (quotaExhausted) await markQuotaExhausted(env);
+      return { html: null, status: res.status, quotaExhausted };
     }
     const html = markPrerendered(await res.text());
     let health = { status: "n/a", reason: "", record: false };
@@ -712,6 +771,18 @@ export default {
           });
         }
       }
+      // Quota already known to be used up: fail fast, no browser launch and no
+      // markStale write. The caller should stop until the next UTC day.
+      if (await isQuotaExhausted(env)) {
+        logGate(request, "forced", normUrl, "forced-skipped-quota");
+        return new Response("render quota exhausted until UTC midnight", {
+          status: 429,
+          headers: {
+            "cache-control": "no-store",
+            "x-quota-exhausted": "true",
+          },
+        });
+      }
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
       const result = await refresh(env, key, normUrl.toString(), 3, "forced");
       if (result.html) {
@@ -730,7 +801,9 @@ export default {
             : {}),
         });
       }
-      const markedStale = await markStale(env, key);
+      // Skip the markStale write when the quota is gone: it can't be retried
+      // today anyway, and the snapshot's real age already decides tomorrow's refresh.
+      const markedStale = result.quotaExhausted ? false : await markStale(env, key);
       logGate(request, "forced", normUrl, "forced-failed", {
         status: result.status,
         quotaExhausted: result.quotaExhausted,
@@ -767,14 +840,14 @@ export default {
       const stale =
         entry.ts < soft || Date.now() - entry.ts > FRESH_SECONDS * 1000;
       let outcome = stale ? "hit-stale" : "hit-fresh";
-      if (
-        stale &&
-        tier === "render" &&
-        (await isKnownPage(env, normUrl)) &&
-        (await claimRenderSlot(env))
-      ) {
-        outcome = "hit-stale-refreshing";
-        ctx.waitUntil(refresh(env, key, normUrl.toString(), 1, "bg-refresh"));
+      if (stale && tier === "render" && (await isKnownPage(env, normUrl))) {
+        if (await isQuotaExhausted(env)) {
+          // Daily quota used up: serve the stale snapshot, don't try to refresh.
+          outcome = "hit-stale-quota-exhausted";
+        } else if (await claimRenderSlot(env)) {
+          outcome = "hit-stale-refreshing";
+          ctx.waitUntil(refresh(env, key, normUrl.toString(), 1, "bg-refresh"));
+        }
       }
       logGate(request, tier, normUrl, outcome);
       return htmlResponse(stripLegacyBadge(entry.html), {
@@ -797,6 +870,12 @@ export default {
     // Don't spend a render on a page whose key doesn't exist.
     if (!(await isKnownPage(env, normUrl))) {
       logGate(request, tier, normUrl, "miss-origin-unknown-key");
+      return fetch(request);
+    }
+
+    // Daily quota used up: serve the origin page, don't try to render.
+    if (await isQuotaExhausted(env)) {
+      logGate(request, tier, normUrl, "miss-origin-quota-exhausted");
       return fetch(request);
     }
 
