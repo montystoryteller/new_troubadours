@@ -67,6 +67,13 @@
 #                                                  Keys not in the events JSON are skipped, not
 #                                                  rendered (NT_NO_CHECK=1 disables the check).
 #                                                  Plural forms work too: --festivals 5
+#        ./updatecache --performer tis-tales other-key --indexnow
+#                                                  you EDITED these existing pages (no new keys, so --delta can't see them):
+#                                                  same as above, but the render counts as a content update (the sitemap <lastmod>
+#                                                  is stamped) and the pages that rendered OK are sent to IndexNow. Works with every
+#                                                  type above (one type per command), explicit keys only. Pages that fail to render
+#                                                  stay in ~/.updatecache-pending (rendered by the next --delta); if IndexNow doesn't
+#                                                  accept them they wait in ~/.updatecache-indexnow for the next --indexnow run.
 #        ./updatecache mypage.html                 refresh NOW (default)
 #        ./updatecache 'performers.html?performer=abc'
 #        ./updatecache https://newtroubadours.org/venues?venue=xyz
@@ -261,9 +268,21 @@ render_one() {
   # leave it unset, so they never move a lastmod.
   local upd_hdr=()
   [ "${NT_MARK_UPDATED:-0}" = "1" ] && upd_hdr=(-H "x-content-updated: $SECRET")
-  result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
-    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health|x-lastmod)' | tr -d '\r' | paste -sd' ' -)
-  echo "$result"
+  # A 429 from the gatekeeper is either the DAILY quota (x-quota-exhausted: stop) or a short
+  # back-off (x-render-paused: <seconds>: 2 min after the first 429 of the day, 20 min after the
+  # second, 60 after the third). For a short one we wait it out and retry the same page once,
+  # unless it is longer than NT_MAX_PAUSE_WAIT seconds (default 1500 = 25 min); then we stop.
+  local attempt paused maxwait="${NT_MAX_PAUSE_WAIT:-1500}"
+  for attempt in 1 2; do
+    result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
+      | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-render-paused|x-marked-stale|x-page-health|x-lastmod)' | tr -d '\r' | paste -sd' ' -)
+    echo "$result"
+    case "$result" in *x-quota-exhausted*) break ;; esac
+    paused=$(printf '%s' "$result" | sed -n 's/.*[Xx]-[Rr]ender-[Pp]aused: \([0-9]*\).*/\1/p')
+    [ -n "$paused" ] && [ "$attempt" -eq 1 ] && [ "$paused" -le "$maxwait" ] || break
+    echo "  renders paused ${paused}s after a 429; waiting, then retrying this page once..." >&2
+    sleep $((paused + 3))
+  done
   # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit,
   # and a healthy page). Only those are IndexNow'd; the rest stay pending and are retried next run.
   # Health comes from the gatekeeper's x-page-health header (absent = not checked = treated as fine):
@@ -283,6 +302,7 @@ render_one() {
   fi
   case "$result" in
     *x-quota-exhausted*) echo "Daily browser quota exhausted; stopping." >&2; return 1 ;;
+    *x-render-paused*)   echo "Renders are paused after repeated 429s (longer than NT_MAX_PAUSE_WAIT); stopping. Run again later." >&2; return 1 ;;
   esac
   return 0
 }
@@ -312,6 +332,38 @@ unhealthy_pages_json() {
   printf '%s\n' "$out"
 }
 
+# Bookkeeping for explicit-key renders run with --indexnow (the pages were EDITED, so they are a
+# content update). The caller has set UPD_DIR to a temp dir holding attempted.txt (every URL it
+# tried) and ok.txt (those render_one recorded as rendered OK and healthy). Same lists as --delta:
+# failures go on the pending list (the next --delta renders them), successes come off it, and
+# rendered URLs wait in the unsubmitted list until IndexNow has accepted them.
+update_finish() {
+  local pending="${NT_PENDING_FILE:-$HOME/.updatecache-pending}"
+  local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}"
+  local dt="$UPD_DIR" n_ok n_left n_unsub=0
+  touch "$dt/ok.txt" "$dt/attempted.txt"
+  grep -vxFf "$dt/ok.txt" "$dt/attempted.txt" > "$dt/failed.txt" || true
+  { [ -s "$pending" ] && grep -vxFf "$dt/ok.txt" "$pending"; cat "$dt/failed.txt"; } \
+    | awk 'NF && !seen[$0]++' > "$dt/pending.new"
+  if [ -s "$dt/pending.new" ] || [ -e "$pending" ]; then cat "$dt/pending.new" > "$pending"; fi
+  n_ok=$(grep -c . "$dt/ok.txt"); n_left=$(grep -c . "$dt/failed.txt")
+  echo "Rendered OK: $n_ok. Not rendered: $n_left$( [ "$n_left" -gt 0 ] && echo " (added to $pending; ./updatecache --delta renders them later)")."
+  if [ -s "$dt/ok.txt" ]; then
+    cat "$dt/ok.txt" >> "$unsub"
+    awk 'NF && !seen[$0]++' "$unsub" > "$dt/unsub.tmp" && mv "$dt/unsub.tmp" "$unsub"
+  fi
+  [ -s "$unsub" ] && n_unsub=$(grep -c . "$unsub")
+  if [ "$n_unsub" -gt 0 ]; then
+    if bash "$(cd "$(dirname "$0")" && pwd)/indexnow.sh" -f "$unsub"; then
+      : > "$unsub"
+    else
+      echo "IndexNow did not accept everything; the $n_unsub URL(s) stay in $unsub for the next --indexnow run." >&2
+    fi
+  else
+    echo "Nothing waiting to be sent to IndexNow."
+  fi
+}
+
 # Render ONE random page of a given type that has no snapshot yet.
 # With LIST_ONLY=1 it instead prints every uncached key and exits.
 # With explicit keys (KEYS_GIVEN) it renders just those, with no KV lookup.
@@ -327,12 +379,27 @@ fill_one() {
   local prefer_upcoming="${7:-0}"
   local what="$param"; [ "$rawmode" = "1" ] && what="repertoire"
 
+  # --indexnow only makes sense for pages you name (they are the ones you edited).
+  if [ "${INDEXNOW:-0}" = "1" ] && [ "${LIST_ONLY:-0}" != "1" ] && [ ${#KEYS_GIVEN[@]} -eq 0 ]; then
+    echo "--indexnow needs explicit keys, e.g. ./updatecache --$what some-key --indexnow" >&2
+    exit 1
+  fi
+
   # Explicit keys given (e.g. ./updatecache --performer tis-tales): render just
   # those, after checking each is a real key in the events JSON (unknown keys
   # are skipped and no render is spent). Re-renders even if a snapshot exists.
   if [ "${LIST_ONLY:-0}" != "1" ] && [ ${#KEYS_GIVEN[@]} -gt 0 ]; then
     command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-    local k raw enc valid="" n=0 skipped=0 vname vurl ok hint
+    local k raw enc valid="" n=0 skipped=0 vname vurl ok hint url stopped=0
+    # --indexnow: treat this run as a content update (stamp <lastmod>) and record what rendered OK.
+    UPD_DIR=""
+    if [ "${INDEXNOW:-0}" = "1" ]; then
+      UPD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-update.XXXXXX")
+      trap 'rm -rf "$UPD_DIR"' EXIT
+      : > "$UPD_DIR/ok.txt"; : > "$UPD_DIR/attempted.txt"
+      RENDERED_FILE="$UPD_DIR/ok.txt"
+      NT_MARK_UPDATED=1
+    fi
     if [ "${NT_NO_CHECK:-0}" != "1" ] || [ "$rawmode" = "1" ]; then
       for vname in events_normalized events_normalised; do
         vurl="${NT_EVENTS_JSON:-https://$HOST/$vname.json}"
@@ -369,9 +436,16 @@ fill_one() {
       if [ "$rawmode" != "1" ]; then
         if [[ "$k" == *%* ]]; then enc="$k"; else enc=$(jq -rn --arg k "$k" '$k|@uri'); fi
       fi
-      render_one "https://$HOST/$page.html?$param=$enc" "$n" || break
+      url="https://$HOST/$page.html?$param=$enc"
+      [ -n "$UPD_DIR" ] && printf '%s\n' "$url" >> "$UPD_DIR/attempted.txt"
+      render_one "$url" "$n" || { stopped=1; break; }
     done
     [ $skipped -gt 0 ] && echo "$skipped key(s) skipped as invalid." >&2
+    if [ -n "$UPD_DIR" ]; then
+      unset RENDERED_FILE NT_MARK_UPDATED
+      [ $stopped -eq 1 ] && echo "Stopped early: keys after the one that stopped were not rendered. Run again for them." >&2
+      update_finish
+    fi
     exit 0
   fi
 
@@ -1184,10 +1258,17 @@ fill_missing() {
 # render in one run (default 1). Seconds between renders: NT_DELAY (default 12).
 COUNT=1
 KEYS_GIVEN=()
-if [[ "$2" =~ ^[0-9]+$ ]]; then
-  [ "$2" -ge 1 ] && COUNT="$2"
-elif [ -n "$2" ]; then
-  KEYS_GIVEN=("${@:2}")   # anything non-numeric after the type option = explicit key(s)
+# --indexnow (anywhere after the type option) is a flag, not a key: with explicit keys it makes
+# the run a content update (see update_finish). --delta / --refresh-stale read "$@" themselves.
+INDEXNOW=0
+TYPE_ARGS=()
+for a in "${@:2}"; do
+  if [ "$a" = "--indexnow" ]; then INDEXNOW=1; else TYPE_ARGS+=("$a"); fi
+done
+if [[ "${TYPE_ARGS[0]:-}" =~ ^[0-9]+$ ]]; then
+  [ "${TYPE_ARGS[0]}" -ge 1 ] && COUNT="${TYPE_ARGS[0]}"
+elif [ ${#TYPE_ARGS[@]} -gt 0 ]; then
+  KEYS_GIVEN=("${TYPE_ARGS[@]}")   # anything non-numeric after the type option = explicit key(s)
 fi
 DELAY="${NT_DELAY:-12}"
 
