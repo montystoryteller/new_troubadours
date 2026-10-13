@@ -30,6 +30,9 @@
 #                                                    ./updatecache --refresh-stale performer 20
 #                                                    ./updatecache --refresh-stale 10          (any page type)
 #                                                  "Stale" is as in --list-stale (aged out, soft-purged, marked stale, hard-purged).
+#                                                  Add --all to remove the N cap, and --not-ok to ALSO include fresh snapshots whose
+#                                                  health flag is not ok (or missing), or that the health log lists as unhealthy:
+#                                                    ./updatecache --refresh-stale booksmerch --all --not-ok
 #                                                  Pages with no health "ok" flag (error/missing/unflagged old snapshots, or in the
 #                                                  gatekeeper problem log) are rendered first; NT_NO_HEALTH_PRIORITY=1 disables that.
 #                                                  Add --indexnow to also submit the pages that rendered OK to IndexNow (same
@@ -736,10 +739,14 @@ list_stale() {
 # failed render keeps the old snapshot (and marks it stale), so a rerun just tries again.
 refresh_stale() {
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-  local n=20 type="" pat="" a do_idx=0
+  local n=20 type="" pat="" a do_idx=0 notok=0
   for a in "$@"; do
     if [ "$a" = "--indexnow" ]; then
       do_idx=1
+    elif [ "$a" = "--all" ]; then
+      n=999999                      # no cap: refresh every candidate
+    elif [ "$a" = "--not-ok" ]; then
+      notok=1                       # candidates = stale OR not-ok/unflagged (even if still fresh)
     elif [[ "$a" =~ ^[0-9]+$ ]]; then
       [ "$a" -ge 1 ] && n="$a"
     elif [ -n "$a" ]; then
@@ -753,7 +760,7 @@ refresh_stale() {
     storyclub|storyclubs)     pat='/storyclub\.html\?club=' ;;
     festival|festivals)       pat='/festival\.html\?festival=' ;;
     promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
-    booksmerch)               pat='/books_merch\.html\?performer=' ;;
+    booksmerch)               pat='/books_merch\.html\?' ;;   # performer=, publisher= and view= variants
     repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
     event|events)             pat='/event\.html\?event=' ;;
     *) echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire event)" >&2; exit 1 ;;
@@ -765,12 +772,20 @@ refresh_stale() {
   local jqargs=(--arg base "render:https://$HOST" --argjson now "$now_ms"
       --argjson fresh "$fresh_ms" --argjson soft "$EPOCH_SOFT" --argjson hard "$EPOCH_HARD"
       --argjson ttl "$TTL_MS")
+  # --not-ok widens the candidates from "stale" to "stale OR not ok": a snapshot whose own health
+  # flag is not ok/n/a (incl. none at all) or whose last logged render was unhealthy, even if fresh.
+  local hbad_json="{}"
+  [ $notok -eq 1 ] && hbad_json=$(unhealthy_pages_json 2>/dev/null); [ -n "$hbad_json" ] || hbad_json="{}"
+  jqargs+=(--argjson notok "$notok" --argjson hbad "$hbad_json")
   all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
-      [ .[] | select(.name | startswith($base)) | { name: .name, ts: entry_ts }
-            | select(.ts != null)
-            | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
+      def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
+      def isstale: entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh);
+      def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or ($hbad[pg] != null);
+      [ .[] | select(.name | startswith($base))
+            | select(isstale or ($notok == 1 and isbad))
+            | { name: .name, ts: (entry_ts // 0) } ]
       | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
-  [ -n "$all" ] || { echo "No stale snapshots." >&2; exit 0; }
+  [ -n "$all" ] || { echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') snapshots." >&2; exit 0; }
   # Stale snapshots with no page-health "ok" flag in their own KV metadata (the gatekeeper stores
   # metadata.health on every snapshot it writes: ok|warn|error|loading|missing|404|n/a). Snapshots
   # written before it did so have no flag at all, and count as "not ok" until they are re-rendered.
@@ -778,12 +793,11 @@ refresh_stale() {
   local snapbad
   snapbad=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
       .[] | select(.name | startswith($base)) | select((.metadata.health // "") as $h | $h != "ok" and $h != "n/a")
-          | select(entry_ts != null)
-          | select(entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh)
+          | select($notok == 1 or (entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh)))
           | .name | ltrimstr("render:")')
   if [ -n "$pat" ]; then
     all=$(printf '%s\n' "$all" | grep -E -- "$pat")
-    [ -n "$all" ] || { echo "No stale ${type} snapshots." >&2; exit 0; }
+    [ -n "$all" ] || { echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') ${type} snapshots." >&2; exit 0; }
   fi
   total=$(printf '%s\n' "$all" | wc -l | tr -d ' ')
   # Stale pages whose last render the gatekeeper logged as not healthy come first (random among
