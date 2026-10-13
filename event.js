@@ -1698,7 +1698,7 @@ function renderInfoTable(hostVenue) {
     ],
     hostVenue.city && ["Town", hostVenue.city],
     hostVenue.postcode && ["Postcode", hostVenue.postcode],
-    hostVenue.description && ["About", hostVenue.description],
+    //hostVenue.description && ["About", hostVenue.description],
   ].filter(Boolean);
 
   rows.forEach(([label, value]) => {
