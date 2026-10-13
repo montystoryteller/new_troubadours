@@ -53,6 +53,11 @@ const EPOCHS_KEY = "meta:epochs"; // JSON: { soft, hard }
 // Prewarm optimisation: with x-only-if-older-than: <seconds>, a forced request
 // returns immediately (no browser launch) if the stored snapshot is younger.
 const ONLY_IF_OLDER_HEADER = "x-only-if-older-than";
+// Sent (value = DEBUG_SECRET) together with x-force-render ONLY by renders that follow a real
+// content update (`updatecache --delta`). A successful, healthy render then stamps the page's
+// <lastmod> in the sitemap (meta:lastmod). Routine refreshes (prewarm rotation, --refresh-stale,
+// --fill-missing, bot-triggered refreshes) never send it, so they never move a lastmod.
+const UPDATED_HEADER = "x-content-updated";
 
 // Identity params per page: the ones that select a specific record and so
 // produce a genuinely different, indexable page. Keyed by path without ".html".
@@ -611,8 +616,8 @@ const htmlResponse = (html, extra = {}) =>
 // GET /sitemap.xml is generated from the meta:keys index (the same lists that
 // gate renders), so it always matches the set of valid pages and needs no build
 // step. URLs use the same form the site links to and canonicalises on:
-// <page>.html?<param>=<key>. No <lastmod> is emitted: a wrong one is worse than
-// none. Event pages (index list "events": last 30 days onward, built by updatecache/the prewarm Action) are listed too.
+// <page>.html?<param>=<key>. <lastmod> is emitted ONLY for pages that have a stamp in
+// meta:lastmod (see stampLastmod): a wrong one is worse than none. Event pages (index list "events": last 30 days onward, built by updatecache/the prewarm Action) are listed too.
 // NOTE: this route overrides any static sitemap.xml in the repo.
 const SITE_ORIGIN = "https://newtroubadours.org";
 const SITEMAP_ENTRIES = [
@@ -629,6 +634,68 @@ const SITEMAP_ENTRIES = [
 ];
 const SITEMAP_MAX_URLS = 50000; // protocol limit per file
 const SITEMAP_CACHE_SECONDS = 60 * 60 * 6;
+
+// ── lastmod ──────────────────────────────────────────────────
+// meta:lastmod = JSON { "<path>?<param>=<key>": "YYYY-MM-DD" }, e.g.
+//   "/performers.html?performer=ailsa-dixon": "2026-10-13"
+// Written only when a render that followed a content update succeeded (UPDATED_HEADER), so the
+// date means "the snapshot crawlers get now contains the update". A render that failed, hit the
+// Browser Run quota (429 / x-quota-exhausted) or came back unhealthy stamps nothing; the page
+// then stays pending in updatecache and keeps its previous lastmod until a render succeeds.
+// One KV read + at most one write per stamped page; renders are quota-limited to a few dozen a
+// day, so this is far below KV's write limit. Concurrent stamps could lose an entry
+// (last write wins), but updatecache renders serially and a lost stamp only means no <lastmod>.
+const LASTMOD_KEY = "meta:lastmod";
+const LASTMOD_MAX_ENTRIES = 20000; // safety cap; the oldest stamps are dropped first
+const LASTMOD_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// Map-key for a normalised page URL, or null if the page isn't one the sitemap lists
+// (or carries more than its one identity param).
+function lastmodKeyFor(normUrl) {
+  for (const [, path, param] of SITEMAP_ENTRIES) {
+    if (normUrl.pathname !== path) continue;
+    const params = [...normUrl.searchParams];
+    if (params.length !== 1 || params[0][0] !== param || !params[0][1])
+      return null;
+    return `${path}?${param}=${params[0][1]}`;
+  }
+  return null;
+}
+
+// Same rule updatecache uses before it treats a render as done: a page that rendered its
+// error / loading / "not found" state didn't really update, so it must not claim a lastmod.
+function healthAllowsLastmod(health) {
+  if (!health) return true; // not checked
+  if (["error", "loading", "missing", "stalled", "404", "notfound"].includes(health.status))
+    return false;
+  if (health.status === "warn" && /not found/i.test(health.reason || ""))
+    return false;
+  return true;
+}
+
+// Returns the stamped date, or null if nothing was written. Never throws.
+async function stampLastmod(env, normUrl, health) {
+  try {
+    const mapKey = lastmodKeyFor(normUrl);
+    if (!mapKey || !healthAllowsLastmod(health)) return null;
+    const today = new Date().toISOString().slice(0, 10);
+    const map = (await env.RENDER_CACHE.get(LASTMOD_KEY, "json")) || {};
+    if (map[mapKey] === today) return today; // already stamped today: no write
+    map[mapKey] = today;
+    const keys = Object.keys(map);
+    if (keys.length > LASTMOD_MAX_ENTRIES) {
+      keys
+        .sort((a, b) => String(map[a]).localeCompare(String(map[b])))
+        .slice(0, keys.length - LASTMOD_MAX_ENTRIES)
+        .forEach((k) => delete map[k]);
+    }
+    await env.RENDER_CACHE.put(LASTMOD_KEY, JSON.stringify(map));
+    return today;
+  } catch (err) {
+    console.log("lastmod stamp failed", String(err), normUrl.toString());
+    return null;
+  }
+}
 
 const xmlEscape = (str) =>
   str
@@ -651,11 +718,24 @@ async function sitemapResponse(request, env) {
       headers: { "retry-after": "300", "cache-control": "no-store" },
     });
   }
-  const urls = [`${SITE_ORIGIN}/`];
+  // A missing or unreadable lastmod map just means no <lastmod> tags; it never breaks the sitemap.
+  let lastmods = {};
+  try {
+    lastmods = (await env.RENDER_CACHE.get(LASTMOD_KEY, "json")) || {};
+  } catch (err) {
+    console.log("sitemap: lastmod read failed", String(err));
+  }
+  const urls = [{ loc: `${SITE_ORIGIN}/` }];
   for (const [name, path, param] of SITEMAP_ENTRIES) {
     const list = Array.isArray(idx[name]) ? [...idx[name]].sort() : [];
     for (const key of list) {
-      urls.push(`${SITE_ORIGIN}${path}?${param}=${encodeURIComponent(key)}`);
+      const lm = lastmods[`${path}?${param}=${key}`];
+      urls.push({
+        loc: `${SITE_ORIGIN}${path}?${param}=${encodeURIComponent(key)}`,
+        ...(typeof lm === "string" && LASTMOD_DATE_RE.test(lm)
+          ? { lastmod: lm }
+          : {}),
+      });
     }
   }
   if (urls.length > SITEMAP_MAX_URLS) {
@@ -665,13 +745,21 @@ async function sitemapResponse(request, env) {
   const body =
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    urls.map((u) => `  <url><loc>${xmlEscape(u)}</loc></url>`).join("\n") +
+    urls
+      .map(
+        (u) =>
+          `  <url><loc>${xmlEscape(u.loc)}</loc>` +
+          (u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : "") +
+          "</url>",
+      )
+      .join("\n") +
     "\n</urlset>\n";
   return new Response(request.method === "HEAD" ? null : body, {
     headers: {
       "content-type": "application/xml; charset=utf-8",
       "cache-control": `public, max-age=${SITEMAP_CACHE_SECONDS}`,
       "x-sitemap-urls": String(urls.length),
+      "x-sitemap-lastmods": String(urls.filter((u) => u.lastmod).length),
     },
   });
 }
@@ -775,8 +863,10 @@ export default {
     // Forced render (used by the prewarm workflow): always render live and
     // overwrite the stored snapshot.
     if (forced) {
+      // A render that follows a content update must really happen, so the freshness skip is ignored.
+      const updated = isAuthorized(request, env, UPDATED_HEADER);
       const olderThan = Number(request.headers.get(ONLY_IF_OLDER_HEADER));
-      if (olderThan > 0) {
+      if (olderThan > 0 && !updated) {
         const existing = await env.RENDER_CACHE.get(key, "json");
         const { soft, hard } = await getEpochs(env);
         if (
@@ -809,11 +899,17 @@ export default {
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
       const result = await refresh(env, key, normUrl.toString(), 3, "forced");
       if (result.html) {
+        // Stamp only after a successful render (never on 429 / quota / failure, which return below).
+        const lastmod = updated
+          ? await stampLastmod(env, normUrl, result.health)
+          : null;
         logGate(request, "forced", normUrl, "forced-rendered", {
           health: result.health?.status,
+          ...(updated ? { lastmod: lastmod || "not-stamped" } : {}),
         });
         return htmlResponse(result.html, {
           "cache-control": "no-store",
+          ...(lastmod ? { "x-lastmod": lastmod } : {}),
           ...(result.health
             ? {
                 "x-page-health": result.health.status,

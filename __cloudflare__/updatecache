@@ -256,8 +256,13 @@ upcoming_dated() {
 render_one() {
   local url="$1" n="$2" result
   echo "[$n] === $url"
-  result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" "$url" \
-    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health)' | tr -d '\r' | paste -sd' ' -)
+  # NT_MARK_UPDATED=1 (set only by --delta) also sends x-content-updated, which makes the gatekeeper
+  # stamp this page's <lastmod> in the sitemap after a successful, healthy render. Routine refreshes
+  # leave it unset, so they never move a lastmod.
+  local upd_hdr=()
+  [ "${NT_MARK_UPDATED:-0}" = "1" ] && upd_hdr=(-H "x-content-updated: $SECRET")
+  result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
+    | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health|x-lastmod)' | tr -d '\r' | paste -sd' ' -)
   echo "$result"
   # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit,
   # and a healthy page). Only those are IndexNow'd; the rest stay pending and are retried next run.
@@ -1415,6 +1420,7 @@ JQEND
   # 4. render, NT_DELAY apart, stop at the quota or after N
   : > "$dt/ok.txt"
   RENDERED_FILE="$dt/ok.txt"
+  NT_MARK_UPDATED=1   # these renders follow a content update: stamp sitemap <lastmod> (see render_one)
   local i=0 url
   while IFS= read -r url; do
     [ -n "$url" ] || continue
@@ -1423,7 +1429,7 @@ JQEND
     i=$((i + 1))
     render_one "$url" "$i" || break
   done < "$dt/all.txt"
-  unset RENDERED_FILE
+  unset RENDERED_FILE NT_MARK_UPDATED
 
   # 5. what did not render stays pending
   grep -vxFf "$dt/ok.txt" "$dt/all.txt" > "$pending" || true
