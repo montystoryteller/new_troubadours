@@ -1618,7 +1618,7 @@ async function renderDirectory(data) {
         ];
       if (!venue || !venue.latlon || venue.latlon.length === 0) return;
       if (!isVisible(entry)) return;
-      const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ", " + venue.city : ""}<br><em>${c.schedule || ""}</em>`;
+      const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ", " + venue.city : ""}<br><em>${scheduleLabel(c.schedule) || ""}</em>`;
       const marker = L.circleMarker(venue.latlon, {
         radius: 7,
         fillColor: "#4CAF50",

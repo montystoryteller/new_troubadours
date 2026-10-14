@@ -1254,7 +1254,7 @@ function renderRegularClub(container, event, type, forVenueId) {
   if (event.schedule) {
     const sched = document.createElement("span");
     sched.className = "regular-club-schedule";
-    sched.textContent = capitalise(event.schedule);
+    sched.textContent = capitalise(describeSchedule(event.schedule));  // schedule may be a structured object (e.g. fortnightly)
     metaRow.appendChild(sched);
   }
   if (event.time) {

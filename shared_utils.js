@@ -3122,7 +3122,40 @@ function appendParagraphs(container, text) {
   });
 }
 
+/**
+ * Human-readable text for a recurring schedule. Schedules are either legacy
+ * strings ("1st wednesday") or structured objects as understood by
+ * recurrence-engine.js: {type: "weekly"|"every"|"fortnightly"|"monthly",
+ * day, occurrence?, start}. Strings are returned unchanged; anything
+ * unrecognised gives "".
+ */
+function describeSchedule(schedule) {
+  if (!schedule) return "";
+  if (typeof schedule === "string") return schedule;
+  if (typeof schedule !== "object") return String(schedule);
+  const day = String(schedule.day || "").toLowerCase();
+  const dayPlural = day ? `${day}s` : "";
+  switch (String(schedule.type || "").toLowerCase()) {
+    case "fortnightly":
+      return day ? `fortnightly on ${dayPlural}` : "fortnightly";
+    case "weekly":
+    case "every":
+      return day ? `every ${day}` : "weekly";
+    case "monthly":
+      return day ? `${String(schedule.occurrence || "1st").toLowerCase()} ${day} of the month` : "monthly";
+    default:
+      return "";
+  }
+}
+
+// Upper-cases the first letter. Tolerates non-strings: a structured schedule
+// object is turned into its label first (a Bridport Three Apples-style
+// {type: "fortnightly", ...} used to throw "str.charAt is not a function"
+// and broke the whole page render); other non-strings are stringified.
 function capitalise(str) {
+  if (!str) return "";
+  if (typeof str === "object") str = describeSchedule(str);
+  else if (typeof str !== "string") str = String(str);
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }
 
