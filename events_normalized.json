@@ -19153,6 +19153,26 @@
       "name": "The History Press Ltd",
       "url": "https://thehistorypress.co.uk/",
       "publisher_id": "history-press"
+    },
+    "mercier-press": {
+      "name": "Mercier Press",
+      "url": "https://www.mercierpress.ie/",
+      "publisher_id": "mercier-press"
+    },
+    "gill-books": {
+      "name": "Gill Books",
+      "url": "https://www.gillbooks.ie/",
+      "publisher_id": "gill-books"
+    },
+    "firefly-press": {
+      "name": "Firefly Press",
+      "url": "https://fireflypress.co.uk/",
+      "publisher_id": "firefly-press"
+    },
+    "y-lolfa": {
+      "name": "Y Lolfa",
+      "url": "https://www.ylolfa.com/en",
+      "publisher_id": "y-lolfa"
     }
   },
   "performers": {
@@ -19175,7 +19195,7 @@
       ],
       "books": [
         {
-          "publisher": "Firefly Press Ltd",
+          "publisher_id": "firefly-press",
           "isbn": "9781915444349",
           "cover": "",
           "title": "Strange Tales",
@@ -19184,7 +19204,7 @@
           "buy_url": "https://www.amazon.co.uk/Strange-Tales-Daniel-Morden/dp/1915444179"
         },
         {
-          "publisher": "Y Lolfa",
+          "publisher_id": "y-lolfa",
           "isbn": "9781843235835",
           "cover": "",
           "title": "Dark Tales from the Woods",
@@ -19193,7 +19213,7 @@
           "buy_url": "https://www.ylolfa.com/products/9781843235835/dark-tales-from-the-woods"
         },
         {
-          "publisher": "Y Lolfa",
+          "publisher": "y-lolfa",
           "isbn": "9781848513877",
           "cover": "",
           "title": "Tree of Leaf and Flame",
@@ -19202,7 +19222,7 @@
           "buy_url": "https://www.ylolfa.com/products/9781848513877/tree-of-leaf-and-flame"
         },
         {
-          "publisher": "Y Lolfa",
+          "publisher": "y-lolfa",
           "isbn": "9781785623219",
           "cover": "",
           "title": "Secret Tales from Wales",
@@ -20204,7 +20224,7 @@
       ],
       "books": [
         {
-          "publisher": "Gill Books",
+          "publisher_id": "gill-books",
           "isbn": "9780717136599",
           "cover": "",
           "title": "Meeting the Other Crowd",
@@ -20213,7 +20233,7 @@
           "buy_url": "https://eddielenihan.weebly.com/store.html"
         },
         {
-          "publisher": "Mercier Press",
+          "publishe_id": "mercier-press",
           "isbn": "978-1856351973",
           "cover": "",
           "title": "Gruesome Irish Tales for Children",
@@ -20222,7 +20242,7 @@
           "buy_url": "https://eddielenihan.weebly.com/store.html"
         },
         {
-          "publisher": "Mercier Press",
+          "publisher_id": "mercier-press",
           "isbn": "9780853428206",
           "cover": "",
           "title": "In Search of Biddy Early",
