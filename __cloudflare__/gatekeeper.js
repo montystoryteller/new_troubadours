@@ -675,6 +675,9 @@ async function putEntry(env, key, entry) {
   });
 }
 
+// What to do when a render comes back as the 404 page and a snapshot already exists for the key.
+const DELETE_EXISTING_ON_404 = true;
+
 async function storeSnapshot(env, key, html) {
   // Never let a KV failure (e.g. the free plan's 1,000 writes/day limit) break
   // the response: the freshly rendered HTML is still served, just not stored.
@@ -687,6 +690,16 @@ async function storeSnapshot(env, key, html) {
       ).status;
     } catch {
       health = undefined;
+    }
+    // A "Page not found" render (the site's 404.html) is never worth caching: it would create a
+    // junk entry for a path that doesn't exist (e.g. a forced render of a made-up URL), which
+    // then shows up in the staleness / health reports forever. Skip the write. If a snapshot
+    // already exists for this key the page has gone away, so drop it too (set
+    // DELETE_EXISTING_ON_404 = false to leave the old snapshot alone instead).
+    if (health === "404") {
+      if (DELETE_EXISTING_ON_404) await env.RENDER_CACHE.delete(key);
+      console.log("snapshot not stored: 404 page", key);
+      return;
     }
     await putEntry(env, key, {
       html,
