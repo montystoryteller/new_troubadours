@@ -37,6 +37,16 @@
 #                                                  gatekeeper problem log) are rendered first; NT_NO_HEALTH_PRIORITY=1 disables that.
 #                                                  Add --indexnow to also submit the pages that rendered OK to IndexNow (same
 #                                                  waiting list and indexnow.sh as --delta --indexnow); without it nothing is pinged.
+#        ./updatecache --repair [N] [type]         re-render ONLY pages reported broken / not ok (the gatekeeper's problem log, or a
+#                                                  snapshot health flag of error/warn/loading/missing/404), stale or not; not-ok
+#                                                  pages are tried in random order, N max (default 20). Same options as
+#                                                  --refresh-stale: a type, --all, --indexnow. Add --unflagged to also retry
+#                                                  snapshots with no health flag at all (after the not-ok ones). See what it would
+#                                                  pick with --health. Pages broken at the source (bad data) will just come back
+#                                                  not ok after the re-render. Examples:
+#                                                    ./updatecache --repair
+#                                                    ./updatecache --repair venue --all
+#                                                    ./updatecache --repair 50 --unflagged --indexnow
 #        ./updatecache --list-recent [H]         snapshots WRITTEN in the last H hours (default 12) as URLs, newest first.
 #                                                  Use after a bad deploy; save the list BEFORE purging, it vanishes once deleted:
 #                                                    ./updatecache --list-recent 12 > recent.txt
@@ -666,14 +676,14 @@ status_all() {
 
 # ── staleness report ────────────────────────────────────────────────────────
 # Mirrors the gatekeeper's policy (gatekeeper.js): a snapshot is STALE when its ts is
-# older than FRESH_SECONDS (48h) or older than the soft-purge epoch, and counts as
+# older than FRESH_SECONDS (120h) or older than the soft-purge epoch, and counts as
 # MISSING when its ts is older than the hard-purge epoch (both live in the KV key
 # meta:epochs). The gatekeeper stores ts as KV metadata and sets a KV expiry on every
 # write, so ONE key listing gives every page's age and expiry with no per-key reads.
-FRESH_HOURS="${NT_FRESH_HOURS:-48}"            # gatekeeper FRESH_SECONDS, in hours
+FRESH_HOURS="${NT_FRESH_HOURS:-120}"            # gatekeeper FRESH_SECONDS, in hours
 TTL_DAYS="${NT_TTL_DAYS:-90}"                  # gatekeeper KV_TTL_SECONDS, in days
 TTL_MS=$(( TTL_DAYS * 86400000 ))
-EXPIRY_WARN_HOURS="${NT_EXPIRY_WARN_HOURS:-48}"
+EXPIRY_WARN_HOURS="${NT_EXPIRY_WARN_HOURS:-120}"
 # A snapshot's age: the ts the gatekeeper stored as KV metadata or, when the key listing has
 # no metadata (snapshots written before the gatekeeper stored it), the write time implied by
 # the KV expiry: every write sets expirationTtl = KV_TTL_SECONDS, so written = expiry - TTL.
@@ -843,12 +853,12 @@ list_stale() {
 # --refresh-stale [N] [type]: force-render N RANDOM stale pages (default 20), optionally only of one
 # type. Same definition of "stale" as list_stale() above (kept as its own copy of that query so
 # list_stale is untouched). The arguments can come in either order: a number is N, a word is the type.
-#   type: performer venue storyclub festival promoter booksmerch repertoire event (none = any page)
+#   type: performer venue storyclub festival promoter booksmerch repertoire tour media event (none = any page)
 # Renders are NT_DELAY seconds apart (default 12) and stop if the daily browser quota runs out; a
 # failed render keeps the old snapshot (and marks it stale), so a rerun just tries again.
 refresh_stale() {
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-  local n=20 type="" pat="" a do_idx=0 notok=0
+  local n=20 type="" pat="" xpat="" a do_idx=0 notok=0 onlybad=0 unfl=0
   for a in "$@"; do
     if [ "$a" = "--indexnow" ]; then
       do_idx=1
@@ -856,6 +866,10 @@ refresh_stale() {
       n=999999                      # no cap: refresh every candidate
     elif [ "$a" = "--not-ok" ]; then
       notok=1                       # candidates = stale OR not-ok/unflagged (even if still fresh)
+    elif [ "$a" = "--only-bad" ]; then
+      onlybad=1; notok=1            # repair mode: candidates = ONLY pages reported not ok, stale or not
+    elif [ "$a" = "--unflagged" ]; then
+      unfl=1                        # with --only-bad: also pages that have no health flag at all
     elif [[ "$a" =~ ^[0-9]+$ ]]; then
       [ "$a" -ge 1 ] && n="$a"
     elif [ -n "$a" ]; then
@@ -871,8 +885,10 @@ refresh_stale() {
     promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
     booksmerch)               pat='/books_merch\.html\?' ;;   # performer=, publisher= and view= variants
     repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
+    tour|tours)               pat='/tour_guide\.html\?(.*&)?tour='; xpat='tour=(R-|rep%3A)' ;;   # real tours: everything except repertoire
+    media)                    pat='/media\.html' ;;
     event|events)             pat='/event\.html\?event=' ;;
-    *) echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire event)" >&2; exit 1 ;;
+    *) echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire tour media event)" >&2; exit 1 ;;
   esac
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   read_epochs
@@ -885,16 +901,19 @@ refresh_stale() {
   # flag is not ok/n/a (incl. none at all) or whose last logged render was unhealthy, even if fresh.
   local hbad_json="{}"
   [ $notok -eq 1 ] && hbad_json=$(unhealthy_pages_json 2>/dev/null); [ -n "$hbad_json" ] || hbad_json="{}"
-  jqargs+=(--argjson notok "$notok" --argjson hbad "$hbad_json")
+  jqargs+=(--argjson notok "$notok" --argjson onlybad "$onlybad" --argjson unfl "$unfl" --argjson hbad "$hbad_json")
   all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
       def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
       def isstale: entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh);
       def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or ($hbad[pg] != null);
+      def explicitbad: ((.metadata.health // "") as $h | $h != "" and $h != "ok" and $h != "n/a") or ($hbad[pg] != null);
+      def noflag: (.metadata.health // "") == "";
       [ .[] | select(.name | startswith($base))
-            | select(isstale or ($notok == 1 and isbad))
+            | select(if $onlybad == 1 then (explicitbad or ($unfl == 1 and noflag))
+                     else (isstale or ($notok == 1 and isbad)) end)
             | { name: .name, ts: (entry_ts // 0) } ]
       | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
-  [ -n "$all" ] || { echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') snapshots." >&2; exit 0; }
+  [ -n "$all" ] || { if [ $onlybad -eq 1 ]; then echo "Nothing reported as not ok$([ $unfl -eq 1 ] || echo ' (add --unflagged to include pages with no health flag)')." >&2; else echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') snapshots." >&2; fi; exit 0; }
   # Stale snapshots with no page-health "ok" flag in their own KV metadata (the gatekeeper stores
   # metadata.health on every snapshot it writes: ok|warn|error|loading|missing|404|n/a). Snapshots
   # written before it did so have no flag at all, and count as "not ok" until they are re-rendered.
@@ -906,34 +925,60 @@ refresh_stale() {
           | .name | ltrimstr("render:")')
   if [ -n "$pat" ]; then
     all=$(printf '%s\n' "$all" | grep -E -- "$pat")
+    [ -n "$xpat" ] && all=$(printf '%s\n' "$all" | grep -v -E -- "$xpat")
     [ -n "$all" ] || { echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') ${type} snapshots." >&2; exit 0; }
   fi
   total=$(printf '%s\n' "$all" | wc -l | tr -d ' ')
-  # Stale pages whose last render the gatekeeper logged as not healthy come first (random among
-  # themselves), then the other stale pages at random. NT_NO_HEALTH_PRIORITY=1 turns this off.
-  local hfile bad="" rest="$all" nbad=0
+  # Priority tiers (NT_NO_HEALTH_PRIORITY=1 turns the tiers off):
+  #   1. explicitly NOT ok: the gatekeeper's problem log lists the page, or its snapshot health flag is
+  #      error / warn / loading / missing / 404
+  #   2. no "ok" flag at all (snapshots written before the gatekeeper stored metadata.health)
+  #   3. everything else (plain stale pages)
+  # Each tier is shuffled on its own; the picks are tier 1, then 2, then 3, cut at N.
+  local hfile tier1="" tier2="" rest="$all" nbad=0 nnone=0 snapnone="" snapbad_flag=""
   hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-health.XXXXXX")
   unhealthy_pages_json | jq -r 'keys[]' > "$hfile" 2>/dev/null
   if [ -s "$hfile" ]; then
-    bad=$(printf '%s\n' "$all" | awk -v pre="https://$HOST/" \
+    tier1=$(printf '%s\n' "$all" | awk -v pre="https://$HOST/" \
       'NR == FNR { h[$0] = 1; next } { k = $0; sub(pre, "", k); gsub(/\+/, "%20", k); if (k in h) print $0 }' "$hfile" -)
-    if [ -n "$bad" ]; then
-      rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$bad"))
-      nbad=$(printf '%s\n' "$bad" | grep -c .)
-    fi
   fi
   rm -f "$hfile"
-  # union of the two sources (snapshot metadata and the problem log), restricted to the chosen type
+  # snapshots with no health flag (tier 2) vs an explicit not-ok flag (tier 1), restricted to the chosen type
   if [ -n "$pat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -E -- "$pat"); fi
+  if [ -n "$xpat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -v -E -- "$xpat"); fi
   if [ -n "$snapbad" ]; then
-    bad=$(printf '%s\n%s\n' "$bad" "$snapbad" | grep . | sort -u)
-    rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$bad"))
-    nbad=$(printf '%s\n' "$bad" | grep -c .)
+    snapnone=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
+        .[] | select(.name | startswith($base)) | select((.metadata.health // "") == "")
+            | .name | ltrimstr("render:")' | grep -x -F -f <(printf '%s\n' "$snapbad"))
+    if [ -n "$snapnone" ]; then
+      snapbad_flag=$(printf '%s\n' "$snapbad" | grep -v -x -F -f <(printf '%s\n' "$snapnone"))
+    else
+      snapbad_flag="$snapbad"
+    fi
+    tier1=$(printf '%s\n%s\n' "$tier1" "$snapbad_flag" | grep . | sort -u)
+    tier2=$(printf '%s\n' "$snapnone" | grep . | sort -u)
+    # a page in the problem log is tier 1 even if its snapshot has no flag
+    [ -n "$tier1" ] && [ -n "$tier2" ] && tier2=$(printf '%s\n' "$tier2" | grep -v -x -F -f <(printf '%s\n' "$tier1"))
   fi
-  picks=$({ [ -n "$bad" ] && printf '%s\n' "$bad" | shuf
-            [ -n "$rest" ] && printf '%s\n' "$rest" | shuf; } | head -n "$n")
+  # only ever render candidates (in repair mode the unflagged ones are not candidates unless --unflagged)
+  tier1=$(printf '%s\n' "$tier1" | grep -x -F -f <(printf '%s\n' "$all") || true)
+  tier2=$(printf '%s\n' "$tier2" | grep -x -F -f <(printf '%s\n' "$all") || true)
+  nbad=$(printf '%s\n' "$tier1" | grep -c .)
+  nnone=$(printf '%s\n' "$tier2" | grep -c .)
+  rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n%s\n' "$tier1" "$tier2" | grep .) || true)
+  if [ -n "${NT_NO_HEALTH_PRIORITY:-}" ]; then
+    picks=$(printf '%s\n' "$all" | shuf | head -n "$n")
+  else
+    picks=$({ [ -n "$tier1" ] && printf '%s\n' "$tier1" | shuf
+              [ -n "$tier2" ] && printf '%s\n' "$tier2" | shuf
+              [ -n "$rest" ] && printf '%s\n' "$rest" | shuf; } | head -n "$n")
+  fi
   count=$(printf '%s\n' "$picks" | wc -l | tr -d ' ')
-  echo "$total stale ${type:-page}(s), $nbad without a health \"ok\" flag; rendering $count, those first, then random (one every ${DELAY}s)."
+  if [ $onlybad -eq 1 ]; then
+    echo "Repair: $nbad ${type:-page}(s) reported not ok$([ $unfl -eq 1 ] && echo ", $nnone with no health flag"); re-rendering $count (one every ${DELAY}s). A page whose data/code is really broken will just come back not ok: check with --health."
+  else
+    echo "$total candidate ${type:-page}(s): $nbad not ok, $nnone with no ok flag, rest plain stale; rendering $count in that order (one every ${DELAY}s)."
+  fi
 
   # --indexnow: remember which URLs rendered OK (render_one records HTTP 200, not marked stale, no
   # quota hit, healthy page) so only those are submitted, exactly as --delta does.
@@ -1635,6 +1680,7 @@ case "$1" in
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
   --list-stale)                        list_stale "${2:-}" ;;
   --refresh-stale)                     refresh_stale "${@:2}" ;;
+  --repair)                            refresh_stale --only-bad "${@:2}" ;;
   --list-recent)                       list_recent "${2:-}" ;;
   --list-cached)                       list_cached "${@:2}" ;;
   --health)                            health_report "${2:-}" ;;
