@@ -34,7 +34,7 @@ const ASSET_EXTENSION_RE =
 // A snapshot younger than this is served as-is. Older ones are STILL served,
 // and a render-tier bot request may trigger one background refresh, but only
 // if it wins the global render cooldown (see LOCK_KEY below).
-const FRESH_SECONDS = 60 * 60 * 48; // refresh-if-requested after ~2 days
+const FRESH_SECONDS = 60 * 60 * 120; // refresh-if-requested after ~5 days
 // Keep entries much longer than the freshness window: if a snapshot expired,
 // there would be nothing to serve and a scarce live render would be needed.
 const KV_TTL_SECONDS = 60 * 60 * 24 * 90; // keep stale copies for 90 days (safety net; the prewarm rotation refreshes every page well within this)
