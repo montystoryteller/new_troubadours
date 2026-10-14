@@ -905,8 +905,9 @@ refresh_stale() {
   all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
       def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
       def isstale: entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh);
-      def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or ($hbad[pg] != null);
-      def explicitbad: ((.metadata.health // "") as $h | $h != "" and $h != "ok" and $h != "n/a") or ($hbad[pg] != null);
+      def logbad: ($hbad[pg] != null) and ($hbad[pg] > (entry_ts // 0));   # logged AFTER the current snapshot was written
+      def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or logbad;
+      def explicitbad: ((.metadata.health // "") as $h | $h != "" and $h != "ok" and $h != "n/a") or logbad;
       def noflag: (.metadata.health // "") == "";
       [ .[] | select(.name | startswith($base))
             | select(if $onlybad == 1 then (explicitbad or ($unfl == 1 and noflag))
@@ -935,14 +936,18 @@ refresh_stale() {
   #   2. no "ok" flag at all (snapshots written before the gatekeeper stored metadata.health)
   #   3. everything else (plain stale pages)
   # Each tier is shuffled on its own; the picks are tier 1, then 2, then 3, cut at N.
-  local hfile tier1="" tier2="" rest="$all" nbad=0 nnone=0 snapnone="" snapbad_flag=""
-  hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-health.XXXXXX")
-  unhealthy_pages_json | jq -r 'keys[]' > "$hfile" 2>/dev/null
-  if [ -s "$hfile" ]; then
-    tier1=$(printf '%s\n' "$all" | awk -v pre="https://$HOST/" \
-      'NR == FNR { h[$0] = 1; next } { k = $0; sub(pre, "", k); gsub(/\+/, "%20", k); if (k in h) print $0 }' "$hfile" -)
+  local tier1="" tier2="" rest="$all" nbad=0 nnone=0 snapnone="" snapbad_flag="" logjson
+  logjson=$(unhealthy_pages_json 2>/dev/null); [ -n "$logjson" ] || logjson="{}"
+  # The problem log is append-only (entries live 7 days, a later healthy render never removes them), so a
+  # logged problem only counts while it is NEWER than the page's current snapshot. A page that was re-rendered
+  # since (snapshot ts > log time) has been dealt with; if that render was bad too, its own health flag says so.
+  if [ "$logjson" != "{}" ]; then
+    tier1=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" --argjson hlog "$logjson" "$JQ_TS_DEF"'
+        def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
+        .[] | select(.name | startswith($base))
+            | select(($hlog[pg] != null) and ($hlog[pg] > (entry_ts // 0)))
+            | .name | ltrimstr("render:")')
   fi
-  rm -f "$hfile"
   # snapshots with no health flag (tier 2) vs an explicit not-ok flag (tier 1), restricted to the chosen type
   if [ -n "$pat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -E -- "$pat"); fi
   if [ -n "$xpat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -v -E -- "$xpat"); fi
