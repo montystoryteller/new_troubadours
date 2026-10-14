@@ -4952,6 +4952,48 @@
         }
       ]
     },
+    "jason-buck-slaine-horned-god-2027": {
+      "name": "Sláine: The Horned God",
+      "tour_name": "Sláine: The Horned God Tour",
+      "performer_id": "jason-buck",
+      "tour_description": "The graphic novel, adapted as traditional storytelling, for modern audiences. A tale of ancient Celtic heroes and villains, monsters and magic, dragons and demons, and goddesses and gods.\n\n\n\nSet in a 'time which is not a time' when Britain was rife with magic and mischief, this show brings together the epic heroic exploits and divine transformation of the one who would be High King of the Tribes of the Earth Goddess, reimagining ancient mythologies, adapted and brought to life through traditional storytelling, for modern audiences.\n\n\n\nIn partnership with 2000 AD and Rebellion Publishing, created by Pat Mills 'the godfather of British comics' and Angie Kincaid, Sláine has captured the imagination of comics readers for generations.",
+      "tags": [
+        "storytelling",
+        "tour",
+        "2027"
+      ],
+      "isMusic": false,
+      "isSpecial": true,
+      "tour_dates": [
+        {
+          "date": "12/01/2027",
+          "time": "7pm",
+          "price": "",
+          "fb_event": 1112296737838524,
+          "ticket_url": "",
+          "venue_id": "canal-cafe-theatre",
+          "eventId": "T-jason-buck-slaine-horned-god-2027-20270112-canal-cafe-theatre"
+        },
+        {
+          "date": "13/03/2027",
+          "time": "7.30pm",
+          "price": "",
+          "fb_event": 1112624504591733,
+          "ticket_url": "",
+          "venue_id": "old-library-theatre-and-cafe-newbury",
+          "eventId": "T-jason-buck-slaine-horned-god-2027-20270313-old-library-theatre-and-cafe-newbury"
+        },
+        {
+          "date": "02/04/2027",
+          "time": "7.30pm",
+          "price": "£9.50 - £12.50",
+          "fb_event": 1471339774732664,
+          "ticket_url": "https://www.ticketsource.com/cotswoldplayhouse/t-dklkljd?",
+          "venue_id": "cotswold-playhouse",
+          "eventId": "T-jason-buck-slaine-horned-god-2027-20270402-cotswold-playhouse"
+        }
+      ]
+    },
     "3-daft-monkeys-autumn-2026": {
       "tour_name": "Ebb and Flow 2026",
       "name": "3 Daft Monkeys — Ebb and Flow",
@@ -14556,6 +14598,20 @@
         -3.08328
       ]
     },
+    "old-library-theatre-and-cafe-newbury": {
+      "id": "old-library-theatre-and-cafe-newbury",
+      "name": "Old Library Theatre and cafe, Newbury",
+      "venue_type": "Theatre",
+      "city": "Newbury",
+      "postcode": "RG14 5DJ",
+      "description": "Just a short walk from both Newbury train station and Market Place, The Old Library is a beautifully restored creative venue run by Corn Exchange Newbury, combining a 94-seat studio theatre, Café Bar and a seasonal programme of courses, workshops and events.\n\n\n\nOriginally a Carnegie Library, the building was opened in 1905/1906. Built with money donated by Scottish American philanthropist Andrew Carnegie, it operated as Newbury Library until 2000, so for almost 100 years formed an important part of the social fabric of our town.",
+      "full_address": "The Old Library Theatre and Cafe, Carnegie Road, Newbury, RG14 5DJ",
+      "url": "https://visitnewbury.org.uk/attractions/the-old-library/",
+      "latlon": [
+        51.39895,
+        -1.32126
+      ]
+    },
     "corn-exchange-newbury": {
       "id": "corn-exchange-newbury",
       "name": "Corn Exchange, Newbury",
@@ -14686,6 +14742,20 @@
       "latlon": [
         50.71857,
         -1.97752
+      ]
+    },
+    "canal-cafe-theatre": {
+      "id": "canal-cafe-theatre",
+      "name": "Canal Cafe Theatre",
+      "venue_type": "Theatre",
+      "city": "London",
+      "postcode": "W2 6NG",
+      "full_address": "Canal Cafe Theatre, Delamere Terrace, Little Venice, London, W2 6NG",
+      "url": "https://canalcafetheatre.com/",
+      "description": "Award-winning Canal Café Theatre has been perched on the edge of the Regent’s Canal since the 70’s . It is a renowned comedy, cabaret and theatre venue and over the years has helped launch some of the biggest names in Comedy ranging from John Oliver to the League of Gentlemen to Miranda Hart. Other notable comedians to have trodden the boards of the Canal include Eddie Izzard, The Mighty Boosh, Catherine Tate and Dara O’Briain to name but a few. In 2002, an in-house production of Lucky Stiff made history by being the only Fringe Theatre production to be nominated in the Whatsonstage Awards for Best Musical Revival in the same category as the likes of Kiss Me Kate and My Fair Lady in the West End.",
+      "latlon": [
+        51.52045,
+        -0.18462
       ]
     },
     "plot-9-maze-hill-greenwich": {
