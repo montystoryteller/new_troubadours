@@ -884,7 +884,7 @@ refresh_stale() {
     festival|festivals)       pat='/festival\.html\?festival=' ;;
     promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
     booksmerch)               pat='/books_merch\.html\?' ;;   # performer=, publisher= and view= variants
-    repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
+    repertoire|repertoires)   pat='/tour_guide\.html\?(.*&)?tour=(R-|rep%3A)' ;;   # incl. legacy tour=rep:<show> keys
     tour|tours)               pat='/tour_guide\.html\?(.*&)?tour='; xpat='tour=(R-|rep%3A)' ;;   # real tours: everything except repertoire
     media)                    pat='/media\.html' ;;
     event|events)             pat='/event\.html\?event=' ;;
@@ -999,6 +999,10 @@ refresh_stale() {
     [ $i -gt 0 ] && sleep "$DELAY"
     i=$((i + 1))
     url="${url//+/%20}"   # KV keys store a space as +; back to %20 for the request URL (a literal + is already %2B)
+    case "$url" in *tour=rep%3A*)
+      echo "  (legacy key: rendering its R- page instead; the old tour=rep: snapshot stays stale until you delete it: ./updatecache --purge-only '$url')"
+      url="${url//tour=rep%3A/tour=R-}" ;;
+    esac
     render_one "$url" "$i" || break
   done <<< "$picks"
   unset RENDERED_FILE
@@ -1049,7 +1053,7 @@ list_cached() {
     festival|festivals)       pat='/festival\.html\?festival=' ;;
     promoter|promoters)       pat='/promoters\.html\?promoter=' ;;
     booksmerch)               pat='/books_merch\.html\?' ;;
-    repertoire|repertoires)   pat='/tour_guide\.html\?.*&tour=R-' ;;
+    repertoire|repertoires)   pat='/tour_guide\.html\?(.*&)?tour=(R-|rep%3A)' ;;   # incl. legacy tour=rep:<show> keys
     event|events)             pat='/event\.html\?event=' ;;
   esac
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
