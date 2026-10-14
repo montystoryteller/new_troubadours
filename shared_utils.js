@@ -1836,6 +1836,225 @@ function getEventLevelFlyers(eventOrDate) {
 }
 
 // ---------------------------------------------------------------------------
+// iCalendar (.ics) helpers — client-side "Add to calendar" for a single event.
+// Floating local times (no TZID), stable UID so re-adding updates the entry.
+// ---------------------------------------------------------------------------
+
+function icsEscape(s) {
+  return String(s || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/\r?\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+
+// Fold to 75 octets max per line (approximated by chars, kept under 75 to
+// leave headroom for multi-byte characters).
+function icsFold(line) {
+  const out = [];
+  while (line.length > 70) {
+    out.push(line.slice(0, 70));
+    line = " " + line.slice(70);
+  }
+  out.push(line);
+  return out.join("\r\n");
+}
+
+const icsPad = (n) => String(n).padStart(2, "0");
+const icsDate = (d) =>
+  `${d.getFullYear()}${icsPad(d.getMonth() + 1)}${icsPad(d.getDate())}`;
+const icsDateTime = (d, h, m) => `${icsDate(d)}T${icsPad(h)}${icsPad(m)}00`;
+
+/**
+ * Best-effort parse of a free-text time string ("7.30-9pm", "Doors 7pm,
+ * Start 8.30pm", "8pm"). Returns {start:[h,m], end:[h,m]|null} or null.
+ */
+function parseEventTimes(text) {
+  if (!text) return null;
+  const re = /(\d{1,2})(?:[.:](\d{2}))?\s*(am|pm)?/gi;
+  const found = [];
+  let m;
+  const str = String(text);
+  while ((m = re.exec(str)) !== null) {
+    const h = parseInt(m[1], 10);
+    const min = m[2] ? parseInt(m[2], 10) : 0;
+    if (h > 24 || min > 59) continue;
+    // Skip bare numbers that aren't plausibly times (no minutes, no am/pm,
+    // and not part of a range) — handled below by requiring am/pm or minutes
+    // unless exactly a range/lone hour.
+    found.push({
+      h, min, ap: m[3] ? m[3].toLowerCase() : null,
+      hasMin: !!m[2], index: m.index,
+    });
+  }
+  if (!found.length) return null;
+
+  // Prefer the time labelled "start"/"show"/"performance" when present.
+  let picked = found.slice(0, 2);
+  const lower = str.toLowerCase();
+  const labelIdx = lower.search(/\b(start|starts|show|performance|curtain)\b/);
+  if (labelIdx >= 0) {
+    const after = found.filter((f) => f.index >= labelIdx);
+    if (after.length) picked = after.slice(0, 2);
+  }
+  // Ignore lone bare integers with no am/pm/minutes (e.g. "Week 3").
+  if (picked.length === 1 && !picked[0].ap && !picked[0].hasMin) return null;
+
+  // am/pm inheritance: "7.30-9pm" -> both pm.
+  const lastAp = [...picked].reverse().find((p) => p.ap)?.ap || null;
+  const to24 = (p) => {
+    let h = p.h;
+    const ap = p.ap || lastAp;
+    if (ap === "pm" && h < 12) h += 12;
+    else if (ap === "am" && h === 12) h = 0;
+    else if (!ap && h >= 1 && h <= 11) h += 12; // bare hours: assume evening
+    return [h % 24, p.min];
+  };
+  const start = to24(picked[0]);
+  let end = picked[1] ? to24(picked[1]) : null;
+  if (end && end[0] * 60 + end[1] <= start[0] * 60 + start[1]) end = null;
+  return { start, end };
+}
+
+/**
+ * Resolve an event's start/end from its date + free-text time.
+ * @returns {{allDay:boolean, start:Date, end:Date}}
+ */
+function icsResolveTimes(o) {
+  const t = parseEventTimes(o.time);
+  const d = o.date;
+  if (!t) {
+    return {
+      allDay: true,
+      start: new Date(d.getFullYear(), d.getMonth(), d.getDate()),
+      end: new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1),
+    };
+  }
+  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), t.start[0], t.start[1]);
+  const end = t.end
+    ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), t.end[0], t.end[1])
+    : new Date(start.getTime() + 2 * 3600 * 1000);
+  return { allDay: false, start, end };
+}
+
+// Standard UK rules (BST last Sun Mar -> last Sun Oct) so calendars place the
+// event correctly for viewers in other timezones.
+const ICS_VTIMEZONE_LONDON = [
+  "BEGIN:VTIMEZONE",
+  "TZID:Europe/London",
+  "BEGIN:DAYLIGHT",
+  "TZOFFSETFROM:+0000",
+  "TZOFFSETTO:+0100",
+  "TZNAME:BST",
+  "DTSTART:19700329T010000",
+  "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+  "END:DAYLIGHT",
+  "BEGIN:STANDARD",
+  "TZOFFSETFROM:+0100",
+  "TZOFFSETTO:+0000",
+  "TZNAME:GMT",
+  "DTSTART:19701025T020000",
+  "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+  "END:STANDARD",
+  "END:VTIMEZONE",
+];
+
+const icsLocalStamp = (d) => icsDateTime(d, d.getHours(), d.getMinutes());
+
+/**
+ * Build a VCALENDAR string for one event.
+ * @param {{uid:string, date:Date, time?:string, title:string, description?:string,
+ *          location?:string, url?:string, cancelled?:boolean}} o
+ */
+function buildIcs(o) {
+  const { allDay, start, end } = icsResolveTimes(o);
+  const now = new Date();
+  const stamp =
+    `${now.getUTCFullYear()}${icsPad(now.getUTCMonth() + 1)}${icsPad(now.getUTCDate())}` +
+    `T${icsPad(now.getUTCHours())}${icsPad(now.getUTCMinutes())}${icsPad(now.getUTCSeconds())}Z`;
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//New Troubadours//Event//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+  if (!allDay) lines.push(...ICS_VTIMEZONE_LONDON);
+  lines.push("BEGIN:VEVENT", `UID:${o.uid}@newtroubadours.org`, `DTSTAMP:${stamp}`);
+  if (allDay) {
+    lines.push(`DTSTART;VALUE=DATE:${icsDate(start)}`, `DTEND;VALUE=DATE:${icsDate(end)}`);
+  } else {
+    lines.push(
+      `DTSTART;TZID=Europe/London:${icsLocalStamp(start)}`,
+      `DTEND;TZID=Europe/London:${icsLocalStamp(end)}`,
+    );
+  }
+  lines.push(`SUMMARY:${icsEscape(o.title)}`);
+  if (o.location) lines.push(`LOCATION:${icsEscape(o.location)}`);
+  const desc = [o.time ? `Time: ${o.time}` : "", o.description || "", o.url ? `More info: ${o.url}` : ""]
+    .filter(Boolean).join("\n");
+  if (desc) lines.push(`DESCRIPTION:${icsEscape(desc)}`);
+  if (o.url) lines.push(`URL:${o.url}`);
+  lines.push(o.cancelled ? "STATUS:CANCELLED" : "STATUS:CONFIRMED");
+  if (!allDay) {
+    // Gentle reminder 2 hours before (users can change/remove it).
+    lines.push(
+      "BEGIN:VALARM", "ACTION:DISPLAY",
+      `DESCRIPTION:${icsEscape(o.title)}`, "TRIGGER:-PT2H", "END:VALARM",
+    );
+  }
+  lines.push("END:VEVENT", "END:VCALENDAR");
+  return lines.map(icsFold).join("\r\n") + "\r\n";
+}
+
+/**
+ * One-click "add" links for web calendars (no file download needed).
+ * @returns {{google:string, outlook:string}}
+ */
+function buildCalendarLinks(o) {
+  const { allDay, start, end } = icsResolveTimes(o);
+  const details = [o.time ? `Time: ${o.time}` : "", o.description || "", o.url ? `More info: ${o.url}` : ""]
+    .filter(Boolean).join("\n");
+  const g = new URLSearchParams({
+    action: "TEMPLATE",
+    text: o.title || "",
+    dates: allDay
+      ? `${icsDate(start)}/${icsDate(end)}`
+      : `${icsLocalStamp(start)}/${icsLocalStamp(end)}`,
+    details,
+    location: o.location || "",
+    ctz: "Europe/London",
+  });
+  const iso = (d) => `${d.getFullYear()}-${icsPad(d.getMonth() + 1)}-${icsPad(d.getDate())}T${icsPad(d.getHours())}:${icsPad(d.getMinutes())}:00`;
+  const ol = new URLSearchParams({
+    path: "/calendar/action/compose",
+    rru: "addevent",
+    subject: o.title || "",
+    startdt: iso(start),
+    enddt: iso(end),
+    body: details,
+    location: o.location || "",
+  });
+  if (allDay) ol.set("allday", "true");
+  return {
+    google: `https://calendar.google.com/calendar/render?${g.toString()}`,
+    outlook: `https://outlook.live.com/calendar/0/deeplink/compose?${ol.toString()}`,
+  };
+}
+
+function downloadIcs(filename, icsText) {
+  const blob = new Blob([icsText], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ---------------------------------------------------------------------------
 // DOM helpers
 // ---------------------------------------------------------------------------
 

@@ -396,3 +396,31 @@ a.event-performer-name:hover {
     margin: 0 0 10px 0;
 }
 
+
+/* "Add to calendar" row — Google / Outlook.com links + .ics button. */
+.add-to-calendar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.add-to-calendar-label {
+  font-size: 13px;
+  font-weight: bold;
+}
+.add-to-calendar-btn {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  background: var(--theme-green);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+.add-to-calendar-btn:hover {
+  background: #388e3c;
+  color: #fff;
+}

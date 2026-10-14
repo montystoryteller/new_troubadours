@@ -1380,6 +1380,58 @@ function renderTicketsFlyersVideo(ev) {
     videoControls.appendChild(videoExpandable);
   }
 
+  // "Add to calendar" — Google / Outlook.com links plus an .ics download
+  // (Apple, Outlook desktop, others). Upcoming, non-cancelled events only.
+  // Helpers live in shared_utils.js (buildIcs/buildCalendarLinks/downloadIcs).
+  if (ev._date && ev._date >= getTodayMidnight() && !ev.isCancelled) {
+    anyContent = true;
+    const hostVenue = venuesLookup[ev.venue_id] || null;
+    const id = ev.eventId || resolveEventId(ev, ev._date);
+    const addr = hostVenue?.full_address
+      ? hostVenue.full_address.replace(/^[^,]*,\s*/, "")
+      : "";
+    const calOpts = {
+      uid: id,
+      date: ev._date,
+      time: ev.time,
+      title: ev.showname || ev.name,
+      description: (ev.description || "").replace(/\n{2,}/g, "\n").slice(0, 500),
+      location: hostVenue ? [hostVenue.name, addr].filter(Boolean).join(", ") : "",
+      url: `${location.origin}${location.pathname}?event=${encodeURIComponent(id)}`,
+    };
+    const links = buildCalendarLinks(calOpts);
+
+    const calRow = document.createElement("div");
+    calRow.className = "add-to-calendar";
+    const label = document.createElement("span");
+    label.className = "add-to-calendar-label";
+    label.textContent = "📅 Add to calendar:";
+    calRow.appendChild(label);
+
+    const mkLink = (text, href) => {
+      const a = document.createElement("a");
+      a.className = "add-to-calendar-btn";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = text;
+      return a;
+    };
+    calRow.appendChild(mkLink("Google", links.google));
+    calRow.appendChild(mkLink("Outlook.com", links.outlook));
+
+    const icsBtn = document.createElement("button");
+    icsBtn.className = "add-to-calendar-btn";
+    icsBtn.textContent = "Apple / other (.ics)";
+    icsBtn.addEventListener("click", () =>
+      downloadIcs(`${id}.ics`, buildIcs(calOpts)),
+    );
+    calRow.appendChild(icsBtn);
+
+    videoControls.style.display = "";
+    videoControls.appendChild(calRow);
+  }
+
   aboutSection.style.display = anyContent ? "" : "none";
 }
 
