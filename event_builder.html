@@ -133,6 +133,26 @@
         .field-prefilled {
             background: #fde3ef;
         }
+
+        /* Edit-existing mode (tour / repertoire show): dates that are
+           unchanged from the feed are hidden so only what you're adding or
+           changing is on screen. Direct-child selector on purpose — tour date
+           rows nest flyer rows that share the .date-row class. */
+        .hide-legacy>.date-row[data-legacy="1"] {
+            display: none;
+        }
+
+        .date-row[data-isnew="1"] {
+            border-left: 4px solid #2e7d32;
+        }
+
+        .date-row[data-edited="1"] {
+            border-left: 4px solid #f9a825;
+        }
+
+        .edit-existing-banner {
+            margin-top: 8px;
+        }
     </style>
 </head>
 
@@ -394,6 +414,23 @@
             <h2>Tour</h2>
 
             <div class="field-row">
+                <label>Edit existing tour</label>
+                <div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="text" id="tour-load-existing" list="tourLoadOptions" autocomplete="off"
+                            placeholder="Type to search an existing tour — to add dates or change it"
+                            style="flex:1; min-width:240px;">
+                        <button type="button" class="add-subitem-btn" id="tour-load-existing-btn">Load</button>
+                    </div>
+                    <div class="field-hint">Loads the tour from the feed into this form. Dates already in the feed
+                        (and unchanged) are hidden so you only see what you add. Saving puts a <em>replacement</em>
+                        record in the batch; the output can be just the changes (new / updated dates and changed
+                        fields) or the full record — see the Generated JSON section.</div>
+                    <div id="tour-edit-banner" class="entity-status match edit-existing-banner" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Tour key (id)</label>
                 <input type="text" id="tour-key" placeholder="auto-suggested, edit if needed">
             </div>
@@ -511,7 +548,7 @@
                 date</button>
 
             <div class="btn-row">
-                <button class="btn-add-batch" onclick="addTourToBatch()">Add to batch</button>
+                <button class="btn-add-batch" id="tour-add-btn" onclick="addTourToBatch()">Add to batch</button>
                 <button class="btn-clear-form" onclick="clearTourForm()">Clear form</button>
             </div>
         </div>
@@ -519,6 +556,23 @@
         <!-- ── Repertoire show panel ───────────────────────────── -->
         <div class="panel" id="panel-show" style="display:none;">
             <h2>Repertoire Show</h2>
+
+            <div class="field-row">
+                <label>Edit existing repertoire show</label>
+                <div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <input type="text" id="show-load-existing" list="showLoadOptions" autocomplete="off"
+                            placeholder="Type to search an existing repertoire show — to add dates or change it"
+                            style="flex:1; min-width:240px;">
+                        <button type="button" class="add-subitem-btn" id="show-load-existing-btn">Load</button>
+                    </div>
+                    <div class="field-hint">Loads the repertoire show from the feed into this form. Dates already in the feed
+                        (and unchanged) are hidden so you only see what you add. Saving puts a <em>replacement</em>
+                        record in the batch; the output can be just the changes (new / updated dates and changed
+                        fields) or the full record — see the Generated JSON section.</div>
+                    <div id="show-edit-banner" class="entity-status match edit-existing-banner" style="display:none;"></div>
+                </div>
+            </div>
 
             <div class="field-row">
                 <label>Show key (id)</label>
@@ -576,7 +630,7 @@
                 date</button>
 
             <div class="btn-row">
-                <button class="btn-add-batch" onclick="addShowToBatch()">Add to batch</button>
+                <button class="btn-add-batch" id="show-add-btn" onclick="addShowToBatch()">Add to batch</button>
                 <button class="btn-clear-form" onclick="clearShowForm()">Clear form</button>
             </div>
         </div>
@@ -1747,8 +1801,26 @@
                 so a found age cue always belongs to the whole tour/show, not one date in its list. These
                 behave like <code>updatedFestivals</code>/<code>updatedPodcasts</code>: replace the matching
                 entry in <code>tours</code>/<code>repertoire_shows</code> wholesale, by that same key.
+                <br><br>
+                <strong>Tours / shows edited via "Edit existing"</strong> follow the "Edited tours / shows as" choice
+                below. <em>Changes only</em> gives <code>tourChanges</code> / <code>repertoireShowChanges</code>, keyed
+                by tour/show key, with instruction-style parts: <code>append_to_tour_dates</code> (new date entries
+                to add to the end of the list), <code>replace_in_tour_dates</code> (each has the feed
+                <code>index</code> and a <code>was</code> date/venue for locating it, plus the complete replacement
+                <code>record</code>), <code>remove_from_tour_dates</code>, <code>set_fields</code> (top-level fields
+                to set) and <code>delete_fields</code> (same names with <code>show_dates</code> for shows).
+                <em>Full record</em> gives <code>updatedTours</code> / <code>updatedRepertoireShows</code> — drop-in
+                replacements, as above. <code>index</code> is the position in the file you loaded the form from.
             </div>
             <div class="output-actions">
+                <label style="font-weight:normal; display:inline-flex; align-items:center; gap:6px; margin-right:10px;">
+                    Edited tours / shows as:
+                    <select id="output-edit-mode" onchange="if (document.getElementById('outputArea').value) generateOutput();">
+                        <option value="changes">Changes only (new &amp; updated dates, changed fields)</option>
+                        <option value="full">Full record (replacement)</option>
+                        <option value="both">Both</option>
+                    </select>
+                </label>
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
                 <button onclick="copyOutput()" class="btn-secondary-action">Copy to clipboard</button>
                 <button onclick="downloadOutput()" class="btn-secondary-action">Download .json</button>
@@ -1773,6 +1845,8 @@
     <datalist id="clubNameOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
     <datalist id="podcastOptions"></datalist>
+    <datalist id="tourLoadOptions"></datalist>
+    <datalist id="showLoadOptions"></datalist>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202610122329"></script>
     <script src="recurrence-engine.js?v=202610122329"></script>
@@ -1828,6 +1902,11 @@
         // updatedFestivals/updatedPodcasts (a complete replacement record).
         const updatedTours = {};
         const updatedRepertoireShows = {};
+        // Edit-existing support for tours/shows (see "Editing existing tours / repertoire shows" below).
+        let toursRaw = {};
+        let showsRaw = {};
+        const editing = { tour: null, show: null };
+        const editMeta = { tours: {}, shows: {} };
         // Populated once these fields exist at script-load time (see the
         // bottom of the file) with the attachOpenLinkButton() update
         // function for each ticket URL field — so that populatePerformerForm/
@@ -3854,10 +3933,16 @@
         }
 
         function addTourDateRow() {
-            document.getElementById("tour-date-rows").appendChild(dateRowTemplate("tour"));
+            const row = dateRowTemplate("tour");
+            document.getElementById("tour-date-rows").appendChild(row);
+            if (editing.tour) row.dataset.isnew = "1";
+            return row;
         }
         function addShowDateRow() {
-            document.getElementById("show-date-rows").appendChild(dateRowTemplate("show"));
+            const row = dateRowTemplate("show");
+            document.getElementById("show-date-rows").appendChild(row);
+            if (editing.show) row.dataset.isnew = "1";
+            return row;
         }
 
         function readDateRows(container, kind) {
@@ -3866,6 +3951,13 @@
             // with the shared .date-row class), and querySelectorAll would
             // wrongly pick those up too since it matches any descendant.
             return Array.from(container.children).map(row => {
+                // Edit-existing mode: a loaded row that was never touched goes
+                // out exactly as it came in (nothing re-read, nothing lost).
+                if (row._original && !row._dirty) {
+                    const same = deepCopy(row._original);
+                    if (row._baseIdx != null) Object.defineProperty(same, "_origIdx", { value: row._baseIdx, enumerable: false });
+                    return same;
+                }
                 const dateRaw = row.querySelector(".dr-date").value.trim();
                 const dates = dateRaw.split(",").map(s => s.trim()).filter(Boolean);
                 const entry = {
@@ -3874,7 +3966,12 @@
                     // we know this row has a date too — a row with a venue
                     // typed but no date gets filtered out below anyway, and
                     // shouldn't still leave behind a venue nobody asked for.
-                    venue_id: dates.length ? resolveEntityField(row._venueField) : null,
+                    // A loaded row whose venue text is unchanged keeps its original id
+                    // (resolving by name could pick a same-named but different venue).
+                    venue_id: dates.length
+                        ? ((row._original && row._venueField.input.value.trim() === venueLabel(row._original.venue_id))
+                            ? row._original.venue_id : resolveEntityField(row._venueField))
+                        : null,
                 };
                 const time = row.querySelector(".dr-time").value.trim();
                 const price = row.querySelector(".dr-price").value.trim();
@@ -3920,6 +4017,15 @@
                 }
                 if (row.querySelector(".dr-cancelled").checked) entry.isCancelled = true;
                 if (row.querySelector(".dr-soldout").checked) entry.isSoldOut = true;
+                if (row._original) {
+                    // Touched row from the feed: merge onto the original so keys
+                    // the form doesn't own (eventId, unknown fields) survive.
+                    const merged = mergeKeepOrder(row._original, entry, new Set(kind === "tour" ? TOUR_DATE_OWNED : SHOW_DATE_OWNED));
+                    if (!("isSpecial" in row._original) && merged.isSpecial === true) delete merged.isSpecial;
+                    if (Array.isArray(merged.date)) delete merged.eventId; // multi-night records carry no eventId
+                    if (row._baseIdx != null) Object.defineProperty(merged, "_origIdx", { value: row._baseIdx, enumerable: false });
+                    return merged;
+                }
                 return entry;
             }).filter(e => e.date && e.venue_id);
         }
@@ -4380,7 +4486,7 @@
                 return;
             }
 
-            const perf = resolveMultiPerformerField(tourPerformerMulti);
+            const perf = editPerf("tour", tourPerformerMulti);
             const dateRows = readDateRows(dateRowsContainer, "tour");
             const hasPerformer = !!(perf.performer_id || perf.performer_ids);
             if (!tourName || (!name && !repertoireId) || (!hasPerformer && !repertoireId) || !dateRows.length) {
@@ -4392,7 +4498,7 @@
             const keyBasisPerformer = perf.performer_id || perf.displayName ||
                 (linkedShow ? repertoirePerformerLabel(linkedShow.performer_id || (linkedShow.performer_ids || [])[0]) : "");
             let key = document.getElementById("tour-key").value.trim() || slugify(`${keyBasisPerformer}-${keyBasisName}`);
-            key = uniqueId(key, k => existingTourKeys.has(k) || batch.tours.some(t => t.key === k));
+            key = editing.tour ? editing.tour.key : uniqueId(key, k => existingTourKeys.has(k) || batch.tours.some(t => t.key === k));
 
             // Auto-write an eventId on each single-date tour date, same as
             // addEventToBatch() already does for a flat specific/music/poetry
@@ -4403,7 +4509,7 @@
             // `key` is known, rather than inside readDateRows() — the tour's
             // own key isn't decided until this point.
             dateRows.forEach(td => {
-                if (!Array.isArray(td.date)) {
+                if (!Array.isArray(td.date) && td._origIdx == null) { // dates loaded from the feed keep their id (or lack of one) as-is
                     const id = buildTourDateEventId(key, td);
                     if (id) td.eventId = id;
                 }
@@ -4419,9 +4525,9 @@
             if (perf.performer_ids) record.performer_ids = perf.performer_ids;
             // Anyone already listed as a main performer is dropped, as are repeats.
             const mainIds = new Set([perf.performer_id, ...(perf.performer_ids || [])].filter(Boolean));
-            const otherIds = readPerformerIdListField(tourOtherPerformersField).filter((id, i, a) => !mainIds.has(id) && a.indexOf(id) === i);
+            const otherIds = editList("tour", "other_performer_ids", tourOtherPerformersField).filter((id, i, a) => !mainIds.has(id) && a.indexOf(id) === i);
             if (otherIds.length) record.other_performer_ids = otherIds;
-            const supportIds = readPerformerIdListField(tourSupportPerformersField)
+            const supportIds = editList("tour", "support_performer_ids", tourSupportPerformersField)
                 .filter((id, i, a) => !mainIds.has(id) && !otherIds.includes(id) && a.indexOf(id) === i);
             if (supportIds.length) record.support_performer_ids = supportIds;
             if (document.getElementById("tour-double-headline").checked) record.isDoubleHeadline = true;
@@ -4437,12 +4543,14 @@
             else if (tourKind === "poetry") record.isPoetry = true;
             else record.isSpecial = true;
 
-            batch.tours.push({ key, record });
+            if (editing.tour) { if (!commitEdit("tour", key, record)) return; }
+            else batch.tours.push({ key, record });
             refreshBatchSummary();
             clearTourForm();
         }
 
         function clearTourForm() {
+            resetEditState("tour");
             ["tour-key", "tour-tourname", "tour-name", "tour-description", "tour-video"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("tour-kind").value = "story";
@@ -4486,19 +4594,19 @@
                 return;
             }
 
-            const perf = resolveMultiPerformerField(showPerformerMulti);
+            const perf = editPerf("show", showPerformerMulti);
             const dateRows = readDateRows(dateRowsContainer, "show");
             if (!fullname || !showname || !perf.performer_id && !perf.performer_ids || !dateRows.length) {
                 alert("Please fill in name, show name, at least one performer, and at least one valid show date (with venue).");
                 return;
             }
             let key = document.getElementById("show-key").value.trim() || slugify(`${perf.performer_id || perf.displayName}-${showname}`);
-            key = uniqueId(key, k => existingShowKeys.has(k) || batch.shows.some(s => s.key === k));
+            key = editing.show ? editing.show.key : uniqueId(key, k => existingShowKeys.has(k) || batch.shows.some(s => s.key === k));
 
             // Same auto-write as addTourToBatch() above, for repertoire/
             // touring-show dates.
             dateRows.forEach(sd => {
-                if (!Array.isArray(sd.date)) {
+                if (!Array.isArray(sd.date) && sd._origIdx == null) { // dates loaded from the feed keep their id (or lack of one) as-is
                     const id = buildShowDateEventId(key, sd);
                     if (id) sd.eventId = id;
                 }
@@ -4521,12 +4629,14 @@
             if (document.getElementById("show-touring").checked) record.isTouringShow = true;
             if (document.getElementById("show-storywalk").checked) record.isStoryWalk = true;
 
-            batch.shows.push({ key, record });
+            if (editing.show) { if (!commitEdit("show", key, record)) return; }
+            else batch.shows.push({ key, record });
             refreshBatchSummary();
             clearShowForm();
         }
 
         function clearShowForm() {
+            resetEditState("show");
             ["show-key", "show-fullname", "show-showname", "show-description", "show-flyer", "show-video"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("show-special").checked = true;
@@ -5932,18 +6042,26 @@
                     remove: () => delete updatedEvents[key],
                     previewData: updatedEvents[key],
                 })),
-                ...Object.keys(updatedTours).map(key => ({
-                    tag: "tour-edit",
-                    label: `${updatedTours[key].tour_name || updatedTours[key].name || "(untitled)"} (editing existing tour: ${key})`,
-                    remove: () => delete updatedTours[key],
-                    previewData: updatedTours[key],
-                })),
-                ...Object.keys(updatedRepertoireShows).map(key => ({
-                    tag: "show-edit",
-                    label: `${updatedRepertoireShows[key].showname || updatedRepertoireShows[key].name || "(untitled)"} (editing existing repertoire show: ${key})`,
-                    remove: () => delete updatedRepertoireShows[key],
-                    previewData: updatedRepertoireShows[key],
-                })),
+                ...Object.keys(updatedTours).map(key => {
+                    const m = editMeta.tours[key], valid = m && m.finalJSON === canonStr(updatedTours[key]);
+                    return {
+                        tag: "tour-edit",
+                        label: `${updatedTours[key].tour_name || updatedTours[key].name || "(untitled)"} (editing existing tour: ${key})${valid ? " — " + editSummary(m.changes) : ""}`,
+                        remove: () => { delete updatedTours[key]; delete editMeta.tours[key]; },
+                        previewData: valid ? changesForOutput(m.changes, "tour_dates") : updatedTours[key],
+                        edit: () => { switchToTab("tour"); startEdit("tour", key, "updated"); },
+                    };
+                }),
+                ...Object.keys(updatedRepertoireShows).map(key => {
+                    const m = editMeta.shows[key], valid = m && m.finalJSON === canonStr(updatedRepertoireShows[key]);
+                    return {
+                        tag: "show-edit",
+                        label: `${updatedRepertoireShows[key].showname || updatedRepertoireShows[key].name || "(untitled)"} (editing existing repertoire show: ${key})${valid ? " — " + editSummary(m.changes) : ""}`,
+                        remove: () => { delete updatedRepertoireShows[key]; delete editMeta.shows[key]; },
+                        previewData: valid ? changesForOutput(m.changes, "show_dates") : updatedRepertoireShows[key],
+                        edit: () => { switchToTab("show"); startEdit("show", key, "updated"); },
+                    };
+                }),
             ];
             emptyMsg.style.display = allItems.length ? "none" : "";
             allItems.forEach(item => {
@@ -6021,6 +6139,346 @@
             });
         }
 
+        // ── Editing existing tours / repertoire shows ───────────────────────
+        // Load a tour or repertoire show that's already in the feed, add dates
+        // (or tweak anything), and export either just the changes or the full
+        // replacement record. Existing dates that are unchanged from the feed
+        // are hidden by default so you're only looking at what you're adding.
+        //
+        // Safety net: a loaded date row that is never touched is exported
+        // byte-for-byte as it was loaded (so fields this form can't represent
+        // — pinned eventIds, per-date flyers, anything unknown — can't be lost
+        // or silently reformatted). A row you do touch is merged onto the
+        // original, so keys the form doesn't own survive too.
+        const TOUR_TOP_OWNED = ["tour_name", "tour_dates", "repertoire_id", "name", "performer_id", "performer_ids",
+            "other_performer_ids", "support_performer_ids", "isDoubleHeadline", "tour_description",
+            "touring_event_flyer", "touring_event_flyers", "video_trailer", "isMusic", "isPoetry", "isSpecial"];
+        const SHOW_TOP_OWNED = ["name", "showname", "show_dates", "performer_id", "performer_ids", "description",
+            "touring_event_flyer", "video_trailer", "isSpecial", "isTouringShow", "isStoryWalk"];
+        const DATE_COMMON_OWNED = ["date", "venue_id", "time", "structured_time", "price", "structured_price",
+            "ticket_url", "video_trailer", "date_added", "promoter_id", "promoter", "club", "isCancelled", "isSoldOut"];
+        const TOUR_DATE_OWNED = [...DATE_COMMON_OWNED, "club_event", "title", "description", "other_performer_ids",
+            "isSpecial", "event_flyer", "event_flyers"];
+        const SHOW_DATE_OWNED = [...DATE_COMMON_OWNED, "online", "fb_event", "event_flyer"];
+
+        function deepCopy(v) { return v === undefined ? undefined : JSON.parse(JSON.stringify(v)); }
+        function canon(v) {
+            if (Array.isArray(v)) return v.map(canon);
+            if (v && typeof v === "object") { const o = {}; Object.keys(v).sort().forEach(k => { o[k] = canon(v[k]); }); return o; }
+            return v;
+        }
+        function canonStr(v) { return JSON.stringify(canon(v)); }
+
+        // Keeps the original's key order (so unchanged records diff cleanly
+        // against the feed): owned keys take the form's value (or vanish if the
+        // form cleared them), everything else is carried over untouched.
+        function mergeKeepOrder(original, formRec, ownedSet) {
+            const res = {};
+            for (const k of Object.keys(original)) {
+                if (ownedSet.has(k)) { if (k in formRec) res[k] = formRec[k]; }
+                else res[k] = original[k];
+            }
+            for (const k of Object.keys(formRec)) if (!(k in res)) res[k] = formRec[k];
+            return res;
+        }
+
+        function editCfg(kind) {
+            const base = kind === "tour" ? {
+                noun: "tour", datesKey: "tour_dates", rowsId: "tour-date-rows", keyId: "tour-key",
+                bannerId: "tour-edit-banner", addBtnId: "tour-add-btn", inputId: "tour-load-existing", listId: "tourLoadOptions",
+                updated: updatedTours, meta: editMeta.tours, raw: () => toursRaw,
+                topOwned: TOUR_TOP_OWNED, dateOwned: TOUR_DATE_OWNED,
+                label: r => r.tour_name || r.name || "(untitled)",
+                clearForm: clearTourForm, addRow: addTourDateRow, populate: populateTourFormFromRecord,
+                multi: () => tourPerformerMulti,
+                lists: () => ({ other_performer_ids: tourOtherPerformersField, support_performer_ids: tourSupportPerformersField }),
+            } : {
+                noun: "repertoire show", datesKey: "show_dates", rowsId: "show-date-rows", keyId: "show-key",
+                bannerId: "show-edit-banner", addBtnId: "show-add-btn", inputId: "show-load-existing", listId: "showLoadOptions",
+                updated: updatedRepertoireShows, meta: editMeta.shows, raw: () => showsRaw,
+                topOwned: SHOW_TOP_OWNED, dateOwned: SHOW_DATE_OWNED,
+                label: r => r.showname || r.name || "(untitled)",
+                clearForm: clearShowForm, addRow: addShowDateRow, populate: populateShowFormFromRecord,
+                multi: () => showPerformerMulti,
+                lists: () => ({}),
+            };
+            return { kind, ...base };
+        }
+
+        function multiLabels(multi) {
+            const combined = multi.getCombinedInput && multi.getCombinedInput();
+            return multi.getRows().map(f => f.input.value.trim()).join("|") + "||" + (combined ? combined.value.trim() : "");
+        }
+        function listLabels(field) { return field.rows().map(r => r._field.input.value.trim()).join("|"); }
+
+        // Used by addTourToBatch/addShowToBatch: while editing, performer
+        // fields you haven't touched are NOT re-resolved by name (resolving a
+        // label that's really just an orphaned id would create a junk
+        // performer, and a duplicated name could pick the wrong one).
+        function editPerf(kind, multi) {
+            const st = editing[kind];
+            if (st && multiLabels(multi) === st.perfLabels) {
+                st.perfSame = true;
+                const ids = st.current.performer_ids && st.current.performer_ids.length ? st.current.performer_ids
+                    : (st.current.performer_id ? [st.current.performer_id] : []);
+                if (!ids.length) return {};
+                return ids.length === 1 ? { performer_id: ids[0], displayName: "" } : { performer_ids: [...ids], displayName: "" };
+            }
+            if (st) st.perfSame = false;
+            return resolveMultiPerformerField(multi);
+        }
+        function editList(kind, key, field) {
+            const st = editing[kind];
+            if (st && st.listLabels && st.listLabels[key] === listLabels(field)) return deepCopy(st.current[key]) || [];
+            return readPerformerIdListField(field);
+        }
+
+        function flyerEntriesOf(r, singularKey, pluralKey) {
+            if (Array.isArray(r[pluralKey])) return r[pluralKey].map(f => typeof f === "string" ? { flyer: f, label: "" } : { flyer: f.flyer, label: f.label || "" });
+            if (typeof r[singularKey] === "string" && r[singularKey]) return [{ flyer: r[singularKey], label: "" }];
+            return [];
+        }
+        function populateFlyerRows(container, entries) {
+            container.innerHTML = "";
+            (entries.length ? entries : [{ flyer: "", label: "" }]).forEach(e => {
+                const row = flyerRowTemplate();
+                container.appendChild(row);
+                row.querySelector(".fr-filename").value = e.flyer;
+                row.querySelector(".fr-label").value = e.label;
+            });
+        }
+
+        function populateTourFormFromRecord(key, r) {
+            const $ = id => document.getElementById(id);
+            const setv = (id, v) => { const el = $(id); el.value = v || ""; if (v) markFieldPrefilled(el); };
+            $("tour-key").value = key; tourKeyAutoValue = "";
+            setv("tour-tourname", r.tour_name); setv("tour-name", r.name);
+            setv("tour-description", decodeParagraphBreaksForEdit(r.tour_description || ""));
+            setv("tour-video", r.video_trailer);
+            $("tour-kind").value = r.isMusic ? "music" : r.isPoetry ? "poetry" : "story";
+            $("tour-double-headline").checked = !!r.isDoubleHeadline;
+            $("tour-repertoire-performer-filter").value = "";
+            refreshTourRepertoireShowSelect();
+            $("tour-repertoire-show-select").value = r.repertoire_id || "";
+            updateTourRepertoireHint();
+            populateMultiPerformerField(tourPerformerMulti, r.performer_ids && r.performer_ids.length ? r.performer_ids : (r.performer_id ? [r.performer_id] : []));
+            populatePerformerIdListField(tourOtherPerformersField, r.other_performer_ids);
+            populatePerformerIdListField(tourSupportPerformersField, r.support_performer_ids);
+            populateFlyerRows($("tour-flyer-rows"), flyerEntriesOf(r, "touring_event_flyer", "touring_event_flyers"));
+        }
+        function populateShowFormFromRecord(key, r) {
+            const $ = id => document.getElementById(id);
+            const setv = (id, v) => { const el = $(id); el.value = (typeof v === "string") ? v : ""; if (el.value) markFieldPrefilled(el); };
+            $("show-key").value = key; showKeyAutoValue = "";
+            setv("show-fullname", r.name); setv("show-showname", r.showname);
+            setv("show-description", decodeParagraphBreaksForEdit(r.description || ""));
+            setv("show-flyer", r.touring_event_flyer); setv("show-video", r.video_trailer);
+            $("show-special").checked = !!r.isSpecial;
+            $("show-touring").checked = !!r.isTouringShow;
+            $("show-storywalk").checked = !!r.isStoryWalk;
+            populateMultiPerformerField(showPerformerMulti, r.performer_ids && r.performer_ids.length ? r.performer_ids : (r.performer_id ? [r.performer_id] : []));
+        }
+
+        // Pairs each date in an already-edited record with the feed date it
+        // came from (needed only when re-opening an edit from the batch that
+        // has no stored pairing, e.g. one made by an Enrich checker).
+        function matchIndexes(dates, baseDates) {
+            const used = new Set();
+            const find = test => baseDates.findIndex((b, i) => !used.has(i) && test(b));
+            return dates.map(d => {
+                let i = find(b => canonStr(b) === canonStr(d));
+                if (i < 0 && d.eventId) i = find(b => b.eventId === d.eventId);
+                if (i < 0) i = find(b => canonStr(b.date) === canonStr(d.date) && b.venue_id === d.venue_id);
+                if (i >= 0) used.add(i);
+                return i >= 0 ? i : null;
+            });
+        }
+
+        function populateDateRowsForEdit(container, kind, dates, idxMap, baseDates) {
+            container.innerHTML = "";
+            if (!dates.length) return;
+            populateDateRowsContainer(container, kind, dates);
+            Array.from(container.children).forEach((row, i) => {
+                const d = dates[i];
+                if (kind === "tour") populateFlyerRows(row._flyerRowsContainer, flyerEntriesOf(d, "event_flyer", "event_flyers"));
+                row._original = deepCopy(d);
+                row._baseIdx = idxMap[i];
+                const base = row._baseIdx != null ? baseDates[row._baseIdx] : null;
+                if (base && canonStr(base) === canonStr(d)) row.dataset.legacy = "1";
+                else if (row._baseIdx == null) row.dataset.isnew = "1";
+                else row.dataset.edited = "1";
+                row._dirty = false;
+                const touched = () => {
+                    row._dirty = true;
+                    delete row.dataset.legacy;
+                    if (row._baseIdx != null) row.dataset.edited = "1";
+                };
+                row.addEventListener("input", touched);
+                row.addEventListener("change", touched);
+            });
+        }
+
+        function startEdit(kind, key, source) {
+            const cfg = editCfg(kind);
+            const raw = cfg.raw()[key];
+            const meta = cfg.meta[key];
+            let record, baseline, idxMap = null;
+            if (source === "updated") {
+                record = cfg.updated[key];
+                if (meta && meta.finalJSON === canonStr(record)) { baseline = meta.baseline; idxMap = meta.idxMap; }
+                else baseline = raw || record;
+            } else { record = raw; baseline = raw; }
+            if (!record) { alert(`Couldn't find that ${cfg.noun} in the loaded data.`); return; }
+
+            cfg.clearForm();
+            cfg.populate(key, record);
+            const dates = record[cfg.datesKey] || [];
+            const baseDates = baseline[cfg.datesKey] || [];
+            const map = idxMap || (source === "updated" ? matchIndexes(dates, baseDates) : dates.map((_, i) => i));
+            const container = document.getElementById(cfg.rowsId);
+            populateDateRowsForEdit(container, kind, dates, map, baseDates);
+            container.classList.add("hide-legacy");
+
+            const lists = cfg.lists();
+            editing[kind] = {
+                key, source,
+                current: deepCopy(record),
+                baseline: deepCopy(baseline),
+                perfLabels: multiLabels(cfg.multi()),
+                listLabels: Object.fromEntries(Object.entries(lists).map(([k, f]) => [k, listLabels(f)])),
+                perfSame: false,
+            };
+            const blank = cfg.addRow();
+            if (blank) blank.dataset.isnew = "1";
+            renderEditBanner(kind);
+        }
+
+        function resetEditState(kind) {
+            editing[kind] = null;
+            const cfg = editCfg(kind);
+            const el = document.getElementById(cfg.bannerId);
+            if (el) { el.style.display = "none"; el.innerHTML = ""; }
+            const keyEl = document.getElementById(cfg.keyId);
+            if (keyEl) keyEl.readOnly = false;
+            const container = document.getElementById(cfg.rowsId);
+            if (container) container.classList.remove("hide-legacy");
+            const btn = document.getElementById(cfg.addBtnId);
+            if (btn) btn.textContent = "Add to batch";
+        }
+
+        function renderEditBanner(kind) {
+            const cfg = editCfg(kind), st = editing[kind];
+            const el = document.getElementById(cfg.bannerId);
+            const container = document.getElementById(cfg.rowsId);
+            document.getElementById(cfg.keyId).readOnly = true;
+            document.getElementById(cfg.addBtnId).textContent = "Save changes to batch";
+            const hiddenCount = container.querySelectorAll(":scope > .date-row[data-legacy='1']").length;
+            const hidden = container.classList.contains("hide-legacy");
+            el.style.display = ""; el.innerHTML = "";
+            const span = document.createElement("span");
+            span.textContent = `${st.source === "updated" ? "Re-editing your pending changes to" : "Editing existing"} ${cfg.noun} "${cfg.label(st.current)}" (${st.key}). ` +
+                `${hiddenCount} existing date(s), unchanged from the feed, ${hidden ? "are hidden" : "are shown"}; ` +
+                `green-edged rows are new, amber-edged rows are existing dates you've changed. `;
+            el.appendChild(span);
+            const mk = (text, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "add-subitem-btn"; b.textContent = text; b.addEventListener("click", fn); el.appendChild(b); el.appendChild(document.createTextNode(" ")); };
+            mk(hidden ? `Show ${hiddenCount} existing dates` : "Hide existing dates", () => { container.classList.toggle("hide-legacy"); renderEditBanner(kind); });
+            mk("+ Add a new date", () => { const r = cfg.addRow(); if (r) { r.dataset.isnew = "1"; r.scrollIntoView({ behavior: "smooth", block: "center" }); } });
+            mk("Cancel edit", () => cfg.clearForm());
+        }
+
+        function diffRecords(base, fin, dk) {
+            const bd = base[dk] || [], fd = fin[dk] || [];
+            const added = [], upd = [], rem = [], set = {}, del = [];
+            fd.forEach(d => {
+                const i = d._origIdx;
+                if (i == null) added.push(d);
+                else if (canonStr(d) !== canonStr(bd[i])) upd.push({ index: i, was: { date: bd[i].date, venue_id: bd[i].venue_id }, record: d });
+            });
+            bd.forEach((o, i) => { if (!fd.some(d => d._origIdx === i)) rem.push({ index: i, date: o.date, venue_id: o.venue_id }); });
+            new Set([...Object.keys(base), ...Object.keys(fin)]).forEach(k => {
+                if (k === dk) return;
+                if (!(k in fin)) del.push(k);
+                else if (!(k in base) || canonStr(base[k]) !== canonStr(fin[k])) set[k] = fin[k];
+            });
+            return { added, upd, rem, set, del };
+        }
+        function changesAreEmpty(c) { return !c.added.length && !c.upd.length && !c.rem.length && !Object.keys(c.set).length && !c.del.length; }
+        function editSummary(c) {
+            const bits = [];
+            if (c.added.length) bits.push(`+${c.added.length} new date${c.added.length === 1 ? "" : "s"}`);
+            if (c.upd.length) bits.push(`${c.upd.length} date${c.upd.length === 1 ? "" : "s"} updated`);
+            if (c.rem.length) bits.push(`${c.rem.length} removed`);
+            const f = Object.keys(c.set).length + c.del.length;
+            if (f) bits.push(`${f} field${f === 1 ? "" : "s"} changed`);
+            return bits.join(", ");
+        }
+        // Instruction-style shape that's easy to apply by hand to the feed.
+        function changesForOutput(c, dk) {
+            const o = {};
+            if (c.added.length) o[`append_to_${dk}`] = c.added;
+            if (c.upd.length) o[`replace_in_${dk}`] = c.upd;
+            if (c.rem.length) o[`remove_from_${dk}`] = c.rem;
+            if (Object.keys(c.set).length) o.set_fields = c.set;
+            if (c.del.length) o.delete_fields = c.del;
+            return o;
+        }
+
+        // Called by addTourToBatch/addShowToBatch in place of pushing a new
+        // record. Returns false (and adds nothing) if nothing actually changed.
+        function commitEdit(kind, key, formRecord) {
+            const cfg = editCfg(kind), st = editing[kind], cur = st.current;
+            const owned = new Set(cfg.topOwned);
+            if (st.perfSame) ["performer_id", "performer_ids"].forEach(k => { owned.delete(k); delete formRecord[k]; });
+            if (kind === "show" && cur.touring_event_flyer !== undefined && typeof cur.touring_event_flyer !== "string") {
+                owned.delete("touring_event_flyer"); delete formRecord.touring_event_flyer;
+            }
+            const fin = mergeKeepOrder(cur, formRecord, owned);
+            // The form's "Story/special" kind always writes isSpecial; don't
+            // invent it on a record that never had it.
+            if (kind === "tour" && !("isSpecial" in cur) && fin.isSpecial === true && !cur.isMusic && !cur.isPoetry) delete fin.isSpecial;
+            const changes = diffRecords(st.baseline, fin, cfg.datesKey);
+            if (changesAreEmpty(changes)) {
+                alert(`Nothing has changed compared with the feed version of this ${cfg.noun}, so there's nothing to add to the batch.`);
+                return false;
+            }
+            cfg.updated[key] = fin;
+            cfg.meta[key] = {
+                baseline: st.baseline, changes,
+                idxMap: (fin[cfg.datesKey] || []).map(d => d._origIdx == null ? null : d._origIdx),
+                finalJSON: canonStr(fin),
+            };
+            return true;
+        }
+
+        // Picker (datalist) for the "Edit existing" box on each tab.
+        const loadMaps = { tour: {}, show: {} };
+        function refreshExistingPickers() {
+            [["tour", toursRaw], ["show", showsRaw]].forEach(([kind, raw]) => {
+                const cfg = editCfg(kind);
+                const entries = Object.entries(raw || {}).map(([k, r]) => [`${cfg.label(r)} (${k})`, k]).sort((a, b) => a[0].localeCompare(b[0]));
+                loadMaps[kind] = Object.fromEntries(entries);
+                document.getElementById(cfg.listId).innerHTML = entries.map(([label]) => `<option value="${label.replace(/"/g, "&quot;")}"></option>`).join("");
+            });
+        }
+        function loadExistingFromPicker(kind) {
+            const cfg = editCfg(kind);
+            const input = document.getElementById(cfg.inputId);
+            const text = input.value.trim();
+            if (!text) return;
+            const raw = cfg.raw();
+            let key = loadMaps[kind][text];
+            if (!key) {
+                if (raw[text]) key = text;
+                else { const m = text.match(/\(([^()]+)\)\s*$/); if (m && raw[m[1]]) key = m[1]; }
+            }
+            if (!key) { alert(`No existing ${cfg.noun} matches that — pick one from the suggestions.`); return; }
+            const keyVal = document.getElementById(cfg.keyId).value.trim();
+            if ((editing[kind] || keyVal) && !confirm("This replaces whatever is currently in the form. Continue?")) return;
+            startEdit(kind, key, cfg.updated[key] ? "updated" : "existing");
+            input.value = "";
+            document.getElementById(`panel-${kind === "tour" ? "tour" : "show"}`).scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
         // ── Output generation ───────────────────────────────────────────────
         function generateOutput() {
             const out = {};
@@ -6048,8 +6506,22 @@
             if (Object.keys(updatedClubs).length) out.updatedClubs = updatedClubs;
             if (batch.podcastEpisodeAdditions.length) out.podcastEpisodeAdditions = batch.podcastEpisodeAdditions;
             if (Object.keys(updatedEvents).length) out.updatedEvents = updatedEvents;
-            if (Object.keys(updatedTours).length) out.updatedTours = updatedTours;
-            if (Object.keys(updatedRepertoireShows).length) out.updatedRepertoireShows = updatedRepertoireShows;
+            // Tours / shows edited through "Edit existing": changes-only, full record, or both.
+            // Anything without (still-valid) change info — e.g. from an Enrich checker — is always full.
+            const editMode = (document.getElementById("output-edit-mode") || {}).value || "changes";
+            [["tour", updatedTours, editMeta.tours, "updatedTours", "tourChanges", "tour_dates"],
+            ["show", updatedRepertoireShows, editMeta.shows, "updatedRepertoireShows", "repertoireShowChanges", "show_dates"]]
+                .forEach(([, updated, metas, fullName, changesName, dk]) => {
+                    const full = {}, changes = {};
+                    Object.keys(updated).forEach(k => {
+                        const m = metas[k];
+                        const valid = m && m.finalJSON === canonStr(updated[k]);
+                        if (!valid || editMode !== "changes") full[k] = updated[k];
+                        if (valid && editMode !== "full") changes[k] = changesForOutput(m.changes, dk);
+                    });
+                    if (Object.keys(changes).length) out[changesName] = changes;
+                    if (Object.keys(full).length) out[fullName] = full;
+                });
             document.getElementById("outputArea").value = JSON.stringify(out, null, 2);
         }
 
@@ -6555,6 +7027,8 @@
                 Object.keys(updatedEvents).forEach(k => delete updatedEvents[k]);
                 Object.keys(updatedTours).forEach(k => delete updatedTours[k]);
                 Object.keys(updatedRepertoireShows).forEach(k => delete updatedRepertoireShows[k]);
+                Object.keys(editMeta.tours).forEach(k => delete editMeta.tours[k]);
+                Object.keys(editMeta.shows).forEach(k => delete editMeta.shows[k]);
                 refreshBatchSummary();
                 document.getElementById("enrich-postcode-scan-btn").disabled = false;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = false;
@@ -9346,6 +9820,8 @@
                 existingTourKeys = new Set(Object.keys(result.toursLookup || {}));
                 existingShowKeys = new Set(Object.keys(result.eventsData.repertoire_shows || {}));
                 repertoireShowsLookup = result.eventsData.repertoire_shows || {};
+                toursRaw = result.eventsData.tours || result.toursLookup || {};
+                showsRaw = result.eventsData.repertoire_shows || {};
                 existingFestivalKeys = new Set(Object.keys(festivalsLookup));
 
                 refreshDatalists();
@@ -9365,6 +9841,13 @@
             initPromoterForm();
             initClubForm();
             wirePromoterField(document.getElementById("club-promoter"), document.getElementById("club-promoter-hint"));
+            refreshExistingPickers();
+            ["tour", "show"].forEach(kind => {
+                document.getElementById(`${kind}-load-existing-btn`).addEventListener("click", () => loadExistingFromPicker(kind));
+                document.getElementById(`${kind}-load-existing`).addEventListener("keydown", e => {
+                    if (e.key === "Enter") { e.preventDefault(); loadExistingFromPicker(kind); }
+                });
+            });
 
             // Ticket URL fields aren't built dynamically like the date-row
             // ones (see dateRowTemplate), so they're wired individually here
