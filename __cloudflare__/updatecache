@@ -108,6 +108,12 @@
 #   --hard-purge-all     treat EVERY snapshot as missing (asks for confirmation).
 #                        Bots get the plain origin page until pages are re-rendered.
 #
+#   --force              (add to ANY rendering command) try the render even if the gatekeeper
+#                        has a quota / 429 pause recorded. e.g.
+#                        ./updatecache --performer halo-quin --indexnow --force
+#                        If the quota really is gone it fails with a 429 again and stops; a
+#                        success clears the pause for everyone.
+#
 # Default behaviour only force-renders. A successful render overwrites the stored
 # snapshot. A failed one (rate limit / daily quota) keeps the old snapshot AND
 # marks it stale (you'll see x-marked-stale: true), so the next prewarm run or
@@ -117,6 +123,21 @@
 
 HOST="newtroubadours.org"
 SECRET="${NT_DEBUG_SECRET:?Set NT_DEBUG_SECRET first to the DEBUG_SECRET of the worker}"
+
+# --force (anywhere on the command line): ask the gatekeeper to TRY the render even if it has a
+# render pause / daily-quota flag recorded (sends x-ignore-pause). If Browser Run really is out
+# of quota the render just fails with a 429 again and the run stops as usual. Works with every
+# command that renders (--performer, --delta, --fill-missing, --refresh-stale, plain page names).
+# Needs the gatekeeper.js that understands x-ignore-pause; an older worker simply ignores it.
+FORCE=0
+_args=()
+for _a in "$@"; do
+  if [ "$_a" = "--force" ]; then FORCE=1; else _args+=("$_a"); fi
+done
+set -- ${_args[@]+"${_args[@]}"}
+unset _args _a
+force_hdr=()
+[ "$FORCE" = "1" ] && force_hdr=(-H "x-ignore-pause: $SECRET")
 
 if [ "$1" = "--soft-purge-all" ]; then
   curl -s -w "  [HTTP %{http_code}]\n" -H "x-soft-purge: $SECRET" "https://$HOST/"
@@ -281,11 +302,13 @@ render_one() {
   # unless it is longer than NT_MAX_PAUSE_WAIT seconds (default 1500 = 25 min); then we stop.
   local attempt paused maxwait="${NT_MAX_PAUSE_WAIT:-1500}"
   for attempt in 1 2; do
-    result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
+    result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${force_hdr[@]+"${force_hdr[@]}"} ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
       | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-render-paused|x-marked-stale|x-page-health|x-lastmod)' | tr -d '\r' | paste -sd' ' -)
     echo "$result"
     case "$result" in *x-quota-exhausted*) break ;; esac
     paused=$(printf '%s' "$result" | sed -n 's/.*[Xx]-[Rr]ender-[Pp]aused: \([0-9]*\).*/\1/p')
+    # With --force the gatekeeper already tried the render; waiting out the pause would be pointless.
+    [ "$FORCE" = "1" ] && break
     [ -n "$paused" ] && [ "$attempt" -eq 1 ] && [ "$paused" -le "$maxwait" ] || break
     echo "  renders paused ${paused}s after a 429; waiting, then retrying this page once..." >&2
     sleep $((paused + 3))
@@ -1677,7 +1700,7 @@ for page in "$@"; do
   # Forced render can retry 3x with ~12s gaps, so allow a long timeout
   result=$(curl -s --max-time 120 -o /dev/null \
     -D - -w "" \
-    -H "x-force-render: $SECRET" "$URL" \
+    -H "x-force-render: $SECRET" ${force_hdr[@]+"${force_hdr[@]}"} "$URL" \
     | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-marked-stale|x-page-health)' | tr -d '\r' | paste -sd' ' -)
   echo "Refresh: $result"
   case "$result" in

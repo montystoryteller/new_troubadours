@@ -61,6 +61,13 @@ const ONLY_IF_OLDER_HEADER = "x-only-if-older-than";
 // <lastmod> in the sitemap (meta:lastmod). Routine refreshes (prewarm rotation, --refresh-stale,
 // --fill-missing, bot-triggered refreshes) never send it, so they never move a lastmod.
 const UPDATED_HEADER = "x-content-updated";
+// Sent (value = DEBUG_SECRET) together with x-force-render by `updatecache --force`. The forced
+// render then ignores a recorded pause (lock:quota) and TRIES the renderer anyway. Use it when
+// you suspect the pause is stale (e.g. the quota actually reset, or a short back-off was set by
+// a bot burst). If the renderer really is limited it just 429s again, and the existing pause
+// stays as it was (a still-active pause is never extended or re-counted by this). A successful
+// render clears the pause and the 429 count, like any other success.
+const IGNORE_PAUSE_HEADER = "x-ignore-pause";
 
 // Identity params per page: the ones that select a specific record and so
 // produce a genuinely different, indexable page. Keyed by path without ".html".
@@ -1003,7 +1010,12 @@ export default {
       }
       // Quota already known to be used up: fail fast, no browser launch and no
       // markStale write. The caller should stop until the next UTC day.
-      const pausedUntil = await getPauseUntil(env);
+      // x-ignore-pause skips this check so the render is attempted regardless.
+      const ignorePause = isAuthorized(request, env, IGNORE_PAUSE_HEADER);
+      const pausedUntil = ignorePause ? 0 : await getPauseUntil(env);
+      if (ignorePause && (await getPauseUntil(env))) {
+        logGate(request, "forced", normUrl, "forced-ignoring-pause");
+      }
       if (pausedUntil) {
         logGate(request, "forced", normUrl, "forced-skipped-quota", {
           resumesAt: new Date(pausedUntil).toISOString(),
