@@ -17000,6 +17000,22 @@
         -5.08412
       ]
     },
+    "the-continental-preston": {
+      "id": "the-continental-preston",
+      "name": "The Continental, Preston",
+      "venue_type": "Other / unknown",
+      "city": "Preston",
+      "postcode": "PR1 8JP",
+      "full_address": "The Continental, South Meadow Lane, Preston, PR1 8JP",
+      "url": "https://newcontinental.net/",
+      "facebook": "newcontinental",
+      "instagram": "newcontinentalpreston",
+      "description": "Live music, comedy, spoken word, cinema and club nights — The Boatyard is our dedicated space for culture on the riverside.",
+      "latlon": [
+        53.75021,
+        -2.70711
+      ]
+    },
     "gregson-community-arts-centre": {
       "id": "gregson-community-arts-centre",
       "name": "Gregson Community & Arts Centre",
@@ -18386,6 +18402,36 @@
         -2.97884
       ]
     },
+    "the-foundry-brecon": {
+      "id": "the-foundry-brecon",
+      "name": "The Foundry, Brecon",
+      "venue_type": "Other / unknown",
+      "city": "Brecon",
+      "postcode": "LD3 9EE",
+      "full_address": "The Foundry, 8 Bell Lane, Brecon, LD3 9EE",
+      "url": "https://www.thefoundrybrecon.co.uk/",
+      "facebook": "thefoundrybrecon",
+      "instagram": "thefoundrybrecon",
+      "description": "Brecon's Premier Grassroots Music Venue, Bar & Kitchen nestled in the heart of Mid Wales.\n\n\n\nWith a welcoming ambiance and a capacity for 150 guests, The Foundry stands as a hub for live music aficionados, food enthusiasts, and event seekers alike. Our establishment thrives on the rhythm of live performances, boasting a vibrant lineup of talented artists and bands every week. From soulful melodies to electrifying beats, we curate an eclectic range of musical genres, ensuring an unforgettable experience for all music lovers.",
+      "latlon": [
+        51.94806,
+        -3.39243
+      ]
+    },
+    "queen-s-hall-narberth": {
+      "id": "queen-s-hall-narberth",
+      "name": "Queen's Hall, Narberth",
+      "venue_type": "Other / unknown",
+      "city": "Narberth",
+      "postcode": "SA67 7AS",
+      "full_address": "Queens Hall, High St, Narberth, SA67 7AS",
+      "url": "https://thequeenshall.org.uk/",
+      "description": "The Queens Hall has hosted many successful events for both local and national groups and organisations over the years. These have included Conferences, Seminars, Training Days, Dinner Dances, Charity Fundraisers, Exhibitions, Launch Parties and more. A range of these events has also taken advantage of the flexible catering options, which the hall can also provide.",
+      "latlon": [
+        51.79935,
+        -4.74445
+      ]
+    },
     "the-welfare-ystradgynlais": {
       "id": "the-welfare-ystradgynlais",
       "name": "The Welfare, Ystradgynlais",
@@ -18638,6 +18684,20 @@
         -2.52281
       ]
     },
+    "kirkgate-centre-shipley": {
+      "id": "kirkgate-centre-shipley",
+      "name": "Kirkgate Centre, Shipley",
+      "venue_type": "Other / unknown",
+      "city": "Shipley",
+      "postcode": "BD18 3EH",
+      "full_address": "Kirkgate Community Centre, 39A Kirkgate, Shipley, BD18 3EH",
+      "url": "https://kirkgatecentre.org.uk/",
+      "description": "Our Vision: A happy, vibrant, community-led organisation filled with respect, inspiration and compassion. A place where friendships thrive and well-being is enhanced.\n\n\n\nOur Mission: The Kirkgate Centre is our community building. We enhance the cultural and social lives of everyone in Shipley and surrounding areas, by providing a welcoming, safe and creative space, alongside providing opportunities and activities that reach into the streets and spaces beyond our centre.",
+      "latlon": [
+        53.83396,
+        -1.7792
+      ]
+    },
     "the-underground-bradford": {
       "id": "the-underground-bradford",
       "name": "The Underground, Bradford",
@@ -18729,6 +18789,21 @@
         -1.20877
       ]
     },
+    "the-parish-huddersfield": {
+      "id": "the-parish-huddersfield",
+      "name": "The Parish, Huddersfield",
+      "venue_type": "Other / unknown",
+      "city": "Huddersfield",
+      "postcode": "HD1 2SP",
+      "full_address": "The Parish, The Old Courthouse, Queen Street, Huddersfield, HD1 2SP",
+      "url": "https://www.parishpub.co.uk/",
+      "tickets_url": "https://parishevents.seetickets.com/search/all",
+      "description": "Loud music, big food, good peeople.\n\n\n\nYour friendly neighbourhood Parish. A pub, kitchen and live music venue in the middle of Huddersfield.",
+      "latlon": [
+        53.64447,
+        -1.78014
+      ]
+    },
     "amped-huddersfield": {
       "id": "amped-huddersfield",
       "name": "Amped, Huddersfield",
@@ -18739,6 +18814,22 @@
       "latlon": [
         53.64425,
         -1.77929
+      ]
+    },
+    "wolverhampton-arts-centre": {
+      "id": "wolverhampton-arts-centre",
+      "name": "Wolverhampton Arts Centre",
+      "venue_type": "Arts centre / venue",
+      "city": "Wolverhampton",
+      "postcode": "WV1 4AN",
+      "full_address": "Wolverhampton Arts Centre, Dunkley Street, Wolverhampton, WV1 4AN",
+      "url": "https://wolverhamptonartscentre.co.uk/",
+      "facebook": "WolverhamptonArtsCentre",
+      "instagram": "wolverhamptonartscentre",
+      "description": "Wolverhampton Arts Centre (formerly Newhampton Arts Centre), a creative venue in the heart of Wolverhampton that nurtures new talent and new ideas.",
+      "latlon": [
+        52.5919,
+        -2.13243
       ]
     },
     "the-giffard-wolverhampton": {
@@ -18910,6 +19001,16 @@
         52.11039,
         -2.32698
       ]
+    },
+    "steam-and-whistle": {
+      "id": "steam-and-whistle",
+      "name": "Steam and Whistle",
+      "venue_type": "Pub / bar / café",
+      "city": "Cheltenham",
+      "postcode": "GL51 8NW",
+      "full_address": "Steam and Whistle, 247 Gloucester Road, Cheltenham, GL51 8NW",
+      "instagram": "thesteamandwhistle",
+      "description": "Victorian pub, live music and events.\n\n\n\nVenue by Marvellous Pub Co."
     },
     "frog-fiddle-cheltenham": {
       "id": "frog-fiddle-cheltenham",
@@ -21669,6 +21770,13 @@
       "url": "https://takeart.org/team/danny-pedler",
       "bio": "Folk musician",
       "musician": true
+    },
+    "deja-vu": {
+      "id": "deja-vu",
+      "name": "Deja Vu",
+      "bio": "Trad folk, folk covers & original songs sang and played by the painted lady of Albion",
+      "musician": true,
+      "instagram": "dejavu.folk"
     },
     "jess-silk": {
       "id": "jess-silk",
