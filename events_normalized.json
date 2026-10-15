@@ -4,6 +4,11 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "50rpm": {
+      "promoter_id": "50rpm",
+      "name": "50rpm, Coatbridge",
+      "promoter_link": "https://www.50rpm.co.uk/"
+    },
     "mid-border-arts": {
       "promoter_id": "mid-border-arts",
       "name": "Mid Border Arts",
@@ -3718,10 +3723,12 @@
         },
         {
           "date": "06/11/2026",
-          "venue_id": "50rpm-coatbridge",
+          "venue_id": "the-georgian-hotel-coatbridge",
           "isSpecial": true,
           "time": "7.30pm",
           "price": "£14 (+ £1.40)",
+          "promoter_id": "50rpm",
+          "event_flyer": "2026_11_06_attila_coatbridge.jpg",
           "ticket_url": "https://wegottickets.com/af/671/f/16646",
           "eventId": "T-attila-fiery-words-autumn-2026-20261106-50rpm-coatbridge"
         },
@@ -13415,6 +13422,20 @@
         1.3995
       ]
     },
+    "norwich-arts-centre": {
+      "id": "norwich-arts-centre",
+      "name": "Norwich Arts Centre",
+      "venue_type": "Arts centre / venue",
+      "city": "Norwich",
+      "postcode": "NR2 4PG",
+      "full_address": "Norwich Arts Centre, St. Benedict’s Street, Norwich, NR2 4PG",
+      "url": "https://norwichartscentre.co.uk/",
+      "description": "Internationally recognised and nestled in Norwich’s cultural and independent community, award-winning Norwich Arts Centre (NAC) is a contemporary multi-arts venue housed within a Grade 1 listed beautiful flint building.\n\n\n\nSince 1980, NAC has delivered an alternative programme of new music, theatre, comedy, live art and dance. As well as providing quality cultural experiences all year round NAC is also available to hire for a city centre wedding, civil service or party.\n\n\n\nWe are an independently run venue with charitable status and a mission to support the development of artists and nurture emerging talent across a range of art forms.",
+      "latlon": [
+        52.63145,
+        1.288
+      ]
+    },
     "white-lion-norwich": {
       "id": "white-lion-norwich",
       "name": "White Lion pub, Norwich",
@@ -13437,6 +13458,20 @@
       "latlon": [
         51.9958309,
         -0.7443209
+      ]
+    },
+    "the-black-prince-northampton": {
+      "id": "the-black-prince-northampton",
+      "name": "The Black Prince, Northampton",
+      "venue_type": "Other / unknown",
+      "city": "Northampton",
+      "postcode": "NN1 4AE",
+      "full_address": "The Black Prince, 15 Abington Square, Northampton, NN1 4AE",
+      "url": "https://www.theblackprincenn.com/",
+      "description": "A public house + music venue + beer garden situated on Abington Square in historic Northampton.\n\n\n\nThe Black Prince is a large space encompassing a front bar + music venue room + beer garden, situated on Abington Square in historic Northampton town centre. A public house has stood in this spot since 1897!\n\n\n\nThe Black Prince has been the name since 2016, but this space was formerly known as The Racehorse. Bands have been playing here since the 1960s.",
+      "latlon": [
+        52.24021,
+        -0.88846
       ]
     },
     "quaker-meeting-house-northampton": {
@@ -14490,6 +14525,23 @@
         -1.50871
       ]
     },
+    "the-crescent-york": {
+      "id": "the-crescent-york",
+      "name": "The Crescent, York",
+      "venue_type": "Other / unknown",
+      "city": "York",
+      "postcode": "YO24 1AW",
+      "full_address": "The Crescent, 8 The Crescent, York, YO24 1AW",
+      "url": "https://thecrescentyork.com/",
+      "email": "thecrescentyork@gmail.com",
+      "facebook": "thecrescentyork",
+      "instagram": "thecrescentyork",
+      "description": "The Crescent Community Venue is a fully licensed bar, concert and events venue.  A former Working Men’s Club, it has a long history of community spirit and musical entertainment spanning over 100 years, and since re-opening has rapidly developed into a key component of York’s music and cultural life.",
+      "latlon": [
+        53.95507,
+        -1.09361
+      ]
+    },
     "rise-bluebird-bakery-york": {
       "id": "rise-bluebird-bakery-york",
       "name": "Rise @ Bluebird Bakery, York",
@@ -14500,6 +14552,19 @@
       "latlon": [
         53.95601,
         -1.11947
+      ]
+    },
+    "whitby-brewery-ltd": {
+      "id": "whitby-brewery-ltd",
+      "name": "Whitby Brewery Ltd",
+      "venue_type": "Pub / bar / café",
+      "city": "Whitby",
+      "postcode": "YO22 4JR",
+      "full_address": "Whitby Brewery Ltd, East Cliff, Whitby, YO22 4JR",
+      "url": "https://www.whitby-brewery.com/",
+      "latlon": [
+        54.48905,
+        -0.60628
       ]
     },
     "the-folk-preservation-society-teignmouth": {
@@ -17812,16 +17877,17 @@
         -2.55631
       ]
     },
-    "50rpm-coatbridge": {
-      "id": "50rpm-coatbridge",
-      "name": "50rpm, Coatbridge",
+    "the-georgian-hotel-coatbridge": {
+      "id": "the-georgian-hotel-coatbridge",
+      "name": "The Georgian Hotel, Coatbridge",
       "city": "Coatbridge",
       "postcode": "ML5 1LZ",
-      "full_address": "50rpm, 26 Lefroy Street, Coatbridge, ML5 1LZ",
-      "url": "https://www.50rpm.co.uk/",
+      "full_address": "The Georgian Hotel, 26 Lefroy St, Coatbridge, ML5 1LZ",
+      "url": "https://www.georgianhotel.co.uk/",
+      "facebook": "TheGeorgianHotel",
       "latlon": [
-        55.86284,
-        -4.03888
+        55.86295,
+        -4.03938
       ]
     },
     "hillgigs-thornhill": {
@@ -17846,6 +17912,23 @@
       "latlon": [
         56.46107,
         -2.97651
+      ]
+    },
+    "tunnels-aberdeen": {
+      "id": "tunnels-aberdeen",
+      "name": "Tunnels, Aberdeen",
+      "venue_type": "Other / unknown",
+      "city": "Aberdeen",
+      "postcode": "AB10 1BF",
+      "full_address": "The Tunnels, Carnegie's Brae, Aberdeen, AB10 1BF",
+      "url": "https://www.thetunnels.co.uk/",
+      "email": "info@thetunnels.co.uk",
+      "facebook": "tunnelsaberdeen",
+      "instagram": "tunnelsaberdeen",
+      "description": "Occupying two tunnels under the city, our focus is to bring you the best entertainment in town, from our extensive programme of live music to top DJ's from around the Globe\n\n\n\nTunnels sits beneath the streets of Aberdeen’s city centre, a short walk from Union Street and the Harbour. It’s easy to reach by foot, bus or taxi, and close enough to the centre that most routes naturally lead past it on a night out.\n\n\n\nThe venue is tucked slightly out of sight — but once you know where it is, you know.",
+      "latlon": [
+        57.14689,
+        -2.09751
       ]
     },
     "krakatoa-aberdeen": {
@@ -17906,6 +17989,22 @@
       "latlon": [
         53.76233,
         -0.35512
+      ]
+    },
+    "studio-27": {
+      "id": "studio-27",
+      "name": "Studio 27,",
+      "venue_type": "Arts centre / venue",
+      "city": "Hastings",
+      "postcode": "TN34 1JX",
+      "full_address": "Studio 27, White Rock, Hastings, TN34 1JX",
+      "url": "https://whiterocktheatre.org.uk/meetings-occasions/spaces/studio-27/",
+      "facebook": "WhiteRockTheatre",
+      "instagram": "white_rock_theatre",
+      "description": "A fresh and versatile space that can accommodate up to 200 delegates.\n\n\n\nFollowing significant investment and refurbishment, Studio 27 is now available for venue hire for up to 150 delegates seated or a 200-person standing reception.\n\n\n\nHost a presentation, client meeting, dinner or party in this modern space. Accessible from the ground floor, the mid-size tech-enabled room can be set in traditional or contemporary formats.\n\n\n\nLocated on the seafront, White Rock Theatre is just a 10-minute walk from Hastings train station, with parking available nearby.",
+      "latlon": [
+        50.85373,
+        0.57227
       ]
     },
     "jenny-lind-hastings": {
@@ -18147,6 +18246,20 @@
       "latlon": [
         51.31644,
         -2.20834
+      ]
+    },
+    "bear-cave-bournemouth": {
+      "id": "bear-cave-bournemouth",
+      "name": "Bear Cave, Bournemouth",
+      "venue_type": "Other / unknown",
+      "city": "Bournemouth",
+      "postcode": "BH8 8AD",
+      "full_address": "Bear Cavem 24-26 Holdenhurst Rd, Bournemouth, BH8 8AD",
+      "tickets_url": "https://wegottickets.com/bearsbarandbearcave",
+      "facebook": "bearcavegigs",
+      "latlon": [
+        50.72281,
+        -1.8652
       ]
     },
     "chaplins-the-cellar-bar-bournemouth": {
@@ -18624,6 +18737,22 @@
         -3.13967
       ]
     },
+    "the-factory-live-worthing": {
+      "id": "the-factory-live-worthing",
+      "name": "The Factory Live, Worthing",
+      "venue_type": "Other / unknown",
+      "city": "Worthing",
+      "postcode": "BN14 8BX",
+      "full_address": "The Factory Live, 9A Ivy Arch Rd, Worthing, BN14 8BX",
+      "url": "https://www.thefactorylive.co.uk/",
+      "facebook": "FactoryLiveUK",
+      "instagram": "factoryliveuk",
+      "description": "We are the home of Live Music in Worthing. A 285 capacity space boasting a Yamaha sound system, a fully stocked bar, stage and club lighting system, delicious hot foot and a spacious welcoming green room. Based in the warehouse of Soundhouse Rehearsal and Dance Studios, our venue offers much more than your average gig.",
+      "latlon": [
+        50.8194,
+        -0.37032
+      ]
+    },
     "concorde-2-brighton": {
       "id": "concorde-2-brighton",
       "name": "Concorde 2, Brighton",
@@ -18902,6 +19031,22 @@
       "latlon": [
         51.88953,
         0.90235
+      ]
+    },
+    "prince-albert-inn-stroud": {
+      "id": "prince-albert-inn-stroud",
+      "name": "Prince Albert Inn, Stroud",
+      "venue_type": "Pub / bar / café",
+      "city": "Stroud",
+      "postcode": "GL5 3SS",
+      "full_address": "The Prince Albert, Rodborough Hill, Stroud, GL5 3SS",
+      "url": "https://www.theprincealbertstroud.co.uk/",
+      "facebook": "ThePrinceAlbertStroud",
+      "instagram": "the_prince_albert",
+      "description": "The Prince Albert is a performance space, a gallery, a living room, a place for a chat with friends new and old, a meeting point and always a friendly face.\n\n\n\nBut most importantly, possibly the best pub at the top of a very steep hill just outside Stroud !",
+      "latlon": [
+        51.73887,
+        -2.22504
       ]
     },
     "star-anise-cafe-stroud": {
