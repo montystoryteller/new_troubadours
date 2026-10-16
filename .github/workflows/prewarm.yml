@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       full_refresh:
-        description: "Re-render everything, ignoring freshness (old snapshots are kept if a render fails)"
+        description: "Re-render everything, ignoring freshness (the old snapshot is kept if a render fails or comes back unhealthy)"
         type: boolean
         default: false
 
@@ -31,6 +31,10 @@ jobs:
       # Seconds to wait between browser renders. 15 on the free plan; 1-2 on
       # Workers Paid (limits are far higher there).
       RENDER_GAP: "15"
+      # At most this many of the MAX_RENDERS go to pages whose last render was unhealthy (the
+      # gatekeeper kept their old snapshot and flagged them). They are retried first, after the
+      # base pages; a page that stays unhealthy is dropped from this list after 3 attempts.
+      MAX_RETRY_RENDERS: "10"
       FULL_REFRESH: ${{ inputs.full_refresh }}
 
     steps:
@@ -133,7 +137,14 @@ jobs:
           rotated=$(mktemp)
           awk -v o="$off" '{ a[NR] = $0 } END { for (i = 1; i <= NR; i++) print a[(i + o - 1) % NR + 1] }' "$sorted" > "$rotated"
           echo "Rotation: $n pages, starting at offset $off (step $step per day)"
-          mapfile -t urls < <(cat "$base" "$rotated" | awk '!seen[$0]++')
+          # Pages whose last render was unhealthy (old snapshot kept, flagged for retry): retried
+          # right after the base pages, capped so broken pages can't use the whole budget.
+          retry=$(mktemp)
+          curl -s --max-time 30 -H "x-list-retry: ${SECRET}" "$SITE/" \
+            | grep -E '^https?://' | sed -E "s#^https?://[^/]+#${SITE}#" \
+            | head -n "$MAX_RETRY_RENDERS" > "$retry" || true
+          echo "Retry list (last render unhealthy, old page kept): $(grep -c . "$retry" || true) pages"
+          mapfile -t urls < <(cat "$base" "$retry" "$rotated" | awk '!seen[$0]++')
           echo "Total URLs: ${#urls[@]}"
 
           full="${FULL_REFRESH:-false}"
@@ -163,10 +174,13 @@ jobs:
             prerendered=$(grep -i '^x-prerendered:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             skipped=$(grep -i '^x-prerender-skipped:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             quota=$(grep -i '^x-quota-exhausted:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
-            # Page health as seen in the prerendered snapshot (gatekeeper header; empty on an
-            # older gatekeeper). LOG ONLY for now: an unhealthy render is reported, not failed.
+            # Page health of the render (gatekeeper header; empty on an older gatekeeper). An
+            # unhealthy render is NOT written to the cache: the old snapshot stays and is flagged
+            # for retry (x-snapshot-kept), so it is reported here but not counted as a failure.
             health=$(grep -i '^x-page-health:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             hreason=$(grep -i '^x-page-health-reason:' "$hdrs" | tail -n 1 | tr -d '\r' | cut -d' ' -f2- || true)
+            kept=$(grep -i '^x-snapshot-kept:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
+            stored=$(grep -i '^x-snapshot-stored:' "$hdrs" | tail -n 1 | tr -d '\r' | awk '{print $2}' || true)
             rm -f "$hdrs"
 
             if [ "$quota" = "true" ]; then
@@ -196,9 +210,12 @@ jobs:
               case "$health" in
                 ""|ok|n/a) echo "✅ rendered ($renders): $url" ;;
                 *)
-                  echo "⚠️  rendered ($renders) but page health is '$health': $url${hreason:+  --  $hreason}"
-                  echo "::warning::page health '$health': $url${hreason:+ -- $hreason}"
-                  unhealthy+=("$url [$health]") ;;
+                  if [ "$kept" = "true" ]; then outcome="old page kept"
+                  elif [ "$stored" = "false" ]; then outcome="nothing cached"
+                  else outcome="stored as is (old gatekeeper)"; fi
+                  echo "⚠️  rendered ($renders) but page health is '$health' ($outcome): $url${hreason:+  --  $hreason}"
+                  echo "::warning::page health '$health' ($outcome): $url${hreason:+ -- $hreason}"
+                  unhealthy+=("$url [$health, $outcome]") ;;
               esac
             else
               echo "❌ failed (HTTP $status): $url"
@@ -211,7 +228,7 @@ jobs:
           echo ""
           echo "Rendered this run: $renders, failed: ${#failed[@]}, rendered-but-unhealthy: ${#unhealthy[@]}"
           if [ ${#unhealthy[@]} -gt 0 ]; then
-            echo "Unhealthy renders (see ./updatecache --health for the reasons):"
+            echo "Unhealthy renders, not cached (see ./updatecache --health for the reasons; retried first next run, up to 3 times):"
             printf '  %s\n' "${unhealthy[@]}"
           fi
           if [ ${#failed[@]} -gt 0 ]; then

@@ -40,6 +40,20 @@ const FRESH_SECONDS = 60 * 60 * 120; // refresh-if-requested after ~5 days
 const KV_TTL_SECONDS = 60 * 60 * 24 * 90; // keep stale copies for 90 days (safety net; the prewarm rotation refreshes every page well within this)
 const CLIENT_MAX_AGE_SECONDS = 60 * 60;
 
+// HEALTHY-ONLY CACHE. A render only replaces a stored snapshot if its page health is ok (or n/a,
+// or could not be worked out). An unhealthy render (warn / error / loading / missing / 404) leaves
+// the old snapshot exactly as it was (same html, same ts, so its age stays honest) and just flags
+// it { retry: true, fails: n } and refreshes its KV expiry, so a page that is broken at source
+// does not quietly fall out of the cache. Flagged pages are listed to the prewarm Action
+// (RETRY_LIST_HEADER) so it retries them first; after MAX_UNHEALTHY_RETRIES failed attempts a page
+// drops back into the normal rotation (and bots stop triggering refreshes of it), so a page that is
+// broken in the data cannot burn the daily browser minutes. A healthy render clears the flag.
+// With no old snapshot, an unhealthy render stores nothing (a crawler gets the origin page).
+const MAX_UNHEALTHY_RETRIES = 3;
+// GET with this header (value = DEBUG_SECRET): flagged URLs still worth retrying, one per line.
+const RETRY_LIST_HEADER = "x-list-retry";
+const isHealthyStatus = (s) => !s || s === "ok" || s === "n/a";
+
 const DEBUG_HEADER = "x-force-render";
 const PURGE_HEADER = "x-purge-cache";
 // Invalidation levels, from gentlest to harshest:
@@ -424,6 +438,7 @@ function normalisedUrl(url) {
 //   render cooldown was busy)
 //   miss-rendered | miss-origin-render-failed | miss-origin-no-render
 //   miss-origin-render-busy  (global render cooldown active; served the origin page)
+//   miss-origin-render-unhealthy  (rendered but page health was not ok; nothing stored, origin page served)
 //   miss-origin-quota-exhausted  (daily browser quota used up; served the origin page)
 //   hit-stale-quota-exhausted  (stale snapshot served; refresh skipped because the daily quota is used up)
 //   forced-skipped-quota  (forced/prewarm request refused with 429, no render attempted)
@@ -471,12 +486,13 @@ async function getEpochs(env) {
   }
 }
 
-// ── page health (LOG-ONLY for now) ───────────────────────────
+// ── page health (decides what may be cached: see HEALTHY-ONLY CACHE above) ──
 // Pages that carry the PageHealth LED (shared_utils.js) set
 // <html data-page-health="loading|ok|warn|error"> and put any JS errors / failed
 // render checks in a hidden .page-health-message span. A prerendered snapshot
 // contains both, so we can tell from the HTML alone whether the page really
-// rendered. Nothing here changes what is stored or served: it only
+// rendered. Besides the reporting below, storeSnapshot() refuses to replace a snapshot with an
+// unhealthy render. It
 //   - logs one "render-health" line per render (Workers Logs), and
 //   - writes a small `health:<day>:<page>` KV key (metadata only needs a key
 //     listing) for each page whose render was NOT ok, once per page per day,
@@ -671,13 +687,17 @@ async function putEntry(env, key, entry) {
       ts: entry.ts,
       bytes: entry.html.length,
       ...(entry.health ? { health: entry.health } : {}),
+      ...(entry.retry ? { retry: 1, fails: entry.fails || 0 } : {}),
     },
   });
 }
 
 // What to do when a render comes back as the 404 page and a snapshot already exists for the key.
-const DELETE_EXISTING_ON_404 = true;
+// false = keep the old (healthy) snapshot; true = the page has gone away, drop it.
+const DELETE_EXISTING_ON_404 = false;
 
+// Returns { stored, kept } : stored = the new render replaced / created the snapshot;
+// kept = the new render was unhealthy and the OLD snapshot was left in place (flagged for retry).
 async function storeSnapshot(env, key, html) {
   // Never let a KV failure (e.g. the free plan's 1,000 writes/day limit) break
   // the response: the freshly rendered HTML is still served, just not stored.
@@ -692,22 +712,37 @@ async function storeSnapshot(env, key, html) {
       health = undefined;
     }
     // A "Page not found" render (the site's 404.html) is never worth caching: it would create a
-    // junk entry for a path that doesn't exist (e.g. a forced render of a made-up URL), which
-    // then shows up in the staleness / health reports forever. Skip the write. If a snapshot
-    // already exists for this key the page has gone away, so drop it too (set
-    // DELETE_EXISTING_ON_404 = false to leave the old snapshot alone instead).
-    if (health === "404") {
-      if (DELETE_EXISTING_ON_404) await env.RENDER_CACHE.delete(key);
+    // junk entry for a path that doesn't exist. With DELETE_EXISTING_ON_404 an existing snapshot
+    // is dropped too (the page has gone away); otherwise it is treated like any unhealthy render.
+    if (health === "404" && DELETE_EXISTING_ON_404) {
+      await env.RENDER_CACHE.delete(key);
       console.log("snapshot not stored: 404 page", key);
-      return;
+      return { stored: false, kept: false, health };
+    }
+    if (!isHealthyStatus(health)) {
+      const existing = await env.RENDER_CACHE.get(key, "json");
+      if (existing?.html) {
+        // Same html and ts; only the retry flag moves. putEntry also restarts the KV expiry.
+        await putEntry(env, key, {
+          ...existing,
+          retry: true,
+          fails: (existing.fails || 0) + 1,
+        });
+        console.log("snapshot kept: new render is", health, key);
+        return { stored: false, kept: true, health };
+      }
+      console.log("snapshot not stored: new render is", health, "and none exists", key);
+      return { stored: false, kept: false, health };
     }
     await putEntry(env, key, {
       html,
       ts: Date.now(),
       ...(health ? { health } : {}),
     });
+    return { stored: true, kept: false, health };
   } catch (err) {
     console.log("KV put failed", String(err), key);
+    return { stored: false, kept: false, health: undefined };
   }
 }
 
@@ -731,7 +766,11 @@ async function markStale(env, key) {
 
 async function refresh(env, key, targetUrl, attempts = 1, why = "?") {
   const result = await renderWithRetry(env, targetUrl, attempts, why);
-  if (result.html) await storeSnapshot(env, key, result.html);
+  if (result.html) {
+    const s = await storeSnapshot(env, key, result.html);
+    result.stored = s.stored;
+    result.kept = s.kept;
+  }
   return result;
 }
 
@@ -969,6 +1008,29 @@ export default {
       });
     }
 
+    // List the pages whose last render was unhealthy (old snapshot kept, flagged) and that are
+    // still under the retry cap: one URL per line, fewest failures then oldest first. The prewarm
+    // Action renders these before its normal rotation. One KV listing, no per-key reads.
+    if (isAuthorized(request, env, RETRY_LIST_HEADER)) {
+      const rows = [];
+      let cursor;
+      do {
+        const page = await env.RENDER_CACHE.list({ prefix: "render:", cursor });
+        for (const k of page.keys) {
+          const m = k.metadata;
+          if (m?.retry && (m.fails || 0) < MAX_UNHEALTHY_RETRIES) {
+            rows.push({ url: k.name.slice("render:".length), fails: m.fails || 0, ts: m.ts || 0 });
+          }
+        }
+        cursor = page.list_complete ? undefined : page.cursor;
+      } while (cursor);
+      rows.sort((a, b) => a.fails - b.fails || a.ts - b.ts);
+      return new Response(rows.map((r) => r.url).join("\n") + (rows.length ? "\n" : ""), {
+        status: 200,
+        headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+      });
+    }
+
     // Mark ONE page stale without removing it or using any browser time.
     if (isAuthorized(request, env, MARK_STALE_HEADER)) {
       const existing = await env.RENDER_CACHE.get(key, "json");
@@ -1008,6 +1070,7 @@ export default {
         const { soft, hard } = await getEpochs(env);
         if (
           existing?.html &&
+          !(existing.retry && (existing.fails || 0) < MAX_UNHEALTHY_RETRIES) &&
           existing.ts >= Math.max(soft, hard) &&
           Date.now() - existing.ts < olderThan * 1000
         ) {
@@ -1056,6 +1119,9 @@ export default {
         });
         return htmlResponse(result.html, {
           "cache-control": "no-store",
+          // false = this render was NOT written (unhealthy); x-snapshot-kept = the old page stays.
+          "x-snapshot-stored": result.stored ? "true" : "false",
+          ...(result.kept ? { "x-snapshot-kept": "true" } : {}),
           ...(lastmod ? { "x-lastmod": lastmod } : {}),
           ...(result.health
             ? {
@@ -1111,7 +1177,8 @@ export default {
       const stale =
         entry.ts < soft || Date.now() - entry.ts > FRESH_SECONDS * 1000;
       let outcome = stale ? "hit-stale" : "hit-fresh";
-      if (stale && tier === "render" && (await isKnownPage(env, normUrl))) {
+      const retryCapped = entry.retry && (entry.fails || 0) >= MAX_UNHEALTHY_RETRIES;
+      if (stale && !retryCapped && tier === "render" && (await isKnownPage(env, normUrl))) {
         if (await isQuotaExhausted(env)) {
           // Daily quota used up: serve the stale snapshot, don't try to refresh.
           outcome = "hit-stale-quota-exhausted";
@@ -1163,6 +1230,13 @@ export default {
       1,
       "miss",
     );
+    if (html && !isHealthyStatus(health?.status)) {
+      // Never cache or serve an unhealthy render to a crawler: give it the origin page instead.
+      logGate(request, tier, normUrl, "miss-origin-render-unhealthy", {
+        health: health?.status,
+      });
+      return fetch(request);
+    }
     if (html) {
       logGate(request, tier, normUrl, "miss-rendered", {
         health: health?.status,

@@ -5627,6 +5627,296 @@
         }
       ]
     },
+    "beans-on-toast-in-your-neck-of-the-woods-2026": {
+      "tour_name": "In Your Neck of the Woods 2026",
+      "isMusic": true,
+      "tour_dates": [
+        {
+          "date": "18/11/2026",
+          "venue_id": "proteus-creation-space-basingstoke",
+          "time": "Doors 7pm start 7.45pm",
+          "ticket_url": "https://www.ticketsource.com/proteus-theatre/bmi-presents-beans-on-toast-in-your-neck-of-the-woods/2026-11-18/19:45/t-njmxkze?direct-booking",
+          "other_performer_ids": [
+            "deja-vu"
+          ],
+          "isSpecial": true,
+          "isSoldOut": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261118-proteus-creation-space-basingstoke"
+        },
+        {
+          "date": "19/11/2026",
+          "venue_id": "chapel-arts-centre-bath",
+          "time": "Doors 7pm, start 8pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/f/23201?click_id=h091ToN3RPWb9tyvgC82Yg",
+          "other_performer_ids": [
+            "deja-vu"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261119-chapel-arts-centre-bath"
+        },
+        {
+          "date": "20/11.2026",
+          "venue_id": "steam-and-whistle",
+          "time": "Doors 7pm, start 7.30pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/f/23098",
+          "other_performer_ids": [
+            "deja-vu"
+          ],
+          "isSpecial": true
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "the-foundry-brecon",
+          "time": "7pm",
+          "price": "£20 (+ £0.50)",
+          "ticket_url": "https://www.thefoundrybrecon.co.uk/event-details-registration/beans-on-toast",
+          "other_performer_ids": [
+            "deja-vu"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261121-the-foundry-brecon"
+        },
+        {
+          "date": "22/11/2026",
+          "venue_id": "queen-s-hall-narberth",
+          "time": "Doors 7.30pm",
+          "price": "£18",
+          "ticket_url": "https://thequeenshall.org.uk/events/beans-on-toast-in-your-neck-of-the-woods-2026",
+          "other_performer_ids": [
+            "deja-vu"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queen-s-hall-narberth"
+        },
+        {
+          "date": "24/11/2026",
+          "venue_id": "wolverhampton-arts-centre",
+          "time": "Doors 7pm",
+          "price": "£18 (+ £1.98)",
+          "ticket_url": "https://wolverhamptonartscentre.co.uk/events/beans-on-toast/",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261124-wolverhampton-arts-centre"
+        },
+        {
+          "date": "25/11/2026",
+          "venue_id": "the-continental-preston",
+          "time": "7.30-10.30pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.skiddle.com/whats-on/Preston/The-Continental/Beans-on-Toast/42569191/",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261125-the-continental-preston"
+        },
+        {
+          "date": "26/11/2026",
+          "venue_id": "the-parish-huddersfield",
+          "time": "Doors: 19:30 Starts: 19:55",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.seetickets.com/event/beans-on-toast/parish/3672818",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261126-the-parish-huddersfield"
+        },
+        {
+          "date": "27/11/2026",
+          "venue_id": "kirkgate-centre-shipley",
+          "time": "7pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.seetickets.com/event/beans-on-toast/kirkgate-community-centre/3672869",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261127-kirkgate-centre-shipley"
+        },
+        {
+          "date": "28/11/2026",
+          "venue_id": "tunnels-aberdeen",
+          "time": "7pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.seetickets.com/event/beans-on-toast/the-tunnels/3672563",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261128-tunnels-aberdeen"
+        },
+        {
+          "date": "29/11/2026",
+          "venue_id": "the-georgian-hotel-coatbridge",
+          "time": "Door time: 7:30pm, start time: 7:50pm",
+          "price": "£20 (+£2)",
+          "ticket_url": "https://wegottickets.com/f/23183?click_id=bPfxVRFnStmv1v1wycl-Tg",
+          "other_performer_ids": [
+            "ben-brown"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261129-the-georgian-hotel-coatbridge"
+        },
+        {
+          "date": "01/12/2026",
+          "venue_id": "whitby-brewery-ltd",
+          "time": "7:00 PM - 10:30 PM",
+          "price": "£17",
+          "ticket_url": "https://www.tickettailor.com/events/whitbybrewery/2292885",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261201-whitby-brewery-ltd"
+        },
+        {
+          "date": "02/12/2026",
+          "venue_id": "the-crescent-york",
+          "time": "7:30-11:00 PM",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.universe.com/events/beans-on-toast-tickets-14NX8R",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261202-the-crescent-york"
+        },
+        {
+          "date": "03/12/2026",
+          "venue_id": "the-black-prince-northampton",
+          "time": "7:30pm til 11:00pm",
+          "price": "£18 (+ £2.07)",
+          "ticket_url": "https://www.skiddle.com/whats-on/Northampton/The-Black-Prince/Beans-on-Toast-live-in-Northampton/42569349/",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261203-the-black-prince-northampton"
+        },
+        {
+          "date": "04/12/2026",
+          "venue_id": "norwich-arts-centre",
+          "time": "8:00 PM",
+          "price": "£22.60",
+          "ticket_url": "https://dice.fm/event/92rar6-beans-on-toast-4th-dec-norwich-arts-centre-norwich-tickets",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261204-norwich-arts-centre"
+        },
+        {
+          "date": "05/12/2026",
+          "venue_id": "bodega-nottingham",
+          "time": "7pm",
+          "price": "£19 (+ £2.38)",
+          "ticket_url": "https://www.alttickets.com/beans-on-toast-tickets/nottingham-the-bodega/2026-12-05-19-00",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261205-bodega-nottingham"
+        },
+        {
+          "date": "06/12/2026",
+          "venue_id": "the-rigger-newcastle-under-lyme",
+          "time": "7pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.gigantic.com/beans-on-toast-tickets/newcastle-under-lyme-the-rigger/2026-12-06-19-00",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261206-the-rigger-newcastle-under-lyme"
+        },
+        {
+          "date": "07/12/2026",
+          "venue_id": "prince-albert-inn-stroud",
+          "time": "6:30 PM - 10:30 PM",
+          "price": "£18 (+ £1)",
+          "ticket_url": "https://www.tickettailor.com/events/theprincealbert1/2250073",
+          "other_performer_ids": [
+            "gecko"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261207-prince-albert-inn-stroud"
+        },
+        {
+          "date": "09/12/2026",
+          "venue_id": "bear-cave-bournemouth",
+          "time": "7pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://allotmentlive.seetickets.com/event/beans-on-toast/bear-cave/3672838",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261209-bear-cave-bournemouth"
+        },
+        {
+          "date": "10/12/2026",
+          "venue_id": "barrel-house-ballroom-totnes",
+          "time": "7:30-10:30 PM",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.universe.com/events/beans-on-toast-tickets-GP8B5Z",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261210-barrel-house-ballroom-totnes"
+        },
+        {
+          "date": "11/12/2026",
+          "venue_id": "plough-arts-centre-torrington",
+          "time": "8pm",
+          "price": "£18",
+          "ticket_url": "https://www.theploughartscentre.org.uk/event/beans-toast",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "isSpecial": true,
+          "event_flyer": "2026_12_11_beans_torrington.jpg",
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261211-plough-arts-centre-torrington"
+        },
+        {
+          "date": "12/12/2026",
+          "venue_id": "the-factory-live-worthing",
+          "time": "7pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://www.seetickets.com/event/beans-on-toast/the-factory-live/3683388",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261212-the-factory-live-worthing"
+        },
+        {
+          "date": "13/12/2026",
+          "venue_id": "studio-27",
+          "time": "7.30pm",
+          "price": "£19.35 - £21.60",
+          "ticket_url": "https://whiterocktheatre.org.uk/whats-on/event/beans-on-toast-2026/",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "isSpecial": true,
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261213-studio-27"
+        }
+      ],
+      "name": "In Your Neck of the Woods",
+      "performer_id": "beans-on-toast",
+      "tour_description": "Celebrated folk troubadour Beans on Toast heads out on his annual winter tour.\n\n\n\nPart concert, part gathering, every Beans on Toast show is a unique evening of songs and stories. Expect open-hearted tales of family, friendships and everyday life alongside protest songs, drinking songs, songs about nature and songs that'll have you laughing one minute and wiping away a tear the next.\n\n\n\nWith his trademark warmth, wit and unwavering optimism, Beans has spent nearly two decades building one of the most loyal and welcoming audiences in British folk music. Whether you've been coming for years or it's your first time, everyone is welcome.\n\n\n\nCome and be part of a celebration of music, chaos, community and hope, and leave feeling like you've just caught up with an old friend.",
+      "touring_event_flyers": [
+        "tours_beans_on_toast_autumn_2026.jpg",
+        "tour_beans_neck_of_woods_2026.jpg"
+      ],
+      "isSpecial": true
+    },
     "gaz-brookfield-waiting-for-wisdom-tour-2025": {
       "name": "Gaz Brookfield and The Company of Thieves — Waiting For Wisdom tour",
       "tour_name": "Waiting For Wisdom tour",
@@ -11594,6 +11884,21 @@
       "isSpecial": true
     },
     {
+      "name": "Mysterious Myths & Frightening Folktales of Wales [Dragon Storytellers]",
+      "showname": "Mysterious Myths & Frightening Folktales of Wales",
+      "date": "25/10/2026",
+      "venue_id": "dragon-theatre-barmouth",
+      "performer_id": "dragon-storytellers",
+      "eventId": "20261025-dragon-storytellers-dragon-theatre-barmouth",
+      "date_added": "16/10/2026",
+      "time": "7pm",
+      "price": "£8",
+      "description": "An evening full of spooky stories and frightening folktales about mysterious places, strange happenings and beings who don't seem to be who they say they are. The Dragon Storytellers will tell a variety of myths and folktales of Wales, many of them very local.\n\n\n\nThis evening is intended for adults",
+      "event_flyer": "2026_10_25_dragon_storytellers_frightening.jpg",
+      "ticket_url": "https://www.theatryddraig.cymru/events/mysterious-myths-frightening-folktales-of-wales",
+      "isSpecial": true
+    },
+    {
       "name": "Dark Tales From The Woods [Daniel Morden]",
       "showname": "Dark Tales From The Woods",
       "date": "25/10/2026",
@@ -14447,7 +14752,7 @@
       "city": "Cowes",
       "postcode": "PO31 7TF",
       "full_address": "Carvel Lane Coffee House, Cowes, Isle of Wight, PO31 7TF",
-      "url": "carvellanecoffee",
+      "instagram": "carvellanecoffee",
       "latlon": [
         50.7621899,
         -1.29831
@@ -17993,7 +18298,7 @@
     },
     "studio-27": {
       "id": "studio-27",
-      "name": "Studio 27,",
+      "name": "Studio 27, White Rock Theatre, Hastings",
       "venue_type": "Arts centre / venue",
       "city": "Hastings",
       "postcode": "TN34 1JX",
@@ -20343,7 +20648,7 @@
     "jessie-wild": {
       "id": "jessie-wild",
       "name": "Jessie Wild",
-      "url": "jessie_wild_storyteller",
+      "instagram": "jessie_wild_storyteller",
       "bio": "Jessie Wild is a performance Storyteller/ Creative Educator. Runs The Tell Tales Club, Cardigan / Aberteifi."
     },
     "oliver-lavery": {
@@ -20691,7 +20996,7 @@
     "merl-fluin": {
       "id": "merl-fluin",
       "name": "Merl Fluin",
-      "url": "merlfluin",
+      "instagram": "merlfluin",
       "tickets_url": "https://www.tickettailor.com/events/merlfluin",
       "bio": "Merl Fluin specialises in storytelling for grown-ups: folk tales, fairy tales, magical tales, dark and creepy tales... wonders and horrors to thrill you and chill you (and sometimes both at once). I also perform tales from the vast treasury of Buddhist tradition, from the Buddha's life story to the mysteries of Zen and beyond."
     },
@@ -21949,6 +22254,30 @@
       "instagram": "joesolomusic",
       "musician": true,
       "bio": "Joe Solo is a musician, writer, poet, and activist from Scarborough. His musical odyssey began in 1987 fronting a bash-em-out band at school, and has seen him play nine countries either as lynchpin of pop-punk upstarts Lithium Joe or hammering out his unique brand of Folk, Punk and Blues in his own right."
+    },
+    "ben-brown": {
+      "id": "ben-brown",
+      "name": "Ben Brown",
+      "url": "https://benbrownofficial.bandcamp.com/",
+      "facebook": "benbrownmusicofficial",
+      "bio": "Ben Brown - World's Greatest Songwriter",
+      "musician": true
+    },
+    "gecko": {
+      "id": "gecko",
+      "name": "Gecko",
+      "url": "https://geckoofficial.com/",
+      "instagram": "geckoofficial",
+      "bio": "Gecko is a singer-storyteller based in South London. His songs cover the big things in life with wit and warmth. From dogs in space to ignored characters in renaissance paintings, from pig fugitives to guanabana fruit juice.",
+      "musician": true
+    },
+    "katacombs": {
+      "id": "katacombs",
+      "name": "Katacombs",
+      "url": "https://katacombsmusic.squarespace.com/",
+      "instagram": "katacombs_",
+      "facebook": "https://www.facebook.com/squarespace/",
+      "musician": true
     },
     "undercover-hippy-solo": {
       "id": "undercover-hippy-solo",

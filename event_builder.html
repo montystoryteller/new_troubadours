@@ -9898,6 +9898,34 @@
             refreshBatchSummary();
         })();
     </script>
+    <script>
+        // ── Strip "fancy font" Unicode on paste ──────────────────────────────
+        // Text copied from social media often uses Unicode lookalikes (𝐛𝐨𝐥𝐝,
+        // 𝘪𝘵𝘢𝘭𝘪𝘤, 𝓼𝓬𝓻𝓲𝓹𝓽, 𝕕𝕠𝕦𝕓𝕝𝕖-𝕤𝕥𝕣𝕦𝕔𝕜, 𝚖𝚘𝚗𝚘, ｆｕｌｌｗｉｄｔｈ, ⓒⓘⓡⓒⓛⓔⓓ…) that are
+        // really different characters, not formatting. NFKC maps these back to
+        // plain letters/digits. It is applied ONLY to those blocks, so things
+        // like £, é, ™, ½, ligatures and emoji are left alone.
+        const FANCY_UNICODE_RE = /[\u{1D400}-\u{1D7FF}\u{24B6}-\u{24E9}\u{FF01}-\u{FF5E}\u{1F130}-\u{1F189}]/gu;
+        function stripFancyUnicode(text) {
+            return (text || "").replace(FANCY_UNICODE_RE, ch => ch.normalize("NFKC"));
+        }
+        document.addEventListener("paste", (e) => {
+            const el = e.target;
+            if (!el || !(el.tagName === "TEXTAREA" ||
+                (el.tagName === "INPUT" && ["text", "url", "search", ""].includes(el.type)))) return;
+            if (el.readOnly || el.disabled) return;
+            const pasted = (e.clipboardData || window.clipboardData)?.getData("text/plain");
+            if (!pasted) return;
+            const cleaned = stripFancyUnicode(pasted);
+            if (cleaned === pasted) return; // nothing fancy: let the browser paste normally
+            e.preventDefault();
+            // execCommand keeps the browser's undo stack; setRangeText is the fallback.
+            if (!document.execCommand("insertText", false, cleaned)) {
+                el.setRangeText(cleaned, el.selectionStart, el.selectionEnd, "end");
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+        }, true);
+    </script>
 </body>
 
 </html>

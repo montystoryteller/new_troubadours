@@ -3255,13 +3255,36 @@ function buildBillingRow(ids, label, className) {
 // Tour card
 // ---------------------------------------------------------------------------
 
+/**
+ * The tour_dates THIS performer is actually on. A performer who owns the
+ * tour (performerMatches) is on every date. A guest — listed in
+ * other_performer_ids or support_performer_ids — may only be on some
+ * dates (e.g. Deja Vu on the first five Beans on Toast dates; Ben Brown,
+ * Gecko etc. on the rest), so their page only shows those dates. Uses the
+ * per-date resolvers, so a date's own list correctly replaces the
+ * tour-level one.
+ * @param {object} tour
+ * @returns {object[]}
+ */
+function tourDatesForThisPerformer(tour) {
+  const dates = tour.tour_dates || [];
+  if (performerMatches(tour)) return dates;
+  return dates.filter(
+    (td) =>
+      getAdditionalPerformerIdsForDate(tour, td).includes(performerId) ||
+      getSupportPerformerIdsForDate(tour, td).includes(performerId),
+  );
+}
+
 // How much of the first paragraph to show before collapsing behind a
 // "more…" toggle — see the Description block in renderTourCard().
 const TOUR_CARD_DESC_PREVIEW_LENGTH = 200;
 
 function renderTourCard(container, tourId, tour, relationshipLabel = null) {
   const today = getTodayMidnight();
-  const dates = tour.tour_dates || [];
+  // Only this performer's own dates (all of them for a headliner; just the
+  // dates they're billed on for a guest/support act).
+  const dates = tourDatesForThisPerformer(tour);
 
   const futureDates = dates.filter((d) => {
     const parsed = parseDateString(d.date);
@@ -3362,12 +3385,16 @@ function renderTourCard(container, tourId, tour, relationshipLabel = null) {
   // this performer IS one of the headliners looking at who else is on
   // their own tour.
   const headlinerIds = getTourHeadlinerIds(tour);
-  const billAdditionalIds = [...getTourAdditionalPerformerIds(tour)].filter(
-    (id) => id !== performerId && !headlinerIds.has(id),
-  );
-  const billSupportIds = [...getTourSupportPerformerIds(tour)].filter(
-    (id) => id !== performerId && !headlinerIds.has(id),
-  );
+  // Scoped to the dates shown on this card, so a guest on only some dates
+  // doesn't list acts from the other legs of the tour.
+  const billAdditionalIds = [
+    ...new Set(
+      dates.flatMap((td) => getAdditionalPerformerIdsForDate(tour, td)),
+    ),
+  ].filter((id) => id !== performerId && !headlinerIds.has(id));
+  const billSupportIds = [
+    ...new Set(dates.flatMap((td) => getSupportPerformerIdsForDate(tour, td))),
+  ].filter((id) => id !== performerId && !headlinerIds.has(id));
   const billAdditionalRow = buildBillingRow(
     billAdditionalIds,
     isDoubleHeadlineForDate(tour, null) ? "Co-headlining:" : "Also featuring:",

@@ -62,6 +62,31 @@
 #        ./updatecache --health [DAYS]             renders the gatekeeper logged as NOT healthy in the last DAYS
 #                                                  (default 7): error / loading / missing / warn / 404, with the reason
 #                                                  (reads the health:* keys; one KV listing, no renders)
+#        ./updatecache --list-expiring [H] [type]  snapshots whose KV expiry is within H hours (default 120), soonest first, as URLs:
+#                                                  the pages about to drop out of the cache (a snapshot expires 90 days after its last
+#                                                  write). Past events (dated >30 days ago) are left out; --all includes them. Add a
+#                                                  second number to cap the list. Re-render them:  ./updatecache $(./updatecache --list-expiring 120 20)
+#        ./updatecache --list-retry                pages serving an OLD snapshot because their latest render was not healthy (the
+#                                                  gatekeeper keeps the old page and flags it): fails so far, age, health, reason, URL.
+#                                                  "capped" ones are no longer retried first and need a data/page fix.
+#        ./updatecache --list-orphans [type]       snapshots whose key is no longer in the events JSON (the orphans column of --status)
+#        ./updatecache --purge-orphans [type] [--yes]  delete them (asks first; no render, no browser time)
+#        ./updatecache --resolved <page>... [--yes]  remove those pages' entries from the health log (what --health and --daily
+#                                                  report). Purging a snapshot or re-rendering never removes them; they only expire
+#                                                  after 7 days. Pages: 50, /50, performers.html?performer=x or a full URL; exact match.
+#                                                  Lists the entries and asks for YES first (--yes skips). --resolved --all clears the log.
+#        ./updatecache --quota                     is the gatekeeper holding renders back after 429s? (exit status 3 = paused)
+#        ./updatecache --daily [N]                 the daily routine with a budget of N renders (default 30, or NT_DAILY_RENDERS): checks the
+#                                                  pause, shows last day's unhealthy renders, then spends the budget in this order, each step
+#                                                  getting whatever the earlier ones left: --repair (up to N), --fill-missing, --refresh-stale
+#                                                  --oldest, and LAST stale event pages dated more than 30 days ago (unhealthy ones are always repaired first, old events included). Stops cleanly when the quota
+#                                                  runs out. Pages matching NT_HEALTH_IGNORE (default: event_builder.html, stats.html) are skipped.
+#        ./updatecache --list-stale [N] [type]     (the type word works here too; --all lists every one)
+#        --refresh-stale / --repair also take: --no-old-events (leave out event pages dated more than 30 days ago) and
+#                                                  --old-events-only (just those). Without either, STALE old events are tried last; unhealthy pages always come first.
+#        --refresh-stale / --repair also take: --skip-capped (leave out retry-flagged pages at the retry cap) and --skip-bad
+#        ./updatecache --refresh-stale ... --oldest  render the OLDEST stale pages first instead of random ones (the not-ok and
+#                                                  retry-flagged pages still come first)
 #        ./updatecache --list-performers           list performers that have no snapshot yet (count at the end)
 #        ./updatecache --list-venues               same, for venues
 #        ./updatecache --list-storyclubs           same, for story clubs
@@ -128,6 +153,10 @@
 # snapshot. A failed one (rate limit / daily quota) keeps the old snapshot AND
 # marks it stale (you'll see x-marked-stale: true), so the next prewarm run or
 # bot request retries it automatically.
+#
+#   Auto-resolve: whenever a render comes back healthy (HTTP 200, x-page-health: ok, snapshot stored), that page's health-log
+#   entries (the ones older than the render) are cleared when the command ends: one health-log listing per run, not one per page.
+#   Pages that failed again keep their entries. NT_NO_AUTO_RESOLVE=1 turns it off; --resolved <page> does it by hand.
 #
 # Requires: export NT_DEBUG_SECRET=your-DEBUG_SECRET-value
 
@@ -295,6 +324,52 @@ upcoming_dated() {
     s = substr($0, RSTART, RLENGTH); gsub(/-/, "", s); if (s >= t) printf "%s\t%s\n", s, $0 }'
 }
 
+# ── auto-resolve: clear health-log entries of pages that re-rendered OK ──────────────────────────────
+# render_one records the outcome of every render (ok = HTTP 200 with x-page-health: ok, and the snapshot was
+# stored; anything else = bad). When the command ends (EXIT trap, also after Ctrl-C) autoresolve_flush looks at
+# the LAST outcome per page and, for the ones that ended OK, deletes that page's health:* log entries that are
+# older than the render: ONE listing of the log and one delete per entry, instead of a lookup per page.
+# NT_NO_AUTO_RESOLVE=1 switches it off. (--resolved <page> does the same by hand.)
+AUTORESOLVE_FILE=""
+autoresolve_note() {
+  [ "${NT_NO_AUTO_RESOLVE:-0}" = "1" ] && return 0
+  local url="$1" result="$2" st=bad
+  case "$result" in
+    *"x-snapshot-kept: true"*|*"x-snapshot-stored: false"*|*x-marked-stale*|*x-quota-exhausted*|*x-render-paused*) st=bad ;;
+    *"x-page-health: ok"*) case "$result" in *" 200"*) st=ok ;; esac ;;
+  esac
+  [ -n "$AUTORESOLVE_FILE" ] || AUTORESOLVE_FILE=$(mktemp "${TMPDIR:-/tmp}/updatecache-resolve.XXXXXX") || return 0
+  printf '%s\t%s\t%s\n' "$st" "$(date +%s)" "$url" >> "$AUTORESOLVE_FILE"
+}
+autoresolve_flush() {
+  local f="$AUTORESOLVE_FILE" oks map json names n=0 done_n=0 k
+  AUTORESOLVE_FILE=""
+  [ -n "$f" ] || return 0
+  oks=$(awk -F'\t' 'NF >= 3 { last[$3] = $1 "\t" $2 } END { for (u in last) { split(last[u], a, "\t"); if (a[1] == "ok") print a[2] "\t" u } }' "$f")
+  rm -f "$f"
+  [ -n "$oks" ] || return 0
+  command -v jq >/dev/null || return 0
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  json=$(kv_list_json "health:" 2>/dev/null) || { echo "Auto-resolve: could not read the health log; nothing cleared (try ./updatecache --resolved <page>)." >&2; return 0; }
+  map=$(printf '%s\n' "$oks" | jq -Rn '[inputs | split("\t") | select(length >= 2)
+          | { p: (.[1] | sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20")), t: (.[0] | tonumber) }
+          | select(.p != "")] | reduce .[] as $e ({}; .[$e.p] = $e.t)')
+  names=$(printf '%s\n' "$json" | jq -r --argjson m "$map" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    .[] | ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm) as $p
+        | select($m[$p] != null)
+        | select(((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) <= ($m[$p] + 5))
+        | .name')
+  [ -n "$names" ] || return 0
+  n=$(printf '%s\n' "$names" | grep -c .)
+  while IFS= read -r k; do
+    [ -n "$k" ] || continue
+    if run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key delete "$k" \
+         --namespace-id "$NT_KV_NAMESPACE_ID" --remote >/dev/null 2>&1; then done_n=$((done_n + 1)); fi
+  done <<< "$names"
+  echo "Auto-resolved: cleared $done_n of $n health-log entr$([ "$n" -eq 1 ] && echo y || echo ies) for pages that re-rendered OK this run."
+}
+
 # Force-render one URL and print the status headers. Returns 1 if the daily
 # browser quota is exhausted (so callers can stop).
 #   render_one <url> <n>
@@ -311,9 +386,18 @@ render_one() {
   # second, 60 after the third). For a short one we wait it out and retry the same page once,
   # unless it is longer than NT_MAX_PAUSE_WAIT seconds (default 1500 = 25 min); then we stop.
   local attempt paused maxwait="${NT_MAX_PAUSE_WAIT:-1500}"
+  # Minimum gap between ANY two renders, even across separate updatecache processes (--daily runs
+  # --repair, --fill-missing and --refresh-stale as three processes, each of which skips the delay
+  # before its own first render). The time of the last render is kept in a stamp file.
+  local stamp="${NT_LAST_RENDER_FILE:-${TMPDIR:-/tmp}/updatecache-last-render}" _now _last _wait
   for attempt in 1 2; do
+    _now=$(date +%s); _last=$(cat "$stamp" 2>/dev/null); _last="${_last:-0}"
+    [[ "$_last" =~ ^[0-9]+$ ]] || _last=0
+    _wait=$(( ${NT_DELAY:-12} - (_now - _last) ))
+    if [ "$_wait" -gt 0 ]; then sleep "$_wait"; fi
     result=$(curl -s --max-time 120 -o /dev/null -D - -H "x-force-render: $SECRET" ${force_hdr[@]+"${force_hdr[@]}"} ${upd_hdr[@]+"${upd_hdr[@]}"} "$url" \
-      | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-render-paused|x-marked-stale|x-page-health|x-lastmod)' | tr -d '\r' | paste -sd' ' -)
+      | grep -iE '^(HTTP/|x-prerendered|x-quota-exhausted|x-render-paused|x-marked-stale|x-page-health|x-lastmod|x-snapshot-kept|x-snapshot-stored)' | tr -d '\r' | paste -sd' ' -)
+    date +%s > "$stamp" 2>/dev/null
     echo "$result"
     case "$result" in *x-quota-exhausted*) break ;; esac
     paused=$(printf '%s' "$result" | sed -n 's/.*[Xx]-[Rr]ender-[Pp]aused: \([0-9]*\).*/\1/p')
@@ -323,6 +407,13 @@ render_one() {
     echo "  renders paused ${paused}s after a 429; waiting, then retrying this page once..." >&2
     sleep $((paused + 3))
   done
+  # The gatekeeper only writes HEALTHY renders: an unhealthy one leaves the old snapshot in place (flagged
+  # for retry) or, if there is none, stores nothing. Say so, because the render itself came back 200.
+  case "$result" in
+    *"x-snapshot-kept: true"*)   echo "  ⚠ page health is not ok: the OLD snapshot was kept (flagged for retry; see $0 --list-retry and --health)." >&2 ;;
+    *"x-snapshot-stored: false"*) echo "  ⚠ page health is not ok and there is no old snapshot: nothing was cached (see $0 --health)." >&2 ;;
+  esac
+  autoresolve_note "$url" "$result"
   # --delta sets RENDERED_FILE: record URLs that rendered OK (HTTP 200, not marked stale, no quota hit,
   # and a healthy page). Only those are IndexNow'd; the rest stay pending and are retried next run.
   # Health comes from the gatekeeper's x-page-health header (absent = not checked = treated as fine):
@@ -354,19 +445,24 @@ render_one() {
 # (scheme/host/leading slash removed, "+" -> %20) so they can be matched against page URLs.
 # NT_HEALTH_DAYS = how far back to look (default 7, the log's own expiry); NT_NO_HEALTH_PRIORITY=1
 # switches the whole feature off. Used by fill_one() and refresh_stale().
+# Pages whose health problems are IGNORED everywhere the health log is read (--health, --daily's report,
+# --repair / --refresh-stale priority, --staleness). A jq/regex matched against the page path+query
+# (no leading slash). Override with NT_HEALTH_IGNORE='...'; NT_HEALTH_IGNORE='' ignores nothing.
+HEALTH_IGNORE_DEFAULT='^(event_builder|stats)\.html'
 unhealthy_pages_json() {
   if [ "${NT_NO_HEALTH_PRIORITY:-0}" = "1" ]; then echo '{}'; return 0; fi
   local hj out days="${NT_HEALTH_DAYS:-7}"
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   note "Reading the health log (to render pages whose last render was not healthy first)..."
   hj=$(kv_list_json "health:") || { echo "Could not read the health log; not prioritising unhealthy pages." >&2; echo '{}'; return 0; }
-  out=$(printf '%s\n' "$hj" | jq -c --argjson d "$days" '
+  out=$(printf '%s\n' "$hj" | jq -c --argjson d "$days" --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
     def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
     def ms: ((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) * 1000;
     ((now - ($d * 86400)) * 1000) as $cut
     | [ .[] | select((.metadata.status // "") != "ok")
             | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm), at: ms }
-            | select(.at >= $cut and .p != "") ]
+            | select(.at >= $cut and .p != "")
+            | select($ign == "" or (.p | test($ign) | not)) ]
     | reduce .[] as $e ({}; .[$e.p] = ([(.[$e.p] // 0), $e.at] | max))' 2>/dev/null)
   [ -n "$out" ] || out='{}'
   printf '%s\n' "$out"
@@ -435,7 +531,7 @@ fill_one() {
     UPD_DIR=""
     if [ "${INDEXNOW:-0}" = "1" ]; then
       UPD_DIR=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-update.XXXXXX")
-      trap 'rm -rf "$UPD_DIR"' EXIT
+      trap 'autoresolve_flush; rm -rf "$UPD_DIR"' EXIT
       : > "$UPD_DIR/ok.txt"; : > "$UPD_DIR/attempted.txt"
       RENDERED_FILE="$UPD_DIR/ok.txt"
       NT_MARK_UPDATED=1
@@ -674,6 +770,15 @@ status_all() {
   exit 0
 }
 
+# An event page whose id is dated more than 30 days ago (the sitemap's cut-off) is an "old event": it is
+# allowed to fade away, so it is looked at LAST. Works on a KV listing entry (needs .name).
+JQ_OLD_EVENT_DEFS='def evdate: ((capture("(^|-)(?<d>20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(-|$)").d)
+                              // (capture("-(?<ms>[0-9]{12,14})$").ms | tonumber / 1000 | floor | strftime("%Y%m%d")));
+  def isold: ([ .name | capture("/event\\.html\\?event=(?<e>[^&]*)") | .e ] | .[0]) as $e
+             | if $e == null then false
+               else (([ $e | try evdate catch empty ] | .[0]) as $d | ($d != null and $d < (now - 2592000 | strftime("%Y%m%d")))) end;
+  '
+
 # ── staleness report ────────────────────────────────────────────────────────
 # Mirrors the gatekeeper's policy (gatekeeper.js): a snapshot is STALE when its ts is
 # older than FRESH_SECONDS (120h) or older than the soft-purge epoch, and counts as
@@ -731,7 +836,7 @@ JQ_STALE_ROWS='
     | ($r | split("?")[0]) as $path
     | if $path == "/tour_guide.html" and ($r | test("tour=(R-|rep%3A)")) then $path + " (rep)" else $path end;
   [ .[] | select(.name | startswith($base))
-        | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null), h: (.metadata.health // "") } ]
+        | { kind: kind, ts: entry_ts, est: entry_est, exp: (.expiration // null), h: (.metadata.health // ""), r: ((.metadata.retry // 0) == 1) } ]
   | group_by(.kind)[]
   | . as $g
   | [ $g[0].kind,
@@ -746,7 +851,8 @@ JQ_STALE_ROWS='
       ([ $g[] | select(.h == "ok") ] | length),
       ([ $g[] | select(.h != "" and .h != "ok" and .h != "n/a") ] | length),
       ([ $g[] | select(.h == "") ] | length),
-      ([ $g[] | select(.h == "n/a") ] | length)
+      ([ $g[] | select(.h == "n/a") ] | length),
+      ([ $g[] | select(.r) ] | length)
     ] | @tsv'
 
 # marked-stale (ts=0), soft-purged, aged-out, hard-purged, expiring soon, total stored, age estimated
@@ -787,14 +893,15 @@ staleness_report() {
   echo
   printf '%s\n' "$rows" | awk -F'\t' -v warn="$EXPIRY_WARN_HOURS" '
     function age(ms) { if (ms < 0) return "-"; if (ms >= 86400000) return sprintf("%.1fd", ms / 86400000); return sprintf("%.1fh", ms / 3600000) }
-    BEGIN { mx = -1; printf "%-24s %6s %6s %6s %7s %5s %4s %7s %8s %6s %6s %6s %5s\n", "page", "stored", "fresh", "stale", "invalid", "est", "unk", "oldest", "exp<" warn "h", "ok", "notok", "noflag", "n/a" }
-    NF { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d\n", $1, $2, $3, $4, $5, $6, $7, age($8), $9, $10, $11, $12, $13
-         for (i = 2; i <= 7; i++) t[i] += $i; t[9] += $9; t[10] += $10; t[11] += $11; t[12] += $12; t[13] += $13; if ($8 + 0 > mx) mx = $8 + 0 }
-    END { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d\n", "TOTAL", t[2], t[3], t[4], t[5], t[6], t[7], age(mx), t[9], t[10], t[11], t[12], t[13] }'
+    BEGIN { mx = -1; printf "%-24s %6s %6s %6s %7s %5s %4s %7s %8s %6s %6s %6s %5s %5s\n", "page", "stored", "fresh", "stale", "invalid", "est", "unk", "oldest", "exp<" warn "h", "ok", "notok", "noflag", "n/a", "retry" }
+    NF { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d %5d\n", $1, $2, $3, $4, $5, $6, $7, age($8), $9, $10, $11, $12, $13, $14
+         for (i = 2; i <= 7; i++) t[i] += $i; t[9] += $9; t[10] += $10; t[11] += $11; t[12] += $12; t[13] += $13; t[14] += $14; if ($8 + 0 > mx) mx = $8 + 0 }
+    END { printf "%-24s %6d %6d %6d %7d %5d %4d %7s %8d %6d %6d %6d %5d %5d\n", "TOTAL", t[2], t[3], t[4], t[5], t[6], t[7], age(mx), t[9], t[10], t[11], t[12], t[13], t[14] }'
   echo "(est = age estimated from the KV expiry; unk = no age available; oldest ignores marked-stale pages;
  ok / notok / noflag = the page-health the gatekeeper stored with the snapshot: ok, error|warn|loading|missing|404,
  or no flag because it was written before health was recorded; n/a = pages without a health LED, such as the
- home page, index.html and stats.html, which are fine and never flagged)"
+ home page, index.html and stats.html, which are fine and never flagged; retry = kept on an OLD snapshot
+ because the latest render was not healthy, see --list-retry)"
   echo
   echo "Stale: $stale of $stored  (aged past ${FRESH_HOURS}h: $aged, soft-purged: $softp, marked stale with ts=0: $marked)"
   if [ "$est" -gt 0 ]; then
@@ -812,6 +919,9 @@ staleness_report() {
     [ .[] | select(.name | startswith($base)) | select($bad[pg] != null) ] as $b
     | "\($b | length) \([ $b[] | entry_ts as $t | select($t != null and ($t < $hard or $t < $soft or ($now - $t) > $fresh)) ] | length)"' 2>/dev/null)"
   echo "Not-ok health (last ${NT_HEALTH_DAYS:-7}d log): $(printf '%s' "$hbad" | jq 'length') pages logged; ${hstored:-?} have a stored snapshot, ${hstale:-?} of those are stale"
+  local nretry ncapped
+  read -r nretry ncapped <<< "$(printf '%s\n' "$json" | jq -r --argjson cap "${NT_MAX_RETRIES:-3}" '[ .[] | select((.metadata.retry // 0) == 1) ] as $r | "\($r | length) \([ $r[] | select((.metadata.fails // 0) >= $cap) ] | length)"' 2>/dev/null)"
+  echo "Kept on an old snapshot after an unhealthy render (retry flag): ${nretry:-0}, of which ${ncapped:-0} at the retry cap (see: $0 --list-retry)"
   awk -v n="$(( stale + invalid ))" 'BEGIN { printf "Refreshing all %d stale/invalid pages = about %d x 2s = %.1f min of browser time (free plan: 10 min/day, shared with crawlers).\n", n, n, n * 2 / 60 }'
   echo
   echo "How the gatekeeper treats them:"
@@ -825,13 +935,52 @@ staleness_report() {
   exit 0
 }
 
+# Pages the health log lists as NOT healthy that have NO stored snapshot (an unhealthy render is never stored, so a
+# page that has never rendered healthily lives only in the log). Prints their request URLs, one per line. Used by
+# --repair (and so --daily) so such pages are retried too, even when they are not in the sitemap. Left out: 404s
+# (crawlers asking for paths that are not pages), anything that is not an .html page, NT_HEALTH_IGNORE pages, and with
+# --skip-capped (arg 2 = 1) pages that were unhealthy on NT_MAX_RETRIES (3) or more different days: they need a
+# data/page fix, then a by-hand render. NT_NO_LOGGED_RENDER=1 turns this off.
+#   logged_without_snapshot <render: KV listing json> <skipcap 0|1>
+logged_without_snapshot() {
+  local snapjson="$1" skipcap="${2:-0}" hj
+  [ "${NT_NO_LOGGED_RENDER:-0}" = "1" ] && return 0
+  [ "${NT_NO_HEALTH_PRIORITY:-0}" = "1" ] && return 0
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  hj=$(kv_list_json "health:" 2>/dev/null) || return 0
+  printf '%s\n' "$hj" | jq -r --argjson snap "$snapjson" --arg base "render:https://$HOST" --arg host "https://$HOST" \
+      --argjson d "${NT_HEALTH_DAYS:-7}" --argjson cap "${NT_MAX_RETRIES:-3}" --argjson skipcap "$skipcap" \
+      --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    def ms: ((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) * 1000;
+    ($snap | map(select(.name | startswith($base)) | (.name | ltrimstr($base + "/") | gsub("\\+"; "%20")) | {(.): true}) | add // {}) as $have
+    | ((now - ($d * 86400)) * 1000) as $cut
+    | [ .[] | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm),
+                at: ms, day: ((.metadata.at // "")[0:10]), st: (.metadata.status // "") }
+            | select(.st != "ok" and .at >= $cut and .p != "") ]
+    | group_by(.p)
+    | map({ p: .[0].p, days: (map(.day) | unique | length), last: max_by(.at) })
+    | .[]
+    | select(.last.st != "404")
+    | select(.p | test("^[A-Za-z0-9_-]+\\.html(\\?|$)"))
+    | select($ign == "" or ((.p | test($ign)) | not))
+    | select($have[.p] == null)
+    | select($skipcap == 0 or .days < $cap)
+    | $host + "/" + .p' 2>/dev/null
+}
+
 # --list-stale [N]: the N stalest pages (default 20), oldest first, as full URLs.
 # "Stale" = needs a refresh: stale by the gatekeeper's policy, or hard-purged. Feed the
 # list straight back in:  ./updatecache $(./updatecache --list-stale 20)
 list_stale() {
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-  local n=20
-  [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && n="$1"
+  local n=20 type="" a
+  for a in "$@"; do
+    if [[ "$a" =~ ^[0-9]+$ ]]; then [ "$a" -ge 1 ] && n="$a"
+    elif [ "$a" = "--all" ]; then n=999999
+    elif [ -n "$a" ]; then type="$a"; fi
+  done
+  type_pattern "$type" || { echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire tour media event)" >&2; exit 1; }
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   read_epochs
   local now_ms=$(( $(date +%s) * 1000 )) fresh_ms=$(( FRESH_HOURS * 3600000 )) json all
@@ -844,8 +993,10 @@ list_stale() {
             | select(.ts != null)
             | select(.ts < $hard or .ts < $soft or ($now - .ts) > $fresh) ]
       | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
-  [ -n "$all" ] || { echo "No stale snapshots." >&2; exit 0; }
-  echo "$(printf '%s\n' "$all" | wc -l | tr -d ' ') snapshot(s) need a refresh; listing the oldest $n." >&2
+  if [ -n "$PAT" ]; then all=$(printf '%s\n' "$all" | grep -E -- "$PAT"); fi
+  if [ -n "$XPAT" ]; then all=$(printf '%s\n' "$all" | grep -v -E -- "$XPAT"); fi
+  [ -n "$all" ] || { echo "No stale ${type:-page} snapshots." >&2; exit 0; }
+  echo "$(printf '%s\n' "$all" | wc -l | tr -d ' ') ${type:-page} snapshot(s) need a refresh; listing the oldest $n." >&2
   printf '%s\n' "$all" | head -n "$n"
   exit 0
 }
@@ -858,12 +1009,22 @@ list_stale() {
 # failed render keeps the old snapshot (and marks it stale), so a rerun just tries again.
 refresh_stale() {
   command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
-  local n=20 type="" pat="" xpat="" a do_idx=0 notok=0 onlybad=0 unfl=0
+  local n=20 type="" pat="" xpat="" a do_idx=0 notok=0 onlybad=0 unfl=0 oldest=0 nobad=0 skipcap=0 oldmode=0
   for a in "$@"; do
     if [ "$a" = "--indexnow" ]; then
       do_idx=1
     elif [ "$a" = "--all" ]; then
       n=999999                      # no cap: refresh every candidate
+    elif [ "$a" = "--skip-bad" ]; then
+      nobad=1                       # leave out the not-ok / retry-flagged pages (another step already handles them)
+    elif [ "$a" = "--skip-capped" ]; then
+      skipcap=1                     # leave out retry-flagged pages that hit the retry cap (broken at source: fix the data)
+    elif [ "$a" = "--no-old-events" ]; then
+      oldmode=1                     # leave out event pages dated more than 30 days ago (--daily looks at them last)
+    elif [ "$a" = "--old-events-only" ]; then
+      oldmode=2                     # ONLY event pages dated more than 30 days ago
+    elif [ "$a" = "--oldest" ]; then
+      oldest=1                      # oldest snapshots first within each priority group, instead of random
     elif [ "$a" = "--not-ok" ]; then
       notok=1                       # candidates = stale OR not-ok/unflagged (even if still fresh)
     elif [ "$a" = "--only-bad" ]; then
@@ -901,19 +1062,31 @@ refresh_stale() {
   # flag is not ok/n/a (incl. none at all) or whose last logged render was unhealthy, even if fresh.
   local hbad_json="{}"
   [ $notok -eq 1 ] && hbad_json=$(unhealthy_pages_json 2>/dev/null); [ -n "$hbad_json" ] || hbad_json="{}"
-  jqargs+=(--argjson notok "$notok" --argjson onlybad "$onlybad" --argjson unfl "$unfl" --argjson hbad "$hbad_json")
-  all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
+  jqargs+=(--argjson skipcap "$skipcap" --argjson cap "${NT_MAX_RETRIES:-3}" --argjson notok "$notok" --argjson onlybad "$onlybad" --argjson unfl "$unfl" --argjson hbad "$hbad_json" --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" --argjson oldmode "$oldmode")
+  all=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF $JQ_OLD_EVENT_DEFS"'
       def pg: .name | ltrimstr($base + "/") | gsub("\\+"; "%20");
       def isstale: entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh);
+      def flagged: ((.metadata.retry // 0) == 1);   # old page kept after an unhealthy render (gatekeeper retry flag)
+      def capped: flagged and ((.metadata.fails // 0) >= $cap);
       def logbad: ($hbad[pg] != null) and ($hbad[pg] > (entry_ts // 0));   # logged AFTER the current snapshot was written
-      def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or logbad;
-      def explicitbad: ((.metadata.health // "") as $h | $h != "" and $h != "ok" and $h != "n/a") or logbad;
+      def isbad: ((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or logbad or flagged;
+      def explicitbad: ((.metadata.health // "") as $h | $h != "" and $h != "ok" and $h != "n/a") or logbad or flagged;
       def noflag: (.metadata.health // "") == "";
       [ .[] | select(.name | startswith($base))
+            | select($skipcap == 0 or (capped | not))
+            | select($ign == "" or ((pg | test($ign)) | not))   # NT_HEALTH_IGNORE: pages we do not care about
+            | select($oldmode == 0 or ((isold) == ($oldmode == 2)))
             | select(if $onlybad == 1 then (explicitbad or ($unfl == 1 and noflag))
-                     else (isstale or ($notok == 1 and isbad)) end)
+                     else (isstale or flagged or ($notok == 1 and isbad)) end)
             | { name: .name, ts: (entry_ts // 0) } ]
       | sort_by(.ts) | .[] | .name | ltrimstr("render:")')
+  # --repair: pages the health log lists that have no snapshot at all are candidates too (they can only be repaired by
+  # rendering them; they are not in the KV listing, so the query above never sees them).
+  local extra=""
+  if [ $onlybad -eq 1 ] && [ $nobad -eq 0 ]; then
+    extra=$(logged_without_snapshot "$json" "$skipcap")
+    [ -n "$extra" ] && all=$(printf '%s\n%s\n' "$all" "$extra" | grep .)
+  fi
   [ -n "$all" ] || { if [ $onlybad -eq 1 ]; then echo "Nothing reported as not ok$([ $unfl -eq 1 ] || echo ' (add --unflagged to include pages with no health flag)')." >&2; else echo "No stale$([ $notok -eq 1 ] && echo '/not-ok') snapshots." >&2; fi; exit 0; }
   # Stale snapshots with no page-health "ok" flag in their own KV metadata (the gatekeeper stores
   # metadata.health on every snapshot it writes: ok|warn|error|loading|missing|404|n/a). Snapshots
@@ -921,8 +1094,8 @@ refresh_stale() {
   # "n/a" (home page, index, stats: no health LED) is fine and is not prioritised.
   local snapbad
   snapbad=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
-      .[] | select(.name | startswith($base)) | select((.metadata.health // "") as $h | $h != "ok" and $h != "n/a")
-          | select($notok == 1 or (entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh)))
+      .[] | select(.name | startswith($base)) | select(((.metadata.health // "") as $h | $h != "ok" and $h != "n/a") or ((.metadata.retry // 0) == 1))
+          | select($notok == 1 or ((.metadata.retry // 0) == 1) or (entry_ts != null and (entry_ts < $hard or entry_ts < $soft or ($now - entry_ts) > $fresh)))
           | .name | ltrimstr("render:")')
   if [ -n "$pat" ]; then
     all=$(printf '%s\n' "$all" | grep -E -- "$pat")
@@ -953,7 +1126,7 @@ refresh_stale() {
   if [ -n "$xpat" ]; then snapbad=$(printf '%s\n' "$snapbad" | grep -v -E -- "$xpat"); fi
   if [ -n "$snapbad" ]; then
     snapnone=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF"'
-        .[] | select(.name | startswith($base)) | select((.metadata.health // "") == "")
+        .[] | select(.name | startswith($base)) | select((.metadata.health // "") == "" and ((.metadata.retry // 0) != 1))
             | .name | ltrimstr("render:")' | grep -x -F -f <(printf '%s\n' "$snapbad"))
     if [ -n "$snapnone" ]; then
       snapbad_flag=$(printf '%s\n' "$snapbad" | grep -v -x -F -f <(printf '%s\n' "$snapnone"))
@@ -965,24 +1138,57 @@ refresh_stale() {
     # a page in the problem log is tier 1 even if its snapshot has no flag
     [ -n "$tier1" ] && [ -n "$tier2" ] && tier2=$(printf '%s\n' "$tier2" | grep -v -x -F -f <(printf '%s\n' "$tier1"))
   fi
+  # no-snapshot pages from the health log are unhealthy by definition: tier 1
+  if [ -n "$extra" ]; then tier1=$(printf '%s\n%s\n' "$tier1" "$extra" | grep . | sort -u); fi
   # only ever render candidates (in repair mode the unflagged ones are not candidates unless --unflagged)
   tier1=$(printf '%s\n' "$tier1" | grep -x -F -f <(printf '%s\n' "$all") || true)
   tier2=$(printf '%s\n' "$tier2" | grep -x -F -f <(printf '%s\n' "$all") || true)
+  if [ $nobad -eq 1 ]; then
+    all=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$tier1" | grep .) || printf '%s\n' "$all")
+    tier1=""
+  fi
   nbad=$(printf '%s\n' "$tier1" | grep -c .)
   nnone=$(printf '%s\n' "$tier2" | grep -c .)
   rest=$(printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n%s\n' "$tier1" "$tier2" | grep .) || true)
-  if [ -n "${NT_NO_HEALTH_PRIORITY:-}" ]; then
+  # Build the full ordered list first; the N cut (and the old-events-last reorder) happens afterwards.
+  local n_req="$n" oldurls=""; n=999999
+  if [ $oldest -eq 1 ]; then
+    # $all is already oldest-first. Not-ok / retry-flagged pages (tier 1) still come first; after them
+    # purely by age, so a snapshot close to its 90-day expiry is never held back by a younger page
+    # that merely lacks a health flag.
+    if [ -n "${NT_NO_HEALTH_PRIORITY:-}" ] || [ -z "$tier1" ]; then
+      picks=$(printf '%s\n' "$all" | head -n "$n")
+    else
+      picks=$({ printf '%s\n' "$all" | grep -x -F -f <(printf '%s\n' "$tier1")
+                printf '%s\n' "$all" | grep -v -x -F -f <(printf '%s\n' "$tier1"); } | head -n "$n")
+    fi
+  elif [ -n "${NT_NO_HEALTH_PRIORITY:-}" ]; then
     picks=$(printf '%s\n' "$all" | shuf | head -n "$n")
   else
     picks=$({ [ -n "$tier1" ] && printf '%s\n' "$tier1" | shuf
               [ -n "$tier2" ] && printf '%s\n' "$tier2" | shuf
               [ -n "$rest" ] && printf '%s\n' "$rest" | shuf; } | head -n "$n")
   fi
+  # Plain stale event pages dated more than 30 days ago go LAST (see below: unhealthy ones do not).
+  oldurls=$(printf '%s\n' "$json" | jq -r "${jqargs[@]}" "$JQ_TS_DEF $JQ_OLD_EVENT_DEFS"'
+      .[] | select(.name | startswith($base)) | select(isold) | .name | ltrimstr("render:")')
+  # Unhealthy pages (tier 1: not ok / retry-flagged) are ALWAYS repaired first, old events included: only plain
+  # stale old events are pushed to the end.
+  if [ -n "$oldurls" ] && [ -n "$tier1" ]; then
+    oldurls=$(printf '%s\n' "$oldurls" | grep -v -x -F -f <(printf '%s\n' "$tier1") || true)
+  fi
+  if [ -n "$oldurls" ]; then
+    picks=$({ printf '%s\n' "$picks" | grep -v -x -F -f <(printf '%s\n' "$oldurls")
+              printf '%s\n' "$picks" | grep -x -F -f <(printf '%s\n' "$oldurls"); } | grep . | head -n "$n_req")
+  else
+    picks=$(printf '%s\n' "$picks" | head -n "$n_req")
+  fi
+  n="$n_req"
   count=$(printf '%s\n' "$picks" | wc -l | tr -d ' ')
   if [ $onlybad -eq 1 ]; then
     echo "Repair: $nbad ${type:-page}(s) reported not ok$([ $unfl -eq 1 ] && echo ", $nnone with no health flag"); re-rendering $count (one every ${DELAY}s). A page whose data/code is really broken will just come back not ok: check with --health."
   else
-    echo "$total candidate ${type:-page}(s): $nbad not ok, $nnone with no ok flag, rest plain stale; rendering $count in that order (one every ${DELAY}s)."
+    echo "$total candidate ${type:-page}(s): $nbad not ok, $nnone with no ok flag, rest plain stale; rendering $count in that order$([ $oldest -eq 1 ] && echo ', oldest first after the not-ok ones') (one every ${DELAY}s)."
   fi
 
   # --indexnow: remember which URLs rendered OK (render_one records HTTP 200, not marked stale, no
@@ -990,7 +1196,7 @@ refresh_stale() {
   local okfile=""
   if [ $do_idx -eq 1 ]; then
     okfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-refresh.XXXXXX")
-    trap 'rm -f "$okfile"' EXIT
+    trap 'autoresolve_flush; rm -f "$okfile"' EXIT
     RENDERED_FILE="$okfile"
   fi
 
@@ -1240,9 +1446,10 @@ health_report() {
   local days=7 json rows
   [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && days="$1"
   json=$(kv_list_json "health:") || exit 1
-  rows=$(printf '%s\n' "$json" | jq -r --argjson d "$days" '
+  rows=$(printf '%s\n' "$json" | jq -r --argjson d "$days" --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
     (now - ($d * 86400) | todate) as $cut
-    | [ .[] | select((.metadata.at // "") >= $cut) ]
+    | [ .[] | select((.metadata.at // "") >= $cut)
+            | select($ign == "" or (((.metadata.page // .name) | tostring | sub("^https?://[^/]+/?"; "") | sub("^/"; "")) | test($ign) | not)) ]
     | sort_by(.metadata.at) | reverse | .[]
     | [ (.metadata.at // "?"), (.metadata.status // "?"), (.metadata.why // "?"),
         (.metadata.page // .name), (.metadata.reason // "") ] | @tsv')
@@ -1374,8 +1581,26 @@ fill_missing() {
     echo "All $SM_TOTAL listed pages already have snapshots."
     rm -f "$tmp" "$tab"; exit 0
   fi
-  echo "$SM_MISSING of $SM_TOTAL listed pages have no snapshot; rendering up to $COUNT (base pages first, then random; one every ${DELAY}s)."
-  picks=$({ grep -v '?' "$tmp" | shuf; grep '?' "$tmp" | shuf; } | head -n "$COUNT")
+  # Missing pages whose last render the gatekeeper logged as NOT healthy come right after the base pages
+  # (the same priority --performer/--venue/... give them), then the rest in random order.
+  local hfile bad_urls="" other_urls nbad=0
+  hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-health.XXXXXX")
+  unhealthy_pages_json | jq -r 'keys[]' > "$hfile" 2>/dev/null
+  other_urls=$(grep '?' "$tmp")
+  if [ -s "$hfile" ]; then
+    # compare the page path+query (no host, no leading slash, + as %20) with the log's page strings
+    bad_urls=$(printf '%s\n' "$other_urls" | awk 'NR == FNR { h[$0] = 1; next }
+      { k = $0; sub(/^https?:\/\/[^\/]+\/?/, "", k); gsub(/\+/, "%20", k); if (k in h) print $0 }' "$hfile" -)
+    if [ -n "$bad_urls" ]; then
+      nbad=$(printf '%s\n' "$bad_urls" | grep -c .)
+      other_urls=$(printf '%s\n' "$other_urls" | grep -v -x -F -f <(printf '%s\n' "$bad_urls") || true)
+    fi
+  fi
+  rm -f "$hfile"
+  echo "$SM_MISSING of $SM_TOTAL listed pages have no snapshot; rendering up to $COUNT (base pages first, then $nbad with a not-ok health log, then random; one every ${DELAY}s)."
+  picks=$({ grep -v '?' "$tmp" | shuf
+            [ -n "$bad_urls" ] && printf '%s\n' "$bad_urls" | shuf
+            [ -n "$other_urls" ] && printf '%s\n' "$other_urls" | shuf; } | head -n "$COUNT")
   rm -f "$tmp" "$tab"
   while IFS= read -r url; do
     [ -n "$url" ] || continue
@@ -1459,7 +1684,7 @@ delta_cmd() {
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   local pending="${NT_PENDING_FILE:-$HOME/.updatecache-pending}"
   DT=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-delta.XXXXXX")
-  trap 'rm -rf "$DT"' EXIT
+  trap 'autoresolve_flush; rm -rf "$DT"' EXIT
   local dt="$DT"
 
   note "Fetching the new events JSON..."
@@ -1672,6 +1897,339 @@ JQEND
   exit 0
 }
 
+# ── added commands: --list-expiring, --list-retry, --list-orphans / --purge-orphans, --quota, --daily ──
+
+# Sets PAT / XPAT (grep -E patterns on a page URL) for a type word; returns 1 for an unknown type.
+# (the same words and patterns --refresh-stale uses; "" = every page)
+type_pattern() {
+  PAT=""; XPAT=""
+  case "$1" in
+    "")                       ;;
+    performer|performers)     PAT='/performers\.html\?performer=' ;;
+    venue|venues)             PAT='/venues\.html\?venue=' ;;
+    storyclub|storyclubs)     PAT='/storyclub\.html\?club=' ;;
+    festival|festivals)       PAT='/festival\.html\?festival=' ;;
+    promoter|promoters)       PAT='/promoters\.html\?promoter=' ;;
+    booksmerch)               PAT='/books_merch\.html\?' ;;
+    repertoire|repertoires)   PAT='/tour_guide\.html\?(.*&)?tour=(R-|rep%3A)' ;;
+    tour|tours)               PAT='/tour_guide\.html\?(.*&)?tour='; XPAT='tour=(R-|rep%3A)' ;;
+    media)                    PAT='/media\.html' ;;
+    event|events)             PAT='/event\.html\?event=' ;;
+    *) return 1 ;;
+  esac
+}
+
+# --list-expiring [HOURS] [type] [--all]: snapshots whose KV expiry falls within HOURS (default
+# NT_EXPIRY_WARN_HOURS = 120), soonest first, as full URLs. A snapshot only expires 90 days after its
+# last write, so these are the pages about to drop out of the cache: re-render them with
+#   ./updatecache $(./updatecache --list-expiring 120 20)      (or just: ./updatecache $(./updatecache --list-expiring))
+# Past events (event id dated more than 30 days ago, the same cut-off as the sitemap) are left out,
+# because they are allowed to fade away; --all includes them.
+list_expiring() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local hours="$EXPIRY_WARN_HOURS" type="" a allp=0 limit=999999 seen_num=0
+  for a in "$@"; do
+    if [[ "$a" =~ ^[0-9]+$ ]]; then
+      if [ $seen_num -eq 0 ]; then [ "$a" -ge 1 ] && hours="$a"; seen_num=1; else [ "$a" -ge 1 ] && limit="$a"; fi
+    elif [ "$a" = "--all" ]; then allp=1
+    elif [ -n "$a" ]; then type="$a"; fi
+  done
+  type_pattern "$type" || { echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire tour media event)" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local now_ms=$(( $(date +%s) * 1000 )) soon_ms=$(( hours * 3600000 )) json all total nall
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  local base="render:https://$HOST"
+  all=$(printf '%s\n' "$json" | jq -r --arg base "$base" --argjson now "$now_ms" --argjson soon "$soon_ms" --argjson allp "$allp" '
+      def evdate: ((capture("(^|-)(?<d>20[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(-|$)").d)
+                   // (capture("-(?<ms>[0-9]{12,14})$").ms | tonumber / 1000 | floor | strftime("%Y%m%d")));
+      (now - 2592000 | strftime("%Y%m%d")) as $cut
+      | [ .[] | select(.name | startswith($base))
+              | select(.expiration != null and (.expiration * 1000 - $now) < $soon)
+              | ([ .name | capture("/event\\.html\\?event=(?<e>[^&]*)") | .e ] | first // null) as $e
+              | ((if $e == null then null else (try ($e | evdate) catch null) end) // null) as $d
+              | select($allp == 1 or $d == null or $d >= $cut)
+              | { name: .name, exp: .expiration } ]
+      | sort_by(.exp) | .[] | .name | ltrimstr("render:")')
+  total=$(printf '%s\n' "$json" | jq -r --arg base "$base" --argjson now "$now_ms" --argjson soon "$soon_ms" \
+      '[ .[] | select(.name | startswith($base)) | select(.expiration != null and (.expiration * 1000 - $now) < $soon) ] | length')
+  if [ -n "$PAT" ]; then all=$(printf '%s\n' "$all" | grep -E -- "$PAT"); fi
+  if [ -n "$XPAT" ]; then all=$(printf '%s\n' "$all" | grep -v -E -- "$XPAT"); fi
+  nall=$(printf '%s\n' "$all" | grep -c .)
+  if [ "$nall" -eq 0 ]; then
+    echo "No ${type:-page} snapshots expire within ${hours}h (of $total expiring in all).$([ $allp -eq 0 ] && [ "$total" -gt 0 ] && echo " Past events are left out; add --all to include them.")" >&2
+    exit 0
+  fi
+  echo "$nall ${type:-page} snapshot(s) expire within ${hours}h, soonest first ($total expiring in all; past events $([ $allp -eq 1 ] && echo included || echo left out))." >&2
+  printf '%s\n' "$all" | head -n "$limit"
+  exit 0
+}
+
+# --list-retry: pages whose latest render was NOT healthy, so the gatekeeper kept the old snapshot and
+# flagged it for retry (KV metadata retry/fails). Shows failures so far, age of the kept page, the
+# health status and reason from the health log, and the URL. Pages at the retry cap (NT_MAX_RETRIES,
+# default 3 = the gatekeeper's MAX_UNHEALTHY_RETRIES) are no longer retried first: they are the ones
+# that need a data/code fix. One listing of render: and one of health:, no renders.
+list_retry() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local now_ms=$(( $(date +%s) * 1000 )) cap="${NT_MAX_RETRIES:-3}" json hfile rows
+  json=$(kv_list_json "render:https://$HOST/") || exit 1
+  hfile=$(mktemp "${TMPDIR:-/tmp}/updatecache-hl.XXXXXX")
+  kv_list_json "health:" > "$hfile" 2>/dev/null || echo '[]' > "$hfile"
+  rows=$(printf '%s\n' "$json" | jq -r --slurpfile h "$hfile" --arg base "render:https://$HOST" \
+      --argjson now "$now_ms" --argjson cap "$cap" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    ($h[0] | map(select((.metadata.status // "") != "" and (.metadata.status // "") != "ok")
+                 | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm),
+                     s: .metadata.status, r: (.metadata.reason // ""), at: (.metadata.at // "") })
+             | sort_by(.at) | reduce .[] as $e ({}; .[$e.p] = $e)) as $hm
+    | [ .[] | select(.name | startswith($base)) | select((.metadata.retry // 0) == 1)
+            | (.name | ltrimstr($base + "/") | gsub("\\+"; "%20")) as $pg
+            | { url: (.name | ltrimstr("render:")), fails: (.metadata.fails // 0), ts: (.metadata.ts // 0),
+                s: ($hm[$pg].s // "?"), r: ($hm[$pg].r // "") } ]
+    | sort_by(-.fails, .ts) | .[]
+    | [ .fails, (if .ts > 0 then ((((($now - .ts) / 86400000) * 10 | floor) / 10 | tostring) + "d") else "?" end),
+        (if .fails >= $cap then "capped" else "retrying" end), .s, .url, .r ] | @tsv')
+  rm -f "$hfile"
+  if [ -z "$rows" ]; then
+    echo "No snapshot is flagged for retry: every stored page came from a healthy render."
+    exit 0
+  fi
+  printf '%s\n' "$rows" | awk -F'\t' '
+    BEGIN { printf "%5s %7s %-9s %-8s %s\n", "fails", "age", "state", "health", "page  --  reason" }
+    { printf "%5d %7s %-9s %-8s %s%s\n", $1, $2, $3, $4, $5, ($6 != "" ? "  --  " $6 : ""); n++; if ($3 == "capped") c++ }
+    END { printf "\n%d page(s) are serving an OLD snapshot because the latest render was not healthy; %d at the retry cap.\n", n, c + 0
+          print "Capped pages are not retried first any more: fix the data/page, then re-render (./updatecache --repair, or the page by name)." }'
+  exit 0
+}
+
+# Prints, for one page type, the snapshots whose key is no longer in the events JSON (the "orphans"
+# column of --status), as request-ready URLs. Uses the globals set by orphans_collect.
+#   orphan_row <label> <page> <param> <default-jq> <jq-env-override> [rawmode] [tag]
+orphan_row() {
+  local label="$1" page="$2" param="$3" default_jq="$4" jq_override="$5"
+  local rawmode="${6:-0}" tag="${7:-}" uri_filter="| @uri"; [ "$rawmode" = "1" ] && uri_filter=""
+  [ -z "$ORPH_TYPE" ] || [ "$ORPH_TYPE" = "$label" ] || return 0
+  local jq_keys="${!jq_override:-$default_jq}" prefix="render:https://$HOST/$page.html?$param=" all cached k
+  all=$(echo "$STATUS_JSON" | jq -r "$jq_keys $uri_filter" 2>/dev/null \
+    | sed -e 's/%20/+/g' -e 's/~/%7E/g' -e 's/%2A/*/g' | sort -u)
+  cached=$(echo "$STATUS_NAMES" \
+    | awk -v p="$prefix" 'index($0, p) == 1 { print substr($0, length(p) + 1) }' \
+    | { if [ -n "$tag" ]; then grep -F -- "$tag"; else cat; fi; } | sort -u)
+  [ -n "$all" ] || return 0     # no keys read for this type: never call everything an orphan
+  comm -13 <(echo "$all") <(echo "$cached") | grep . | while IFS= read -r k; do
+    printf 'https://%s/%s.html?%s=%s\n' "$HOST" "$page" "$param" "${k//+/%20}"
+  done
+}
+
+# Fetch the events JSON + the KV listing (as --status does) and fill ORPHANS with every orphan URL.
+orphans_collect() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local type="$1" name json_url statusjson
+  case "$type" in
+    "") ORPH_TYPE="" ;;
+    performer|performers) ORPH_TYPE=performers ;;
+    venue|venues) ORPH_TYPE=venues ;;
+    storyclub|storyclubs) ORPH_TYPE=storyclubs ;;
+    festival|festivals) ORPH_TYPE=festivals ;;
+    promoter|promoters) ORPH_TYPE=promoters ;;
+    booksmerch) ORPH_TYPE=booksmerch ;;
+    repertoire|repertoires) ORPH_TYPE=repertoire ;;
+    event|events) ORPH_TYPE=events ;;
+    *) echo "Unknown type '$type' (performer venue storyclub festival promoter booksmerch repertoire event)" >&2; exit 1 ;;
+  esac
+  STATUS_JSON=""
+  for name in events_normalized events_normalised; do
+    json_url="${NT_EVENTS_JSON:-https://$HOST/$name.json}"
+    STATUS_JSON=$(curl -sf --max-time 60 "$json_url") && [ -n "$STATUS_JSON" ] && break
+    STATUS_JSON=""
+  done
+  [ -n "$STATUS_JSON" ] || { echo "Could not fetch the events JSON (set NT_EVENTS_JSON?); not listing anything." >&2; exit 1; }
+  read_epochs
+  statusjson=$(kv_list_json "render:https://$HOST/") || exit 1
+  STATUS_NAMES=$(printf '%s\n' "$statusjson" \
+    | jq -r --argjson hard "$EPOCH_HARD" --argjson ttl "$TTL_MS" \
+        "$JQ_TS_DEF"'.[] | select((entry_ts // $hard) >= $hard) | .name')
+  ORPHANS=$({
+    orphan_row performers  performers  performer "$JQ_PERFORMER"  NT_KEYS_JQ_PERFORMER
+    orphan_row venues      venues      venue     "$JQ_VENUE"      NT_KEYS_JQ_VENUE
+    orphan_row storyclubs  storyclub   club      "$JQ_STORYCLUB"  NT_KEYS_JQ_STORYCLUB
+    orphan_row festivals   festival    festival  "$JQ_FESTIVAL"   NT_KEYS_JQ_FESTIVAL
+    orphan_row promoters   promoters   promoter  "$JQ_PROMOTER"   NT_KEYS_JQ_PROMOTER
+    orphan_row booksmerch  books_merch performer "$JQ_BOOKSMERCH" NT_KEYS_JQ_BOOKSMERCH
+    orphan_row repertoire  tour_guide  performer "$JQ_REPERTOIRE" NT_KEYS_JQ_REPERTOIRE 1 "&tour=R-"
+    orphan_row events      event       event     "$JQ_EVENT"      NT_KEYS_JQ_EVENT
+  })
+}
+
+# --list-orphans [type]: snapshots whose key is no longer in the events JSON (see the orphans column
+# of --status), one URL per line. They are never requested again; they just expire after 90 days.
+list_orphans() {
+  orphans_collect "$1"
+  if [ -z "$ORPHANS" ]; then echo "No orphan snapshots${1:+ for $1}." >&2; exit 0; fi
+  printf '%s\n' "$ORPHANS"
+  echo "$(printf '%s\n' "$ORPHANS" | grep -c .) orphan snapshot(s). Remove them with: $0 --purge-orphans${1:+ $1}" >&2
+  exit 0
+}
+
+# --purge-orphans [type] [--yes]: delete the orphan snapshots (no render, no browser time).
+purge_orphans() {
+  local type="" yes=0 a n
+  for a in "$@"; do if [ "$a" = "--yes" ]; then yes=1; elif [ -n "$a" ]; then type="$a"; fi; done
+  orphans_collect "$type"
+  if [ -z "$ORPHANS" ]; then echo "No orphan snapshots${type:+ for $type}."; exit 0; fi
+  n=$(printf '%s\n' "$ORPHANS" | grep -c .)
+  printf '%s\n' "$ORPHANS"
+  echo
+  echo "$n orphan snapshot(s) listed above: their keys are not in the events JSON, so nothing links to them."
+  if [ $yes -ne 1 ]; then
+    read -r -p "Type YES to delete them: " answer
+    [ "$answer" = "YES" ] || { echo "Cancelled."; exit 1; }
+  fi
+  local urls=()
+  while IFS= read -r a; do [ -n "$a" ] && urls+=("$a"); done <<< "$ORPHANS"
+  exec bash "$(cd "$(dirname "$0")" && pwd)/$(basename "$0")" --purge-only "${urls[@]}"
+}
+
+# Read a numeric KV value (lock:quota, lock:strikes). Prints nothing if the key does not exist.
+kv_get_number() {
+  run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key get "$1" \
+    --namespace-id "$NT_KV_NAMESPACE_ID" --remote 2>/dev/null | tr -d '\r' | grep -E '^[0-9]+$' | head -n 1
+}
+
+# --quota: is the gatekeeper holding renders back after Browser Run 429s? (lock:quota = pause end,
+# lock:strikes = 429s today.) Exit status 3 when paused, so scripts can stop early. Free: two KV reads.
+quota_cmd() {
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local q s now_ms until mins
+  q=$(kv_get_number lock:quota); s=$(kv_get_number lock:strikes)
+  now_ms=$(( $(date +%s) * 1000 ))
+  if [ -n "$q" ] && [ "$q" -le 1000000000000 ] 2>/dev/null; then   # legacy flag value: paused until UTC midnight
+    q=$(( ($(date -u +%s) / 86400 + 1) * 86400 * 1000 ))
+  fi
+  echo "429s from Browser Run today: ${s:-0}"
+  if [ -n "$q" ] && [ "$q" -gt "$now_ms" ] 2>/dev/null; then
+    mins=$(( (q - now_ms) / 60000 ))
+    echo "Renders are PAUSED until $(fmt_epoch "$q") (in ${mins} min)."
+    if [ "$mins" -gt 480 ]; then echo "That is the daily quota: it resets at 00:00 UTC. $0 --force tries anyway."
+    else echo "A short back-off after a 429; $0 waits it out, or --force tries anyway."; fi
+    exit 3
+  fi
+  echo "No render pause recorded: renders should go through."
+  exit 0
+}
+
+# --daily [N]: the whole daily routine in one go, within N renders (default NT_DAILY_RENDERS or 30):
+#   1. does nothing if renders are paused (--force overrides)    2. shows the last day's unhealthy renders
+#   3. --repair --skip-capped (about N/4)   4. --fill-missing (about N/4)
+#   5. --refresh-stale --oldest --skip-bad --skip-capped (the rest; pages the first step already tried are not repeated)
+# Each step stops cleanly on the daily quota, and so does the whole routine.
+daily_cmd() {
+  local n="${NT_DAILY_RENDERS:-30}" a fw=() log rc self remaining used step
+  self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+  for a in "$@"; do [[ "$a" =~ ^[0-9]+$ ]] && [ "$a" -ge 1 ] && n="$a"; done
+  [ "$FORCE" = "1" ] && fw=(--force)
+  echo "== Daily maintenance: a budget of $n renders, spent in this order: repair, then pages with no snapshot, then oldest stale, then (last) stale event pages dated >30 days ago =="
+  if [ "$FORCE" != "1" ]; then
+    bash "$self" --quota; rc=$?
+    if [ $rc -eq 3 ]; then echo "Stopping: renders are paused. (add --force to try anyway)"; exit 0; fi
+  fi
+  echo; echo "-- unhealthy renders in the last day --"
+  bash "$self" --health 1 2>&1 | head -n 25
+  log=$(mktemp "${TMPDIR:-/tmp}/updatecache-daily.XXXXXX")
+  remaining=$n
+  # Each step may use ALL of what is left (renders spent so far are counted from its "[k] === url" lines);
+  # whatever a step does not use falls through to the next one. Unhealthy pages are always repaired first
+  # (old events too); only STALE old events are left out of step 3 (--no-old-events) and get what remains last.
+  for step in "repair (every page in the health log, with or without a snapshot, plus retry-flagged ones; not the capped ones)|--repair @N@ --skip-capped" \
+              "fill missing (no snapshot yet)|--fill-missing @N@" \
+              "oldest stale|--refresh-stale @N@ --oldest --skip-bad --skip-capped --no-old-events" \
+              "stale old events (dated more than 30 days ago), last|--refresh-stale @N@ --oldest --skip-bad --skip-capped --old-events-only"; do
+    if [ "$remaining" -le 0 ]; then echo; echo "Render budget ($n) used up; skipping: ${step%%|*}."; continue; fi
+    echo; echo "-- ${step%%|*} (up to $remaining of $n renders left) --"
+    step="${step#*|}"
+    # shellcheck disable=SC2086
+    bash "$self" ${step//@N@/$remaining} ${fw[@]+"${fw[@]}"} 2>&1 | tee "$log"
+    if grep -qiE 'quota exhausted|renders are paused' "$log"; then
+      echo; echo "Browser quota reached: stopping here; run again after 00:00 UTC (or when the pause ends)."
+      rm -f "$log"; exit 0
+    fi
+    used=$(grep -cE '^\[[0-9]+\] === ' "$log")
+    remaining=$(( remaining - used ))
+  done
+  rm -f "$log"
+  echo; echo "Done: $(( n - remaining )) of $n renders used. Check progress with: $0 --staleness   (pages stuck on an old snapshot: $0 --list-retry; about to expire: $0 --list-expiring)"
+  exit 0
+}
+
+# --resolved <page>... | --all [--yes]: remove entries from the health log (the health:<day>:<page> keys
+# that --health, --daily and the repair priority read). The log is append-only and entries live 7 days;
+# a purge or a healthy re-render never removes them, so use this for pages that were fixed, or never
+# were real pages (e.g. a mistyped /50). Pages are matched EXACTLY after normalising (scheme/host and
+# leading slash dropped, "+" = %20): 50, /50, performers.html?performer=x or a full URL all work.
+# It only touches the log, not snapshots (so a snapshot's own retry flag stays: re-render the page).
+resolved_cmd() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local yes=0 all=0 a targets=() tjson json names n k answer failed=0 done_n=0
+  for a in "$@"; do
+    case "$a" in
+      --yes) yes=1 ;;
+      --all) all=1 ;;
+      "") ;;
+      *) targets+=("$a") ;;
+    esac
+  done
+  if [ $all -eq 0 ] && [ ${#targets[@]} -eq 0 ]; then
+    echo "Usage: $0 --resolved <page> [page...] [--yes]   |   $0 --resolved --all [--yes]" >&2
+    exit 1
+  fi
+  if [ $all -eq 1 ] && [ ${#targets[@]} -gt 0 ]; then
+    echo "Give either pages or --all, not both." >&2; exit 1
+  fi
+  tjson=$(if [ ${#targets[@]} -gt 0 ]; then printf '%s\n' "${targets[@]}" | jq -Rn '[inputs]'; else echo '[]'; fi)
+  json=$(kv_list_json "health:") || exit 1
+  names=$(printf '%s\n' "$json" | jq -r --argjson t "$tjson" --argjson all "$all" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    ($t | map(norm)) as $want
+    | .[] | select($all == 1
+                   or (((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm) as $p
+                       | any($want[]; . == $p)))
+    | .name')
+  if [ -z "$names" ]; then
+    if [ $all -eq 1 ]; then echo "The health log is already empty."; else echo "No health-log entries match: ${targets[*]}"; fi
+    exit 0
+  fi
+  n=$(printf '%s\n' "$names" | grep -c .)
+  printf '%s\n' "$json" | jq -r --argjson t "$tjson" --argjson all "$all" '
+    def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
+    ($t | map(norm)) as $want
+    | .[] | select($all == 1
+                   or (((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm) as $p
+                       | any($want[]; . == $p)))
+    | "  " + (.metadata.at // "?") + "  " + (.metadata.status // "?") + "  " + (.metadata.page // .name)'
+  echo "$n health-log entr$([ "$n" -eq 1 ] && echo y || echo ies) listed above."
+  if [ $yes -ne 1 ]; then
+    read -r -p "Type YES to delete them from the log: " answer
+    [ "$answer" = "YES" ] || { echo "Cancelled."; exit 1; }
+  fi
+  while IFS= read -r k; do
+    [ -n "$k" ] || continue
+    if run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key delete "$k" \
+         --namespace-id "$NT_KV_NAMESPACE_ID" --remote >/dev/null 2>&1; then
+      done_n=$((done_n + 1))
+    else
+      failed=$((failed + 1)); echo "Could not delete: $k" >&2
+    fi
+  done <<< "$names"
+  echo "Deleted $done_n of $n log entr$([ "$n" -eq 1 ] && echo y || echo ies).$([ $failed -gt 0 ] && echo " $failed failed: run again, or check 'npx wrangler whoami'.")"
+  [ $failed -eq 0 ] || exit 1
+  exit 0
+}
+
+trap autoresolve_flush EXIT
 case "$1" in
   --list-performers|--list-performer)  LIST_ONLY=1; dispatch performer ;;
   --list-venues|--list-venue)          LIST_ONLY=1; dispatch venue ;;
@@ -1687,12 +2245,19 @@ case "$1" in
   --fill-missing)                      fill_missing ;;
   --staleness)                         staleness_report ;;
   --inspect)                           inspect_cmd "${2:-}" "${3:-}" ;;
-  --list-stale)                        list_stale "${2:-}" ;;
+  --list-stale)                        list_stale "${@:2}" ;;
   --refresh-stale)                     refresh_stale "${@:2}" ;;
   --repair)                            refresh_stale --only-bad "${@:2}" ;;
   --list-recent)                       list_recent "${2:-}" ;;
   --list-cached)                       list_cached "${@:2}" ;;
   --health)                            health_report "${2:-}" ;;
+  --list-expiring)                     list_expiring "${@:2}" ;;
+  --list-retry)                        list_retry ;;
+  --list-orphans)                      list_orphans "${2:-}" ;;
+  --purge-orphans)                     purge_orphans "${@:2}" ;;
+  --quota)                             quota_cmd ;;
+  --daily)                             daily_cmd "${@:2}" ;;
+  --resolved)                          resolved_cmd "${@:2}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
   --storyclub|--storyclubs)            dispatch storyclub ;;
@@ -1718,7 +2283,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--indexnow])" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--oldest] [--indexnow] / --list-stale [N] [type] / --list-expiring / --list-retry / --list-orphans / --purge-orphans / --quota / --daily [N])" >&2
   exit 1
 fi
 
