@@ -16819,7 +16819,7 @@
     },
     "watermill-inn-ings": {
       "id": "watermill-inn-ings",
-      "name": "Orepool Inn, Ings",
+      "name": "Watermill Inn, Ings",
       "city": "Windermere",
       "postcode": "LA8 9PY",
       "full_address": "Watermill Inn & Windermere Brewing Co., Ings, Nr. Windermere, LA8 9PY",
@@ -16845,7 +16845,7 @@
     "orepool-inn-sling": {
       "id": "orepool-inn-sling",
       "name": "Orepool Inn",
-      "city": "Sling",
+      "city": "Coleford",
       "postcode": "GL16 8LH",
       "full_address": "Orepool Inn, Sling, Coleford, GL16 8LH",
       "url": "https://www.orepoolinn.co.uk/",
@@ -19770,30 +19770,41 @@
     }
   },
   "publishers": {
+    "propolis":{
+      "name": "Propolis",
+      "url": "https://www.thebookhive.co.uk/publishing/",
+      "publisher_id": "propolis",
+      "description": "Propolis is the publishing imprint of The Book Hive. We publish idiosyncratic work with tangential links to East Anglia — titles that booksellers want to hand-sell, and readers will treasure and share."
+    },
     "history-press": {
       "name": "The History Press Ltd",
       "url": "https://thehistorypress.co.uk/",
-      "publisher_id": "history-press"
+      "publisher_id": "history-press",
+      "description": "The History Press is an independent non-fiction publisher based in the heart of Cheltenham, Gloucestershire — home also to one of the most prestigious literary festivals in the country.\n\n\n\nAlong with a rich heritage in history publishing, History Press seeks to inform, entertain and champion untold stories and hidden voices across a variety of genres, such as memoir, entertainment, travel, true crime and many more."
     },
     "mercier-press": {
       "name": "Mercier Press",
       "url": "https://www.mercierpress.ie/",
-      "publisher_id": "mercier-press"
+      "publisher_id": "mercier-press",
+      "description": "Mercier Press is Ireland's oldest independent publishing house, based in Cork. It was founded in 1944 by Captain Seán and Mary Feehan. The publishing house was named after Cardinal Mercier of Belgium, a man who in his day, proved himself not only a man of thought, whose mind ranged over every subject of vital interest to humanity, but a man of action in the varying circumstances of a life that shone before the eyes of a watching world. The voice of Cardinal Mercier could not be stilled and Mercier Press is proud to borrow from him the inspiration for its publishing programme, which is a belief in the importance of Ireland’s ability to provide accessible histories and cultural books for Irish readers and all who are interested in Irish cultural life."
     },
     "gill-books": {
       "name": "Gill Books",
       "url": "https://www.gillbooks.ie/",
-      "publisher_id": "gill-books"
+      "publisher_id": "gill-books",
+      "description": "Established in 1856, Gill Books is Ireland's biggest independent, multi-award-winning book publisher."
     },
     "firefly-press": {
       "name": "Firefly Press",
       "url": "https://fireflypress.co.uk/",
-      "publisher_id": "firefly-press"
+      "publisher_id": "firefly-press",
+      "description": "Firefly Press is an award-winning independent children's and YA publisher based in Wales, publishing quality fiction in all genres for 5-19 years olds."
     },
     "y-lolfa": {
       "name": "Y Lolfa",
       "url": "https://www.ylolfa.com/en",
-      "publisher_id": "y-lolfa"
+      "publisher_id": "y-lolfa",
+      "description": "Y Lolfa was established in the mid Sixties, a period of fun and protest when a new generation of Welsh youth were demanding both official and unofficial status for their language. Welsh books at the time were pretty dull and it was Y Lolfa’s vision to create a new kind of publishing that would be lively, colourful and provocative, while taking advantage of the artistic freedom provided by the new, small offset litho printing process."
     }
   },
   "performers": {
@@ -20478,7 +20489,7 @@
       },
       "books": [
         {
-          "publisher": "Propolis",
+          "publisher_id": "propolis",
           "isbn": "9780992946050",
           "cover": "",
           "title": "The Assembly of the Severed Head",
@@ -20488,7 +20499,7 @@
           "buy_url": "https://uk.bookshop.org/p/books/the-assembly-of-the-severed-head-a-novel-of-the-mabinogi-hugh-lupton/5643a4c86590f9f"
         },
         {
-          "publisher": "Propolis",
+          "publisher_id": "propolis",
           "isbn": "9781916905139",
           "cover": "",
           "title": "The Dreaming of Place",
