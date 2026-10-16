@@ -267,6 +267,18 @@ const PageHealth = (() => {
   }
 
   /**
+   * Adds a non-fatal warning after markReady() (which resets warnings), e.g.
+   * "this link was out of date and was redirected". Amber LED; the gatekeeper
+   * sees the text in the page-health message and treats the render as not
+   * healthy enough to cache. Safe to call before or after markReady().
+   * @param {string} message
+   */
+  function addWarning(message) {
+    if (message && !warnings.includes(message)) warnings.push(message);
+    render();
+  }
+
+  /**
    * The page could not render at all (e.g. the events data failed to load
    * and the page showed its own error message). Always red.
    */
@@ -297,6 +309,7 @@ const PageHealth = (() => {
   return {
     markReady,
     markNotFound,
+    addWarning,
     markFailed,
     get status() {
       return status();

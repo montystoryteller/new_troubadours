@@ -11,6 +11,11 @@
 // capped there (flag in KV under lock:quota, count under lock:strikes). A successful
 // render resets the count; "time limit exceeded" (daily cap) goes straight to midnight.
 // Also serves /sitemap.xml, generated from the meta:keys index in KV.
+// Broken event links: when a crawler's render comes back as the page's "not found" state (or as
+// an outdated-id redirect, see urlVerdict()), the crawler gets a real 404 (or a 301 to the right
+// event) instead of a 200, and the verdict is remembered for 2 h (nf:<url>) so repeat pings of
+// the same bad URL don't each burn a render. Humans are unaffected: they go straight to origin,
+// where event.js shows its own soft-404 page with did-you-mean suggestions.
 //
 // Required bindings:
 //   RENDERER      service binding -> renderer worker
@@ -53,6 +58,85 @@ const MAX_UNHEALTHY_RETRIES = 3;
 // GET with this header (value = DEBUG_SECRET): flagged URLs still worth retrying, one per line.
 const RETRY_LIST_HEADER = "x-list-retry";
 const isHealthyStatus = (s) => !s || s === "ok" || s === "n/a";
+
+// ── broken-URL verdicts (404 / 301 for crawlers) ─────────────
+// event.js reports a broken ?event= through PageHealth (data-page-health="warn" + a message):
+//   "...not found..."          -> nothing matched: answer 404
+//   "nt-redirect:<event id>"   -> an outdated id that was matched by date + venue: answer 301
+// Only the paths listed here are allowed to produce these, so a flaky render of any other page
+// can never turn into a 404 / 301 that crawlers remember. Add "/performers" etc. once their
+// not-found states are trusted the same way.
+const VERDICT_PATHS = new Set(["/event"]);
+const VERDICT_PREFIX = "nf:";
+const VERDICT_TTL_SECONDS = 60 * 60 * 2; // re-render a bad URL at most every 2 h
+const verdictKeyFor = (normUrl) => VERDICT_PREFIX + normUrl.toString();
+const verdictAllowed = (normUrl) =>
+  VERDICT_PATHS.has(normUrl.pathname.replace(/\.html$/, ""));
+
+// -> { kind: "moved", id } | { kind: "gone" } | null. Never throws.
+function urlVerdict(health) {
+  try {
+    if (!health || health.status !== "warn") return null;
+    const reason = health.reason || "";
+    const moved = /nt-redirect:([^\s|)]+)/.exec(reason);
+    if (moved) return { kind: "moved", id: moved[1] };
+    if (/not found/i.test(reason)) return { kind: "gone" };
+  } catch {
+    /* fall through */
+  }
+  return null;
+}
+
+async function readVerdict(env, normUrl) {
+  try {
+    return await env.RENDER_CACHE.get(verdictKeyFor(normUrl), "json");
+  } catch (err) {
+    console.log("verdict read failed", String(err));
+    return null;
+  }
+}
+
+async function storeVerdict(env, normUrl, verdict) {
+  try {
+    await env.RENDER_CACHE.put(verdictKeyFor(normUrl), JSON.stringify(verdict), {
+      expirationTtl: VERDICT_TTL_SECONDS,
+    });
+  } catch (err) {
+    console.log("verdict write failed", String(err));
+  }
+}
+
+// html = the rendered not-found page when we have it (first sighting); otherwise the origin page
+// is fetched and re-served with a 404 (its JS shows the same not-found UI to bots that run it).
+async function verdictResponse(verdict, normUrl, request, html = null) {
+  if (verdict.kind === "moved") {
+    const to = new URL(normUrl);
+    to.searchParams.set("event", verdict.id);
+    return new Response(null, {
+      status: 301,
+      headers: {
+        location: to.toString(),
+        "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
+        "x-prerendered": "true",
+      },
+    });
+  }
+  const headers = {
+    "x-robots-tag": "noindex",
+    "cache-control": "no-store",
+    "x-prerendered": "true",
+  };
+  if (html) {
+    return new Response(html, {
+      status: 404,
+      headers: { "content-type": "text/html; charset=utf-8", ...headers },
+    });
+  }
+  const origin = await fetch(request);
+  const h = new Headers(origin.headers);
+  Object.entries(headers).forEach(([k, v]) => h.set(k, v));
+  return new Response(origin.body, { status: 404, statusText: "Not Found", headers: h });
+}
 
 const DEBUG_HEADER = "x-force-render";
 const PURGE_HEADER = "x-purge-cache";
@@ -443,6 +527,8 @@ function normalisedUrl(url) {
 //   hit-stale-quota-exhausted  (stale snapshot served; refresh skipped because the daily quota is used up)
 //   forced-skipped-quota  (forced/prewarm request refused with 429, no render attempted)
 //   miss-origin-unknown-key  (page key not in the meta:keys index; no render spent)
+//   miss-gone | miss-moved  (render said the URL is broken: served a 404 / 301; verdict stored in KV)
+//   miss-gone-cached | miss-moved-cached  (same verdict replayed from KV, no render spent)
 //   (no-render = a cache-only-tier bot such as Googlebot: never spends a render)
 //   miss-origin-kv-error  (KV read threw; served the origin page, no render attempted)
 //   forced-rendered | forced-failed  (tier "forced": updatecache / prewarm / debug ping)
@@ -1196,6 +1282,16 @@ export default {
       });
     }
 
+    // A URL an earlier render found to be broken (or outdated): replay that answer to ANY bot tier,
+    // Googlebot included, without spending a render. One KV read, event pages only.
+    if (verdictAllowed(normUrl)) {
+      const known = await readVerdict(env, normUrl);
+      if (known?.kind === "gone" || known?.kind === "moved") {
+        logGate(request, tier, normUrl, `miss-${known.kind}-cached`);
+        return verdictResponse(known, normUrl, request);
+      }
+    }
+
     // True cache miss: a single attempt, no waiting. If Browser Run is
     // rate limited we fall straight through to the origin page below; the
     // scheduled prewarm fills the cache later.
@@ -1230,6 +1326,15 @@ export default {
       1,
       "miss",
     );
+    const verdict = html && verdictAllowed(normUrl) ? urlVerdict(health) : null;
+    if (verdict) {
+      logGate(request, tier, normUrl, `miss-${verdict.kind}`, {
+        health: health?.status,
+        ...(verdict.id ? { to: verdict.id } : {}),
+      });
+      ctx.waitUntil(storeVerdict(env, normUrl, verdict));
+      return verdictResponse(verdict, normUrl, request, html);
+    }
     if (html && !isHealthyStatus(health?.status)) {
       // Never cache or serve an unhealthy render to a crawler: give it the origin page instead.
       logGate(request, tier, normUrl, "miss-origin-render-unhealthy", {

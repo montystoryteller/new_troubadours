@@ -265,6 +265,160 @@ function findEventByLegacyId(eventId) {
   return best ? best() : null;
 }
 
+// ---------------------------------------------------------------------------
+// Unknown-id recovery: "did you mean" matching
+// ---------------------------------------------------------------------------
+// When ?event= resolves nothing (findEventById / findTourOrShowDateEventById /
+// findEventByLegacyId all missed) — typically a stale link after a tour was
+// renamed, or a truncated/mistyped id — findEventIdMatches() tries to work out
+// what was meant, from the shape every id shares: `...-yyyymmdd-venueId`.
+//
+//   auto         the ONE candidate on the same date at the same venue (a date +
+//                venue pair is effectively unique, so this is safe to redirect
+//                to). Null if there isn't exactly one clear winner.
+//   suggestions  up to SUGGESTION_MAX likely candidates for a "Did you mean"
+//                list (auto, if any, is first).
+//
+// Only runs on the not-found path, so walking every event once is fine.
+const SUGGESTION_MAX = 5;
+const SUGGESTION_MIN_SCORE = 0.6;
+const AUTO_MATCH_MARGIN = 0.25; // winner must beat the runner-up by this much
+const ID_STOP_TOKENS = new Set(["the", "of", "and", "at", "in"]);
+
+function idTokens(s) {
+  return String(s || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(
+      (t) => t.length > 1 && !ID_STOP_TOKENS.has(t) && !/^\d{8}$/.test(t),
+    );
+}
+
+const ymdOf = (d) =>
+  `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+
+// One entry per dated occurrence, shaped like the three resolvers above see
+// them: flat events use resolveEventId(); tour/show dates use their T-/R- ids
+// (first date only for a multi-date shorthand, same as the id builders).
+function collectIdCandidates() {
+  const out = [];
+  const add = (id, date, venueId, title, extraText, build) => {
+    if (!id || !date) return;
+    out.push({
+      id,
+      date,
+      ymd: ymdOf(date),
+      venueId: venueId || "",
+      title,
+      tokens: new Set([...idTokens(id), ...idTokens(`${title} ${extraText}`)]),
+      build,
+    });
+  };
+
+  FLAT_SEARCH_SOURCES.forEach(({ key }) => {
+    resolvableFlatEvents(eventsData[key]).forEach((e) =>
+      add(
+        resolveEventId(e, e._date),
+        e._date,
+        e.venue_id,
+        e.showname || e.name,
+        performerNamesOf(e).join(" "),
+        () => e,
+      ),
+    );
+  });
+
+  Object.entries(toursLookup || {}).forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      const first = Array.isArray(td.date) ? td.date[0] : td.date;
+      add(
+        resolveTourDateEventId(tourId, td),
+        parseDateString(first),
+        td.venue_id,
+        tour.tour_name || tour.name,
+        `${tour.name || ""} ${performerNamesOf(tour).join(" ")}`,
+        () => buildEventRecordFromTourDate(tourId, tour, td),
+      );
+    });
+  });
+
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      const first = Array.isArray(sd.date) ? sd.date[0] : sd.date;
+      add(
+        resolveShowDateEventId(tsId, sd),
+        parseDateString(first),
+        sd.venue_id,
+        ts.showname || ts.name,
+        `${ts.name || ""} ${performerNamesOf(ts).join(" ")}`,
+        () => buildEventRecordFromShowDate(tsId, ts, sd),
+      );
+    });
+  });
+
+  return out;
+}
+
+function findEventIdMatches(badId) {
+  const wanted = String(badId || "").toLowerCase();
+  const dm =
+    /(?:^|-)((?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01]))(?:-|$)/.exec(
+      wanted,
+    );
+  const ymd = dm ? dm[1] : null;
+  const afterDate = dm ? wanted.slice(dm.index + dm[0].length) : "";
+  const wantedTokens = new Set(idTokens(wanted));
+  const today = getTodayMidnight();
+
+  const scored = collectIdCandidates()
+    .map((c) => {
+      const sameDate = !!ymd && c.ymd === ymd;
+      const sameVenue =
+        !!afterDate &&
+        !!c.venueId &&
+        (afterDate === c.venueId || afterDate.endsWith(`-${c.venueId}`));
+      let overlap = 0;
+      wantedTokens.forEach((t) => {
+        if (c.tokens.has(t)) overlap++;
+      });
+      const tokenScore = wantedTokens.size ? overlap / wantedTokens.size : 0;
+      // Name tokens = what's left of the bad id once the venue's own words are
+      // removed (tour/show/performer words). If there are some and NONE appear
+      // on this candidate, it's a different act at the same place and time.
+      const venueWords = new Set(idTokens(c.venueId));
+      const nameWords = [...wantedTokens].filter((t) => !venueWords.has(t));
+      const nameClash =
+        nameWords.length > 0 && !nameWords.some((t) => c.tokens.has(t));
+      const score =
+        tokenScore +
+        (sameDate ? 0.5 : 0) +
+        (sameVenue ? 0.5 : 0) +
+        (c.date >= today ? 0.02 : 0); // nudge upcoming over past on ties
+      return { ...c, sameDate, sameVenue, nameClash, score };
+    })
+    .filter((c) => c.score >= SUGGESTION_MIN_SCORE)
+    .sort((a, b) => b.score - a.score || a.date - b.date);
+
+  // Auto-redirect only on an exact date + venue hit that clearly stands out.
+  // (Venue ids can be suffixes of each other — "nottingham" vs
+  // "bodega-nottingham" — so among date+venue hits the longest venue id wins.)
+  const dateVenueHits = scored.filter(
+    (c) => c.sameDate && c.sameVenue && !c.nameClash,
+  );
+  const longestVenue = Math.max(0, ...dateVenueHits.map((c) => c.venueId.length));
+  const strong = dateVenueHits.filter((c) => c.venueId.length === longestVenue);
+  let auto = null;
+  if (strong.length === 1) auto = strong[0];
+  else if (
+    strong.length > 1 &&
+    strong[0].score - strong[1].score >= AUTO_MATCH_MARGIN
+  )
+    auto = strong[0];
+
+  const suggestions = scored.slice(0, SUGGESTION_MAX);
+  return { auto, suggestions };
+}
+
 // Address-bar URL for a resolved event: ?event=<id>, dropping the legacy
 // ?event_id= alias but keeping other params (q/time/types shareable-search state).
 function canonicalEventUrl(canonicalId) {
@@ -957,6 +1111,20 @@ let initialSearchTerm = "";
     eventRecord = findEventByLegacyId(eventIdParam);
   }
 
+  // Still nothing: try to work out what was meant (see findEventIdMatches()).
+  // A single date+venue hit is treated as a redirect — the page below renders
+  // that event, the address bar is rewritten by the block after this, and a
+  // notice tells the visitor the link they followed was out of date.
+  let idMatches = null;
+  let resolvedByFuzzyMatch = false;
+  if (!eventRecord && eventIdParam) {
+    idMatches = findEventIdMatches(eventIdParam);
+    if (idMatches.auto) {
+      eventRecord = idMatches.auto.build();
+      resolvedByFuzzyMatch = true;
+    }
+  }
+
   // Anything that resolved under an id other than the record's current one
   // (an old-scheme id, or the `?event_id=` alias): rewrite the address bar to
   // ?event=<current id>, then re-run setCanonical() (shared_utils.js), which
@@ -972,16 +1140,36 @@ let initialSearchTerm = "";
   }
 
   if (!eventRecord) {
+    document.getElementById("loadingState").style.display = "none";
     if (eventIdParam) {
+      // Soft 404: the page is still useful (did-you-mean + today's events), but
+      // it says plainly that the link is broken, is noindex, and reports a
+      // "not found" health state so the gatekeeper never caches it as healthy
+      // and can answer crawlers with a real 404 (see gatekeeper.js).
       console.warn(
-        `event.html: event "${eventIdParam}" not found — showing today's events instead.`,
+        `event.html: event "${eventIdParam}" not found — showing suggestions and today's events instead.`,
       );
+      showEventNotFound(
+        eventIdParam,
+        (idMatches || findEventIdMatches(eventIdParam)).suggestions,
+      );
+      showTodayEvents();
+      // Only claim "not found" when the data is trustworthy. If the feed fell back to a
+      // stale cached copy, a brand-new event may simply be missing from it, so report the
+      // stale-feed warning instead; the gatekeeper then won't treat it as a 404 verdict.
+      if (
+        typeof dataHealthStatus === "undefined" ||
+        dataHealthStatus.status === "ok"
+      ) {
+        PageHealth.markNotFound();
+      } else {
+        PageHealth.markReady({ contentId: "todayEventsState" });
+      }
     } else {
       console.info("event.html: no ?event= given — showing today's events.");
+      showTodayEvents();
+      PageHealth.markReady({ contentId: "todayEventsState" });
     }
-    document.getElementById("loadingState").style.display = "none";
-    showTodayEvents();
-    PageHealth.markReady({ contentId: "todayEventsState" });
     return;
   }
 
@@ -1002,6 +1190,17 @@ let initialSearchTerm = "";
         ],
       ],
     });
+
+    if (resolvedByFuzzyMatch) {
+      const canonicalId =
+        eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
+      showOutdatedLinkNotice(eventIdParam);
+      // Machine-readable token first: the gatekeeper reads "nt-redirect:<id>"
+      // out of the health reason and answers crawlers with a 301 to that id.
+      PageHealth.addWarning(
+        `nt-redirect:${canonicalId} (outdated event link, matched by date and venue)`,
+      );
+    }
 
     const hostVenue = venuesLookup[eventRecord.venue_id] || null;
     if (hostVenue && hasLatlon(hostVenue)) {
@@ -1196,6 +1395,107 @@ function initTodayEventsFilters() {
     wrap.appendChild(document.createTextNode(` ${label}`));
     container.appendChild(wrap);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Not-found / outdated-link UI. Everything user-supplied (the id from the URL)
+// goes in via textContent only.
+// ---------------------------------------------------------------------------
+
+const NOTICE_STYLE =
+  "margin:0 0 1rem;padding:.75rem 1rem;border-left:4px solid #d98e04;" +
+  "background:rgba(217,142,4,.12);border-radius:4px;";
+
+function showEventNotFound(badId, suggestions) {
+  document.title = "Event not found \u2014 New Troubadours";
+  setCanonical(); // bare event.html — never canonicalise to the broken id
+  const robots = document.createElement("meta");
+  robots.name = "robots";
+  robots.content = "noindex, follow";
+  document.head.appendChild(robots);
+
+  const panel = document.createElement("section");
+  panel.id = "eventNotFoundPanel";
+  panel.className = "event-not-found";
+  panel.setAttribute("role", "status");
+  panel.style.cssText = NOTICE_STYLE;
+
+  const h = document.createElement("h2");
+  h.textContent = "We couldn\u2019t find that event";
+  panel.appendChild(h);
+
+  const p = document.createElement("p");
+  p.append(
+    "The link you followed doesn\u2019t match any event on the site. It may be mistyped, cut off, or the event may have been renamed or removed. The id it asked for was: ",
+  );
+  const code = document.createElement("code");
+  code.textContent = badId;
+  code.style.wordBreak = "break-all";
+  p.appendChild(code);
+  panel.appendChild(p);
+
+  if (suggestions && suggestions.length) {
+    const lead = document.createElement("p");
+    lead.textContent =
+      suggestions.length === 1 ? "Did you mean:" : "Did you mean one of these?";
+    panel.appendChild(lead);
+
+    const ul = document.createElement("ul");
+    suggestions.forEach((c) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = `event.html?event=${encodeURIComponent(c.id)}`;
+      a.textContent = c.title;
+      li.appendChild(a);
+      const venue = venuesLookup[c.venueId];
+      const meta = [
+        formatMediumDate(c.date),
+        venue && [venue.name, venue.city].filter(Boolean).join(", "),
+      ]
+        .filter(Boolean)
+        .join(" \u2022 ");
+      if (meta) li.append(` \u2014 ${meta}`);
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
+  }
+
+  const tail = document.createElement("p");
+  tail.append("You can also use the search box above, or browse the ");
+  const guide = document.createElement("a");
+  guide.href = "event_guide.html";
+  guide.textContent = "event guide";
+  tail.appendChild(guide);
+  tail.append(". Here\u2019s what\u2019s on today in the meantime:");
+  panel.appendChild(tail);
+
+  const anchor = document.getElementById("todayEventsState");
+  anchor.parentNode.insertBefore(panel, anchor);
+}
+
+// Shown on top of a correctly rendered event when the visitor's link was
+// resolved by date + venue rather than by exact id.
+function showOutdatedLinkNotice(oldId) {
+  const container = document.getElementById("eventContent");
+  if (!container) return;
+  const note = document.createElement("div");
+  note.id = "outdatedLinkNotice";
+  note.className = "event-outdated-link";
+  note.setAttribute("role", "status");
+  note.style.cssText = NOTICE_STYLE;
+  note.append(
+    "The link you followed was out of date, so we\u2019ve taken you to the matching event. " +
+      "The address in your browser bar is now the current one \u2014 use it if you\u2019re sharing this page. " +
+      "If this isn\u2019t the event you were after, try the search box above. ",
+  );
+  const small = document.createElement("small");
+  small.append("Old id: ");
+  const code = document.createElement("code");
+  code.textContent = oldId;
+  code.style.wordBreak = "break-all";
+  small.appendChild(code);
+  note.appendChild(small);
+  container.insertBefore(note, container.firstChild);
 }
 
 function showTodayEvents() {
