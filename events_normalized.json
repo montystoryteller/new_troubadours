@@ -6525,6 +6525,7 @@
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/1353388599609560/",
       "club": "norwich-story-club",
+      "old_id": "norwichSCl",
       "venue_id": "gibraltar-gardens-norwich"
     },
     {
@@ -11035,7 +11036,7 @@
       "showname": "Taffy Thomas/Eliza Carthy",
       "date": "13/09/2026",
       "time": "7.30pm for 8pm start",
-      "club": "thenewmusicaltraditionsclub",
+      "folk_id": "thenewmusicaltraditionsclub",
       "price": "£16.00 (+ £1.60)",
       "event_flyer": "",
       "description": "Storyteller Taffy Thomas founded and directed the community arts company, Charivari, with their popular touring unit, the Fabulous Salami Brothers, which he fronted and performed in. After a major stroke at the age of 36 Taffy turned back to story telling as self-imposed speech therapy, which turned into a new career.\n\n\n\nTaffy has a repertoire of more than 300 stories, collected mainly from traditional oral sources, which he is happy to tell in almost any situation. This repertoire was built by meeting and working with virtually all the great traditional storytellers who were alive in Britain. He is now the most experienced English storyteller, having performed in many countries on four continents. He is currently artistic director of Tales in Trust, the Northern Centre for Storytelling, based at The Storyteller's Garden in Grasmere. In the 2001 New Year Honours List he was awarded the MBE for services to storytelling and charity and performed a new collaboration for the Blue Peter Prom at the Royal Albert Hall. With Taffy's head bursting with with over 300 stories, plus riddles and folklore, professional storyteller Giles Abbot once commented, 'when Taffy goes it will be like a library burning down.' We are incredibly pleased to have Taffy with us for a special solo performance.\n\n\n\nDescribing herself simply as a 'modern English musician', Eliza Carthy is one of the most recognisable faces in British folk. She has received an MBE; numerous BBC R2 Folk Awards; two Mercury Prize nominations; was the first English traditional musician to be nominated for a BBC R3 Award for World Music, and in 2021 became President of the English Folk Dance & Song Society. Born into a formidable musical dynasty, her mother Norma was one of The Watersons and her father Martin Carthy is a hugely influential singer and guitarist, the incredible range of traditional and contemporary musicians who were part of the extended Waterson/Carthy world helped her develop her own unique approach to music. Eliza and her family were mainstays of the original Musical Traditions Club, and we are delighted to welcome her to our new format.",
@@ -12936,6 +12937,7 @@
       "exceptions": [],
       "venue_id": "orepool-inn-sling",
       "facebook": "musicaltraditionsclub",
+      "folk_id": "thenewmusicaltraditionsclub",
       "tickets_url": "https://wegottickets.com/thenewmusicaltraditionsclub"
     },
     {
