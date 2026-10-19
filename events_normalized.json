@@ -3454,6 +3454,120 @@
       "video_trailer": "https://undercoverhippy.com/home",
       "isSpecial": true
     },
+        "john-cooper-clarke-have-it-2026": {
+          "tour_name": "Have It Tour 2026",
+          "tour_dates": [
+            {
+              "date": "20/10/2026",
+              "venue_id": "pavilion-theatre-glasgow",
+              "time": "7.30pm",
+              "price": "£36",
+              "ticket_url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB/event/other/dr-john-cooper-clarke-tickets",
+              "other_performer_ids": [
+                "luke-wright"
+              ],
+              "isSpecial": true,
+              "eventId": "T-john-cooper-clarke-have-it-2026-20261020-pavilion-theatre-glasgow"
+            },
+            {
+              "date": "06/11/2026",
+              "venue_id": "grand-opera-house-york",
+              "time": "7pm",
+              "price": "£36 / £39.75",
+              "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
+              "other_performer_ids": [
+                "luke-wright"
+              ],
+              "isSpecial": true,
+              "eventId": "T-john-cooper-clarke-have-it-2026-20261106-grand-opera-house-york"
+            },
+            {
+              "date": "25/11/2026",
+              "venue_id": "de-montfort-hall-leciester",
+              "time": "7pm",
+              "price": "£46 / £41 / £36",
+              "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
+              "other_performer_ids": [
+                "luke-wright"
+              ],
+              "isSpecial": true,
+              "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leciester"
+            },
+            {
+              "date": "27/11/2026",
+              "venue_id": "queens-hall-edinburgh",
+              "time": "7pm",
+              "price": "£51.50 - £45.45  (including 10% booking fee per ticket, and £2 transaction fee)",
+              "ticket_url": "https://www.thequeenshall.net/whats-on/dr-john-cooper-clarke-edinburgh-2026",
+              "other_performer_ids": [
+                "luke-wright"
+              ],
+              "isSpecial": true,
+              "eventId": "T-john-cooper-clarke-have-it-2026-20261127-queens-hall-edinburgh"
+            }
+          ],
+          "name": "Have It",
+          "performer_id": "john-cooper-clarke",
+          "isPoetry": true,
+          "tour_description": "2025 saw Dr John Cooper Clarke achieve historical feats as he became the first poet to headline a UK arena – the biggest indoor arena in Europe, Manchester’s Co-op Live. The celebrated poet also received the prestigious 2025 Northern Music Award in March of this year in recognition of his phenomenal influence in the music world.\n\n\n\nDr John Cooper Clarke’s anarchic punk poetry has thrilled people for decades, and his no-nonsense approach to his work has seen his career spanning cultures, audiences, art forms and continents. His critically acclaimed 2020 memoir ‘I Wanna Be Yours’ explored his extraordinary life, filled with remarkable personalities.\n\n\n\nHis latest collection, ‘Have It’, will be a completely new collection of work and follows on from 2024’s ‘WHAT’, an instant Sunday Times bestseller. Across his 20-date 2026 tour, Dr John Cooper Clarke will be introducing this new body of work alongside his beloved, hilarious and classic fan-favourites.",
+          "touring_event_flyer": "tour_johncooperclarke_have-it-2026.jpg",
+          "isSpecial": true
+        },
+    "luke-wright-later-life-letter": {
+      "tour_name": "Later Life Letter, October 2026",
+      "tour_dates": [
+        {
+          "date": "21/10/2026",
+          "venue_id": "theatre-royal-plymouth",
+          "ticket_url": "https://my.theatreroyal.com/events/342219/342220",
+          "isSpecial": true,
+          "eventId": "T-luke-wright-later-life-letter-20261021-theatre-royal-plymouth"
+        },
+        {
+          "date": "22/10/2026",
+          "venue_id": "the-mission-theatre-bath",
+          "time": "8pm",
+          "price": "£15",
+          "ticket_url": "https://www.missiontheatre.co.uk/tickets/thursday-22nd-october-luke-wright-730pm",
+          "isSpecial": true,
+          "eventId": "T-luke-wright-later-life-letter-20261022-the-mission-theatre-bath"
+        },
+        {
+          "date": "23/10/2026",
+          "venue_id": "cambridge-junction",
+          "time": "8pm",
+          "price": "£18.50",
+          "ticket_url": "https://www.junction.co.uk/events/luke-wright-later-life-letter/",
+          "isSpecial": true,
+          "eventId": "T-luke-wright-later-life-letter-20261023-cambridge-junction"
+        },
+        {
+          "date": "24/10/2026",
+          "venue_id": "colchester-arts-centre",
+          "time": "Doors 8.30pm, show 8.45pm",
+          "price": "£17.50 / £15.50 concs (+ £1)",
+          "ticket_url": "https://colchesterartscentre.ticketsolve.com/ticketbooth/shows/1173666227",
+          "isSpecial": true,
+          "eventId": "T-luke-wright-later-life-letter-20261024-colchester-arts-centre"
+        },
+        {
+          "date": "25/10/2026",
+          "venue_id": "the-courthouse-otley",
+          "time": "Doors: 6:45pm,  Show Starts: 7:30 pm",
+          "price": "£16 advance",
+          "ticket_url": "https://otleycourthouse.ticketsolve.com/ticketbooth/shows/1173670284",
+          "isSpecial": true,
+          "eventId": "T-luke-wright-later-life-letter-20261025-the-courthouse-otley"
+        }
+      ],
+      "name": "Later Life Letter",
+      "performer_id": "luke-wright",
+      "isPoetry": true,
+      "tour_description": "Later Life Letter tells the story of Luke Wright’s adoption – the life he leads, and the one he might have done. What’s it like to stumble across your birth mother on Facebook? How do you honour the parents who have raised you while satisfying a curiosity about where you came from? Is it telling that you married a social worker?\n\n\n\nWright navigates his audience through a warm and honest hour of poems and stand-up with the wit, pathos, and silliness that has made him one of the most popular live poets in England.\n\n\n\nThis is a frank account of what it means to be someone’s child told by a performer who really knows what he’s doing. Expect raucous laughter, tear-stained cheeks, and a little smattering of drum ‘n’ bass.\n\n\n\nTour in support the release of Luke Wright's new collection of poems, \"Later Life Letter\".",
+      "touring_event_flyer": "tour_lukewright_oct_2026.jpg",
+      "video_trailer": "https://www.youtube.com/watch?v=WFqTYu88j_s",
+      "isSpecial": true
+    },
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
@@ -11790,6 +11904,19 @@
       "isSpecial": true
     },
     {
+      "name": "Journey Amongst Monsters and Storytellers [Nick Jubber]",
+      "showname": "Journey Amongst Monsters and Storytellers",
+      "date": "21/10/2026",
+      "venue_id": "wimborne-library",
+      "performer_id": "nick-jubber",
+      "eventId": "20261021-nick-jubber-wimborne-library",
+      "date_added": "19/10/2026",
+      "price": "Free (members) / £5 guests",
+      "description": "Nick Jubber is looking forward to talking monsters, fairy tales and everything in between at Wimborne Library on Wednesday 21st, starting 7pm. Some spooky stories for the season, and a few madcap ones too.",
+      "event_flyer": "2026_10_21_nickjubber_beasts_wimborne.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "Icelandic Ghost Stories [Jason Buck]",
       "showname": "Icelandic Ghost Stories",
       "date": "21/10/2026",
@@ -11993,7 +12120,10 @@
       "date_added": "22/09/2026",
       "time": "7.30-10pm",
       "price": "£17.50",
-      "event_flyer": "folk_bus_autumn_2026.jpg",
+      "event_flyers": [
+        "folk_bus_autumn_2026.jpg",
+        "2026_10_28_the_folk_bus_strange_halloween.jpg"
+      ],
       "description": "The nights grow longer and the shadows draw in about us.\n\n\n\nHalloween marks the hinge of the year, traditionally the time when the boundary between this world and the Otherworld grows thin. It is a time for remembering the dead, for gathering together, for merriment and for telling stories.\n\n\n\nSo come hunker down at the Parabola Arts Centre for an evening of strange tales, while the restless dead wander the streets outside.\n\n\n\nPerformance storyteller Oliver Lavery and folk musician Tamsin Quin bring together eerie tales from Britain and beyond with original folk songs and live music. Expect ghosts and goblins, ancient heroes, child-snatching river demons and the bloodthirsty gods of the Mexican underworld.\n\n\n\nOliver's storytelling draws on the oral traditions of Britain and Ireland, while Tamsin's music weaves through the tales.\n\n\n\nTogether, they are The Folk Bus, and this is their Cheltenham storytelling debut. Why not join them this Halloween for a journey into the Otherworld? You may not leave the theatre quite the same.",
       "ticket_url": "https://boxoffice.cheltladiescollege.org/events/175765",
       "isSpecial": true,
@@ -12181,6 +12311,37 @@
       "ticket_url": "https://cherrypicklecatering.co.uk/events/ghost-stories-and-fabulous-feasting",
       "isSpecial": true,
       "isDinner": true
+    },
+    {
+      "name": "Of Stars, Bears And The Beginning Of Time [Riika Polonen]",
+      "showname": "Of Stars, Bears And The Beginning Of Time",
+      "date": "31/10/2026",
+      "venue_id": "cornerstone-st-johns-edinburgh",
+      "performer_id": "riika-polonen",
+      "eventId": "20261031-riika-polonen-cornerstone-st-johns-edinburgh",
+      "date_added": "19/10/2026",
+      "time": "7pm",
+      "price": "£10 (+ £1.55)",
+      "description": "Of Stars, Bears and the Beginning of Time\n\n\n\nAn enchanting mythical journey through the celestial origin stories of the Fenno-Baltic tradition, told by Finnish-born storyteller Riikka Palonen and accompanied by folk musician Richard Clarke.\n\n\n\nModern science tells us we were born from star dust – but how did the ancient people in the north know that? Who told them these first stories? What is the origin of iron? Who married the girl from the golden egg? How was the first oak cut down? Elemental stories like these are extremely important as they remind us that we are still equally part of this planet, alongside bears, cranes and wolves.",
+      "age_rating": "12+",
+      "min_age": 12,
+      "event_flyer": "2026_10_21_riikka-palonen-stars.webp",
+      "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-and-the-beginning-of-time-tickets-2000460700807",
+      "isSpecial": true
+    },
+    {
+      "name": "Tales By The Fire [Peter Chand]",
+      "showname": "Tales By The Fire",
+      "date": "01/11/2026",
+      "venue_id": "the-george-hotel-hayfield",
+      "performer_id": "peter-chand",
+      "eventId": "20261101-peter-chand-the-george-hotel-hayfield",
+      "date_added": "19/10/2026",
+      "time": "5.30pm (children), 7pm (adults)",
+      "price": "Free",
+      "description": "With Halloween just behind us, what better way to spend a dark autumn evening than gathering together for some spellbinding tales?\n\n\n\n5:30pm — Stories for Children\n\n\n\nAn enchanting storytelling session for our younger audience, full of wonder, mischief and magic!\n\n\n\n7pm — Tales for Grown-Ups\n\n\n\nAs darkness falls, the stories take a darker turn… Expect mysterious happenings, unexpected twists and tales that might just send a shiver down your spine!",
+      "event_flyer": "2026_11_01_chand_georgehotelhayfield.jpg",
+      "isSpecial": true
     },
     {
       "name": "Macabre Tales, Sinister Stories [Tony \"Monty\" Hirst]",
@@ -13117,6 +13278,19 @@
         -1.47411
       ]
     },
+    "cornerstone-st-johns-edinburgh": {
+      "id": "cornerstone-st-johns-edinburgh",
+      "name": "Cornerstone St. Johns, Edinburgh",
+      "full_address": "Cornerstone St. Johns, Princes St., Edinburgh, EH2 4BJ",
+      "city": "Edinburgh",
+      "postcode": "EH2 4BJ",
+      "url": "https://www.stjohns-edinburgh.org.uk/venues/cornerstone",
+      "description": "A multi-purpose events & meeting space that can be divided up to add two breakout rooms. Can be set to various styles: theatre, cabaret, classroom, workshop, boardroom, u-shaped, circle (chairs only), horseshoe (chairs only)\n\n\n\nMaximum Capacity: 120 (theatre style)\n\n\n\nEquipment Available: PA/mics/projector or TV/flipchart & pens/lectern",
+      "latlon": [
+        55.94996,
+        -3.20656
+      ]
+    },
     "scottish-storytelling-centre": {
       "id": "scottish-storytelling-centre",
       "name": "Scottish Storytelling Centre",
@@ -13129,6 +13303,32 @@
         -3.18492
       ]
     },
+        "queens-hall-edinburgh": {
+          "id": "queens-hall-edinburgh",
+          "name": "Queen's Hall, Edinburgh",
+          "full_address": "Queen's Hall, 85-89 Clerk St, Edinburgh, EH8 9JG",
+          "city": "Edinburgh",
+          "postcode": "EH8 9JG",
+          "url": "https://www.thequeenshall.net/",
+          "description": "A venue like no other in Edinburgh.\n\n\n\nThe place artists love to play.\n\n\n\nA fan favourite.\n\n\n\nAn independent charity.",
+          "latlon": [
+            55.94151,
+            -3.18175
+          ]
+        },
+        "pavilion-theatre-glasgow": {
+          "id": "pavilion-theatre-glasgow",
+          "name": "Pavilion Theatre, Glasgow",
+          "full_address": "Pavilion Theatre, 121 Renfield St, Glasgow, G2 3AX",
+          "city": "Glasgow",
+          "postcode": "G2 3AX",
+          "url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB",
+          "description": "n recent years, the Pavilion has firmly maintained its reputation as Glasgow’s number one variety theatre. With a distinctive reverence for tradition and an appetite for the highest quality entertainment, it remains the last stronghold of a long music hall tradition, owing everything to its dedicated staff and patrons.",
+          "latlon": [
+            55.86505,
+            -4.25572
+          ]
+        },
     "strode-theatre": {
       "id": "strode-theatre",
       "name": "Strode Theatre, Street",
@@ -13355,6 +13555,18 @@
       "latlon": [
         53.13332,
         -1.55226
+      ]
+    },
+    "wimborne-library": {
+      "id": "wimborne-library",
+      "name": "Wimborne Library",
+      "full_address": "Wimborne Library, Crown Mead, Rear of 55 to 57 High Street, Wimborne, BH21 1HH",
+      "city": "Wimborne",
+      "postcode": "BH21 1HH",
+      "facebook": "https://www.facebook.com/people/Wimborne-Library/61577598606548/",
+      "latlon": [
+        50.79929,
+        -1.98654
       ]
     },
     "blandford-forum-corn-exchange": {
@@ -14737,6 +14949,18 @@
         -1.92039
       ]
     },
+        "de-montfort-hall-leciester": {
+          "id": "de-montfort-hall-leciester",
+          "name": "De Montfort Hall, Leciester",
+          "full_address": "De Montfort Hall, Granville Road, Leicester, LE1 7RU",
+          "city": "Leicester",
+          "postcode": "LE1 7RU",
+          "url": "https://www.demontforthall.co.uk/",
+          "latlon": [
+            52.62503,
+            -1.12202
+          ]
+        },
     "central-library-leicester": {
       "id": "central-library-leicester",
       "name": "Central Library",
@@ -14833,6 +15057,18 @@
         -1.50871
       ]
     },
+        "grand-opera-house-york": {
+          "id": "grand-opera-house-york",
+          "name": "Grand Opera House, York",
+          "full_address": "Grand Opera House, Cumberland Street, York, YO1 9SW",
+          "city": "York",
+          "postcode": "YO1 9SW",
+          "url": "https://www.atgtickets.com/venues/grand-opera-house-york/whats-on/",
+          "latlon": [
+            53.95713,
+            -1.08228
+          ]
+        },
     "the-crescent-york": {
       "id": "the-crescent-york",
       "name": "The Crescent, York",
@@ -15810,6 +16046,18 @@
       "latlon": [
         53.13627,
         -1.54804
+      ]
+    },
+    "the-george-hotel-hayfield": {
+      "id": "the-george-hotel-hayfield",
+      "name": "The George Hotel, Hayfield",
+      "full_address": "The George Hotel, 14 Church Street, Hayfield, SK22 2JE",
+      "city": "Hayfield, Derbyshire",
+      "postcode": "SK22 2JE",
+      "url": "https://www.thegeorgehotelhayfield.co.uk/",
+      "latlon": [
+        53.37903,
+        -1.94555
       ]
     },
     "dubrek-studios-derby": {
@@ -18678,6 +18926,21 @@
         -1.55634
       ]
     },
+    "the-mission-theatre-bath": {
+      "id": "the-mission-theatre-bath",
+      "name": "The Mission Theatre, Bath",
+      "full_address": "Mission Theatre, 32 Corn Street, Bath, BA1 1UF",
+      "city": "Bath",
+      "postcode": "BA1 1UF",
+      "url": "https://www.missiontheatre.co.uk/",
+      "facebook": "TheMissionTheatreBath",
+      "instagram": "themissiontheatre",
+      "description": "The Mission Theatre is a 200 year-old Grade II listed building originally built as a Catholic Chapel.\n\n\n\nNow it is owned by the Bath & North East Somerset Council, which granted Next Stage Theatre Company a lease to occupy and use the building as a theatre, arts centre and multi-purpose facility for community activities. This lease is now guaranteed for another 99 years!\n\n\n\nThe Mission Theatre comprises a large, well-equipped Main Auditorium suitable for end-on, thrust or in-the-round productions for up to 150 audience members.",
+      "latlon": [
+        51.37912,
+        -2.36161
+      ]
+    },
     "chapel-arts-centre-bath": {
       "id": "chapel-arts-centre-bath",
       "name": "Chapel Arts Centre, Bath",
@@ -18749,6 +19012,20 @@
       "latlon": [
         50.51612,
         -4.86561
+      ]
+    },
+    "theatre-royal-plymouth": {
+      "id": "theatre-royal-plymouth",
+      "name": "Theatre Royal, Plymouth",
+      "full_address": "Theatre ROyal, Royal Parade, Plymouth, PL1 2TR",
+      "city": "Plymouth",
+      "postcode": "PL1 2TR",
+      "url": "https://theatreroyal.com/",
+      "facebook": "TheatreRoyalPlymouth",
+      "instagram": "theatreroyalplymouth",
+      "latlon": [
+        50.36984,
+        -4.14508
       ]
     },
     "the-bar-barbican-theatre-plymouth": {
@@ -19329,6 +19606,21 @@
         -0.1384
       ]
     },
+    "colchester-arts-centre": {
+      "id": "colchester-arts-centre",
+      "name": "Colchester Arts Centre",
+      "full_address": "Colchester Arts Centre, Church Street, Colchester, CO1 1NF",
+      "city": "Colchester",
+      "postcode": "CO1 1NF",
+      "url": "https://colchesterartscentre.com/",
+      "facebook": "ColchesterArtsCentre",
+      "instagram": "colchartscentre/",
+      "description": "How do you describe a venue that can put children's entertainer Palfi the Clown on, on the same day as Cradle of Filth? Where a Vinyl listening session in the morning becomes a comedy club in the evening, where folk enthusiasts can sit happily knitting (and they do!) in the exact same spot a ferocious mosh pit of teenage dancing takes place the following night?  And where the beautiful historic architecture of St Mary's Church dating back over a thousand years, plays host to some of the newest comics, most modern choreographers, some of the coolest DJ's and some of the freshest talent in Britain.\n\n\n\nOur passion to present new work bringing great bands and comics to Colchester burns more brightly than ever.  Our business is all about fresh ideas, new acts, new art forms and vibrant new ways of working.  We can't stand still. We embrace the new, the quirky the original - and yes, the surreal!",
+      "latlon": [
+        51.88863,
+        0.89429
+      ]
+    },
     "three-wise-monkeys-colchester": {
       "id": "three-wise-monkeys-colchester",
       "name": "Three Wise Monkeys, Colchester",
@@ -19773,7 +20065,7 @@
     }
   },
   "publishers": {
-    "propolis":{
+    "propolis": {
       "name": "Propolis",
       "url": "https://www.thebookhive.co.uk/publishing/",
       "publisher_id": "propolis",
@@ -20271,6 +20563,35 @@
       "name": "Cath Edwards | Matt Vaughan",
       "url": "",
       "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs.\n\n\n\nMatthew is a storyteller of 10 years experience. He has worked since 2011 in a Public Library Service in the East-Midlands and has been lucky enough to be able to develop his storytelling practice in his professional environment, performing stories and providing interactive workshops to audiences of all ages. He has worked in early years settings, primary and secondary schools and performed in clubs. He loves to perform international folk tales and wonder tales of all kinds as well as having particular interest in the stories of working folk of Britain, drawing on stories from his own coal mining heritage and beyond, and stories about nature the wild places of this world."
+    },
+        "john-cooper-clarke": {
+          "id": "john-cooper-clarke",
+          "name": "John Cooper Clarke",
+          "url": "https://www.johncooperclarke.com/listings/",
+          "bio": "Biting, satirical, political and very funny verse delivered in rapid-fire performance style resonating with the punk movement in the late 70s. After touring with most of punk’s seminal and ground breaking bands including the Sex Pistols, The Clash, Buzzcocks, The Fall, and Elvis Costello, to name but a few, he began to draw large crowds in his own right. Joy Division were proud to open for JCC on numerous occasions and New Order later supported him on their first joint Australian tour.",
+          "facebook": "johncooperclarke",
+          "youtube_videos": [
+            {
+              "story_name": "Live at The George Tavern",
+              "yt_url": "https://www.youtube.com/watch?v=XJq38cWHLP8"
+            }
+          ],
+          "instagram": "johncooperclarke"
+        },
+    "luke-wright": {
+      "id": "luke-wright",
+      "name": "Luke Wright",
+      "url": "https://www.lukewright.co.uk/",
+      "bio": "Writer and performer of poetry for over 25 years, taking poems to theatres, festivals, and pubs all over the world.",
+      "facebook": "mrlukewright",
+      "instagram": "lukewrightpoet",
+      "poet": true
+    },
+    "nick-jubber": {
+      "id": "nick-jubber",
+      "name": "Nick Jubber",
+      "url": "https://nickjubber.com/",
+      "bio": "Writer and traveller, with a passion for history and a pair of itchy feet. Nick Jubber is fascinated by storytelling and the connections (or misconnections!) between past and present."
     },
     "attila-the-stockbroker": {
       "id": "attila-the-stockbroker",
