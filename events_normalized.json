@@ -3483,7 +3483,7 @@
             },
             {
               "date": "25/11/2026",
-              "venue_id": "de-montfort-hall-leciester",
+              "venue_id": "de-montfort-hall-leicester",
               "time": "7pm",
               "price": "£46 / £41 / £36",
               "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
@@ -3491,7 +3491,7 @@
                 "luke-wright"
               ],
               "isSpecial": true,
-              "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leciester"
+              "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leicester"
             },
             {
               "date": "27/11/2026",
@@ -14949,9 +14949,9 @@
         -1.92039
       ]
     },
-        "de-montfort-hall-leciester": {
-          "id": "de-montfort-hall-leciester",
-          "name": "De Montfort Hall, Leciester",
+        "de-montfort-hall-leicester": {
+          "id": "de-montfort-hall-leicester",
+          "name": "De Montfort Hall, leicester",
           "full_address": "De Montfort Hall, Granville Road, Leicester, LE1 7RU",
           "city": "Leicester",
           "postcode": "LE1 7RU",
