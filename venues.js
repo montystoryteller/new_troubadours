@@ -746,6 +746,13 @@ setCanonical("venue");
   const params = new URLSearchParams(window.location.search);
   venueId = params.get("venue");
 
+  // A crawler served a prerendered snapshot of a record flagged usePrerender:
+  // keep the snapshot exactly as it is (see shouldSkipRerender() in shared_utils.js).
+  if (venueId && shouldSkipRerender()) {
+    console.info(`Keeping prerendered snapshot for ${venueId}`);
+    return;
+  }
+
   if (!venueId) {
     const loaded = await loadEventsData();
     if (!loaded) return showNotFound();
@@ -830,6 +837,7 @@ setCanonical("venue");
 // ---------------------------------------------------------------------------
 
 function renderVenue() {
+  flagPrerenderPreference(venue);
   const venueTitle = nameWithTown(venue.name, venue.city);
   document.title = `${venueTitle} — New Troubadours`;
 

@@ -1,0 +1,20 @@
+#!/bin/bash
+# kvbackup: archive every key + value + metadata/expiry from the render cache
+set -euo pipefail
+NS="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+out="kv-backup-$(date -u +%Y%m%d)"
+mkdir -p "$out"
+
+# Names, plus expiration and metadata (the gatekeeper's ts), in one listing
+npx wrangler kv key list --namespace-id "$NS" --remote > "$out/keys.json"
+
+# Values, 100 keys per call
+jq -r '.[].name' "$out/keys.json" | split -l 100 - "$out/chunk."
+for c in "$out"/chunk.*; do
+  jq -R . "$c" | jq -s . > "$c.keys.json"
+  npx wrangler kv bulk get "$c.keys.json" --namespace-id "$NS" --remote > "$c.values.json"
+  rm "$c" "$c.keys.json"
+done
+
+tar -czf "$out.tar.gz" "$out" && rm -rf "$out"
+echo "Wrote $out.tar.gz"

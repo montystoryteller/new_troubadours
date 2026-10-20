@@ -2104,6 +2104,33 @@ function simpleList(panel, items) {
   panel.appendChild(list);
 }
 
+// ---------------------------------------------------------------------------
+// Prerender opt-out of re-rendering (performer / venue records: `usePrerender`)
+// ---------------------------------------------------------------------------
+// The gatekeeper worker stamps every snapshot it serves to a crawler with
+// <html data-prerendered="...">. Humans never get a snapshot, so that
+// attribute is only ever present for bots.
+//
+// A record with `usePrerender: true` makes its page keep the snapshot as-is:
+//  1. During the headless render, renderPerformer()/renderVenue() call
+//     flagPrerenderPreference(record), which sets <html data-use-prerender="true">.
+//     That attribute is captured in the stored snapshot.
+//  2. When a crawler is later served that snapshot, the page script calls
+//     shouldSkipRerender() before doing anything else and returns early: no data
+//     fetch, no re-render, so a failed load can't replace good content with
+//     the "not found" state.
+// The flag therefore takes effect after the page's next prerender.
+function shouldSkipRerender() {
+  const d = document.documentElement.dataset;
+  return !!d.prerendered && d.usePrerender === "true";
+}
+
+function flagPrerenderPreference(record) {
+  if (record && record.usePrerender === true) {
+    document.documentElement.dataset.usePrerender = "true";
+  }
+}
+
 function showNotFound() {
   document.getElementById("loadingState").style.display = "none";
   document.getElementById("notFoundState").style.display = "";  PageHealth.markNotFound();

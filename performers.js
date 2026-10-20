@@ -486,6 +486,13 @@ setCanonical("performer");
   const params = new URLSearchParams(window.location.search);
   performerId = params.get("performer");
 
+  // A crawler served a prerendered snapshot of a record flagged usePrerender:
+  // keep the snapshot exactly as it is (see shouldSkipRerender() in shared_utils.js).
+  if (performerId && shouldSkipRerender()) {
+    console.info(`Keeping prerendered snapshot for ${performerId}`);
+    return;
+  }
+
   // Lazy-image loader for performer-page flyer thumbnails — see
   // createLazyImageLoader() in shared_utils.js for the shared
   // implementation (also used by the flyers page and tour flyer
@@ -776,6 +783,7 @@ function isPastFlatEvent(event) {
 }
 
 function renderPerformer() {
+  flagPrerenderPreference(performer);
   document.title = `${performer.name} — New Troubadours`;
 
   setMetaDescription(

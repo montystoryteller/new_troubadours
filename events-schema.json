@@ -277,6 +277,11 @@
           "type": "string",
           "description": "Same as the object's own key; kept inline for convenience."
         },
+        "usePrerender": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, a prerendered snapshot served to a crawler is kept as-is and the page script does not re-render over it (see shouldSkipRerender() in shared_utils.js). Takes effect after the page's next prerender, since the flag is captured into the snapshot at render time. Leave unset (false) for normal behaviour."
+        },
         "name": {
           "type": "string"
         },
@@ -362,6 +367,11 @@
         "id": {
           "type": "string",
           "description": "Same as the object's own key."
+        },
+        "usePrerender": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, a prerendered snapshot served to a crawler is kept as-is and the page script does not re-render over it (see shouldSkipRerender() in shared_utils.js). Takes effect after the page's next prerender, since the flag is captured into the snapshot at render time. Leave unset (false) for normal behaviour."
         },
         "name": {
           "type": "string"
