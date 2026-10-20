@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Web stats — New Troubadours</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1d1d1f; --muted: #6b6b73; --line: #dcdce2;
+    --card: #f5f5f8; --accent: #2a5db0; --bar2: #c9d6ef;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17171a; --fg: #ececf0; --muted: #9a9aa5; --line: #34343c;
+            --card: #222227; --accent: #7aa2f0; --bar2: #2d3b5c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin-bottom: 14px; }
+  .drop { border: 2px dashed var(--line); border-radius: 8px; padding: 14px; background: var(--card); margin-bottom: 14px; }
+  .drop.over { border-color: var(--accent); }
+  .loaded { color: var(--muted); margin-top: 6px; font-size: 13px; }
+  .tabs { display: flex; gap: 6px; margin: 12px 0; flex-wrap: wrap; }
+  .tabs button, .controls button { border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 6px 12px; border-radius: 6px; cursor: pointer; font: inherit; }
+  .tabs button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .controls input[type=text], .controls select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); font: inherit; }
+  .cards { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .card { background: var(--card); border-radius: 8px; padding: 8px 14px; min-width: 110px; }
+  .card b { display: block; font-size: 1.2rem; }
+  .card span { color: var(--muted); font-size: 12px; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { cursor: pointer; white-space: nowrap; position: sticky; top: 0; background: var(--bg); user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th.sorted::after { content: " ▾"; } th.sorted.asc::after { content: " ▴"; }
+  td.id { font-family: ui-monospace, monospace; font-size: 12.5px; word-break: break-all; }
+  td .name { display: block; font-family: system-ui, sans-serif; color: var(--muted); font-size: 12px; }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+  a { color: var(--accent); }
+  .empty { color: var(--muted); padding: 20px 0; }
+  svg text { fill: var(--muted); font-size: 11px; }
+  .hidden { display: none; }
+  #insights h3 { margin: 22px 0 2px; font-size: 1.05rem; }
+  #insights .note { color: var(--muted); margin: 0 0 8px; max-width: 80ch; }
+  #insights .warn { background: var(--card); border-left: 4px solid var(--accent); padding: 8px 12px; border-radius: 4px; max-width: 80ch; }
+  td.q { max-width: 28ch; }
+  button.spark { border: 0; background: none; padding: 0; cursor: pointer; }
+  button.spark svg path { stroke: var(--accent); fill: none; stroke-width: 1.5; }
+  .detail { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; background: var(--card); }
+  .detail h3 { margin: 0 0 4px; font-size: 1.05rem; word-break: break-all; }
+  .detail .row { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .linkbtn { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; font: inherit; text-align: left; text-decoration: underline; }
+</style>
+</head>
+<body>
+<h1>Web stats</h1>
+<div class="sub">Google Search Console exports, processed in your browser — nothing is uploaded anywhere.</div>
+
+<div class="drop" id="drop">
+  <label>Choose or drop the files (Search Console CSVs and/or <code>gsc_all.json</code> / <code>gsc_page_query.json</code> from the API — any mix, all at once):
+    <input type="file" id="files" accept=".csv,text/csv,.json,application/json" multiple>
+  </label>
+  <br><br>
+  <label>Optional, to show names beside ids and check queries against them: <input type="file" id="dataFile" accept=".json,application/json"> <small>(events_normalized.json)</small></label>
+  <div class="loaded" id="loaded">Nothing loaded yet.</div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="sub" id="filtersLine"></div>
+  <div class="cards" id="cards"></div>
+  <div class="tabs" id="tabs">
+    <button data-tab="pages" class="on">Pages (by slug / id)</button>
+    <button data-tab="insights">Insights (page ↔ query)</button>
+    <button data-tab="queries">Queries</button>
+    <button data-tab="daily">Daily</button>
+    <button data-tab="countries">Countries</button>
+    <button data-tab="devices">Devices</button>
+    <button data-tab="appearance">Search appearance</button>
+  </div>
+  <div id="pagesTab">
+    <div class="controls">
+      <label>Type <select id="typeSel"></select></label>
+      <input type="text" id="search" placeholder="Filter by id, name or URL…" size="30">
+      <label><input type="checkbox" id="clickedOnly"> only with clicks</label>
+      <span id="count" class="sub" style="margin:0"></span>
+    </div>
+    <div id="pageDetail" class="detail hidden"></div>
+    <div class="scroll"><table id="pagesTable"></table></div>
+  </div>
+  <div id="insightsTab" class="hidden"><div id="insights"></div></div>
+  <div id="queriesTab" class="hidden">
+    <div class="controls"><input type="text" id="qsearch" placeholder="Filter queries…" size="30"></div>
+    <div class="scroll"><table id="queriesTable"></table></div>
+  </div>
+  <div id="dailyTab" class="hidden"><div id="chart"></div></div>
+  <div id="countriesTab" class="hidden"><div class="scroll"><table id="countriesTable"></table></div></div>
+  <div id="devicesTab" class="hidden"><div class="scroll"><table id="devicesTable"></table></div></div>
+  <div id="appearanceTab" class="hidden"><div class="scroll"><table id="appearanceTable"></table></div><div id="appearanceNote" class="empty"></div></div>
+</div>
+
+<script>
+"use strict";
+
+// ── CSV parsing (quote-aware, handles BOM, CRLF, commas inside quotes) ──
+function parseCSV(text) {
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+  const rows = []; let row = [], cur = "", inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else inQ = false; }
+      else cur += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cur); cur = ""; rows.push(row); row = [];
+    } else cur += c;
+  }
+  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(x => x !== ""));
+}
+const num = v => { const n = parseFloat(String(v).replace("%", "")); return isNaN(n) ? null : n; };
+
+// ── State ──
+const S = { pages: [], queries: [], daily: [], countries: [], devices: [], appearance: [], filters: [], appearanceSeen: false, names: {},
+  pq: [], pqPage: new Map(), pqQuery: new Map(), entities: new Map(),
+  pageDaily: new Map(), queryDaily: new Map(), range: null,
+  sort: { pages: ["clicks", false], queries: ["clicks", false], countries: ["impressions", false], devices: ["impressions", false], appearance: ["impressions", false] } };
+
+// Which query param holds the id, per page path.
+const PARAM_BY_PATH = {
+  "/performers.html": ["performer"], "/books_merch.html": ["performer", "publisher"],
+  "/venues.html": ["venue"], "/event.html": ["event", "event_id"],
+  "/tour_guide.html": ["tour"], "/storyclub.html": ["club"],
+  "/festival.html": ["festival"], "/promoters.html": ["promoter"],
+};
+
+function classifyPage(url) {
+  let u; try { u = new URL(url); } catch { return { type: "other", id: "", path: url }; }
+  const path = u.pathname === "/" ? "home" : u.pathname.replace(/^\//, "");
+  let id = "", param = "";
+  for (const p of PARAM_BY_PATH[u.pathname] || []) {
+    if (u.searchParams.get(p)) { id = u.searchParams.get(p); param = p; break; }
+  }
+  // Type = page file + which param it is (so books_merch performer vs publisher stay apart)
+  const base = path.replace(/\.html$/, "");
+  const type = id ? (param === "publisher" ? base + " (publisher)" : base) : base + " (index)";
+  return { type, id, path };
+}
+
+function ingest(name, text) {
+  const rows = parseCSV(text);
+  if (!rows.length) return null;
+  const head = rows[0][0].trim().toLowerCase();
+  const body = rows.slice(1);
+  if (head === "top pages") {
+    S.pages = body.map(r => {
+      const c = classifyPage(r[0]);
+      return { url: r[0], ...c, clicks: num(r[1]) || 0, impressions: num(r[2]) || 0, position: num(r[4]) };
+    });
+    return `Pages (${S.pages.length})`;
+  }
+  if (head === "top queries") {
+    S.queries = body.map(r => ({ query: r[0], clicks: num(r[1]) || 0, impressions: num(r[2]) || 0, position: num(r[4]) }));
+    return `Queries (${S.queries.length})`;
+  }
+  const dim = r => ({ name: r[0], clicks: num(r[1]) || 0, impressions: num(r[2]) || 0, position: num(r[4]) });
+  if (head === "country") { S.countries = body.map(dim); return `Countries (${S.countries.length})`; }
+  if (head === "device") { S.devices = body.map(dim); return `Devices (${S.devices.length})`; }
+  if (head === "search appearance") { S.appearance = body.map(dim); S.appearanceSeen = true; return `Search appearance (${S.appearance.length})`; }
+  if (head === "filter") { S.filters = body.map(r => `${r[0]}: ${r[1]}`); return "Filters"; }
+  if (head === "date") {
+    S.daily = body.map(r => ({ date: r[0], clicks: num(r[1]) || 0, impressions: num(r[2]) || 0 }));
+    return `Daily (${S.daily.length} days)`;
+  }
+  return null;
+}
+
+// ── Names from events_normalized.json (optional) ──
+function buildNames(d) {
+  const n = {};
+  const add = (type, id, name) => { if (id && name) n[type + "|" + id] = name; };
+  for (const [k, v] of Object.entries(d.performers || {})) { add("performers", k, v.name); add("books_merch", k, v.name); }
+  for (const [k, v] of Object.entries(d.venues || {})) add("venues", k, [v.name, v.city].filter(Boolean).join(", "));
+  for (const [k, v] of Object.entries(d.tours || {})) add("tour_guide", k, v.name || v.title);
+  for (const [k, v] of Object.entries(d.festivals || {})) add("festival", k, v.name);
+  for (const [k, v] of Object.entries(d.promoters || {})) add("promoters", k, v.name);
+  for (const [k, v] of Object.entries(d.publishers || {})) add("books_merch (publisher)", k, v.name);
+  for (const c of d.clubs || []) if (c && c.club) add("storyclub", c.club, c.name);
+  S.names = n;
+  // Exact-name index for the "wrong page" check. Names shared by several records are ambiguous and skipped.
+  const seen = new Map();
+  const put = (type, id, name) => {
+    const k = normText(name); if (!k) return;
+    const prev = seen.get(k);
+    if (!prev) seen.set(k, { type, id });
+    else if (prev.id !== id || prev.type !== type) prev.ambiguous = true;
+  };
+  for (const [k, v] of Object.entries(d.performers || {})) put("performers", k, v.name);
+  for (const [k, v] of Object.entries(d.venues || {})) put("venues", k, v.name);
+  S.entities = new Map([...seen].filter(([, v]) => !v.ambiguous));
+}
+const normText = s => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const nameFor = p => S.names[p.type + "|" + p.id] || "";
+
+// ── Rendering helpers ──
+const el = (tag, props = {}, ...kids) => {
+  const e = Object.assign(document.createElement(tag), props);
+  for (const k of kids) e.append(k);
+  return e;
+};
+const fmt = (n, d = 0) => n == null ? "–" : n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+const ctr = r => r.impressions ? (100 * r.clicks / r.impressions) : null;
+
+function renderTable(table, cols, rows, sortKey, onSort) {
+  table.replaceChildren();
+  const [key, asc] = sortKey;
+  const tr = el("tr");
+  for (const c of cols) {
+    const th = el("th", { textContent: c.label, className: (c.num ? "num " : "") + (c.key === key ? "sorted" + (asc ? " asc" : "") : "") });
+    th.onclick = () => onSort(c.key);
+    tr.append(th);
+  }
+  table.append(el("thead", {}, tr));
+  const tb = el("tbody");
+  for (const r of rows) {
+    const row = el("tr");
+    for (const c of cols) row.append(c.cell(r));
+    tb.append(row);
+  }
+  table.append(tb);
+  if (!rows.length) table.after(el("div", { className: "empty", textContent: "No rows." }));
+}
+function sortRows(rows, [key, asc], getters) {
+  const g = getters[key] || (r => r[key]);
+  return rows.slice().sort((a, b) => {
+    const x = g(a), y = g(b);
+    if (x == null && y == null) return 0;
+    if (x == null) return 1; if (y == null) return -1;       // blanks always last
+    const c = typeof x === "string" ? x.localeCompare(y) : x - y;
+    return asc ? c : -c;
+  });
+}
+const tdNum = (v, d = 0) => el("td", { className: "num", textContent: fmt(v, d) });
+
+// ── Pages tab ──
+function pageRows() {
+  const type = document.getElementById("typeSel").value;
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const only = document.getElementById("clickedOnly").checked;
+  return S.pages.filter(p =>
+    (type === "all" || p.type === type) &&
+    (!only || p.clicks > 0) &&
+    (!q || (p.id + " " + nameFor(p) + " " + p.url).toLowerCase().includes(q)));
+}
+function renderPages() {
+  document.querySelectorAll("#pagesTab .empty").forEach(e => e.remove());
+  const rows = sortRows(pageRows(), S.sort.pages, { ctr, name: nameFor, nq: r => (S.pqPage.get(r.url) || []).length, trend: r => { const h = halfDelta(S.pageDaily.get(r.url) || []); return h ? h.delta : null; } });
+  document.getElementById("count").textContent = `${rows.length} of ${S.pages.length} URLs`;
+  const cols = [
+    { key: "type", label: "Type", cell: r => el("td", {}, el("span", { className: "tag", textContent: r.type })) },
+    { key: "id", label: "Slug / id", cell: r => {
+        const td = el("td", { className: "id" });
+        const label = r.id || r.path;
+        td.append(el("a", { href: r.url, target: "_blank", rel: "noopener", textContent: label }));
+        const nm = nameFor(r);
+        if (nm) td.append(el("span", { className: "name", textContent: nm }));
+        return td; } },
+    { key: "clicks", label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+    { key: "impressions", label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { key: "ctr", label: "CTR %", num: true, cell: r => tdNum(ctr(r), 1) },
+    { key: "position", label: "Avg pos", num: true, cell: r => tdNum(r.position, 1) },
+  ];
+  if (S.pageDaily.size) cols.push({ key: "trend", label: "Trend (impr.) ▸ detail", cell: r => {
+    const td = el("td");
+    const days = S.pageDaily.get(r.url);
+    if (days) { const b = el("button", { className: "spark", title: "Open this page's daily detail" }); b.append(sparkline(fillDays(days))); b.onclick = () => openDetail(r.url); td.append(b); }
+    return td;
+  } });
+  if (S.pq.length) cols.push({ key: "nq", label: "Top queries (from API file)", cell: r => {
+    const l = (S.pqPage.get(r.url) || []).slice().sort((a, b) => b.impressions - a.impressions);
+    return el("td", { className: "q", textContent: l.slice(0, 3).map(x => `${x.query} (${x.impressions})`).join("; ") + (l.length > 3 ? ` +${l.length - 3} more` : "") });
+  } });
+  renderTable(document.getElementById("pagesTable"), cols, rows, S.sort.pages, k => {
+    const [ck, ca] = S.sort.pages;
+    // Position sorts best-first (ascending) by default; everything else biggest-first.
+    S.sort.pages = [k, k === ck ? !ca : (k === "position" || k === "id" || k === "type")];
+    renderPages();
+  });
+}
+
+// ── Queries tab ──
+function renderQueries() {
+  document.querySelectorAll("#queriesTab .empty").forEach(e => e.remove());
+  const q = document.getElementById("qsearch").value.trim().toLowerCase();
+  const rows = sortRows(S.queries.filter(r => !q || r.query.toLowerCase().includes(q)), S.sort.queries, { ctr, np: r => (S.pqQuery.get(r.query) || []).length });
+  const cols = [
+    { key: "query", label: "Query", cell: r => el("td", { textContent: r.query }) },
+    { key: "clicks", label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+    { key: "impressions", label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { key: "ctr", label: "CTR %", num: true, cell: r => tdNum(ctr(r), 1) },
+    { key: "position", label: "Avg pos", num: true, cell: r => tdNum(r.position, 1) },
+  ];
+  if (S.pq.length) cols.push({ key: "np", label: "Pages (from API file)", cell: r => {
+    const l = (S.pqQuery.get(r.query) || []).slice().sort((a, b) => b.impressions - a.impressions);
+    const td = el("td", { className: "id" });
+    l.slice(0, 3).forEach((x, i) => { if (i) td.append(el("br")); td.append(el("a", { href: x.page, target: "_blank", rel: "noopener", textContent: short(x.page) })); });
+    if (l.length > 3) td.append(` +${l.length - 3} more`);
+    return td;
+  } });
+  renderTable(document.getElementById("queriesTable"), cols, rows, S.sort.queries, k => {
+    const [ck, ca] = S.sort.queries;
+    S.sort.queries = [k, k === ck ? !ca : (k === "position" || k === "query")];
+    renderQueries();
+  });
+}
+
+// ── Daily tab (inline SVG: impressions as light bars, clicks as dark bars) ──
+function renderDaily() {
+  const box = document.getElementById("chart");
+  box.replaceChildren();
+  if (!S.daily.length) { box.append(el("div", { className: "empty", textContent: "Load Chart.csv or gsc_all.json to see daily totals." })); return; }
+  drawDailyChart(box, S.daily);
+}
+function drawDailyChart(box, data) {
+  const W = Math.max(600, data.length * 14), H = 220, L = 36, B = 40, T = 10;
+  const maxI = Math.max(1, ...data.map(d => d.impressions));
+  const maxC = Math.max(1, ...data.map(d => d.clicks));
+  const bw = (W - L) / data.length;
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", W); svg.setAttribute("height", H);
+  const add = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.append(e); return e; };
+  data.forEach((d, i) => {
+    const x = L + i * bw;
+    const hi = (H - B - T) * d.impressions / maxI;
+    const hc = (H - B - T) * d.clicks / maxC;
+    add("rect", { x: x + 1, y: H - B - hi, width: Math.max(1, bw - 2), height: hi, fill: "var(--bar2)" }).append(Object.assign(document.createElementNS(NS, "title"), { textContent: `${d.date}: ${d.impressions} impressions, ${d.clicks} clicks` }));
+    if (d.clicks) add("rect", { x: x + bw * 0.3, y: H - B - hc, width: Math.max(1, bw * 0.4), height: hc, fill: "var(--accent)" });
+    if (i % Math.ceil(data.length / 12) === 0) add("text", { x: x, y: H - B + 14, "text-anchor": "start" }, d.date.slice(5));
+  });
+  add("text", { x: 2, y: T + 8 }, fmt(maxI));
+  const wrap = el("div", { className: "scroll" }); wrap.append(svg);
+  box.append(wrap, el("div", { className: "sub", textContent: `Light bars: impressions (max ${fmt(maxI)}). Dark bars: clicks (scaled separately, max ${fmt(maxC)}).` }));
+}
+
+// ── Countries / Devices / Search appearance (simple dimension tables) ──
+function renderDim(key, tableId, label, withShare) {
+  const table = document.getElementById(tableId);
+  table.parentElement.querySelectorAll(".empty").forEach(e => e.remove());
+  const rows = S[key];
+  const totC = rows.reduce((s, r) => s + r.clicks, 0), totI = rows.reduce((s, r) => s + r.impressions, 0);
+  const cols = [
+    { key: "name", label, cell: r => el("td", { textContent: r.name }) },
+    { key: "clicks", label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+    { key: "impressions", label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { key: "ctr", label: "CTR %", num: true, cell: r => tdNum(ctr(r), 2) },
+    { key: "position", label: "Avg pos", num: true, cell: r => tdNum(r.position, 1) },
+  ];
+  if (withShare) cols.push(
+    { key: "cshare", label: "% of clicks", num: true, cell: r => tdNum(totC ? 100 * r.clicks / totC : null, 1) },
+    { key: "ishare", label: "% of impressions", num: true, cell: r => tdNum(totI ? 100 * r.impressions / totI : null, 1) });
+  const sorted = sortRows(rows, S.sort[key], { ctr, cshare: r => r.clicks, ishare: r => r.impressions });
+  renderTable(table, cols, sorted, S.sort[key], k => {
+    const [ck, ca] = S.sort[key];
+    S.sort[key] = [k, k === ck ? !ca : (k === "position" || k === "name")];
+    renderDim(key, tableId, label, withShare);
+  });
+}
+function renderDimTabs() {
+  renderDim("countries", "countriesTable", "Country", true);
+  renderDim("devices", "devicesTable", "Device", true);
+  renderDim("appearance", "appearanceTable", "Search appearance", true);
+  document.getElementById("appearanceNote").textContent = !S.appearanceSeen
+    ? "Load Search_appearance.csv or gsc_all.json to see this."
+    : S.appearance.length ? "" : "That file has no rows: Google only reports search appearance (rich results etc.) when the site has them.";
+  const bits = [];
+  if (S.filters.length) bits.push("Export filters — " + S.filters.join(" · "));
+  if (S.range) bits.push(`API range — ${S.range.start} to ${S.range.end}`);
+  document.getElementById("filtersLine").textContent = bits.join("   |   ");
+}
+
+// ── Summary cards + type dropdown ──
+function renderSummary() {
+  const sum = a => a.reduce((s, r) => s + r.clicks, 0), imp = a => a.reduce((s, r) => s + r.impressions, 0);
+  const cards = [];
+  const base = S.daily.length ? S.daily : S.pages;
+  if (base.length) {
+    cards.push(["Clicks", fmt(sum(base))], ["Impressions", fmt(imp(base))],
+               ["CTR", fmt(100 * sum(base) / Math.max(1, imp(base)), 2) + "%"]);
+  }
+  if (S.pages.length) cards.push(["URLs listed", fmt(S.pages.length)]);
+  document.getElementById("cards").replaceChildren(...cards.map(([l, v]) => el("div", { className: "card" }, el("b", { textContent: v }), el("span", { textContent: l }))));
+
+  const types = [...new Set(S.pages.map(p => p.type))].sort();
+  const sel = document.getElementById("typeSel"), prev = sel.value;
+  sel.replaceChildren(el("option", { value: "all", textContent: "All types" }),
+    ...types.map(t => el("option", { value: t, textContent: `${t} (${S.pages.filter(p => p.type === t).length})` })));
+  sel.value = types.includes(prev) ? prev : "all";
+}
+
+function indexPQ() {
+  S.pqPage = new Map(); S.pqQuery = new Map();
+  for (const r of S.pq) {
+    if (!S.pqPage.has(r.page)) S.pqPage.set(r.page, []);
+    S.pqPage.get(r.page).push(r);
+    if (!S.pqQuery.has(r.query)) S.pqQuery.set(r.query, []);
+    S.pqQuery.get(r.query).push(r);
+  }
+}
+const short = url => { const c = classifyPage(url); return c.id ? `${c.type}: ${c.id}` : c.path; };
+
+// Pure computation (kept separate from rendering so it can be tested).
+function computeInsights() {
+  const rows = S.pq;
+  const tot = a => ({ c: a.reduce((s, r) => s + r.clicks, 0), i: a.reduce((s, r) => s + r.impressions, 0) });
+  const T = tot(rows);
+  const site = S.daily.length ? { c: S.daily.reduce((s, r) => s + r.clicks, 0), i: S.daily.reduce((s, r) => s + r.impressions, 0) } : null;
+
+  const byType = new Map();
+  for (const r of rows) {
+    const t = classifyPage(r.page).type.replace(" (index)", " (index)");
+    const o = byType.get(t) || { type: t, pairs: 0, impressions: 0, clicks: 0 };
+    o.pairs++; o.impressions += r.impressions; o.clicks += r.clicks; byType.set(t, o);
+  }
+  const bandDefs = [["1–3", 0, 3], ["4–7", 3, 7], ["8–10", 7, 10], ["11–20", 10, 20], ["21+", 20, 1e9]];
+  const bands = bandDefs.map(([label, lo, hi]) => {
+    const a = rows.filter(r => r.position > lo && r.position <= hi);
+    const t = tot(a); return { label, pairs: a.length, impressions: t.i, clicks: t.c };
+  });
+  const nearMiss = rows.filter(r => r.position >= 4 && r.position <= 12 && r.clicks === 0 && r.impressions >= 5)
+    .sort((a, b) => b.impressions - a.impressions);
+
+  const wrong = [];
+  if (S.entities.size) {
+    const origin = rows.length ? new URL(rows[0].page).origin : "";
+    for (const [q, list] of S.pqQuery) {
+      const ent = S.entities.get(normText(q)); if (!ent) continue;
+      const hit = list.some(r => { const c = classifyPage(r.page); return c.type === ent.type && c.id === ent.id; });
+      const param = ent.type === "performers" ? "performer" : "venue";
+      const expected = `${origin}/${ent.type}.html?${param}=${ent.id}`;
+      const imp = list.reduce((s, r) => s + r.impressions, 0);
+      wrong.push({ query: q, impressions: imp, clicks: list.reduce((s, r) => s + r.clicks, 0), ranking: list.slice().sort((a, b) => b.impressions - a.impressions), expected, hit, ent });
+    }
+    wrong.sort((a, b) => (a.hit - b.hit) || b.impressions - a.impressions);
+  }
+  const multi = [...S.pqQuery].filter(([, l]) => l.length > 1)
+    .map(([q, l]) => ({ query: q, pages: l.slice().sort((a, b) => b.impressions - a.impressions), impressions: l.reduce((s, r) => s + r.impressions, 0) }))
+    .sort((a, b) => b.impressions - a.impressions);
+  return { T, site, byType: [...byType.values()].sort((a, b) => b.impressions - a.impressions), bands, nearMiss, wrong, multi, nPages: S.pqPage.size, nQueries: S.pqQuery.size };
+}
+
+// ── Time helpers (API data with a date dimension) ──
+function dayList() {
+  let a = S.range && S.range.start, b = S.range && S.range.end;
+  if (!a || !b) { const ds = S.daily.map(d => d.date).sort(); if (ds.length) { a = ds[0]; b = ds[ds.length - 1]; } }
+  if (!a || !b) return [];
+  const out = [];
+  for (let t = Date.parse(a); t <= Date.parse(b); t += 864e5) out.push(new Date(t).toISOString().slice(0, 10));
+  return out;
+}
+function fillDays(rows) {
+  const by = new Map(rows.map(r => [r.date, r]));
+  return dayList().map(d => by.get(d) || { date: d, clicks: 0, impressions: 0 });
+}
+function halfDelta(rows) {
+  const days = dayList(); if (days.length < 4) return null;
+  const mid = days[Math.floor(days.length / 2)];
+  const o = { before: 0, after: 0, cBefore: 0, cAfter: 0 };
+  for (const r of rows) { if (r.date < mid) { o.before += r.impressions; o.cBefore += r.clicks; } else { o.after += r.impressions; o.cAfter += r.clicks; } }
+  o.delta = o.after - o.before; return o;
+}
+function movers(map) {
+  const out = [];
+  for (const [key, rows] of map) { const h = halfDelta(rows); if (h && h.before + h.after >= 8) out.push({ key, ...h }); }
+  return out;
+}
+function sparkline(days) {
+  const NS = "http://www.w3.org/2000/svg", W = 90, H = 22;
+  const max = Math.max(1, ...days.map(d => d.impressions));
+  const svg = document.createElementNS(NS, "svg"); svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const step = days.length > 1 ? W / (days.length - 1) : W;
+  const path = document.createElementNS(NS, "path");
+  path.setAttribute("d", days.map((d, i) => `${i ? "L" : "M"}${(i * step).toFixed(1)},${(H - 2 - (H - 4) * d.impressions / max).toFixed(1)}`).join(""));
+  svg.append(path); return svg;
+}
+function openDetail(url) {
+  const box = document.getElementById("pageDetail");
+  box.replaceChildren(); box.classList.remove("hidden");
+  const p = S.pages.find(x => x.url === url) || { url, clicks: 0, impressions: 0 };
+  const close = el("button", { textContent: "Close" }); close.onclick = () => box.classList.add("hidden");
+  const head = el("div", { className: "row" }, el("h3", { textContent: short(url) }), el("a", { href: url, target: "_blank", rel: "noopener", textContent: "open page" }), close);
+  box.append(head);
+  const nm = S.names[classifyPage(url).type + "|" + classifyPage(url).id];
+  if (nm) box.append(el("div", { className: "sub", textContent: nm }));
+  const days = S.pageDaily.get(url) || [];
+  const tc = days.reduce((s, r) => s + r.clicks, 0), ti = days.reduce((s, r) => s + r.impressions, 0);
+  box.append(el("div", { className: "sub", textContent: `${fmt(ti || p.impressions)} impressions, ${fmt(tc || p.clicks)} clicks over the range; active on ${days.length} of ${dayList().length} days.` }));
+  const chart = el("div"); box.append(chart);
+  if (days.length) drawDailyChart(chart, fillDays(days));
+  const qs = (S.pqPage.get(url) || []).slice().sort((a, b) => b.impressions - a.impressions);
+  if (qs.length) {
+    box.append(el("h3", { textContent: "Queries that showed this page", style: "margin-top:12px" }));
+    const wrap = el("div", { className: "scroll" }), t = el("table"); wrap.append(t); box.append(wrap);
+    renderTable(t, [
+      { label: "Query", cell: r => el("td", { className: "q", textContent: r.query }) },
+      { label: "Impr.", num: true, cell: r => tdNum(r.impressions) },
+      { label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+      { label: "Avg pos", num: true, cell: r => tdNum(r.position, 1) },
+    ], qs, [null, false], () => {});
+  }
+  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function renderInsights() {
+  const box = document.getElementById("insights");
+  box.replaceChildren();
+  if (!S.pq.length && !S.pageDaily.size && !S.queryDaily.size) { box.append(el("div", { className: "empty", textContent: "Load gsc_all.json (or gsc_page_query.json) from the Search Console API script to see which queries lead to which pages, and what is rising or falling." })); return; }
+  const section = (title, note, node) => { box.append(el("h3", { textContent: title })); if (note) box.append(el("p", { className: "note", textContent: note })); if (node) box.append(node); };
+  const table = (cols, rows) => { const wrap = el("div", { className: "scroll" }); const t = el("table"); wrap.append(t); box.append(wrap); renderTable(t, cols, rows, [null, false], () => {}); };
+  const link = r => { const td = el("td", { className: "id" }); td.append(el("a", { href: r.page || r.url, target: "_blank", rel: "noopener", textContent: short(r.page || r.url) })); return td; };
+  const pct = (a, b) => b ? fmt(100 * a / b, 1) + "%" : "–";
+
+  const moversSection = (title, note, map, isPage, rising) => {
+    const rows = movers(map).filter(m => rising ? m.delta > 0 : m.delta < 0).sort((a, b) => rising ? b.delta - a.delta : a.delta - b.delta).slice(0, 10);
+    section(title, note, null);
+    table([
+      { label: isPage ? "Page" : "Query", cell: r => { const td = el("td", { className: isPage ? "id" : "q" }); if (isPage) { const b = el("button", { className: "linkbtn", textContent: short(r.key) }); b.onclick = () => { showTab("pages"); openDetail(r.key); }; td.append(b); } else td.textContent = r.key; return td; } },
+      { label: "Impr. first half", num: true, cell: r => tdNum(r.before) },
+      { label: "Impr. second half", num: true, cell: r => tdNum(r.after) },
+      { label: "Change", num: true, cell: r => el("td", { className: "num", textContent: (r.delta > 0 ? "+" : "") + fmt(r.delta) }) },
+      { label: "Clicks (1st / 2nd)", num: true, cell: r => el("td", { className: "num", textContent: `${r.cBefore} / ${r.cAfter}` }) },
+    ], rows);
+  };
+  if (S.pageDaily.size) {
+    const half = "Compares total impressions in the first and second half of the date range. Needs at least 8 impressions in total to appear.";
+    moversSection("Pages gaining impressions", half + " Click a page for its daily detail.", S.pageDaily, true, true);
+    moversSection("Pages losing impressions", half, S.pageDaily, true, false);
+  }
+  if (S.queryDaily.size) {
+    const half = "Same comparison for search queries (visible queries only).";
+    moversSection("Queries gaining impressions", half, S.queryDaily, false, true);
+    moversSection("Queries losing impressions", half, S.queryDaily, false, false);
+  }
+  if (!S.pq.length) return;
+  const I = computeInsights();
+  const cov = I.site
+    ? `This file holds ${fmt(I.T.i)} impressions and ${fmt(I.T.c)} clicks across ${fmt(I.nQueries)} queries and ${fmt(I.nPages)} pages — ${pct(I.T.i, I.site.i)} of the site's impressions and ${pct(I.T.c, I.site.c)} of its clicks. Google hides rare (anonymised) queries, so everything below describes the visible slice only.`
+    : `This file holds ${fmt(I.T.i)} impressions and ${fmt(I.T.c)} clicks across ${fmt(I.nQueries)} queries and ${fmt(I.nPages)} pages. Google hides rare (anonymised) queries, so this is only the visible slice of your traffic (load Chart.csv to see how much).`;
+  box.append(el("p", { className: "warn", textContent: cov }));
+
+  section("Where the searches land", "Share of visible impressions by page type. A type with lots of impressions but almost no clicks is being shown but not chosen.", null);
+  table([
+    { label: "Page type", cell: r => el("td", {}, el("span", { className: "tag", textContent: r.type })) },
+    { label: "Query/page pairs", num: true, cell: r => tdNum(r.pairs) },
+    { label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { label: "Share", num: true, cell: r => el("td", { className: "num", textContent: pct(r.impressions, I.T.i) }) },
+    { label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+  ], I.byType);
+
+  section("Rank position vs clicks", "Where in the results your pages appear when they're shown. The 8–10 and 11+ bands are the bottom of page one and page two; clicks fall away steeply there.", null);
+  table([
+    { label: "Position", cell: r => el("td", { textContent: r.label }) },
+    { label: "Query/page pairs", num: true, cell: r => tdNum(r.pairs) },
+    { label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { label: "Clicks", num: true, cell: r => tdNum(r.clicks) },
+    { label: "CTR", num: true, cell: r => el("td", { className: "num", textContent: pct(r.clicks, r.impressions) }) },
+  ], I.bands);
+
+  section(`Near misses (${I.nearMiss.length})`, "Shown at position 4–12 at least 5 times with no clicks. Anything that moves these up a few places, or earns a better title and description, is the cheapest gain.", null);
+  table([
+    { label: "Query", cell: r => el("td", { className: "q", textContent: r.query }) },
+    { label: "Page", cell: link },
+    { label: "Impressions", num: true, cell: r => tdNum(r.impressions) },
+    { label: "Position", num: true, cell: r => tdNum(r.position, 1) },
+  ], I.nearMiss.slice(0, 30));
+
+  if (!S.entities.size) {
+    section("Is the right page ranking?", "Load events_normalized.json (second file picker) to check whether searches for a performer's or venue's exact name land on that entity's own page.", null);
+  } else {
+    const bad = I.wrong.filter(w => !w.hit);
+    section(`Is the right page ranking? (${bad.length} of ${I.wrong.length} name searches miss their own page)`,
+      "Queries that exactly match a performer or venue name. \"Own page seen\" says whether that entity's own page appeared for the query at all; if not, other pages are answering for it.", null);
+    table([
+      { label: "Query", cell: r => el("td", { className: "q", textContent: r.query }) },
+      { label: "Impr.", num: true, cell: r => tdNum(r.impressions) },
+      { label: "Own page seen?", cell: r => el("td", { textContent: r.hit ? "yes" : "no" }) },
+      { label: "Pages that did rank (impr., pos)", cell: r => { const td = el("td", { className: "id" }); r.ranking.forEach((x, i) => { if (i) td.append(el("br")); td.append(el("a", { href: x.page, target: "_blank", rel: "noopener", textContent: short(x.page) }), ` (${x.impressions}, ${fmt(x.position, 1)})`); }); return td; } },
+      { label: "Own page", cell: r => { const td = el("td", { className: "id" }); td.append(el("a", { href: r.expected, target: "_blank", rel: "noopener", textContent: `${r.ent.type}: ${r.ent.id}` })); return td; } },
+    ], I.wrong.slice(0, 40));
+  }
+
+  section(`Queries answered by more than one page (${I.multi.length})`, "The same search shows several of your URLs, so they compete with each other. Sometimes that's fine (an event and its tour page); sometimes it's two URLs for one thing.", null);
+  table([
+    { label: "Query", cell: r => el("td", { className: "q", textContent: r.query }) },
+    { label: "Impr.", num: true, cell: r => tdNum(r.impressions) },
+    { label: "Pages (impr., pos)", cell: r => { const td = el("td", { className: "id" }); r.pages.forEach((x, i) => { if (i) td.append(el("br")); td.append(el("a", { href: x.page, target: "_blank", rel: "noopener", textContent: short(x.page) }), ` (${x.impressions}, ${fmt(x.position, 1)})`); }); return td; } },
+  ], I.multi.slice(0, 25));
+}
+
+function refresh() {
+  document.getElementById("app").classList.remove("hidden");
+  indexPQ(); renderSummary(); renderPages(); renderQueries(); renderDaily(); renderDimTabs(); renderInsights();
+}
+
+// ── Loading ──
+function ingestAll(d) {
+  const R = d.reports || {}, got = [];
+  const m = r => ({ clicks: r.clicks || 0, impressions: r.impressions || 0, position: r.position == null ? null : r.position });
+  const title = t => t ? t.charAt(0) + t.slice(1).toLowerCase() : t;
+  if (d.range && d.range.start && d.range.end) S.range = d.range;
+  if (R.daily) { S.daily = R.daily.map(r => ({ date: r.date, ...m(r) })).sort((a, b) => a.date.localeCompare(b.date)); got.push(`daily ${S.daily.length}`); }
+  if (R.pages) { S.pages = R.pages.map(r => ({ url: r.page, ...classifyPage(r.page), ...m(r) })); got.push(`pages ${S.pages.length}`); }
+  if (R.page_query) { S.pq = R.page_query.map(r => ({ page: r.page, query: r.query, ctr: r.ctr, ...m(r) })); got.push(`page/query ${S.pq.length}`); }
+  if (R.page_daily) {
+    S.pageDaily = new Map();
+    for (const r of R.page_daily) { if (!S.pageDaily.has(r.page)) S.pageDaily.set(r.page, []); S.pageDaily.get(r.page).push({ date: r.date, ...m(r) }); }
+    got.push(`page/day ${R.page_daily.length}`);
+  }
+  if (R.query_daily) {
+    S.queryDaily = new Map(); const agg = new Map();
+    for (const r of R.query_daily) {
+      if (!S.queryDaily.has(r.query)) S.queryDaily.set(r.query, []);
+      S.queryDaily.get(r.query).push({ date: r.date, ...m(r) });
+      const a = agg.get(r.query) || { query: r.query, clicks: 0, impressions: 0, pw: 0 };
+      a.clicks += r.clicks || 0; a.impressions += r.impressions || 0; a.pw += (r.position || 0) * (r.impressions || 0); agg.set(r.query, a);
+    }
+    S.queries = [...agg.values()].map(a => ({ query: a.query, clicks: a.clicks, impressions: a.impressions, position: a.impressions ? a.pw / a.impressions : null }));
+    got.push(`query/day ${R.query_daily.length}`);
+  }
+  if (R.countries) { S.countries = R.countries.map(r => ({ name: String(r.country || "").toUpperCase(), ...m(r) })); got.push(`countries ${S.countries.length}`); }
+  if (R.devices) { S.devices = R.devices.map(r => ({ name: title(r.device), ...m(r) })); got.push(`devices ${S.devices.length}`); }
+  if (R.appearance) { S.appearance = R.appearance.map(r => ({ name: r.searchAppearance, ...m(r) })); S.appearanceSeen = true; got.push(`appearance ${S.appearance.length}`); }
+  return `API file (${got.join(", ")})`;
+}
+async function ingestJSON(f) {
+  try {
+    const d = JSON.parse(await f.text());
+    if (d && d.reports && typeof d.reports === "object") return ingestAll(d);
+    if (Array.isArray(d) && d.every(r => r && typeof r.page === "string" && typeof r.query === "string")) {
+      S.pq = d; return `Page/query pairs (${d.length})`;
+    }
+    if (d && d.performers) { buildNames(d); return "Names (events data)"; }
+    return `${f.name} (ignored: not recognised)`;
+  } catch (err) { return `${f.name} (unreadable: ${err.message})`; }
+}
+async function loadFiles(fileList) {
+  const got = [];
+  for (const f of fileList) {
+    if (/\.json$/i.test(f.name)) { got.push(await ingestJSON(f)); continue; }
+    const label = ingest(f.name, await f.text());
+    if (label) got.push(label); else got.push(`${f.name} (ignored)`);
+  }
+  document.getElementById("loaded").textContent = "Loaded: " + got.join(", ");
+  refresh();
+}
+document.getElementById("files").onchange = e => loadFiles(e.target.files);
+document.getElementById("dataFile").onchange = async e => {
+  try { buildNames(JSON.parse(await e.target.files[0].text())); refresh(); }
+  catch (err) { document.getElementById("loaded").textContent = "Couldn't read that JSON: " + err.message; }
+};
+const drop = document.getElementById("drop");
+["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => loadFiles(e.dataTransfer.files));
+
+function showTab(t) {
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  for (const n of ["pages", "insights", "queries", "daily", "countries", "devices", "appearance"]) document.getElementById(n + "Tab").classList.toggle("hidden", n !== t);
+}
+document.getElementById("tabs").onclick = e => { const t = e.target.dataset.tab; if (t) showTab(t); };
+for (const id of ["typeSel", "search", "clickedOnly"]) document.getElementById(id).addEventListener("input", renderPages);
+document.getElementById("qsearch").addEventListener("input", renderQueries);
+</script>
+</body>
+</html>
