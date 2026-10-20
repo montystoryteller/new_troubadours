@@ -1,0 +1,1794 @@
+/* =============================================================
+   0. SHARED COLOUR VARIABLES
+   Performance-type accent colours — single source of truth for
+   the full-saturation accent used by filter buttons, tags, and
+   badges across the events/tours/performers/venues/flyers pages.
+   Keep in sync with PERFORMANCE_TYPE_COLOURS in shared_utils.js.
+   (Softer tint/shade variants, e.g. badge backgrounds, and
+   gradient stops on the coloured event/tour cards, are a
+   deliberately different design choice and are not driven by
+   these variables.)
+   ============================================================= */
+:root {
+    --color-story: #2e7d32;
+    --color-music: #443cd7;
+    --color-poetry: #d6006e;
+    --color-troupe: #795548;
+
+    /* Primary Green Theme Variables */
+    --theme-green: #4CAF50;
+    --theme-green-dark: #2e7d32;
+    --theme-green-border: #a5d6a7;
+    --theme-green-border-alt: #c8e6c9;
+    /* Promoted here from venue-styles.css and tour-styles.css, which both
+       independently defined this exact value in their own :root blocks. */
+    --theme-green-bg: #e8f5e9;
+}
+
+/* =============================================================
+   1. BASE
+   body, headings
+   ============================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    overflow-x: hidden;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin: 5px 0 10px 0;
+}
+
+h2 {
+    text-align: center;
+    font-style: italic;
+    color: #898b89;
+    margin: 5px 0 20px 0;
+    font-size: 18px;
+}
+
+/* =============================================================
+   1b. SITE NAV
+   ============================================================= */
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  gap: 4px;
+  padding: 6px 0 10px;
+  margin: 0 0 18px;
+  border-bottom: 1px solid #ddd;
+  scrollbar-width: none;
+}
+
+.site-nav a {
+  flex-shrink: 1;
+  padding: 5px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  background: transparent;
+  border: 1px solid #ccc;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.site-nav a:hover {
+  background: #f5f5f5;
+  border-color: #999;
+  color: #111;
+}
+.site-nav a[aria-current="page"] {
+  background: #f5f5f5;
+  border: 1.5px solid #111;
+  color: #111;
+  font-weight: 700;
+  pointer-events: none;
+}
+/* On a detail page (e.g. ?performer=x) the current-section link stays
+   clickable and returns to the plain base page. */
+.site-nav a[aria-current="page"].nav-current-detail {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.site-nav a[aria-current="page"].nav-current-detail:hover {
+  background: #eaeaea;
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-nav {
+    border-bottom-color: #333;
+  }
+  .site-nav a {
+    color: #999;
+    border-color: #444;
+  }
+  .site-nav a:hover {
+    background: #2a2a2a;
+    border-color: #777;
+    color: #eee;
+  }
+  .site-nav a[aria-current="page"] {
+    background: #2a2a2a;
+    border-color: #eee;
+    color: #eee;
+  }
+}
+
+/* Navigation feedback for page transitions */
+.site-nav a.nav-link-pending {
+  opacity: 0.6;
+}
+
+body.nav-loading {
+  opacity: 0.85;
+  transition: opacity 0.1s ease-out;
+}
+
+/* =============================================================
+   2. BUTTONS
+   ============================================================= */
+
+button {
+    padding: 10px 20px;
+    background-color: var(--theme-green);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button.active {
+    background-color: var(--theme-green-dark);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.3);
+}
+
+/* =============================================================
+   PERFORMANCE-TYPE FILTER BUTTONS (story/music/poetry/troupe)
+   Shared by the performers listing and venues listing pages.
+   Each type gets its own accent colour for both the active and
+   hover states, and explicitly cancels the generic button /
+   button:hover / button.active rules above (background-color,
+   box-shadow) — those would otherwise force every one of these
+   buttons, including music/poetry, to the same green highlight.
+   ============================================================= */
+.type-filter-btn {
+    border: 2px solid #ccc;
+    background: white;
+    color: #555;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+}
+
+.type-filter-btn:hover {
+    background: white;
+}
+
+.type-filter-btn.active {
+    box-shadow: none;
+}
+
+.type-filter-btn[data-ptype="story"].active {
+    background: var(--color-story);
+    border-color: var(--color-story);
+    color: white;
+}
+
+.type-filter-btn[data-ptype="music"].active {
+    background: var(--color-music);
+    border-color: var(--color-music);
+    color: white;
+}
+
+.type-filter-btn[data-ptype="poetry"].active {
+    background: var(--color-poetry);
+    border-color: var(--color-poetry);
+    color: white;
+}
+
+.type-filter-btn[data-ptype="troupe"].active {
+    background: var(--color-troupe);
+    border-color: var(--color-troupe);
+    color: white;
+}
+
+.type-filter-btn[data-ptype="story"]:not(.active):hover {
+    border-color: var(--color-story);
+    color: var(--color-story);
+}
+
+.type-filter-btn[data-ptype="music"]:not(.active):hover {
+    border-color: var(--color-music);
+    color: var(--color-music);
+}
+
+.type-filter-btn[data-ptype="poetry"]:not(.active):hover {
+    border-color: var(--color-poetry);
+    color: var(--color-poetry);
+}
+
+.type-filter-btn[data-ptype="troupe"]:not(.active):hover {
+    border-color: var(--color-troupe);
+    color: var(--color-troupe);
+}
+
+/* Slightly darkened shades for the active+hover state — derived tints,
+   not driven by the CSS variables above (deliberately a different value,
+   not just var() + opacity). */
+.type-filter-btn[data-ptype="story"].active:hover {
+    background: #276829;
+}
+
+.type-filter-btn[data-ptype="music"].active:hover {
+    background: #3931b8;
+}
+
+.type-filter-btn[data-ptype="poetry"].active:hover {
+    background: #b8004f;
+}
+
+.type-filter-btn[data-ptype="troupe"].active:hover {
+    background: #63443a;
+}
+
+
+/* =============================================================
+   3. FORM INPUTS
+   ============================================================= */
+
+input[type="date"],
+select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+
+/* =============================================================
+   4. MAP
+   Base map container and popup styles.
+   Note: tour-styles.css overrides #map-container for the tour page.
+   ============================================================= */
+
+#map-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 600px;
+}
+
+#map {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+}
+
+.popup-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--theme-green-dark);
+}
+
+.popup-content p {
+    margin: 5px 0;
+}
+
+
+/* =============================================================
+   8. COLOPHON
+   ============================================================= */
+
+.about {
+    margin-top: 40px;
+    padding: 20px;
+    font-size: 13px;
+    color: #888;
+    border-top: 1px solid #e0e0e0;
+}
+
+.about p {
+    margin: 0 0 8px 0;
+}
+
+#dataLastUpdated {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.data-updated-text {
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* Status LED next to the "Data last updated" line — reflects whether the
+   events_normalized.json feed loaded normally (green), failed but fell
+   back to a stale cached copy (orange), or failed with no cache at all
+   to fall back on (red). See loadEventsData() / displayDataLastUpdated()
+   in shared_utils.js. */
+.data-health-led {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+}
+
+.data-health-ok {
+    background: #4CAF50;
+    box-shadow: 0 0 4px #4CAF50;
+}
+
+.data-health-stale-cache {
+    background: #ff9800;
+    box-shadow: 0 0 4px #ff9800;
+}
+
+.data-health-error {
+    background: #e53935;
+    box-shadow: 0 0 4px #e53935;
+}
+
+/* Added only while the LED reflects a problem (stale-cache/error) — see
+   wireDataHealthLedClick() in shared_utils.js. Clicking, or pressing
+   Enter/Space when focused, toggles .data-health-message next to it.
+   The title/aria-label tooltip alone isn't reachable on a touch device,
+   so this gives the same explanation a visible, tappable home. */
+.data-health-led-clickable {
+    cursor: pointer;
+}
+
+.data-health-led-clickable:hover,
+.data-health-led-clickable:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.data-health-message {
+    display: none;
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #555;
+}
+
+.data-refresh-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 12px;
+    margin-left: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.data-refresh-link:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.data-refresh-status {
+    display: inline;
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+
+/* =============================================================
+   5. EVENT CARDS — BASE & VARIANTS
+   .event base, then colour/style variants: special, music, folk,
+   session, highlighted, cancelled
+   ============================================================= */
+
+.event {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--theme-green);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.event:hover {
+    background-color: #f0f0f0;
+}
+
+.event.special {
+    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+    border: 2px solid var(--theme-green-dark);
+    color: white;
+}
+
+.event.music {
+    background: linear-gradient(135deg, #443cd7 0%, #8e9df3 100%);
+    border: 2px solid #1006c6;
+    color: white;
+}
+
+.event.folk {
+    background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+    border: 2px solid #654321;
+    color: white;
+}
+
+.event.poetry {
+    background: linear-gradient(135deg, #c2005c 0%, #ff4fa3 100%);
+    border: 2px solid #8a0040;
+    color: white;
+}
+
+.event.session {
+    background: linear-gradient(135deg, #90ee90 0%, #98fb98 100%);
+    border: 2px solid #228b22;
+    color: #1a5c1a;
+}
+
+.event.highlighted {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    border-left-width: 8px;
+}
+
+.event.event-cancelled, .event.event-rescheduled {
+    border-left: 4px solid #c62828 !important;
+    background: repeating-linear-gradient(
+        -45deg,
+        #e8ede8, #e8ede8 8px,
+        #dfe6df 8px, #dfe6df 16px
+    );
+    color: #555;
+}
+
+/* Past event styling (mirrors the tour page's .date-past treatment).
+   Applied to every .event unconditionally so past events are visibly
+   dimmed even when the "Hide past events" checkbox is left unchecked.
+   Cancelled/rescheduled events already have their own faded striped
+   look, so they only get the dimming filter, not the colour override —
+   avoids fighting their !important background/border rule above.
+   No opacity here (deliberately) — an opaque card sitting at reduced
+   opacity on the page's white background washes the "solid" grey
+   colours below right back out toward invisible, which is the muted
+   grey-on-grey/pale-on-pale look this is meant to prevent. The
+   grayscale filter alone is enough of a "this one's past" cue. */
+.event.date-past {
+    filter: grayscale(40%);
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) {
+    border-left-color: #aaa !important;
+    background: #f0f0f0 !important;
+    color: #888 !important;
+}
+
+.event.special.date-past,
+.event.music.date-past,
+.event.folk.date-past,
+.event.poetry.date-past,
+.event.session.date-past {
+    background: linear-gradient(135deg, #777 0%, #aaa 100%) !important;
+    border-color: #999 !important;
+    color: #ddd !important;
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-name::after {
+    content: " — past";
+    font-size: 0.8em;
+    color: inherit;
+    font-weight: normal;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+/* .event-location/.event-tickets a/.event-featured-guest all set their
+   own colour directly (per-type: yellow/green/wheat depending on
+   variant), so the ancestor .event.date-past colour override above
+   never reaches them — inheritance loses to a value specified directly
+   on the same element, regardless of !important on the ancestor. Force
+   these specific children to the same muted colour explicitly instead,
+   for every type variant, so a past card reads as one flat muted
+   colour rather than its original bright palette bleeding through. */
+.event.date-past:not(.event-cancelled):not(.event-rescheduled)
+  :is(.event-location, .event-tickets a, .event-tickets .separator, .event-featured-guest, .event-featured-guest a) {
+    color: #888 !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past
+  :is(.event-location, .event-tickets a, .event-tickets .separator, .event-featured-guest, .event-featured-guest a) {
+    color: #ddd !important;
+}
+
+/* Same issue for the website/email/link icons — they're coloured via
+   fill/color set directly on the svg (or, for event-link, on the
+   anchor too — see the ICONS section above), not inherited, so they
+   need the same explicit per-variant muting. Facebook's colours are
+   baked into the SVG itself (not currentColor-based) so it isn't
+   included here — the grayscale filter on the whole card is the only
+   thing that dims it, same as before. */
+.event.date-past:not(.event-cancelled):not(.event-rescheduled)
+  :is(.event-website, .event-email, .event-link) svg {
+    fill: #aaa !important;
+    color: #aaa !important;
+}
+
+.event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-link {
+    color: #aaa !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past
+  :is(.event-website, .event-email, .event-link) svg {
+    fill: #ccc !important;
+    color: #ccc !important;
+}
+
+.event:is(.special, .music, .folk, .poetry, .session).date-past .event-link {
+    color: #ccc !important;
+}
+
+
+/* =============================================================
+   6. EVENT CARD CONTENT
+   Name, date, location — base styles then per-variant overrides
+   ============================================================= */
+
+.event-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.event-date {
+    margin-top: 5px;
+}
+
+.event-location {
+    color: #777;
+    font-style: italic;
+    margin-top: 3px;
+    font-size: 14px;
+}
+
+/* Featured guest slot on recurring club events — "feat. Performer Name" */
+.event-featured-guest {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-top: 3px;
+}
+
+.event-featured-guest a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-style: italic;
+}
+
+.event-featured-guest a:hover {
+    text-decoration: underline;
+}
+
+.special .event-location {
+    color: var(--theme-green-border-alt);
+}
+
+.music .event-location {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.poetry .event-location {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.folk .event-location {
+    color: #f5deb3;
+}
+
+.session .event-location {
+    color: #2d5a2d;
+}
+
+.event.event-cancelled .event-location {
+    color: #178232;
+}
+
+/* Date status indicators */
+.event-date-cancelled {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.special .event-date-cancelled {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.special .event-location .event-date-cancelled,
+.music .event-location .event-date-cancelled,
+.poetry .event-location .event-date-cancelled {
+    color: #649f66;
+}
+
+.event-date-rescheduled-notice {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.event-date-usually {
+    color: var(--theme-green-dark);
+    font-style: italic;
+}
+
+/* Venue links */
+.venue-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.venue-link:hover {
+    text-decoration: underline;
+}
+
+
+/* =============================================================
+   7. ICONS  (website / email / facebook)
+   Base icon rules, then colour overrides grouped by variant:
+   default → music → folk → session → facebook-inline
+   ============================================================= */
+
+.event-facebook,
+.event-email,
+.event-website,
+.event-link {
+    display: inline-block;
+    margin-left: 10px;
+    text-decoration: none !important;
+    vertical-align: middle;
+    border: none;
+    border-bottom: none !important;
+}
+
+.event-facebook svg,
+.event-email svg,
+.event-website svg,
+.event-link svg {
+    width: 20px;
+    height: 20px;
+    transition: fill 0.3s, color 0.3s;
+}
+
+/* Default icon colours */
+/* Facebook colours are baked into the SVG itself */
+
+.event-email svg {
+    fill: #ffffff;
+}
+
+.event-email:hover svg {
+    fill: #77ee77;
+}
+
+.event-website svg {
+    fill: #555555;
+}
+
+.event-website:hover svg {
+    fill: #1eb868;
+}
+
+.event.special .event-website svg {
+    fill: #d9d5d5;
+}
+
+.event-link {
+    color: #ffffff;
+}
+
+.event-link:hover {
+    color: #77ee77;
+}
+
+/* event-link is a stroke-based outline icon (fill: none in the SVG
+   itself), unlike the fill-based icons above, so it's coloured via
+   `color` rather than `fill` — its <path> declares stroke="currentColor"
+   directly (not on the <svg> root the way the email icon does), so
+   `currentColor` resolves against the inherited `color` property, not
+   against a `stroke` value set on an ancestor. The anchor itself also
+   needs `color` set explicitly (above) — same reason
+   .event-storyclub-name-link/.event-performer-link (events-styles.css)
+   set `color: inherit` on their own anchors: without it, the browser's
+   default `a:-webkit-any-link { color: -webkit-link; }` wins on the
+   anchor and that's what currentColor would inherit down to the <path>.
+   Only special/music/poetry cards ever carry this icon (see
+   event_display.js's hasEventPage), and all three use a dark/coloured
+   card background, so plain white suits every variant — no per-type
+   override needed the way website/facebook get above. */
+.event-link svg {
+    color: #ffffff;
+}
+
+.event-link:hover svg {
+    color: #77ee77;
+}
+
+/* Music variant icon overrides */
+/* Invert facebook on blue background so it reads as white circle / blue f */
+.event.music .event-facebook svg {
+    filter: invert(1);
+}
+
+.event.music .event-email svg {
+    fill: #77ee77;
+}
+
+.event.music .event-email:hover svg {
+    fill: #ffffff;
+}
+
+.event.music .event-website svg {
+    fill: rgba(255, 255, 255, 0.85);
+}
+
+.event.music .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Poetry variant icon overrides */
+/* Invert facebook on magenta background so it reads as white circle / blue f */
+.event.poetry .event-facebook svg {
+    filter: invert(1);
+}
+
+.event.poetry .event-email svg {
+    fill: #ffb3da;
+}
+
+.event.poetry .event-email:hover svg {
+    fill: #ffffff;
+}
+
+.event.poetry .event-website svg {
+    fill: rgba(255, 255, 255, 0.85);
+}
+
+.event.poetry .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Folk variant icon overrides */
+.event.folk .event-email svg,
+.event.folk .event-website svg {
+    fill: #f5deb3;
+}
+
+.event.folk .event-email:hover svg,
+.event.folk .event-website:hover svg {
+    fill: #ffffff;
+}
+
+/* Session variant icon overrides */
+.event.session .event-email svg,
+.event.session .event-website svg {
+    fill: #228b22;
+}
+
+.event.session .event-email:hover svg,
+.event.session .event-website:hover svg {
+    fill: #1a5c1a;
+}
+
+
+
+/* =============================================================
+   8. TICKETS & LINKS
+   ============================================================= */
+
+.event-tickets {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-tickets a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 2px solid var(--theme-green);
+}
+
+.event.special .event-tickets a,
+.event.music .event-tickets a,
+.event.poetry .event-tickets a {
+    color: #ffeb3b;
+    border-bottom: 2px solid #fff59d;
+}
+
+.event-tickets a:hover {
+    border-bottom-color: #ffffff;
+}
+
+.event-tickets .separator {
+    color: #ffeb3b;
+    margin: 0 8px;
+}
+
+.event.event-cancelled .event-tickets a {
+    color: #e65100;
+    border-bottom-color: #e65100;
+}
+
+
+/* =============================================================
+   9. BADGES
+   ============================================================= */
+
+.event-badge {
+    background: rgba(76, 175, 80, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.event-badge-cancelled {
+    background-color: #c62828 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.event-badge-sold-out {
+    background-color: #e65100 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.event-badge-support-slot {
+    background-color: #5e4b8b !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+
+/* =============================================================
+   10. EXPANDABLE SECTIONS
+   ============================================================= */
+
+.event-expand-btn {
+    display: block;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: var(--theme-green);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: fit-content;
+}
+
+.event.special .event-expand-btn,
+.event.music .event-expand-btn,
+.event.poetry .event-expand-btn,
+.event.folk .event-expand-btn,
+.event.session .event-expand-btn {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.event.special .event-expand-btn:hover,
+.event.music .event-expand-btn:hover,
+.event.poetry .event-expand-btn:hover,
+.event.folk .event-expand-btn:hover,
+.event.session .event-expand-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.event.event-cancelled .event-expand-btn {
+    background: var(--theme-green-dark);
+    color: white;
+}
+
+.event.event-cancelled .event-expand-btn:hover {
+    background: #1b5e20;
+}
+
+.event-expandable {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-left: 4px solid var(--theme-green);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+.event-description {
+    margin-bottom: 15px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.event-description p {
+    margin: 0 0 10px 0;
+}
+
+.event-flyer-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* =============================================================
+   11. UTILITIES
+   ============================================================= */
+
+/* Spacing for the icons span appended to a venue line */
+.venue-icons {
+    margin-left: 8px;
+}
+
+/* Spacing for the VIEW TOUR link in the tickets row */
+.tour-link {
+    margin-right: 0;
+}
+
+.event.hidden {
+    display: none;
+}
+
+.no-events {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+
+/* =============================================================
+   12. RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    button {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+}
+
+/* =============================================================
+   13. FESTIVAL CARDS
+   White-background card with bold green left border.
+   primary_type="music" gets a blue variant via .festival-music.
+   The .festival class must NOT also carry .special so that
+   filterEvents() DOM-based detection stays unambiguous.
+   ============================================================= */
+
+.event.festival {
+    background: #daf3d8;
+    border-left: 6px solid var(--theme-green-dark);
+    border-top: 1px solid var(--theme-green-border-alt);
+    border-right: 1px solid var(--theme-green-border-alt);
+    border-bottom: 1px solid var(--theme-green-border-alt);
+    border-radius: 4px;
+}
+
+.event.festival:hover {
+    background: #f1f8f1;
+}
+
+/* Music-primary festival — blue border variant */
+.event.festival.festival-music {
+    background: #dbe4f1;
+    border-left-color: #1006c6;
+    border-top-color: #c5caf5;
+    border-right-color: #c5caf5;
+    border-bottom-color: #c5caf5;
+}
+
+.event.festival.festival-music:hover {
+    background: #f0f1fc;
+}
+
+/* Event name — dark green for storytelling, dark blue for music */
+.event.festival .event-name {
+    color: #1b5e20;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.event.festival.festival-music .event-name {
+    color: #0d0671;
+}
+
+/* Performer list */
+.event.festival .festival-performers {
+    font-style: italic;
+    color: #444;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Venue */
+.event.festival .event-location {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Date range */
+.event.festival .festival-date-range {
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.event.festival.festival-music .festival-date-range {
+    color: #1006c6;
+}
+
+.festival-day-count {
+    color: #555;
+    font-weight: normal;
+}
+
+/* Festival badge — sits inline after the event name */
+.event-badge.festival-badge {
+    background: #e8f5e9;
+    color: var(--theme-green-dark) !important;
+    border: 1px solid var(--theme-green-border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.event.festival.festival-music .event-badge.festival-badge {
+    background: #e8eaf6;
+    color: #1a237e !important;
+    border-color: #9fa8da;
+}
+
+/* Ticket / programme link row */
+.event.festival .event-tickets a {
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--theme-green);
+}
+
+.event.festival.festival-music .event-tickets a {
+    color: #1006c6;
+    border-bottom-color: #443cd7;
+}
+
+.event.festival .event-tickets a:hover {
+    border-bottom-color: #1b5e20;
+}
+
+/* Tickets */
+
+
+.ticket-link {
+    font-size: 12px;
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid var(--theme-green);
+    padding-bottom: 1px;
+}
+
+.ticket-link:hover {
+    color: #1b5e20;
+    border-bottom-color: #1b5e20;
+}
+
+/* Programme TBA / Full programme link — pill-style button */
+a.festival-programme-link {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 10px;
+    background: #e8f5e9;
+    color: var(--theme-green-dark) !important;
+    border: 1px solid var(--theme-green-border);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+a.festival-programme-link:hover {
+    background: var(--theme-green-border-alt);
+    color: #1b5e20 !important;
+}
+
+.event.festival.festival-music a.festival-programme-link {
+    background: #e8eaf6;
+    color: #1a237e !important;
+    border-color: #9fa8da;
+}
+
+.event.festival.festival-music a.festival-programme-link:hover {
+    background: #c5caf5;
+}
+
+/* =============================================================
+   14. VENUE & PERFORMER PAGE LINKS
+   Small profile/info link appended to venue and performer lines.
+   Uses a pill style so it reads clearly on any card colour.
+   ============================================================= */
+
+.venue-page-link {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #555;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+    padding: 1px 5px;
+    text-decoration: none;
+    vertical-align: middle;
+    line-height: 1.4;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+
+.venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.18);
+    color: #000;
+    text-decoration: none;
+}
+
+/* On coloured cards: white pill with dark text */
+.event.special .venue-page-link,
+.event.music .venue-page-link,
+.event.poetry .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.event.special .venue-page-link:hover,
+.event.music .venue-page-link:hover,
+.event.poetry .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.event.folk .venue-page-link {
+    color: #f5deb3;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.event.folk .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+}
+
+.event.session .venue-page-link {
+    color: #1a5c1a;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.event.session .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.tour-date-item .venue-page-link {
+    color: #555;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.tour-date-item .venue-page-link:hover {
+    background: rgba(0, 0, 0, 0.14);
+    color: #000;
+}
+
+.tour-date-item.music .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tour-date-item.music .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.tour-date-item.poetry .venue-page-link {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tour-date-item.poetry .venue-page-link:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.event-club-link:hover {
+    border-bottom-style: solid !important;
+}
+
+/* =============================================================
+   15. SIMPLE LIST
+   Used by simpleList() in shared_utils.js — a compact linked
+   grid used in venue and performer detail panels.
+   ============================================================= */
+
+.simple-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 4px 16px;
+    margin-top: 4px;
+}
+
+.simple-list-row {
+    font-size: 13px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0ebe3; /* warm off-white, unique to this component */
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.simple-list-row a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.simple-list-row a:hover {
+    text-decoration: underline;
+}
+
+.simple-list-meta {
+    color: #888;
+    white-space: nowrap;
+}
+
+/* Badges/tags placed after the link (e.g. type tags on the performers
+   listing) — flex-shrink:0 keeps them from being squeezed when the name
+   wraps to multiple lines, and align-self overrides the row's baseline
+   alignment so the pill stays vertically centred rather than sitting on
+   the text baseline. */
+.simple-list-row > :not(a) {
+    flex-shrink: 0;
+    align-self: center;
+}
+
+/* =============================================================
+   16. DIRECTORY CONTROLS
+   Collapsible map and search box used on the venues and clubs
+   directory pages. Built by createCollapsibleMap() and
+   createSearchBox() in shared_utils.js.
+   ============================================================= */
+ 
+/* Shared card shell: collapsible map wrapper and controls panel */
+.dir-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+ 
+/* <summary> row inside the collapsible map */
+.dir-map-summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    list-style: none;
+    user-select: none;
+}
+ 
+/* Map div — height is set inline per page via style.height */
+.dir-map-div {
+    width: 100%;
+}
+ 
+/* Controls card (search + filters) */
+.dir-controls {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+}
+ 
+/* Search wrapper (positions the clear button and dropdown) */
+.dir-search-wrap {
+    position: relative;
+    margin-bottom: 12px;
+}
+ 
+.dir-search-input {
+    width: 100%;
+    padding: 9px 36px 9px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+ 
+/* Clear (✕) button overlaid on the right of the input */
+.dir-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    box-shadow: none;
+}
+ 
+/* Autocomplete dropdown panel */
+.dir-search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 220px;
+    overflow-y: auto;
+}
+ 
+/* Individual suggestion row — replaces JS mouseover/mouseout handlers */
+.dir-search-dropdown-item {
+    padding: 9px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #d0d0d0;
+    font-size: 13px;
+}
+ 
+.dir-search-dropdown-item:hover {
+    background: #f5f5f5;
+}
+ 
+/* Secondary city/location hint inside a suggestion row */
+.dir-search-item-meta {
+    color: #888;
+    margin-left: 8px;
+    font-size: 12px;
+}
+ 
+/* Filter section label */
+.dir-filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888;
+    margin-bottom: 6px;
+}
+ 
+/* Button strip container */
+.dir-filter-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+ 
+/* Individual filter pill button */
+.dir-filter-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: white;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.dir-filter-btn:hover {
+    background: #f0f0f0;
+    border-color: #999;
+    color: #333;
+}
+ 
+/* Type-filter buttons carry a coloured left border set inline per type */
+.dir-filter-btn[style*="border-left"] {
+    padding-left: 8px;
+}
+.dir-filter-btn.active-green {
+    background: var(--theme-green-dark);
+    color: white;
+    border-color: var(--theme-green-dark);
+}
+ 
+/* Active state — teal (week filter / secondary filters) */
+.dir-filter-btn.active-teal {
+    background: #00796b;
+    color: white;
+    border-color: #00796b;
+}
+
+/* =============================================================
+   SHARED DETAIL PAGE COMPONENTS
+   Used by venue and performer detail pages.
+   ============================================================= */
+
+/* Loading / not-found states */
+.loading-state,
+.not-found-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #777;
+    font-style: italic;
+}
+
+.not-found-state a {
+    color: var(--theme-green-dark);
+}
+
+
+/* Event row list */
+.event-row {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #d0d0d0;
+    align-items: flex-start;
+}
+
+.event-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.event-row-past {
+    opacity: 0.65;
+}
+
+.event-row-date {
+    font-size: 12px;
+    color: #666;
+    min-width: 120px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    line-height: 1.5;
+}
+
+.event-row-detail {
+    flex: 1;
+}
+
+.event-row-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.event-row-time {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    margin-right: 8px;
+}
+
+
+/* Badges */
+.badge-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    align-items: center;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.badge-special {
+    background: #e8f5e9;
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-border);
+}
+
+.badge-music {
+    background: #e8eaf6;
+    color: #1a237e;
+    border: 1px solid #9fa8da;
+}
+
+.badge-poetry {
+    background: #fde8f2;
+    color: #8a0040;
+    border: 1px solid #f5a8ce;
+}
+
+/* Added for renderEventRow() (moved here from venues.js so storyclub.js
+   can use it too — see shared_utils.js) and the badges it can produce
+   that shared-styles.css didn't have rules for yet. */
+.badge-walk {
+    background: #eceff1;
+    color: #37474f;
+    border: 1px solid #b0bec5;
+}
+
+.badge-club {
+    background: #e8f5e9;
+    color: #1b5e20;
+    border: 1px solid #a5d6a7;
+}
+
+.badge-folk {
+    background: #fdf8f4;
+    color: #8b4513;
+    border: 1px solid #d7ccc8;
+}
+
+/* Also moved here from venue-styles.css (was venue-page-only) — needed by
+   renderEventRow()'s "specific"/"tour"/"club"/"folk"/"session" branches,
+   and by the venue-link line those rows can show, on any page that calls
+   it, not just venues.html. */
+.event-row-performer {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.event-row-performer a {
+    color: var(--theme-green-dark, #2e7d32);
+    text-decoration: none;
+}
+
+.event-row-performer a:hover {
+    text-decoration: underline;
+}
+
+.event-row-venue {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--theme-green-dark, #2e7d32);
+    text-decoration: none;
+    margin-bottom: 3px;
+}
+
+.event-row-venue:hover {
+    text-decoration: underline;
+}
+
+.badge-price {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+}
+
+/* Horizon <select> in a "Nearby ..." section heading — used by both
+   venues.js's own nearby-events feature and storyclub.js's nearby-story
+   feature, previously only defined in venue-styles.css. */
+.nearby-events-horizon {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 2px 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+}
+
+.badge-past {
+    background: #f5f5f5;
+    color: #888;
+    border: 1px solid #ddd;
+}
+
+
+/* Page header / back-link nav (venue and performer detail pages) */
+.page-header {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .event-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .event-row-date {
+        min-width: auto;
+    }
+}
+
+/* "Find/See … on New Troubadours" share badge — one mount point per page
+   (<div id="shareBadge" class="share-badge">), populated by
+   renderShareBadge() in shared_utils.js. Left empty (so hidden) when the
+   page has no entity id in its URL or the entity isn't found. */
+.share-badge {
+    margin: 1.5em 0 0.5em;
+}
+
+.share-badge:empty {
+    display: none;
+}
+
+.share-badge img {
+    display: block;
+}
+
+/* "Copy badge HTML" control next to the badge — see renderShareBadge(). */
+.badge-copy-link {
+    margin-left: 10px;
+    font-size: 12px;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.badge-copy-link:hover {
+    text-decoration: underline;
+}
+
+.badge-copy-message {
+    margin-left: 6px;
+    font-size: 12px;
+    color: #888;
+    vertical-align: middle;
+}
+
+/* =============================================================
+   PAGE HEALTH LED (colophon) — see PageHealth in shared_utils.js.
+   grey = loading (pulses; slower pulse + "stuck?" text once stalled),
+   green = rendered OK, amber = rendered with warnings, red = JS error
+   or failed render check. Also exposed as html[data-page-health].
+   ============================================================= */
+.page-health {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.page-health-led {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+    background: #9e9e9e;
+}
+
+.page-health-loading {
+    background: #9e9e9e;
+    animation: page-health-pulse 1.2s ease-in-out infinite;
+}
+
+.page-health-loading.page-health-stalled {
+    background: #616161;
+    animation-duration: 2.4s;
+}
+
+.page-health-ok {
+    background: #4CAF50;
+    box-shadow: 0 0 4px #4CAF50;
+}
+
+.page-health-warn {
+    background: #ff9800;
+    box-shadow: 0 0 4px #ff9800;
+}
+
+.page-health-error {
+    background: #e53935;
+    box-shadow: 0 0 4px #e53935;
+}
+
+.page-health-text {
+    font-style: italic;
+    margin-top: 8px;
+}
+
+.page-health-led-clickable {
+    cursor: pointer;
+}
+
+.page-health-led-clickable:hover,
+.page-health-led-clickable:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.page-health-message {
+    flex-basis: 100%;
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #555;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@keyframes page-health-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-health-loading { animation: none; }
+}

@@ -1,0 +1,595 @@
+/* =============================================================
+   venue-styles.css
+   Styles for venues.html
+   Depends on shared-styles.css being loaded first.
+   ============================================================= */
+
+/* --theme-green/--theme-green-dark removed (byte-for-byte duplicates of
+   shared-styles.css's :root); --theme-green-bg promoted there too, since
+   tour-styles.css independently defined the identical value. */
+
+
+/* =============================================================
+   1. VENUE HERO
+   ============================================================= */
+
+.venue-hero {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.venue-hero-top {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.venue-hero-text {
+    flex: 1;
+}
+
+.venue-hero-text h1 {
+    text-align: left;
+    margin: 0 0 8px 0;
+    font-size: 26px;
+    color: #333;
+    font-style: normal;
+}
+
+.venue-address {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.venue-links {
+    font-size: 14px;
+}
+
+.venue-links a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.venue-links a:hover {
+    text-decoration: underline;
+}
+
+.venue-description {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+}
+
+.venue-description p {
+    margin: 0 0 10px 0;
+}
+
+
+/* =============================================================
+   2. TWO-COLUMN LAYOUT
+   ============================================================= */
+
+.two-col-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .two-col-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.left-col,
+.right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* =============================================================
+   3. CONTENT SECTIONS
+   ============================================================= */
+
+.content-section {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-heading {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-style: normal;
+}
+
+/* .nearby-events-horizon moved to shared-styles.css — used by both this
+   page's own nearby-events feature and storyclub.js's nearby-story
+   feature now that renderEventRow() lives in shared_utils.js. */
+
+/* Act-type filter (story / music / poetry checkboxes) — see
+   renderActTypeFilter() in venues.js. Colour per type comes in via
+   --act-colour, set inline from PTYPE_DEFS. */
+
+.venue-act-filter {
+    padding: 12px 16px;
+}
+
+.venue-act-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+}
+
+.venue-act-filter-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #555;
+}
+
+.venue-act-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+
+.venue-act-check input {
+    accent-color: var(--act-colour, var(--theme-green));
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.venue-act-count {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: var(--act-colour, #555);
+    background: color-mix(in srgb, var(--act-colour, #999) 12%, white);
+    border: 1px solid color-mix(in srgb, var(--act-colour, #999) 35%, white);
+}
+
+/* Types this venue has nothing of stay tickable (they still govern the
+   nearby-events list) but read as quiet. */
+.venue-act-check-empty {
+    color: #999;
+}
+
+.venue-act-check-empty .venue-act-count {
+    color: #aaa;
+    background: #f5f5f5;
+    border-color: #e5e5e5;
+}
+
+/* Shown only when the saved selection hides everything at this venue */
+.venue-act-filter-status {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #777;
+}
+
+.venue-act-filter-status[hidden] {
+    display: none;
+}
+
+.venue-act-filter-reset {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+
+/* =============================================================
+   4. MAP
+   Overrides shared-styles.css #map-container for the venue page.
+   ============================================================= */
+
+#map-container {
+    height: 260px;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+    margin-bottom: 12px;
+}
+
+#map {
+    height: 100%;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+
+/* =============================================================
+   5. VENUE INFO TABLE
+   ============================================================= */
+
+.venue-info-table {
+    margin-top: 8px;
+}
+
+.info-table-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.info-table-row:last-child {
+    border-bottom: none;
+}
+
+.info-table-label {
+    color: #888;
+}
+
+.info-table-value {
+    color: #333;
+    font-weight: bold;
+    text-align: right;
+}
+
+
+/* =============================================================
+   6. REGULAR CLUB CARDS
+   ============================================================= */
+
+.regular-club-card {
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid var(--theme-green);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+.regular-club-card:last-child {
+    margin-bottom: 0;
+}
+
+.regular-club-card.club-folk {
+    border-left-color: #8b4513;
+    background: #fdf8f4;
+}
+
+.regular-club-card.club-session {
+    border-left-color: #228b22;
+    background: #f4faf4;
+}
+
+.regular-club-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.regular-club-schedule {
+    font-weight: bold;
+    color: var(--theme-green-dark);
+}
+
+.club-folk .regular-club-schedule {
+    color: #8b4513;
+}
+
+.club-session .regular-club-schedule {
+    color: #228b22;
+}
+
+.regular-club-meta {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.regular-club-parity-note {
+    font-style: italic;
+    color: #888;
+}
+
+.regular-club-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.regular-club-links {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.regular-club-links a {
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.regular-club-links a:hover {
+    text-decoration: underline;
+}
+
+.regular-club-exceptions {
+    font-size: 12px;
+    color: #c62828;
+    font-style: italic;
+    margin-top: 6px;
+}
+
+
+/* =============================================================
+   7. EVENT ROWS
+   ============================================================= */
+
+/* .event-row-performer, .event-row-venue, .badge-price, and
+   .nearby-events-horizon moved to shared-styles.css — renderEventRow()
+   (which uses them) moved to shared_utils.js so storyclub.js's
+   nearby-story feature could use it too, not just this page. */
+
+/* Venue-specific badge variants (genuinely venue-only, not used by
+   renderEventRow — left here) */
+
+.badge-stories-welcome {
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid #a5d6a7;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-top: 6px;
+    display: inline-block;
+}
+
+.badge-by-invite {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-top: 6px;
+    display: inline-block;
+    margin-left: 4px;
+}
+
+/* =============================================================
+   8. NEARBY VENUES
+   ============================================================= */
+
+.nearby-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.nearby-row:last-child {
+    border-bottom: none;
+}
+
+.nearby-name {
+    font-size: 14px;
+    color: var(--theme-green-dark);
+    font-weight: bold;
+    text-decoration: none;
+    flex: 1;
+}
+
+.nearby-name:hover {
+    text-decoration: underline;
+}
+
+.nearby-city {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.nearby-dist {
+    font-size: 12px;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+
+/* =============================================================
+   9. FLYER GALLERY
+   ============================================================= */
+
+.venue-flyer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.venue-flyer-thumb {
+    display: block;
+    line-height: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease;
+}
+
+.venue-flyer-thumb:hover {
+    transform: translateY(-2px);
+}
+
+.venue-flyer-thumb img {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Past flyers: greyed out, brightened back to full colour on hover so
+   they're still easy to inspect */
+.venue-flyer-thumb-past img {
+    filter: grayscale(100%);
+    opacity: 0.55;
+    transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.venue-flyer-thumb-past:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+
+/* =============================================================
+   10. ALL-VENUES DIRECTORY LISTING
+   ============================================================= */
+
+.venue-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+}
+
+.venue-list-count {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 8px 4px;
+}
+
+.venue-list-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 30px;
+    font-style: italic;
+    grid-column: 1 / -1;
+}
+
+.venue-list-card {
+    background: white;
+    border-radius: 6px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    border-left: 4px solid #999;
+    transition: box-shadow 0.15s ease;
+}
+
+.venue-list-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.venue-list-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.venue-list-loc {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+}
+
+.venue-type-badge {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.venue-ptype-badge {
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: 4px;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.venue-list-website-link {
+    font-size: 11px;
+    color: var(--theme-green-dark);
+    text-decoration: none;
+    margin-top: 4px;
+    margin-left: 6px;
+    display: inline-block;
+}
+
+/* Flags a venue whose latlon is missing or malformed, so bad geodata
+   (e.g. an empty [] instead of proper coordinates) is visible at a
+   glance in the directory listing rather than silently dropped off
+   the map. */
+.venue-list-card-no-latlon {
+    outline: 2px solid #e53935;
+    outline-offset: -1px;
+}
+
+.venue-no-latlon-badge {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* Missing-coordinates warning shown at the bottom of a single venue's
+   page (see hasLatlon() in venues.js). */
+.venue-no-latlon-warning {
+    margin: 20px 0 0;
+    padding: 14px 18px;
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+
+/* =============================================================
+   11. RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 600px) {
+    .venue-hero-top {
+        flex-direction: column;
+    }
+}
