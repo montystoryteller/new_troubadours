@@ -455,11 +455,12 @@ unhealthy_pages_json() {
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   note "Reading the health log (to render pages whose last render was not healthy first)..."
   hj=$(kv_list_json "health:") || { echo "Could not read the health log; not prioritising unhealthy pages." >&2; echo '{}'; return 0; }
-  out=$(printf '%s\n' "$hj" | jq -c --argjson d "$days" --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
+  out=$(printf '%s\n' "$hj" | jq -c --argjson d "$days" --argjson redir "${NT_REPAIR_REDIRECTS:-0}" --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
     def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
     def ms: ((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) * 1000;
     ((now - ($d * 86400)) * 1000) as $cut
     | [ .[] | select((.metadata.status // "") != "ok")
+            | select($redir == 1 or ((.metadata.reason // "") | test("nt-redirect:") | not))   # outdated-event-link redirects: a re-render cannot fix them
             | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm), at: ms }
             | select(.at >= $cut and .p != "")
             | select($ign == "" or (.p | test($ign) | not)) ]
@@ -949,13 +950,14 @@ logged_without_snapshot() {
   NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
   hj=$(kv_list_json "health:" 2>/dev/null) || return 0
   printf '%s\n' "$hj" | jq -r --argjson snap "$snapjson" --arg base "render:https://$HOST" --arg host "https://$HOST" \
-      --argjson d "${NT_HEALTH_DAYS:-7}" --argjson cap "${NT_MAX_RETRIES:-3}" --argjson skipcap "$skipcap" \
+      --argjson d "${NT_HEALTH_DAYS:-7}" --argjson cap "${NT_MAX_RETRIES:-3}" --argjson skipcap "$skipcap" --argjson redir "${NT_REPAIR_REDIRECTS:-0}" \
       --arg ign "${NT_HEALTH_IGNORE-$HEALTH_IGNORE_DEFAULT}" '
     def norm: sub("^https?://[^/]+/?"; "") | sub("^/"; "") | gsub("\\+"; "%20");
     def ms: ((.metadata.at // "") | sub("\\.[0-9]+"; "") | (try fromdateiso8601 catch 0)) * 1000;
     ($snap | map(select(.name | startswith($base)) | (.name | ltrimstr($base + "/") | gsub("\\+"; "%20")) | {(.): true}) | add // {}) as $have
     | ((now - ($d * 86400)) * 1000) as $cut
-    | [ .[] | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm),
+    | [ .[] | select($redir == 1 or ((.metadata.reason // "") | test("nt-redirect:") | not))   # outdated-event-link redirects: a re-render cannot fix them
+            | { p: ((.metadata.page // (.name | sub("^health:[0-9-]+:"; ""))) | tostring | norm),
                 at: ms, day: ((.metadata.at // "")[0:10]), st: (.metadata.status // "") }
             | select(.st != "ok" and .at >= $cut and .p != "") ]
     | group_by(.p)
