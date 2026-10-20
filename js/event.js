@@ -1,0 +1,2190 @@
+// ---------------------------------------------------------------------------
+// event.js — event.html
+//
+// With a resolvable ?event=: loads data, resolves the event, and renders
+// the hero + tickets/video + performer info in the left column, flyer
+// thumbnail(s) at the top of the right-hand sidebar, and reuses venues.js's
+// map/nearby-venues/nearby-events pattern for the rest of the right column
+// (map itself sits in the left column next to performer info — see
+// event-styles.css's .left-col-split). Also wires up the top search box.
+//
+// With no ?event= (or one that doesn't resolve): shows a filterable
+// list of today's one-off dated events instead (see showTodayEvents()).
+//
+// Tickets / flyer(s) / video trailer mirror storyclub.js's per-event
+// treatment (ticket_url + fb_event, getEventLevelFlyers(), video_trailer),
+// scoped to this one event record rather than a whole club's calendar —
+// club-dated flyers (clubRecord.club_flyers[]) and tour/show-level flyers
+// (getTourLevelFlyers()) don't apply to a bare specificEvent, so they're
+// not pulled in here.
+//
+// NOT yet wired up in this pass:
+//   - the search box indexes specificEvents, musicEvents, poetryEvents,
+//     tour dates, and repertoire show dates (with Story/Music/Poetry
+//     checkboxes and an Upcoming/Previous/All filter) — festivals aren't
+//     indexed yet
+//   - today's-events / more-by-performer panels don't include recurring
+//     club/folk/session nights, since matching those against a specific
+//     date needs the recurrence engine wired in here too
+// Natural next steps once this much is confirmed working.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Data + state
+// ---------------------------------------------------------------------------
+
+let eventsData = null;
+let venuesLookup = {};
+let performersLookup = {};
+let toursLookup = {};
+let eventRecord = null; // resolved specificEvent for this page, with a _date added
+let map = null;
+let leafletPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+// Lazy leaflet loader — the map here is secondary sidebar content, same
+// as on venues.html, so there's no static leaflet <link>/<script> tag in
+// event.html; loaded on demand instead. Duplicated from venues.js rather
+// than shared, matching that file's own precedent (it isn't in
+// shared_utils.js either).
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+// ---------------------------------------------------------------------------
+// Event identity
+// ---------------------------------------------------------------------------
+
+// buildEventId()/buildStructuredEventId()/resolveEventId() all live in
+// shared_utils.js (venues.js, storyclub.js, and performers.js link to
+// this page's permalinks from their own listings too, via that file's
+// linkEventRowTitle(), which now builds those links with resolveEventId()
+// as well — kept out of this file to avoid a second, easy-to-drift copy
+// of the id formula(s)).
+//
+// This page builds its own permalinks (buildSearchIndex() below) using
+// resolveEventId() — an explicit `eventId` on the record if it has one,
+// else the newer `yyyymmdd-performerId-venueId` scheme. findEventById()
+// checks an incoming id against resolveEventId() AND the older
+// buildEventId() formula, so a permalink built elsewhere on the site with
+// the older scheme still resolves here.
+
+// One-off dated flat events — specificEvents, musicEvents, and poetryEvents
+// all share this exact shape (flat array, single/array .date, .venue_id) —
+// expanded and filtered down to ones the search box / findEventById() can
+// actually resolve.
+//
+// expandTourDates() (shared_utils.js) is reused here even though it's named
+// for tour_dates — it's a generic "date may be a string or string[]"
+// flattener (same normalisation forEachDateInRange() does inline), and
+// specificEvents/musicEvents/poetryEvents can carry the same
+// `"date": ["21/01/2026", "22/01/2026"]` shorthand as tour_dates. Without
+// this, a multi-date entry's raw array `.date` fails parseDateString()
+// (which warns and returns null for arrays), so the whole entry was
+// silently dropped by the `e._date` filter below.
+function resolvableFlatEvents(list) {
+  return expandTourDates(list || [])
+    .map((e) => ({ ...e, _date: parseDateString(e.date) }))
+    .filter((e) => e._date && e.name);
+}
+
+// Resolves an event id against any one-off dated event that uses the plain
+// name+date id scheme (specific/music/poetry events) — this is also used to
+// build permalinks out from the "More by this performer" and "Events today"
+// panels. Tour dates and touring-show dates use a different identity
+// (tourId/tsId + date) and don't have a standalone event.html permalink —
+// see buildSearchIndex() below, which links those to tour_guide.html instead.
+function findEventById(eventId) {
+  const target = eventId;   // params.get() already decoded it — don't decode again (i.e. avoid decodeURIComponent(eventId) here)
+  const pools = [
+    eventsData.specificEvents,
+    eventsData.musicEvents,
+    eventsData.poetryEvents,
+  ];
+  for (const list of pools) {
+    // Checks the current scheme first (explicit eventId, or the new
+    // yyyymmdd-performerId-venueId generator), then falls back to the
+    // older buildEventId() formula — so an incoming id built either way
+    // (an old permalink out in the wild, or one from a page that still
+    // calls buildEventId()/linkEventRowTitle() directly) still resolves.
+    const found = resolvableFlatEvents(list).find(
+      (e) =>
+        resolveEventId(e, e._date) === target ||
+        buildEventId(e.name, e._date) === target,
+    );
+    if (found) return found;
+  }
+  return null;
+}
+
+// Resolves a T-/R- id (see shared_utils.js's TOUR_EVENT_ID_PREFIX/
+// SHOW_EVENT_ID_PREFIX) against a single date within toursLookup or
+// eventsData.repertoire_shows, and normalizes the match into the flat
+// specificEvent-shaped record renderPage() and friends already expect —
+// see buildEventRecordFromTourDate()/buildEventRecordFromShowDate() below.
+// Kept separate from findEventById() (rather than folded into it) since
+// that function's own docstring is explicit that tour/show dates are a
+// different identity scheme with no standalone permalink — this is the
+// new code path that gives them one, without disturbing the old function
+// or its two supported id schemes.
+//
+// Brute-force regenerate-and-compare, same philosophy as findEventById():
+// nothing here parses tourId/date/venueId back out of the incoming id
+// string (tourId and venueId can both contain hyphens, which would make
+// that fragile) — the prefix is only used to pick which pool to loop over.
+function findTourOrShowDateEventById(eventId) {
+  if (eventId.startsWith(TOUR_EVENT_ID_PREFIX)) {
+    for (const [tourId, tour] of Object.entries(toursLookup || {})) {
+      for (const tourDate of tour.tour_dates || []) {
+        if (resolveTourDateEventId(tourId, tourDate) === eventId) {
+          return buildEventRecordFromTourDate(tourId, tour, tourDate);
+        }
+      }
+    }
+    return null;
+  }
+
+  if (eventId.startsWith(SHOW_EVENT_ID_PREFIX)) {
+    for (const [tsId, ts] of Object.entries(
+      eventsData.repertoire_shows || {},
+    )) {
+      for (const showDate of ts.show_dates || []) {
+        if (resolveShowDateEventId(tsId, showDate) === eventId) {
+          return buildEventRecordFromShowDate(tsId, ts, showDate);
+        }
+      }
+    }
+    return null;
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Legacy `${name}-${date.getTime()}` ids (old buildEventId() scheme)
+// ---------------------------------------------------------------------------
+// e.g. "Gaz Brookfield Autumn 2026 Tour-1795075200000". findEventById()
+// only matches these for flat events, and only if the timestamp matches to
+// the millisecond — but the timestamp is *local midnight in whichever
+// timezone built the link* (1795075200000 is 08:00 UTC, i.e. midnight in
+// UTC-8, for the 19/11/2026 date), so links built in a different timezone
+// than this browser's never match exactly. This resolver instead parses the
+// id into (name, timestamp), finds records whose name matches, and picks
+// the date whose UTC midnight is consistent with that timestamp under any
+// real-world UTC offset (UTC-12 … UTC+14). Covers flat events, tour dates
+// (matched on tour_name/name) and repertoire-show dates (showname/name).
+const LEGACY_EVENT_ID_RE = /^(.+)-(\d{10,14})$/;
+const HOUR_MS = 60 * 60 * 1000;
+
+// ts is local midnight in some timezone, so ts = dateUTCmidnight - offset,
+// offset ∈ [-12h, +14h]  →  ts - dateUTCmidnight ∈ [-14h, +12h].
+// Returns the distance (for picking the best of two adjacent-day matches
+// when the timestamp falls in the 2h overlap), or null for no match.
+function legacyTimestampScore(ts, date) {
+  if (!date) return null;
+  const dateUtc = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  const diff = ts - dateUtc;
+  return diff >= -14 * HOUR_MS && diff <= 12 * HOUR_MS ? Math.abs(diff) : null;
+}
+
+function findEventByLegacyId(eventId) {
+  const m = LEGACY_EVENT_ID_RE.exec(eventId);
+  if (!m) return null;
+  const norm = (s) => String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
+  const wantedName = norm(m[1]);
+  const ts = Number(m[2]);
+
+  let best = null;
+  let bestScore = Infinity;
+  const consider = (score, build) => {
+    if (score !== null && score < bestScore) {
+      bestScore = score;
+      best = build;
+    }
+  };
+  // A date field may be a string or a string[] (multi-night shorthand).
+  const datesOf = (d) =>
+    (Array.isArray(d.date) ? d.date : [d.date]).map(parseDateString);
+
+  for (const list of [
+    eventsData.specificEvents,
+    eventsData.musicEvents,
+    eventsData.poetryEvents,
+  ]) {
+    for (const e of resolvableFlatEvents(list)) {
+      if (norm(e.name) !== wantedName) continue;
+      consider(legacyTimestampScore(ts, e._date), () => e);
+    }
+  }
+
+  for (const [tourId, tour] of Object.entries(toursLookup || {})) {
+    const names = [tour.tour_name, tour.name].map(norm);
+    if (!names.includes(wantedName)) continue;
+    for (const tourDate of tour.tour_dates || []) {
+      for (const d of datesOf(tourDate)) {
+        consider(legacyTimestampScore(ts, d), () =>
+          buildEventRecordFromTourDate(tourId, tour, tourDate),
+        );
+      }
+    }
+  }
+
+  for (const [tsId, show] of Object.entries(eventsData.repertoire_shows || {})) {
+    const names = [show.showname, show.name].map(norm);
+    if (!names.includes(wantedName)) continue;
+    for (const showDate of show.show_dates || []) {
+      for (const d of datesOf(showDate)) {
+        consider(legacyTimestampScore(ts, d), () =>
+          buildEventRecordFromShowDate(tsId, show, showDate),
+        );
+      }
+    }
+  }
+
+  return best ? best() : null;
+}
+
+// ---------------------------------------------------------------------------
+// Unknown-id recovery: "did you mean" matching
+// ---------------------------------------------------------------------------
+// When ?event= resolves nothing (findEventById / findTourOrShowDateEventById /
+// findEventByLegacyId all missed) — typically a stale link after a tour was
+// renamed, or a truncated/mistyped id — findEventIdMatches() tries to work out
+// what was meant, from the shape every id shares: `...-yyyymmdd-venueId`.
+//
+//   auto         the ONE candidate on the same date at the same venue (a date +
+//                venue pair is effectively unique, so this is safe to redirect
+//                to). Null if there isn't exactly one clear winner.
+//   suggestions  up to SUGGESTION_MAX likely candidates for a "Did you mean"
+//                list (auto, if any, is first).
+//
+// Only runs on the not-found path, so walking every event once is fine.
+const SUGGESTION_MAX = 5;
+const SUGGESTION_MIN_SCORE = 0.6;
+const AUTO_MATCH_MARGIN = 0.25; // winner must beat the runner-up by this much
+const ID_STOP_TOKENS = new Set(["the", "of", "and", "at", "in"]);
+
+function idTokens(s) {
+  return String(s || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(
+      (t) => t.length > 1 && !ID_STOP_TOKENS.has(t) && !/^\d{8}$/.test(t),
+    );
+}
+
+const ymdOf = (d) =>
+  `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+
+// One entry per dated occurrence, shaped like the three resolvers above see
+// them: flat events use resolveEventId(); tour/show dates use their T-/R- ids
+// (first date only for a multi-date shorthand, same as the id builders).
+function collectIdCandidates() {
+  const out = [];
+  const add = (id, date, venueId, title, extraText, build) => {
+    if (!id || !date) return;
+    out.push({
+      id,
+      date,
+      ymd: ymdOf(date),
+      venueId: venueId || "",
+      title,
+      tokens: new Set([...idTokens(id), ...idTokens(`${title} ${extraText}`)]),
+      build,
+    });
+  };
+
+  FLAT_SEARCH_SOURCES.forEach(({ key }) => {
+    resolvableFlatEvents(eventsData[key]).forEach((e) =>
+      add(
+        resolveEventId(e, e._date),
+        e._date,
+        e.venue_id,
+        e.showname || e.name,
+        performerNamesOf(e).join(" "),
+        () => e,
+      ),
+    );
+  });
+
+  Object.entries(toursLookup || {}).forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      const first = Array.isArray(td.date) ? td.date[0] : td.date;
+      add(
+        resolveTourDateEventId(tourId, td),
+        parseDateString(first),
+        td.venue_id,
+        tour.tour_name || tour.name,
+        `${tour.name || ""} ${performerNamesOf(tour).join(" ")}`,
+        () => buildEventRecordFromTourDate(tourId, tour, td),
+      );
+    });
+  });
+
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      const first = Array.isArray(sd.date) ? sd.date[0] : sd.date;
+      add(
+        resolveShowDateEventId(tsId, sd),
+        parseDateString(first),
+        sd.venue_id,
+        ts.showname || ts.name,
+        `${ts.name || ""} ${performerNamesOf(ts).join(" ")}`,
+        () => buildEventRecordFromShowDate(tsId, ts, sd),
+      );
+    });
+  });
+
+  return out;
+}
+
+function findEventIdMatches(badId) {
+  const wanted = String(badId || "").toLowerCase();
+  const dm =
+    /(?:^|-)((?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01]))(?:-|$)/.exec(
+      wanted,
+    );
+  const ymd = dm ? dm[1] : null;
+  const afterDate = dm ? wanted.slice(dm.index + dm[0].length) : "";
+  const wantedTokens = new Set(idTokens(wanted));
+  const today = getTodayMidnight();
+
+  const scored = collectIdCandidates()
+    .map((c) => {
+      const sameDate = !!ymd && c.ymd === ymd;
+      const sameVenue =
+        !!afterDate &&
+        !!c.venueId &&
+        (afterDate === c.venueId || afterDate.endsWith(`-${c.venueId}`));
+      let overlap = 0;
+      wantedTokens.forEach((t) => {
+        if (c.tokens.has(t)) overlap++;
+      });
+      const tokenScore = wantedTokens.size ? overlap / wantedTokens.size : 0;
+      // Name tokens = what's left of the bad id once the venue's own words are
+      // removed (tour/show/performer words). If there are some and NONE appear
+      // on this candidate, it's a different act at the same place and time.
+      const venueWords = new Set(idTokens(c.venueId));
+      const nameWords = [...wantedTokens].filter((t) => !venueWords.has(t));
+      const nameClash =
+        nameWords.length > 0 && !nameWords.some((t) => c.tokens.has(t));
+      const score =
+        tokenScore +
+        (sameDate ? 0.5 : 0) +
+        (sameVenue ? 0.5 : 0) +
+        (c.date >= today ? 0.02 : 0); // nudge upcoming over past on ties
+      return { ...c, sameDate, sameVenue, nameClash, score };
+    })
+    .filter((c) => c.score >= SUGGESTION_MIN_SCORE)
+    .sort((a, b) => b.score - a.score || a.date - b.date);
+
+  // Auto-redirect only on an exact date + venue hit that clearly stands out.
+  // (Venue ids can be suffixes of each other — "nottingham" vs
+  // "bodega-nottingham" — so among date+venue hits the longest venue id wins.)
+  const dateVenueHits = scored.filter(
+    (c) => c.sameDate && c.sameVenue && !c.nameClash,
+  );
+  const longestVenue = Math.max(0, ...dateVenueHits.map((c) => c.venueId.length));
+  const strong = dateVenueHits.filter((c) => c.venueId.length === longestVenue);
+  let auto = null;
+  if (strong.length === 1) auto = strong[0];
+  else if (
+    strong.length > 1 &&
+    strong[0].score - strong[1].score >= AUTO_MATCH_MARGIN
+  )
+    auto = strong[0];
+
+  const suggestions = scored.slice(0, SUGGESTION_MAX);
+  return { auto, suggestions };
+}
+
+// Address-bar URL for a resolved event: ?event=<id>, dropping the legacy
+// ?event_id= alias but keeping other params (q/time/types shareable-search state).
+function canonicalEventUrl(canonicalId) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("event_id");
+  url.searchParams.set("event", canonicalId);
+  return url;
+}
+
+// Normalizes a (tour, tourDate) match into the shape renderPage() and its
+// helpers (renderTicketsFlyersVideo, renderPerformerSection,
+// renderEventFlyers, resolveEventId, getEventLevelFlyers, ...) already read
+// off a flat specificEvent record. tourDate's own fields (venue_id, time,
+// price, ticket_url, fb_event, event_flyer(s), isSoldOut, isCancelled, ...)
+// pass straight through via the spread; only fields that live on the
+// *tour* rather than the date are pulled across explicitly, and only when
+// the date doesn't already have its own (a date-level `description`, say,
+// wins over the tour's).
+//
+// `_sourceTourId`/`_sourceTourName` aren't read by any existing render
+// function — they're new, consumed by the "part of tour X" link
+// renderPage() adds when they're present (see below).
+function buildEventRecordFromTourDate(tourId, tour, tourDate) {
+  const dateStr = Array.isArray(tourDate.date)
+    ? tourDate.date[0]
+    : tourDate.date;
+  const displayName = tour.tour_name || tour.name;
+  return {
+    ...tourDate,
+    name: displayName,
+    showname: displayName,
+    performer_id: tour.performer_id,
+    performer_ids: tour.performer_ids,
+    performer: tour.performer,
+    description: tourDate.description || tour.tour_description || null,
+    video_trailer: tourDate.video_trailer || tour.video_trailer || null,
+    eventId: resolveTourDateEventId(tourId, tourDate),
+    date: dateStr,
+    _date: parseDateString(dateStr),
+    _sourceTourId: tourId,
+    _sourceTourName: displayName,
+  };
+}
+
+// Same normalization as buildEventRecordFromTourDate(), for a repertoire/
+// touring-show date. `_sourceTourId` is built with the same
+// "R-"-prefixed form tour_guide.html's own ?tour= param expects (see
+// TOUR_GUIDE_REPERTOIRE_ID_PREFIX above), so the "part of X" link this
+// produces points at the right entry in tour_guide.html's combined
+// tour+repertoire selector.
+function buildEventRecordFromShowDate(tsId, ts, showDate) {
+  const dateStr = Array.isArray(showDate.date)
+    ? showDate.date[0]
+    : showDate.date;
+  const displayName = ts.showname || ts.name;
+  return {
+    ...showDate,
+    name: displayName,
+    showname: displayName,
+    performer_id: ts.performer_id,
+    performer_ids: ts.performer_ids,
+    performer: ts.performer,
+    description: showDate.description || ts.show_description || null,
+    video_trailer: showDate.video_trailer || ts.video_trailer || null,
+    eventId: resolveShowDateEventId(tsId, showDate),
+    date: dateStr,
+    _date: parseDateString(dateStr),
+    _sourceTourId: TOUR_GUIDE_REPERTOIRE_ID_PREFIX + tsId,
+    _sourceTourName: displayName,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Search box
+// ---------------------------------------------------------------------------
+
+// Upcoming (default) / previous / all — narrows which events the search box
+// below can match, independent of the typed search term. "Upcoming" means
+// today or later, matching the >= comparisons used elsewhere on this page
+// (e.g. collectUpcomingEventsForPerformer's today cutoff).
+let eventSearchTimeFilter = "upcoming";
+let eventSearchInputEl = null; // set once createSearchBox() returns, so
+// changing the time filter can re-run whatever search term is already typed
+
+// ---------------------------------------------------------------------------
+// Shareable search links: ?q=&time=&types=
+// ---------------------------------------------------------------------------
+// A search is shareable by copying the address bar: the typed term, time
+// filter, and story/music/poetry checkboxes are kept in the URL via
+// history.replaceState() (see syncSearchStateToUrl()) as the visitor types
+// or changes a filter, and read back out again on load (see
+// applyUrlSearchParams(), called once from the boot IIFE below). Only
+// applied when the URL actually has a `q` — this is deliberately a
+// for-this-pageview-only override, not written to
+// SEARCH_TYPE_FILTER_STORAGE_KEY, so opening a shared link never silently
+// overwrites the visitor's own saved checkbox preference.
+let urlTypeFilterOverride = null; // {story,music,poetry} booleans, or null
+
+function applyUrlSearchParams(params) {
+  const time = params.get("time");
+  if (time === "upcoming" || time === "previous" || time === "all") {
+    eventSearchTimeFilter = time;
+  }
+
+  // Present-but-empty ("types=") deliberately means "nothing ticked", not
+  // "no override" — only a fully absent param falls through to localStorage
+  // /defaults, so distinguish null (absent) from "" (empty) here.
+  const types = params.get("types");
+  if (types !== null) {
+    const set = new Set(types.split(",").filter(Boolean));
+    urlTypeFilterOverride = {
+      story: set.has("story"),
+      music: set.has("music"),
+      poetry: set.has("poetry"),
+    };
+  }
+
+  return params.get("q") || "";
+}
+
+// Mirrors the current search term + filters into the URL via
+// history.replaceState (not pushState — a search shouldn't fill up the
+// back-button history one keystroke at a time). Called from onChange, so it
+// tracks every keystroke, the clear button, and every filter change (both
+// re-dispatch an "input" event — see initSearchFilters()/
+// initSearchTypeFilters() below). An empty term clears all three params
+// rather than leaving stale filters behind with no search to apply them to.
+function syncSearchStateToUrl(term) {
+  const url = new URL(window.location.href);
+  const trimmed = term.trim();
+  if (trimmed) {
+    url.searchParams.set("q", trimmed);
+    url.searchParams.set("time", eventSearchTimeFilter);
+    url.searchParams.set(
+      "types",
+      [...activeSearchTypeCategories()].join(","),
+    );
+  } else {
+    url.searchParams.delete("q");
+    url.searchParams.delete("time");
+    url.searchParams.delete("types");
+  }
+  history.replaceState(null, "", url);
+}
+
+function matchesEventSearchTimeFilter(eventDate, today) {
+  if (eventSearchTimeFilter === "all") return true;
+  if (eventSearchTimeFilter === "previous") return eventDate < today;
+  return eventDate >= today; // "upcoming"
+}
+
+// performer_id/performer_ids normalisation, shared by every search-index
+// builder below — mirrors collectPerformerAppearances()/
+// collectPerformerVideoAppearances() in shared_utils.js. A co-headlined
+// entry carries performer_ids (plural) instead of a single performer_id.
+function performerNamesOf(entity) {
+  const ids = Array.isArray(entity.performer_ids)
+    ? entity.performer_ids
+    : entity.performer_id
+      ? [entity.performer_id]
+      : [];
+  return ids.map((id) => performersLookup[id]?.name).filter(Boolean);
+}
+
+// A repertoire show is browsed on tour_guide.html by merging it into that
+// page's own toursLookup under a synthetic "R-<id>" key — see
+// tour_display.js's buildCombinedToursLookup()/REPERTOIRE_ID_PREFIX. There's
+// no separate repertoire-show page, so a search result for one of its dates
+// links here with the same prefixed id, exactly as tour_guide.html expects.
+// (Previously "rep:" — that form is DEPRECATED. tour_display.js still accepts it
+// on incoming ?tour= links and rewrites it to "R-", but nothing here generates it.)
+const TOUR_GUIDE_REPERTOIRE_ID_PREFIX = "R-";
+
+// Builds one search-index entry with a common shape, regardless of which
+// record type it came from — buildSearchIndex()'s sections below each just
+// gather their own fields and hand them here. `category` is "story" /
+// "music" / "poetry", the same story-first/opt-in split
+// collectEventsOnDate() already uses for the "Events today" panel — reused
+// here to drive the search box's own Story/Music/Poetry checkboxes.
+function searchIndexEntry({
+  displayName,
+  altName,
+  performerNames,
+  hostVenue,
+  date,
+  href,
+  kindLabel,
+  category,
+  isCancelled,
+  isSoldOut,
+}) {
+  const performerName = performerNames.join(", ") || null;
+  const searchText = [
+    displayName,
+    // altName is indexed alongside displayName, not instead of it — some
+    // records only credit performers in a free-text name (e.g. "... [Holly
+    // Medland & Merl Fluin]") rather than performer_id(s), so dropping it
+    // whenever a showname exists could hide that credit from search
+    // entirely.
+    altName,
+    performerName,
+    hostVenue?.name,
+    hostVenue?.city,
+    hostVenue?.full_address,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return {
+    displayName,
+    performerName,
+    hostVenue,
+    date,
+    href,
+    kindLabel,
+    category,
+    isCancelled: !!isCancelled,
+    isSoldOut: !!isSoldOut,
+    searchText,
+  };
+}
+
+// Indexes one-off specificEvents/musicEvents/poetryEvents, tour dates, and
+// repertoire show dates — each dated occurrence becomes its own entry, with
+// its own venue, its own navigation target (an event.html permalink for a
+// flat event; the shared tour_guide.html?tour= page, real or synthetic
+// "R-" id, for a tour/repertoire date, matching how those are already
+// browsed there), and its own story/music/poetry category for the Story/
+// Music/Poetry checkboxes. Festivals aren't indexed yet — a further step.
+const FLAT_SEARCH_SOURCES = [
+  { key: "specificEvents", category: "story" },
+  { key: "musicEvents", category: "music" },
+  { key: "poetryEvents", category: "poetry" },
+];
+
+function buildSearchIndex() {
+  const entries = [];
+
+  FLAT_SEARCH_SOURCES.forEach(({ key, category }) => {
+    resolvableFlatEvents(eventsData[key]).forEach((e) => {
+      entries.push(
+        searchIndexEntry({
+          displayName: e.showname || e.name,
+          altName: e.name,
+          performerNames: performerNamesOf(e),
+          hostVenue: venuesLookup[e.venue_id] || null,
+          date: e._date,
+          href: `event.html?event=${encodeURIComponent(resolveEventId(e, e._date))}`,
+          // "story" is the always-on default bucket, so it needs no badge
+          // of its own — same reasoning as TODAY_EVENTS_TYPE_LABELS not
+          // badging specificEvents rows either.
+          kindLabel:
+            category === "story"
+              ? undefined
+              : category === "music"
+                ? "Music"
+                : "Poetry",
+          category,
+          isCancelled: e.isCancelled,
+          isSoldOut: e.isSoldOut,
+        }),
+      );
+    });
+  });
+
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    // Same isMusic/isPoetry precedence as collectEventsOnDate()'s tour
+    // mapping below and TOUR_PANEL_GROUPS in tour_display.js — a tour with
+    // neither flag set defaults to "story".
+    const category = tour.isMusic
+      ? "music"
+      : tour.isPoetry
+        ? "poetry"
+        : "story";
+    expandTourDates(tour.tour_dates || []).forEach((td) => {
+      const date = parseDateString(td.date);
+      if (!date) return;
+      entries.push(
+        searchIndexEntry({
+          displayName: tour.tour_name || tour.name,
+          altName: tour.showname,
+          performerNames: performerNamesOf(tour),
+          hostVenue: venuesLookup[td.venue_id] || null,
+          date,
+          href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+          kindLabel: "Tour date",
+          category,
+          isCancelled: td.isCancelled,
+          isSoldOut: td.isSoldOut,
+        }),
+      );
+    });
+  });
+
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    expandTourDates(ts.show_dates || []).forEach((sd) => {
+      const date = parseDateString(sd.date);
+      if (!date) return;
+      entries.push(
+        searchIndexEntry({
+          displayName: ts.showname || ts.name,
+          altName: ts.name,
+          performerNames: performerNamesOf(ts),
+          hostVenue: venuesLookup[sd.venue_id] || null,
+          date,
+          href: `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_ID_PREFIX + tsId)}`,
+          kindLabel: ts.isStoryWalk ? "Story walk" : "Touring show",
+          // Repertoire shows are always "story", same as collectEventsOnDate()'s
+          // showDatesHere mapping — story walks stay in this scope too, not a
+          // separate opt-in category (matching renderEventRow's comment on
+          // the same point).
+          category: "story",
+          isCancelled: sd.isCancelled,
+          isSoldOut: sd.isSoldOut,
+        }),
+      );
+    });
+  });
+
+  return entries;
+}
+
+// ---------------------------------------------------------------------------
+// Persisted search-type filter preferences (localStorage)
+// ---------------------------------------------------------------------------
+// Same pattern as event_display.js's FILTER_PREFS_STORAGE_KEY for the
+// calendar page's own checkboxes — localStorage, not a cookie, so it never
+// leaves the browser. Stored under its own key rather than folded into
+// event_display.js's prefs object: this is a search-scope filter local to
+// this page, not one of the calendar's category/display filters.
+const SEARCH_TYPE_FILTER_STORAGE_KEY = "ntEventSearchTypePrefs";
+
+// Story-first, opt-in music/poetry — Story on by default, Music/Poetry off,
+// matching EVENT_TYPE_FILTERS' music/poetry entries in event_display.js
+// (and TODAY_EVENTS_TYPE_LABELS' all-on default further down, which is a
+// deliberately different bias for that panel).
+const SEARCH_TYPE_FILTER_DEFAULTS = {
+  story: true,
+  music: false,
+  poetry: false,
+};
+
+function readStoredSearchTypeFilters() {
+  try {
+    const raw = localStorage.getItem(SEARCH_TYPE_FILTER_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (err) {
+    // Storage disabled/unavailable (private browsing, locked-down browser
+    // settings, corrupted value, etc.) — treat as "nothing stored" rather
+    // than breaking the page.
+    return null;
+  }
+}
+
+function writeStoredSearchTypeFilters() {
+  const prefs = {};
+  Object.keys(SEARCH_TYPE_FILTER_DEFAULTS).forEach((category) => {
+    const el = document.getElementById(`eventSearchTypeFilter-${category}`);
+    if (el) prefs[category] = el.checked;
+  });
+  try {
+    localStorage.setItem(SEARCH_TYPE_FILTER_STORAGE_KEY, JSON.stringify(prefs));
+  } catch (err) {
+    // No usable storage — the page still works, the choice just won't
+    // carry over to next time.
+  }
+}
+
+function activeSearchTypeCategories() {
+  return new Set(
+    Object.keys(SEARCH_TYPE_FILTER_DEFAULTS).filter((category) => {
+      const el = document.getElementById(`eventSearchTypeFilter-${category}`);
+      return el ? el.checked : SEARCH_TYPE_FILTER_DEFAULTS[category];
+    }),
+  );
+}
+
+// Applies the time filter + type checkboxes + typed term to the search
+// index — the same three filters the dropdown's own `search` callback
+// applies, factored out here so the below-the-filters results panel (see
+// renderSearchResultsList()) matches the dropdown exactly rather than
+// drifting out of sync with it. Returns every match, unsliced; callers cap
+// it to however many they want to show.
+function searchEventIndex(term, index, today) {
+  const activeCategories = activeSearchTypeCategories();
+  return index
+    .filter((e) => matchesEventSearchTimeFilter(e.date, today))
+    .filter((e) => activeCategories.has(e.category))
+    .filter((e) => e.searchText.includes(term))
+    .sort(compareSearchResults());
+}
+
+// Result ordering. Upcoming: earliest first (chronological ascending).
+// Previous and All: most recent first (reverse chronological).
+function compareSearchResults() {
+  return eventSearchTimeFilter === "upcoming"
+    ? (a, b) => a.date - b.date
+    : (a, b) => b.date - a.date;
+}
+
+// How many rows the below-the-filters panel shows before truncating. The
+// dropdown itself is disabled on this page (see initSearchBox() below), so
+// this is the only cap that matters here.
+const SEARCH_RESULTS_PANEL_MAX = 30; // rows shown initially
+const SEARCH_RESULTS_PANEL_STEP = 10; // extra rows per "Show more" click
+let searchResultsVisible = SEARCH_RESULTS_PANEL_MAX;
+
+// Persistent, scrollable list of the current search matches, shown below
+// the search filters (see #eventSearchResultsSection in event.html) —
+// unlike the dropdown, it doesn't close on blur, so it stays put while
+// skimming on mobile. Reuses the exact same filtering as the dropdown
+// (searchEventIndex above); only how it's rendered differs.
+function renderSearchResultsList(term, index, today, keepVisible = false) {
+  if (!keepVisible) searchResultsVisible = SEARCH_RESULTS_PANEL_MAX;
+  const section = document.getElementById("eventSearchResultsSection");
+  const countEl = document.getElementById("eventSearchResultsCount");
+  const list = document.getElementById("eventSearchResultsList");
+  if (!section || !countEl || !list) return;
+
+  list.innerHTML = "";
+
+  // Same minimum-length threshold as the dropdown (createSearchBox only
+  // searches once term.length >= 1); below that, hide entirely rather than
+  // showing an empty card.
+  if (!term || term.length < 1) {
+    section.style.display = "none";
+    return;
+  }
+
+  const matches = searchEventIndex(term.toLowerCase(), index, today);
+  section.style.display = "";
+
+  if (matches.length === 0) {
+    countEl.textContent = "No matching events.";
+    return;
+  }
+
+  countEl.textContent =
+    matches.length > searchResultsVisible
+      ? `Showing ${searchResultsVisible} of ${matches.length} matching events.`
+      : `${matches.length} matching event${matches.length === 1 ? "" : "s"}`;
+
+  matches.slice(0, searchResultsVisible).forEach((entry) => {
+    const row = document.createElement("a");
+    row.className = "event-search-result-row";
+    if (entry.isCancelled) row.classList.add("event-search-result-cancelled");
+    row.href = entry.href;
+
+    const dateCol = document.createElement("div");
+    dateCol.className = "event-search-result-date";
+    dateCol.textContent = entry.date ? formatMediumDate(entry.date) : "TBC";
+    row.appendChild(dateCol);
+
+    const detail = document.createElement("div");
+    detail.className = "event-search-result-detail";
+
+    const title = document.createElement("div");
+    title.className = "event-search-result-title";
+    title.textContent = entry.displayName;
+    [
+      [entry.isCancelled, "Cancelled", "event-badge-cancelled"],
+      [!entry.isCancelled && entry.isSoldOut, "Sold out", "event-badge-sold-out"],
+    ].forEach(([show, text, cls]) => {
+      if (!show) return;
+      const badge = document.createElement("span");
+      badge.className = `event-badge ${cls}`;
+      badge.textContent = text;
+      title.appendChild(badge);
+    });
+    detail.appendChild(title);
+
+    const metaParts = [
+      entry.kindLabel,
+      entry.performerName,
+      entry.hostVenue?.name,
+      entry.hostVenue?.city,
+    ]
+      .filter(Boolean)
+      .join(" \u2022 ");
+    if (metaParts) {
+      const meta = document.createElement("div");
+      meta.className = "event-search-result-meta";
+      meta.textContent = metaParts;
+      detail.appendChild(meta);
+    }
+    row.appendChild(detail);
+
+    list.appendChild(row);
+  });
+
+  const remaining = matches.length - searchResultsVisible;
+  if (remaining > 0) {
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "event-search-more";
+    more.textContent = `Show ${Math.min(SEARCH_RESULTS_PANEL_STEP, remaining)} more`;
+    more.addEventListener("click", () => {
+      searchResultsVisible += SEARCH_RESULTS_PANEL_STEP;
+      renderSearchResultsList(term, index, today, true);
+    });
+    list.appendChild(more);
+  }
+}
+
+// Story/Music/Poetry checkboxes, shown under the search box. Initial state
+// comes from localStorage (falling back to SEARCH_TYPE_FILTER_DEFAULTS for
+// a first-ever visit or a category added since); every change both saves
+// the new state and — same re-dispatch trick as initSearchFilters() below —
+// re-runs whatever search term is already typed.
+function initSearchTypeFilters() {
+  const container = document.getElementById("eventSearchTypeFilters");
+  if (!container || container.dataset.wired) return;
+  container.dataset.wired = "true";
+
+  const stored = readStoredSearchTypeFilters() || {};
+  const SEARCH_TYPE_FILTER_LABELS = [
+    ["story", "Storytelling"],
+    ["music", "Music"],
+    ["poetry", "Poetry"],
+  ];
+
+  SEARCH_TYPE_FILTER_LABELS.forEach(([category, label]) => {
+    const id = `eventSearchTypeFilter-${category}`;
+    const wrap = document.createElement("label");
+    wrap.className = "event-search-type-filter";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = id;
+    checkbox.value = category;
+    // Priority: URL override (a shared link) > stored preference > default.
+    checkbox.checked =
+      urlTypeFilterOverride && typeof urlTypeFilterOverride[category] === "boolean"
+        ? urlTypeFilterOverride[category]
+        : typeof stored[category] === "boolean"
+          ? stored[category]
+          : SEARCH_TYPE_FILTER_DEFAULTS[category];
+    checkbox.addEventListener("change", () => {
+      writeStoredSearchTypeFilters();
+      if (eventSearchInputEl && eventSearchInputEl.value.trim().length >= 1) {
+        eventSearchInputEl.dispatchEvent(new Event("input"));
+      }
+    });
+
+    wrap.appendChild(checkbox);
+    wrap.appendChild(document.createTextNode(` ${label}`));
+    container.appendChild(wrap);
+  });
+}
+
+// Wires the #eventSearchBox container up with createSearchBox()
+// (shared_utils.js) — same component venues.js/performers.js use for
+// their own directory search. Searches event/tour/show name, performer,
+// venue, town, and address (per the search index above); selecting a
+// result navigates to its own permalink (event.html for a specificEvent,
+// tour_guide.html for a tour or repertoire show date).
+function initSearchBox() {
+  const container = document.getElementById("eventSearchBox");
+  if (!container) return;
+
+  const index = buildSearchIndex();
+  const today = getTodayMidnight();
+
+  const { input } = createSearchBox(container, {
+    placeholder: "Search events by name, performer, venue, town\u2026",
+    // createSearchBox's own dropdown is position:absolute (shared-styles.css),
+    // so on this page it would sit directly on top of the type-filter
+    // checkboxes and the results panel below — and offers nothing over that
+    // panel anyway (no keyboard nav, same underlying filter). So: always
+    // return no results, which keeps the dropdown permanently empty/hidden.
+    // We still use createSearchBox for the input/clear-button plumbing and
+    // its onChange hook; renderItem/onSelect are dropdown-only, so they're
+    // dropped along with it. venues.js/performers.js use createSearchBox
+    // for their own directory dropdowns unchanged — this only disables it
+    // here.
+    search: () => [],
+    // Drives the below-the-filters results panel (renderSearchResultsList)
+    // rather than re-filtering anything on this page directly — event.html
+    // shows one event, not a list, so there's nothing else here to
+    // re-filter. Fires on every keystroke, on clear, and whenever the time/
+    // type filters re-dispatch an "input" event (see initSearchFilters()/
+    // initSearchTypeFilters() above), so the panel always tracks the typed
+    // term and current filters.
+    onChange: (term) => {
+      renderSearchResultsList(term, index, today);
+      syncSearchStateToUrl(term);
+    },
+  });
+
+  eventSearchInputEl = input;
+  initSearchFilters();
+  initSearchTypeFilters();
+
+  // A shared link's ?q= — filters (time/types) are already applied above
+  // via eventSearchTimeFilter/urlTypeFilterOverride, since those need to be
+  // in place before the radios/checkboxes are built. The term itself is
+  // applied last, once the input exists, by dispatching "input" so it runs
+  // through the exact same path a visitor typing it would.
+  if (initialSearchTerm) {
+    input.value = initialSearchTerm;
+    input.dispatchEvent(new Event("input"));
+  }
+}
+
+// Upcoming (default) / Previous / All radio group, shown under the search
+// box. Changing it doesn't re-search by itself (createSearchBox has no
+// "re-run" hook) — instead, if there's already a typed term, re-dispatch an
+// "input" event on the search box's own input element, which re-invokes the
+// search() callback above (now reading the newly-changed time filter).
+function initSearchFilters() {
+  const container = document.getElementById("eventSearchFilters");
+  if (!container || container.dataset.wired) return;
+  container.dataset.wired = "true";
+
+  const EVENT_SEARCH_TIME_FILTERS = [
+    ["upcoming", "Upcoming"],
+    ["previous", "Previous"],
+    ["all", "All"],
+  ];
+
+  EVENT_SEARCH_TIME_FILTERS.forEach(([value, label]) => {
+    const id = `eventSearchFilter-${value}`;
+    const wrap = document.createElement("label");
+    wrap.className = "event-search-filter";
+
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "eventSearchFilter";
+    radio.id = id;
+    radio.value = value;
+    radio.checked = value === eventSearchTimeFilter;
+    radio.addEventListener("change", () => {
+      eventSearchTimeFilter = value;
+      if (eventSearchInputEl && eventSearchInputEl.value.trim().length >= 1) {
+        eventSearchInputEl.dispatchEvent(new Event("input"));
+      }
+    });
+
+    wrap.appendChild(radio);
+    wrap.appendChild(document.createTextNode(` ${label}`));
+    container.appendChild(wrap);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+
+// Initialize immediately (don't wait for DOMContentLoaded) so data starts
+// loading early, matching venues.js/storyclub.js.
+setCanonical("event");
+
+let initialSearchTerm = "";
+
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  // `event_id` is accepted as an alias — some old shared links used it.
+  const eventIdParam = params.get("event") || params.get("event_id");
+  prependMetaKeyword(`${eventIdParam}`);
+  // Reads q/time/types, if present, so a shared search link reproduces the
+  // same box contents and filters it was copied from — see the "Shareable
+  // search links" block above.
+  initialSearchTerm = applyUrlSearchParams(params);
+
+  const loaded = await loadEventsData();
+  if (!loaded) return showNotFound();
+
+  eventsData = loaded.eventsData;
+  venuesLookup = loaded.venuesLookup;
+  performersLookup = loaded.performersLookup;
+  toursLookup = loaded.toursLookup;
+  displayDataLastUpdated(loaded.lastUpdateTime);
+  initNavFeedback();
+  initSearchBox();
+
+  //const debugComment = document.createComment(
+  //   `eventIdParam: ${eventIdParam}\n}`,
+  // );
+  //document.body.appendChild(debugComment);
+
+  eventRecord = eventIdParam
+    ? findEventById(eventIdParam) || findTourOrShowDateEventById(eventIdParam)
+    : null;
+
+  // Old `${name}-${getTime()}` ids that didn't match exactly (see
+  // findEventByLegacyId()).
+  if (!eventRecord && eventIdParam) {
+    eventRecord = findEventByLegacyId(eventIdParam);
+  }
+
+  // Still nothing: try to work out what was meant (see findEventIdMatches()).
+  // A single date+venue hit is treated as a redirect — the page below renders
+  // that event, the address bar is rewritten by the block after this, and a
+  // notice tells the visitor the link they followed was out of date.
+  let idMatches = null;
+  let resolvedByFuzzyMatch = false;
+  if (!eventRecord && eventIdParam) {
+    idMatches = findEventIdMatches(eventIdParam);
+    if (idMatches.auto) {
+      eventRecord = idMatches.auto.build();
+      resolvedByFuzzyMatch = true;
+    }
+  }
+
+  // Anything that resolved under an id other than the record's current one
+  // (an old-scheme id, or the `?event_id=` alias): rewrite the address bar to
+  // ?event=<current id>, then re-run setCanonical() (shared_utils.js), which
+  // reads ?event= from the URL — it ran at load, before the id was resolved,
+  // so it saw the legacy id (or nothing, for ?event_id=).
+  if (eventRecord) {
+    const currentId =
+      eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
+    if (currentId !== eventIdParam || !params.get("event")) {
+      history.replaceState(null, "", canonicalEventUrl(currentId));
+      setCanonical("event");
+    }
+  }
+
+  if (!eventRecord) {
+    document.getElementById("loadingState").style.display = "none";
+    if (eventIdParam) {
+      // Soft 404: the page is still useful (did-you-mean + today's events), but
+      // it says plainly that the link is broken, is noindex, and reports a
+      // "not found" health state so the gatekeeper never caches it as healthy
+      // and can answer crawlers with a real 404 (see gatekeeper.js).
+      console.warn(
+        `event.html: event "${eventIdParam}" not found — showing suggestions and today's events instead.`,
+      );
+      showEventNotFound(
+        eventIdParam,
+        (idMatches || findEventIdMatches(eventIdParam)).suggestions,
+      );
+      showTodayEvents();
+      // Only claim "not found" when the data is trustworthy. If the feed fell back to a
+      // stale cached copy, a brand-new event may simply be missing from it, so report the
+      // stale-feed warning instead; the gatekeeper then won't treat it as a 404 verdict.
+      if (
+        typeof dataHealthStatus === "undefined" ||
+        dataHealthStatus.status === "ok"
+      ) {
+        PageHealth.markNotFound();
+      } else {
+        PageHealth.markReady({ contentId: "todayEventsState" });
+      }
+    } else {
+      console.info("event.html: no ?event= given — showing today's events.");
+      showTodayEvents();
+      PageHealth.markReady({ contentId: "todayEventsState" });
+    }
+    return;
+  }
+
+  // One H1 per page: the event's own name is the H1 on its page.
+  setPageHeadingMode(true, "eventName");
+
+  // Defer heavy rendering to background to allow loading state to display
+  setTimeout(() => {
+    renderPage();
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("eventContent").style.display = "";
+    PageHealth.markReady({
+      contentId: "eventContent",
+      checks: [
+        [
+          "event name is empty",
+          () => document.getElementById("eventName").textContent.trim().length > 0,
+        ],
+      ],
+    });
+
+    if (resolvedByFuzzyMatch) {
+      const canonicalId =
+        eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
+      showOutdatedLinkNotice(eventIdParam);
+      // Machine-readable token first: the gatekeeper reads "nt-redirect:<id>"
+      // out of the health reason and answers crawlers with a 301 to that id.
+      PageHealth.addWarning(
+        `nt-redirect:${canonicalId} (outdated event link, matched by date and venue)`,
+      );
+    }
+
+    const hostVenue = venuesLookup[eventRecord.venue_id] || null;
+    if (hostVenue && hasLatlon(hostVenue)) {
+      loadLeaflet()
+        .then(() => {
+          initEventMap(hostVenue);
+          setTimeout(() => map.invalidateSize(), 0);
+        })
+        .catch((error) => {
+          console.error("Failed to load event map:", error);
+          document.getElementById("map-container").style.display = "none";
+        });
+    } else {
+      document.getElementById("map-container").style.display = "none";
+    }
+  }, 0);
+})();
+
+// ---------------------------------------------------------------------------
+// Today's events (no-?event= fallback). One-off dated events only
+// (specific/music/poetry events, tour dates, touring-show dates, festivals
+// in progress) — recurring club/folk/session nights aren't matched against
+// today's date yet, since that needs the recurrence engine wired in here
+// too. Mixes several event types together, so — unlike the performer-
+// upcoming panel, which is already scoped to one performer — this gets its
+// own type filter checkboxes rather than dumping everything in unfiltered.
+// ---------------------------------------------------------------------------
+
+// Which filter checkbox group each entry's category belongs to — reuses
+// the same story/music/poetry categorization shared_utils.js's
+// collectDatedEventsForVenue() computes (tours/shows fall in "story"
+// unless their tour record says isMusic/isPoetry; festivals are always
+// "story" and so always shown, mirroring event_display.js's getEventType(),
+// which checks isFestival before any story/music/poetry opt-in).
+const TODAY_EVENTS_TYPE_LABELS = [
+  ["story", "Storytelling"],
+  ["music", "Music"],
+  ["poetry", "Poetry"],
+];
+
+let todayEventsAll = [];
+
+function collectEventsOnDate(targetDate) {
+  const sameDate = (d) => d && d.getTime() === targetDate.getTime();
+
+  const specificEvents = (eventsData.specificEvents || []).filter((e) =>
+    sameDate(parseDateString(e.date)),
+  );
+  const musicEvents = (eventsData.musicEvents || []).filter((e) =>
+    sameDate(parseDateString(e.date)),
+  );
+  const poetryEvents = (eventsData.poetryEvents || []).filter((e) =>
+    sameDate(parseDateString(e.date)),
+  );
+
+  const tourDatesHere = [];
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    expandTourDates(tour.tour_dates).forEach((tourDate) => {
+      if (sameDate(parseDateString(tourDate.date))) {
+        tourDatesHere.push({ tour, tourId, tourDate });
+      }
+    });
+  });
+
+  const showDatesHere = [];
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    expandTourDates(ts.show_dates).forEach((showDate) => {
+      if (sameDate(parseDateString(showDate.date))) {
+        showDatesHere.push({ ts, tsId, showDate });
+      }
+    });
+  });
+
+  const festivalsHere = Object.entries(eventsData.festivals || {}).filter(
+    ([, f]) => {
+      const start = parseDateString(f.start_date);
+      const end = parseDateString(f.end_date) || start;
+      return start && targetDate >= start && targetDate <= end;
+    },
+  );
+
+  return [
+    ...specificEvents.map((e) => ({
+      type: "specific",
+      date: parseDateString(e.date),
+      data: e,
+      venueId: e.venue_id,
+      category: "story",
+    })),
+    ...musicEvents.map((e) => ({
+      type: "music",
+      date: parseDateString(e.date),
+      data: e,
+      venueId: e.venue_id,
+      category: "music",
+    })),
+    ...poetryEvents.map((e) => ({
+      type: "poetry",
+      date: parseDateString(e.date),
+      data: e,
+      venueId: e.venue_id,
+      category: "poetry",
+    })),
+    ...tourDatesHere.map((t) => ({
+      type: "tour",
+      date: parseDateString(t.tourDate.date),
+      data: t,
+      venueId: t.tourDate.venue_id,
+      category: t.tour.isMusic ? "music" : t.tour.isPoetry ? "poetry" : "story",
+    })),
+    ...showDatesHere.map((s) => ({
+      type: "show",
+      date: parseDateString(s.showDate.date),
+      data: s,
+      venueId: s.showDate.venue_id,
+      category: "story",
+    })),
+    ...festivalsHere.map(([fid, f]) => ({
+      type: "festival",
+      date: targetDate,
+      data: { fid, festival: f },
+      venueId: f.venue_id,
+      category: "story",
+      alwaysShown: true,
+    })),
+  ]
+    .map((e) => ({ ...e, venue: venuesLookup[e.venueId] || null }))
+    .sort((a, b) => {
+      const nameOf = (e) =>
+        e.data.showname ||
+        e.data.name ||
+        e.data.tour?.tour_name ||
+        e.data.ts?.show_name ||
+        e.data.festival?.name ||
+        "";
+      return nameOf(a).localeCompare(nameOf(b));
+    });
+}
+
+function activeTodayEventsCategories() {
+  return new Set(
+    Array.from(
+      document.querySelectorAll(
+        '#todayEventsFilters input[type="checkbox"]:checked',
+      ),
+    ).map((cb) => cb.value),
+  );
+}
+
+function renderTodayEventsList() {
+  const list = document.getElementById("todayEventsList");
+  list.innerHTML = "";
+
+  const active = activeTodayEventsCategories();
+  const filtered = todayEventsAll.filter(
+    (e) => e.alwaysShown || active.has(e.category),
+  );
+
+  if (!filtered.length) {
+    const p = document.createElement("p");
+    p.className = "today-events-empty";
+    p.innerHTML = todayEventsAll.length
+      ? "No events match the selected filters."
+      : 'No dated events found for today. <a href="storyclub.html">Check out storyclubs instead.</a>';
+    list.appendChild(p);
+    return;
+  }
+
+  filtered.forEach((entry) => {
+    renderEventRow(list, entry, false, { showVenue: true });
+  });
+}
+
+function initTodayEventsFilters() {
+  const container = document.getElementById("todayEventsFilters");
+  if (container.dataset.wired) return;
+  container.dataset.wired = "true";
+
+  TODAY_EVENTS_TYPE_LABELS.forEach(([category, label]) => {
+    const id = `todayEventsFilter-${category}`;
+    const wrap = document.createElement("label");
+    wrap.className = "today-events-filter";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = id;
+    checkbox.value = category;
+    checkbox.checked = true;
+    checkbox.addEventListener("change", renderTodayEventsList);
+
+    wrap.appendChild(checkbox);
+    wrap.appendChild(document.createTextNode(` ${label}`));
+    container.appendChild(wrap);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Not-found / outdated-link UI. Everything user-supplied (the id from the URL)
+// goes in via textContent only.
+// ---------------------------------------------------------------------------
+
+const NOTICE_STYLE =
+  "margin:0 0 1rem;padding:.75rem 1rem;border-left:4px solid #d98e04;" +
+  "background:rgba(217,142,4,.12);border-radius:4px;";
+
+function showEventNotFound(badId, suggestions) {
+  document.title = "Event not found \u2014 New Troubadours";
+  setCanonical(); // bare event.html — never canonicalise to the broken id
+  const robots = document.createElement("meta");
+  robots.name = "robots";
+  robots.content = "noindex, follow";
+  document.head.appendChild(robots);
+
+  const panel = document.createElement("section");
+  panel.id = "eventNotFoundPanel";
+  panel.className = "event-not-found";
+  panel.setAttribute("role", "status");
+  panel.style.cssText = NOTICE_STYLE;
+
+  const h = document.createElement("h2");
+  h.textContent = "We couldn\u2019t find that event";
+  panel.appendChild(h);
+
+  const p = document.createElement("p");
+  p.append(
+    "The link you followed doesn\u2019t match any event on the site. It may be mistyped, cut off, or the event may have been renamed or removed. The id it asked for was: ",
+  );
+  const code = document.createElement("code");
+  code.textContent = badId;
+  code.style.wordBreak = "break-all";
+  p.appendChild(code);
+  panel.appendChild(p);
+
+  if (suggestions && suggestions.length) {
+    const lead = document.createElement("p");
+    lead.textContent =
+      suggestions.length === 1 ? "Did you mean:" : "Did you mean one of these?";
+    panel.appendChild(lead);
+
+    const ul = document.createElement("ul");
+    suggestions.forEach((c) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = `event.html?event=${encodeURIComponent(c.id)}`;
+      a.textContent = c.title;
+      li.appendChild(a);
+      const venue = venuesLookup[c.venueId];
+      const meta = [
+        formatMediumDate(c.date),
+        venue && [venue.name, venue.city].filter(Boolean).join(", "),
+      ]
+        .filter(Boolean)
+        .join(" \u2022 ");
+      if (meta) li.append(` \u2014 ${meta}`);
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
+  }
+
+  const tail = document.createElement("p");
+  tail.append("You can also use the search box above, or browse the ");
+  const guide = document.createElement("a");
+  guide.href = "event_guide.html";
+  guide.textContent = "event guide";
+  tail.appendChild(guide);
+  tail.append(". Here\u2019s what\u2019s on today in the meantime:");
+  panel.appendChild(tail);
+
+  const anchor = document.getElementById("todayEventsState");
+  anchor.parentNode.insertBefore(panel, anchor);
+}
+
+// Shown on top of a correctly rendered event when the visitor's link was
+// resolved by date + venue rather than by exact id.
+function showOutdatedLinkNotice(oldId) {
+  const container = document.getElementById("eventContent");
+  if (!container) return;
+  const note = document.createElement("div");
+  note.id = "outdatedLinkNotice";
+  note.className = "event-outdated-link";
+  note.setAttribute("role", "status");
+  note.style.cssText = NOTICE_STYLE;
+  note.append(
+    "The link you followed was out of date, so we\u2019ve taken you to the matching event. " +
+      "The address in your browser bar is now the current one \u2014 use it if you\u2019re sharing this page. " +
+      "If this isn\u2019t the event you were after, try the search box above. ",
+  );
+  const small = document.createElement("small");
+  small.append("Old id: ");
+  const code = document.createElement("code");
+  code.textContent = oldId;
+  code.style.wordBreak = "break-all";
+  small.appendChild(code);
+  note.appendChild(small);
+  container.insertBefore(note, container.firstChild);
+}
+
+function showTodayEvents() {
+  document.getElementById("todayEventsState").style.display = "";
+
+  const today = getTodayMidnight();
+  document.getElementById("todayEventsDate").textContent =
+    formatDate(today) || "";
+
+  todayEventsAll = collectEventsOnDate(today);
+  initTodayEventsFilters();
+  renderTodayEventsList();
+}
+
+function renderPage() {
+  const ev = eventRecord;
+  const name = ev.showname || ev.name;
+  
+  const performerIds = performerIdsOf(ev);
+  const performerNames = performerIds
+    .map((id) => performersLookup[id]?.name)
+    .filter(Boolean);
+
+  const performerForTitle =
+    (performerNames.length && performerNames.join(" & ")) ||
+    ev.performer ||
+    null;
+
+  const titleTown = venuesLookup[ev.venue_id]?.city || null;
+  const perfName = performerForTitle
+    ? `${name} — ${performerForTitle}${titleTown ? ` — ${titleTown}` : ""} — New Troubadours`
+    : `${nameWithTown(name, titleTown)} — New Troubadours`;
+  document.title = perfName;
+  document.getElementById("eventName").textContent = name;
+  const descVenue = venuesLookup[ev.venue_id];
+  setMetaDescription(
+    [
+      performerForTitle ? `${name} with ${performerForTitle}` : name,
+      [
+        descVenue && nameWithTown(descVenue.name, titleTown),
+        [ev._date && formatDate(ev._date), ev.time].filter(Boolean).join(", "),
+      ]
+        .filter(Boolean)
+        .join(" — "),
+      "Tickets and details.",
+    ]
+      .filter(Boolean)
+      .join(" — "),
+  );
+  prependMetaKeyword(perfName);
+
+  const metaParts = [formatDate(ev._date), ev.time || null, ev.price || null]
+    .filter(Boolean)
+    .join(" • ");
+  document.getElementById("eventMeta").textContent = metaParts;
+
+  const hostVenue = venuesLookup[ev.venue_id] || null;
+  const venueDiv = document.getElementById("eventVenue");
+  if (hostVenue) {
+    const a = document.createElement("a");
+    a.href = `venues.html?venue=${encodeURIComponent(ev.venue_id)}`;
+    a.textContent =
+      hostVenue.name + (hostVenue.city ? `, ${hostVenue.city}` : "");
+    venueDiv.appendChild(a);
+  }
+
+  // Set only on a record resolved via findTourOrShowDateEventById() (a
+  // single tour/touring-show date) — links back to the full run this one
+  // date belongs to, on its own line under the venue link.
+  if (ev._sourceTourId) {
+    venueDiv.appendChild(document.createElement("br"));
+    const tourLink = document.createElement("a");
+    tourLink.href = `tour_guide.html?tour=${encodeURIComponent(ev._sourceTourId)}`;
+    tourLink.className = "event-part-of-tour-link";
+    tourLink.textContent = `Part of ${ev._sourceTourName} — see all dates \u2192`;
+    venueDiv.appendChild(tourLink);
+  }
+
+  if (ev.description && ev.description.trim()) {
+    const descDiv = document.getElementById("eventDescription");
+    descDiv.style.display = "";
+    appendParagraphs(descDiv, ev.description);
+  }
+
+  renderTicketsFlyersVideo(ev);
+  renderEventFlyers(ev);
+  renderPerformerSection(ev);
+  renderPerformerUpcomingEvents(ev);
+  renderVenueDescription(hostVenue);
+  renderInfoTable(hostVenue);
+  // Built via resolveEventId(ev, ev._date) rather than the raw ?event= the
+  // page was loaded with — findEventById() also accepts an old-scheme id as
+  // a fallback match (see buildEventId()'s docstring in shared_utils.js), so
+  // the incoming URL isn't guaranteed to be the current-scheme one; this
+  // keeps the badge pointing at the canonical link.
+  renderShareBadge("event", resolveEventId(ev, ev._date));
+
+  if (hostVenue && hasLatlon(hostVenue)) {
+    const nearby = findNearbyByLatLon(
+      hostVenue.latlon[0],
+      hostVenue.latlon[1],
+      Object.entries(venuesLookup),
+      { excludeKey: ev.venue_id, radiusKm: 20, limit: 8 },
+    );
+    renderNearbyVenues(nearby);
+    renderNearbyEvents(nearby, getTodayMidnight());
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tickets / flyer(s) / video trailer (mirrors storyclub.js's per-event
+// tickets/flyer/video treatment, scoped to this one event record — see
+// the file header comment for what's deliberately left out)
+// ---------------------------------------------------------------------------
+
+function renderTicketsFlyersVideo(ev) {
+  const aboutSection = document.getElementById("aboutSection");
+  const ticketsDiv = document.getElementById("eventTickets");
+  const videoControls = document.getElementById("videoControls");
+
+  let anyContent = false;
+
+  // Tickets link + Facebook event icon (shared_utils.js's ICON_SVG.facebook)
+  const hasTickets = !!ev.ticket_url;
+  const hasFbEvent = !!ev.fb_event;
+  if (hasTickets || hasFbEvent) {
+    anyContent = true;
+    ticketsDiv.style.display = "";
+
+    if (hasTickets) {
+      const a = document.createElement("a");
+      a.href = ev.ticket_url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Tickets available here";
+      ticketsDiv.appendChild(a);
+    }
+
+    if (hasFbEvent) {
+      if (hasTickets) {
+        const sep = document.createElement("span");
+        sep.className = "separator";
+        sep.textContent = "|";
+        ticketsDiv.appendChild(sep);
+      }
+      const fbA = document.createElement("a");
+      fbA.href = `https://www.facebook.com/events/${ev.fb_event}`;
+      fbA.target = "_blank";
+      fbA.rel = "noopener noreferrer";
+      fbA.innerHTML = ICON_SVG.facebook;
+      fbA.querySelector("svg").style.cssText =
+        "width:20px;height:20px;vertical-align:middle;";
+      ticketsDiv.appendChild(fbA);
+    }
+  }
+
+  // Video trailer (shared_utils.js's getYouTubeEmbedUrl()/createVideoTrailerEmbed())
+  const videoEmbedUrl = getYouTubeEmbedUrl(ev.video_trailer);
+  if (videoEmbedUrl) {
+    anyContent = true;
+    videoControls.style.display = "";
+
+    const videoBtn = document.createElement("button");
+    videoBtn.className = "expand-btn";
+    videoBtn.textContent = "Video preview";
+
+    const videoExpandable = document.createElement("div");
+    videoExpandable.className = "expandable";
+
+    const { wrapper, iframe } = createVideoTrailerEmbed(
+      `${ev.showname || ev.name} trailer`,
+    );
+    videoExpandable.appendChild(wrapper);
+
+    videoBtn.addEventListener("click", () => {
+      const open = videoExpandable.classList.toggle("open");
+      videoBtn.textContent = open ? "Hide video" : "Video preview";
+      iframe.src = open ? videoEmbedUrl : "";
+    });
+
+    videoControls.appendChild(videoBtn);
+    videoControls.appendChild(videoExpandable);
+  }
+
+  // "Add to calendar" — Google / Outlook.com links plus an .ics download
+  // (Apple, Outlook desktop, others). Upcoming, non-cancelled events only.
+  // Helpers live in shared_utils.js (buildIcs/buildCalendarLinks/downloadIcs).
+  if (ev._date && ev._date >= getTodayMidnight() && !ev.isCancelled) {
+    anyContent = true;
+    const hostVenue = venuesLookup[ev.venue_id] || null;
+    const id = ev.eventId || resolveEventId(ev, ev._date);
+    const addr = hostVenue?.full_address
+      ? hostVenue.full_address.replace(/^[^,]*,\s*/, "")
+      : "";
+    const calOpts = {
+      uid: id,
+      date: ev._date,
+      time: ev.time,
+      title: ev.showname || ev.name,
+      description: (ev.description || "").replace(/\n{2,}/g, "\n").slice(0, 500),
+      location: hostVenue ? [hostVenue.name, addr].filter(Boolean).join(", ") : "",
+      url: `${location.origin}${location.pathname}?event=${encodeURIComponent(id)}`,
+    };
+    const links = buildCalendarLinks(calOpts);
+
+    const calRow = document.createElement("div");
+    calRow.className = "add-to-calendar";
+    const label = document.createElement("span");
+    label.className = "add-to-calendar-label";
+    label.textContent = "📅 Add to calendar:";
+    calRow.appendChild(label);
+
+    const mkLink = (text, href) => {
+      const a = document.createElement("a");
+      a.className = "add-to-calendar-btn";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = text;
+      return a;
+    };
+    calRow.appendChild(mkLink("Google", links.google));
+    calRow.appendChild(mkLink("Outlook.com", links.outlook));
+
+    const icsBtn = document.createElement("button");
+    icsBtn.className = "add-to-calendar-btn";
+    icsBtn.textContent = "Apple / other (.ics)";
+    icsBtn.addEventListener("click", () =>
+      downloadIcs(`${id}.ics`, buildIcs(calOpts)),
+    );
+    calRow.appendChild(icsBtn);
+
+    videoControls.style.display = "";
+    videoControls.appendChild(calRow);
+  }
+
+  aboutSection.style.display = anyContent ? "" : "none";
+}
+
+// ---------------------------------------------------------------------------
+// Flyer thumbnails — small, always-visible images at the top of the right
+// column (rather than behind an expand button, which wasn't working).
+// Event-level flyers only (event_flyer/event_flyer2/event_flyers), resolved
+// by getEventLevelFlyers() (shared_utils.js) — same helper storyclub.js uses.
+// Each thumbnail links to the full-size image in a new tab.
+// ---------------------------------------------------------------------------
+
+function renderEventFlyers(ev) {
+  const section = document.getElementById("eventFlyersSection");
+  const list = document.getElementById("eventFlyersList");
+  list.innerHTML = "";
+
+  const flyers = getEventLevelFlyers(ev);
+  if (!flyers.length) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.querySelector(".section-heading").textContent =
+    flyers.length > 1 ? "Flyers" : "Flyer";
+
+  flyers.forEach((flyer) => {
+    const src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(flyer.filename)}`;
+    const a = document.createElement("a");
+    a.href = src;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "event-flyer-thumb-link";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = `${ev.showname || ev.name} ${flyer.label}`;
+    img.className = "event-flyer-thumb";
+
+    a.appendChild(img);
+    list.appendChild(a);
+  });
+
+  section.style.display = "";
+}
+
+// ---------------------------------------------------------------------------
+// Performer info (name/link, musician/poet badges, bio, website — a
+// trimmed-down version of performers.js's renderPerformer(), just enough
+// for a sidebar-style panel rather than the full performer page)
+// ---------------------------------------------------------------------------
+
+function renderPerformerSection(ev) {
+  const section = document.getElementById("performerSection");
+  const container = document.getElementById("performerInfo");
+  container.innerHTML = "";
+
+  const performer = ev.performer_id ? performersLookup[ev.performer_id] : null;
+  const name = (performer && performer.name) || ev.performer || null;
+  if (!name) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "";
+
+  const header = document.createElement("div");
+  header.className = "event-performer-header";
+
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("");
+  const avatar = document.createElement("div");
+  avatar.className = "event-performer-avatar";
+  avatar.textContent = initials;
+  header.appendChild(avatar);
+
+  const nameWrap = document.createElement("div");
+  if (ev.performer_id && performer) {
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(ev.performer_id)}`;
+    a.className = "event-performer-name";
+    a.textContent = name;
+    nameWrap.appendChild(a);
+  } else {
+    const span = document.createElement("span");
+    span.className = "event-performer-name";
+    span.textContent = name;
+    nameWrap.appendChild(span);
+  }
+
+  if (performer && (performer.musician || performer.poet)) {
+    const badges = document.createElement("div");
+    badges.className = "event-performer-badges";
+    if (performer.musician) {
+      const b = document.createElement("span");
+      b.className = "event-performer-badge";
+      b.textContent = "Musician";
+      badges.appendChild(b);
+    }
+    if (performer.poet) {
+      const b = document.createElement("span");
+      b.className = "event-performer-badge";
+      b.textContent = "Poet";
+      badges.appendChild(b);
+    }
+    nameWrap.appendChild(badges);
+  }
+
+  header.appendChild(nameWrap);
+  container.appendChild(header);
+
+  if (performer && performer.bio && performer.bio.trim()) {
+    const bioDiv = document.createElement("div");
+    bioDiv.className = "event-performer-bio";
+    appendParagraphs(bioDiv, performer.bio);
+    container.appendChild(bioDiv);
+  }
+
+  if (performer && performer.url) {
+    const href = sanitizeUrl(performer.url);
+    if (href) {
+      const a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.className = "event-performer-website";
+      a.textContent = href
+        .replace(/^https?:\/\/(www\.)?/, "")
+        .replace(/\/$/, "");
+      container.appendChild(a);
+    }
+  }
+
+  if (ev.performer_id && performer) {
+    const profileLink = document.createElement("a");
+    profileLink.href = `performers.html?performer=${encodeURIComponent(ev.performer_id)}`;
+    profileLink.className = "event-performer-profile-link";
+    profileLink.textContent = "View full profile \u2192";
+    container.appendChild(profileLink);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Upcoming events by the same performer (right-col panel, top). Mirrors
+// performers.js's own performer-page collection: a compound-id match (so a
+// duo/troupe billing that includes this performer is picked up too — see
+// performers.js's compoundIdsForMe/performerMatches()) across tours,
+// touring shows, and specific/music/poetry events, rendered with
+// shared_utils.js's renderEventRow() (the same row used for this page's own
+// nearby-events list) rather than a bespoke row here.
+// ---------------------------------------------------------------------------
+
+function compoundIdsForPerformer(performerId) {
+  const ids = new Set();
+  Object.entries(performersLookup).forEach(([pid, p]) => {
+    const members = p.performer_ids || p.ids || [];
+    if (Array.isArray(members) && members.includes(performerId)) {
+      ids.add(pid);
+    }
+  });
+  return ids;
+}
+
+function performerRecordMatches(obj, performerId, compoundIds) {
+  if (obj.performer_id === performerId) return true;
+  if (
+    Array.isArray(obj.performer_ids) &&
+    obj.performer_ids.includes(performerId)
+  )
+    return true;
+  if (obj.performer_id && compoundIds.has(obj.performer_id)) return true;
+  return false;
+}
+
+// Collects this performer's upcoming dates across every event type that
+// carries a performer_id, resolving each to the venue-row shape
+// renderEventRow() expects (type/date/data/venue/venueId).
+function collectUpcomingEventsForPerformer(performerId, today) {
+  const compoundIds = compoundIdsForPerformer(performerId);
+  const matches = (obj) =>
+    performerRecordMatches(obj, performerId, compoundIds);
+
+  const specificEvents = (eventsData.specificEvents || []).filter(matches);
+  const musicEvents = (eventsData.musicEvents || []).filter(matches);
+  const poetryEvents = (eventsData.poetryEvents || []).filter(matches);
+
+  const tourDatesHere = [];
+  Object.entries(toursLookup).forEach(([tourId, tour]) => {
+    if (!matches(tour)) return;
+    expandTourDates(tour.tour_dates).forEach((tourDate) => {
+      tourDatesHere.push({ tour, tourId, tourDate });
+    });
+  });
+
+  const showDatesHere = [];
+  Object.entries(eventsData.repertoire_shows || {}).forEach(([tsId, ts]) => {
+    if (!matches(ts)) return;
+    expandTourDates(ts.show_dates).forEach((showDate) => {
+      showDatesHere.push({ ts, tsId, showDate });
+    });
+  });
+
+  return (
+    [
+      ...specificEvents.map((e) => ({
+        type: "specific",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...musicEvents.map((e) => ({
+        type: "music",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...poetryEvents.map((e) => ({
+        type: "poetry",
+        date: parseDateString(e.date),
+        data: e,
+        venueId: e.venue_id,
+      })),
+      ...tourDatesHere.map((t) => ({
+        type: "tour",
+        date: parseDateString(t.tourDate.date),
+        data: t,
+        venueId: t.tourDate.venue_id,
+      })),
+      ...showDatesHere.map((s) => ({
+        type: "show",
+        date: parseDateString(s.showDate.date),
+        data: s,
+        venueId: s.showDate.venue_id,
+      })),
+    ]
+      .filter((e) => e.date && e.date >= today)
+      // Drop this page's own event out of its performer's "more dates" list.
+      .filter(
+        (e) =>
+          !(
+            e.type === "specific" &&
+            e.data.name === eventRecord.name &&
+            e.data.date === eventRecord.date
+          ),
+      )
+      .map((e) => ({ ...e, venue: venuesLookup[e.venueId] || null }))
+      .sort((a, b) => a.date - b.date)
+  );
+}
+
+const PERFORMER_UPCOMING_MAX = 6;
+
+// Note: renderEventRow() (shared_utils.js) already links each row's title
+// to its event.html permalink itself now (via linkEventRowTitle()), for
+// every specific/music/poetry entry it renders — including these — so
+// there's no separate wrapping step needed here any more.
+
+function renderPerformerUpcomingEvents(ev) {
+  const section = document.getElementById("performerUpcomingSection");
+  if (!ev.performer_id || !performersLookup[ev.performer_id]) {
+    section.style.display = "none";
+    return;
+  }
+
+  const upcoming = collectUpcomingEventsForPerformer(
+    ev.performer_id,
+    getTodayMidnight(),
+  ).slice(0, PERFORMER_UPCOMING_MAX);
+
+  if (!upcoming.length) {
+    section.style.display = "none";
+    return;
+  }
+
+  const performerLabel = performersLookup[ev.performer_id].name;
+  section.querySelector(".section-heading").textContent =
+    `More by ${performerLabel}`;
+
+  const list = document.getElementById("performerUpcomingList");
+  list.innerHTML = "";
+  upcoming.forEach((entry) => {
+    renderEventRow(list, entry, false, { showVenue: true });
+  });
+
+  section.style.display = "";
+}
+
+// ---------------------------------------------------------------------------
+// Venue description (shown at the bottom of the map panel, if the host
+// venue record has its own description text)
+// ---------------------------------------------------------------------------
+
+function renderVenueDescription(hostVenue) {
+  const div = document.getElementById("venueDescription");
+  if (hostVenue && hostVenue.description && hostVenue.description.trim()) {
+    div.style.display = "";
+    appendParagraphs(div, hostVenue.description);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Info table (mirrors venues.js's renderInfoTable(), for the host venue)
+// ---------------------------------------------------------------------------
+
+function renderInfoTable(hostVenue) {
+  if (!hostVenue) return;
+  const table = document.getElementById("venueInfoTable");
+
+  const rows = [
+    hostVenue.name && ["Name", hostVenue.name],
+    hostVenue.full_address && [
+      "Address",
+      hostVenue.full_address.replace(/^[^,]*,\s*/, ""),
+    ],
+    hostVenue.city && ["Town", hostVenue.city],
+    hostVenue.postcode && ["Postcode", hostVenue.postcode],
+    //hostVenue.description && ["About", hostVenue.description],
+  ].filter(Boolean);
+
+  rows.forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "info-table-row";
+    const l = document.createElement("span");
+    l.className = "info-table-label";
+    l.textContent = label;
+    const v = document.createElement("span");
+    v.className = "info-table-value";
+    v.textContent = value;
+    row.appendChild(l);
+    row.appendChild(v);
+    table.appendChild(row);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Map (mirrors venues.js's initVenueMap(), for the host venue)
+// ---------------------------------------------------------------------------
+
+function initEventMap(hostVenue) {
+  const [lat, lon] = hostVenue.latlon;
+  map = L.map("map", { minZoom: 5, maxZoom: 18 }).setView([lat, lon], 14);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
+
+  const marker = L.marker([lat, lon]).addTo(map);
+  marker
+    .bindPopup(
+      `<strong>${escapeHtml(hostVenue.name)}</strong><br>${escapeHtml(hostVenue.city || "")}`,
+    )
+    .openPopup();
+}
+
+// ---------------------------------------------------------------------------
+// Nearby venues (mirrors venues.js's renderNearbyVenues(), parameterized
+// by the nearby list computed in renderPage() rather than read off a
+// module-scope venue/venueId — this page's "self" is the event's host
+// venue, not a venue record of the page's own).
+// ---------------------------------------------------------------------------
+
+function renderNearbyVenues(nearby) {
+  if (nearby.length === 0) return;
+
+  document.getElementById("nearbySection").style.display = "";
+  const list = document.getElementById("nearbyList");
+
+  nearby.forEach(({ key: vid, item: v, dist }) => {
+    const row = document.createElement("div");
+    row.className = "nearby-row";
+
+    const a = document.createElement("a");
+    a.href = `venues.html?venue=${encodeURIComponent(vid)}`;
+    a.className = "nearby-name";
+    a.textContent = v.name;
+    row.appendChild(a);
+
+    if (v.city) {
+      const city = document.createElement("span");
+      city.className = "nearby-city";
+      city.textContent = v.city;
+      row.appendChild(city);
+    }
+
+    const distSpan = document.createElement("span");
+    distSpan.className = "nearby-dist";
+    distSpan.textContent = `${dist.toFixed(1)} km`;
+    row.appendChild(distSpan);
+
+    list.appendChild(row);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Nearby events (mirrors venues.js's renderNearbyEvents()/
+// renderNearbyEventsList(), across the same nearby-venue set computed
+// above rather than a single module-scope venueId).
+// ---------------------------------------------------------------------------
+
+let nearbyVenuesForEvents = [];
+let nearbyEventsToday = null;
+
+function renderNearbyEvents(nearby, today) {
+  if (nearby.length === 0) return;
+
+  nearbyVenuesForEvents = nearby;
+  nearbyEventsToday = today;
+  document.getElementById("nearbyEventsSection").style.display = "";
+
+  const horizonSelect = document.getElementById("nearbyEventsHorizon");
+  if (!horizonSelect.dataset.wired) {
+    horizonSelect.dataset.wired = "true";
+    horizonSelect.addEventListener("change", () =>
+      renderNearbyEventsList(Number(horizonSelect.value)),
+    );
+  }
+
+  renderNearbyEventsList(Number(horizonSelect.value));
+}
+
+function renderNearbyEventsList(days) {
+  const list = document.getElementById("nearbyEventsList");
+  list.innerHTML = "";
+
+  const today = nearbyEventsToday;
+  const horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + days);
+
+  const MAX_EVENTS = 15;
+  const upcomingNearby = nearbyVenuesForEvents
+    .flatMap(({ key: vid, item: v }) => [
+      ...collectDatedEventsForVenue(vid)
+        .filter((e) => e.date >= today && e.date < horizon)
+        .map((e) => ({ ...e, venueId: vid, venue: v })),
+      ...collectRecurringEventsForVenue(vid, today, horizon).map((e) => ({
+        ...e,
+        venueId: vid,
+        venue: v,
+      })),
+    ])
+    .sort((a, b) => a.date - b.date)
+    .slice(0, MAX_EVENTS);
+
+  if (upcomingNearby.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "no-events";
+    empty.textContent = `No nearby events found in the next ${days} days.`;
+    list.appendChild(empty);
+    return;
+  }
+
+  upcomingNearby.forEach((entry) =>
+    renderEventRow(list, entry, false, { showVenue: true }),
+  );
+}

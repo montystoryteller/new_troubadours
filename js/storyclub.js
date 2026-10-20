@@ -1,0 +1,2142 @@
+// ── Constants (mirrors event_display.js) ─────────────────────────────────
+// DAYS_OF_WEEK, MONTHS_SHORT — defined once in shared_utils.js (loaded
+// before this file); storyclub.js used to keep its own identical copies
+// under the names DAYS and MONTHS_SHORT.
+
+// Global holder for the loaded events data, matching the convention
+// already used in venues.js/tour_display.js/event_display.js/performers.js
+// (storyclub.js previously kept this only as a local `data` variable
+// inside the init IIFE below, passed explicitly to render functions as
+// a parameter — that still works and is unchanged; this global exists
+// so shared_utils.js functions written against `eventsData`, like
+// collectDatedEventsForVenue()/collectRecurringEventsForVenue(), also
+// work when called from this page).
+let eventsData = null;
+let toursLookup = {}; // needed by collectDatedEventsForVenue()'s call to
+// collectTourDatesForVenue() (shared_utils.js) — same convention as venues.js.
+let performersLookup = {}; // needed by renderEventRow() (shared_utils.js)
+
+// ── Lazy Leaflet loading ──────────────────────────────────────────────────
+// storyclub.html no longer links/preloads Leaflet's CSS or JS. It's loaded
+// here on demand — for a single club's venue map straight after its content
+// is built, and for the directory's collapsible map only when it's first
+// opened (createCollapsibleMap()'s loadMapLibrary hook) — so a slow or
+// unreachable cdnjs request can never hold up the page's own content.
+// Same approach as venues.js / tour_display.js / event.js / festival_display.js.
+let leafletPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+// FACEBOOK_SVG, GLOBE_SVG, EMAIL_SVG — these used to be storyclub.js's own
+// copies of exactly the icons already in shared_utils.js's ICON_SVG
+// (.facebook, .website, .email respectively); use those instead.
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+// parseDateString() used to be redefined locally here — a DD/MM/YYYY parser
+// that also resolved structured schedule objects via
+// RecurrenceEngine.nextOccurrence(). Being a plain `function` declaration,
+// it silently SHADOWED the global parseDateString() from shared_utils.js
+// for this entire page, including every call shared_utils.js makes to it
+// internally (festival/event/tour/show date parsing) — so storyclub.html
+// was quietly running different date-parsing logic than every other page
+// that loads shared_utils.js.
+//
+// Checked every parseDateString() call site across the whole codebase
+// (event.js, event_display.js, festival_display.js, performers.js,
+// tour_display.js, event_builder.html, shared_utils.js itself, and this
+// file's own four call sites below): none of them ever pass a schedule
+// object — only DD/MM/YYYY strings (event.date, tourDate.date,
+// showDate.date, festival.start_date/end_date, feature_slots[][0]) — so
+// the object-resolving branch was dead code. Removed; this file now uses
+// the one shared parseDateString() (shared_utils.js, loaded before this
+// file), same as everywhere else. If a genuine need to resolve a schedule
+// OBJECT to a single date ever comes up, call
+// RecurrenceEngine.nextOccurrence(schedule, exceptions) directly — as
+// nextScheduledDate() below already does — rather than re-adding this
+// under the parseDateString name.
+
+// formatDate() — defined in shared_utils.js
+
+function scheduleLabel(schedule) {
+  if (!schedule) return null;
+
+  // Handle structured schedule object
+  if (typeof schedule === "object") {
+    const type = (schedule.type || "").toLowerCase();
+    const day = schedule.day || "";
+    const occ = schedule.occurrence || "";
+
+    if (type === "weekly" || type === "every") {
+      return `Meets every ${capitalise(day)}`;
+    }
+    if (type === "fortnightly") {
+      return `Meets fortnightly on ${capitalise(day)}s`;
+    }
+    if (type === "monthly") {
+      return `Meets the ${occ} ${capitalise(day)} of the month`;
+    }
+    return "Meets scheduled dates";
+  }
+
+  // Legacy string fallback
+  const str = String(schedule);
+  return "Meets " + str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function icon(svg, href, cls, title) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.className = cls;
+
+  // Tooltip for mouse users
+  a.title = title;
+
+  // Accessible name for screen readers
+  a.setAttribute("aria-label", title);
+
+  a.innerHTML = svg;
+  a.style.cssText =
+    "display:inline-block;margin-left:6px;vertical-align:middle;text-decoration:none;";
+
+  const svgEl = a.querySelector("svg");
+  svgEl.style.cssText = "width:20px;height:20px;";
+
+  // Hide the raw SVG from screen readers so they only read the aria-label
+  svgEl.setAttribute("aria-hidden", "true");
+
+  return a;
+}
+
+// Facebook page/group links: use facebookLinkSpecs() from shared_utils.js.
+
+// Mirrors getMonthParity()/resolveEventVenue() in event_display.js — a
+// club with `alternate_locations` rotates venues by calendar-month parity
+// (e.g. even months at one venue, odd months at another). Resolves to the
+// club's own `venue_id` when there's no override for that date's parity.
+// resolveClubVenueId() — defined in shared_utils.js
+
+// ── Shared schedule engine (used by both single-club view and directory) ──
+// Was ~200 lines of _SCHED_DAY_MAP/_SCHED_OCC_MAP/_findNthDayInMonth/
+// scheduledOccurrencesInRange, duplicated (with subtly different exception
+// handling) in event_display.js and referenced again, broken, from
+// parseScheduleObject() above. All consolidated into recurrence-engine.js
+// (loaded before this file) — see that file for full docs, and for the
+// regression tests covering leap years, year boundaries, 4-vs-5-occurrence
+// months, reschedule detection, etc.
+const scheduledOccurrencesInRange =
+  RecurrenceEngine.scheduledOccurrencesInRange;
+const scheduledDatesInRange = RecurrenceEngine.scheduledDatesInRange;
+const nextMeetingDate = RecurrenceEngine.nextMeetingDate;
+const nextOccurrence = RecurrenceEngine.nextOccurrence;
+const prevMeetingDate = RecurrenceEngine.prevMeetingDate;
+
+// ── Main ──────────────────────────────────────────────────────────────────
+setCanonical("club");
+
+(async function () {
+  const params = new URLSearchParams(location.search);
+  const clubId = params.get("club");
+
+  // Load data (should be cached, so this is fast)
+  const result = await loadEventsData();
+  if (!result) {
+    document.getElementById("page-content").innerHTML =
+      '<p class="not-found">Could not load events data.</p>';
+    PageHealth.markFailed("events data failed to load");
+    return;
+  }
+  const data = result.eventsData;
+  eventsData = data; // populate the global too — see declaration above
+  toursLookup = result.toursLookup || {};
+  performersLookup = result.performersLookup || {};
+
+  // Display when data was last refreshed
+  displayDataLastUpdated(result.lastUpdateTime);
+  initNavFeedback();
+
+  // Check if we have cached schedules; if not, show a spinner while computing
+  const cachedSchedules = getSchedulesCache();
+  if (!cachedSchedules) {
+    document.getElementById("page-content").innerHTML =
+      '<p class="status-message status-message--loading">Loading Story Clubs… <strong>[Hard refresh this page it is seems to be taking too long…]</strong</p>';
+  }
+
+  // Defer heavy computation (schedule calculations, filtering, sorting) to background
+  // This allows the browser to render the loading state or cached data first
+  setTimeout(async () => {
+    await renderPage(data, clubId);
+    if (document.querySelector("#page-content .not-found")) {
+      PageHealth.markNotFound();
+    } else {
+      PageHealth.markReady({
+        contentId: "page-content",
+        checks: [
+          [
+            "still showing a loading message",
+            () => !document.querySelector("#page-content .status-message--loading"),
+          ],
+        ],
+      });
+    }
+    // Mark schedules as cached — valid until date/month boundary crosses
+    setSchedulesCache({ computed: true });
+  }, 0);
+})();
+
+async function renderPage(data, clubId) {
+  const clubRecord = data.clubs.find((e) => e.club === clubId) || null;
+
+  if (!clubRecord && !clubId) {
+    // No club param — show a directory of all clubs
+    await renderDirectory(data);
+    return;
+  }
+
+  if (!clubRecord) {
+    document.getElementById("page-content").innerHTML =
+      `<div class="not-found"><h2>Club not found</h2><p>No club with id <code>${clubId}</code>.</p></div>`;
+    return;
+  }
+
+  // A real club is on screen: offer its "Find us on" badge.
+  renderShareBadge("club", clubId);
+
+  // Performer lookup helper — must come before anything below
+  // that calls it. tourClubEvents/repertoireClubEvents (built
+  // just below) both call resolveClubEventPerformer() while
+  // constructing each event, so this can't be declared any later
+  // than here even though it reads more naturally next to the
+  // other lookups further down.
+  const performers = data.performers || {};
+  function performerName(id) {
+    return id && performers[id] ? performers[id].name : null;
+  }
+  function performerUrl(id) {
+    return id && performers[id] ? performers[id].url || null : null;
+  }
+
+  // Resolves a tour/repertoire-show record's performer(s) into the
+  // shape renderSpecificEvent() already expects: a linkable
+  // performer_id when there's exactly one performer, or a
+  // plain-text joined `performer` string when there's more than
+  // one (renderSpecificEvent() falls back to plain text via
+  // `ev.performer` whenever performer_id doesn't resolve to a
+  // name, so this doesn't require any change there). Some records
+  // give a single performer_id, others an array performer_ids —
+  // both are handled the same way performers.html's own
+  // performerMatches() already does.
+  function resolveClubEventPerformer(obj) {
+    const ids =
+      Array.isArray(obj.performer_ids) && obj.performer_ids.length
+        ? obj.performer_ids
+        : obj.performer_id
+          ? [obj.performer_id]
+          : [];
+    if (ids.length === 1) return { performer_id: ids[0], performer: null };
+    if (ids.length > 1) {
+      return {
+        performer_id: null,
+        performer: ids.map((id) => performerName(id) || id).join(" & "),
+      };
+    }
+    return { performer_id: null, performer: null };
+  }
+
+  // Find all specific events for this club
+  const today = getTodayMidnight();
+
+  // Per-event flyer resolution for the "Flyer"/"Flyers" button on each
+  // event card: combines any flyer(s) attached directly to this
+  // occurrence (event_flyer/event_flyer2/event_flyers —
+  // getEventLevelFlyers(), shared_utils.js) with any of this club's own
+  // club_flyers[] that are dated (YYYY_MM_DD prefix, parseDatedClubFlyer()
+  // — shared_utils.js) matching this occurrence's date, plus — for tour/
+  // repertoire dates — the tour/show's own flyer(s) passed in via
+  // otherFlyers. Mirrors getExpandableContent()'s flyer list on the
+  // events page (event_display.js), so a flyer added there also shows up
+  // here.
+  function collectEventFlyers(baseEvent, date, otherFlyers) {
+    const flyers = [];
+
+    getEventLevelFlyers(baseEvent).forEach((f) => {
+      flyers.push({
+        path: f.filename,
+        basePath: "./storyclub_assets/event_flyers/",
+        altSuffix: f.label || "event flyer",
+      });
+    });
+
+    if (date && Array.isArray(clubRecord.club_flyers)) {
+      clubRecord.club_flyers
+        .filter((f) => typeof f === "string" && f.trim())
+        .map((f) => f.trim())
+        .filter((f) => {
+          const flyerDate = parseDatedClubFlyer(f);
+          return flyerDate && flyerDate.toDateString() === date.toDateString();
+        })
+        .forEach((filename) => {
+          flyers.push({
+            path: filename,
+            basePath: "./storyclub_assets/event_flyers/",
+            altSuffix: "flyer",
+          });
+        });
+    }
+
+    (otherFlyers || []).forEach((f) => {
+      flyers.push({
+        path: f.filename,
+        basePath: "./storyclub_assets/event_flyers/",
+        altSuffix: f.label || "tour flyer",
+      });
+    });
+
+    return flyers;
+  }
+
+  const clubSpecificEvents = data.specificEvents
+    .filter((e) => e.club === clubId)
+    .map((e) => {
+      const _date = parseDateString(e.date);
+      return {
+        ...e,
+        _date,
+        video_trailer: e.video_trailer || null,
+        flyers: collectEventFlyers(e, _date),
+      };
+    })
+    .filter((e) => e._date);
+
+  // Tour dates can opt into a club's event list via a "club_event"
+  // tag on the individual tour_dates entry (e.g. a one-off tour
+  // stop that's also that club's regular night). expandTourDates()
+  // (shared_utils.js) flattens any array-format dates first, so a
+  // multi-night stop is picked up correctly too.
+  //
+  // `club` is now the canonical field (same as specificEvents and
+  // show_dates); `club_event` is a deprecated alias still honoured here
+  // until the data has been migrated, after which the fallback can go.
+  const tours = data.tours || {};
+  const tourClubEvents = [];
+  for (const tourKey in tours) {
+    const tour = tours[tourKey];
+    expandTourDates(tour.tour_dates)
+      .filter((tourDate) => (tourDate.club || tourDate.club_event) === clubId)
+      .forEach((tourDate) => {
+        const _date = parseDateString(tourDate.date);
+        if (!_date) return;
+        const { performer_id, performer } = resolveClubEventPerformer(tour);
+        tourClubEvents.push({
+          name: tour.name,
+          showname: tour.tour_name || tour.name,
+          performer_id,
+          performer,
+          venue_id: tourDate.venue_id,
+          time: tourDate.time || tour.time || null,
+          price: tourDate.price || tour.price || null,
+          description: tour.tour_description || null,
+          ticket_url: tourDate.ticket_url || null,
+          fb_event: tourDate.fb_event || null,
+          video_trailer: tourDate.video_trailer || tour.video_trailer || null,
+          isSpecial: !!tourDate.isSpecial || !!tour.isSpecial,
+          isCancelled: !!tourDate.isCancelled,
+          isSoldOut: !!tourDate.isSoldOut,
+          flyers: collectEventFlyers(tourDate, _date, getTourLevelFlyers(tour)),
+          _date,
+        });
+      });
+  }
+
+  // Repertoire shows: same idea as tour dates above, but each
+  // show_dates[] entry opts in via a plain `club` field (per the
+  // schema's showDate.club, "the club night this date belongs
+  // to") rather than a separate `club_event` flag — repertoire
+  // shows don't otherwise have a general-purpose, non-club-opt-in
+  // use for `club`, so there's no ambiguity to resolve here the
+  // way there is for tour_dates.
+  const repertoireShows = data.repertoire_shows || {};
+  const repertoireClubEvents = [];
+  for (const showKey in repertoireShows) {
+    const show = repertoireShows[showKey];
+    expandTourDates(show.show_dates)
+      .filter((showDate) => showDate.club === clubId)
+      .forEach((showDate) => {
+        const _date = parseDateString(showDate.date);
+        if (!_date) return;
+        const { performer_id, performer } = resolveClubEventPerformer(show);
+        repertoireClubEvents.push({
+          name: show.name,
+          showname: show.showname || show.name,
+          performer_id,
+          performer,
+          venue_id: showDate.venue_id,
+          time: showDate.time || null,
+          price: showDate.price || null,
+          description: show.description || null,
+          ticket_url: showDate.ticket_url || null,
+          fb_event: showDate.fb_event || null,
+          video_trailer: showDate.video_trailer || show.video_trailer || null,
+          isSpecial: !!showDate.isSpecial || !!show.isSpecial,
+          isCancelled: !!showDate.isCancelled,
+          isSoldOut: !!showDate.isSoldOut,
+          // getTourLevelFlyers() is written against tour.tour_flyer /
+          // .touring_event_flyer / .touring_event_flyers — a repertoire
+          // show record uses those same field names for its own
+          // whole-run artwork, so the same resolver works unmodified.
+          flyers: collectEventFlyers(showDate, _date, getTourLevelFlyers(show)),
+          _date,
+        });
+      });
+  }
+
+  const allSpecific = clubSpecificEvents
+    .concat(tourClubEvents)
+    .concat(repertoireClubEvents)
+    .sort((a, b) => a._date - b._date);
+
+  const pastEvents = allSpecific.filter((e) => e._date < today);
+  const upcomingEvents = allSpecific.filter((e) => e._date >= today);
+
+  // Schedule resolution (next/prev meeting dates, date-range expansion) is
+  // handled by the shared module-scope engine defined above:
+  // scheduledDatesInRange(), nextMeetingDate(), prevMeetingDate().
+  // (Previously this block had its own copy of that logic, which had gone
+  // out of sync with the shared version and silently dropped structured
+  // schedule objects like {"type":"fortnightly", ...}. Use the aliases
+  // below rather than re-introducing a second copy.)
+  const nextScheduledDate = nextMeetingDate;
+  const prevScheduledDate = prevMeetingDate;
+
+  // Venue lookup — clubs with `alternate_locations` rotate venue by the
+  // next meeting's month parity, so resolve that before looking it up
+  // rather than always using the club's own (possibly placeholder,
+  // e.g. "various") venue_id.
+  const venueIdForHeader = resolveClubVenueId(
+    clubRecord,
+    nextScheduledDate(clubRecord.schedule, clubRecord.exceptions || []) ||
+      today,
+  );
+  const venue = data.venues[venueIdForHeader] || null;
+
+  // Resolve feature_slots for a given Date → { name, url, id } or null
+  function featuredGuestForDate(date) {
+    const slots = clubRecord.feature_slots;
+    if (!slots || !slots.length) return null;
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    const dateStr = `${dd}/${mm}/${yyyy}`;
+    const slot = slots.find((s) => s[0] === dateStr);
+    if (!slot || !slot[1]) return null;
+    const pid = slot[1];
+    const rec = performers[pid];
+    if (!rec) return null;
+    const safeUrl = rec.url ? sanitizeUrl(rec.url) : null;
+    return { id: pid, name: rec.name, url: safeUrl };
+  }
+
+  // Render a small "feat. NAME" element for a featured guest
+  function featuredGuestEl(guest) {
+    const div = document.createElement("div");
+    div.className = "club-featured-guest";
+    div.appendChild(document.createTextNode("feat. "));
+    const a = document.createElement("a");
+    a.href =
+      guest.url || `performers.html?performer=${encodeURIComponent(guest.id)}`;
+    if (guest.url) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    a.textContent = guest.name;
+    div.appendChild(a);
+    return div;
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────
+  const clubTitle = nameWithTown(clubRecord.name, venue && venue.city);
+  document.title = `${clubTitle} — New Troubadours`;
+
+  const clubSched = scheduleLabel(clubRecord.schedule);
+  setMetaDescription(
+    [
+      clubTitle,
+      [
+        clubSched &&
+          clubSched + (clubRecord.time ? ` at ${clubRecord.time}` : ""),
+        venue && `venue: ${venue.name}`,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      "Next dates, guests and map.",
+    ]
+      .filter(Boolean)
+      .join(" — "),
+  );
+  prependMetaKeyword(clubTitle);
+
+  const root = document.getElementById("page-content");
+  root.innerHTML = "";
+
+  // Back-link to the full clubs directory
+  const pageHeader = document.createElement("div");
+  pageHeader.className = "page-header";
+  const backLink = document.createElement("a");
+  backLink.href = "storyclub.html";
+  backLink.className = "back-link";
+  backLink.textContent = "← All story clubs";
+  pageHeader.appendChild(backLink);
+  root.appendChild(pageHeader);
+
+  // One H1 per page: the club's own name (below) is the H1 on its page.
+  setPageHeadingMode(true);
+
+  // Header card
+  const header = document.createElement("div");
+  header.className = "club-header";
+
+  const h1 = document.createElement("h1");
+  h1.textContent = clubRecord.name;
+  header.appendChild(h1);
+
+  if (clubRecord.schedule) {
+    const sched = document.createElement("div");
+    sched.className = "club-schedule";
+    sched.textContent =
+      scheduleLabel(clubRecord.schedule) +
+      (clubRecord.time ? ` • ${clubRecord.time}` : "");
+    header.appendChild(sched);
+  }
+
+  if (venue) {
+    const vdiv = document.createElement("div");
+    vdiv.className = "club-venue";
+    if (venue.url) {
+      const a = document.createElement("a");
+      a.href = venue.url;
+      a.target = "_blank";
+      a.textContent = venue.name;
+      vdiv.appendChild(a);
+    } else {
+      vdiv.textContent = venue.name;
+    }
+    if (venue.city) {
+      vdiv.appendChild(document.createTextNode(`, ${venue.city}`));
+    }
+    if (venue.postcode) {
+      vdiv.appendChild(document.createTextNode(` ${venue.postcode}`));
+    }
+    header.appendChild(vdiv);
+  }
+
+  if (clubRecord.price) {
+    const p = document.createElement("div");
+    p.style.cssText = "margin-top:4px;font-size:14px;color:#555;";
+    p.textContent = clubRecord.price;
+    header.appendChild(p);
+  }
+
+  // Next meeting + featured guest — shown in header for quick visibility
+  if (clubRecord.schedule) {
+    const nextHeaderDate = nextScheduledDate(
+      clubRecord.schedule,
+      clubRecord.exceptions || [],
+    );
+    if (nextHeaderDate) {
+      const msPerDay = 86400000;
+      const dDiff = Math.round((nextHeaderDate - today) / msPerDay);
+      // Only show here if not tonight/tomorrow (those get the alert banner)
+      if (dDiff > 1) {
+        const nextDiv = document.createElement("div");
+        nextDiv.className = "club-next-meeting";
+        nextDiv.textContent = `Next meeting: ${formatDate(nextHeaderDate)}`;
+        header.appendChild(nextDiv);
+        const headerGuest = featuredGuestForDate(nextHeaderDate);
+        if (headerGuest) header.appendChild(featuredGuestEl(headerGuest));
+      } else if (dDiff >= 0) {
+        // Tonight or tomorrow — just show the featured guest under the schedule
+        const headerGuest = featuredGuestForDate(nextHeaderDate);
+        if (headerGuest) header.appendChild(featuredGuestEl(headerGuest));
+      }
+    }
+  }
+
+  // Dropdown listing every recurring scheduled date over the next 12 months
+  // (comma-separated), collapsed by default via <details>/<summary>.
+  if (clubRecord.schedule) {
+    const rangeTo = new Date(today);
+    rangeTo.setFullYear(rangeTo.getFullYear() + 1);
+    const upcomingDates = scheduledDatesInRange(
+      clubRecord.schedule,
+      today,
+      rangeTo,
+      clubRecord.exceptions || [],
+    );
+    if (upcomingDates.length) {
+      const details = document.createElement("details");
+      details.className = "club-upcoming-dates";
+      const summary = document.createElement("summary");
+      summary.textContent = `Scheduled dates in the next 12 months (${upcomingDates.length})`;
+      details.appendChild(summary);
+      const list = document.createElement("div");
+      list.className = "club-upcoming-dates-list";
+      list.textContent = upcomingDates.map((d) => formatDate(d)).join("; ");
+      details.appendChild(list);
+      header.appendChild(details);
+    }
+  }
+
+  // Icons row
+  const iconsRow = document.createElement("div");
+  iconsRow.className = "club-icons";
+  if (clubRecord.link) {
+    const g = icon(
+      ICON_SVG.website,
+      clubRecord.link,
+      "event-website",
+      "Website",
+    );
+    g.querySelector("svg").style.fill = "#555";
+    iconsRow.appendChild(g);
+  }
+  if (clubRecord.email) {
+    iconsRow.appendChild(
+      icon(
+        ICON_SVG.email,
+        `mailto:${clubRecord.email}`,
+        "event-email",
+        "Email",
+      ),
+    );
+  }
+  facebookLinkSpecs(clubRecord).forEach(({ kind, href }) => {
+    iconsRow.appendChild(
+      icon(
+        ICON_SVG[kind],
+        href,
+        kind === "facebook_group"
+          ? "event-facebook event-facebook-group"
+          : "event-facebook",
+        FACEBOOK_LINK_LABELS[kind],
+      ),
+    );
+  });
+  if (iconsRow.children.length) header.appendChild(iconsRow);
+
+  // A club that is also a promoter has its own page in the promoters directory.
+  if (clubRecord.isPromoter) {
+    const pl = document.createElement("a");
+    pl.href = `promoters.html?promoter=${encodeURIComponent(clubRecord.club)}`;
+    pl.textContent = "📇 Promoter page";
+    pl.className = "club-promoter-link";
+    pl.style.cssText = "display:inline-block;margin:6px 0;font-size:0.9em;";
+    header.appendChild(pl);
+  }
+
+  // Convenor(s) and regular tellers: performer ids (convenor may be a single
+  // string or a list). Each links to the performer's page; ids that don't
+  // resolve to a performers record are skipped with a console warning.
+  function performerRoleLine(label, ids) {
+    const list = (Array.isArray(ids) ? ids : ids ? [ids] : []).filter(
+      (id) => typeof id === "string" && id.trim(),
+    );
+    const known = [];
+    list.forEach((id) => {
+      if (performers[id]) known.push(id);
+      else console.warn(`${clubRecord.name}: unknown performer id "${id}" in ${label}`);
+    });
+    if (!known.length) return null;
+    const div = document.createElement("div");
+    div.className = "club-performer-role";
+    div.style.cssText = "margin:6px 0;font-size:0.95em;";
+    const strong = document.createElement("strong");
+    strong.textContent = `${label}: `;
+    div.appendChild(strong);
+    known.forEach((id, i) => {
+      if (i > 0) div.appendChild(document.createTextNode(", "));
+      const a = document.createElement("a");
+      a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+      a.textContent = performers[id].name || id;
+      div.appendChild(a);
+    });
+    return div;
+  }
+  const convenorList = Array.isArray(clubRecord.convenor)
+    ? clubRecord.convenor
+    : clubRecord.convenor
+      ? [clubRecord.convenor]
+      : [];
+  const convenorEl = performerRoleLine(
+    convenorList.length > 1 ? "Convenors" : "Convenor",
+    convenorList,
+  );
+  if (convenorEl) header.appendChild(convenorEl);
+  const tellersEl = performerRoleLine(
+    "Regular tellers",
+    clubRecord.regular_tellers,
+  );
+  if (tellersEl) header.appendChild(tellersEl);
+
+  const hasGroupDesc = clubRecord.description && clubRecord.description.trim();
+
+  if (hasGroupDesc) {
+    const about = document.createElement("div");
+    const btn = document.createElement("button");
+    btn.className = "expand-btn";
+    btn.textContent = "About...";
+
+    const expandable = document.createElement("div");
+    expandable.className = "expandable";
+
+    const groupDesc = document.createElement("div");
+    groupDesc.className = "group-description";
+    groupDesc.innerHTML = clubRecord.description
+      .split("\n\n\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+      .join("");
+
+    expandable.appendChild(groupDesc);
+    btn.addEventListener("click", () => {
+      const open = expandable.classList.toggle("open");
+      btn.textContent = open ? "Hide About" : "About...";
+    });
+    about.appendChild(btn);
+    about.appendChild(expandable);
+    header.appendChild(about);
+  }
+
+  // Optional video trailer (YouTube only — getYouTubeEmbedUrl() validates and
+  // converts to a youtube-nocookie.com /embed/ URL, returning null for
+  // anything else). Shown inline under the About section, as on the tour
+  // page. loading="lazy" defers the iframe until it nears the viewport so
+  // it can't delay the club's text content.
+  const clubEmbedUrl = getYouTubeEmbedUrl(clubRecord.video_trailer);
+  if (clubEmbedUrl) {
+    const trailer = document.createElement("div");
+    trailer.className = "club-trailer";
+    const { wrapper, iframe } = createVideoTrailerEmbed(
+      `${clubRecord.name} trailer`,
+    );
+    iframe.loading = "lazy";
+    iframe.src = clubEmbedUrl;
+    trailer.appendChild(wrapper);
+    header.appendChild(trailer);
+  }
+
+  if (clubRecord.club_flyer) {
+    const img = document.createElement("img");
+    img.src = `./storyclub_assets/club_flyers/${sanitizeFlyerPath(clubRecord.club_flyer)}`;
+    img.className = "club-flyer";
+    img.alt = clubRecord.name;
+    header.appendChild(img);
+  }
+
+  // Additional flyers (clubRecord.club_flyers) — extra artwork for the club,
+  // separate from the single club_flyer above. Sourced from
+  // storyclub_assets/event_flyers/ per the schema. A filename prefixed
+  // YYYY_MM_DD (e.g. "2026_03_15_special_guest.jpg") is a flyer for
+  // that specific club date — shown with a date caption, greyed out
+  // if that date is in the past (matches the venues page treatment).
+  // parseDatedClubFlyer() (shared_utils.js) is the single implementation
+  // of that YYYY_MM_DD detection, shared with the event guide/flyers/
+  // venues pages.
+  if (Array.isArray(clubRecord.club_flyers) && clubRecord.club_flyers.length) {
+    const gallery = document.createElement("div");
+    gallery.className = "club-flyer-gallery";
+    clubRecord.club_flyers.forEach((filename) => {
+      const clean = filename?.trim();
+      if (!clean) return;
+      const item = document.createElement("div");
+      item.className = "club-flyer-gallery-item";
+      const img = document.createElement("img");
+      img.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(clean)}`;
+      img.className = "club-flyer-gallery-img";
+      img.alt = clubRecord.name;
+      img.loading = "lazy";
+      item.appendChild(img);
+      const flyerDate = parseDatedClubFlyer(clean);
+      if (flyerDate) {
+        if (flyerDate < today) img.classList.add("club-flyer-gallery-img-past");
+        const caption = document.createElement("div");
+        caption.className = "club-flyer-gallery-caption";
+        caption.textContent = formatDate(flyerDate);
+        item.appendChild(caption);
+      }
+      gallery.appendChild(item);
+    });
+    if (gallery.children.length) header.appendChild(gallery);
+  }
+
+  root.appendChild(header);
+
+  // ── Tonight / tomorrow alert ───────────────────────────────────────
+  // Check both next scheduled meeting AND specific upcoming events
+  function makeAlert(date, label) {
+    const div = document.createElement("div");
+    div.className = `meeting-alert ${label === "tonight" ? "tonight" : "tomorrow"}`;
+    div.innerHTML =
+      `<span class="alert-icon">${label === "tonight" ? "🎉" : "📅"}</span>` +
+      `<span>${label === "tonight" ? "Meeting <strong>tonight</strong>" : "Meeting <strong>tomorrow</strong>"}` +
+      (clubRecord.time ? ` at ${clubRecord.time}` : "") +
+      ` — ${formatDate(date)}</span>`;
+    return div;
+  }
+
+  function dayDiff(a, b) {
+    // Days between two midnight-normalised dates
+    return Math.round((a - b) / 86400000);
+  }
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  // Check next scheduled recurring date first
+  let alertDate = null;
+  if (clubRecord.schedule) {
+    const next = nextScheduledDate(
+      clubRecord.schedule,
+      clubRecord.exceptions || [],
+    );
+    if (next) {
+      const diff = dayDiff(next, today);
+      if (diff === 0 || diff === 1) alertDate = { date: next, diff };
+    }
+  }
+  // Also check if any specific upcoming event is tonight or tomorrow
+  for (const ev of upcomingEvents) {
+    const diff = dayDiff(ev._date, today);
+    if (diff === 0 || diff === 1) {
+      // Specific event takes priority over generic schedule alert
+      alertDate = { date: ev._date, diff };
+      break;
+    }
+  }
+
+  if (alertDate) {
+    root.appendChild(
+      makeAlert(alertDate.date, alertDate.diff === 0 ? "tonight" : "tomorrow"),
+    );
+  }
+
+  // ── Upcoming specific events ───────────────────────────────────────
+
+  // Map rendered after upcoming events
+  const latlon = venue && venue.latlon;
+  function renderMap() {
+    if (!latlon) return;
+    const mapWrap = document.createElement("div");
+    mapWrap.id = "map-container";
+    root.appendChild(mapWrap);
+    const mapDiv = document.createElement("div");
+    mapDiv.id = "map";
+    mapDiv.style.height = "100%";
+    mapWrap.appendChild(mapDiv);
+    // Leaflet loads lazily (see loadLeaflet() above); the map is an
+    // enhancement, so a failed load just hides its container.
+    loadLeaflet()
+      .then(() => {
+        const map = L.map("map").setView(latlon, 14);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+        const popupHtml = `<strong>${venue.name}</strong><br>${venue.full_address || venue.city || ""}`;
+        L.marker(latlon).addTo(map).bindPopup(popupHtml).openPopup();
+      })
+      .catch((error) => {
+        console.error("Failed to load club map:", error);
+        mapWrap.style.display = "none";
+      });
+  }
+
+  // ── Sections ──────────────────────────────────────────────────────
+  function sectionHeading(text, cls) {
+    const h = document.createElement("h2");
+    h.className = `section-heading ${cls}`;
+    h.textContent = text;
+    return h;
+  }
+
+  function renderSpecificEvent(ev, isPast) {
+    const card = document.createElement("div");
+    card.className =
+      "specific-event" +
+      (ev.isSpecial ? " is-special" : "") +
+      (isPast ? " is-past" : "");
+
+    // Show name
+    const showname = document.createElement("div");
+
+    showname.className = "showname";
+    showname.textContent = ev.showname || ev.name;
+    if (ev.eventId) {
+      showname.appendChild(
+        icon(
+          ICON_SVG.link,
+          `event.html?event=${ev.eventId}`,
+          "event-link",
+          "Event page",
+        ),
+      );
+    }
+
+    card.appendChild(showname);
+
+    // Performer
+    const pName = performerName(ev.performer_id) || ev.performer || null;
+    if (pName) {
+      const pDiv = document.createElement("div");
+      pDiv.className = "performer";
+      const pUrl = performerUrl(ev.performer_id);
+      if (pUrl) {
+        const a = document.createElement("a");
+        a.href = pUrl;
+        a.target = "_blank";
+        a.style.color = "inherit";
+        a.textContent = pName;
+        pDiv.appendChild(a);
+      } else {
+        pDiv.textContent = pName;
+      }
+      card.appendChild(pDiv);
+    }
+
+    // Venue (if different from club's home venue)
+    const evVenue = data.venues[ev.venue_id] || null;
+    if (evVenue) {
+      const locDiv = document.createElement("div");
+      locDiv.className = "event-location";
+      locDiv.textContent =
+        evVenue.name +
+        (evVenue.city ? `, ${evVenue.city}` : "") +
+        (evVenue.postcode ? ` ${evVenue.postcode}` : "");
+      card.appendChild(locDiv);
+    }
+
+    // Date + time
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "event-date";
+    dateDiv.textContent =
+      formatDate(ev._date) +
+      (ev.time ? ` • ${ev.time}` : "") +
+      (ev.price ? ` • ${ev.price}` : "");
+    card.appendChild(dateDiv);
+
+    // Expandable: description + tickets
+    const hasDesc = ev.description && ev.description.trim();
+    const hasTickets = ev.ticket_url;
+    const hasFbEvent = ev.fb_event;
+
+    if (hasTickets || hasFbEvent) {
+      const tickets = document.createElement("div");
+      tickets.className = "event-tickets";
+      if (hasTickets) {
+        const a = document.createElement("a");
+        a.href = ev.ticket_url;
+        a.target = "_blank";
+        a.textContent = "Tickets available here";
+        tickets.appendChild(a);
+      }
+      if (hasFbEvent) {
+        if (hasTickets) {
+          const sep = document.createElement("span");
+          sep.className = "separator";
+          sep.textContent = " | ";
+          tickets.appendChild(sep);
+        }
+        const fbUrl = `https://www.facebook.com/events/${ev.fb_event}`;
+        const fbA = document.createElement("a");
+        fbA.href = fbUrl;
+        fbA.target = "_blank";
+        fbA.innerHTML = ICON_SVG.facebook;
+        fbA.querySelector("svg").style.cssText =
+          "width:20px;height:20px;vertical-align:middle;";
+        tickets.appendChild(fbA);
+      }
+      card.appendChild(tickets);
+    }
+
+    if (hasDesc) {
+      const btn = document.createElement("button");
+      btn.className = "expand-btn";
+      btn.textContent = "More info…";
+
+      const expandable = document.createElement("div");
+      expandable.className = "expandable";
+
+      const desc = document.createElement("div");
+      desc.className = "event-description";
+      desc.innerHTML = ev.description
+        .split("\n\n\n\n")
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+        .join("");
+      expandable.appendChild(desc);
+
+      btn.addEventListener("click", () => {
+        const open = expandable.classList.toggle("open");
+        btn.textContent = open ? "Less info" : "More info…";
+      });
+
+      card.appendChild(btn);
+      card.appendChild(expandable);
+    }
+
+    // Flyer(s) for this specific occurrence — event-level flyers, any of
+    // this club's own dated club_flyers[] matching this date, and (for
+    // tour/repertoire dates) the tour/show's own flyer(s), all resolved
+    // up front onto ev.flyers by collectEventFlyers() above.
+    const flyers = ev.flyers || [];
+    if (flyers.length) {
+      const flyerBtn = document.createElement("button");
+      flyerBtn.className = "expand-btn";
+      flyerBtn.textContent = flyers.length > 1 ? "Flyers" : "Flyer";
+
+      const flyerExpandable = document.createElement("div");
+      flyerExpandable.className = "expandable";
+
+      flyers.forEach((flyer, index) => {
+        if (!flyer.path) return;
+        const img = document.createElement("img");
+        img.alt = `${ev.showname || ev.name} ${flyer.altSuffix}`;
+        img.src = `${flyer.basePath}${sanitizeFlyerPath(flyer.path)}`;
+        img.className = "club-flyer";
+        if (index > 0) img.classList.add("event-flyer-subsequent");
+        flyerExpandable.appendChild(img);
+      });
+
+      flyerBtn.addEventListener("click", () => {
+        const open = flyerExpandable.classList.toggle("open");
+        flyerBtn.textContent = open
+          ? flyers.length > 1
+            ? "Hide flyers"
+            : "Hide flyer"
+          : flyers.length > 1
+            ? "Flyers"
+            : "Flyer";
+      });
+
+      card.appendChild(flyerBtn);
+      card.appendChild(flyerExpandable);
+    }
+
+    // Video trailer preview, if a valid YouTube URL is available
+    // (getYouTubeEmbedUrl() — shared_utils.js — validates and
+    // converts to a safe youtube-nocookie.com /embed/ URL, or
+    // returns null for anything else).
+    const videoEmbedUrl = getYouTubeEmbedUrl(ev.video_trailer);
+    if (videoEmbedUrl) {
+      const videoBtn = document.createElement("button");
+      videoBtn.className = "expand-btn";
+      videoBtn.textContent = "Video preview";
+
+      const videoExpandable = document.createElement("div");
+      videoExpandable.className = "expandable";
+
+      const { wrapper: videoWrapper, iframe } = createVideoTrailerEmbed(
+        `${ev.showname || ev.name} trailer`,
+      );
+      // src is only set when opened, and cleared when closed,
+      // so the trailer doesn't keep playing off-screen.
+
+      videoExpandable.appendChild(videoWrapper);
+
+      videoBtn.addEventListener("click", () => {
+        const open = videoExpandable.classList.toggle("open");
+        videoBtn.textContent = open ? "Hide video" : "Video preview";
+        iframe.src = open ? videoEmbedUrl : "";
+      });
+
+      card.appendChild(videoBtn);
+      card.appendChild(videoExpandable);
+    }
+
+    return card;
+  }
+
+  // Upcoming specific events
+  if (upcomingEvents.length) {
+    root.appendChild(sectionHeading("Upcoming events", "upcoming"));
+    upcomingEvents.forEach((e) =>
+      root.appendChild(renderSpecificEvent(e, false)),
+    );
+
+    // Also show next regular meeting date as a reference
+    if (clubRecord.schedule) {
+      const next = nextScheduledDate(
+        clubRecord.schedule,
+        clubRecord.exceptions || [],
+      );
+      if (next) {
+        const note = document.createElement("p");
+        note.style.cssText =
+          "margin:10px 0 0;color:#888;font-size:13px;font-style:italic;";
+        note.textContent = `Next regular meeting date: ${formatDate(next)}`;
+        root.appendChild(note);
+        const nextGuest = featuredGuestForDate(next);
+        if (nextGuest) root.appendChild(featuredGuestEl(nextGuest));
+      }
+    }
+  } else {
+    root.appendChild(sectionHeading("Upcoming events", "upcoming"));
+
+    const schedDiv = document.createElement("div");
+    schedDiv.style.cssText = "padding:14px 0 6px;";
+
+    const schedule = clubRecord.schedule;
+    const exceptions = clubRecord.exceptions || [];
+
+    if (schedule) {
+      const next = nextScheduledDate(schedule, exceptions);
+      const prev = prevScheduledDate(schedule, exceptions);
+
+      if (next) {
+        const p = document.createElement("p");
+        p.style.cssText = "margin:0 0 6px;color:#2e7d32;font-weight:bold;";
+        p.textContent = `Next regular meeting: ${formatDate(next)}`;
+        schedDiv.appendChild(p);
+        const nextGuest = featuredGuestForDate(next);
+        if (nextGuest) schedDiv.appendChild(featuredGuestEl(nextGuest));
+      }
+      if (prev) {
+        const p = document.createElement("p");
+        p.style.cssText = "margin:0 0 6px;color:#888;font-size:14px;";
+        p.textContent = `Previous regular meeting: ${formatDate(prev)}`;
+        schedDiv.appendChild(p);
+      }
+      if (!next && !prev) {
+        const p = document.createElement("p");
+        p.className = "no-events";
+        p.textContent = "No scheduled dates found in the near future.";
+        schedDiv.appendChild(p);
+      }
+    } else {
+      const p = document.createElement("p");
+      p.className = "no-events";
+      p.textContent = "No specific upcoming events listed.";
+      schedDiv.appendChild(p);
+    }
+
+    root.appendChild(schedDiv);
+  }
+
+  // ── Feature slots ──────────────────────────────────────────────────
+  const slots = clubRecord.feature_slots;
+  if (slots && slots.length) {
+    // Parse and sort all slots by date
+    const parsedSlots = slots
+      .map((s) => {
+        const date = parseDateString(s[0]);
+        return date ? { date, performerId: s[1] } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.date - b.date);
+
+    // Deduplicate: same date + performer combination
+    const seen = new Set();
+    const uniqueSlots = parsedSlots.filter((s) => {
+      const key = s.date.getTime() + "|" + s.performerId;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    if (uniqueSlots.length) {
+      root.appendChild(sectionHeading("Featured guests", "upcoming"));
+
+      uniqueSlots.forEach(({ date, performerId }) => {
+        const isPast = date < today;
+        const row = document.createElement("div");
+        row.className = "feature-slot" + (isPast ? " is-past" : "");
+
+        const dateEl = document.createElement("div");
+        dateEl.className = "feature-slot-date";
+        dateEl.textContent = formatDate(date);
+        row.appendChild(dateEl);
+
+        const perfEl = document.createElement("div");
+        perfEl.className = "feature-slot-performer";
+
+        const rec = performers[performerId];
+        if (rec) {
+          const safeUrl = rec.url ? sanitizeUrl(rec.url) : null;
+          const perfUrl =
+            safeUrl ||
+            `performers.html?performer=${encodeURIComponent(performerId)}`;
+          const a = document.createElement("a");
+          a.href = perfUrl;
+          if (safeUrl) {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+          }
+          a.textContent = rec.name;
+          perfEl.appendChild(a);
+        } else {
+          // Performer id not in data — show the raw id as a fallback
+          perfEl.textContent = performerId;
+        }
+
+        row.appendChild(perfEl);
+        root.appendChild(row);
+      });
+    }
+  }
+
+  // Past specific events (most recent first)
+  renderMap();
+
+  if (pastEvents.length) {
+    root.appendChild(sectionHeading("Past events", "past"));
+    [...pastEvents]
+      .reverse()
+      .forEach((e) => root.appendChild(renderSpecificEvent(e, true)));
+  }
+
+  renderNearbyStoryEventsSection(root, clubRecord);
+}
+
+// ── Nearby story events ─────────────────────────────────────────────────
+// "Story-first, opt-in music/poetry/folk" — mirrors venues.js's own
+// nearby-events feature (same shared collectDatedEventsForVenue()/
+// collectRecurringEventsForVenue()/renderEventRow(), see shared_utils.js),
+// but centred on THIS club's own venue(s) rather than a single fixed
+// venue, and defaulting to the "story" category only (storyclub nights,
+// story walks, special/repertoire storytelling shows, festivals).
+
+const NEARBY_RADIUS_KM = 20; // matches venues.js's own nearby-venues radius
+const NEARBY_MAX_EVENTS = 15; // matches venues.js's own nearby-events cap
+
+/**
+ * Resolve a club's own venue(s) into one or more {lat, lon} search
+ * centers. A club with alternate_locations has up to two possible
+ * venues; if they're within NEARBY_RADIUS_KM of each other, search from
+ * their midpoint (one combined neighbourhood, avoiding the need to pick
+ * "which date resolves to which venue" just to decide what's nearby);
+ * if they're far apart (expected to be rare), search from each
+ * separately and the caller unions the results.
+ * @param {object} clubRecord
+ * @returns {{lat: number, lon: number}[]}
+ */
+function resolveClubNearbyCenters(clubRecord) {
+  const ids = [
+    ...new Set(
+      [
+        clubRecord.venue_id,
+        clubRecord.alternate_locations?.even?.venue_id,
+        clubRecord.alternate_locations?.odd?.venue_id,
+      ].filter(Boolean),
+    ),
+  ];
+  const withLatLon = ids
+    .map((vid) => eventsData.venues[vid])
+    .filter((v) => v && hasLatlon(v));
+
+  if (withLatLon.length === 0) return [];
+  if (withLatLon.length === 1) {
+    const [lat, lon] = withLatLon[0].latlon;
+    return [{ lat, lon }];
+  }
+
+  const allClose = withLatLon.every((a, i) =>
+    withLatLon
+      .slice(i + 1)
+      .every(
+        (b) =>
+          haversineKm(a.latlon[0], a.latlon[1], b.latlon[0], b.latlon[1]) <=
+          NEARBY_RADIUS_KM,
+      ),
+  );
+
+  if (allClose) {
+    const lat =
+      withLatLon.reduce((s, v) => s + v.latlon[0], 0) / withLatLon.length;
+    const lon =
+      withLatLon.reduce((s, v) => s + v.latlon[1], 0) / withLatLon.length;
+    return [{ lat, lon }];
+  }
+  // Far apart: search each separately; collectNearbyStoryEvents() unions
+  // (and de-dupes, via the Set below) the resulting nearby-venue sets.
+  return withLatLon.map((v) => ({ lat: v.latlon[0], lon: v.latlon[1] }));
+}
+
+/**
+ * Gather nearby story-first (+opt-in music/poetry/folk) events/clubs
+ * around a club's venue(s), within [today, today+days]. Excludes this
+ * club's own recurring instances so it doesn't list itself.
+ * @param {object} clubRecord
+ * @param {number} days
+ * @param {Set<string>} categories - always includes "story"; may also
+ *   include "music"/"poetry"/"folk" per the opt-in checkboxes
+ * @returns {object[]} same entry shape renderEventRow() expects
+ */
+function collectNearbyStoryEvents(clubRecord, days, categories) {
+  const centers = resolveClubNearbyCenters(clubRecord);
+  if (centers.length === 0) return [];
+
+  const today = getTodayMidnight();
+  const horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + days);
+
+  const venueEntries = Object.entries(eventsData.venues || {});
+  const nearbyVenueIds = new Set();
+  centers.forEach(({ lat, lon }) => {
+    findNearbyByLatLon(lat, lon, venueEntries, {
+      radiusKm: NEARBY_RADIUS_KM,
+      limit: 20, // generous here; the final list is capped below post-filter
+    }).forEach(({ key }) => nearbyVenueIds.add(key));
+  });
+
+  const results = [];
+  nearbyVenueIds.forEach((vid) => {
+    const venue = eventsData.venues[vid];
+    [
+      ...collectDatedEventsForVenue(vid).filter(
+        (e) => e.date >= today && e.date < horizon,
+      ),
+      ...collectRecurringEventsForVenue(vid, today, horizon),
+    ].forEach((entry) => {
+      if (!categories.has(entry.category)) return;
+      if (entry.type === "club" && entry.data.club.club === clubRecord.club) {
+        return; // don't list this club among its own "nearby" results
+      }
+      results.push({ ...entry, venueId: vid, venue });
+    });
+  });
+
+  return results.sort((a, b) => a.date - b.date).slice(0, NEARBY_MAX_EVENTS);
+}
+
+/**
+ * Builds and appends the "Nearby story events" section to a club's page:
+ * a horizon selector (default 7 days, widenable to 35 — chosen so
+ * widening fully reliably includes even a monthly club's own next date),
+ * opt-in checkboxes for music/poetry/folk (story is always included,
+ * unconditionally), and the resulting list.
+ * @param {HTMLElement} root
+ * @param {object} clubRecord
+ */
+function renderNearbyStoryEventsSection(root, clubRecord) {
+  const section = document.createElement("div");
+  section.className = "nearby-story-section";
+
+  const heading = document.createElement("h3");
+  heading.className = "section-heading upcoming";
+  heading.textContent = "Nearby story events ";
+
+  const horizonSelect = document.createElement("select");
+  horizonSelect.className = "nearby-events-horizon";
+  [7, 14, 21, 35].forEach((d) => {
+    const opt = document.createElement("option");
+    opt.value = String(d);
+    opt.textContent = `next ${d} days`;
+    horizonSelect.appendChild(opt);
+  });
+  heading.appendChild(horizonSelect);
+  section.appendChild(heading);
+
+  const optInRow = document.createElement("div");
+  optInRow.className = "nearby-category-optins";
+  const checkboxes = {};
+  [
+    { key: "music", label: "Music" },
+    { key: "poetry", label: "Poetry" },
+    { key: "folk", label: "Folk & sessions" },
+  ].forEach(({ key, label }) => {
+    const lbl = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.addEventListener("change", refresh);
+    checkboxes[key] = cb;
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(" " + label));
+    optInRow.appendChild(lbl);
+  });
+  section.appendChild(optInRow);
+
+  const listEl = document.createElement("div");
+  section.appendChild(listEl);
+
+  function refresh() {
+    const days = Number(horizonSelect.value);
+    const categories = new Set(["story"]);
+    Object.entries(checkboxes).forEach(([key, cb]) => {
+      if (cb.checked) categories.add(key);
+    });
+    listEl.innerHTML = "";
+    const nearby = collectNearbyStoryEvents(clubRecord, days, categories);
+    if (nearby.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "no-events";
+      empty.textContent = `No nearby story events found in the next ${days} days.`;
+      listEl.appendChild(empty);
+      return;
+    }
+    nearby.forEach((entry) =>
+      renderEventRow(listEl, entry, false, { showVenue: true }),
+    );
+  }
+
+  horizonSelect.addEventListener("change", refresh);
+  root.appendChild(section);
+  refresh(); // default view: today, 7-day window, story only
+}
+
+// ── Directory (no club= param) ────────────────────────────────────────────
+async function renderDirectory(data) {
+  document.title = "Story Clubs — New Troubadours";
+  const root = document.getElementById("page-content");
+
+  // Show loading state while we do heavy computation (sorting, filtering, indexing)
+  root.innerHTML =
+    '<p class="status-message status-message--loading">Building directory…</p>';
+
+  // Yield to browser so loading message renders before heavy work begins
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  // Now do the heavy computation off the main thread
+  const DAYS_ORDER = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  const clubs = data.clubs.filter((e) => e.club);
+
+  // ── Parse day and week from schedule string ──────────────────────────
+  function clubDay(c) {
+    if (!c || !c.schedule) return null;
+
+    // Handle structured schedule object
+    if (typeof c.schedule === "object") {
+      const dStr = (c.schedule.day || "").toLowerCase();
+      return DAYS_ORDER.find((d) => d.toLowerCase() === dStr) || null;
+    }
+
+    // Legacy fallback string check
+    const lower = String(c.schedule).toLowerCase();
+    return DAYS_ORDER.find((d) => lower.includes(d.toLowerCase())) || null;
+  }
+
+  function clubWeeks(c) {
+    if (!c || !c.schedule) return [];
+
+    // Handle structured schedule object
+    if (typeof c.schedule === "object") {
+      const type = (c.schedule.type || "").toLowerCase();
+      if (type === "every" || type === "weekly" || type === "fortnightly") {
+        return ["every"];
+      }
+      if (type === "monthly") {
+        return [(c.schedule.occurrence || "1st").toLowerCase()];
+      }
+      return [];
+    }
+
+    // Legacy fallback string check
+    const lower = String(c.schedule).toLowerCase();
+    if (lower.startsWith("every")) return ["every"];
+    return ["1st", "2nd", "3rd", "4th", "last"].filter((w) =>
+      lower.includes(w),
+    );
+  }
+
+  // Resolve a feature slot for a given club record + Date
+  function dirFeaturedGuest(c, date) {
+    const slots = c.feature_slots;
+    if (!slots || !slots.length || !date) return null;
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    const dateStr = `${dd}/${mm}/${yyyy}`;
+    const slot = slots.find((s) => s[0] === dateStr);
+    if (!slot || !slot[1]) return null;
+    const rec = data.performers[slot[1]];
+    return rec ? rec.name : null;
+  }
+
+  // Sort: day order → week ordinal → name
+  const WEEK_IDX = {
+    every: -1,
+    "1st": 0,
+    "2nd": 1,
+    "3rd": 2,
+    "4th": 3,
+    last: 4,
+  };
+  clubs.sort((a, b) => {
+    const da = DAYS_ORDER.indexOf(clubDay(a));
+    const db = DAYS_ORDER.indexOf(clubDay(b));
+    if (da !== db) return (da < 0 ? 99 : da) - (db < 0 ? 99 : db);
+    const wa = Math.min(...clubWeeks(a).map((w) => WEEK_IDX[w] ?? 99));
+    const wb = Math.min(...clubWeeks(b).map((w) => WEEK_IDX[w] ?? 99));
+    if (wa !== wb) return wa - wb;
+    return a.name.localeCompare(b.name);
+  });
+
+  // ── Filter state ─────────────────────────────────────────────────────
+  let activeDay = null; // null = All
+  let activeWeek = null; // null = All
+  let activePeriod = null; // null | 'today' | 'week' | 'weekend' | '7days'
+  let searchTerm = "";
+
+  // Build search index: { c, searchText, nextMeeting, nextOcc }
+  // nextOcc (pre-computed once) is the next occurrence whether cancelled or
+  // not, so a club whose next date is cancelled still shows (marked
+  // cancelled) instead of silently disappearing. nextMeeting is just its
+  // date, kept for the existing sort/feature-slot lookups.
+  const today = getTodayMidnight();
+  const clubIndex = clubs.map((c) => {
+    const nextOcc = nextOccurrence(c.schedule, c.exceptions);
+    // Clubs with alternate_locations rotate venue by month parity — resolve
+    // against the next occurrence (or today, if none) rather than always
+    // using the club's own (possibly placeholder) venue_id.
+    const venue =
+      data.venues[resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)] ||
+      {};
+    const parts = [
+      c.name,
+      venue.name,
+      venue.city,
+      venue.full_address,
+      c.location,
+    ].filter(Boolean);
+    return {
+      c,
+      searchText: parts.join(" ").toLowerCase(),
+      nextOcc,
+      nextMeeting: nextOcc ? nextOcc.date : null,
+    };
+  });
+
+  var isVisible = function (entry) {
+    const { c } = entry;
+    if (activeDay && clubDay(c) !== activeDay) return false;
+    if (activeWeek) {
+      const weeks = clubWeeks(c);
+      if (!weeks.includes(activeWeek)) return false;
+    }
+    if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase()))
+      return false;
+    if (activePeriod) {
+      // Compute the window for the chosen period
+      const from = new Date(today);
+      const to = new Date(today);
+      if (activePeriod === "today") {
+        // to stays = today
+      } else if (activePeriod === "week") {
+        // Rest of this calendar week (Mon–Sun). Find Sunday.
+        const dayOfWeek = today.getDay(); // 0=Sun,6=Sat
+        const daysToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+        to.setDate(to.getDate() + daysToSunday);
+      } else if (activePeriod === "weekend") {
+        // Next Saturday and Sunday
+        const dow = today.getDay();
+        const daysToSat = dow === 6 ? 0 : (6 - dow + 7) % 7 || 7;
+        to.setDate(to.getDate() + daysToSat + 1); // through Sunday
+        from.setDate(from.getDate() + (daysToSat === 0 ? 0 : daysToSat));
+      } else if (activePeriod === "7days") {
+        to.setDate(to.getDate() + 6);
+      }
+      // Include cancelled occurrences here too — a club cancelled "today"
+      // should still show in the "Today" filter, marked as cancelled,
+      // rather than vanishing as if nothing was ever scheduled.
+      const occurrences = scheduledOccurrencesInRange(
+        c.schedule,
+        from,
+        to,
+        c.exceptions || [],
+      );
+      if (occurrences.length === 0) return false;
+    }
+    return true;
+  };
+
+  // ── Page title ───────────────────────────────────────────────────────
+  // Clear the "Building directory…" placeholder set above — everything
+  // from here on appends directly to root, so it would otherwise be left
+  // sitting permanently as the first child once the real content is built.
+  root.innerHTML = "";
+
+  const intro = document.createElement("p");
+  intro.className = "directory-intro";
+  intro.innerHTML =
+    "<em>It's always worth checking direct to see if an apparently scheduled club event is on. Clubs often take a month or two off in the summer, dates change around Christmas and Easter, or if a special event is booked, etc.</em>";
+  root.appendChild(intro);
+
+  // ── Collapsible map ──────────────────────────────────────────────────
+  // mapHandle.map is null until the user opens the panel for the first time.
+  // Once open, the map's viewport acts as a live filter on the list below —
+  // pan or zoom the map and the list updates to match, same as the main
+  // calendar page's map (see updateMapView() in event_display.js). No
+  // separate toggle is needed: the filter is simply "is the map open".
+  let dirMap = null;
+  const activeMarkers = []; // L.circleMarker instances currently on the map
+
+  // (Re)draw markers for every club that passes isVisible().
+  function renderMapMarkers() {
+    if (!dirMap) return;
+    activeMarkers.forEach((m) => m.remove());
+    activeMarkers.length = 0;
+    // Use clubIndex so we can call isVisible (which handles day/week/search/bounds)
+    clubIndex.forEach((entry) => {
+      const { c } = entry;
+      const venue =
+        data.venues[
+          resolveClubVenueId(c, (entry.nextOcc && entry.nextOcc.date) || today)
+        ];
+      if (!venue || !venue.latlon || venue.latlon.length === 0) return;
+      if (!isVisible(entry)) return;
+      const popup = `<strong>${c.name}</strong><br>${venue.name}${venue.city ? ", " + venue.city : ""}<br><em>${scheduleLabel(c.schedule) || ""}</em>`;
+      const marker = L.circleMarker(venue.latlon, {
+        radius: 7,
+        fillColor: "#4CAF50",
+        color: "#2e7d32",
+        weight: 2,
+        fillOpacity: 0.85,
+      })
+        .addTo(dirMap)
+        .bindPopup(popup);
+      marker.on("click", () => {
+        const card = document.getElementById("club-card-" + c.club);
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      activeMarkers.push(marker);
+    });
+  }
+
+  // Fit the map to every club with usable coordinates, ignoring current
+  // filters — this is the baseline view shown the moment the panel opens,
+  // so opening the map doesn't itself narrow the list.
+  function fitDirMapToAllClubs() {
+    const pts = clubIndex
+      .map(
+        ({ c, nextOcc }) =>
+          data.venues[
+            resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)
+          ],
+      )
+      .filter((v) => v && v.latlon && v.latlon.length)
+      .map((v) => v.latlon);
+    if (pts.length) dirMap.fitBounds(pts, { padding: [40, 40] });
+  }
+
+  const mapHandle = createCollapsibleMap(
+    root,
+    "dir-map",
+    "Show map of all clubs (pan/zoom to filter the list)",
+    360,
+    (map) => {
+      dirMap = map;
+
+      fitDirMapToAllClubs();
+
+      // Wire map movement → re-filter the list to whatever's in view.
+      map.on("moveend zoomend", () => {
+        renderList();
+        renderMapMarkers();
+      });
+
+      renderMapMarkers(); // initial paint
+    },
+    loadLeaflet, // loaded on first open, not up front
+  );
+
+  // Extend isVisible to respect the map's current viewport once it's open.
+  // We wrap the existing isVisible function, capturing it first.
+  const _isVisibleBase = isVisible;
+  isVisible = function (entry) {
+    if (!_isVisibleBase(entry)) return false;
+    if (dirMap) {
+      const venue =
+        data.venues[
+          resolveClubVenueId(
+            entry.c,
+            (entry.nextOcc && entry.nextOcc.date) || today,
+          )
+        ];
+      if (!venue || !venue.latlon || venue.latlon.length === 0) return false;
+      if (!dirMap.getBounds().contains(venue.latlon)) return false;
+    }
+    return true;
+  };
+
+  // ── Filter controls ──────────────────────────────────────────────────
+  const controls = document.createElement("div");
+  controls.className = "dir-controls";
+
+  // ── "What's on" period quick-filter row ──────────────────────────────
+  const periodRow = document.createElement("div");
+  periodRow.className = "period-filter-row";
+
+  const periodLabel = document.createElement("span");
+  periodLabel.className = "period-filter-label";
+  periodLabel.textContent = "What's on:";
+  periodRow.appendChild(periodLabel);
+
+  let periodBtnEls = [];
+  function refreshPeriodBtns() {
+    periodBtnEls.forEach((b) =>
+      b.classList.toggle("active", b.dataset.period === (activePeriod || "")),
+    );
+  }
+
+  [
+    { label: "All dates", value: null },
+    { label: "Today", value: "today" },
+    { label: "This week", value: "week" },
+    { label: "This weekend", value: "weekend" },
+    { label: "Next 7 days", value: "7days" },
+  ].forEach(({ label, value }) => {
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.className = "period-btn" + (value === activePeriod ? " active" : "");
+    btn.dataset.period = value || "";
+    btn.addEventListener("click", () => {
+      activePeriod = activePeriod === value ? null : value;
+      // Period filter and day/week filters are complementary; clear
+      // day/week when switching to a period so results aren't empty.
+      if (activePeriod) {
+        activeDay = null;
+        activeWeek = null;
+        refreshDayBtns();
+        refreshWeekBtns();
+      }
+      refreshPeriodBtns();
+      renderList();
+    });
+    periodRow.appendChild(btn);
+    periodBtnEls.push(btn);
+  });
+  controls.appendChild(periodRow);
+
+  // Two-column button grid
+  const filterGrid = document.createElement("div");
+  filterGrid.style.cssText =
+    "display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:14px;";
+
+  // Day buttons
+  const dayGroup = document.createElement("div");
+  const dayLabel = document.createElement("div");
+  dayLabel.className = "dir-filter-label";
+  dayLabel.textContent = "Day of week";
+  dayGroup.appendChild(dayLabel);
+  const dayBtns = document.createElement("div");
+  dayBtns.className = "dir-filter-btns";
+
+  function makeDayBtn(label, value) {
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.className =
+      "dir-filter-btn" + (value === activeDay ? " active-green" : "");
+    btn.addEventListener("click", () => {
+      activeDay = activeDay === value ? null : value;
+      // Period and day/week filters are complementary (see the period
+      // buttons above, which already clear day/week the other way). Without
+      // this, "Next 7 days" + "Wednesday" can silently show zero results
+      // when the next Wednesday club falls on day 9 — reading as "no
+      // Wednesday clubs" rather than "not within the next 7 days".
+      if (activeDay) {
+        activePeriod = null;
+        refreshPeriodBtns();
+      }
+      refreshDayBtns();
+      renderList();
+    });
+    return btn;
+  }
+  let dayBtnEls = [];
+  function refreshDayBtns() {
+    dayBtnEls.forEach((btn, i) => {
+      const val = i === 0 ? null : DAYS_ORDER[i - 1];
+      btn.classList.toggle("active-green", activeDay === val);
+    });
+  }
+  // All button first, then Mon-Sun abbreviated
+  const allDayBtn = makeDayBtn("All", null);
+  dayBtns.appendChild(allDayBtn);
+  dayBtnEls.push(allDayBtn);
+  DAYS_ORDER.forEach((d) => {
+    const btn = makeDayBtn(d.slice(0, 3), d);
+    dayBtns.appendChild(btn);
+    dayBtnEls.push(btn);
+  });
+  dayGroup.appendChild(dayBtns);
+  filterGrid.appendChild(dayGroup);
+
+  // Week buttons
+  const weekGroup = document.createElement("div");
+  const weekLabel = document.createElement("div");
+  weekLabel.className = "dir-filter-label";
+  weekLabel.textContent = "Week of month";
+  weekGroup.appendChild(weekLabel);
+  const weekBtns = document.createElement("div");
+  weekBtns.className = "dir-filter-btns";
+
+  const WEEK_DISPLAY = ["All", "Every", "1st", "2nd", "3rd", "4th", "Last"];
+  const WEEK_VALUES = [null, "every", "1st", "2nd", "3rd", "4th", "last"];
+  let weekBtnEls = [];
+  function refreshWeekBtns() {
+    weekBtnEls.forEach((btn, i) => {
+      btn.classList.toggle("active-teal", activeWeek === WEEK_VALUES[i]);
+    });
+  }
+  WEEK_DISPLAY.forEach((label, i) => {
+    const val = WEEK_VALUES[i];
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.className = "dir-filter-btn";
+    btn.addEventListener("click", () => {
+      activeWeek = activeWeek === val ? null : val;
+      // Same reasoning as the day-of-week buttons above: clear the "What's
+      // on" period so it can't silently mask week-of-month results that
+      // fall outside a short period window.
+      if (activeWeek) {
+        activePeriod = null;
+        refreshPeriodBtns();
+      }
+      refreshWeekBtns();
+      renderList();
+    });
+    weekBtns.appendChild(btn);
+    weekBtnEls.push(btn);
+  });
+  weekGroup.appendChild(weekBtns);
+  filterGrid.appendChild(weekGroup);
+
+  controls.appendChild(filterGrid);
+
+  // ── Search box with dropdown suggestions ────────────────────────────
+  createSearchBox(controls, {
+    placeholder: "Search clubs by name, venue or location…",
+    search: (term) =>
+      clubIndex.filter((e) => e.searchText.includes(term)).slice(0, 8),
+    renderItem: ({ c, nextOcc }) => {
+      const venue =
+        data.venues[
+          resolveClubVenueId(c, (nextOcc && nextOcc.date) || today)
+        ] || {};
+      const item = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = c.name;
+      item.appendChild(strong);
+      if (venue.city) {
+        const city = document.createElement("span");
+        city.className = "dir-search-item-meta";
+        city.textContent = venue.city;
+        item.appendChild(city);
+      }
+      return item;
+    },
+    onSelect: ({ c }, searchInput, clearBtn, dropdown) => {
+      searchInput.value = c.name;
+      searchTerm = c.name;
+      clearBtn.style.display = "block";
+      dropdown.style.display = "none";
+      renderList();
+      setTimeout(() => {
+        const el = document.getElementById("club-card-" + c.club);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    },
+    onChange: (term) => {
+      searchTerm = term;
+      renderList();
+    },
+  });
+
+  root.appendChild(controls);
+
+  // ── Result count line ────────────────────────────────────────────────
+  const countLine = document.createElement("p");
+  countLine.style.cssText = "font-size:13px;color:#888;margin:0 0 8px 4px;";
+  root.appendChild(countLine);
+
+  // ── Club list container ──────────────────────────────────────────────
+  const listWrap = document.createElement("div");
+  listWrap.className = "club-list-grid";
+  root.appendChild(listWrap);
+
+  // ── Badge helpers ────────────────────────────────────────────────────
+  function nextMeetingBadge(occ) {
+    if (!occ) return null;
+    const { date: nextDate, isCancelled } = occ;
+    const msPerDay = 86400000;
+    const diffDays = Math.round((nextDate - today) / msPerDay);
+    const dateLabel =
+      DAYS_OF_WEEK[nextDate.getDay()] +
+      " " +
+      nextDate.getDate() +
+      " " +
+      MONTHS_SHORT[nextDate.getMonth()];
+
+    if (isCancelled) {
+      // Only worth flagging cancellations for near-term dates — cancelled
+      // slots further out fall through to .later (hidden), same as usual.
+      if (diffDays > 13) return null;
+      const badge = document.createElement("div");
+      badge.className = "next-meeting-badge cancelled";
+      badge.textContent = `❌ Cancelled — ${dateLabel}`;
+      return badge;
+    }
+
+    let cls, label;
+    if (diffDays === 0) {
+      cls = "today";
+      label = "🔴 Tonight";
+    } else if (diffDays === 1) {
+      cls = "tomorrow";
+      label = "🟠 Tomorrow";
+    } else if (diffDays <= 6) {
+      cls = "thisweek";
+      label = "🟢 " + dateLabel;
+    } else if (diffDays <= 13) {
+      cls = "nextweek";
+      label = dateLabel;
+    } else {
+      return null; // .later is display:none, skip building element
+    }
+    const badge = document.createElement("div");
+    badge.className = "next-meeting-badge " + cls;
+    badge.textContent = label;
+    return badge;
+  }
+
+  // ── Render function ──────────────────────────────────────────────────
+  function renderList() {
+    renderMapMarkers(); // keep map in sync with current filters
+    listWrap.innerHTML = "";
+
+    let visible = clubIndex.filter(isVisible);
+    const total = clubIndex.length;
+    countLine.textContent =
+      visible.length === total
+        ? `${total} clubs`
+        : `${visible.length} of ${total} clubs`;
+
+    if (visible.length === 0) {
+      const p = document.createElement("p");
+      p.style.cssText =
+        "text-align:center;color:#aaa;padding:30px;font-style:italic;grid-column:1/-1;";
+      p.textContent = "No clubs match the current filters.";
+      listWrap.appendChild(p);
+      return;
+    }
+
+    // When a period filter is active: sort by next meeting date ascending,
+    // suppress day-of-week headings (chronological order is more useful).
+    if (activePeriod) {
+      visible = [...visible].sort((a, b) => {
+        const am = a.nextMeeting ? a.nextMeeting.getTime() : Infinity;
+        const bm = b.nextMeeting ? b.nextMeeting.getTime() : Infinity;
+        return am - bm;
+      });
+    }
+
+    // Render clubs in batches to allow browser repaints
+    const BATCH_SIZE = 20;
+    let batchIndex = 0;
+    let currentDay = null;
+
+    const renderBatch = () => {
+      const endIndex = Math.min(batchIndex + BATCH_SIZE, visible.length);
+
+      for (let i = batchIndex; i < endIndex; i++) {
+        const entry = visible[i];
+        const { c } = entry;
+        const venue =
+          data.venues[
+            resolveClubVenueId(
+              c,
+              (entry.nextOcc && entry.nextOcc.date) || today,
+            )
+          ];
+        const day = clubDay(c);
+
+        // Day headings: show only when no period or day filter is narrowing things down
+        if (!activePeriod && !activeDay && day !== currentDay) {
+          currentDay = day;
+          const h2 = document.createElement("h2");
+          h2.style.cssText =
+            "font-size:14px;font-weight:bold;color:#2e7d32;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #c8e6c9;grid-column:1/-1;";
+          h2.textContent = day ? day + "s" : "Variable / irregular";
+          listWrap.appendChild(h2);
+        }
+
+        const card = document.createElement("div");
+        card.className =
+          "event" + (entry.nextOcc?.isCancelled ? " event-cancelled" : "");
+        card.id = "club-card-" + c.club;
+        card.style.cursor = "pointer";
+        card.onclick = () => (location.href = `storyclub.html?club=${c.club}`);
+
+        const name = document.createElement("div");
+        name.className = "event-name";
+        name.textContent = c.name;
+        card.appendChild(name);
+
+        // Next-meeting badge (shown when meeting is within ~2 weeks;
+        // renders a "Cancelled" badge instead if that occurrence is cancelled)
+        const badge = nextMeetingBadge(entry.nextOcc);
+        if (badge) card.appendChild(badge);
+
+        if (c.schedule) {
+          const s = document.createElement("div");
+          s.className = "event-date";
+
+          // Cleanly uses our unified labelling helper safely, plus the
+          // actual next occurrence date (not just the recurrence pattern)
+          s.textContent =
+            scheduleLabel(c.schedule) +
+            (c.time ? " \u2022 " + c.time : "") +
+            (entry.nextMeeting
+              ? " \u2022 next: " + formatDate(entry.nextMeeting)
+              : "");
+
+          card.appendChild(s);
+        }
+
+        // Featured guest for the next meeting date
+        const dirGuest = dirFeaturedGuest(c, entry.nextMeeting);
+        if (dirGuest) {
+          const featDiv = document.createElement("div");
+          featDiv.className = "club-dir-featured-guest";
+          featDiv.textContent = `feat. ${dirGuest}`;
+          card.appendChild(featDiv);
+        }
+
+        if (venue) {
+          const loc = document.createElement("div");
+          loc.className = "event-location";
+          loc.textContent = venue.name + (venue.city ? `, ${venue.city}` : "");
+          card.appendChild(loc);
+        } else if (c.location) {
+          const loc = document.createElement("div");
+          loc.className = "event-location";
+          loc.textContent = c.location;
+          card.appendChild(loc);
+        }
+
+        const meta = document.createElement("div");
+        meta.style.cssText =
+          "display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;";
+        const linkSrc = c.link || c.website || c.tickets_url;
+        if (linkSrc) {
+          const a = icon(ICON_SVG.website, linkSrc, "event-website", "Website");
+          // Match the grey color used in the single-club header
+          a.querySelector("svg").style.fill = "#555";
+          a.onclick = (e) => e.stopPropagation();
+          meta.appendChild(a);
+        }
+        facebookLinkSpecs(c).forEach(({ kind, href }) => {
+          const a = icon(
+            ICON_SVG[kind],
+            href,
+            kind === "facebook_group"
+              ? "event-facebook event-facebook-group"
+              : "event-facebook",
+            FACEBOOK_LINK_LABELS[kind],
+          );
+          a.onclick = (e) => e.stopPropagation(); // Keep this so clicking the link doesn't open the club card
+          meta.appendChild(a);
+        });
+        if (c.email) {
+          const a = icon(
+            ICON_SVG.email,
+            `mailto:${c.email}`,
+            "event-email",
+            "Email",
+          );
+          a.onclick = (e) => e.stopPropagation();
+          meta.appendChild(a);
+        }
+
+        if (true) {
+          const a = icon(
+            ICON_SVG.link,
+            `storyclub.html?club=${c.club}`,
+            "event-link",
+            "Link",
+          );
+          a.onclick = (e) => e.stopPropagation();
+          meta.appendChild(a);
+        }
+
+        if (meta.childNodes.length) card.appendChild(meta);
+
+        /*
+        // If a dated flyer (clubRecord.club_flyers[], "YYYY_MM_DD_..." prefix)
+        // matches the next occurrence shown on this card, show it as a
+        // thumbnail — same detection used on the club's own page.
+        if (Array.isArray(c.club_flyers) && entry.nextMeeting) {
+          const matchingFlyer = c.club_flyers.find((f) => {
+            const d = parseDatedClubFlyer(f);
+            return (
+              d &&
+              d.getFullYear() === entry.nextMeeting.getFullYear() &&
+              d.getMonth() === entry.nextMeeting.getMonth() &&
+              d.getDate() === entry.nextMeeting.getDate()
+            );
+          });
+          if (matchingFlyer) {
+            const thumb = document.createElement("img");
+            thumb.src = `./storyclub_assets/event_flyers/${sanitizeFlyerPath(matchingFlyer.trim())}`;
+            thumb.className = "club-dir-flyer-thumb";
+            thumb.alt = c.name;
+            thumb.loading = "lazy";
+            card.appendChild(thumb);
+          }
+        }
+        */
+
+        listWrap.appendChild(card);
+      }
+
+      batchIndex = endIndex;
+
+      // If there are more clubs to render, schedule the next batch
+      if (batchIndex < visible.length) {
+        setTimeout(renderBatch, 0);
+      }
+    };
+
+    renderBatch();
+  }
+
+  // Initial render
+  refreshDayBtns();
+  refreshWeekBtns();
+  refreshPeriodBtns();
+  renderList();
+}

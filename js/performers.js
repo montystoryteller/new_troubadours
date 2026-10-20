@@ -1,0 +1,3906 @@
+// ---------------------------------------------------------------------------
+// Flyer helpers (used by render functions below)
+// ---------------------------------------------------------------------------
+
+const BASE_FLYER = "./storyclub_assets/event_flyers/";
+
+// ?tour= value prefix tour_guide.html uses for a repertoire show (must match
+// tour_display.js's REPERTOIRE_ID_PREFIX). Was "rep:" — DEPRECATED; the old
+// form is still accepted by tour_guide.html but must not be generated here.
+const TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX = "R-";
+
+function sanitizeFlyerName(name) {
+  if (!name) return "";
+  return name.replace(/[^a-zA-Z0-9._\-]/g, "");
+}
+
+// ---------------------------------------------------------------------------
+// Data + state
+// ---------------------------------------------------------------------------
+
+let eventsData = null;
+let venuesLookup = {};
+let performersLookup = {};
+let toursLookup = {};
+
+/**
+ * Lines like "Convenor of: Island Storytellers" / "Regular teller at: …" for
+ * a performer, worked out from clubs[].convenor (string or list of
+ * performer ids) and clubs[].regular_tellers. Each club links to its
+ * storyclub.html page. The two roles are independent, so a club can appear
+ * under both. Returns an array of elements (empty if none).
+ * @param {string} performerId
+ * @returns {HTMLElement[]}
+ */
+function clubRoleLines(performerId) {
+  const clubs = (eventsData && eventsData.clubs) || [];
+  const asList = (v) => (Array.isArray(v) ? v : v ? [v] : []);
+  const convenes = [];
+  const tells = [];
+  clubs.forEach((c) => {
+    if (!c || !c.club) return;
+    // Independent roles: someone can be both convenor and a regular teller
+    // of the same club, and both lines are shown.
+    if (asList(c.convenor).includes(performerId)) convenes.push(c);
+    if (asList(c.regular_tellers).includes(performerId)) tells.push(c);
+  });
+  const build = (label, list) => {
+    if (!list.length) return null;
+    const div = document.createElement("div");
+    div.className = "performer-club-roles";
+    const strong = document.createElement("strong");
+    strong.textContent = `${label}: `;
+    div.appendChild(strong);
+    list.forEach((c, i) => {
+      if (i > 0) div.appendChild(document.createTextNode(", "));
+      const a = document.createElement("a");
+      a.href = `storyclub.html?club=${encodeURIComponent(c.club)}`;
+      a.textContent = c.name || c.club;
+      div.appendChild(a);
+    });
+    return div;
+  };
+  return [
+    build("Convenor of", convenes),
+    build("Regular teller at", tells),
+  ].filter(Boolean);
+}
+let podcastsLookup = {};
+let performerId = null;
+let performer = null;
+let compoundIdsForMe = new Set();
+let pfImgLoader = null;
+
+// ---------------------------------------------------------------------------
+// Bootstrap
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// "Featured on a named series" / "has media" — used to badge performers on
+// both the directory listing and their own page.
+//
+// featuredSeriesFor() is the stronger signal: an actual guest credit on one
+// of the site's recognised industry-standard interview/telling series
+// (currently World Storytelling Cafe and Taking the Tradition On), pulled
+// from the podcasts registry — see events-schema.json → $defs.podcast.
+//
+// hasAnyMedia() is deliberately coarse: true if this performer has *any*
+// video, own podcast feed, or podcast-guest appearance, without saying
+// which. The directory listing only has room for one icon per signal, and
+// spelling out video-vs-podcast-vs-appearance there would be more clutter
+// than it's worth — a performer's own page already breaks these out
+// properly (Videos / Podcasts / Podcast Appearances sections).
+// ---------------------------------------------------------------------------
+
+const FEATURED_SERIES = [
+  { podcastId: "world-storytelling-cafe", shortLabel: "WSC" },
+  { podcastId: "taking-the-tradition-on-podcast", shortLabel: "TTTO" },
+];
+
+function podcastCreditIncludesAny(podcast, ids) {
+  return (podcast?.items || []).some((item) => {
+    const itemIds = Array.isArray(item.performer_ids)
+      ? item.performer_ids
+      : item.performer_id
+        ? [item.performer_id]
+        : [];
+    return itemIds.some((id) => ids.has(id));
+  });
+}
+
+function featuredSeriesFor(ids) {
+  return FEATURED_SERIES.filter(({ podcastId }) =>
+    podcastCreditIncludesAny(podcastsLookup[podcastId], ids),
+  ).map(({ podcastId, shortLabel }) => ({
+    podcastId,
+    shortLabel,
+    fullName: podcastsLookup[podcastId]?.series_title || shortLabel,
+  }));
+}
+
+function hasAnyMedia(performer, ids) {
+  if (
+    Array.isArray(performer.youtube_videos) &&
+    performer.youtube_videos.length > 0
+  )
+    return true;
+  if (
+    performer.podcast &&
+    (typeof performer.podcast === "string" || performer.podcast.length > 0)
+  )
+    return true;
+  if (
+    Array.isArray(performer.podcast_appearances) &&
+    performer.podcast_appearances.length > 0
+  )
+    return true;
+  return Object.values(podcastsLookup).some((podcast) =>
+    podcastCreditIncludesAny(podcast, ids),
+  );
+}
+
+function renderAllPerformers() {
+  const container = document.getElementById("performerContent");
+  container.innerHTML = "";
+  applyDirectoryHeadingMode();
+
+  // ── Build search index ─────────────────────────────────────────────
+  // Each entry covers performer name + bio + tour/show/event names
+  // so you can find "Cinderella" and land on the performer who does it.
+  const perfIndex = Object.entries(performersLookup)
+    .filter(([, p]) => !isTroupeConfig(p))
+    .filter(([pid, p]) => {
+      if (!p || typeof p.name !== "string" || !p.name.trim()) {
+        console.warn(
+          `Performer "${pid}" has no name — skipping in directory`,
+          p,
+        );
+        return false;
+      }
+      return true;
+    })
+    .sort((a, b) => a[1].name.localeCompare(b[1].name))
+    .map(([pid, p]) => {
+      const aliasIds = new Set([pid, ...(p.aliases || [])]);
+      const showNames = [];
+      // What kinds of appearances this performer has — a
+      // performer can be more than one type (e.g. a musician
+      // who also does spoken word), so this is a Set, not a
+      // single category.
+      const types = new Set();
+      if (p.poet === true) types.add("poetry");
+      if (p.musician === true) types.add("music");
+      
+      // Tours
+      Object.values(toursLookup).forEach((t) => {
+        if (performerIdsOf(t).some((id) => aliasIds.has(id))) {
+          const n = t.tour_name || t.name;
+          if (n) showNames.push(n);
+          types.add(classifyPerformanceType(t));
+        }
+      });
+      // Touring shows — always story
+      Object.values(eventsData.repertoire_shows || {}).forEach((ts) => {
+        if (performerIdsOf(ts).some((id) => aliasIds.has(id))) {
+          const n = ts.showname || ts.name;
+          if (n) showNames.push(n);
+          types.add("story");
+        }
+      });
+      // Specific / music / poetry events
+      [
+        ...(eventsData.specificEvents || []),
+        ...(eventsData.musicEvents || []),
+        ...(eventsData.poetryEvents || []),
+      ].forEach((e) => {
+        if (performerIdsOf(e).some((id) => aliasIds.has(id))) {
+          const n = e.showname || e.name;
+          if (n && !showNames.includes(n)) showNames.push(n);
+          types.add(classifyPerformanceType(e));
+        }
+      });
+
+      // "Story Troupe" — a combined-billing entry (its own
+      // record links to several individual performer_ids,
+      // e.g. two storytellers touring under one joint id)
+      // whose appearances include story shows. Scoped to
+      // story specifically, not music/poetry duos.
+      const isMultiPerformer =
+        Array.isArray(p.performer_ids) && p.performer_ids.length > 0;
+      if (isMultiPerformer && types.has("story")) types.add("troupe");
+
+      // Performers with no tours/shows/events listed yet
+      // (e.g. a newly-added entry) default to "story" — the
+      // most likely bucket on a storytelling-first site —
+      // rather than being left type-less. A type-less entry
+      // would otherwise never match any filter combination,
+      // including the "everything selected" default, and
+      // silently vanish from the directory.
+      if (types.size === 0) types.add("story");
+
+      return {
+        pid,
+        name: p.name,
+        nameLower: p.name.toLowerCase(),
+        bioLower: (p.bio || "").toLowerCase(),
+        showNamesLower: showNames.map((s) => s.toLowerCase()),
+        showNames,
+        href: `performers.html?performer=${encodeURIComponent(pid)}`,
+        isTroupe: isTroupe(p),
+        types,
+        hasMedia: hasAnyMedia(p, aliasIds),
+        featuredSeries: featuredSeriesFor(aliasIds),
+      };
+    });
+
+  // ── Type filters ──────────────────────────────────────────────────
+  const TYPE_DEFS = [
+    { key: "story", label: "Storytellers" },
+    { key: "music", label: "Musicians" },
+    { key: "poetry", label: "Poets" },
+    { key: "troupe", label: "Story Troupes" },
+  ];
+  const activeTypes = new Set(TYPE_DEFS.map((t) => t.key));
+  let currentSearchTerm = "";
+
+  const typeFilterWrap = document.createElement("div");
+  typeFilterWrap.className = "perf-type-filters";
+
+  const allTypeBtn = document.createElement("button");
+  allTypeBtn.className = "dir-filter-btn active-teal";
+  allTypeBtn.textContent = "All";
+  allTypeBtn.onclick = () => {
+    TYPE_DEFS.forEach(({ key }) => activeTypes.add(key));
+    refreshTypeBtns();
+    applyFilters();
+  };
+  typeFilterWrap.appendChild(allTypeBtn);
+
+  const noneTypeBtn = document.createElement("button");
+  noneTypeBtn.className = "dir-filter-btn";
+  noneTypeBtn.textContent = "None";
+  noneTypeBtn.onclick = () => {
+    activeTypes.clear();
+    refreshTypeBtns();
+    applyFilters();
+  };
+  typeFilterWrap.appendChild(noneTypeBtn);
+
+  const typeBtnEls = [];
+  TYPE_DEFS.forEach(({ key, label }) => {
+    const btn = document.createElement("button");
+    btn.className = "type-filter-btn active";
+    btn.dataset.ptype = key;
+    btn.textContent = label;
+    btn.onclick = () => {
+      if (activeTypes.has(key)) activeTypes.delete(key);
+      else activeTypes.add(key);
+      refreshTypeBtns();
+      applyFilters();
+    };
+    typeBtnEls.push(btn);
+    typeFilterWrap.appendChild(btn);
+  });
+
+  function refreshTypeBtns() {
+    typeBtnEls.forEach((btn) =>
+      btn.classList.toggle("active", activeTypes.has(btn.dataset.ptype)),
+    );
+    allTypeBtn.classList.toggle(
+      "active-teal",
+      activeTypes.size === TYPE_DEFS.length,
+    );
+    // Highlighted only when every type button is off — i.e. the actual
+    // "nothing selected" state — not merely "not all selected" (that's
+    // just the normal look of any partial selection).
+    noneTypeBtn.classList.toggle("active-teal", activeTypes.size === 0);
+  }
+
+  container.appendChild(typeFilterWrap);
+
+  // ── Search box ────────────────────────────────────────────────────
+  const searchWrap = document.createElement("div");
+  searchWrap.className = "perf-search-wrap";
+
+  createSearchBox(searchWrap, {
+    placeholder: "Search performers, shows or tours…",
+    search: (term) => {
+      const t = term.toLowerCase();
+      return perfIndex
+        .map((entry) => {
+          if (entry.nameLower.includes(t)) return { entry, matchType: "name" };
+          if (entry.bioLower.includes(t)) return { entry, matchType: "bio" };
+          const showMatch = entry.showNames.find((s, i) =>
+            entry.showNamesLower[i].includes(t),
+          );
+          if (showMatch) return { entry, matchType: showMatch };
+          return null;
+        })
+        .filter(Boolean)
+        .slice(0, 10);
+    },
+    renderItem: ({ entry, matchType }) => {
+      const div = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = entry.name;
+      div.appendChild(strong);
+      if (matchType !== "name" && matchType !== "bio") {
+        // matchType is the show name that matched
+        const meta = document.createElement("span");
+        meta.className = "dir-search-item-meta";
+        meta.textContent = matchType;
+        div.appendChild(meta);
+      } else if (matchType === "bio") {
+        const meta = document.createElement("span");
+        meta.className = "dir-search-item-meta";
+        meta.textContent = "bio";
+        div.appendChild(meta);
+      }
+      if (entry.isTroupe) {
+        const tag = document.createElement("span");
+        tag.className = "dir-search-item-meta";
+        tag.textContent = "troupe";
+        div.appendChild(tag);
+      }
+      return div;
+    },
+    onSelect: ({ entry }, searchInput, clearBtn, dropdown) => {
+      // Navigate directly to the performer page
+      location.href = entry.href;
+    },
+    onChange: (term) => {
+      currentSearchTerm = term.toLowerCase();
+      applyFilters();
+    },
+  });
+
+  container.appendChild(searchWrap);
+
+  // ── Collapsible list ──────────────────────────────────────────────
+  const details = document.createElement("details");
+  details.className = "all-performers-details";
+
+  const summary = document.createElement("summary");
+  summary.className = "all-performers-summary";
+
+  const summaryLabel = document.createElement("span");
+  summaryLabel.className = "all-performers-label";
+  summaryLabel.textContent = `All performers (${perfIndex.length})`;
+  summary.appendChild(summaryLabel);
+
+  const summaryHint = document.createElement("span");
+  summaryHint.className = "all-performers-hint";
+  summaryHint.textContent = "click to expand";
+  summary.appendChild(summaryHint);
+
+  details.appendChild(summary);
+
+  const listBody = document.createElement("div");
+  listBody.className = "all-performers-body";
+
+  // Build list rows manually so we can tag each with data-pid for filtering
+  const TYPE_TAG_LABELS = {
+    music: "Music",
+    poetry: "Poetry",
+    troupe: "Troupe",
+  };
+  const list = document.createElement("div");
+  list.className = "simple-list";
+  perfIndex.forEach((entry) => {
+    const row = document.createElement("div");
+    row.className = "simple-list-row";
+    row.dataset.pid = entry.pid;
+    row.dataset.types = [...entry.types].join(" ");
+    const a = document.createElement("a");
+    a.href = entry.href;
+    a.textContent = entry.name;
+    row.appendChild(a);
+    // Small type tags (story is the baseline look, so only
+    // tag music/poetry to keep the common case uncluttered).
+    // Grouped in one wrapper so 2+ tags cluster together as a
+    // single flex item instead of being spread apart by the
+    // row's justify-content: space-between.
+    const tagGroup = document.createElement("span");
+    tagGroup.className = "simple-list-row-tags";
+    entry.types.forEach((ty) => {
+      if (!TYPE_TAG_LABELS[ty]) return;
+      const tag = document.createElement("span");
+      tag.className = `simple-list-row-type-tag type-${ty}`;
+      tag.textContent = TYPE_TAG_LABELS[ty];
+      tagGroup.appendChild(tag);
+    });
+    // Media icon — see hasAnyMedia(); deliberately one combined icon
+    // rather than separate video/podcast/appearance icons (their own
+    // page breaks those out properly).
+    if (entry.hasMedia) {
+      const mediaIcon = document.createElement("span");
+      mediaIcon.className = "simple-list-row-media-icon";
+      mediaIcon.textContent = "🎬";
+      mediaIcon.title = "Has video and/or podcast content";
+      tagGroup.appendChild(mediaIcon);
+    }
+    // Featured-series badge(s) — a guest credit on a recognised
+    // industry-standard series (see FEATURED_SERIES), separate from the
+    // generic media icon above since it's a stronger credential. Links to
+    // that series' scoped view on the Watch & Listen page (media.js
+    // reads ?series=<podcast_id> — see also the same link built in
+    // renderPerformer() for the header badge).
+    entry.featuredSeries.forEach(({ podcastId, shortLabel, fullName }) => {
+      const seriesBadge = document.createElement("a");
+      seriesBadge.href = `media.html?series=${encodeURIComponent(podcastId)}`;
+      seriesBadge.className = "simple-list-row-series-tag";
+      seriesBadge.textContent = shortLabel;
+      seriesBadge.title = `Featured on ${fullName} — view all episodes`;
+      seriesBadge.onclick = (e) => e.stopPropagation();
+      tagGroup.appendChild(seriesBadge);
+    });
+    if (tagGroup.children.length > 0) row.appendChild(tagGroup);
+    list.appendChild(row);
+  });
+  listBody.appendChild(list);
+  details.appendChild(listBody);
+
+  container.appendChild(details);
+
+  // ── Combined search + type filtering ────────────────────────────────
+  function applyFilters() {
+    const t = currentSearchTerm;
+    const matchedPids = new Set(
+      t
+        ? perfIndex
+            .filter(
+              (e) =>
+                e.nameLower.includes(t) ||
+                e.bioLower.includes(t) ||
+                e.showNamesLower.some((s) => s.includes(t)),
+            )
+            .map((e) => e.pid)
+        : perfIndex.map((e) => e.pid), // empty → show all
+    );
+
+    let visibleCount = 0;
+    listBody.querySelectorAll(".simple-list-row").forEach((row) => {
+      const pid = row.dataset.pid;
+      const rowTypes = row.dataset.types.split(" ").filter(Boolean);
+      const typeVisible = rowTypes.some((ty) => activeTypes.has(ty));
+      const searchVisible = !t || matchedPids.has(pid);
+      const visible = typeVisible && searchVisible;
+      row.style.display = visible ? "" : "none";
+      if (visible) visibleCount++;
+    });
+
+    const filterActive = !!t || activeTypes.size < TYPE_DEFS.length;
+    summaryLabel.textContent = filterActive
+      ? `All performers — ${visibleCount} match${visibleCount !== 1 ? "es" : ""}`
+      : `All performers (${perfIndex.length})`;
+
+    // Auto-expand when filtering, restore default when cleared
+    if (filterActive) details.open = true;
+  }
+}
+
+// Initialize immediately (don't wait for DOMContentLoaded) so data starts loading early
+setCanonical("performer");
+
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  performerId = params.get("performer");
+
+  // A crawler served a prerendered snapshot of a record flagged usePrerender:
+  // keep the snapshot exactly as it is (see shouldSkipRerender() in shared_utils.js).
+  if (performerId && shouldSkipRerender()) {
+    console.info(`Keeping prerendered snapshot for ${performerId}`);
+    return;
+  }
+
+  // Lazy-image loader for performer-page flyer thumbnails — see
+  // createLazyImageLoader() in shared_utils.js for the shared
+  // implementation (also used by the flyers page and tour flyer
+  // gallery). Declared here so it's available to all functions.
+  // Matches both flyer-strip and gallery-card wrap contexts.
+  pfImgLoader = createLazyImageLoader({
+    rootMargin: "300px 0px",
+    srcAttribute: "pfSrc",
+    revealedClass: "pf-loaded",
+    wrapSelector: ".perf-flyer-thumb, .perf-gallery-img-wrap",
+    errorMessage: "Flyer image<br>not available",
+  });
+
+  if (!performerId) {
+    const loaded = await loadEventsData();
+    if (!loaded) return showNotFound();
+    eventsData = loaded.eventsData;
+    toursLookup = loaded.toursLookup;
+    performersLookup = loaded.performersLookup;
+    // Needed by hasAnyMedia()/featuredSeriesFor() for the directory's
+    // media icon and WSC/TTTO series badges.
+    podcastsLookup = loaded.podcastsLookup;
+    displayDataLastUpdated(loaded.lastUpdateTime);
+    initNavFeedback();
+
+    // Defer heavy rendering to background to allow loading state to display
+    setTimeout(() => {
+      renderAllPerformers();
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("performerContent").style.display = "";
+      PageHealth.markReady({
+        contentId: "performerContent",
+        checks: [
+          [
+            "performer list has no rows",
+            () => document.querySelectorAll(".simple-list-row").length > 0,
+          ],
+        ],
+      });
+    }, 0);
+    return;
+  }
+
+  const loaded = await loadEventsData();
+  if (!loaded) {
+    showNotFound();
+    return;
+  }
+
+  eventsData = loaded.eventsData;
+  venuesLookup = loaded.venuesLookup;
+  performersLookup = loaded.performersLookup;
+  toursLookup = loaded.toursLookup;
+  podcastsLookup = loaded.podcastsLookup;
+  displayDataLastUpdated(loaded.lastUpdateTime);
+  initNavFeedback();
+
+  // An old/alternate id (performer record with `same_as`) — send the visitor
+  // to the canonical performer's page. location.replace() keeps the alias
+  // out of the history, so Back doesn't bounce straight into the redirect.
+  // Other query params are preserved.
+  const canonicalId = resolvePerformerAlias(performerId);
+  if (canonicalId && canonicalId !== performerId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("performer", canonicalId);
+    window.location.replace(url.toString());
+    return;
+  }
+
+  performer = performersLookup[performerId];
+  if (!performer) {
+    showNotFound();
+    return;
+  }
+
+  // A performer record flagged isClub is just a pointer to a story club —
+  // send the visitor to the club's own page. Uses the record's optional
+  // `club` field if the club slug differs from the performer id. Only
+  // redirects when a matching clubs[] record exists, so a bad slug falls
+  // through to the guard below rather than redirecting to a dead page.
+  // location.replace() keeps this page out of the history, so Back doesn't
+  // bounce straight into the redirect.
+  if (performer.isClub) {
+    const clubSlug = performer.club || performerId;
+    if ((eventsData.clubs || []).some((c) => c && c.club === clubSlug)) {
+      const url = new URL("storyclub.html", window.location.href);
+      url.search = "";
+      url.searchParams.set("club", clubSlug);
+      window.location.replace(url.toString());
+      return;
+    }
+  }
+
+  // renderPerformer() assumes every performer has a name (title, meta
+  // keywords, avatar initials). A stub record without one would throw
+  // part-way through rendering, so treat it as not found instead.
+  if (typeof performer.name !== "string" || !performer.name.trim()) {
+    console.warn(`Performer "${performerId}" has no name`, performer);
+    showNotFound();
+    return;
+  }
+
+  // Defer heavy rendering to background to allow loading state to display
+  setTimeout(() => {
+    renderPerformer();
+    renderShareBadge("performer", performerId);
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("performerContent").style.display = "";
+  PageHealth.markReady({
+      contentId: "performerContent",
+      checks: [
+        [
+          "performer name is empty",
+          () => document.getElementById("performerName").textContent.trim().length > 0,
+        ],
+      ],
+    });
+  }, 0);
+})();
+
+// ---------------------------------------------------------------------------
+// Main render
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// "Agenda" ordering for the top-level Tours/Repertoire/Other
+// appearances/Festivals listings — soonest-upcoming first, then most
+// recently completed first below that, rather than a flat oldest-to-
+// newest list that would bury anything upcoming under years of history
+// (or, for tours/touring shows/festivals, no date-based order at all).
+// ---------------------------------------------------------------------------
+
+/**
+ * Given a list of Date objects for one tour/show/festival, picks the one
+ * date "representing" it for sorting purposes: the soonest upcoming date
+ * if it has any, otherwise its most recent past date.
+ * @param {(Date|null)[]} dates
+ * @returns {Date|null}
+ */
+function representativeDate(dates) {
+  const valid = dates.filter(Boolean);
+  if (valid.length === 0) return null;
+  const today = getTodayMidnight();
+  const future = valid.filter((d) => d >= today).sort((a, b) => a - b);
+  if (future.length > 0) return future[0];
+  return valid.sort((a, b) => b - a)[0];
+}
+
+/**
+ * Comparator factory: sorts so every item with an upcoming representative
+ * date comes first (soonest first), then every item whose representative
+ * date is in the past comes after (most recent first), then anything with
+ * no date at all sinks to the very bottom.
+ * @param {(item: any) => Date|null} getDate
+ */
+function upcomingFirstThenRecent(getDate) {
+  const today = getTodayMidnight();
+  return (a, b) => {
+    const da = getDate(a);
+    const db = getDate(b);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    const aFuture = da >= today;
+    const bFuture = db >= today;
+    if (aFuture && bFuture) return da - db; // soonest upcoming first
+    if (!aFuture && !bFuture) return db - da; // most recent past first
+    return aFuture ? -1 : 1; // any upcoming beats any past
+  };
+}
+
+function representativeTourDate(tour) {
+  return representativeDate(
+    (tour.tour_dates || []).map((td) => parseDateString(td.date)),
+  );
+}
+
+function representativeShowDate(show) {
+  return representativeDate(
+    (show.show_dates || []).map((sd) => parseDateString(sd.date)),
+  );
+}
+
+// A page with no ?performer= arg shows the directory (renderAllPerformers()),
+// whose #pageHeading — "The New Troubadours — Performers" — is correctly
+// the page's one and only H1 there. Once a specific performer is loaded
+// (renderPerformer()), that performer's own name (in the static
+// #performerName element) becomes the more page-specific, SEO-relevant H1
+// instead, so #pageHeading is demoted to H2 and the directory-only
+// #pageSubheading ("Directory of UK based...") — which would otherwise sit
+// above that performer's name describing the directory, not them — is
+// hidden. Both apply* functions are idempotent, so it's safe to call the
+// "wrong" one first and correct it, or to call the same one twice.
+//
+// Both are also re-applied on `pageshow`, not just from the two render
+// functions — this page doesn't use pushState/History-API routing, so
+// switching between the directory and a specific performer is always a
+// full navigation to a different document, but the browser's
+// back/forward cache (bfcache) can still restore either document's exact
+// prior DOM state without re-running this script from scratch. Since
+// each document's own state is only ever mutated by its own render pass,
+// a bfcache restore alone can't actually mix up the two modes — but
+// re-applying on pageshow (keyed off the already-parsed `performerId`,
+// not off which render function happened to run) is a cheap, defensive
+// guarantee that Back/Forward between the two always shows the correct
+// heading level, rather than relying on that reasoning holding forever.
+function promoteHeadingToH1(el) {
+  if (!el || el.tagName === "H1") return el;
+  const h1 = document.createElement("h1");
+  h1.id = el.id;
+  h1.className = el.className;
+  h1.innerHTML = el.innerHTML;
+  el.replaceWith(h1);
+  return h1;
+}
+
+function demoteHeadingToH2(el) {
+  if (!el || el.tagName === "H2") return el;
+  const h2 = document.createElement("h2");
+  h2.id = el.id;
+  h2.className = el.className;
+  h2.innerHTML = el.innerHTML;
+  el.replaceWith(h2);
+  return h2;
+}
+
+function applyDirectoryHeadingMode() {
+  promoteHeadingToH1(document.getElementById("pageHeading"));
+  // Null-safe: the performer name element doesn't exist once the directory
+  // has rendered, but a bfcache restore of a performer page can re-run this.
+  demoteHeadingToH2(document.getElementById("performerName"));
+  const subheading = document.getElementById("pageSubheading");
+  if (subheading) subheading.style.display = "";
+}
+
+function applyPerformerHeadingMode() {
+  demoteHeadingToH2(document.getElementById("pageHeading"));
+  // #performerName is an <h2> in performers.html so the raw source has one
+  // <h1> only; it becomes the page's H1 here.
+  promoteHeadingToH1(document.getElementById("performerName"));
+  const subheading = document.getElementById("pageSubheading");
+  if (subheading) subheading.style.display = "none";
+}
+
+window.addEventListener("pageshow", () => {
+  if (performerId) {
+    applyPerformerHeadingMode();
+  } else {
+    applyDirectoryHeadingMode();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Ownership test — does an event/tour/show/festival-lineup entry belong to
+// the performer whose page is showing?
+// Checks: direct performer_id match, performer_ids array on the record
+// itself (used on tours like Haggarty/Brittain), and compound performer
+// records whose ids/performer_ids include this performer (used on
+// specificEvents like Queen of Between which carry a compound
+// performer_id). Relies on performerId and compoundIdsForMe, which
+// renderPerformer() sets up before anything calls this.
+// ---------------------------------------------------------------------------
+
+function performerMatches(obj) {
+  if (obj.performer_id === performerId) return true;
+  if (
+    Array.isArray(obj.performer_ids) &&
+    obj.performer_ids.includes(performerId)
+  )
+    return true;
+  if (obj.performer_id && compoundIdsForMe.has(obj.performer_id)) return true;
+  return false;
+}
+
+// Is a flat event (single .date, or a .datetimes list — judged by its
+// LAST date) in the past? Same rule renderEventRow() uses for its Past badge.
+function isPastFlatEvent(event) {
+  const today = getTodayMidnight();
+  if (Array.isArray(event.datetimes) && event.datetimes.length > 0) {
+    const lastDateStr = event.datetimes[event.datetimes.length - 1]
+      .split(/\s*:\s*/)[0]
+      .trim();
+    const lastDate = parseDateString(lastDateStr);
+    return !!(lastDate && lastDate < today);
+  }
+  const d = parseDateString(event.date);
+  return !!(d && d < today);
+}
+
+function renderPerformer() {
+  flagPrerenderPreference(performer);
+  document.title = `${performer.name} — New Troubadours`;
+
+  setMetaDescription(
+    `${performer.name} — ${
+      metaSnippet(performer.bio) ||
+      "upcoming performances, tours and festival appearances."
+    }`,
+  );
+  prependMetaKeyword(performer.name);
+
+  applyPerformerHeadingMode();
+
+  // Avatar initials
+  const initials = performer.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("");
+  document.getElementById("performerAvatar").textContent = initials;
+
+  // For compound performers, render each member name as a link to their individual page.
+  // Members may be declared via performer_ids/ids, or inferred from the compound ID
+  // by splitting on known separators (e.g. "daniel-morden-hugh-lupton-sarah-lianne-lewis").
+  const nameEl = document.getElementById("performerName");
+  const members =
+    performer.performer_ids ||
+    performer.ids ||
+    (() => {
+      // Fallback: infer members by finding individual performer IDs that appear
+      // as substrings of the compound performer ID (longest matches first).
+      const candidateIds = Object.keys(performersLookup)
+        .filter(
+          (id) =>
+            id !== performerId &&
+            performersLookup[id] &&
+            !(performersLookup[id].performer_ids || performersLookup[id].ids),
+        )
+        .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
+      const remaining = [performerId];
+      const found = [];
+      let slug = performerId;
+      for (const id of candidateIds) {
+        if (slug.includes(id)) {
+          found.push(id);
+          slug = slug
+            .replace(id, "")
+            .replace(/^-+|-+$/g, "")
+            .replace(/-{2,}/g, "-");
+        }
+        if (!slug) break;
+      }
+      return found.length > 1 ? found : [];
+    })();
+  if (members.length > 1) {
+    // Tokenise the display name by common separators, preserving them as delimiters.
+    // e.g. "Daniel Morden | Hugh Lupton & Sarah Lianne Lewis" → parts + separators.
+    const separatorRe = /(\s*[\|&\/]\s*|\s+and\s+|\s+feat\.\s*)/i;
+    const rawParts = performer.name.split(separatorRe);
+    // rawParts alternates: [name, sep, name, sep, name, …]
+    rawParts.forEach((part, i) => {
+      if (i % 2 === 1) {
+        // Separator token — keep it as plain text
+        nameEl.appendChild(document.createTextNode(part));
+      } else {
+        const trimmed = part.trim();
+        if (!trimmed) return;
+        // Try to find the matching individual performer record by name.
+        const matchId = members.find((id) => {
+          const p = performersLookup[id];
+          return p && p.name.toLowerCase() === trimmed.toLowerCase();
+        });
+        if (matchId) {
+          const a = document.createElement("a");
+          a.href = `performers.html?performer=${encodeURIComponent(matchId)}`;
+          a.textContent = trimmed;
+          a.className = "performer-member-link";
+          nameEl.appendChild(a);
+        } else {
+          nameEl.appendChild(document.createTextNode(trimmed));
+        }
+      }
+    });
+  } else if (members.length === 1) {
+    // Single declared member — link it
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(members[0])}`;
+    a.textContent = performer.name;
+    a.className = "performer-member-link";
+    nameEl.appendChild(a);
+  } else {
+    nameEl.textContent = performer.name;
+  }
+
+  // Also render member chips beneath the name when performer_ids are declared
+  if (members.length > 1) {
+    const chipsDiv = document.createElement("div");
+    chipsDiv.className = "performer-member-chips";
+    members.forEach((id) => {
+      const p = performersLookup[id];
+      if (!p) return;
+      const chip = document.createElement("a");
+      chip.href = `performers.html?performer=${encodeURIComponent(id)}`;
+      chip.className = "performer-member-chip";
+      // Avatar initials
+      const initials = p.name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((w) => w[0].toUpperCase())
+        .slice(0, 2)
+        .join("");
+      const av = document.createElement("span");
+      av.className = "chip-avatar";
+      av.textContent = initials;
+      chip.appendChild(av);
+      chip.appendChild(document.createTextNode(p.name));
+      chipsDiv.appendChild(chip);
+    });
+    // Insert after the h1
+    nameEl.parentNode.insertBefore(chipsDiv, nameEl.nextSibling);
+  }
+
+  // Musician / Poet badges — shown if this performer record (or,
+  // for a combined billing like "Jess Silk & Joe Solo", any of its
+  // declared members) is tagged musician: true / poet: true.
+  const isMusicianPerformer =
+    performer.musician === true ||
+    members.some((id) => performersLookup[id]?.musician === true);
+  const isPoetPerformer =
+    performer.poet === true ||
+    members.some((id) => performersLookup[id]?.poet === true);
+  const badgesDiv = document.getElementById("performerBadges");
+  if (isMusicianPerformer) {
+    const badge = document.createElement("span");
+    badge.className = "performer-badge performer-badge-musician";
+    badge.textContent = "Musician";
+    badgesDiv.appendChild(badge);
+  }
+  if (isPoetPerformer) {
+    const badge = document.createElement("span");
+    badge.className = "performer-badge performer-badge-poet";
+    badge.textContent = "Poet";
+    badgesDiv.appendChild(badge);
+  }
+
+  // Featured-series badge(s) — see featuredSeriesFor(); same credit check
+  // used on the directory listing. performer.aliases mirrors the aliasIds
+  // set built there (pid + declared aliases), matching the direct-id
+  // credit-matching convention already used by collectPerformerVideoAppearances()/
+  // collectPerformerAppearances() rather than expanding through compound
+  // performer_ids (podcast items tag individuals directly in practice).
+  // Links to that series' scoped view on the Watch & Listen page
+  // (media.js reads ?series=<podcast_id>).
+  featuredSeriesFor(
+    new Set([performerId, ...(performer.aliases || [])]),
+  ).forEach(({ podcastId, shortLabel, fullName }) => {
+    const badge = document.createElement("a");
+    badge.href = `media.html?series=${encodeURIComponent(podcastId)}`;
+    badge.className = "performer-badge performer-badge-series";
+    badge.textContent = `🌍 ${shortLabel}`;
+    badge.title = `Featured on ${fullName} — view all episodes`;
+    badgesDiv.appendChild(badge);
+  });
+
+  // External links: website, Facebook, Facebook page/group, Instagram, Podcast
+  const websiteDiv = document.getElementById("performerWebsite");
+
+  function addPerformerLink(url, label, kind) {
+    if (!url) return;
+    let href;
+    if (kind === "facebook") {
+      href = normaliseFacebookUrl(url);
+    } else if (kind === "facebook_group") {
+      href = normaliseFacebookGroupUrl(url);
+    } else if (kind === "instagram") {
+      href = normaliseInstagramUrl(url);
+    } else {
+      href = sanitizeUrl(url);
+    }
+    if (!href || href === "#") return;
+    if (websiteDiv.children.length > 0)
+      websiteDiv.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = label;
+    websiteDiv.appendChild(a);
+  }
+
+  addPerformerLink(
+    performer.url,
+    performer.url
+      ? performer.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")
+      : "",
+    "website",
+  );
+  addPerformerLink(performer.facebook, "Facebook", "facebook");
+  addPerformerLink(performer.facebook_group, "Facebook group", "facebook_group");
+  addPerformerLink(performer.instagram, "Instagram", "instagram");
+  // Groups this performer belongs to ("Also performs as: …"), from the groups'
+  // own performer_ids — see groupIdsForMember() in books_utils.js.
+  const groupsDiv = document.getElementById("performerGroups");
+  groupsDiv.innerHTML = "";
+  const groupsLine = collaborationsLine(performerId, performersLookup);
+  if (groupsLine) groupsDiv.appendChild(groupsLine);
+  // Story clubs this performer convenes / is a regular teller at — the
+  // reverse of clubs[].convenor / clubs[].regular_tellers.
+  clubRoleLines(performerId).forEach((line) => groupsDiv.appendChild(line));
+
+  // Podcast(s) get their own collapsible section further down the page
+  // (see renderPodcastSection) rather than a link here, since performer.podcast
+  // may be a single URL or a whole list of them.
+
+  // Bio
+  if (performer.bio) {
+    const bioDiv = document.getElementById("performerBio");
+    appendParagraphs(bioDiv, performer.bio);
+  }
+
+  // Podcasts
+  renderPodcastSection(performer);
+  renderPodcastAppearancesSection(performer);
+  renderVideosSection(performer);
+
+  // Build a set of all compound performer IDs that include this performer.
+  // Checks both performer_ids and the legacy ids field on performer records.
+  // e.g. if performerId = "sarah-liisa-wilkinson", this set will contain
+  // "lucy-lill-sarah-liisa-wilkinson" so events with that performer_id are found.
+  compoundIdsForMe = new Set();
+  Object.entries(performersLookup).forEach(([pid, p]) => {
+    const members = p.performer_ids || p.ids || [];
+    if (Array.isArray(members) && members.includes(performerId)) {
+      compoundIdsForMe.add(pid);
+    }
+  });
+
+  // If viewing a troupe, also treat all its alias configs as "me"
+  if (isTroupe(performer)) {
+    (performer.aliases || []).forEach((aid) => compoundIdsForMe.add(aid));
+  }
+  // If viewing a troupe config, treat the parent troupe as "me" too
+  if (isTroupeConfig(performer) && performer.troupe) {
+    compoundIdsForMe.add(performer.troupe);
+    // ...and the sibling configs
+    const parent = performersLookup[performer.troupe];
+    (parent?.aliases || []).forEach((aid) => {
+      if (aid !== performerId) compoundIdsForMe.add(aid);
+    });
+  }
+
+  // Books and merch (books_utils.js). Merch can be credited to this performer
+  // via another record's performer_ids, or to a troupe they belong to.
+  renderBooksSection(performer);
+  renderMerchSection(new Set([performerId, ...compoundIdsForMe]));
+
+  // Gather all data for this performer
+  const myTours = Object.entries(toursLookup)
+    .filter(([, t]) => performerMatches(t))
+    .sort(upcomingFirstThenRecent(([, t]) => representativeTourDate(t)));
+  const myTouringShows = Object.entries(eventsData.repertoire_shows || {})
+    .filter(([, ts]) => performerMatches(ts))
+    .sort(upcomingFirstThenRecent(([, ts]) => representativeShowDate(ts))); // Expand any multi-night `date` arrays (dateOrDates) into one entry per date,
+  // same convention as tour_dates — see expandTourDates() in shared_utils.js.
+  // Story walks are still repertoireShow records under the hood (same
+  // show_dates/venue/performer shape), but list separately from
+  // "Repertoire" here — see myRepertoireShows/myStoryWalks below.
+  const myRepertoireShows = myTouringShows.filter(([, ts]) => !ts.isStoryWalk);
+  const myStoryWalks = myTouringShows.filter(([, ts]) => ts.isStoryWalk);
+  const mySpecific = expandTourDates(
+    (eventsData.specificEvents || []).filter((e) => performerMatches(e)),
+  );
+  const myMusic = expandTourDates(
+    (eventsData.musicEvents || []).filter((e) => performerMatches(e)),
+  );
+  const myPoetry = expandTourDates(
+    (eventsData.poetryEvents || []).filter((e) => performerMatches(e)),
+  );
+  const myFestivals = Object.entries(eventsData.festivals || {})
+    .filter(([, f]) => (f.performers || []).some((p) => performerMatches(p)))
+    .sort(upcomingFirstThenRecent(([, f]) => parseDateString(f.start_date)));
+
+  // Tours where this performer appears only via other_performer_ids or
+  // support_performer_ids ("guest" appearances). They aren't in myTours
+  // (the tour's own headline performer billing) but everyone else on the
+  // bill is still a collaborator — see collectCollaborators() — and the
+  // tour itself is still worth showing on this performer's page, labelled
+  // with how they're billed on it — see relationshipLabelForTour() and
+  // the Tours section below.
+  const myGuestTours = Object.entries(toursLookup)
+    .filter(
+      ([, t]) =>
+        !performerMatches(t) &&
+        (getTourAdditionalPerformerIds(t).has(performerId) ||
+          getTourSupportPerformerIds(t).has(performerId)),
+    )
+    .sort(upcomingFirstThenRecent(([, t]) => representativeTourDate(t)));
+
+  // Collaborators — note myFestivals is deliberately excluded here: sharing
+  // a festival bill isn't performing together (see collectCollaborators()).
+  renderCollaboratorsSection(
+    collectCollaborators([
+      ...myTours.map(([, t]) => ({
+        record: t,
+        displayName: t.tour_name || t.name,
+      })),
+      ...myGuestTours.map(([, t]) => ({
+        record: t,
+        displayName: t.tour_name || t.name,
+      })),
+      ...myTouringShows.map(([, ts]) => ({
+        record: ts,
+        displayName: ts.showname || ts.name,
+      })),
+      ...mySpecific.map((e) => ({
+        record: e,
+        displayName: e.showname || e.name,
+      })),
+      ...myMusic.map((e) => ({ record: e, displayName: e.showname || e.name })),
+      ...myPoetry.map((e) => ({
+        record: e,
+        displayName: e.showname || e.name,
+      })),
+    ]),
+  );
+
+  // Count all tour dates
+  const totalTourDates = myTours.reduce(
+    (sum, [, t]) => sum + (t.tour_dates || []).length,
+    0,
+  );
+  const totalTouringDates = myTouringShows.reduce(
+    (sum, [, ts]) => sum + (ts.show_dates || []).length,
+    0,
+  );
+
+  // Count unique venues across all events
+  const venueIds = new Set();
+  myTours.forEach(([, t]) =>
+    (t.tour_dates || []).forEach(
+      (td) => td.venue_id && venueIds.add(td.venue_id),
+    ),
+  );
+  myTouringShows.forEach(([, ts]) =>
+    (ts.show_dates || []).forEach(
+      (sd) => sd.venue_id && venueIds.add(sd.venue_id),
+    ),
+  );
+  [...mySpecific, ...myMusic, ...myPoetry].forEach(
+    (e) => e.venue_id && venueIds.add(e.venue_id),
+  );
+
+  // Stats row
+  const hasToursOrShows =
+    myTours.length > 0 || myGuestTours.length > 0 || myTouringShows.length > 0;
+  const otherEventsCount = mySpecific.length + myMusic.length + myPoetry.length;
+  const otherEventsLabel = hasToursOrShows
+    ? "Other events"
+    : otherEventsCount === 1
+      ? "Event"
+      : "Events";
+  const stats = [
+    { n: myTours.length, label: myTours.length === 1 ? "Tour" : "Tours" },
+    { n: totalTourDates + totalTouringDates, label: "Tour dates" },
+    { n: otherEventsCount, label: otherEventsLabel },
+    { n: venueIds.size, label: "Venues" },
+  ];
+  const statsRow = document.getElementById("statsRow");
+  stats.forEach((s) => {
+    if (s.n === 0) return;
+    const card = document.createElement("div");
+    card.className = "stat-card";
+    card.innerHTML = `<div class="stat-n">${s.n}</div><div class="stat-l">${escapeHtml(s.label)}</div>`;
+    statsRow.appendChild(card);
+  });
+
+  // Tours — this performer's own headline tours first, then any tours
+  // where they only appear as an additional performer or support act
+  // (myGuestTours), each labelled with how they're billed — see
+  // relationshipLabelForTour().
+  if (myTours.length > 0 || myGuestTours.length > 0) {
+    document.getElementById("toursSection").style.display = "";
+    const list = document.getElementById("toursList");
+    myTours.forEach(([tourId, tour]) => renderTourCard(list, tourId, tour));
+    myGuestTours.forEach(([tourId, tour]) =>
+      renderTourCard(list, tourId, tour, relationshipLabelForTour(tour)),
+    );
+  }
+
+  // Touring shows (excludes story walks — see myStoryWalks below)
+  if (myRepertoireShows.length > 0) {
+    document.getElementById("touringShowsSection").style.display = "";
+    const list = document.getElementById("touringShowsList");
+    myRepertoireShows.forEach(([tsId, ts]) =>
+      renderTouringShowCard(list, tsId, ts),
+    );
+  }
+
+  // Story walks — same card renderer as Repertoire above (a story walk is
+  // still a repertoireShow record; only which section it lists under
+  // differs), just a separate section/heading.
+  if (myStoryWalks.length > 0) {
+    document.getElementById("storyWalksSection").style.display = "";
+    const list = document.getElementById("storyWalksList");
+    myStoryWalks.forEach(([tsId, ts]) => renderTouringShowCard(list, tsId, ts));
+  }
+
+  // Specific + music + poetry events
+  const allOther = [...mySpecific, ...myMusic, ...myPoetry].sort(
+    upcomingFirstThenRecent((e) => parseDateString(e.date)),
+  );
+  if (allOther.length > 0) {
+    document.getElementById("eventsSection").style.display = "";
+    // Heading: "Appearances" when sole content, "Other appearances" when alongside tours/shows
+    document.getElementById("eventsSectionHeading").textContent =
+      hasToursOrShows ? "Other appearances" : "Appearances";
+    // Annotate the stat card if all events are TBC
+    const tbcCount = allOther.filter(
+      (e) =>
+        !parseDateString(e.date) &&
+        !(Array.isArray(e.datetimes) && e.datetimes.length > 0),
+    ).length;
+    if (tbcCount === allOther.length && tbcCount > 0) {
+      // All are TBC — add a small note to the stat card label
+      const statCards = document
+        .getElementById("statsRow")
+        .querySelectorAll(".stat-card");
+      statCards.forEach((card) => {
+        const label = card.querySelector(".stat-l");
+        if (
+          label &&
+          (label.textContent === "Event" ||
+            label.textContent === "Events" ||
+            label.textContent === "Other events")
+        ) {
+          label.textContent += " (date TBC)";
+        }
+      });
+    } else if (tbcCount > 0) {
+      // Some are TBC — note how many
+      const statCards = document
+        .getElementById("statsRow")
+        .querySelectorAll(".stat-card");
+      statCards.forEach((card) => {
+        const label = card.querySelector(".stat-l");
+        if (
+          label &&
+          (label.textContent === "Event" ||
+            label.textContent === "Events" ||
+            label.textContent === "Other events")
+        ) {
+          label.textContent += ` (${tbcCount} TBC)`;
+        }
+      });
+    }
+    // Upcoming (and undated/TBC) appearances stay in the main list; past
+    // ones sit behind a collapsible, like past tour/show dates, so a long
+    // history doesn't bury what's coming up. allOther is already ordered
+    // upcoming-first then most-recent-past-first, so order is preserved.
+    const list = document.getElementById("eventsList");
+    const upcomingOther = allOther.filter((e) => !isPastFlatEvent(e));
+    const pastOther = allOther.filter((e) => isPastFlatEvent(e));
+    upcomingOther.forEach((e) => renderEventRow(list, e));
+
+    if (pastOther.length > 0) {
+      const details = document.createElement("details");
+      details.className = "dates-collapsible-details";
+      // Nothing upcoming → the past list is the section's whole content,
+      // so don't hide it behind a click.
+      const openByDefault = upcomingOther.length === 0;
+      if (openByDefault) details.open = true;
+
+      const summary = document.createElement("summary");
+      summary.className = "dates-collapsible-summary";
+      summary.textContent = `Past appearances (${pastOther.length})`;
+      const hint = document.createElement("span");
+      hint.className = "dates-collapsible-hint";
+      hint.textContent = openByDefault ? "click to collapse" : "click to expand";
+      summary.appendChild(hint);
+      details.appendChild(summary);
+      details.addEventListener("toggle", () => {
+        hint.textContent = details.open ? "click to collapse" : "click to expand";
+      });
+
+      const pastList = document.createElement("div");
+      pastList.className = "dates-collapsible-list";
+      pastOther.forEach((e) => renderEventRow(pastList, e));
+      details.appendChild(pastList);
+      list.appendChild(details);
+    }
+  }
+
+  // Festivals
+  if (myFestivals.length > 0) {
+    document.getElementById("festivalsSection").style.display = "";
+    const list = document.getElementById("festivalsList");
+    myFestivals.forEach(([fid, f]) => renderFestivalRow(list, fid, f));
+  }
+
+  // "Coming up" — merged upcoming dates, shown above the stats row
+  renderUpcomingSection(myTours, myTouringShows, allOther, myFestivals);
+
+  // Flyer gallery — collects all flyers across tours, shows and events
+  renderFlyerGallery(myTours, myTouringShows, allOther);
+
+  // If this is a troupe, render each alias config as a collapsible sub-section
+  if (isTroupe(performer)) {
+    renderTroupeConfigs(performer);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// "Coming up" — the next few dated appearances across tours, repertoire,
+// story walks, other events and festivals, merged and soonest-first, shown
+// between the bio and the stats row so "where can I see this performer
+// next?" is answered without scrolling through each section below.
+// Deliberately compact: one line per date (date | title, time, venue,
+// co-performers, tickets), wrapping inside its own column on narrow
+// screens rather than stacking like the full event rows further down
+// (which also carry badges, flyers and descriptions — all still there).
+// Undated/TBC events are left out here (they still appear under
+// "Other appearances").
+// ---------------------------------------------------------------------------
+
+const UPCOMING_VISIBLE = 5;
+
+function formatUpcomingDate(d) {
+  const withYear = d.getFullYear() !== getTodayMidnight().getFullYear();
+  return `${DAYS_SHORT[d.getDay()]} ${formatShortDate(d)}${withYear ? " " + d.getFullYear() : ""}`;
+}
+
+function renderUpcomingRow(container, it) {
+  const row = document.createElement("div");
+  row.className = "upcoming-row";
+
+  const dateEl = document.createElement("div");
+  dateEl.className = "upcoming-row-date";
+  dateEl.textContent = it.dateLabel || formatUpcomingDate(it.date);
+  row.appendChild(dateEl);
+
+  const main = document.createElement("div");
+  main.className = "upcoming-row-main";
+
+  const title = document.createElement("span");
+  title.className = "upcoming-row-title";
+  if (it.href) {
+    const a = document.createElement("a");
+    a.href = it.href;
+    a.textContent = it.title;
+    title.appendChild(a);
+  } else {
+    title.textContent = it.title;
+    if (it.linkRecord) {
+      // event.html permalink, when the record has a plain .date
+      linkEventRowTitle(title, it.linkRecord, it.linkDate || null);
+    }
+  }
+  main.appendChild(title);
+
+  if (it.tag) {
+    const tag = document.createElement("span");
+    tag.className = "upcoming-row-tag";
+    tag.textContent = it.tag;
+    main.appendChild(tag);
+  }
+
+  const bits = [];
+  if (it.time) bits.push(it.time);
+  const venue = it.venueId ? venuesLookup[it.venueId] : null;
+  if (venue) bits.push(venue.name + (venue.city ? `, ${venue.city}` : ""));
+  if (bits.length > 0) {
+    const meta = document.createElement("span");
+    meta.className = "upcoming-row-meta";
+    meta.textContent = bits.join(" · ");
+    main.appendChild(meta);
+  }
+
+  const coLine = buildCoPerformerLine(
+    coPerformerIdsFor(it.record),
+    "upcoming-row-with",
+  );
+  if (coLine) main.appendChild(coLine);
+
+  const ticketHref = it.ticketUrl ? sanitizeUrl(it.ticketUrl) : null;
+  if (ticketHref) {
+    const a = document.createElement("a");
+    a.href = ticketHref;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "upcoming-row-tickets";
+    a.textContent = "Tickets";
+    main.appendChild(a);
+  }
+
+  row.appendChild(main);
+  container.appendChild(row);
+}
+
+function renderUpcomingSection(
+  myTours,
+  myTouringShows,
+  allOther,
+  myFestivals,
+) {
+  const today = getTodayMidnight();
+  const items = [];
+
+  myTours.forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      const d = parseDateString(td.date);
+      if (!d || d < today) return;
+      items.push({
+        date: d,
+        title: tour.tour_name || tour.name,
+        href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+        time: td.time || tour.time || null,
+        venueId: td.venue_id,
+        ticketUrl: td.ticket_url,
+        record: tour,
+      });
+    });
+  });
+
+  myTouringShows.forEach(([tsId, ts]) => {
+    (ts.show_dates || []).forEach((sd) => {
+      const d = parseDateString(sd.date);
+      if (!d || d < today) return;
+      items.push({
+        date: d,
+        title: ts.showname || ts.name,
+        href: `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX + tsId)}`,
+        time: sd.time || null,
+        venueId: sd.venue_id,
+        ticketUrl: sd.ticket_url,
+        record: ts,
+      });
+    });
+  });
+
+  allOther.forEach((e) => {
+    if (isPastFlatEvent(e)) return;
+    let d = parseDateString(e.date);
+    let time = e.time || null;
+    if (!d && Array.isArray(e.datetimes) && e.datetimes.length > 0) {
+      const parts = e.datetimes[0].split(/\s*:\s*/);
+      d = parseDateString((parts[0] || "").trim());
+      if (!time && parts[1]) time = parts[1].trim();
+    }
+    if (!d) return; // TBC — stays in "Other appearances" only
+    items.push({
+      date: d,
+      title: e.showname || e.name,
+      time,
+      venueId: e.venue_id,
+      ticketUrl: e.ticket_url,
+      record: e,
+      // Permalinks only exist for events with their own plain .date
+      linkRecord: e.date ? e : null,
+      linkDate: e.date ? d : null,
+    });
+  });
+
+  myFestivals.forEach(([, f]) => {
+    const start = parseDateString(f.start_date);
+    const end = parseDateString(f.end_date) || start;
+    if (!start || end < today) return;
+    const underway = start < today;
+    items.push({
+      // A festival already under way sorts as "today".
+      date: underway ? today : start,
+      dateLabel: underway ? `Until ${formatShortDate(end)}` : null,
+      title: f.name,
+      tag: "Festival",
+      venueId: f.venue_id,
+      ticketUrl: f.ticket_url,
+      record: {}, // festival lineups aren't a shared billing — no "with"
+    });
+  });
+
+  if (items.length === 0) return;
+  items.sort((a, b) => a.date - b.date);
+
+  document.getElementById("upcomingSection").style.display = "";
+  document.getElementById("upcomingHeading").textContent =
+    `Coming up (${items.length})`;
+
+  const list = document.getElementById("upcomingList");
+  list.innerHTML = "";
+  items.slice(0, UPCOMING_VISIBLE).forEach((it) => renderUpcomingRow(list, it));
+
+  const rest = items.slice(UPCOMING_VISIBLE);
+  if (rest.length > 0) {
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "perf-more-btn upcoming-more";
+    moreBtn.textContent = `+${rest.length} more`;
+    moreBtn.addEventListener("click", () => {
+      rest.forEach((it) => renderUpcomingRow(list, it));
+      moreBtn.remove();
+    });
+    list.parentNode.appendChild(moreBtn);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Flyer gallery
+// Collects all flyers for this performer (tour-level, per-date, event, show)
+// and renders a horizontally-scrolling strip of thumbnails.
+// ---------------------------------------------------------------------------
+
+// Shared list that the lightbox navigates — populated by renderFlyerGallery
+let perfGalleryItems = [];
+
+// ── Performer-page flyer lightbox (state + functions) ───────────────────
+// Defined here (in the same script block as renderPerformer/
+// renderTourCard) rather than in the later <script> tag near the
+// lightbox markup, so makePerfFlyerThumb & co. are guaranteed to exist
+// before renderPerformer ever calls them — the wiring of the lightbox's
+// own buttons (which needs that markup to exist first) stays in the
+// later <script> tag, further down the page.
+let _pfItems = [];
+let _pfIdx = 0;
+
+function openPerfFlyer(items, idx) {
+  _pfItems = items;
+  _pfIdx = idx;
+  showPfSlide();
+  document.getElementById("perfFlyerLightbox").classList.add("pf-open");
+  document.addEventListener("keydown", pfLbKey);
+}
+
+function closePerfFlyer() {
+  document.getElementById("perfFlyerLightbox").classList.remove("pf-open");
+  document.removeEventListener("keydown", pfLbKey);
+}
+
+function showPfSlide() {
+  const item = _pfItems[_pfIdx];
+  document.getElementById("pfImg").src = item.src;
+  document.getElementById("pfImg").alt = item.label || "";
+  document.getElementById("pfCaption").textContent = item.label || "";
+  document.getElementById("pfPrev").disabled = _pfIdx <= 0;
+  document.getElementById("pfNext").disabled = _pfIdx >= _pfItems.length - 1;
+}
+
+function pfLbKey(e) {
+  if (e.key === "Escape") closePerfFlyer();
+  if (e.key === "ArrowLeft" && _pfIdx > 0) {
+    _pfIdx--;
+    showPfSlide();
+  }
+  if (e.key === "ArrowRight" && _pfIdx < _pfItems.length - 1) {
+    _pfIdx++;
+    showPfSlide();
+  }
+}
+
+// Helper used by renderTourCard / renderTouringShowCard / renderEventRow
+function makePerfFlyerThumb(flyerName, label, extraClass) {
+  const src = BASE_FLYER + sanitizeFlyerName(flyerName.trim());
+  const wrap = document.createElement("div");
+  wrap.className = "perf-flyer-thumb" + (extraClass ? " " + extraClass : "");
+  wrap.title = "View flyer";
+  const img = document.createElement("img");
+  img.dataset.pfSrc = src;
+  img.alt = label || "Flyer";
+  pfImgLoader.observe(img);
+  wrap.appendChild(img);
+  wrap.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // Open in the full gallery list if available, so prev/next works
+    const galleryIdx = perfGalleryItems.findIndex((i) => i.src === src);
+    if (galleryIdx >= 0) {
+      openPerfFlyer(perfGalleryItems, galleryIdx);
+    } else {
+      openPerfFlyer([{ src, label: label || "" }], 0);
+    }
+  });
+  return wrap;
+}
+
+function renderFlyerGallery(myTours, myTouringShows, allOther) {
+  const items = [];
+  const seen = new Set();
+
+  function add(flyerName, label, dateStr, isMusic, isPast, isPoetry) {
+    if (!flyerName?.trim()) return;
+    const key = flyerName.trim() + "|" + (dateStr || "");
+    if (seen.has(key)) return;
+    seen.add(key);
+    items.push({
+      src: BASE_FLYER + sanitizeFlyerName(flyerName.trim()),
+      label: label || "",
+      dateStr: dateStr || "",
+      isMusic: !!isMusic,
+      isPoetry: !!isPoetry,
+      isPast: !!isPast,
+    });
+  }
+
+  const today = getTodayMidnight();
+
+  // Tours — tour-level flyer(s) first, then per-date flyer(s).
+  // getTourLevelFlyers()/getEventLevelFlyers() (shared_utils.js) each
+  // resolve to a de-duplicated list; add() itself also dedupes by
+  // flyerName+dateStr, so looping every flyer here is safe even if the
+  // same filename somehow appears in both places.
+  myTours.forEach(([, tour]) => {
+    const dates = tour.tour_dates || [];
+    const first = dates[0] ? parseDateString(dates[0].date) : null;
+    const last = dates[dates.length - 1]
+      ? parseDateString(dates[dates.length - 1].date)
+      : null;
+    const range =
+      first && last && first.getTime() !== last.getTime()
+        ? `${formatShortDate(first)} – ${formatShortDate(last)}`
+        : first
+          ? formatShortDate(first)
+          : "";
+    const allPast = last && last < today;
+    getTourLevelFlyers(tour).forEach((f) => {
+      add(
+        f.filename,
+        tour.tour_name || tour.name,
+        range,
+        tour.isMusic,
+        allPast,
+        tour.isPoetry,
+      );
+    });
+    (tour.tour_dates || []).forEach((td) => {
+      const d = parseDateString(td.date);
+      getEventLevelFlyers(td).forEach((f) => {
+        add(
+          f.filename,
+          tour.tour_name || tour.name,
+          d ? formatShortDate(d) : td.date || "",
+          tour.isMusic,
+          d && d < today,
+          tour.isPoetry,
+        );
+      });
+    });
+  });
+
+  // Touring shows — show-level flyer, then per-date
+  myTouringShows.forEach(([, ts]) => {
+    const tsFlyer = ts.touring_event_flyer || ts.event_flyer;
+    if (tsFlyer?.trim()) {
+      add(tsFlyer, ts.showname || ts.name, "", false, false, false);
+    }
+    (ts.show_dates || []).forEach((sd) => {
+      const d = parseDateString(sd.date);
+      getEventLevelFlyers(sd).forEach((f) => {
+        add(
+          f.filename,
+          ts.showname || ts.name,
+          d ? formatShortDate(d) : sd.date || "",
+          false,
+          d && d < today,
+          false,
+        );
+      });
+    });
+  });
+
+  // Specific + music + poetry events
+  allOther.forEach((e) => {
+    const d = parseDateString(e.date);
+    getEventLevelFlyers(e).forEach((f) => {
+      add(
+        f.filename,
+        e.showname || e.name,
+        d ? formatShortDate(d) : e.date || "",
+        !!e.isMusic,
+        d && d < today,
+        !!e.isPoetry,
+      );
+    });
+  });
+
+  if (items.length === 0) return;
+
+  // Store globally so lightbox can navigate
+  perfGalleryItems = items;
+
+  // Show the section
+  const section = document.getElementById("perfGallerySection");
+  section.style.display = "";
+  document.getElementById("perfGalleryHint").textContent =
+    `${items.length} flyer${items.length !== 1 ? "s" : ""} — click to expand`;
+
+  // Build thumbnail cards
+  const strip = document.getElementById("perfGalleryStrip");
+  strip.innerHTML = "";
+
+  items.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.className =
+      "perf-gallery-card" +
+      (item.isMusic ? " gc-music" : "") +
+      (item.isPoetry ? " gc-poetry" : "") +
+      (item.isPast ? " gc-past" : "");
+    card.title = item.label + (item.dateStr ? " · " + item.dateStr : "");
+    card.addEventListener("click", () => openPerfFlyer(perfGalleryItems, idx));
+
+    const wrap = document.createElement("div");
+    wrap.className = "perf-gallery-img-wrap";
+
+    const img = document.createElement("img");
+    img.dataset.pfSrc = item.src;
+    img.alt = item.label || "Thumbnail";
+    pfImgLoader.observe(img);
+    wrap.appendChild(img);
+
+    const badge = document.createElement("span");
+    badge.className = "perf-gallery-type-badge";
+    badge.textContent = item.isMusic
+      ? "Music"
+      : item.isPoetry
+        ? "Poetry"
+        : "Show";
+    wrap.appendChild(badge);
+
+    card.appendChild(wrap);
+
+    const cap = document.createElement("div");
+    cap.className = "perf-gallery-caption";
+
+    const capTitle = document.createElement("div");
+    capTitle.className = "perf-gallery-caption-title";
+    capTitle.textContent = item.label;
+    cap.appendChild(capTitle);
+
+    const capDate = document.createElement("div");
+    capDate.className = "perf-gallery-caption-date";
+    capDate.textContent = item.dateStr || (item.isPast ? "Past" : "Upcoming");
+    cap.appendChild(capDate);
+
+    card.appendChild(cap);
+    strip.appendChild(card);
+  });
+
+  // Lazy-load images when <details> is opened
+  let observed = false;
+  section.addEventListener("toggle", () => {
+    if (section.open && !observed) {
+      observed = true;
+      strip
+        .querySelectorAll("img[data-pf-src]")
+        .forEach((img) => pfImgLoader.observe(img));
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Podcast section
+// performer.podcast may be a single URL string or an array of URL strings
+// (see events-schema.json → $defs.podcastUrls) — normalise to an array first,
+// same as the .date / dateOrDates convention used elsewhere in this file.
+//
+// Each URL is treated as a podcast feed (or a podcast website to
+// autodiscover a feed on) and actually fetched, so the section shows a
+// real episode list rather than just a link — using the same
+// fetch/autodiscover/parse machinery as the episode list in
+// podcast-feed-curator.html (see podcast_utils.js). Each feed's
+// episode list sits behind its own nested "Episodes" collapsible and
+// is only fetched the first time that particular feed is expanded —
+// opening the outer "Podcasts" section alone triggers no network
+// calls, and a feed the user never expands is never fetched. Long
+// episode/feed lists are paged behind "+N more" rather than dumped in
+// all at once.
+// ---------------------------------------------------------------------------
+
+const PERF_PODCAST_FEEDS_VISIBLE = 4;
+const PERF_PODCAST_EPISODES_VISIBLE = 5;
+// Recognise a handful of common podcast-hosting domains so a feed card
+// can show a friendly platform name before (or if) the real feed title
+// loads. Anything else falls back to the bare hostname.
+const PODCAST_PLATFORM_LABELS = {
+  "open.spotify.com": "Spotify",
+  "spotify.com": "Spotify",
+  "podcasts.apple.com": "Apple Podcasts",
+  "music.amazon.co.uk": "Amazon Music",
+  "music.amazon.com": "Amazon Music",
+  "soundcloud.com": "SoundCloud",
+  "youtube.com": "YouTube",
+  "youtu.be": "YouTube",
+  "anchor.fm": "Anchor",
+  "buzzsprout.com": "Buzzsprout",
+  "podbean.com": "Podbean",
+  "libsyn.com": "Libsyn",
+  "audioboom.com": "Audioboom",
+  "acast.com": "Acast",
+  "podomatic.com": "Podomatic",
+  "captivate.fm": "Captivate",
+  "transistor.fm": "Transistor",
+};
+
+function normalisePodcastUrls(podcast) {
+  const raw = Array.isArray(podcast) ? podcast : podcast ? [podcast] : [];
+  const seen = new Set();
+  const out = [];
+  raw.forEach((u) => {
+    if (typeof u !== "string") return;
+    const trimmed = u.trim();
+    if (!trimmed || seen.has(trimmed)) return;
+    seen.add(trimmed);
+    out.push(trimmed);
+  });
+  return out;
+}
+
+function podcastLinkLabel(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    if (PODCAST_PLATFORM_LABELS[host]) return PODCAST_PLATFORM_LABELS[host];
+    const knownSuffix = Object.keys(PODCAST_PLATFORM_LABELS).find((h) =>
+      host.endsWith("." + h),
+    );
+    return knownSuffix ? PODCAST_PLATFORM_LABELS[knownSuffix] : host;
+  } catch (e) {
+    return "Podcast";
+  }
+}
+
+// Toggle an inline audio preview for one episode/appearance row. Mirrors
+// the "▶ Preview" behaviour in podcast-feed-curator.html, including the
+// CORS-proxy retry, and closes any other open preview first so only one
+// plays at a time. The audio's `src` is only ever set here — nothing
+// fetches or preloads it until the user actually clicks play.
+function togglePodcastAudioPreview(
+  row,
+  audioUrl,
+  btn,
+  labelPlaying = "▶ Preview",
+) {
+  const existing = row.querySelector(".perf-podcast-episode-audio");
+  if (existing) {
+    existing.remove();
+    btn.textContent = labelPlaying;
+    return;
+  }
+  document
+    .querySelectorAll(".perf-podcast-episode-audio")
+    .forEach((h) => h.remove());
+  document
+    .querySelectorAll(".perf-podcast-episode-preview-btn")
+    .forEach((b) => {
+      b.textContent = b.dataset.playLabel || "▶ Preview";
+    });
+
+  const holder = document.createElement("div");
+  holder.className = "perf-podcast-episode-audio";
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.autoplay = true;
+  audio.src = audioUrl;
+  audio.addEventListener("error", () => {
+    if (audio.dataset.retried) return;
+    audio.dataset.retried = "1";
+    audio.src = proxiedPodcastUrl(audioUrl);
+  });
+  holder.appendChild(audio);
+  row.appendChild(holder);
+  btn.textContent = "■ Close";
+}
+
+// Build one feed card: header (icon/artwork + title + "Open ↗" link)
+// plus a nested, collapsed-by-default "Episodes" panel. Returns
+// {el, load} — load() fetches the feed (populating the real title/
+// artwork and pre-building the episode list) and is called by
+// renderPodcastSection as soon as the outer "Podcasts" section is
+// opened, so a visitor sees real feed info without an extra click.
+// The nested Episodes panel itself is just a plain CSS-collapsed
+// <details> at that point — opening it doesn't trigger any further
+// fetch, since the data's already in hand.
+function createPodcastFeedCard(url) {
+  const card = document.createElement("div");
+  card.className = "perf-card";
+
+  const header = document.createElement("div");
+  header.className = "perf-podcast-feed-header";
+
+  const icon = document.createElement("div");
+  icon.className = "perf-podcast-feed-icon";
+  icon.textContent = "🎙";
+  header.appendChild(icon);
+
+  const headerBody = document.createElement("div");
+  headerBody.className = "perf-podcast-feed-header-body";
+
+  const title = document.createElement("div");
+  title.className = "perf-podcast-feed-title";
+  title.textContent = podcastLinkLabel(url);
+  headerBody.appendChild(title);
+
+  const sub = document.createElement("div");
+  sub.className = "perf-podcast-feed-sub";
+  sub.textContent = "Loading feed…";
+  headerBody.appendChild(sub);
+
+  header.appendChild(headerBody);
+
+  const openLink = createExternalLink(url, "Open ↗", {
+    className: "perf-podcast-feed-open",
+  });
+  if (openLink) header.appendChild(openLink);
+
+  card.appendChild(header);
+
+  // Nested "Episodes" panel — collapsed by default, populated
+  // eagerly by load() below, but only actually revealed when the
+  // visitor clicks it open.
+  const episodesDetails = document.createElement("details");
+  episodesDetails.className = "perf-nested-details";
+
+  const episodesSummary = document.createElement("summary");
+  episodesSummary.className = "perf-nested-summary";
+
+  const episodesLabel = document.createElement("span");
+  episodesLabel.textContent = "Episodes";
+  episodesSummary.appendChild(episodesLabel);
+
+  const episodesHint = document.createElement("span");
+  episodesHint.className = "perf-nested-hint";
+  episodesHint.textContent = "loading…";
+  episodesSummary.appendChild(episodesHint);
+
+  episodesDetails.appendChild(episodesSummary);
+
+  const episodesBody = document.createElement("div");
+  episodesBody.className = "perf-nested-body";
+  episodesDetails.appendChild(episodesBody);
+
+  card.appendChild(episodesDetails);
+
+  function addEpisode(episodeList, episode) {
+    const row = document.createElement("div");
+    row.className = "perf-podcast-episode";
+
+    const top = document.createElement("div");
+    top.className = "perf-podcast-episode-row";
+
+    const epBody = document.createElement("div");
+    epBody.className = "perf-item-body";
+
+    const epTitle = document.createElement("div");
+    epTitle.className = "perf-podcast-episode-title";
+    epTitle.textContent = episode.title;
+    epBody.appendChild(epTitle);
+
+    const metaParts = [];
+    if (episode.pubDate) metaParts.push(formatPodcastDate(episode.pubDate));
+    if (episode.duration)
+      metaParts.push(formatPodcastDuration(episode.duration));
+    if (metaParts.length > 0) {
+      const epMeta = document.createElement("div");
+      epMeta.className = "perf-podcast-episode-meta";
+      epMeta.textContent = metaParts.join(" · ");
+      epBody.appendChild(epMeta);
+    }
+
+    top.appendChild(epBody);
+
+    if (episode.enclosureUrl) {
+      const previewBtn = document.createElement("button");
+      previewBtn.type = "button";
+      previewBtn.className = "perf-podcast-episode-preview-btn";
+      previewBtn.textContent = "▶ Preview";
+      previewBtn.addEventListener("click", () =>
+        togglePodcastAudioPreview(row, episode.enclosureUrl, previewBtn),
+      );
+      top.appendChild(previewBtn);
+    }
+
+    row.appendChild(top);
+    episodeList.appendChild(row);
+  }
+
+  async function load() {
+    let result;
+    try {
+      result = await loadPodcastFeed(url);
+    } catch (e) {
+      sub.textContent = "Couldn't load this feed — try the link above.";
+      sub.classList.add("is-error");
+      episodesHint.textContent = "unavailable";
+      return;
+    }
+    const { feed, items } = result;
+
+    if (feed.title) title.textContent = feed.title;
+    if (feed.image) {
+      const img = document.createElement("img");
+      img.className = "perf-podcast-feed-thumb";
+      img.src = feed.image;
+      img.alt = "Podcast feed thumbnail";
+      icon.replaceWith(img);
+    }
+    sub.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;
+
+    if (items.length === 0) {
+      episodesHint.textContent = "no episodes";
+      const empty = document.createElement("div");
+      empty.className = "perf-podcast-feed-status";
+      empty.textContent = "No episodes listed in this feed.";
+      episodesBody.appendChild(empty);
+      return;
+    }
+
+    episodesHint.textContent = `${items.length} episode${items.length !== 1 ? "s" : ""}`;
+
+    const episodeList = document.createElement("div");
+    episodeList.className = "perf-podcast-episode-list";
+    episodesBody.appendChild(episodeList);
+
+    const visible = items.slice(0, PERF_PODCAST_EPISODES_VISIBLE);
+    const rest = items.slice(PERF_PODCAST_EPISODES_VISIBLE);
+    visible.forEach((ep) => addEpisode(episodeList, ep));
+
+    if (rest.length > 0) {
+      const moreBtn = document.createElement("button");
+      moreBtn.type = "button";
+      moreBtn.className = "perf-more-btn";
+      moreBtn.textContent = `+${rest.length} more episode${rest.length !== 1 ? "s" : ""}`;
+      moreBtn.addEventListener("click", () => {
+        rest.forEach((ep) => addEpisode(episodeList, ep));
+        moreBtn.remove();
+      });
+      episodesBody.appendChild(moreBtn);
+    }
+  }
+
+  return { el: card, load };
+}
+
+function renderPodcastSection(performer) {
+  const urls = normalisePodcastUrls(performer.podcast);
+  const section = document.getElementById("perfPodcastSection");
+  if (urls.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfPodcastHint").textContent =
+    `${urls.length} podcast${urls.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfPodcastList");
+  list.innerHTML = "";
+
+  // Feed data (title, artwork, episode list) is fetched as soon as
+  // the outer "Podcasts" section is opened — not before, so nothing
+  // loads for a performer whose podcast section a visitor never
+  // opens — but without waiting for a further click per feed, so
+  // the card shows real info rather than just a bare URL.
+  let opened = false;
+  const pendingLoads = [];
+
+  function addFeed(url) {
+    const { el, load } = createPodcastFeedCard(url);
+    list.appendChild(el);
+    if (opened) load();
+    else pendingLoads.push(load);
+  }
+
+  const visible = urls.slice(0, PERF_PODCAST_FEEDS_VISIBLE);
+  const rest = urls.slice(PERF_PODCAST_FEEDS_VISIBLE);
+  visible.forEach(addFeed);
+
+  if (rest.length > 0) {
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "perf-more-btn";
+    moreBtn.textContent = `+${rest.length} more podcast${rest.length !== 1 ? "s" : ""}`;
+    moreBtn.addEventListener("click", () => {
+      rest.forEach(addFeed);
+      moreBtn.remove();
+    });
+    list.appendChild(moreBtn);
+  }
+
+  section.addEventListener("toggle", () => {
+    if (section.open && !opened) {
+      opened = true;
+      pendingLoads.forEach((load) => load());
+      pendingLoads.length = 0;
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Podcast Appearances section
+// performer.podcast_appearances (see events-schema.json →
+// $defs.podcastAppearance) lists one-off guest spots on OTHER
+// people's podcasts — as opposed to performer.podcast, which is a
+// podcast the performer runs themself. Each entry either references
+// a series in the top-level `podcasts` registry via podcast_id, or
+// gives the podcast name/url inline. Unlike the feed section above,
+// no fetching or autodiscovery is needed for the list itself (the
+// episode name + audio link are already in the data) — the only
+// network request possible here is the episode audio itself, and
+// that's only requested if/when the visitor presses ▶ Preview.
+// ---------------------------------------------------------------------------
+
+// resolvePodcastAppearanceMeta(), collectPerformerAppearances(), and
+// extractYoutubeId()/collectPerformerVideoAppearances() are defined in
+// shared_utils.js (also used by media.js) — see that file's "Podcast/video
+// appearance resolution" section.
+
+function renderPodcastAppearancesSection(performer) {
+  const appearances = collectPerformerAppearances(
+    performer,
+    performerId,
+    podcastsLookup,
+  );
+  const section = document.getElementById("perfPodcastAppearancesSection");
+  if (appearances.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfPodcastAppearancesHint").textContent =
+    `${appearances.length} appearance${appearances.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfPodcastAppearancesList");
+  list.innerHTML = "";
+
+  // Reuse the same card chrome as a podcast feed card, just without
+  // its header, so appearances visually match the feeds above.
+  const card = document.createElement("div");
+  card.className = "perf-card";
+  const episodeList = document.createElement("div");
+  episodeList.className = "perf-podcast-episode-list";
+  card.appendChild(episodeList);
+  list.appendChild(card);
+
+  function addAppearance(appearance) {
+    const row = document.createElement("div");
+    row.className = "perf-podcast-episode";
+
+    const top = document.createElement("div");
+    top.className = "perf-podcast-episode-row";
+
+    const body = document.createElement("div");
+    body.className = "perf-item-body";
+
+    const title = document.createElement("div");
+    title.className = "perf-podcast-episode-title";
+    title.textContent = appearance.episode_name;
+    body.appendChild(title);
+
+    const meta = resolvePodcastAppearanceMeta(appearance, podcastsLookup);
+    if (meta.name) {
+      const metaLine = document.createElement("div");
+      metaLine.className = "perf-podcast-episode-meta";
+      const metaLink = meta.url
+        ? createExternalLink(meta.url, meta.name, {})
+        : null;
+      metaLine.appendChild(metaLink || document.createTextNode(meta.name));
+      body.appendChild(metaLine);
+    }
+    // Format badge (e.g. "interview", "telling") — same badge style used
+    // in the Videos section, kept separate from the name/link above so
+    // the link stays a clean click target.
+    if (meta.format) {
+      const badges = document.createElement("div");
+      badges.className = "perf-video-badges";
+      const formatBadge = document.createElement("span");
+      formatBadge.className = "perf-video-format-badge";
+      formatBadge.textContent = meta.format;
+      badges.appendChild(formatBadge);
+      body.appendChild(badges);
+    }
+
+    top.appendChild(body);
+
+    if (appearance.audio_url) {
+      const previewBtn = document.createElement("button");
+      previewBtn.type = "button";
+      previewBtn.className = "perf-podcast-episode-preview-btn";
+      previewBtn.textContent = "▶ Play";
+      previewBtn.dataset.playLabel = "▶ Play";
+      previewBtn.addEventListener("click", () =>
+        togglePodcastAudioPreview(
+          row,
+          appearance.audio_url,
+          previewBtn,
+          "▶ Play",
+        ),
+      );
+      top.appendChild(previewBtn);
+    }
+
+    row.appendChild(top);
+    episodeList.appendChild(row);
+  }
+
+  const visible = appearances.slice(0, PERF_PODCAST_EPISODES_VISIBLE);
+  const rest = appearances.slice(PERF_PODCAST_EPISODES_VISIBLE);
+  visible.forEach(addAppearance);
+
+  if (rest.length > 0) {
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "perf-more-btn";
+    moreBtn.textContent = `+${rest.length} more`;
+    moreBtn.addEventListener("click", () => {
+      rest.forEach(addAppearance);
+      moreBtn.remove();
+    });
+    card.appendChild(moreBtn);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Videos section
+// Two sources are merged here:
+//   1. Registry-sourced — episode items (in the top-level `podcasts`
+//      registry, see events-schema.json → $defs.podcast / $defs.podcastEpisode)
+//      tagged with this performer's id via performer_id/performer_ids,
+//      whose item carries a yt_url. This is the preferred home for a
+//      video going forward (e.g. World Storytelling Cafe, Taking the
+//      Tradition On), since it also captures the series name/presenter
+//      and lets one series' videos be reused across every performer
+//      it features.
+//   2. Legacy inline — performer.youtube_videos (see events-schema.json
+//      → $defs.youtubeVideo), each labelled with a story/piece name
+//      rather than necessarily the video's own YouTube title. Kept for
+//      performers not yet migrated into the podcasts registry.
+// Each video gets its own nested collapsible (not just a play button,
+// per the brief) — its embed is only created the first time THAT
+// video's collapsible is opened, and is torn down again (stopping
+// playback) if it's closed, so nothing ever loads for a video a
+// visitor never expands.
+// ---------------------------------------------------------------------------
+
+// extractYoutubeId() and collectPerformerVideoAppearances() are defined in
+// shared_utils.js (also used by media.js).
+
+// ---------------------------------------------------------------------------
+// Collaborators
+// Other performers who shared an actual performance with this one — the
+// same tour_dates/show_dates/specific-event entry, not just the same
+// festival lineup (a festival bill lists several unrelated acts on the
+// same day, which isn't "performing together" in the sense meant here —
+// see renderPerformer(), which deliberately doesn't feed myFestivals into
+// this). A shared credit shows up either as an explicit performer_ids[]
+// array on the record (e.g. a tour billed as "Daniel Morden & Hugh
+// Lupton"), or as a compound/troupe performer_id that includes this
+// performer among its declared members (e.g. viewing Gillian Brownson's
+// page, whose tour is billed under the joint id
+// "gillian-brownson-dragon-storytellers"). Deliberately excludes the case
+// where record.performer_id === performerId itself: that's just this
+// performer's (or, when viewing a troupe's own page, the troupe's own)
+// ordinary billing, already shown in the page header/member chips above —
+// not a collaboration with someone else.
+// ---------------------------------------------------------------------------
+
+// Additional performers on a tour, per tour.other_performer_ids and
+// tour_dates[].other_performer_ids. A date's own non-empty list REPLACES
+// the tour-level one for that date (same rule as the tour page's
+// getAdditionalPerformerIds() in tour_display.js). Returns one list per
+// date — i.e. one per distinct bill — or just [tour-level list] if the
+// tour has no dates. Nothing on the data says who "headlines", so these
+// lists plus the tour's performer_id/performer_ids are treated as one bill.
+function getTourAdditionalLists(tour) {
+  const tourIds = Array.isArray(tour?.other_performer_ids)
+    ? tour.other_performer_ids.filter(Boolean)
+    : [];
+  const dates = Array.isArray(tour?.tour_dates) ? tour.tour_dates : [];
+  if (dates.length === 0) return tourIds.length > 0 ? [tourIds] : [];
+  return dates
+    .map((td) => {
+      const dateIds = Array.isArray(td?.other_performer_ids)
+        ? td.other_performer_ids.filter(Boolean)
+        : [];
+      return dateIds.length > 0 ? dateIds : tourIds;
+    })
+    .filter((list) => list.length > 0);
+}
+
+// Everyone who appears as an additional performer on any date of the
+// tour — excluding the tour's own headliners and anyone already covered
+// by the more specific support_performer_ids relationship, so a
+// performer only ever shows up in one of the two buckets.
+function getTourAdditionalPerformerIds(tour) {
+  const headliners = getTourHeadlinerIds(tour);
+  const supportIds = getTourSupportPerformerIds(tour);
+  const result = new Set();
+  getTourAdditionalLists(tour).forEach((list) =>
+    list.forEach((id) => {
+      if (!headliners.has(id) && !supportIds.has(id)) result.add(id);
+    }),
+  );
+  return result;
+}
+
+// Other additional performers who share at least one date's bill with `id`.
+function getCoAdditionalPerformerIds(tour, id) {
+  const result = new Set();
+  getTourAdditionalLists(tour).forEach((list) => {
+    if (list.includes(id)) list.forEach((other) => result.add(other));
+  });
+  return result;
+}
+
+// The individual headline performer ids of a tour: explicit performer_ids,
+// plus performer_id — expanded to its declared members when it's a
+// compound/troupe id (same convention as the compound handling below).
+function getTourHeadlinerIds(tour) {
+  const ids = new Set();
+  if (Array.isArray(tour?.performer_ids)) {
+    tour.performer_ids.forEach((id) => id && ids.add(id));
+  }
+  if (tour?.performer_id) {
+    const rec = performersLookup[tour.performer_id];
+    const members = rec?.performer_ids || rec?.ids || [];
+    if (Array.isArray(members) && members.length > 0) {
+      members.forEach((id) => id && ids.add(id));
+    } else {
+      ids.add(tour.performer_id);
+    }
+  }
+  return ids;
+}
+
+// Support acts (support_performer_ids) — a more specific, always-"opening
+// for the headliner" relationship than the arbitrary other_performer_ids
+// bucket above. Same replace-not-merge rule as getTourAdditionalLists():
+// a date's own support_performer_ids, when non-empty, replaces the
+// tour-level list for that date. Ported from tour_display.js's
+// getSupportPerformerIds()/getEffectiveHeadlinerId()/
+// isDoubleHeadlineForDate() — kept here rather than in shared_utils.js
+// only because that file wasn't in scope for this change; a future pass
+// could move all three there so the two pages can't drift apart.
+function getSupportLists(tour) {
+  const tourIds = Array.isArray(tour?.support_performer_ids)
+    ? tour.support_performer_ids.filter(Boolean)
+    : [];
+  const dates = Array.isArray(tour?.tour_dates) ? tour.tour_dates : [];
+  if (dates.length === 0) return tourIds.length > 0 ? [tourIds] : [];
+  return dates
+    .map((td) => {
+      const dateIds = Array.isArray(td?.support_performer_ids)
+        ? td.support_performer_ids.filter(Boolean)
+        : [];
+      return dateIds.length > 0 ? dateIds : tourIds;
+    })
+    .filter((list) => list.length > 0);
+}
+
+// Everyone who appears as a support act on any date of the tour.
+function getTourSupportPerformerIds(tour) {
+  const result = new Set();
+  getSupportLists(tour).forEach((list) =>
+    list.forEach((id) => result.add(id)),
+  );
+  return result;
+}
+
+// Other support acts who share at least one date's bill with `id`.
+function getCoSupportPerformerIds(tour, id) {
+  const result = new Set();
+  getSupportLists(tour).forEach((list) => {
+    if (list.includes(id)) list.forEach((other) => result.add(other));
+  });
+  return result;
+}
+
+// Whether a tour(-date)'s other_performer_ids bucket represents genuine
+// co-headline billing (isDoubleHeadline) rather than a plain "also
+// featuring" support slot — same aggregate-level flag tour_display.js
+// checks per date; used here at tour level since this page shows one
+// card per tour rather than one row per date.
+function isDoubleHeadlineForDate(tour, tourDate) {
+  if (tourDate && typeof tourDate.isDoubleHeadline === "boolean") {
+    return tourDate.isDoubleHeadline;
+  }
+  return !!(tour && tour.isDoubleHeadline);
+}
+
+// Who's actually headlining a given tour date. Normally that's just the
+// tour's own performer_id, but a date can set `headliner` to name someone
+// else instead (the touring act appearing in a support slot on that
+// person's own night) — ported from tour_display.js's
+// getEffectiveHeadlinerId().
+function getEffectiveHeadlinerId(tour, tourDate) {
+  if (tourDate && tourDate.headliner) return tourDate.headliner;
+  return tour?.performer_id;
+}
+
+// Per-date variants of getTourAdditionalPerformerIds()/
+// getTourSupportPerformerIds() above — those two aggregate across every
+// date of the tour for the one "Also featuring:"/"Support:" summary row
+// on the tour card; these instead resolve a SINGLE date's own bill, for
+// the per-date "With:"/"Co-headliner(s):"/"Support:" rows on each event
+// row underneath (tourDateToEventRow()/renderEventRow()) — the same
+// per-date relationship tour_display.js shows on the tour page itself,
+// since an override on one date can differ from the tour-level default.
+// Ported from tour_display.js's getAdditionalPerformerIds(tour, tourDate)/
+// getSupportPerformerIds(tour, tourDate).
+function getAdditionalPerformerIdsForDate(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.other_performer_ids)
+      ? tourDate.other_performer_ids.filter(Boolean)
+      : [];
+  const tourIds = Array.isArray(tour?.other_performer_ids)
+    ? tour.other_performer_ids.filter(Boolean)
+    : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = getTourHeadlinerIds(tour);
+  const supportIds = new Set(getSupportPerformerIdsForDate(tour, tourDate));
+
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      supportIds.has(id) ||
+      !performersLookup[id]
+    )
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
+function getSupportPerformerIdsForDate(tour, tourDate) {
+  const dateIds =
+    tourDate && Array.isArray(tourDate.support_performer_ids)
+      ? tourDate.support_performer_ids.filter(Boolean)
+      : [];
+  const tourIds = Array.isArray(tour?.support_performer_ids)
+    ? tour.support_performer_ids.filter(Boolean)
+    : [];
+  const source = dateIds.length > 0 ? dateIds : tourIds;
+
+  const headliners = getTourHeadlinerIds(tour);
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, tourDate);
+
+  const seen = new Set();
+  const result = [];
+  source.forEach((id) => {
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      id === effectiveHeadlinerId ||
+      !performersLookup[id]
+    )
+      return;
+    seen.add(id);
+    result.push(id);
+  });
+  return result;
+}
+
+function collectCollaborators(records) {
+  const map = new Map(); // collaboratorId -> Set of shared show/tour names
+
+  records.forEach(({ record, displayName }) => {
+    const castIds = new Set();
+
+    if (
+      Array.isArray(record.performer_ids) &&
+      record.performer_ids.includes(performerId)
+    ) {
+      record.performer_ids.forEach((id) => castIds.add(id));
+    }
+
+    if (
+      record.performer_id &&
+      record.performer_id !== performerId &&
+      compoundIdsForMe.has(record.performer_id)
+    ) {
+      const compound = performersLookup[record.performer_id];
+      const compoundMembers = compound?.performer_ids || compound?.ids || [];
+      compoundMembers.forEach((id) => castIds.add(id));
+    }
+
+    // Additional tour performers (other_performer_ids) and support acts
+    // (support_performer_ids). The data doesn't say who headlines, so the
+    // whole bill counts: if this performer is billed on the tour
+    // (performerMatches), everyone else on the bill is a collaborator; if
+    // they're themselves an additional performer or support act, the
+    // tour's billed headliners are, plus anyone else sharing a date's
+    // bill with them in the same bucket, plus the other bucket entirely
+    // (an "also featuring" performer and the tour's support act(s) are
+    // both on the same bill as each other too).
+    const additionalIds = getTourAdditionalPerformerIds(record);
+    const supportIds = getTourSupportPerformerIds(record);
+    if (performerMatches(record)) {
+      additionalIds.forEach((id) => castIds.add(id));
+      supportIds.forEach((id) => castIds.add(id));
+    } else {
+      if (additionalIds.has(performerId)) {
+        getTourHeadlinerIds(record).forEach((id) => castIds.add(id));
+        getCoAdditionalPerformerIds(record, performerId).forEach((id) =>
+          castIds.add(id),
+        );
+        supportIds.forEach((id) => castIds.add(id));
+      }
+      if (supportIds.has(performerId)) {
+        getTourHeadlinerIds(record).forEach((id) => castIds.add(id));
+        getCoSupportPerformerIds(record, performerId).forEach((id) =>
+          castIds.add(id),
+        );
+        additionalIds.forEach((id) => castIds.add(id));
+      }
+    }
+
+    castIds.forEach((id) => {
+      if (id === performerId) return;
+      if (!map.has(id)) map.set(id, new Set());
+      if (displayName) map.get(id).add(displayName);
+    });
+  });
+
+  return map;
+}
+
+/**
+ * @param {Map<string, Set<string>>} collaborators - id -> shared show/tour names
+ */
+function renderCollaboratorsSection(collaborators) {
+  const section = document.getElementById("perfCollaboratorsSection");
+  const ids = [...collaborators.keys()]
+    .filter((id) => performersLookup[id])
+    .sort((a, b) =>
+      (performersLookup[a]?.name || a).localeCompare(
+        performersLookup[b]?.name || b,
+      ),
+    );
+
+  if (ids.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfCollaboratorsHint").textContent =
+    `${ids.length} collaborator${ids.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfCollaboratorsList");
+  list.innerHTML = "";
+
+  ids.forEach((id) => {
+    const p = performersLookup[id];
+    const showNames = [...(collaborators.get(id) || [])].filter(Boolean);
+
+    const row = document.createElement("div");
+    row.className = "perf-collaborator-row";
+
+    const nameLine = document.createElement("div");
+    nameLine.className = "perf-collaborator-name-line";
+
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.className = "perf-collaborator-name";
+    a.textContent = p.name;
+    nameLine.appendChild(a);
+
+    // Musician/Poet badges — same convention as the page-header badges
+    // (see renderPerformer()), checking declared members too in case the
+    // collaborator is itself a compound/troupe entry.
+    const members = p.performer_ids || p.ids || [];
+    const isMusicianCollab =
+      p.musician === true ||
+      members.some((mid) => performersLookup[mid]?.musician === true);
+    const isPoetCollab =
+      p.poet === true ||
+      members.some((mid) => performersLookup[mid]?.poet === true);
+    if (isMusicianCollab) {
+      const badge = document.createElement("span");
+      badge.className = "performer-badge performer-badge-musician";
+      badge.textContent = "Musician";
+      nameLine.appendChild(badge);
+    }
+    if (isPoetCollab) {
+      const badge = document.createElement("span");
+      badge.className = "performer-badge performer-badge-poet";
+      badge.textContent = "Poet";
+      nameLine.appendChild(badge);
+    }
+    row.appendChild(nameLine);
+
+    if (showNames.length > 0) {
+      const meta = document.createElement("div");
+      meta.className = "perf-collaborator-meta";
+      meta.textContent = showNames.join(", ");
+      row.appendChild(meta);
+    }
+
+    list.appendChild(row);
+  });
+}
+
+function renderVideosSection(performer) {
+  const videos = collectPerformerVideoAppearances(
+    performer,
+    performerId,
+    podcastsLookup,
+  );
+  const section = document.getElementById("perfVideosSection");
+  if (videos.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfVideosHint").textContent =
+    `${videos.length} video${videos.length !== 1 ? "s" : ""} — click to expand`;
+
+  const list = document.getElementById("perfVideosList");
+  list.innerHTML = "";
+
+  // Reuse the same card chrome as a podcast feed card, just without
+  // its header, so this list visually matches the sections above.
+  const card = document.createElement("div");
+  card.className = "perf-card";
+  list.appendChild(card);
+
+  videos.forEach((video) => {
+    const videoId = extractYoutubeId(video.yt_url);
+
+    const details = document.createElement("details");
+    details.className = "perf-nested-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "perf-nested-summary";
+
+    // Reuse .perf-item-body's flex:1/min-width:0 so the title
+    // (and, for registry-sourced videos, a series subtitle beneath it)
+    // takes the available space, pushing the hint to the right edge —
+    // matching the appearances list's title+meta layout.
+    const textCol = document.createElement("div");
+    textCol.className = "perf-item-body";
+
+    const label = document.createElement("div");
+    label.textContent = video.story_name || "Untitled video";
+    textCol.appendChild(label);
+
+    if (video.source || video.format) {
+      const badges = document.createElement("div");
+      badges.className = "perf-video-badges";
+      if (video.source) {
+        const sourceBadge = document.createElement("span");
+        sourceBadge.className = "perf-video-source-badge";
+        sourceBadge.textContent = video.source;
+        badges.appendChild(sourceBadge);
+      }
+      if (video.format) {
+        const formatBadge = document.createElement("span");
+        formatBadge.className = "perf-video-format-badge";
+        formatBadge.textContent = video.format;
+        badges.appendChild(formatBadge);
+      }
+      textCol.appendChild(badges);
+    }
+
+    summary.appendChild(textCol);
+
+    const hint = document.createElement("span");
+    hint.className = "perf-nested-hint";
+    hint.textContent = "▶ click to play";
+    summary.appendChild(hint);
+
+    details.appendChild(summary);
+
+    const body = document.createElement("div");
+    body.className = "perf-nested-body";
+    details.appendChild(body);
+
+    details.addEventListener("toggle", () => {
+      if (details.open) {
+        hint.textContent = "playing";
+        const frame = document.createElement("div");
+        frame.className = "perf-video-frame";
+        const iframe = document.createElement("iframe");
+        // `origin` matters here, not just as good practice — without it,
+        // the postMessage handshake YouTube's embed uses to sync its UI
+        // can fail, which is what leaves the pause/play icon stuck in the
+        // centre of the view even though the video is actually playing.
+        const embedOrigin = encodeURIComponent(window.location.origin);
+        iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin=${embedOrigin}`;
+        iframe.title = video.story_name || "YouTube video";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        iframe.loading = "lazy";
+        frame.appendChild(iframe);
+        body.appendChild(frame);
+      } else {
+        hint.textContent = "▶ click to play";
+        body.innerHTML = ""; // tears down the iframe, stopping playback
+      }
+    });
+
+    card.appendChild(details);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Books & Merch sections
+// Card markup and data collection are shared with books_merch.html — see
+// books_utils.js. Both sections stay hidden when there's nothing to show.
+// ---------------------------------------------------------------------------
+
+function appendSeeAllLink(list, label, forId = performerId) {
+  const line = document.createElement("div");
+  line.className = "bm-see-all";
+  const a = document.createElement("a");
+  a.href = `books_merch.html?performer=${encodeURIComponent(forId)}`;
+  a.textContent = label;
+  line.appendChild(a);
+  list.appendChild(line);
+}
+
+function renderBooksSection(performer) {
+  const section = document.getElementById("perfBooksSection");
+  const entries = collectBooksFor([performerId], performersLookup);
+  if (entries.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  document.getElementById("perfBooksHint").textContent =
+    `${entries.length} book${entries.length !== 1 ? "s" : ""} — click to expand`;
+
+  const publishers = eventsData?.publishers || {};
+  const list = document.getElementById("perfBooksList");
+  list.innerHTML = "";
+
+  const cards = document.createElement("div");
+  cards.className = "bm-list";
+  entries.forEach(({ book, credited }) => {
+    // Co-authored: name the *other* authors.
+    cards.appendChild(
+      createBookCard(book, {
+        publishers,
+        performersLookup,
+        creditIds: credited.filter((cid) => cid !== performerId),
+        creditPrefix: "with ",
+      }),
+    );
+  });
+  list.appendChild(cards);
+  appendSeeAllLink(list, "Books & merch page →");
+}
+
+function renderMerchSection(ids) {
+  const section = document.getElementById("perfMerchSection");
+  const entries = collectMerchFor(ids, performersLookup);
+  if (entries.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  // Merch that credits this performer is "theirs". Merch that only reaches
+  // them because they belong to a group (e.g. Daniel Morden -> Devils Violin)
+  // is listed separately under a "Via <group>" subheading. On troupe pages
+  // the aliases / parent troupe count as the performer, so nothing is "via".
+  const allOwn = isTroupe(performer) || isTroupeConfig(performer);
+  const own = [];
+  const viaGroups = new Map(); // group id -> entries
+  entries.forEach((entry) => {
+    if (allOwn || entry.credited.includes(performerId)) {
+      own.push(entry);
+      return;
+    }
+    const groupId = entry.credited.find((cid) => ids.has(cid)) || entry.ownerId;
+    if (!viaGroups.has(groupId)) viaGroups.set(groupId, []);
+    viaGroups.get(groupId).push(entry);
+  });
+  const viaCount = entries.length - own.length;
+
+  section.style.display = "";
+  document.getElementById("perfMerchHint").textContent =
+    `${entries.length} item${entries.length !== 1 ? "s" : ""}` +
+    (viaCount ? ` (${viaCount} via groups)` : "") +
+    " — click to expand";
+
+  const list = document.getElementById("perfMerchList");
+  list.innerHTML = "";
+
+  if (own.length) {
+    const cards = document.createElement("div");
+    cards.className = "bm-list";
+    own.forEach(({ item, credited }) => {
+      // For a joint item, name the *other* credited performers.
+      const others = credited.filter((cid) => !ids.has(cid));
+      cards.appendChild(
+        createMerchCard(item, {
+          performersLookup,
+          creditIds: others,
+          creditPrefix: "with ",
+        }),
+      );
+    });
+    list.appendChild(cards);
+  }
+
+  [...viaGroups.entries()]
+    .sort((a, b) =>
+      (performersLookup[a[0]]?.name || a[0]).localeCompare(
+        performersLookup[b[0]]?.name || b[0],
+      ),
+    )
+    .forEach(([groupId, groupEntries]) => {
+      const groupName = performersLookup[groupId]?.name || groupId;
+      const heading = document.createElement("div");
+      heading.className = "bm-subheading";
+      heading.textContent = `Via ${groupName}`;
+      list.appendChild(heading);
+
+      const cards = document.createElement("div");
+      cards.className = "bm-list";
+      groupEntries.forEach(({ item }) => {
+        cards.appendChild(createMerchCard(item, { performersLookup }));
+      });
+      list.appendChild(cards);
+      appendSeeAllLink(list, `All ${groupName} books & merch →`, groupId);
+    });
+
+  appendSeeAllLink(list, "Books & merch page →");
+}
+
+// ---------------------------------------------------------------------------
+// Troupe config sub-sections
+// Shown at the bottom of a troupe's performer page.
+// Each alias (e.g. tis-tales-hsf) gets its own collapsible block listing
+// its events, so that the specific lineup is visible without cluttering
+// the main performer listing.
+// ---------------------------------------------------------------------------
+
+function renderTroupeConfigs(troupe) {
+  const aliases = troupe.aliases || [];
+  if (aliases.length === 0) return;
+
+  const configs = aliases
+    .map((aid) => [aid, performersLookup[aid]])
+    .filter(([, p]) => p); // only render configs that exist in data
+
+  if (configs.length === 0) return;
+
+  // Wrapper section
+  const section = document.createElement("div");
+  section.className = "content-section";
+  section.style.marginTop = "20px";
+
+  const heading = document.createElement("h3");
+  heading.className = "section-heading";
+  heading.textContent = "Lineup configurations";
+  section.appendChild(heading);
+
+  configs.forEach(([configId, config]) => {
+    // Gather events for this specific config ID
+    const configTours = Object.entries(toursLookup).filter(
+      ([, t]) =>
+        t.performer_id === configId ||
+        (Array.isArray(t.performer_ids) && t.performer_ids.includes(configId)),
+    );
+    const configShows = Object.entries(
+      eventsData.repertoire_shows || {},
+    ).filter(([, ts]) => performerIdsOf(ts).includes(configId));
+    const configSpecific = (eventsData.specificEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
+    );
+    const configMusic = (eventsData.musicEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
+    );
+    const configPoetry = (eventsData.poetryEvents || []).filter((e) =>
+      performerIdsOf(e).includes(configId),
+    );
+
+    const totalDates =
+      configTours.reduce((s, [, t]) => s + (t.tour_dates || []).length, 0) +
+      configShows.reduce((s, [, ts]) => s + (ts.show_dates || []).length, 0) +
+      configSpecific.length +
+      configMusic.length +
+      configPoetry.length;
+
+    // Collapsible card for this config
+    const details = document.createElement("details");
+    details.className = "troupe-config-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "troupe-config-summary";
+
+    const summaryLabel = document.createElement("span");
+    summaryLabel.className = "troupe-config-label";
+    summaryLabel.textContent = config.name;
+    summary.appendChild(summaryLabel);
+
+    if (totalDates > 0) {
+      const badge = document.createElement("span");
+      badge.className = "troupe-config-badge";
+      badge.textContent = `${totalDates} date${totalDates !== 1 ? "s" : ""}`;
+      summary.appendChild(badge);
+    }
+
+    details.appendChild(summary);
+
+    const body = document.createElement("div");
+    body.className = "troupe-config-body";
+
+    // Member chips for this lineup
+    const configMembers = config.performer_ids || config.ids || [];
+    if (configMembers.length > 0) {
+      const chipsDiv = document.createElement("div");
+      chipsDiv.className = "performer-member-chips troupe-config-chips";
+      configMembers.forEach((mid) => {
+        const m = performersLookup[mid];
+        if (!m) return;
+        const chip = document.createElement("a");
+        chip.href = `performers.html?performer=${encodeURIComponent(mid)}`;
+        chip.className = "performer-member-chip";
+        const initials = m.name
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((w) => w[0].toUpperCase())
+          .slice(0, 2)
+          .join("");
+        const av = document.createElement("span");
+        av.className = "chip-avatar";
+        av.textContent = initials;
+        chip.appendChild(av);
+        chip.appendChild(document.createTextNode(m.name));
+        chipsDiv.appendChild(chip);
+      });
+      body.appendChild(chipsDiv);
+    }
+
+    if (totalDates === 0) {
+      const none = document.createElement("p");
+      none.style.cssText =
+        "font-size:13px;color:#999;font-style:italic;margin-top:10px";
+      none.textContent = "No events listed for this lineup.";
+      body.appendChild(none);
+    } else {
+      // Tours
+      configTours.forEach(([tid, tour]) => renderTourCard(body, tid, tour));
+      // Touring shows
+      configShows.forEach(([tsId, ts]) =>
+        renderTouringShowCard(body, tsId, ts),
+      );
+      // Other events
+      const otherEvents = [
+        ...configSpecific,
+        ...configMusic,
+        ...configPoetry,
+      ].sort((a, b) => {
+        const da = parseDateString(a.date),
+          db = parseDateString(b.date);
+        if (!da && !db) return 0;
+        if (!da) return 1;
+        if (!db) return -1;
+        return da - db;
+      });
+      if (otherEvents.length > 0) {
+        const evtList = document.createElement("div");
+        otherEvents.forEach((e) => renderEventRow(evtList, e));
+        body.appendChild(evtList);
+      }
+    }
+
+    details.appendChild(body);
+    section.appendChild(details);
+  });
+
+  document.getElementById("performerContent").appendChild(section);
+}
+
+// ---------------------------------------------------------------------------
+// Tour/repertoire "history" — full past-date detail
+// The stats badges only ever gave a *count* of past dates, with no way to
+// see which venues/when — everything actually visible elsewhere on the
+// page (the Other Appearances list) shows real detail even for past
+// events. These two helpers flatten one tour_dates/show_dates entry into
+// the same flat-event shape renderEventRow() expects (a lighter version of
+// what buildTourMergedEvent()/buildShowMergedEvent() do for the calendar
+// in event_display.js, which isn't loaded on this page), so the past-dates
+// collapsible added in renderTourCard()/renderTouringShowCard() below can
+// reuse that renderer — and its date/venue/badge/flyer handling — as-is.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Co-performers + description dropdown (shared by tour/show cards and
+// event rows)
+// ---------------------------------------------------------------------------
+
+/**
+ * Ids of the OTHER performers billed on an event/tour/show record, seen
+ * from the current performer's page. Covers both ways a shared billing is
+ * recorded: an explicit performer_ids[] array, or a compound performer_id
+ * (a joint record whose own performer_ids/ids list its members). The
+ * current performer (and any troupe/alias ids standing in for them) are
+ * left out, as are ids with no performer record to name or link to.
+ * @param {object} record
+ * @returns {string[]}
+ */
+function coPerformerIdsFor(record) {
+  const out = [];
+  const add = (id) => {
+    if (!id || id === performerId || compoundIdsForMe.has(id)) return;
+    if (!performersLookup[id] || out.includes(id)) return;
+    out.push(id);
+  };
+  performerIdsOf(record).forEach((id) => {
+    const rec = performersLookup[id];
+    const members = rec?.performer_ids || rec?.ids || [];
+    if (compoundIdsForMe.has(id) && members.length > 0) {
+      members.forEach(add);
+    } else {
+      add(id);
+    }
+  });
+  return out;
+}
+
+/**
+ * Builds a "with A & B" line of links to the co-performers' pages, or null
+ * if there are none.
+ * @param {string[]} ids
+ * @param {string} className
+ * @returns {HTMLElement|null}
+ */
+function buildCoPerformerLine(ids, className) {
+  if (!ids || ids.length === 0) return null;
+  const line = document.createElement("div");
+  line.className = className;
+  line.appendChild(document.createTextNode("with "));
+  ids.forEach((id, i) => {
+    if (i > 0) line.appendChild(document.createTextNode(" & "));
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.textContent = performersLookup[id].name;
+    a.onclick = (e) => e.stopPropagation();
+    line.appendChild(a);
+  });
+  return line;
+}
+
+/**
+ * Builds a collapsed "About this event" dropdown from a description string
+ * (paragraphs separated by PARAGRAPH_SEPARATOR, as elsewhere), or null if
+ * there's no description text.
+ * @param {string|null|undefined} text
+ * @param {string} [label]
+ * @returns {HTMLElement|null}
+ */
+function buildDescriptionDropdown(text, label = "About this event") {
+  if (typeof text !== "string" || !text.trim()) return null;
+  const details = document.createElement("details");
+  details.className = "event-row-desc";
+  details.addEventListener("click", (e) => e.stopPropagation());
+  const summary = document.createElement("summary");
+  summary.className = "event-row-desc-summary";
+  summary.textContent = label;
+  details.appendChild(summary);
+  const body = document.createElement("div");
+  body.className = "event-row-desc-body";
+  appendParagraphs(body, text);
+  details.appendChild(body);
+  return details;
+}
+
+function tourDateToEventRow(tourId, tour, td) {
+  // This date's own billing relationship — may differ from the tour-level
+  // "Also featuring:"/"Support:" summary on the card above if this date
+  // overrides other_performer_ids/support_performer_ids/headliner. Read
+  // by renderEventRow() to show the same per-date "With:"/
+  // "Co-headliner(s):"/"Support:"/"Supporting X" rows the tour page shows
+  // on this exact date — see getAdditionalPerformerIdsForDate() etc.
+  const effectiveHeadlinerId = getEffectiveHeadlinerId(tour, td);
+  const billingFlip =
+    td.headliner && effectiveHeadlinerId !== tour.performer_id
+      ? effectiveHeadlinerId
+      : null;
+  return {
+    // Explicit T-tourId-yyyymmdd-venueId id (or td's own frozen eventId),
+    // via resolveTourDateEventId() (shared_utils.js) — same scheme
+    // tour_display.js's permalink and event.js's findTourOrShowDateEventById()
+    // use. Setting it here means linkEventRowTitle()'s resolveEventId()
+    // call below picks it up instead of falling back to
+    // buildStructuredEventId()'s flat performerId+date+venueId scheme,
+    // which isn't resolvable for a tour date and would produce a dead link.
+    eventId: resolveTourDateEventId(tourId, td),
+    name: tour.tour_name || tour.name,
+    showname: tour.name,
+    date: td.date,
+    time: td.time || tour.time || null,
+    venue_id: td.venue_id,
+    performer_id: tour.performer_id,
+    isMusic: tour.isMusic,
+    isPoetry: tour.isPoetry,
+    isSpecial: tour.isSpecial,
+    ticket_url: td.ticket_url,
+    _dateAdditionalIds: getAdditionalPerformerIdsForDate(tour, td),
+    _dateSupportIds: getSupportPerformerIdsForDate(tour, td),
+    _dateIsDoubleHeadline: isDoubleHeadlineForDate(tour, td),
+    _dateBillingFlip: billingFlip,
+    // Rare per-date copy only — the tour's own description is already
+    // shown on the tour card above, so it isn't repeated on every row.
+    description: combineDescriptionWithPrefix(
+      td.description_prefix,
+      td.description,
+    ),
+    // First of this date's own flyer(s), falling back to the tour's —
+    // getEventLevelFlyers()/getTourLevelFlyers() (shared_utils.js) apply
+    // the full event_flyer/event_flyer2/event_flyers and
+    // tour_flyer/touring_event_flyer/touring_event_flyers precedence;
+    // renderEventRow() only shows one flyer button per row, so just the
+    // first is used here.
+    event_flyer:
+      getEventLevelFlyers(td)[0]?.filename ||
+      getTourLevelFlyers(tour)[0]?.filename ||
+      null,
+  };
+}
+
+function showDateToEventRow(tsId, show, sd) {
+  return {
+    // Same reasoning as tourDateToEventRow()'s eventId above, one level
+    // down: R-tsId-yyyymmdd-venueId (or sd's own frozen eventId) via
+    // resolveShowDateEventId().
+    eventId: resolveShowDateEventId(tsId, sd),
+    name: show.name,
+    showname: show.showname || show.name,
+    date: sd.date,
+    time: sd.time || null,
+    venue_id: sd.venue_id,
+    performer_id: show.performer_id,
+    isSpecial: show.isSpecial,
+    ticket_url: sd.ticket_url,
+    description: combineDescriptionWithPrefix(
+      sd.description_prefix,
+      sd.description,
+    ),
+    event_flyer:
+      getEventLevelFlyers(sd)[0]?.filename || show.touring_event_flyer || null,
+  };
+}
+
+function sortByDate(a, b) {
+  const da = parseDateString(a.date),
+    db = parseDateString(b.date);
+  if (!da && !db) return 0;
+  if (!da) return 1;
+  if (!db) return -1;
+  return da - db;
+}
+
+/**
+ * Appends a "Past dates (N)" collapsible to `card`, listing every entry in
+ * `pastDates` (oldest first) via renderEventRow(), using `toEventRow` to
+ * flatten each date entry first. No-op if there are no past dates.
+ * @param {HTMLElement} card
+ * @param {object[]} pastDates
+ * @param {(dateEntry: object) => object} toEventRow
+ */
+/**
+ * Appends a "{titlePrefix} (N)" collapsible to `card`, listing every entry
+ * in `dateEntries` (chronological order) via renderEventRow(), using
+ * `toEventRow` to flatten each date entry first. No-op if there are no
+ * entries. Used for both the Upcoming dates (open by default, so nothing
+ * currently visible becomes an extra click) and Past dates (closed by
+ * default) sections on tour/repertoire cards — previously Upcoming was a
+ * row of button-styled pips while Past was a dropdown; this makes both
+ * behave the same way.
+ * @param {HTMLElement} card
+ * @param {object[]} dateEntries
+ * @param {(dateEntry: object) => object} toEventRow
+ * @param {{ titlePrefix: string, defaultOpen?: boolean }} options
+ */
+function renderDateCollapsible(
+  card,
+  dateEntries,
+  toEventRow,
+  { titlePrefix, defaultOpen = false, sortDescending = false },
+) {
+  if (dateEntries.length === 0) return;
+
+  const details = document.createElement("details");
+  details.className = "dates-collapsible-details";
+  if (defaultOpen) details.open = true;
+
+  const summary = document.createElement("summary");
+  summary.className = "dates-collapsible-summary";
+  summary.textContent = `${titlePrefix} (${dateEntries.length})`;
+  const hint = document.createElement("span");
+  hint.className = "dates-collapsible-hint";
+  hint.textContent = defaultOpen ? "click to collapse" : "click to expand";
+  summary.appendChild(hint);
+  details.appendChild(summary);
+
+  const list = document.createElement("div");
+  list.className = "dates-collapsible-list";
+  // Upcoming dates read soonest-first (ascending); past dates read most-
+  // recent-first (descending) — reverse chronological, so the thing that
+  // just happened is at the top rather than buried below years-old dates.
+  [...dateEntries]
+    .sort(sortDescending ? (a, b) => sortByDate(b, a) : sortByDate)
+    .forEach((d) => renderEventRow(list, toEventRow(d)));
+  details.appendChild(list);
+
+  card.appendChild(details);
+}
+
+// ---------------------------------------------------------------------------
+// Relationship labelling (headliner / co-headliner / also featuring /
+// support act) — for a tour this performer doesn't own outright, says how
+// they're billed on it, from their own page.
+// ---------------------------------------------------------------------------
+
+/**
+ * Describes how the performer whose page this is relates to `tour`, for a
+ * tour they're NOT the/a headline performer_id/performer_ids on (a headline
+ * tour already gets its own "with A & B" co-performers line — see
+ * coPerformerIdsFor()/buildCoPerformerLine() — so this only covers the
+ * other_performer_ids / support_performer_ids buckets).
+ * @param {object} tour
+ * @returns {string|null} a short label, or null if performerMatches(tour)
+ *   (own tour — no label needed) or neither bucket includes them.
+ */
+function relationshipLabelForTour(tour) {
+  if (performerMatches(tour)) return null;
+  if (getTourSupportPerformerIds(tour).has(performerId)) {
+    // Who they're supporting is named as a linked "Supporting:" row on
+    // the card body (see renderTourCard()) rather than embedded as plain
+    // text here, so the header badge just needs to say what role this is.
+    return "Support act";
+  }
+  if (getTourAdditionalPerformerIds(tour).has(performerId)) {
+    return isDoubleHeadlineForDate(tour, null)
+      ? "Co-headliner"
+      : "Also featuring";
+  }
+  return null;
+}
+
+/**
+ * Builds a "Label: A, B" row of links to performers.html profile pages, or
+ * null if there's nobody to show. Mirrors tour_display.js's
+ * buildAdditionalPerformersEl() — same label/link shape, just plain
+ * comma-separated links (this page's existing convention, see
+ * buildCoPerformerLine()) rather than tour_display.js's coloured pills.
+ * @param {string[]} ids
+ * @param {string} label
+ * @param {string} className
+ * @returns {HTMLElement|null}
+ */
+function buildBillingRow(ids, label, className) {
+  const valid = (ids || []).filter((id) => performersLookup[id]);
+  if (valid.length === 0) return null;
+  const row = document.createElement("div");
+  row.className = className;
+  row.appendChild(document.createTextNode(`${label} `));
+  valid.forEach((id, i) => {
+    if (i > 0) row.appendChild(document.createTextNode(", "));
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.textContent = performersLookup[id].name;
+    a.onclick = (e) => e.stopPropagation();
+    row.appendChild(a);
+  });
+  return row;
+}
+
+// ---------------------------------------------------------------------------
+// Tour card
+// ---------------------------------------------------------------------------
+
+/**
+ * The tour_dates THIS performer is actually on. A performer who owns the
+ * tour (performerMatches) is on every date. A guest — listed in
+ * other_performer_ids or support_performer_ids — may only be on some
+ * dates (e.g. Deja Vu on the first five Beans on Toast dates; Ben Brown,
+ * Gecko etc. on the rest), so their page only shows those dates. Uses the
+ * per-date resolvers, so a date's own list correctly replaces the
+ * tour-level one.
+ * @param {object} tour
+ * @returns {object[]}
+ */
+function tourDatesForThisPerformer(tour) {
+  const dates = tour.tour_dates || [];
+  if (performerMatches(tour)) return dates;
+  return dates.filter(
+    (td) =>
+      getAdditionalPerformerIdsForDate(tour, td).includes(performerId) ||
+      getSupportPerformerIdsForDate(tour, td).includes(performerId),
+  );
+}
+
+// How much of the first paragraph to show before collapsing behind a
+// "more…" toggle — see the Description block in renderTourCard().
+const TOUR_CARD_DESC_PREVIEW_LENGTH = 200;
+
+function renderTourCard(container, tourId, tour, relationshipLabel = null) {
+  const today = getTodayMidnight();
+  // Only this performer's own dates (all of them for a headliner; just the
+  // dates they're billed on for a guest/support act).
+  const dates = tourDatesForThisPerformer(tour);
+
+  const futureDates = dates.filter((d) => {
+    const parsed = parseDateString(d.date);
+    return parsed && parsed >= today;
+  });
+  const pastDates = dates.filter((d) => {
+    const parsed = parseDateString(d.date);
+    return parsed && parsed < today;
+  });
+
+  const firstDate = dates[0] ? parseDateString(dates[0].date) : null;
+  const lastDate = dates[dates.length - 1]
+    ? parseDateString(dates[dates.length - 1].date)
+    : null;
+
+  const isMusic = tour.isMusic;
+  const isPoetry = tour.isPoetry;
+  const card = document.createElement("div");
+  card.className = `listing-card${isMusic ? " listing-card-music" : ""}${isPoetry ? " listing-card-poetry" : ""}`;
+
+  // Flyer thumbnail (floated right) — first of the tour's flyers, via
+  // getTourLevelFlyers() (shared_utils.js), which covers
+  // tour_flyer/touring_event_flyer/touring_event_flyers.
+  const tourCardFlyer = getTourLevelFlyers(tour)[0]?.filename;
+  if (tourCardFlyer) {
+    card.appendChild(
+      makePerfFlyerThumb(tourCardFlyer, tour.tour_name || tour.name),
+    );
+  }
+
+  // Header row
+  const header = document.createElement("div");
+  header.className = "listing-card-header";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "listing-card-name";
+  nameEl.textContent = tour.tour_name || tour.name;
+  header.appendChild(nameEl);
+
+  // How this performer is billed on a tour they don't own outright (see
+  // relationshipLabelForTour()) — e.g. "Co-headliner", "Also featuring",
+  // "Supporting Daniel Morden". Their own tours pass no label: the
+  // co-performers line below already covers headline billing.
+  if (relationshipLabel) {
+    const relBadge = document.createElement("span");
+    relBadge.className = "listing-relationship-badge";
+    relBadge.textContent = relationshipLabel;
+    header.appendChild(relBadge);
+  }
+
+  // Badge: remaining dates
+  if (futureDates.length > 0) {
+    const badge = document.createElement("span");
+    badge.className = "listing-remaining-badge";
+    badge.textContent = `${futureDates.length} date${futureDates.length !== 1 ? "s" : ""} remaining`;
+    header.appendChild(badge);
+  } else {
+    const badge = document.createElement("span");
+    badge.className = "listing-completed-badge";
+    badge.textContent =
+      pastDates.length > 0
+        ? `Completed (${pastDates.length} date${pastDates.length !== 1 ? "s" : ""})`
+        : "Completed";
+    header.appendChild(badge);
+  }
+
+  card.appendChild(header);
+
+  // Co-performers line — other performers billed on this tour, seen from
+  // one of their individual pages
+  const tourCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(tour),
+    "listing-card-meta listing-card-with",
+  );
+  if (tourCoLine) card.appendChild(tourCoLine);
+
+  // "Supporting:" — when the performer whose page this is is themselves a
+  // support act on this tour, name (and link to) who they're supporting,
+  // same label+button shape as "Also featuring:"/"Support:" below, rather
+  // than only naming the headliner as plain text inside the relationship
+  // badge above.
+  const headlinerIdsForSupportingRow = getTourHeadlinerIds(tour);
+  if (getTourSupportPerformerIds(tour).has(performerId)) {
+    const supportingRow = buildBillingRow(
+      [...headlinerIdsForSupportingRow],
+      "Supporting:",
+      "listing-card-meta listing-card-billing listing-card-billing-support",
+    );
+    if (supportingRow) card.appendChild(supportingRow);
+  }
+
+  // Rest of the bill beyond the headline co-performers line above —
+  // other_performer_ids / support_performer_ids, aggregated across every
+  // date, excluding the person whose page this is and the tour's own
+  // headliners. Mirrors tour_display.js's "Also featuring:"/
+  // "Co-headlining:"/"Support:" rows on the tour page itself, so the same
+  // bill is visible from a performer's own page too — including when
+  // this performer IS one of the headliners looking at who else is on
+  // their own tour.
+  const headlinerIds = getTourHeadlinerIds(tour);
+  // Scoped to the dates shown on this card, so a guest on only some dates
+  // doesn't list acts from the other legs of the tour.
+  const billAdditionalIds = [
+    ...new Set(
+      dates.flatMap((td) => getAdditionalPerformerIdsForDate(tour, td)),
+    ),
+  ].filter((id) => id !== performerId && !headlinerIds.has(id));
+  const billSupportIds = [
+    ...new Set(dates.flatMap((td) => getSupportPerformerIdsForDate(tour, td))),
+  ].filter((id) => id !== performerId && !headlinerIds.has(id));
+  const billAdditionalRow = buildBillingRow(
+    billAdditionalIds,
+    isDoubleHeadlineForDate(tour, null) ? "Co-headlining:" : "Also featuring:",
+    "listing-card-meta listing-card-billing",
+  );
+  if (billAdditionalRow) card.appendChild(billAdditionalRow);
+  const billSupportRow = buildBillingRow(
+    billSupportIds,
+    "Support:",
+    "listing-card-meta listing-card-billing listing-card-billing-support",
+  );
+  if (billSupportRow) card.appendChild(billSupportRow);
+
+  // Description — collapsed by default (first paragraph, capped at
+  // TOUR_CARD_DESC_PREVIEW_LENGTH chars), with a "more…" toggle that swaps
+  // in the complete, multi-paragraph description in place. Unlike the
+  // Repertoire cards below (which always show everything, since the show
+  // is the primary thing there and there's no separate detail page to
+  // link out to), a tour card is a preview linking to the full tour page
+  // — but tour_description text inherited from a repertoire show (see
+  // applyRepertoireInheritance() in shared_utils.js) can run much longer
+  // than the old hand-written tour blurbs, so it's worth letting people
+  // read the whole thing here too without having to leave the page.
+  if (tour.tour_description) {
+    const paras = tour.tour_description
+      .split("\n\n\n\n")
+      .map((p) => p.replace(/\n\n/g, " ").trim())
+      .filter(Boolean);
+    const firstPara = paras[0] || "";
+    const isTruncated = firstPara.length > TOUR_CARD_DESC_PREVIEW_LENGTH;
+    const hasMore = isTruncated || paras.length > 1;
+
+    const desc = document.createElement("div");
+    desc.className = "listing-card-desc";
+
+    const previewP = document.createElement("p");
+    previewP.textContent = isTruncated
+      ? firstPara.slice(0, TOUR_CARD_DESC_PREVIEW_LENGTH - 1).trimEnd() + "…"
+      : firstPara;
+    desc.appendChild(previewP);
+
+    if (hasMore) {
+      const fullWrap = document.createElement("div");
+      fullWrap.className = "listing-card-desc-full";
+      fullWrap.style.display = "none";
+      paras.forEach((p) => {
+        const el = document.createElement("p");
+        el.textContent = p;
+        fullWrap.appendChild(el);
+      });
+      desc.appendChild(fullWrap);
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "listing-card-desc-toggle";
+      toggle.textContent = "more…";
+      toggle.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const isOpen = fullWrap.style.display !== "none";
+        fullWrap.style.display = isOpen ? "none" : "block";
+        previewP.style.display = isOpen ? "" : "none";
+        toggle.textContent = isOpen ? "more…" : "less";
+      };
+      desc.appendChild(toggle);
+    }
+
+    card.appendChild(desc);
+  }
+
+  // Date range + count
+  if (firstDate && lastDate) {
+    const meta = document.createElement("div");
+    meta.className = "listing-card-meta";
+    meta.textContent = `${formatShortDate(firstDate)} – ${formatShortDate(lastDate)} · ${dates.length} date${dates.length !== 1 ? "s" : ""}`;
+    card.appendChild(meta);
+  }
+
+  // Upcoming and past dates — both as collapsibles (upcoming open by
+  // default so nothing currently visible needs an extra click; past
+  // closed by default). See renderDateCollapsible().
+  const toEventRow = (td) => tourDateToEventRow(tourId, tour, td);
+  renderDateCollapsible(card, futureDates, toEventRow, {
+    titlePrefix: "Upcoming dates",
+    defaultOpen: true,
+  });
+  renderDateCollapsible(card, pastDates, toEventRow, {
+    titlePrefix: "Past dates",
+    sortDescending: true,
+  });
+
+  // View tour link
+  const footer = document.createElement("div");
+  footer.className = "listing-card-footer";
+  const viewLink = document.createElement("a");
+  viewLink.href = `tour_guide.html?tour=${encodeURIComponent(tourId)}`;
+  viewLink.className = "listing-view-link";
+  viewLink.textContent = "View full tour →";
+  footer.appendChild(viewLink);
+  card.appendChild(footer);
+
+  container.appendChild(card);
+}
+
+// ---------------------------------------------------------------------------
+// Repertoire show card
+// The show itself is the primary thing; dates are secondary context.
+// ---------------------------------------------------------------------------
+
+function renderTouringShowCard(container, tsId, ts) {
+  const today = getTodayMidnight();
+  const dates = ts.show_dates || [];
+  const futureDates = dates.filter((d) => {
+    const p = parseDateString(d.date);
+    return p && p >= today;
+  });
+  const pastDates = dates.filter((d) => {
+    const p = parseDateString(d.date);
+    return p && p < today;
+  });
+
+  const card = document.createElement("div");
+  card.className = "listing-card repertoire-card";
+
+  // Flyer thumbnail from touring_event_flyer, or the first date's own
+  // flyer(s) via getEventLevelFlyers() (shared_utils.js).
+  const tsFlyer =
+    ts.touring_event_flyer ||
+    ts.event_flyer ||
+    (dates.length > 0 && getEventLevelFlyers(dates[0])[0]?.filename) ||
+    null;
+  if (tsFlyer?.trim()) {
+    card.appendChild(makePerfFlyerThumb(tsFlyer, ts.showname || ts.name));
+  }
+
+  // Header: show name + badge
+  const header = document.createElement("div");
+  header.className = "listing-card-header";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "listing-card-name";
+  nameEl.textContent = ts.showname || ts.name;
+  header.appendChild(nameEl);
+
+  const badge = document.createElement("span");
+  badge.className =
+    futureDates.length > 0 ? "listing-remaining-badge" : "listing-completed-badge";
+  badge.textContent =
+    futureDates.length > 0
+      ? `${futureDates.length} upcoming date${futureDates.length !== 1 ? "s" : ""}`
+      : pastDates.length > 0
+        ? `${pastDates.length} past date${pastDates.length !== 1 ? "s" : ""}`
+        : "No dates listed";
+  header.appendChild(badge);
+  card.appendChild(header);
+
+  const showCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(ts),
+    "listing-card-meta listing-card-with",
+  );
+  if (showCoLine) card.appendChild(showCoLine);
+
+  // Full description — the show is the thing, so give it room
+  if (ts.description) {
+    const desc = document.createElement("div");
+    desc.className = "listing-card-desc repertoire-desc";
+    const paras = ts.description
+      .split("\n\n\n\n")
+      .map((p) => p.replace(/\n\n/g, " ").trim())
+      .filter(Boolean);
+    paras.forEach((p) => {
+      const el = document.createElement("p");
+      el.textContent = p;
+      desc.appendChild(el);
+    });
+    card.appendChild(desc);
+  }
+
+  // Upcoming and past dates — both as collapsibles (upcoming open by
+  // default so nothing currently visible needs an extra click; past
+  // closed by default). See renderDateCollapsible().
+  const toEventRow = (sd) => showDateToEventRow(tsId, ts, sd);
+  renderDateCollapsible(card, futureDates, toEventRow, {
+    titlePrefix: "Upcoming dates",
+    defaultOpen: true,
+  });
+  renderDateCollapsible(card, pastDates, toEventRow, {
+    titlePrefix: "Past dates",
+    sortDescending: true,
+  });
+
+  // View show link — the Touring Shows page (tour_display.js) treats a
+  // repertoire show as just another browsable item, under a synthetic id
+  // "R-<showId>" (see repertoireShowAsTourShape() there) so it can't
+  // collide with a real tour id.
+  const footer = document.createElement("div");
+  footer.className = "listing-card-footer";
+  const viewLink = document.createElement("a");
+  viewLink.href = `tour_guide.html?tour=${encodeURIComponent(TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX + tsId)}`;
+  viewLink.className = "listing-view-link";
+  viewLink.textContent = "View full show →";
+  footer.appendChild(viewLink);
+  card.appendChild(footer);
+
+  container.appendChild(card);
+}
+
+// ---------------------------------------------------------------------------
+// Other event row
+// ---------------------------------------------------------------------------
+
+function renderEventRow(container, event) {
+  // If the event has no single date but has a datetimes array, use the first entry's date.
+  // datetimes entries look like "01/04/2026 : 7.30pm"
+  let dateStr = event.date;
+  let timeStr = event.time;
+  const hasDatesArray =
+    Array.isArray(event.datetimes) && event.datetimes.length > 0;
+  if (!dateStr && hasDatesArray) {
+    const firstDt = event.datetimes[0];
+    const parts = firstDt.split(/\s*:\s*/);
+    dateStr = parts[0] ? parts[0].trim() : "";
+    if (!timeStr && parts[1]) timeStr = parts[1].trim();
+  }
+  const date = parseDateString(dateStr);
+  // isPast: for multi-date events use the *last* datetime to decide
+  let isPast = false;
+  if (hasDatesArray) {
+    const lastDt = event.datetimes[event.datetimes.length - 1];
+    const lastDateStr = lastDt.split(/\s*:\s*/)[0].trim();
+    const lastDate = parseDateString(lastDateStr);
+    isPast = lastDate && lastDate < getTodayMidnight();
+  } else {
+    isPast = date && date < getTodayMidnight();
+  }
+  const venue = event.venue_id ? venuesLookup[event.venue_id] : null;
+
+  const row = document.createElement("div");
+  row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+  const dateCol = document.createElement("div");
+  dateCol.className = "event-row-date";
+  if (date) {
+    dateCol.textContent =
+      hasDatesArray && event.datetimes.length > 1
+        ? `${formatMediumDate(date)} +${event.datetimes.length - 1} more`
+        : formatMediumDate(date);
+  } else {
+    dateCol.textContent = "Date TBC";
+  }
+  if (isPast) dateCol.classList.add("muted");
+  row.appendChild(dateCol);
+
+  const detail = document.createElement("div");
+  detail.className = "event-row-detail";
+
+  const title = document.createElement("div");
+  title.className = "event-row-title";
+  title.textContent = event.showname || event.name;
+  detail.appendChild(title);
+  // Only events with their own plain .date field have an event.html
+  // permalink — matches resolvableFlatEvents()/findEventById() in
+  // event.js, which key off event.name + parseDateString(event.date)
+  // directly and don't know about the .datetimes fallback above, so a
+  // permalink built from a .datetimes-derived date wouldn't resolve there.
+  // linkEventRowTitle() (shared_utils.js) is a no-op if the date is null,
+  // so this is safe to call unconditionally.
+  linkEventRowTitle(
+    title,
+    event,
+    event.date ? parseDateString(event.date) : null,
+  );
+
+  if (timeStr) {
+    const t = document.createElement("span");
+    t.className = "event-row-time";
+    t.textContent = timeStr;
+    detail.appendChild(t);
+  }
+
+  // Co-performer credit for shared bills (e.g. "with Lucy Lill") — from an
+  // explicit performer_ids[] list or a compound performer_id.
+  const eventCoLine = buildCoPerformerLine(
+    coPerformerIdsFor(event),
+    "event-row-time event-row-with",
+  );
+  if (eventCoLine) detail.appendChild(eventCoLine);
+
+  // Per-date tour billing relationship (tour dates only — see
+  // tourDateToEventRow()): the same "Supporting X"/"With:"/
+  // "Co-headliner(s):"/"Support:" rows the tour page itself shows for
+  // this exact date, which can differ from the tour-level "Also
+  // featuring:"/"Support:" summary on the card above if this date
+  // overrides the tour's defaults. The page owner (performerId) is
+  // filtered out of each row — no point telling someone they're on the
+  // bill with themselves.
+  if (event._dateBillingFlip && event._dateBillingFlip !== performerId) {
+    const flipRow = buildBillingRow(
+      [event._dateBillingFlip],
+      "Supporting:",
+      "event-row-time event-row-with",
+    );
+    if (flipRow) detail.appendChild(flipRow);
+  }
+  const dateAddlRow = buildBillingRow(
+    (event._dateAdditionalIds || []).filter((id) => id !== performerId),
+    event._dateIsDoubleHeadline ? "Co-headliner(s):" : "With:",
+    "event-row-time event-row-with",
+  );
+  if (dateAddlRow) detail.appendChild(dateAddlRow);
+  const dateSupportRow = buildBillingRow(
+    (event._dateSupportIds || []).filter((id) => id !== performerId),
+    "Support:",
+    "event-row-time event-row-with event-row-support",
+  );
+  if (dateSupportRow) detail.appendChild(dateSupportRow);
+
+  if (venue) {
+    const v = document.createElement("div");
+    v.className = "event-row-venue";
+    if (venue.url) {
+      const a = document.createElement("a");
+      a.href = sanitizeUrl(venue.url) || "#";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = venue.name;
+      v.appendChild(a);
+      if (venue.city) v.appendChild(document.createTextNode(`, ${venue.city}`));
+    } else {
+      v.textContent = venue.name + (venue.city ? `, ${venue.city}` : "");
+    }
+    detail.appendChild(v);
+  }
+
+  const badges = document.createElement("div");
+  badges.className = "badge-row";
+  if (event.isMusic) {
+    badges.appendChild(makeBadge("badge-music", "Music"));
+  }
+  if (event.isPoetry) {
+    badges.appendChild(makeBadge("badge-poetry", "Poetry"));
+  }
+  if (event.isSpecial && !event.isMusic && !event.isPoetry) {
+    badges.appendChild(makeBadge("badge-special", "Story show"));
+  }
+  if (isPast) {
+    badges.appendChild(makeBadge("badge-past", "Past"));
+  }
+  if (event.ticket_url && !isPast) {
+    const a = document.createElement("a");
+    a.href = sanitizeUrl(event.ticket_url) || "#";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "ticket-link";
+    a.textContent = "Tickets";
+    badges.appendChild(a);
+  }
+  detail.appendChild(badges);
+
+  // Description dropdown (if the event has one)
+  const descDropdown = buildDescriptionDropdown(event.description);
+  if (descDropdown) detail.appendChild(descDropdown);
+
+  // Flyer expand-button (if available)
+  if (event.event_flyer?.trim()) {
+    const flyerSrc = BASE_FLYER + sanitizeFlyerName(event.event_flyer.trim());
+    const btn = document.createElement("span");
+    btn.className = "event-row-flyer-btn";
+    btn.textContent = "🖼 View flyer";
+    const expandable = document.createElement("div");
+    expandable.className = "event-row-flyer-expandable";
+    const fimg = document.createElement("img");
+    fimg.alt = event.showname || event.name || "Flyer";
+    let flyerLoaded = false;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = expandable.style.display === "block";
+      if (isOpen) {
+        expandable.style.display = "none";
+        btn.textContent = "🖼 View flyer";
+      } else {
+        if (!flyerLoaded) {
+          fimg.src = flyerSrc;
+          flyerLoaded = true;
+        }
+        expandable.style.display = "block";
+        btn.textContent = "🖼 Hide flyer";
+      }
+    });
+    fimg.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const galleryIdx = perfGalleryItems.findIndex((i) => i.src === flyerSrc);
+      if (galleryIdx >= 0) {
+        openPerfFlyer(perfGalleryItems, galleryIdx);
+      } else {
+        openPerfFlyer(
+          [{ src: flyerSrc, label: event.showname || event.name || "" }],
+          0,
+        );
+      }
+    });
+    expandable.appendChild(fimg);
+    detail.appendChild(btn);
+    detail.appendChild(expandable);
+  }
+
+  row.appendChild(detail);
+  container.appendChild(row);
+}
+
+// ---------------------------------------------------------------------------
+// Festival row
+// ---------------------------------------------------------------------------
+
+function renderFestivalRow(container, fid, festival) {
+  const start = parseDateString(festival.start_date);
+  const end = parseDateString(festival.end_date);
+  const isPast = end && end < getTodayMidnight();
+
+  const row = document.createElement("div");
+  row.className = `event-row${isPast ? " event-row-past" : ""}`;
+
+  const dateCol = document.createElement("div");
+  dateCol.className = "event-row-date";
+  if (start && end) {
+    dateCol.textContent =
+      start.toDateString() === end.toDateString()
+        ? formatMediumDate(start)
+        : `${formatShortDate(start)} – ${formatShortDate(end)}`;
+  }
+  row.appendChild(dateCol);
+
+  const detail = document.createElement("div");
+  detail.className = "event-row-detail";
+
+  const title = document.createElement("div");
+  title.className = "event-row-title";
+  title.textContent = festival.name;
+  detail.appendChild(title);
+
+  const role = (festival.performers || []).find((p) => performerMatches(p));
+  if (role && role.role) {
+    const r = document.createElement("span");
+    r.className = "event-row-time";
+    r.textContent = role.role;
+    detail.appendChild(r);
+  }
+
+  const venue = festival.venue_id ? venuesLookup[festival.venue_id] : null;
+  if (venue) {
+    const v = document.createElement("div");
+    v.className = "event-row-venue";
+    v.textContent = venue.name + (venue.city ? `, ${venue.city}` : "");
+    detail.appendChild(v);
+  }
+
+  const badges = document.createElement("div");
+  badges.className = "badge-row";
+  badges.appendChild(makeBadge("badge-special", "Festival"));
+  if (isPast) {
+    badges.appendChild(makeBadge("badge-past", "Past"));
+  }
+  if (festival.ticket_url && !isPast) {
+    const a = document.createElement("a");
+    a.href = sanitizeUrl(festival.ticket_url) || "#";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "ticket-link";
+    a.textContent = "Tickets";
+    badges.appendChild(a);
+  }
+  detail.appendChild(badges);
+
+  row.appendChild(detail);
+  container.appendChild(row);
+}
+
+// ── Performer-page flyer lightbox wiring ────────────────────────────────
+// State + functions (openPerfFlyer, closePerfFlyer, showPfSlide, pfLbKey,
+// makePerfFlyerThumb) now live in the main script block above, alongside
+// renderPerformer, so they're guaranteed to exist before it needs them.
+// Only the bits that require the lightbox markup above to already exist
+// in the DOM stay here.
+
+document.getElementById("pfClose").onclick = closePerfFlyer;
+document.getElementById("pfPrev").onclick = () => {
+  if (_pfIdx > 0) {
+    _pfIdx--;
+    showPfSlide();
+  }
+};
+document.getElementById("pfNext").onclick = () => {
+  if (_pfIdx < _pfItems.length - 1) {
+    _pfIdx++;
+    showPfSlide();
+  }
+};
+document.getElementById("perfFlyerLightbox").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("perfFlyerLightbox"))
+    closePerfFlyer();
+});

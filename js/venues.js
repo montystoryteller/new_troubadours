@@ -1,0 +1,1630 @@
+// ---------------------------------------------------------------------------
+// Data + state
+// ---------------------------------------------------------------------------
+
+let eventsData = null;
+let venuesLookup = {};
+let performersLookup = {};
+let toursLookup = {};
+let venueId = null;
+let venue = null;
+let map = null;
+let leafletPromise = null;
+
+const LEAFLET_JS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+const LEAFLET_CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletPromise) return leafletPromise;
+
+  leafletPromise = new Promise((resolve, reject) => {
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = LEAFLET_CSS_URL;
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement("script");
+    script.src = LEAFLET_JS_URL;
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet could not be loaded"));
+    document.head.appendChild(script);
+  });
+
+  return leafletPromise;
+}
+
+function preloadLeafletWhenIdle() {
+  const preload = () =>
+    loadLeaflet().catch((error) =>
+      console.warn("Leaflet preload failed:", error),
+    );
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(preload, { timeout: 2000 });
+  } else {
+    setTimeout(preload, 1500);
+  }
+}
+
+// Single source of truth for "does this venue have usable coordinates".
+// `venue.latlon` being present isn't enough on its own — some venues have
+// it set to an empty array [] rather than being missing outright, and []
+// is truthy in JS, so a plain `if (v.latlon)` check lets those through
+// and crashes downstream Leaflet calls that expect a real [lat, lon] pair.
+// hasLatlon(), haversineKm() — defined in shared_utils.js
+
+// ---------------------------------------------------------------------------
+// Bootstrap
+// ---------------------------------------------------------------------------
+
+// Performance-type classification (what kinds of events happen at a
+// venue — distinct from classifyVenueType()/VTYPE_* in shared_guessers.js,
+// which classify the *building* itself from its name). Story/Music/
+// Poetry mirror the same three buckets used on the performers listing
+// page; folk nights and Irish sessions are treated as "music" here
+// since they're live-music events, even though they're their own
+// event types internally.
+const PTYPE_DEFS = [
+  { key: "story", label: "Story", colour: "#2e7d32" },
+  { key: "music", label: "Music", colour: "#443cd7" },
+  { key: "poetry", label: "Poetry", colour: "#d6006e" },
+];
+const PTYPE_COLOUR = Object.fromEntries(
+  PTYPE_DEFS.map((p) => [p.key, p.colour]),
+);
+
+function classifyVenuePerformanceTypes(venueId) {
+  const types = new Set();
+
+  // Recurring nights. couldBeAtVenue() rather than a plain venue_id match,
+  // so a night that alternates here by month parity still counts.
+  if ((eventsData.clubs || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("story");
+  if ((eventsData.folkNights || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("music");
+  if ((eventsData.irishSessions || []).some((e) => couldBeAtVenue(e, venueId)))
+    types.add("music");
+
+  // One-off dated events — the same collector the venue page itself lists
+  // from, so the directory badges and the page's act-type checkboxes can't
+  // disagree about what a venue hosts (tour dates, repertoire shows and
+  // festivals all included).
+  collectDatedEventsForVenue(venueId).forEach((e) =>
+    types.add(ptypeForCategory(e.category)),
+  );
+
+  return types;
+}
+
+function renderAllVenues() {
+  const root = document.getElementById("venueContent");
+  root.innerHTML = "";
+
+  // Build sorted venue list (only venues with a name)
+  const venueList = Object.entries(venuesLookup)
+    .filter(([, v]) => v.name)
+    .sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+  // Collect unique cities for filter
+  const cities = [
+    ...new Set(venueList.map(([, v]) => v.city).filter(Boolean)),
+  ].sort();
+
+  // Build search index — pre-classify venue type so it's available for
+  // both the listing cards and the shared type filter.
+  //
+  // resolveVenueTypesForVenue() (shared_guessers.js) prefers an explicit
+  // venue.venue_type (single value or array) over the name-based guess —
+  // this used to just be classifyVenueType(v.name), which meant a manually
+  // set venue_type override had no visible effect anywhere on this page.
+  // `vtypes` holds every resolved type (for badges / multi-type filter
+  // matching); `vtype` is the first/primary one, kept as its own field
+  // because it's what map-marker colour, legend bucketing, and the
+  // single-select type filter still key off.
+  const venueIndex = venueList.map(([vid, v]) => {
+    const vtypes = resolveVenueTypesForVenue(v);
+    return {
+      vid,
+      v,
+      vtypes,
+      vtype: vtypes[0].label,
+      ptypes: classifyVenuePerformanceTypes(vid),
+      searchText: [v.name, v.city, v.full_address, v.postcode]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase(),
+    };
+  });
+
+  // Collect the types that actually appear (in canonical order). Checks
+  // ALL of a venue's types, not just the primary one, so a venue tagged
+  // ["pub-bar-cafe", "live-music-venue"] makes both filter buttons appear.
+  const presentTypes = VTYPE_ORDER.filter((t) =>
+    venueIndex.some((e) => e.vtypes.some((vt) => vt.label === t)),
+  );
+
+  // ── Filter state ─────────────────────────────────────────────────────
+  let activeCity = null;
+  let searchTerm = "";
+  // Venue-type filter: which types are selected — a toggleable OR/union
+  // set, same convention as activePTypes below. Starts with every type
+  // that actually appears selected, i.e. no restriction.
+  const activeVenueTypes = new Set(presentTypes);
+  let mapBounds = null; // null = no bounds filter (map closed / never panned)
+  // Performance-type filter: which of story/music/poetry are
+  // selected, and whether a venue must match ANY (union) or ALL
+  // (intersection) of them. All three selected + union == no
+  // restriction (the default).
+  const activePTypes = new Set(PTYPE_DEFS.map((p) => p.key));
+  let ptypeMode = "union"; // 'union' | 'intersection'
+
+  // vid → marker, so city filter can show/hide individual markers
+  const markerByVid = {};
+
+  function performanceTypeVisible(entry) {
+    if (activePTypes.size === 0) return false; // nothing selected → show nothing
+    if (ptypeMode === "intersection") {
+      // Always compute the real intersection — selecting all
+      // three types should narrow to venues hosting all three,
+      // not fall back to "show everything".
+      return [...activePTypes].every((t) => entry.ptypes.has(t));
+    }
+    // Union: selecting every type is equivalent to no restriction
+    if (activePTypes.size === PTYPE_DEFS.length) return true;
+    return [...entry.ptypes].some((t) => activePTypes.has(t));
+  }
+
+  function venueTypeMatches(entry) {
+    if (activeVenueTypes.size === 0) return false; // nothing selected → show nothing
+    // Selecting every type that appears is equivalent to no restriction —
+    // same convention as performanceTypeVisible() below.
+    if (activeVenueTypes.size === presentTypes.length) return true;
+    return entry.vtypes.some((vt) => activeVenueTypes.has(vt.label));
+  }
+
+  function isVisible(entry) {
+    if (!venueTypeMatches(entry)) return false;
+    if (!performanceTypeVisible(entry)) return false;
+    if (activeCity && entry.v.city !== activeCity) return false;
+    if (searchTerm && !entry.searchText.includes(searchTerm.toLowerCase()))
+      return false;
+    if (mapBounds && hasLatlon(entry.v)) {
+      if (!mapBounds.contains(entry.v.latlon)) return false;
+    }
+    return true;
+  }
+
+  // Marker visibility mirrors isVisible() but (matching prior
+  // behaviour) ignores free-text search and map-bounds panning —
+  // only the toggle-style filters (venue type / performance type /
+  // city) show or hide markers directly.
+  function markerVisible(entry) {
+    if (!venueTypeMatches(entry)) return false;
+    if (!performanceTypeVisible(entry)) return false;
+    if (activeCity !== null && entry.v.city !== activeCity) return false;
+    return true;
+  }
+
+  function syncMarkerVisibility() {
+    if (!mapHandle.map) return;
+    venueIndex.forEach((entry) => {
+      const marker = markerByVid[entry.vid];
+      if (!marker) return;
+      if (markerVisible(entry)) {
+        marker.addTo(mapHandle.map);
+      } else {
+        marker.remove();
+      }
+    });
+  }
+
+  // Zoom/pan the map to fit whatever the toggle-style filters (venue
+  // type / performance type / city) currently leave visible — mirrors
+  // fitMapToEvents() on the events page. A no-op if the map hasn't been
+  // opened yet; there's nothing to fit until then, and it'll be called
+  // again on open via the onInit callback below.
+  function fitMapToVisibleVenues() {
+    if (!mapHandle.map) return;
+    const map = mapHandle.map;
+
+    const visibleCoords = venueIndex
+      .filter((entry) => markerVisible(entry) && hasLatlon(entry.v))
+      .map((entry) => entry.v.latlon);
+
+    if (visibleCoords.length === 0) {
+      map.setView([53.0, -2.0], 6); // no matches (or none with coords) — reset to the full UK view
+    } else if (visibleCoords.length === 1) {
+      map.setView(visibleCoords[0], 12);
+    } else {
+      map.fitBounds(L.latLngBounds(visibleCoords), { padding: [30, 30] });
+    }
+
+    // Set mapBounds directly from the view we just chose rather than
+    // waiting on a moveend/zoomend event — fitBounds()/setView() don't
+    // reliably fire one when the pan is small enough not to need a
+    // matching zoom change, and we want the list filter to match the
+    // map immediately either way.
+    mapBounds = map.getBounds();
+    renderList();
+  }
+
+  // ── Marker registry (populated lazily when the map first opens) ──────
+  const markersByType = {};
+
+  // ── Controls: search + venue-type filter + city filter ───────────────
+  const controls = document.createElement("div");
+  controls.className = "dir-controls";
+
+  createSearchBox(controls, {
+    placeholder: "Search venues by name, city or postcode\u2026",
+    search: (term) =>
+      venueIndex.filter((e) => e.searchText.includes(term)).slice(0, 8),
+    renderItem: ({ v }) => {
+      const item = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = v.name;
+      item.appendChild(strong);
+      if (v.city) {
+        const city = document.createElement("span");
+        city.className = "dir-search-item-meta";
+        city.textContent = v.city;
+        item.appendChild(city);
+      }
+      return item;
+    },
+    onSelect: ({ vid, v }, searchInput, clearBtn, dropdown) => {
+      searchInput.value = v.name;
+      searchTerm = v.name;
+      clearBtn.style.display = "block";
+      dropdown.style.display = "none";
+      renderList();
+      setTimeout(() => {
+        const el = document.getElementById("venue-row-" + vid);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    },
+    onChange: (term) => {
+      searchTerm = term;
+      renderList();
+    },
+  });
+
+  // ── Venue-type filter buttons — independent toggles (OR/union), same
+  // interaction as the performance-type buttons below: click a type to
+  // add/remove it from the selection; "All" resets to every type shown.
+  {
+    const typeLabel = document.createElement("div");
+    typeLabel.className = "dir-filter-label";
+    typeLabel.textContent = "Filter by venue type";
+    controls.appendChild(typeLabel);
+
+    const typeBtnsWrap = document.createElement("div");
+    typeBtnsWrap.className = "dir-filter-btns";
+
+    const allTypeBtn = document.createElement("button");
+    allTypeBtn.textContent = "All";
+    allTypeBtn.className = "dir-filter-btn active-teal";
+    typeBtnsWrap.appendChild(allTypeBtn);
+
+    const noneTypeBtn = document.createElement("button");
+    noneTypeBtn.textContent = "None";
+    noneTypeBtn.className = "dir-filter-btn";
+    typeBtnsWrap.appendChild(noneTypeBtn);
+
+    const typeBtnEls = [];
+
+    presentTypes.forEach((vtype) => {
+      const colour = VTYPE_COLOURS[vtype] || "#999";
+      const btn = document.createElement("button");
+      btn.className = "dir-filter-btn active-teal";
+      btn.style.borderLeftColor = colour;
+      btn.style.borderLeftWidth = "4px";
+
+      const swatch = document.createElement("span");
+      swatch.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;background:${colour};margin-right:5px;vertical-align:middle;flex-shrink:0;`;
+      btn.appendChild(swatch);
+      btn.appendChild(document.createTextNode(vtype));
+
+      typeBtnEls.push({ btn, vtype });
+      typeBtnsWrap.appendChild(btn);
+    });
+
+    function refreshTypeBtns() {
+      typeBtnEls.forEach(({ btn, vtype }) =>
+        btn.classList.toggle("active-teal", activeVenueTypes.has(vtype)),
+      );
+      // "All" reads as active only when every present type is selected —
+      // i.e. genuinely "no restriction" — matching the ptype "All" button.
+      allTypeBtn.classList.toggle(
+        "active-teal",
+        activeVenueTypes.size === presentTypes.length,
+      );
+      // "None" mirrors it at the other end — active only when nothing's
+      // selected (which shows zero venues; see venueTypeMatches()).
+      noneTypeBtn.classList.toggle("active-teal", activeVenueTypes.size === 0);
+    }
+
+    function refreshAndApply() {
+      refreshTypeBtns();
+      renderList();
+      syncMarkerVisibility();
+      fitMapToVisibleVenues();
+    }
+
+    allTypeBtn.addEventListener("click", () => {
+      presentTypes.forEach((t) => activeVenueTypes.add(t));
+      refreshAndApply();
+    });
+    noneTypeBtn.addEventListener("click", () => {
+      activeVenueTypes.clear();
+      refreshAndApply();
+    });
+    typeBtnEls.forEach(({ btn, vtype }) => {
+      btn.addEventListener("click", () => {
+        if (activeVenueTypes.has(vtype)) activeVenueTypes.delete(vtype);
+        else activeVenueTypes.add(vtype);
+        refreshAndApply();
+      });
+    });
+
+    controls.appendChild(typeBtnsWrap);
+  }
+
+  // ── Performance-type filter — story/music/poetry, with a
+  // union/intersection mode toggle ────────────────────────────────────
+  {
+    const ptypeLabel = document.createElement("div");
+    ptypeLabel.className = "dir-filter-label";
+    ptypeLabel.textContent = "Filter by performance type";
+    controls.appendChild(ptypeLabel);
+
+    const ptypeBtnsWrap = document.createElement("div");
+    ptypeBtnsWrap.className = "dir-filter-btns";
+
+    const allPtypeBtn = document.createElement("button");
+    allPtypeBtn.textContent = "All";
+    allPtypeBtn.className = "dir-filter-btn active-teal";
+    allPtypeBtn.addEventListener("click", () => {
+      PTYPE_DEFS.forEach(({ key }) => activePTypes.add(key));
+      ptypeMode = "union";
+      refreshPtypeBtns();
+      renderList();
+      syncMarkerVisibility();
+      fitMapToVisibleVenues();
+    });
+    ptypeBtnsWrap.appendChild(allPtypeBtn);
+
+    const nonePtypeBtn = document.createElement("button");
+    nonePtypeBtn.textContent = "None";
+    nonePtypeBtn.className = "dir-filter-btn";
+    nonePtypeBtn.addEventListener("click", () => {
+      activePTypes.clear();
+      refreshPtypeBtns();
+      renderList();
+      syncMarkerVisibility();
+      fitMapToVisibleVenues();
+    });
+    ptypeBtnsWrap.appendChild(nonePtypeBtn);
+
+    const ptypeBtnEls = [];
+    PTYPE_DEFS.forEach(({ key, label }) => {
+      const btn = document.createElement("button");
+      btn.className = "type-filter-btn active";
+      btn.dataset.ptype = key;
+      btn.textContent = label;
+      btn.addEventListener("click", () => {
+        if (activePTypes.has(key)) activePTypes.delete(key);
+        else activePTypes.add(key);
+        refreshPtypeBtns();
+        renderList();
+        syncMarkerVisibility();
+        fitMapToVisibleVenues();
+      });
+      ptypeBtnEls.push(btn);
+      ptypeBtnsWrap.appendChild(btn);
+    });
+
+    function refreshPtypeBtns() {
+      ptypeBtnEls.forEach((btn) =>
+        btn.classList.toggle("active", activePTypes.has(btn.dataset.ptype)),
+      );
+      // "All" reads as active only when every type is selected in union mode —
+      // i.e. genuinely "no restriction", matching the venue-type All button's meaning.
+      allPtypeBtn.classList.toggle(
+        "active-teal",
+        activePTypes.size === PTYPE_DEFS.length && ptypeMode === "union",
+      );
+      // "None" mirrors it at the other end — active only when nothing's
+      // selected (which shows zero venues; see performanceTypeVisible()).
+      nonePtypeBtn.classList.toggle("active-teal", activePTypes.size === 0);
+    }
+
+    controls.appendChild(ptypeBtnsWrap);
+
+    // Mode toggle — only meaningful once 2+ types are selected,
+    // but always visible so its state is clear.
+    const modeWrap = document.createElement("div");
+    modeWrap.style.cssText =
+      "display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:#777;";
+
+    const modeLabel = document.createElement("span");
+    modeLabel.textContent = "Show venues matching:";
+    modeWrap.appendChild(modeLabel);
+
+    const unionBtn = document.createElement("button");
+    unionBtn.className = "dir-filter-btn active-teal";
+    unionBtn.textContent = "Any selected (union)";
+
+    const intersectionBtn = document.createElement("button");
+    intersectionBtn.className = "dir-filter-btn";
+    intersectionBtn.textContent = "All selected (intersection)";
+
+    function applyPtypeMode(mode) {
+      ptypeMode = mode;
+      unionBtn.classList.toggle("active-teal", mode === "union");
+      intersectionBtn.classList.toggle("active-teal", mode === "intersection");
+      refreshPtypeBtns();
+      renderList();
+      syncMarkerVisibility();
+      fitMapToVisibleVenues();
+    }
+    unionBtn.addEventListener("click", () => applyPtypeMode("union"));
+    intersectionBtn.addEventListener("click", () =>
+      applyPtypeMode("intersection"),
+    );
+
+    modeWrap.appendChild(unionBtn);
+    modeWrap.appendChild(intersectionBtn);
+    controls.appendChild(modeWrap);
+  }
+
+  // ── City filter — collapsible <details> with buttons ──────────────────
+  if (cities.length > 0) {
+    const cityDetails = document.createElement("details");
+    cityDetails.className = "dir-card";
+    cityDetails.style.cssText = "margin-top:6px;";
+
+    const citySummary = document.createElement("summary");
+    citySummary.className = "dir-map-summary";
+    citySummary.style.cssText =
+      "font-size:13px;padding:7px 12px;cursor:pointer;";
+
+    function updateCitySummary() {
+      citySummary.textContent = activeCity
+        ? `📍 City: ${activeCity}`
+        : "📍 Filter by city";
+    }
+    updateCitySummary();
+    cityDetails.appendChild(citySummary);
+
+    const cityBtnsWrap = document.createElement("div");
+    cityBtnsWrap.style.cssText =
+      "padding:8px 12px 10px;display:flex;flex-wrap:wrap;gap:5px;";
+
+    let cityBtnEls = [];
+    function refreshCityBtns() {
+      cityBtnEls.forEach((btn, i) => {
+        const val = i === 0 ? null : cities[i - 1];
+        btn.classList.toggle("active-teal", activeCity === val);
+      });
+      updateCitySummary();
+    }
+
+    function applyCityFilter(city) {
+      activeCity = city;
+      refreshCityBtns();
+      renderList();
+
+      // Sync map markers — hide any that don't match the active filters
+      syncMarkerVisibility();
+
+      // Zoom to fit the selected city's venues, or back out to the full
+      // view when returning to "All".
+      fitMapToVisibleVenues();
+
+      // Close the panel once a selection is made (except "All")
+      if (city !== null) cityDetails.open = false;
+    }
+
+    const allCityBtn = document.createElement("button");
+    allCityBtn.textContent = "All";
+    allCityBtn.className = "dir-filter-btn active-teal";
+    allCityBtn.addEventListener("click", () => applyCityFilter(null));
+    cityBtnsWrap.appendChild(allCityBtn);
+    cityBtnEls.push(allCityBtn);
+
+    cities.forEach((city) => {
+      const btn = document.createElement("button");
+      btn.textContent = city;
+      btn.className = "dir-filter-btn";
+      btn.addEventListener("click", () => {
+        applyCityFilter(activeCity === city ? null : city);
+      });
+      cityBtnsWrap.appendChild(btn);
+      cityBtnEls.push(btn);
+    });
+
+    cityDetails.appendChild(cityBtnsWrap);
+    controls.appendChild(cityDetails);
+  }
+
+  root.appendChild(controls);
+
+  // ── Collapsible map ───────────────────────────────────────────────────
+  const mapHandle = createCollapsibleMap(
+    root,
+    "venues-dir-map",
+    "Show map of all venues",
+    400,
+    (map) => {
+      venueIndex.forEach(({ vid, v, vtype, ptypes }) => {
+        if (!hasLatlon(v)) return;
+        const colour = VTYPE_COLOURS[vtype] || "#999";
+        const ptypeLine =
+          ptypes.size > 0
+            ? `<br>${[...ptypes].map((t) => PTYPE_DEFS.find((p) => p.key === t)?.label || t).join(" · ")}`
+            : "";
+        const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? "<br>" + escapeHtml(v.city) : ""}<br><em style="color:${colour}">${vtype}</em>${ptypeLine}`;
+        const marker = L.circle(v.latlon, {
+          radius: 3000,
+          fillColor: colour,
+          color: colour,
+          weight: 2,
+          fillOpacity: 0.8,
+        })
+          .addTo(map)
+          .bindPopup(popup)
+          .on("click", () => {
+            location.href = `venues.html?venue=${encodeURIComponent(vid)}`;
+          });
+        if (!markersByType[vtype]) markersByType[vtype] = [];
+        markersByType[vtype].push(marker);
+        markerByVid[vid] = marker;
+      });
+
+      // Apply any filters already active before the map was opened
+      const ptypeFilterActive =
+        activePTypes.size !== PTYPE_DEFS.length || ptypeMode !== "union";
+      const venueTypeFilterActive =
+        activeVenueTypes.size !== presentTypes.length;
+      if (venueTypeFilterActive || activeCity !== null || ptypeFilterActive) {
+        venueIndex.forEach((entry) => {
+          const marker = markerByVid[entry.vid];
+          if (!marker) return;
+          if (markerVisible(entry)) {
+            marker.addTo(map);
+          } else {
+            marker.remove();
+          }
+        });
+      }
+
+      // Fit the view to whatever the pre-existing filters leave visible,
+      // the first time the map is opened (mirrors fitMapToEvents() on the
+      // events page).
+      fitMapToVisibleVenues();
+
+      // ── Bounds filter on zoom/pan (mirrors events page behaviour) ───
+      // Deliberately zoomend/dragend rather than moveend: opening this
+      // panel calls map.invalidateSize(), which — because the map was
+      // rendered at 0×0 while the <details> was collapsed — schedules its
+      // own corrective pan and fires a *moveend* a couple of hundred ms
+      // later purely to fix the tile layout, not because anyone moved
+      // the map. Listening on moveend meant that phantom event was
+      // captured as mapBounds, often with the map still mid-layout, which
+      // is why the venue list could go blank right after opening the map
+      // or otherwise resizing it. zoomend/dragend only fire for a real
+      // user zoom or drag, so they don't have that problem. (fitBounds()
+      // calls below update mapBounds directly rather than relying on
+      // these events, so programmatic re-centring still keeps the list
+      // in sync.)
+      function updateFromMapBounds() {
+        mapBounds = map.getBounds();
+        renderList();
+      }
+      map.on("zoomend", updateFromMapBounds);
+      map.on("dragend", updateFromMapBounds);
+
+      // Clear bounds filter when the map panel is collapsed
+      mapHandle.details.addEventListener("toggle", () => {
+        if (!mapHandle.details.open) {
+          mapBounds = null;
+          renderList();
+        }
+      });
+    },
+    loadLeaflet,
+  );
+
+  // ── Count line ───────────────────────────────────────────────────────
+  const countLine = document.createElement("p");
+  countLine.className = "venue-list-count";
+  root.appendChild(countLine);
+
+  // ── List container ───────────────────────────────────────────────────
+  const listWrap = document.createElement("div");
+  listWrap.className = "venue-list-grid";
+  root.appendChild(listWrap);
+
+  // ── Render function ──────────────────────────────────────────────────
+  function renderList() {
+    listWrap.innerHTML = "";
+    const visible = venueIndex.filter(isVisible);
+    const total = venueIndex.length;
+    countLine.textContent =
+      visible.length === total
+        ? `${total} venues`
+        : `${visible.length} of ${total} venues`;
+
+    if (visible.length === 0) {
+      const p = document.createElement("p");
+      p.className = "venue-list-empty";
+      p.textContent = "No venues match the current filters.";
+      listWrap.appendChild(p);
+      return;
+    }
+
+    visible.forEach(({ vid, v, vtype, vtypes, ptypes }) => {
+      const colour = VTYPE_COLOURS[vtype] || "#999";
+
+      const row = document.createElement("div");
+      row.id = "venue-row-" + vid;
+      row.className = "venue-list-card";
+      row.style.borderLeftColor = colour;
+      const hasCoords = hasLatlon(v);
+      if (!hasCoords) row.classList.add("venue-list-card-no-latlon");
+      row.onclick = () => {
+        location.href = `venues.html?venue=${encodeURIComponent(vid)}`;
+      };
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "venue-list-name";
+      nameEl.textContent = v.name;
+      row.appendChild(nameEl);
+
+      if (v.city || v.postcode) {
+        const locEl = document.createElement("div");
+        locEl.className = "venue-list-loc";
+        locEl.textContent = [v.city, v.postcode].filter(Boolean).join(" · ");
+        row.appendChild(locEl);
+      }
+
+      // Venue-type badge(s) (building type) — one badge per resolved
+      // type, so a venue with venue_type: ["pub-bar-cafe",
+      // "live-music-venue"] shows both rather than only the primary one.
+      vtypes.forEach((vt) => {
+        const typeBadge = document.createElement("span");
+        typeBadge.className = "venue-type-badge";
+        typeBadge.style.cssText = `background:${vt.colour}22;color:${vt.colour};border:1px solid ${vt.colour}55;`;
+        typeBadge.textContent = vt.label;
+        row.appendChild(typeBadge);
+      });
+
+      // Performance-type badges (story/music/poetry) — the
+      // "highlighting" for what kinds of events happen here
+      [...ptypes].forEach((pt) => {
+        const def = PTYPE_DEFS.find((p) => p.key === pt);
+        if (!def) return;
+        const pill = document.createElement("span");
+        pill.className = "venue-ptype-badge";
+        pill.style.cssText = `background:${def.colour}22;color:${def.colour};border:1px solid ${def.colour}55;`;
+        pill.textContent = def.label;
+        row.appendChild(pill);
+      });
+
+      if (!hasCoords) {
+        const noLatlonBadge = document.createElement("span");
+        noLatlonBadge.className = "venue-type-badge venue-no-latlon-badge";
+        noLatlonBadge.textContent = "⚠️ No location";
+        row.appendChild(noLatlonBadge);
+      }
+
+      if (v.url) {
+        const a = document.createElement("a");
+        a.href = sanitizeUrl(v.url) || "#";
+        a.target = "_blank";
+        a.className = "venue-list-website-link";
+        a.textContent = "website";
+        a.onclick = (e) => e.stopPropagation();
+        row.appendChild(a);
+      }
+
+      listWrap.appendChild(row);
+    });
+  }
+
+  renderList();
+}
+
+// Initialize immediately (don't wait for DOMContentLoaded) so data starts loading early
+setCanonical("venue");
+
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  venueId = params.get("venue");
+
+  // A crawler served a prerendered snapshot of a record flagged usePrerender:
+  // keep the snapshot exactly as it is (see shouldSkipRerender() in shared_utils.js).
+  if (venueId && shouldSkipRerender()) {
+    console.info(`Keeping prerendered snapshot for ${venueId}`);
+    return;
+  }
+
+  if (!venueId) {
+    const loaded = await loadEventsData();
+    if (!loaded) return showNotFound();
+    eventsData = loaded.eventsData;
+    venuesLookup = loaded.venuesLookup;
+    performersLookup = loaded.performersLookup;
+    toursLookup = loaded.toursLookup;
+    displayDataLastUpdated(loaded.lastUpdateTime);
+    initNavFeedback();
+    // Defer heavy rendering to background to allow loading state to display
+    setTimeout(() => {
+      renderAllVenues();
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("venueContent").style.display = "";
+      preloadLeafletWhenIdle();
+      PageHealth.markReady({
+        contentId: "venueContent",
+        checks: [
+          [
+            "venue list has no cards",
+            () => document.querySelectorAll(".venue-list-card").length > 0,
+          ],
+        ],
+      });
+    }, 0);
+    return;
+  }
+
+  const loaded = await loadEventsData();
+  if (!loaded) {
+    showNotFound();
+    return;
+  }
+
+  eventsData = loaded.eventsData;
+  venuesLookup = loaded.venuesLookup;
+  performersLookup = loaded.performersLookup;
+  displayDataLastUpdated(loaded.lastUpdateTime);
+  initNavFeedback();
+  toursLookup = loaded.toursLookup;
+
+  venue = venuesLookup[venueId];
+  if (!venue) {
+    showNotFound();
+    return;
+  }
+
+  // One H1 per page: the venue's own name is the H1 on its page.
+  setPageHeadingMode(true, "venueName");
+
+  // Defer heavy rendering to background to allow loading state to display
+  setTimeout(() => {
+    renderVenue();
+    renderShareBadge("venue", venueId);
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("venueContent").style.display = "";
+    PageHealth.markReady({
+      contentId: "venueContent",
+      checks: [
+        [
+          "venue name is empty",
+          () => document.getElementById("venueName").textContent.trim().length > 0,
+        ],
+      ],
+    });
+    if (hasLatlon(venue)) {
+      loadLeaflet()
+        .then(() => {
+          initVenueMap();
+          setTimeout(() => map.invalidateSize(), 0);
+        })
+        .catch((error) => {
+          console.error("Failed to load venue map:", error);
+          document.getElementById("map-container").style.display = "none";
+        });
+    }
+  }, 0);
+})();
+
+// ---------------------------------------------------------------------------
+// Main render
+// ---------------------------------------------------------------------------
+
+function renderVenue() {
+  flagPrerenderPreference(venue);
+  const venueTitle = nameWithTown(venue.name, venue.city);
+  document.title = `${venueTitle} — New Troubadours`;
+
+  setMetaDescription(
+    `${venueTitle} — upcoming storytelling and live events, with dates, map and venue details.`,
+  );
+  prependMetaKeyword(venueTitle);
+
+  document.getElementById("venueName").textContent = venue.name;
+
+  // Address
+  if (venue.full_address) {
+    const addr = document.getElementById("venueAddress");
+    addr.textContent = venue.full_address;
+  }
+
+  // External links
+  const linksDiv = document.getElementById("venueLinks");
+  if (venue.url) {
+    const a = document.createElement("a");
+    a.href = sanitizeUrl(venue.url) || "#";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "Website";
+    linksDiv.appendChild(a);
+  }
+  if (venue.email) {
+    if (linksDiv.children.length > 0)
+      linksDiv.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = `mailto:${escapeHtml(venue.email)}`;
+    a.textContent = "Email";
+    linksDiv.appendChild(a);
+  }
+  facebookLinkSpecs(venue).forEach(({ kind, href }) => {
+    if (linksDiv.children.length > 0)
+      linksDiv.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = FACEBOOK_LINK_LABELS[kind];
+    linksDiv.appendChild(a);
+  });
+  if (venue.instagram) {
+    if (linksDiv.children.length > 0)
+      linksDiv.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = normaliseInstagramUrl(venue.instagram);
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "Instagram";
+    linksDiv.appendChild(a);
+  }
+  // Google Maps link
+  if (hasLatlon(venue)) {
+    if (linksDiv.children.length > 0)
+      linksDiv.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    const q = encodeURIComponent(venue.full_address || venue.name);
+    a.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "Google Maps";
+    linksDiv.appendChild(a);
+  }
+
+  // Description
+  if (venue.description) {
+    const descDiv = document.getElementById("venueDescription");
+    descDiv.style.display = "";
+    appendParagraphs(descDiv, venue.description);
+  }
+
+  // Info table
+  renderInfoTable();
+
+  // Map
+  if (!hasLatlon(venue)) {
+    document.getElementById("map-container").style.display = "none";
+
+    // Flag it clearly at the bottom of the page too — an editor scanning
+    // the venue itself is more likely to notice it there than to infer
+    // it from the map section merely being absent.
+    const warning = document.createElement("p");
+    warning.className = "venue-no-latlon-warning";
+    warning.textContent =
+      "⚠️ This venue is missing map coordinates (latlon), so it won't show on any map or in map-based filtering until that's added.";
+    document.getElementById("venueContent").appendChild(warning);
+  }
+
+  // Gather all events at this venue — includes a club/folk-night/session
+  // whose alternate_locations puts it here on some months even though its
+  // base venue_id points elsewhere (and correctly excludes one whose base
+  // venue_id is here but which actually alternates away half the time —
+  // see the parity note rendered by renderRegularClub() below).
+  const regularClubs = (eventsData.clubs || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
+  );
+  const folkNights = (eventsData.folkNights || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
+  );
+  const irishSessions = (eventsData.irishSessions || []).filter((e) =>
+    couldBeAtVenue(e, venueId),
+  );
+
+  // Act-type filter (story / music / poetry checkboxes) — all ticked unless
+  // the visitor has saved a different selection.
+  venueActiveActTypes = loadSavedKeySet(
+    VENUE_ACT_FILTER_STORAGE_KEY,
+    PTYPE_DEFS.map((p) => p.key),
+  );
+
+  const today = getTodayMidnight();
+  const venueActs = {
+    regularClubs,
+    folkNights,
+    irishSessions,
+    // Tours, repertoire shows, festivals and one-off events, sorted by date
+    allDated: collectDatedEventsForVenue(venueId),
+    today,
+  };
+
+  renderActTypeFilter(venueActs);
+  renderVenueActs(venueActs);
+
+  // Nearby venues
+  renderNearbyVenues();
+
+  // Nearby events (next 7 days, across nearby venues) — also respects the
+  // act-type checkboxes; see renderNearbyEventsList().
+  renderNearbyEvents(today);
+}
+
+// ---------------------------------------------------------------------------
+// Act-type filter — story / music / poetry checkboxes for this venue's page
+// ---------------------------------------------------------------------------
+
+// One saved selection shared across every venue page (loadSavedKeySet() /
+// saveKeySet() in shared_utils.js), not one per venue — "I only care about
+// music" should carry from venue to venue.
+const VENUE_ACT_FILTER_STORAGE_KEY = "venueActTypeFilter";
+let venueActiveActTypes = new Set(PTYPE_DEFS.map((p) => p.key));
+
+function countActsByType({ regularClubs, folkNights, irishSessions, allDated }) {
+  const counts = Object.fromEntries(PTYPE_DEFS.map((p) => [p.key, 0]));
+  counts.story += regularClubs.length;
+  counts.music += folkNights.length + irishSessions.length;
+  allDated.forEach((e) => {
+    const t = ptypeForCategory(e.category);
+    if (t in counts) counts[t] += 1;
+  });
+  return counts;
+}
+
+function renderActTypeFilter(venueActs) {
+  const existing = document.getElementById("venueActFilter");
+  if (existing) existing.remove();
+
+  const counts = countActsByType(venueActs);
+  const totalHere = Object.values(counts).reduce((a, b) => a + b, 0);
+  // Nothing at this venue and no nearby events to filter either → no bar.
+  if (totalHere === 0 && getNearbyVenues().length === 0) return;
+
+  // The flyer gallery is itself filtered by act-type (see
+  // renderVenueFlyers()), so the bar belongs above it, not just above the
+  // event lists — anchor to the top of .left-col rather than any one
+  // section, so this doesn't silently drift out of place if the sections
+  // in venues.html get reordered again.
+  const leftCol = document.querySelector(".two-col-layout .left-col");
+  const anchor =
+    leftCol?.firstElementChild ||
+    document.getElementById("venueFlyersSection") ||
+    document.getElementById("regularClubsSection") ||
+    document.getElementById("upcomingSection");
+  if (!anchor || !anchor.parentNode) return;
+
+  const bar = document.createElement("div");
+  bar.id = "venueActFilter";
+  bar.className = "content-section venue-act-filter";
+
+  const row = document.createElement("div");
+  row.className = "venue-act-filter-row";
+
+  const heading = document.createElement("span");
+  heading.className = "venue-act-filter-label";
+  heading.textContent = "Show:";
+  row.appendChild(heading);
+
+  PTYPE_DEFS.forEach(({ key, label, colour }) => {
+    const wrap = document.createElement("label");
+    wrap.className = "venue-act-check";
+    if (counts[key] === 0) wrap.classList.add("venue-act-check-empty");
+    wrap.style.setProperty("--act-colour", colour);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = key;
+    input.checked = venueActiveActTypes.has(key);
+    input.addEventListener("change", () => {
+      if (input.checked) venueActiveActTypes.add(key);
+      else venueActiveActTypes.delete(key);
+      saveKeySet(VENUE_ACT_FILTER_STORAGE_KEY, venueActiveActTypes);
+      renderVenueActs(venueActs);
+      updateActFilterStatus(venueActs);
+    });
+    wrap.appendChild(input);
+    wrap.appendChild(document.createTextNode(label));
+
+    const count = document.createElement("span");
+    count.className = "venue-act-count";
+    count.textContent = counts[key];
+    wrap.appendChild(count);
+
+    row.appendChild(wrap);
+  });
+  bar.appendChild(row);
+
+  const status = document.createElement("div");
+  status.id = "venueActFilterStatus";
+  status.className = "venue-act-filter-status";
+  status.hidden = true;
+  bar.appendChild(status);
+
+  anchor.parentNode.insertBefore(bar, anchor);
+  updateActFilterStatus(venueActs);
+}
+
+// If the saved selection hides EVERYTHING this venue has, say so (with a
+// one-click way out) rather than leaving a page that looks empty.
+function updateActFilterStatus(venueActs) {
+  const status = document.getElementById("venueActFilterStatus");
+  if (!status) return;
+
+  const counts = countActsByType(venueActs);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const shown = PTYPE_DEFS.reduce(
+    (n, { key }) => n + (venueActiveActTypes.has(key) ? counts[key] : 0),
+    0,
+  );
+  const hidden = total - shown;
+
+  status.textContent = "";
+  if (hidden === 0 || shown > 0) {
+    status.hidden = true;
+    return;
+  }
+
+  status.hidden = false;
+  status.appendChild(
+    document.createTextNode(
+      `Nothing to show — ${hidden} ${hidden === 1 ? "item is" : "items are"} hidden by your selection. `,
+    ),
+  );
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "venue-act-filter-reset";
+  btn.textContent = "Show all";
+  btn.addEventListener("click", () => {
+    venueActiveActTypes = new Set(PTYPE_DEFS.map((p) => p.key));
+    saveKeySet(VENUE_ACT_FILTER_STORAGE_KEY, venueActiveActTypes);
+    document
+      .querySelectorAll("#venueActFilter input[type=checkbox]")
+      .forEach((cb) => (cb.checked = true));
+    renderVenueActs(venueActs);
+    updateActFilterStatus(venueActs);
+  });
+  status.appendChild(btn);
+}
+
+function fillRegularClubSection(sectionId, listId, items, type) {
+  const section = document.getElementById(sectionId);
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
+  section.style.display = items.length > 0 ? "" : "none";
+  items.forEach((e) => renderRegularClub(list, e, type, venueId));
+}
+
+function fillDatedSection(sectionId, listId, entries, isPast) {
+  const section = document.getElementById(sectionId);
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
+  section.style.display = entries.length > 0 ? "" : "none";
+  entries.forEach((e) => renderEventRow(list, e, isPast));
+}
+
+// (Re)builds every act-dependent section of the venue page from the
+// currently ticked types: regular nights, upcoming/past dated events, the
+// flyer gallery, and the nearby-events list. Safe to call repeatedly.
+function renderVenueActs({
+  regularClubs,
+  folkNights,
+  irishSessions,
+  allDated,
+  today,
+}) {
+  const on = venueActiveActTypes;
+
+  // Story clubs are "story"; folk nights and Irish sessions are "music"
+  // (same grouping as PTYPE_DEFS / ptypeForCategory()).
+  const clubsShown = on.has("story") ? regularClubs : [];
+  fillRegularClubSection(
+    "regularClubsSection",
+    "regularClubsList",
+    clubsShown,
+    "storyclub",
+  );
+  fillRegularClubSection(
+    "folkNightsSection",
+    "folkNightsList",
+    on.has("music") ? folkNights : [],
+    "folk",
+  );
+  fillRegularClubSection(
+    "irishSessionsSection",
+    "irishSessionsList",
+    on.has("music") ? irishSessions : [],
+    "session",
+  );
+
+  const visibleDated = allDated.filter((e) =>
+    on.has(ptypeForCategory(e.category)),
+  );
+  fillDatedSection(
+    "upcomingSection",
+    "upcomingList",
+    visibleDated.filter((e) => e.date >= today),
+    false,
+  );
+  // Most recent first for past
+  fillDatedSection(
+    "pastSection",
+    "pastList",
+    visibleDated.filter((e) => e.date < today).reverse(),
+    true,
+  );
+
+  // Flyers gallery — current/upcoming in full colour, past greyed out
+  renderVenueFlyers(clubsShown, visibleDated, today);
+
+  // Nearby events share the same checkboxes. (nearbyEventsToday is still
+  // null on the very first render; renderNearbyEvents() draws it then.)
+  if (nearbyEventsToday) {
+    const horizonSelect = document.getElementById("nearbyEventsHorizon");
+    renderNearbyEventsList(Number(horizonSelect.value));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// collectTourDatesForVenue(), collectShowDatesForVenue(),
+// collectDatedEventsForVenue(), collectRecurringEventsForVenue() —
+// defined in shared_utils.js (storyclub.js's nearby-events feature is a
+// second consumer). Each entry now also carries a .category
+// ("story"/"music"/"poetry"/"folk") for story-first/opt-in filtering.
+// ---------------------------------------------------------------------------
+// Info table
+// ---------------------------------------------------------------------------
+
+function renderInfoTable() {
+  const table = document.getElementById("venueInfoTable");
+
+  const rows = [
+    venue.city && ["City", venue.city],
+    venue.postcode && ["Postcode", venue.postcode],
+  ].filter(Boolean);
+
+  if (rows.length === 0) return;
+
+  rows.forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "info-table-row";
+    const l = document.createElement("span");
+    l.className = "info-table-label";
+    l.textContent = label;
+    const v = document.createElement("span");
+    v.className = "info-table-value";
+    v.textContent = value;
+    row.appendChild(l);
+    row.appendChild(v);
+    table.appendChild(row);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Map
+// ---------------------------------------------------------------------------
+
+function initVenueMap() {
+  const [lat, lon] = venue.latlon;
+  map = L.map("map", { minZoom: 5, maxZoom: 18 }).setView([lat, lon], 14);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
+
+  const marker = L.marker([lat, lon]).addTo(map);
+  marker
+    .bindPopup(
+      `<strong>${escapeHtml(venue.name)}</strong><br>${escapeHtml(venue.city || "")}`,
+    )
+    .openPopup();
+}
+
+// ---------------------------------------------------------------------------
+// Regular club card
+// ---------------------------------------------------------------------------
+
+function renderRegularClub(container, event, type, forVenueId) {
+  const typeClass =
+    { storyclub: "club-story", folk: "club-folk", session: "club-session" }[
+      type
+    ] || "";
+  const card = document.createElement("div");
+  card.className = `regular-club-card ${typeClass}`;
+
+  const nameRow = document.createElement("div");
+  nameRow.className = "regular-club-name";
+  nameRow.textContent = event.name;
+  card.appendChild(nameRow);
+
+  const metaRow = document.createElement("div");
+  metaRow.className = "regular-club-meta";
+  if (event.schedule) {
+    const sched = document.createElement("span");
+    sched.className = "regular-club-schedule";
+    sched.textContent = capitalise(describeSchedule(event.schedule));  // schedule may be a structured object (e.g. fortnightly)
+    metaRow.appendChild(sched);
+  }
+  if (event.time) {
+    metaRow.appendChild(
+      document.createTextNode(event.schedule ? " · " + event.time : event.time),
+    );
+  }
+  if (event.price) {
+    metaRow.appendChild(document.createTextNode(" · " + event.price));
+  }
+  // If this record alternates between two venues, say which months apply
+  // to the venue THIS card is being shown on — without this, a club
+  // meeting here only every other month would look like it's always here.
+  // Only handles the case where the current venue matches one of the two
+  // explicit alternate_locations entries; a venue matching neither (the
+  // base venue_id used as an implicit fallback for whichever parity has
+  // no explicit override) doesn't get a note — rare in practice (the one
+  // real example in the data sets both "even" and "odd" explicitly) but
+  // worth knowing this isn't fully general.
+  if (forVenueId && event.alternate_locations) {
+    let parityNote = null;
+    if (event.alternate_locations.even?.venue_id === forVenueId) {
+      parityNote = "even months only";
+    } else if (event.alternate_locations.odd?.venue_id === forVenueId) {
+      parityNote = "odd months only";
+    }
+    if (parityNote) {
+      const note = document.createElement("span");
+      note.className = "regular-club-parity-note";
+      note.textContent = ` (${parityNote})`;
+      metaRow.appendChild(note);
+    }
+  }
+  if (metaRow.childNodes.length > 0) card.appendChild(metaRow);
+
+  if (event.description) {
+    const desc = document.createElement("div");
+    desc.className = "regular-club-desc";
+    desc.textContent = event.description;
+    card.appendChild(desc);
+  }
+
+  // Links row
+  const links = document.createElement("div");
+  links.className = "regular-club-links";
+  const linkSrc = event.link || event.url;
+  if (linkSrc) {
+    const a = document.createElement("a");
+    a.href = sanitizeUrl(linkSrc) || "#";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "Website";
+    links.appendChild(a);
+  }
+  facebookLinkSpecs(event).forEach(({ kind, href }) => {
+    if (links.children.length > 0)
+      links.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = FACEBOOK_LINK_LABELS[kind];
+    links.appendChild(a);
+  });
+  if (event.email) {
+    if (links.children.length > 0)
+      links.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = `mailto:${escapeHtml(event.email)}`;
+    a.textContent = "Email";
+    links.appendChild(a);
+  }
+  if (links.children.length > 0) card.appendChild(links);
+
+  // Exceptions / notes
+  if (Array.isArray(event.exceptions) && event.exceptions.length > 0) {
+    const exc = document.createElement("div");
+    exc.className = "regular-club-exceptions";
+    exc.textContent = `Note: not on ${event.exceptions.join(", ")}`;
+    card.appendChild(exc);
+  }
+  if (event.storiesWelcome) {
+    card.appendChild(makeBadge("badge-stories-welcome", "Stories welcome"));
+  }
+  if (event.byInvitation) {
+    card.appendChild(makeBadge("badge-by-invite", "By invitation"));
+  }
+
+  container.appendChild(card);
+}
+
+// ---------------------------------------------------------------------------
+// Dated event row (specific, music, tour date, festival)
+// ---------------------------------------------------------------------------
+
+// renderEventRow() — defined in shared_utils.js (storyclub.js's nearby-events feature is a second consumer)
+
+// ---------------------------------------------------------------------------
+// Flyers gallery
+// ---------------------------------------------------------------------------
+
+// A filename in a club's flyers[] list prefixed YYYY_MM_DD (e.g.
+// "2026_07_26_loveshack-birds.jpg") is a flyer for that specific date;
+// anything else is generic club artwork treated as always-current.
+// parseDatedClubFlyer() (shared_utils.js) is the single implementation
+// of that detection, shared with the event guide/flyers/storyclub pages.
+
+// Pull the flyer filename(s) relevant to one of the dated entries
+// already assembled into allDated (specific/music/poetry/tour/show/festival).
+function extractFlyersForEntry(entry) {
+  const EVENT_BASE = "./storyclub_assets/event_flyers/";
+  const out = [];
+  const add = (filename) => {
+    const clean = filename?.trim();
+    if (clean) out.push({ filename: clean, basePath: EVENT_BASE });
+  };
+
+  if (
+    entry.type === "specific" ||
+    entry.type === "music" ||
+    entry.type === "poetry"
+  ) {
+    const e = entry.data;
+    getEventLevelFlyers(e).forEach((f) => add(f.filename));
+    add(e.tour_flyer);
+  } else if (entry.type === "tour") {
+    const { tour, tourDate } = entry.data;
+    const dateFlyers = getEventLevelFlyers(tourDate);
+    if (dateFlyers.length > 0) {
+      dateFlyers.forEach((f) => add(f.filename));
+    } else {
+      getTourLevelFlyers(tour).forEach((f) => add(f.filename));
+    }
+  } else if (entry.type === "show") {
+    const { ts, showDate } = entry.data;
+    const dateFlyers = getEventLevelFlyers(showDate);
+    if (dateFlyers.length > 0) {
+      dateFlyers.forEach((f) => add(f.filename));
+    } else {
+      add(ts.touring_event_flyer);
+    }
+  } else if (entry.type === "festival") {
+    getEventLevelFlyers(entry.data.festival).forEach((f) => add(f.filename));
+  }
+  return out;
+}
+
+// Build the venue's flyer gallery from: regular club nights (club_flyer
+// + club_flyers[], generic ones always "current", YYYY_MM_DD-prefixed ones
+// dated) plus every dated event happening at this venue. Deduplicated
+// by file so a flyer reused across several dates (e.g. a tour headline
+// flyer) only appears once, coloured by its most relevant occurrence.
+function renderVenueFlyers(regularClubs, allDated, today) {
+  const flyerMap = new Map();
+
+  // Re-runnable: wipe any previous render (the act-type checkboxes call
+  // this again on every change).
+  const flyersSection = document.getElementById("venueFlyersSection");
+  const list = document.getElementById("venueFlyersList");
+  flyersSection.style.display = "none";
+  list.innerHTML = "";
+
+  function addFlyer(filename, basePath, date) {
+    const key = `${basePath}${filename}`;
+    const isPast = date ? date < today : false;
+    const existing = flyerMap.get(key);
+    if (!existing) {
+      flyerMap.set(key, { filename, basePath, date, isPast });
+      return;
+    }
+    // Prefer a current/upcoming occurrence over a past one, and the
+    // earliest upcoming date over a later one.
+    if (
+      !isPast &&
+      (existing.isPast || (date && existing.date && date < existing.date))
+    ) {
+      existing.date = date;
+      existing.isPast = isPast;
+    }
+  }
+
+  regularClubs.forEach((club) => {
+    if (club.club_flyer?.trim()) {
+      addFlyer(club.club_flyer.trim(), "./storyclub_assets/club_flyers/", null);
+    }
+    (Array.isArray(club.club_flyers) ? club.club_flyers : []).forEach((raw) => {
+      const clean = raw?.trim();
+      if (!clean) return;
+      const date = parseDatedClubFlyer(clean);
+      addFlyer(clean, "./storyclub_assets/event_flyers/", date);
+    });
+  });
+
+  allDated.forEach((entry) => {
+    extractFlyersForEntry(entry).forEach((f) =>
+      addFlyer(f.filename, f.basePath, entry.date),
+    );
+  });
+
+  if (flyerMap.size === 0) return;
+
+  const items = [...flyerMap.values()];
+  const current = items
+    .filter((i) => !i.isPast)
+    .sort((a, b) => (a.date || today) - (b.date || today));
+  const past = items.filter((i) => i.isPast).sort((a, b) => b.date - a.date);
+
+  flyersSection.style.display = "";
+
+  [...current, ...past].forEach((item) => {
+    const src = `${item.basePath}${sanitizeFlyerPath(item.filename)}`;
+    const a = document.createElement("a");
+    a.href = src;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = `venue-flyer-thumb${item.isPast ? " venue-flyer-thumb-past" : ""}`;
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Flyer thumbnail";
+    img.loading = "lazy";
+    a.appendChild(img);
+    list.appendChild(a);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Nearby venues
+// ---------------------------------------------------------------------------
+
+function getNearbyVenues() {
+  if (!hasLatlon(venue)) return [];
+  const [lat, lon] = venue.latlon;
+  const nearby = findNearbyByLatLon(lat, lon, Object.entries(venuesLookup), {
+    excludeKey: venueId,
+    radiusKm: 20,
+    limit: 8,
+  });
+  // Local callers expect {vid, v, dist}, not the generic {key, item, dist}
+  // shape shared_utils.js's version returns — keep this shim rather than
+  // renaming every call site below.
+  return nearby.map(({ key, item, dist }) => ({ vid: key, v: item, dist }));
+}
+
+function renderNearbyVenues() {
+  const nearby = getNearbyVenues();
+
+  if (nearby.length === 0) return;
+
+  document.getElementById("nearbySection").style.display = "";
+  const list = document.getElementById("nearbyList");
+
+  nearby.forEach(({ vid, v, dist }) => {
+    const row = document.createElement("div");
+    row.className = "nearby-row";
+
+    const a = document.createElement("a");
+    a.href = `venues.html?venue=${encodeURIComponent(vid)}`;
+    a.className = "nearby-name";
+    a.textContent = v.name;
+    row.appendChild(a);
+
+    if (v.city) {
+      const city = document.createElement("span");
+      city.className = "nearby-city";
+      city.textContent = v.city;
+      row.appendChild(city);
+    }
+
+    const distSpan = document.createElement("span");
+    distSpan.className = "nearby-dist";
+    distSpan.textContent = `${dist.toFixed(1)} km`;
+    row.appendChild(distSpan);
+
+    list.appendChild(row);
+  });
+}
+
+// haversineKm() — defined in shared_utils.js
+
+// ---------------------------------------------------------------------------
+// Nearby events (one-off dated events at nearby venues, selectable horizon)
+// ---------------------------------------------------------------------------
+
+let nearbyEventsToday = null;
+
+function renderNearbyEvents(today) {
+  const nearby = getNearbyVenues();
+  if (nearby.length === 0) return;
+
+  nearbyEventsToday = today;
+  document.getElementById("nearbyEventsSection").style.display = "";
+
+  const horizonSelect = document.getElementById("nearbyEventsHorizon");
+  if (!horizonSelect.dataset.wired) {
+    horizonSelect.dataset.wired = "true";
+    horizonSelect.addEventListener("change", () =>
+      renderNearbyEventsList(Number(horizonSelect.value)),
+    );
+  }
+
+  renderNearbyEventsList(Number(horizonSelect.value));
+}
+
+/**
+ * Recurring club-night occurrences at a venue within [from, to] — the
+ * "nearby events" counterpart to collectDatedEventsForVenue()'s one-off
+ * dated collections, which never expand events[] (recurring club
+ * schedules) at all. Kept separate rather than folded into
+ * collectDatedEventsForVenue() itself: that function is unbounded (the
+ * current venue's own page wants its full past+upcoming history), while
+ * a recurring schedule has no natural end and needs an explicit window
+ * to expand against.
+ *
+ * Uses resolveClubVenueId() rather than a plain venue_id match, since a
+ * club alternating between two venues by month parity isn't reliably at
+ * its base venue_id for every occurrence.
+ * @param {string} vid
+ * @param {Date} from
+ * @param {Date} to
+ * @returns {{type: "club", date: Date, data: {club: object}}[]}
+ */
+// collectClubDatesForVenue() — superseded by collectRecurringEventsForVenue()
+// in shared_utils.js, which covers folk nights and Irish sessions too, not
+// just club nights, each tagged with a .category for story/music/poetry/folk
+// filtering.
+
+function renderNearbyEventsList(days) {
+  const list = document.getElementById("nearbyEventsList");
+  list.innerHTML = "";
+
+  const today = nearbyEventsToday;
+  const horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + days);
+
+  const MAX_EVENTS = 15;
+  const upcomingNearby = getNearbyVenues()
+    .flatMap(({ vid, v }) => [
+      ...collectDatedEventsForVenue(vid)
+        .filter((e) => e.date >= today && e.date < horizon)
+        .map((e) => ({ ...e, venueId: vid, venue: v })),
+      ...collectRecurringEventsForVenue(vid, today, horizon).map((e) => ({
+        ...e,
+        venueId: vid,
+        venue: v,
+      })),
+    ])
+    .filter((e) => venueActiveActTypes.has(ptypeForCategory(e.category)))
+    .sort((a, b) => a.date - b.date)
+    .slice(0, MAX_EVENTS);
+
+  if (upcomingNearby.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "no-events";
+    empty.textContent =
+      venueActiveActTypes.size === PTYPE_DEFS.length
+        ? `No nearby events found in the next ${days} days.`
+        : `No nearby events of the selected types in the next ${days} days.`;
+    list.appendChild(empty);
+    return;
+  }
+
+  upcomingNearby.forEach((entry) =>
+    renderEventRow(list, entry, false, { showVenue: true }),
+  );
+}
