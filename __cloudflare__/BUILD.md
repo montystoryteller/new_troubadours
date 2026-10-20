@@ -4,6 +4,14 @@ On local machine, githooks configured via:
 
 `git config core.hooksPath .githooks`
 
+## Bypassing the Worker for CSS
+
+Site stylesheets are stored under `/css/` and referenced from that path. To keep
+stylesheet requests from counting as Worker invocations, add a more-specific
+route in Cloudflare for `newtroubadours.org/css/*` with no Worker attached. It
+will bypass the broader `newtroubadours.org/*` gatekeeper route and go to the
+configured origin. Keep the gatekeeper route for HTML pages and `/sitemap.xml`.
+
 
 ## gatekeeper logging
 
