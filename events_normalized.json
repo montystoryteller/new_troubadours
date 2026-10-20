@@ -5795,7 +5795,7 @@
         },
         {
           "date": "22/11/2026",
-          "venue_id": "queen-s-hall-narberth",
+          "venue_id": "queens-hall-narberth",
           "time": "Doors 7.30pm",
           "price": "£18",
           "ticket_url": "https://thequeenshall.org.uk/events/beans-on-toast-in-your-neck-of-the-woods-2026",
@@ -5803,7 +5803,7 @@
             "deja-vu"
           ],
           "isSpecial": true,
-          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queen-s-hall-narberth"
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queens-hall-narberth"
         },
         {
           "date": "24/11/2026",
@@ -19116,8 +19116,8 @@
         -3.39243
       ]
     },
-    "queen-s-hall-narberth": {
-      "id": "queen-s-hall-narberth",
+    "queens-hall-narberth": {
+      "id": "queens-hall-narberth",
       "name": "Queen's Hall, Narberth",
       "venue_type": "Other / unknown",
       "city": "Narberth",
