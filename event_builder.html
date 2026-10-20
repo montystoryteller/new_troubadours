@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="title" content="New Troubadours — record builder / data entry">
-        <meta name="description" content="New Troubadours event builder — utility for building data records.">
+    <meta name="title" content="New Troubadours — record builder / data entry">
+    <meta name="description" content="New Troubadours event builder — utility for building data records.">
     <title>Event Builder - New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="/css/shared-styles.css?v=202610201948">
@@ -426,7 +426,8 @@
                         (and unchanged) are hidden so you only see what you add. Saving puts a <em>replacement</em>
                         record in the batch; the output can be just the changes (new / updated dates and changed
                         fields) or the full record — see the Generated JSON section.</div>
-                    <div id="tour-edit-banner" class="entity-status match edit-existing-banner" style="display:none;"></div>
+                    <div id="tour-edit-banner" class="entity-status match edit-existing-banner" style="display:none;">
+                    </div>
                 </div>
             </div>
 
@@ -566,11 +567,13 @@
                             style="flex:1; min-width:240px;">
                         <button type="button" class="add-subitem-btn" id="show-load-existing-btn">Load</button>
                     </div>
-                    <div class="field-hint">Loads the repertoire show from the feed into this form. Dates already in the feed
+                    <div class="field-hint">Loads the repertoire show from the feed into this form. Dates already in the
+                        feed
                         (and unchanged) are hidden so you only see what you add. Saving puts a <em>replacement</em>
                         record in the batch; the output can be just the changes (new / updated dates and changed
                         fields) or the full record — see the Generated JSON section.</div>
-                    <div id="show-edit-banner" class="entity-status match edit-existing-banner" style="display:none;"></div>
+                    <div id="show-edit-banner" class="entity-status match edit-existing-banner" style="display:none;">
+                    </div>
                 </div>
             </div>
 
@@ -894,7 +897,8 @@
                     <div id="perf-merch-field"></div>
                     <div class="field-hint">CDs, vinyl, downloads, T-shirts etc. (non-book items). For a joint
                         item (e.g. a duo CD) add the <em>other</em> credited performers — this performer is included
-                        automatically, and the item then appears on all of their profile pages. Label and catalogue number are
+                        automatically, and the item then appears on all of their profile pages. Label and catalogue
+                        number are
                         for records released on a label.</div>
                 </div>
             </div>
@@ -1767,7 +1771,10 @@
                 <code>venues</code>, then merge each record into its matching top-level array/object
                 (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
                 <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by
-                promoter_id — merge its entries into the top-level <code>promoters</code> object. <code>publishers</code> is the same shape (keyed by publisher_id) — merge into the top-level <code>publishers</code> object; it only appears when a book was given a publisher not already registered. <code>clubs</code>
+                promoter_id — merge its entries into the top-level <code>promoters</code> object.
+                <code>publishers</code> is the same shape (keyed by publisher_id) — merge into the top-level
+                <code>publishers</code> object; it only appears when a book was given a publisher not already
+                registered. <code>clubs</code>
                 holds new recurring club nights — append them to the top-level <code>clubs</code> array (not
                 <code>specificEvents</code>, which is where one-off events at a club go).
                 <code>podcastEpisodeAdditions</code>
@@ -1815,7 +1822,8 @@
             <div class="output-actions">
                 <label style="font-weight:normal; display:inline-flex; align-items:center; gap:6px; margin-right:10px;">
                     Edited tours / shows as:
-                    <select id="output-edit-mode" onchange="if (document.getElementById('outputArea').value) generateOutput();">
+                    <select id="output-edit-mode"
+                        onchange="if (document.getElementById('outputArea').value) generateOutput();">
                         <option value="changes">Changes only (new &amp; updated dates, changed fields)</option>
                         <option value="full">Full record (replacement)</option>
                         <option value="both">Both</option>
@@ -1840,7 +1848,13 @@
     <datalist id="promoterNameOptions"></datalist>
     <datalist id="publisherNameOptions"></datalist>
     <datalist id="merchTypeOptions">
-        <option value="cd"><option value="vinyl"><option value="cassette"><option value="download"><option value="t-shirt"><option value="poster"><option value="other">
+        <option value="cd">
+        <option value="vinyl">
+        <option value="cassette">
+        <option value="download">
+        <option value="t-shirt">
+        <option value="poster">
+        <option value="other">
     </datalist>
     <datalist id="clubNameOptions"></datalist>
     <datalist id="festivalOptions"></datalist>
@@ -1849,9 +1863,9 @@
     <datalist id="showLoadOptions"></datalist>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202610122329"></script>
-    <script src="recurrence-engine.js?v=202610202015"></script>
-    <script src="shared_utils.js?v=202610202015"></script>
-    <script src="shared_guessers.js?v=202610202015"></script>
+    <script src="/js/recurrence-engine.js?v=202610202015"></script>
+    <script src="/js/shared_utils.js?v=202610202015"></script>
+    <script src="/js/shared_guessers.js?v=202610202015"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
         let performersLookup = {};
@@ -5664,7 +5678,7 @@
             hint.style.display = "";
             hint.textContent = !id ? "Enter the promoter id above."
                 : club ? `✓ Matches club "${club.name || club.club}".`
-                : `⚠ No club with id "${id}" found yet — add it on the Club tab, or check the id.`;
+                    : `⚠ No club with id "${id}" found yet — add it on the Club tab, or check the id.`;
         }
         document.getElementById("promoter-isclub").addEventListener("change", updatePromoterClubHint);
         document.getElementById("promoter-key").addEventListener("input", updatePromoterClubHint);
@@ -8912,8 +8926,8 @@
                         <div class="enrich-result-name">${esc(f.name)} <span style="font-weight:normal;color:#999;">(${esc(f.where)}; ${esc(f.dates)})</span></div>
                         <div class="enrich-result-detail"><code>${esc(f.eventId)}</code></div>
                         <div class="enrich-result-reasons">${f.safe
-                            ? "Same as the id generated for the first night — removing it changes no existing link, and the later nights get their own ids."
-                            : "⚠ Not the id that would be generated for the first night — removing it changes that night's permalink (old links to it stop working). Left unticked."}</div>
+                        ? "Same as the id generated for the first night — removing it changes no existing link, and the later nights get their own ids."
+                        : "⚠ Not the id that would be generated for the first night — removing it changes that night's permalink (old links to it stop working). Left unticked."}</div>
                     </div>`;
                 resultsEl.appendChild(row);
             });
@@ -9191,7 +9205,7 @@
                 i++; ws();
                 let n = 0;
                 if (text[i] === "]") { i++; return; }
-                for (;;) {
+                for (; ;) {
                     readValue(`${path}[${n++}]`); ws();
                     if (text[i] === ",") { i++; continue; }
                     i++; return;
@@ -9201,7 +9215,7 @@
                 i++; ws();
                 const seen = new Map(); // key -> [{ raw, line }]
                 if (text[i] === "}") { i++; return; }
-                for (;;) {
+                for (; ;) {
                     ws();
                     const keyPos = i;
                     const key = readString();
@@ -9291,12 +9305,12 @@
                     <div class="enrich-result-main">
                         <div class="enrich-result-name">${esc(label || rec)} <span style="font-weight:normal;color:#999;">${esc(label ? rec : "")}</span></div>
                         <div class="enrich-result-reasons">${list.map(h => {
-                            const rel = h.path.startsWith(rec) ? h.path.slice(rec.length).replace(/^\./, "") || h.key : h.path;
-                            const vals = h.identical
-                                ? `same value each time: <code>${esc(clip(h.values[0]))}</code>`
-                                : `<strong>different values</strong> (last one wins): ${h.values.map((v, k) => `<code>${esc(clip(v))}</code> <span style="color:#999;">(line ${h.lines[k]})</span>`).join(" → ")}`;
-                            return `<code>${esc(rel)}</code> ×${h.count} — ${vals}`;
-                        }).join("<br>")}</div>
+                    const rel = h.path.startsWith(rec) ? h.path.slice(rec.length).replace(/^\./, "") || h.key : h.path;
+                    const vals = h.identical
+                        ? `same value each time: <code>${esc(clip(h.values[0]))}</code>`
+                        : `<strong>different values</strong> (last one wins): ${h.values.map((v, k) => `<code>${esc(clip(v))}</code> <span style="color:#999;">(line ${h.lines[k]})</span>`).join(" → ")}`;
+                    return `<code>${esc(rel)}</code> ×${h.count} — ${vals}`;
+                }).join("<br>")}</div>
                     </div>`;
                 resultsEl.appendChild(row);
             });
