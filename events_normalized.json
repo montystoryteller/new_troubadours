@@ -6694,7 +6694,9 @@
       "facebook": "https://www.facebook.com/profile.php?id=61554490450596",
       "club": "gloucesterSCafe",
       "venue_id": "the-folk-of-gloucester",
-      "regular_tellers": ["julian-burnell"]
+      "regular_tellers": [
+        "julian-burnell"
+      ]
     },
     {
       "name": "Beeston Tales",
@@ -11963,6 +11965,19 @@
       "ticket_url": "https://wegottickets.com/f/29419",
       "isSpecial": true
     },
+        {
+          "name": "Otherworld — enthralling stroytelling, enchanting music",
+          "showname": "Otherworld — enthralling stroytelling, enchanting music",
+          "date": "23/10/2026",
+          "venue_id": "llanmaes-village-hall",
+          "eventId": "20261023-unknown-performer-llanmaes-village-hall",
+          "date_added": "21/10/2026",
+          "time": "7pm for 7.30pm",
+          "price": "£12.50",
+          "description": "Celtic tales woven with beautiful music and songs: fiddle, voice, harp.",
+          "event_flyer": "2026_10_23_deb_winter_otherworld.jpg",
+          "isSpecial": true
+        },
     {
       "name": "Tales of Mystery [Ensemble evening]",
       "showname": "Tales of Mystery",
@@ -18672,6 +18687,20 @@
         0.26055
       ]
     },
+    "llanmaes-village-hall": {
+      "id": "llanmaes-village-hall",
+      "name": "Llanmaes Village Hall",
+      "full_address": "Rectory Ct, Llanmaes, Cowbridge Llanmaes, Vale of Glamorgan, CF61 2WJ",
+      "city": "Vale of Glamorgan",
+      "postcode": "CF61 2WJ",
+      "url": "https://www.llanmaesonline.com/village-hall",
+      "facebook": "llanmaesonline",
+      "description": "Commercial events by special arrangements only. Please note, the hall has a maximum capacity of 60 seated, which must not be exceeded.",
+      "latlon": [
+        51.41803,
+        -3.46867
+      ]
+    },
     "acapela-studio-cardiff": {
       "id": "acapela-studio-cardiff",
       "name": "Acapela Studio, Cardiff",
@@ -20691,6 +20720,20 @@
       "name": "Amelia Ace Armande",
       "url": "https://ameliaarmande.wordpress.com/",
       "bio": "Ace began telling professionally with the Brighton Storytellers, and has told at the 'Get A Word in Edgeways' Spoken Word Festival, the Oxford Storytelling Festival, Beeston Tales and the Crick Crack Club. Ace toured Austria as a storyteller with Helbling Publishing. Ace is a founder of the Ropetackle Storytellers Club and mentor for the Step Up Spoken Word initiative."
+    },
+    "deb-winter": {
+      "id": "deb-winter",
+      "name": "Deb Winter",
+      "url": "http://www.deborahwinter.co.uk/storytelling.html",
+      "bio": "The ‘common thread’ in all my work is a deep interest in communication. Whether you are communicating with audiences, groups or individuals, on a page or on a stage, it’s about making a connection with others.\n\n\n\nLive storytelling, especially in an intimate venue, is a wonderful thing. When the passionate energy of the teller meets the deep listening of an attentive audience something unique is created and shared by everyone there."
+    },
+    "jess-ward": {
+      "id": "jess-ward",
+      "name": "Jess Ward",
+      "url": "https://jesswardmusic.co.uk/",
+      "bio": "West Wales-based singer songwriter, harpist and fiddle player Jess Ward offers music you will love to listen to, from beautiful melodies and haunting songs, to rousing folk tunes to get you on the dance floor.",
+      "type": "fiddle, harp",
+      "musician": true
     },
     "carmel-page": {
       "id": "carmel-page",
