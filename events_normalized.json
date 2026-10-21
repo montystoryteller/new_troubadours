@@ -6693,7 +6693,8 @@
       "time": "7pm - 10pm",
       "facebook": "https://www.facebook.com/profile.php?id=61554490450596",
       "club": "gloucesterSCafe",
-      "venue_id": "the-folk-of-gloucester"
+      "venue_id": "the-folk-of-gloucester",
+      "regular_tellers": ["julian-burnell"]
     },
     {
       "name": "Beeston Tales",
@@ -12401,6 +12402,23 @@
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "baden-prince",
       "eventId": "20261104-baden-prince-quaker-meeting-house-northampton"
+    },
+    {
+      "name": "The Killers of Eden: Tales of a Shared World [Julian Burnell]",
+      "showname": "The Killers of Eden: Tales of a Shared World",
+      "date": "05/11/2026",
+      "venue_id": "the-folk-of-gloucester",
+      "performer_id": "julian-burnell",
+      "eventId": "20261105-julian-burnell-the-folk-of-gloucester",
+      "date_added": "21/10/2026",
+      "time": "7pm for 7.30pm start, till 10pm",
+      "club": "gloucesterSCafe",
+      "price": "Pay what you want",
+      "description": "Join us for another evening of wonderous storytelling! This month. café regular Julian Burnell brings us 'The Killers of Eden: Tales of a Shared World'. We'll also have our 8 minute Open Mic spots, just sign up on the night if you'd like to spin us a yarn too.",
+      "age_rating": "14+",
+      "min_age": 14,
+      "event_flyer": "2026_11_05_burnell_killers_eden_gloucester.jpg",
+      "isSpecial": true
     },
     {
       "name": "Twenty Years a Teller [Peter Chand]",
@@ -22091,6 +22109,12 @@
       "name": "Dave Brookes",
       "url": "https://www.thewoollytellers.co.uk/",
       "bio": "A member of the Society for Storytelling with an aim to promote the ancient art of stroytelling.\n\n\n\nDavie's priority is entertainmaint. Whether you are a believer, a sceptic, or simply love a good story, his desire is to intrigue, delight and perhaps unsettle."
+    },
+    "julian-burnell": {
+      "id": "julian-burnell",
+      "name": "Julian Burnell",
+      "facebook": "juliandavidburnell",
+      "bio": "Julian Burnell is a storyteller with a particular interest in how history turns into legend."
     },
     "chris-salisbury": {
       "id": "chris-salisbury",
