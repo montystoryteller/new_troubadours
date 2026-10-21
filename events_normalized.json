@@ -12328,6 +12328,19 @@
       "isDinner": true
     },
     {
+      "name": "Victorian Ghost Stories [Time Jump Histories]",
+      "showname": "Victorian Ghost Stories",
+      "date": "31/10/2026",
+      "venue_id": "smugglers-cat-ryde",
+      "performer_id": "time-jump-histories",
+      "eventId": "20261031-time-jump-histories-smugglers-cat-ryde",
+      "date_added": "21/10/2026",
+      "price": "£12",
+      "description": "Victorian Ghost Stories with Master Edward\n\n\n\nThis atmospheric historical experience combines storytelling, character interpretation, historical information and audience interaction, bringing the darker side of Victorian history vividly to life.\n\n\n\nPerfect for historical societies, museums, community groups, evening events, private functions and Halloween programmes, Victorian Ghost Stories with Master Edward offers an entertaining and immersive journey into a world where the boundary between the living and the dead was never quite clear.\n\n\n\nThe candles are waiting.\n\n\n\nThe spirits are listening.\n\n\n\nAre you brave enough to enter?",
+      "event_flyer": "2026_11_31_time_jump_victorian.jpg",
+      "isSpecial": true
+    },
+    {
       "name": "Of Stars, Bears And The Beginning Of Time [Riika Polonen]",
       "showname": "Of Stars, Bears And The Beginning Of Time",
       "date": "31/10/2026",
@@ -17144,6 +17157,19 @@
         -1.32194
       ]
     },
+    "smugglers-cat-ryde": {
+      "id": "smugglers-cat-ryde",
+      "name": "Smuggler's Cat, Ryde",
+      "full_address": "The Smugglers CAT, The Cellar, THE COLONNADE, Lind Street, Ryde, PO33 2NE",
+      "city": "Ryde",
+      "postcode": "PO33 2NE",
+      "url": "https://www.facebook.com/profile.php?id=61582846532741",
+      "description": "Cellar bar with more historical exhibits than many small museums, including some of the olf Isle of Wight Waxwork museum waxworks..\n\n\n\nExetnesive range of locally produced beers, wines, spirits and ciders, large collection of Island memorabilia.",
+      "latlon": [
+        50.73011,
+        -1.16368
+      ]
+    },
     "star-coffee-ale-house-ryde": {
       "id": "star-coffee-ale-house-ryde",
       "name": "Star Coffee & Ale House",
@@ -21354,6 +21380,12 @@
       "name": "Marcus Pibworth",
       "url": "https://www.marcuspibworth.com/",
       "bio": "Shane is a modern day Oral Storyteller who first heard traditional stories as a child from his father, then often repeated them to his siblings and eventually his own three children. In 1997 Shane went to Canada and while he was there, he was invitated to meet with the indidgenous Metis people and be part of their Ceremonies and a Story Healing Circle, an immense privalage. This experience not only rekindled Shane's storytelling spark, it also provided a profound shift in his thinking as he began to use 'Applied Storytelling' as a Social Worker and then as a Counselling Therapist. His life long storytelling journey continued, with fresh insight."
+    },
+    "time-jump-histories": {
+      "id": "time-jump-histories",
+      "name": "Time Jump Histories",
+      "url": "https://www.timejumphistories.co.uk/",
+      "bio": "Edward Nash is a professional historical interpreter with years of experience performing at heritage sites, schools, and public events. Edward specialises in bringing the past to life through character work, storytelling, and hands‑on demonstrations."
     },
     "merl-fluin": {
       "id": "merl-fluin",
