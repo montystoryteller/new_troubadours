@@ -2872,24 +2872,14 @@ function getEventURLParams() {
   // generateShareableURL() omits any filter that matches its default, so a
   // param that is ABSENT means "use the default" — not "off". Only a
   // param that is present is read literally ("1" = on, anything else = off).
-  // The folk/sessions "noneSelectedFallback" is kept for bare links that
-  // carry no filter params at all (e.g. just ?start=...&end=...).
-  const hasAnyFilterParam = [
-    "storyclubs",
-    "special",
-    ...EVENT_TYPE_FILTERS.map(({ param }) => param),
-  ].some((name) => params.has(name));
   const readFilter = (name, defaultValue) =>
     params.has(name) ? params.get(name) === "1" : defaultValue;
 
   const storyclubs = readFilter("storyclubs", EVENT_FILTER_DEFAULTS.storyclubs);
   const special = readFilter("special", EVENT_FILTER_DEFAULTS.special);
   const typeParams = {};
-  EVENT_TYPE_FILTERS.forEach(({ param, default: def, noneSelectedFallback }) => {
-    typeParams[param] = readFilter(
-      param,
-      !hasAnyFilterParam && noneSelectedFallback ? true : def,
-    );
+  EVENT_TYPE_FILTERS.forEach(({ param, default: def }) => {
+    typeParams[param] = readFilter(param, def);
   });
   const pinmap = params.get("pinmap") === "1";
   // hidecancelled defaults to true (checked) when absent from URL
