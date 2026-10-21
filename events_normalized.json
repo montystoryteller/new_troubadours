@@ -12503,6 +12503,20 @@
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
     },
     {
+      "name": "Tree Folk — Storytelling Session [Lisa Schneidau]",
+      "showname": "Tree Folk — Storytelling Session",
+      "date": "12/11/2026",
+      "venue_id": "cafe-w-waterstones-plymouth",
+      "performer_id": "lisa-schneidau",
+      "eventId": "20261112-lisa-schneidau-cafe-w-waterstones-plymouth",
+      "date_added": "21/10/2026",
+      "time": "4pm",
+      "description": "Join Lisa Schneidau in our cafe for a afternoon of enchanting tales from her book The Tree Folk.\n\n\n\nFollowing the wheel of the year Lisa brings our trees alive through stories and songs, whether they are rooted in rural magic or modern myth. Take a fresh look at the tree folk you share your life with, and discover their stories.",
+      "event_flyer": "2026_11_12_schenidau_waterstones_plymouth.webp",
+      "ticket_url": "https://www.waterstones.com/events/tree-folk-folklore-story-telling/plymouth-drake-circus",
+      "isSpecial": true
+    },
+    {
       "name": "The Selkie Who Stayed & Other Tales [Hannah Sneyd]",
       "showname": "The Selkie Who Stayed & Other Tales",
       "date": "13/11/2026",
@@ -12554,6 +12568,39 @@
       "isSpecial": true,
       "eventId": "20261119-ben-haggarty-jacksons-lane-london"
     },
+        {
+          "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland [Lisa Schneidau]",
+          "showname": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
+          "date": "19/11/2026",
+          "venue_id": "st-saviours-hall",
+          "performer_id": "lisa-schneidau",
+          "eventId": "20261119-lisa-schneidau-st-saviours-hall",
+          "date_added": "21/10/2026",
+          "time": "6pm",
+          "price": "£6",
+          "description": "Following the wheel of the year, storyteller & ecologist Lisa Schneidau brings our trees alive through their stories & songs\n\n\n\nJoin the author, storyteller and ecologist Lisa Schneidau for an evening of song and stories, in the stunning St Saviour's Hall on Lambhay Hill on the Hoe.\n\n\n\nTickets are £6 - including refreshments.\n\n\n\nCopies of Lisa'a new book - Tree Folk will be available to purchase on the night.\n\n\n\nThis event is part of Plymouth Tree People's schedule of events for National Tree Week. There will also be a talk by Jon Stokes on the trees of Britains and Ireland on 27th Nov and a showing of No Trees, No Seas on 25th Nov at the Plymouth Arts Cinema.\n\n\n\nWhat is a folk tale, but a tangled woodland of words, where anything could happen?\n\n\n\nEver since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us and inspired us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nTake a fresh look at the tree-folk you share your life with, and discover their stories in this enchanting book.\n\n\n\n“Lisa knows exactly how to charm the leaves off a tree.” Selvedge magazine\n\n\n\nPlease arrive 10 minutes before the start time.\n\n\n\nSt Saviour's Hall does not have step-free access, and the toilet is down several stairs.\n\n\n\nSnacks, hot drinks and a glass of wine are complimentary.\n\n\n\nThis event is not appropriate for children under 12. All children under 18 must be supervised by an adult.",
+          "event_flyer": "2026_10_17-schneidau_trees-plymouth.webp",
+          "ticket_url": "https://www.eventbrite.co.uk/e/tree-folk-tree-folk-tales-songs-and-lore-from-britain-ireland-tickets-2003298044378",
+          "isSpecial": true
+        },
+        {
+          "name": "Stories of Trees, Fire & Folklore [Lisa Schneidau & Rebecca Beattie]",
+          "showname": "Stories of Trees, Fire & Folklore",
+          "date": "20/11/2026",
+          "venue_id": "the-bookery-crediton",
+          "performer_ids": [
+            "lisa-schneidau",
+            "rebecca-beattie"
+          ],
+          "eventId": "20261120-lisa-schneidau-the-bookery-crediton",
+          "date_added": "21/10/2026",
+          "time": "7pm",
+          "price": "£5 (+ £0.42)",
+          "description": "Winter rituals and woodland traditions.\n\n\n\nThe Bookery is delighted to welcome two acclaimed Dartmoor authors, Lisa Schneidau and Rebecca Beattie, for a captivating winter evening exploring folklore, nature, seasonal traditions and our enduring relationship with the landscape. Inspired by their new books, Tree Folk and The Season of Frost and Fire, the event will bring together two writers who share a deep connection to Dartmoor and a fascination with the ways people have long understood and celebrated nature through story, ritual and imagination.\n\n\n\nAs the evenings draw in and winter approaches, their conversation will range from ancient woodland tales and seasonal customs to winter rituals, forgotten goddesses and the enduring power of folklore. Together they will explore how stories have helped generations of people make sense of the natural world, marking the changing seasons and deepening our connection to the landscapes around us.",
+          "event_flyer": "2026_11_20_schneidau_tree_bookery.jpg",
+          "ticket_url": "https://www.ticketsource.com/thebookery/lisa-schneidau-amp-rebecca-beattie-roots-and-rituals-stories-of-trees-fire-and-folklore/e-qrajqm",
+          "isSpecial": true
+        },
     {
       "name": "Dumnonian Tales [Martin Shaw]",
       "showname": "Dumnonian Tales",
@@ -19158,6 +19205,32 @@
         -4.16452
       ]
     },
+    "st-saviours-hall": {
+      "id": "st-saviours-hall",
+      "name": "St Saviours Hall",
+      "full_address": "St Saviours Hall, Lambhay Street, Plymouth, PL1 2NN",
+      "city": "Plymouth",
+      "postcode": "PL1 2NN",
+      "url": "https://www.plymouthculture.co.uk/venues/st-saviours-cic",
+      "description": "Since 2013 The Lenkiewicz Foundation and Fotonow CIC have been working in partnership to develop projects together and steward St Saviours Church Hall back to full health, which will include a future renovation supported by McCaren Architects. Thanks to support from Plymouth City Council's Social Enterprise Investment Funding the building now has heating and we're looking to take appropriate bookings for cultural and social enterprise projects in the space.",
+      "latlon": [
+        50.366,
+        -4.13486
+      ]
+    },
+    "cafe-w-waterstones-plymouth": {
+      "id": "cafe-w-waterstones-plymouth",
+      "name": "Cafe W, Waterstones, Plymouth",
+      "full_address": "Waterstones Plymouth, Drake Circus, 1 Charles St, Plymouth, PL1 1EA",
+      "city": "Plymouth",
+      "postcode": "PL1 1EA",
+      "url": "https://www.waterstones.com/bookshops/plymouth",
+      "description": "https://www.instagram.com/cafewplymouth/",
+      "latlon": [
+        50.37217,
+        -4.1379
+      ]
+    },
     "savoy-theatre-monmouth": {
       "id": "savoy-theatre-monmouth",
       "name": "Savoy Theatre, Monmouth",
@@ -19997,6 +20070,18 @@
       "latlon": [
         53.9063,
         -1.69304
+      ]
+    },
+    "the-bookery-crediton": {
+      "id": "the-bookery-crediton",
+      "name": "The Bookery, Crediton",
+      "full_address": "The Bookery, High Street, Crediton, EX17 3AH",
+      "city": "Crediton",
+      "postcode": "EX17 3AH",
+      "url": "https://thebookery.org.uk/",
+      "latlon": [
+        50.79056,
+        -3.65903
       ]
     },
     "crediton-arts-centre": {
@@ -21623,6 +21708,13 @@
       "name": "Liz Weir",
       "url": "https://www.lizweirstoryteller.com/",
       "bio": "Liz Weir MBE is an award-winning Irish storyteller who has shared stories on five continents — from pubs, prisons, and hospital rooms to the Royal Albert Hall and New York's Grand Central Station."
+    },
+    "rebecca-beattie": {
+      "id": "rebecca-beattie",
+      "name": "Rebecca Beattie",
+      "url": "https://www.rebeccabeattie.co.uk/",
+      "bio": "Writer, Nature Mystic, crafter and creative ball of energy. May contain witchcraft.\n\n\n\nRebecca Beattie is a Dartmoor-based writer, Wiccan priestess and teacher whose books include The Wheel of the Year and The Way Through the Woods.",
+      "facebook": "rebecca.m.beattie"
     },
     "lisa-schneidau": {
       "id": "lisa-schneidau",
