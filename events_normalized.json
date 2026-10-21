@@ -3454,65 +3454,65 @@
       "video_trailer": "https://undercoverhippy.com/home",
       "isSpecial": true
     },
-        "john-cooper-clarke-have-it-2026": {
-          "tour_name": "Have It Tour 2026",
-          "tour_dates": [
-            {
-              "date": "20/10/2026",
-              "venue_id": "pavilion-theatre-glasgow",
-              "time": "7.30pm",
-              "price": "£36",
-              "ticket_url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB/event/other/dr-john-cooper-clarke-tickets",
-              "other_performer_ids": [
-                "luke-wright"
-              ],
-              "isSpecial": true,
-              "eventId": "T-john-cooper-clarke-have-it-2026-20261020-pavilion-theatre-glasgow"
-            },
-            {
-              "date": "06/11/2026",
-              "venue_id": "grand-opera-house-york",
-              "time": "7pm",
-              "price": "£36 / £39.75",
-              "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
-              "other_performer_ids": [
-                "luke-wright"
-              ],
-              "isSpecial": true,
-              "eventId": "T-john-cooper-clarke-have-it-2026-20261106-grand-opera-house-york"
-            },
-            {
-              "date": "25/11/2026",
-              "venue_id": "de-montfort-hall-leicester",
-              "time": "7pm",
-              "price": "£46 / £41 / £36",
-              "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
-              "other_performer_ids": [
-                "luke-wright"
-              ],
-              "isSpecial": true,
-              "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leicester"
-            },
-            {
-              "date": "27/11/2026",
-              "venue_id": "queens-hall-edinburgh",
-              "time": "7pm",
-              "price": "£51.50 - £45.45  (including 10% booking fee per ticket, and £2 transaction fee)",
-              "ticket_url": "https://www.thequeenshall.net/whats-on/dr-john-cooper-clarke-edinburgh-2026",
-              "other_performer_ids": [
-                "luke-wright"
-              ],
-              "isSpecial": true,
-              "eventId": "T-john-cooper-clarke-have-it-2026-20261127-queens-hall-edinburgh"
-            }
+    "john-cooper-clarke-have-it-2026": {
+      "tour_name": "Have It Tour 2026",
+      "tour_dates": [
+        {
+          "date": "20/10/2026",
+          "venue_id": "pavilion-theatre-glasgow",
+          "time": "7.30pm",
+          "price": "£36",
+          "ticket_url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB/event/other/dr-john-cooper-clarke-tickets",
+          "other_performer_ids": [
+            "luke-wright"
           ],
-          "name": "Have It",
-          "performer_id": "john-cooper-clarke",
-          "isPoetry": true,
-          "tour_description": "2025 saw Dr John Cooper Clarke achieve historical feats as he became the first poet to headline a UK arena – the biggest indoor arena in Europe, Manchester’s Co-op Live. The celebrated poet also received the prestigious 2025 Northern Music Award in March of this year in recognition of his phenomenal influence in the music world.\n\n\n\nDr John Cooper Clarke’s anarchic punk poetry has thrilled people for decades, and his no-nonsense approach to his work has seen his career spanning cultures, audiences, art forms and continents. His critically acclaimed 2020 memoir ‘I Wanna Be Yours’ explored his extraordinary life, filled with remarkable personalities.\n\n\n\nHis latest collection, ‘Have It’, will be a completely new collection of work and follows on from 2024’s ‘WHAT’, an instant Sunday Times bestseller. Across his 20-date 2026 tour, Dr John Cooper Clarke will be introducing this new body of work alongside his beloved, hilarious and classic fan-favourites.",
-          "touring_event_flyer": "tour_johncooperclarke_have-it-2026.jpg",
-          "isSpecial": true
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261020-pavilion-theatre-glasgow"
         },
+        {
+          "date": "06/11/2026",
+          "venue_id": "grand-opera-house-york",
+          "time": "7pm",
+          "price": "£36 / £39.75",
+          "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
+          "other_performer_ids": [
+            "luke-wright"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261106-grand-opera-house-york"
+        },
+        {
+          "date": "25/11/2026",
+          "venue_id": "de-montfort-hall-leicester",
+          "time": "7pm",
+          "price": "£46 / £41 / £36",
+          "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
+          "other_performer_ids": [
+            "luke-wright"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leicester"
+        },
+        {
+          "date": "27/11/2026",
+          "venue_id": "queens-hall-edinburgh",
+          "time": "7pm",
+          "price": "£51.50 - £45.45  (including 10% booking fee per ticket, and £2 transaction fee)",
+          "ticket_url": "https://www.thequeenshall.net/whats-on/dr-john-cooper-clarke-edinburgh-2026",
+          "other_performer_ids": [
+            "luke-wright"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261127-queens-hall-edinburgh"
+        }
+      ],
+      "name": "Have It",
+      "performer_id": "john-cooper-clarke",
+      "isPoetry": true,
+      "tour_description": "2025 saw Dr John Cooper Clarke achieve historical feats as he became the first poet to headline a UK arena – the biggest indoor arena in Europe, Manchester’s Co-op Live. The celebrated poet also received the prestigious 2025 Northern Music Award in March of this year in recognition of his phenomenal influence in the music world.\n\n\n\nDr John Cooper Clarke’s anarchic punk poetry has thrilled people for decades, and his no-nonsense approach to his work has seen his career spanning cultures, audiences, art forms and continents. His critically acclaimed 2020 memoir ‘I Wanna Be Yours’ explored his extraordinary life, filled with remarkable personalities.\n\n\n\nHis latest collection, ‘Have It’, will be a completely new collection of work and follows on from 2024’s ‘WHAT’, an instant Sunday Times bestseller. Across his 20-date 2026 tour, Dr John Cooper Clarke will be introducing this new body of work alongside his beloved, hilarious and classic fan-favourites.",
+      "touring_event_flyer": "tour_johncooperclarke_have-it-2026.jpg",
+      "isSpecial": true
+    },
     "luke-wright-later-life-letter": {
       "tour_name": "Later Life Letter, October 2026",
       "tour_dates": [
@@ -11995,6 +11995,21 @@
       "isSpecial": true
     },
     {
+      "name": "Ghost Stories by Candlelight [woolly-tellers]",
+      "showname": "Ghost Stories by Candlelight",
+      "date": "24/10/2026",
+      "venue_id": "thomson-vosper-bakewell",
+      "performer_id": "woolly-tellers",
+      "eventId": "20261024-woolly-tellers-thomson-vosper-bakewell",
+      "date_added": "21/10/2026",
+      "time": "6pm",
+      "price": "£35",
+      "description": "tep into an evening of mystery, atmosphere, and spine-tingling tales…\n\n\n\nJoin us for Ghost Stories by Candlelight, a unique after-hours experience where flickering candlelight sets the scene for an unforgettable night. Set within our beautifully curated shop, you’ll be immersed in an intimate gathering of storytelling, indulgence, and discovery.\n\n\n\nWhat to expect:\n\n\n\n- Two hauntingly captivating short ghost stories\n- An open invitation to share your own eerie encounters or tales you’ve heard\n- Exclusive evening access to browse our collection of homewares, clothing, gifts, and accessories\n- A selection of delicious canapés and sweet treats\n- Complementary Prosecco and a variety of beverages to enjoy throughout the night\n- A special little gift to take home as a memento\n\n\n\nWhether you're a believer, a sceptic or simply love a good story, this is an evening designed to intrigue, delight, and perhaps… unsettle.\n\n\n\nSpaces are limited, so book your place for a night where the ordinary fades, and the extraordinary whispers in the shadows.\n\n\n\nImportant Information for Attendees\n\n\n\nPlease note that Ghost Stories by Candlelight is designed to be an immersive and atmospheric experience, featuring suspenseful and potentially frightening storytelling elements.\n\n\n\nBy attending, you acknowledge that some content may be unsettling or evoke feelings of fear. This event may not be suitable for individuals who are sensitive to intense or eerie environments, or those with conditions that could be affected by sudden fright or heightened emotional responses.\n\n\n\nFor health and safety reasons, we kindly ask guests to consider their personal comfort levels before booking. If you have any concerns, please feel free to get in touch with us prior to the event.\n\n\n\nYour wellbeing is important to us, and we want everyone to enjoy the evening safely.",
+      "event_flyer": "2026_10_25_ghost_stories_candlelight.jpg",
+      "ticket_url": "https://thomsonandvosper.co.uk/events-and-workshops/ola/services/ghost-stories-by-candlelight",
+      "isSpecial": true
+    },
+    {
       "name": "The Conditions For Courage — An Evening of Celtic Tales [Danielle Free]",
       "showname": "The Conditions For Courage — An Evening of Celtic Tales",
       "date": "24/10/2026",
@@ -13303,32 +13318,32 @@
         -3.18492
       ]
     },
-        "queens-hall-edinburgh": {
-          "id": "queens-hall-edinburgh",
-          "name": "Queen's Hall, Edinburgh",
-          "full_address": "Queen's Hall, 85-89 Clerk St, Edinburgh, EH8 9JG",
-          "city": "Edinburgh",
-          "postcode": "EH8 9JG",
-          "url": "https://www.thequeenshall.net/",
-          "description": "A venue like no other in Edinburgh.\n\n\n\nThe place artists love to play.\n\n\n\nA fan favourite.\n\n\n\nAn independent charity.",
-          "latlon": [
-            55.94151,
-            -3.18175
-          ]
-        },
-        "pavilion-theatre-glasgow": {
-          "id": "pavilion-theatre-glasgow",
-          "name": "Pavilion Theatre, Glasgow",
-          "full_address": "Pavilion Theatre, 121 Renfield St, Glasgow, G2 3AX",
-          "city": "Glasgow",
-          "postcode": "G2 3AX",
-          "url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB",
-          "description": "n recent years, the Pavilion has firmly maintained its reputation as Glasgow’s number one variety theatre. With a distinctive reverence for tradition and an appetite for the highest quality entertainment, it remains the last stronghold of a long music hall tradition, owing everything to its dedicated staff and patrons.",
-          "latlon": [
-            55.86505,
-            -4.25572
-          ]
-        },
+    "queens-hall-edinburgh": {
+      "id": "queens-hall-edinburgh",
+      "name": "Queen's Hall, Edinburgh",
+      "full_address": "Queen's Hall, 85-89 Clerk St, Edinburgh, EH8 9JG",
+      "city": "Edinburgh",
+      "postcode": "EH8 9JG",
+      "url": "https://www.thequeenshall.net/",
+      "description": "A venue like no other in Edinburgh.\n\n\n\nThe place artists love to play.\n\n\n\nA fan favourite.\n\n\n\nAn independent charity.",
+      "latlon": [
+        55.94151,
+        -3.18175
+      ]
+    },
+    "pavilion-theatre-glasgow": {
+      "id": "pavilion-theatre-glasgow",
+      "name": "Pavilion Theatre, Glasgow",
+      "full_address": "Pavilion Theatre, 121 Renfield St, Glasgow, G2 3AX",
+      "city": "Glasgow",
+      "postcode": "G2 3AX",
+      "url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB",
+      "description": "n recent years, the Pavilion has firmly maintained its reputation as Glasgow’s number one variety theatre. With a distinctive reverence for tradition and an appetite for the highest quality entertainment, it remains the last stronghold of a long music hall tradition, owing everything to its dedicated staff and patrons.",
+      "latlon": [
+        55.86505,
+        -4.25572
+      ]
+    },
     "strode-theatre": {
       "id": "strode-theatre",
       "name": "Strode Theatre, Street",
@@ -14949,18 +14964,18 @@
         -1.92039
       ]
     },
-        "de-montfort-hall-leicester": {
-          "id": "de-montfort-hall-leicester",
-          "name": "De Montfort Hall, Leicester",
-          "full_address": "De Montfort Hall, Granville Road, Leicester, LE1 7RU",
-          "city": "Leicester",
-          "postcode": "LE1 7RU",
-          "url": "https://www.demontforthall.co.uk/",
-          "latlon": [
-            52.62503,
-            -1.12202
-          ]
-        },
+    "de-montfort-hall-leicester": {
+      "id": "de-montfort-hall-leicester",
+      "name": "De Montfort Hall, Leicester",
+      "full_address": "De Montfort Hall, Granville Road, Leicester, LE1 7RU",
+      "city": "Leicester",
+      "postcode": "LE1 7RU",
+      "url": "https://www.demontforthall.co.uk/",
+      "latlon": [
+        52.62503,
+        -1.12202
+      ]
+    },
     "central-library-leicester": {
       "id": "central-library-leicester",
       "name": "Central Library",
@@ -15057,18 +15072,18 @@
         -1.50871
       ]
     },
-        "grand-opera-house-york": {
-          "id": "grand-opera-house-york",
-          "name": "Grand Opera House, York",
-          "full_address": "Grand Opera House, Cumberland Street, York, YO1 9SW",
-          "city": "York",
-          "postcode": "YO1 9SW",
-          "url": "https://www.atgtickets.com/venues/grand-opera-house-york/whats-on/",
-          "latlon": [
-            53.95713,
-            -1.08228
-          ]
-        },
+    "grand-opera-house-york": {
+      "id": "grand-opera-house-york",
+      "name": "Grand Opera House, York",
+      "full_address": "Grand Opera House, Cumberland Street, York, YO1 9SW",
+      "city": "York",
+      "postcode": "YO1 9SW",
+      "url": "https://www.atgtickets.com/venues/grand-opera-house-york/whats-on/",
+      "latlon": [
+        53.95713,
+        -1.08228
+      ]
+    },
     "the-crescent-york": {
       "id": "the-crescent-york",
       "name": "The Crescent, York",
@@ -16071,6 +16086,18 @@
       "latlon": [
         52.92661,
         -1.48631
+      ]
+    },
+    "thomson-vosper-bakewell": {
+      "id": "thomson-vosper-bakewell",
+      "name": "Thomson & Vosper, Bakewell",
+      "full_address": "Church Street, Baslow, Bakewell, DE45 1RP",
+      "city": "Bakewell",
+      "postcode": "DE45 1RP",
+      "url": "https://thomsonandvosper.co.uk/",
+      "latlon": [
+        53.24843,
+        -1.6252
       ]
     },
     "alderwasley-village-hall-belper": {
@@ -20564,20 +20591,20 @@
       "url": "",
       "bio": "Cath Edwrds is a storyteller, telling stories to adult audiences, family audiences, very young children, school-age children, and children and young people with special needs.\n\n\n\nMatthew is a storyteller of 10 years experience. He has worked since 2011 in a Public Library Service in the East-Midlands and has been lucky enough to be able to develop his storytelling practice in his professional environment, performing stories and providing interactive workshops to audiences of all ages. He has worked in early years settings, primary and secondary schools and performed in clubs. He loves to perform international folk tales and wonder tales of all kinds as well as having particular interest in the stories of working folk of Britain, drawing on stories from his own coal mining heritage and beyond, and stories about nature the wild places of this world."
     },
-        "john-cooper-clarke": {
-          "id": "john-cooper-clarke",
-          "name": "John Cooper Clarke",
-          "url": "https://www.johncooperclarke.com/listings/",
-          "bio": "Biting, satirical, political and very funny verse delivered in rapid-fire performance style resonating with the punk movement in the late 70s. After touring with most of punk’s seminal and ground breaking bands including the Sex Pistols, The Clash, Buzzcocks, The Fall, and Elvis Costello, to name but a few, he began to draw large crowds in his own right. Joy Division were proud to open for JCC on numerous occasions and New Order later supported him on their first joint Australian tour.",
-          "facebook": "johncooperclarke",
-          "youtube_videos": [
-            {
-              "story_name": "Live at The George Tavern",
-              "yt_url": "https://www.youtube.com/watch?v=XJq38cWHLP8"
-            }
-          ],
-          "instagram": "johncooperclarke"
-        },
+    "john-cooper-clarke": {
+      "id": "john-cooper-clarke",
+      "name": "John Cooper Clarke",
+      "url": "https://www.johncooperclarke.com/listings/",
+      "bio": "Biting, satirical, political and very funny verse delivered in rapid-fire performance style resonating with the punk movement in the late 70s. After touring with most of punk’s seminal and ground breaking bands including the Sex Pistols, The Clash, Buzzcocks, The Fall, and Elvis Costello, to name but a few, he began to draw large crowds in his own right. Joy Division were proud to open for JCC on numerous occasions and New Order later supported him on their first joint Australian tour.",
+      "facebook": "johncooperclarke",
+      "youtube_videos": [
+        {
+          "story_name": "Live at The George Tavern",
+          "yt_url": "https://www.youtube.com/watch?v=XJq38cWHLP8"
+        }
+      ],
+      "instagram": "johncooperclarke"
+    },
     "luke-wright": {
       "id": "luke-wright",
       "name": "Luke Wright",
@@ -22011,6 +22038,12 @@
       "url": "https://www.charlottemooneystories.com/",
       "instagram": "charlottemooneystories",
       "bio": "Since 2015 Charlotte has been telling stories in theatres, clubs, and around campfires. She disentangles tales of power and transformation and asks how we make sense of the stories we have. She is drawn to the place where mythology, folklore, history and the every day meet."
+    },
+    "woolly-tellers": {
+      "id": "woolly-tellers",
+      "name": "Woolly Tellers",
+      "url": "https://www.thewoollytellers.co.uk/",
+      "bio": "Dark tales for adult audiences. Private bookings welcome."
     },
     "dave-brookes": {
       "id": "dave-brookes",
