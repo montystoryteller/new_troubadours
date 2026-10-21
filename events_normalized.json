@@ -14399,6 +14399,7 @@
     },
     "solt-almondbury-hudds": {
       "id": "solt-almondbury-hudds",
+      "isClosedDown": true,
       "name": "Sôlt (Kitchen, Coffee, Bar)",
       "city": "Huddersfield",
       "postcode": "HD5 8RX",
