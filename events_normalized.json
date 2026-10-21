@@ -22077,7 +22077,14 @@
       "id": "woolly-tellers",
       "name": "Woolly Tellers",
       "url": "https://www.thewoollytellers.co.uk/",
-      "bio": "Dark tales for adult audiences. Private bookings welcome."
+      "bio": "Dark tales for adult audiences. Private bookings welcome.",
+      "type": "troupe",
+      "members": [
+        "dave-brookes"
+      ],
+      "performer_ids": [
+        "dave-brookes"
+      ]
     },
     "dave-brookes": {
       "id": "dave-brookes",
