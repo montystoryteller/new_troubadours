@@ -1832,6 +1832,7 @@
                 <button onclick="generateOutput()" class="btn-primary-action">Generate from batch</button>
                 <button onclick="copyOutput()" class="btn-secondary-action">Copy to clipboard</button>
                 <button onclick="downloadOutput()" class="btn-secondary-action">Download .json</button>
+                <button onclick="submitOutput()" class="btn-primary-action">Send for review</button>
                 <button onclick="clearOutput()" class="btn-clear-form">Clear</button>
             </div>
             <textarea id="outputArea" readonly
@@ -6560,6 +6561,35 @@
             a.download = "new_event_data.json";
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        async function submitOutput() {
+            if (!document.getElementById("outputArea").value) generateOutput();
+            const body = document.getElementById("outputArea").value;
+            if (!body || body === "{}") { alert("Nothing to send."); return; }
+            let key = null;
+            try { key = localStorage.getItem("submitKey"); } catch (e) { }
+            if (!key) {
+                key = prompt("Submit key:");
+                if (!key) return;
+            }
+            try {
+                const res = await fetch("/event-submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-Submit-Key": key },
+                    body
+                });
+                if (res.status === 401) {
+                    try { localStorage.removeItem("submitKey"); } catch (e) { }
+                    alert("Wrong submit key.");
+                    return;
+                }
+                if (!res.ok) { alert("Failed: " + res.status + " " + await res.text()); return; }
+                try { localStorage.setItem("submitKey", key); } catch (e) { }
+                alert("Sent for review.");
+            } catch (e) {
+                alert("Could not reach the server: " + e.message);
+            }
         }
 
         // ── Boot ─────────────────────────────────────────────────────────────

@@ -1,0 +1,69 @@
+name: Event submission
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: submissions
+
+jobs:
+  ingest:
+    # Only issues carrying the label AND created by you (the PAT's owner)
+    if: >
+      contains(github.event.issue.labels.*.name, 'event-submission') &&
+      github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUM: ${{ github.event.issue.number }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract and validate JSON
+        id: extract
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          node <<'EOF'
+          const fs = require("fs");
+          const m = (process.env.BODY || "").match(/^~~~~json\r?\n([\s\S]*)\r?\n~~~~\s*$/);
+          if (!m) throw new Error("Issue body is not in the expected ~~~~json fence");
+          const data = JSON.parse(m[1]);
+          if (!data || typeof data !== "object" || Array.isArray(data) || !Object.keys(data).length)
+            throw new Error("JSON must be a non-empty object");
+          fs.mkdirSync("submissions", { recursive: true });
+          const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
+          const file = `submissions/${stamp}-issue-${process.env.NUM}.json`;
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `file=${file}\n`);
+          EOF
+
+      - name: Commit
+        env:
+          FILE: ${{ steps.extract.outputs.file }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          git commit -m "Add submission from issue #$NUM"
+          for i in 1 2 3; do
+            git pull --rebase origin "$DEFAULT_BRANCH" && git push origin "HEAD:$DEFAULT_BRANCH" && break
+            sleep 3
+          done
+
+      - name: Comment and close
+        env:
+          FILE: ${{ steps.extract.outputs.file }}
+        run: |
+          gh issue comment "$NUM" --body "Saved as \`$FILE\`."
+          gh issue close "$NUM"
+
+      - name: Report failure
+        if: failure()
+        run: gh issue comment "$NUM" --body "Processing failed. See the Actions run log for details."
