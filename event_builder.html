@@ -1766,58 +1766,7 @@
         <div class="panel">
             <h2>Generated JSON</h2>
             <div class="merge-note">
-                Copy the relevant section(s) into <code>events_normalized.json</code>: merge
-                <code>newPerformers</code> into <code>performers</code>, <code>newVenues</code> into
-                <code>venues</code>, then merge each record into its matching top-level array/object
-                (<code>specificEvents</code>, <code>musicEvents</code>, <code>tours</code>,
-                <code>repertoire_shows</code>, <code>podcasts</code>). <code>promoters</code> is an object keyed by
-                promoter_id — merge its entries into the top-level <code>promoters</code> object.
-                <code>publishers</code> is the same shape (keyed by publisher_id) — merge into the top-level
-                <code>publishers</code> object; it only appears when a book was given a publisher not already
-                registered. <code>clubs</code>
-                holds new recurring club nights — append them to the top-level <code>clubs</code> array (not
-                <code>specificEvents</code>, which is where one-off events at a club go).
-                <code>podcastEpisodeAdditions</code>
-                is different: each entry's <code>item</code> needs appending, by hand, into the
-                <code>items</code> array of the existing podcast named by its <code>podcast_id</code> —
-                it's a patch against a podcast that already exists, not a new top-level record.
-                <br><br>
-                <code>updatedPerformers</code>, <code>updatedVenues</code>, <code>updatedFestivals</code>,
-                <code>updatedPodcasts</code>, <code>updatedPromoters</code> and <code>updatedClubs</code> come from
-                using "Edit this record" on an existing entry — each
-                is a <strong>complete, edited replacement</strong> for the entry with that same id/key, not a
-                partial patch. Overwrite the matching entry in <code>performers</code> / <code>venues</code> /
-                <code>festivals</code> / <code>podcasts</code> / <code>promoters</code> with it wholesale (for
-                <code>updatedClubs</code>, the <code>clubs</code> array entry whose <code>name</code> is that key — some
-                older records have no <code>club</code> id, and two ids are shared, so the name is the only unique
-                handle) (any field you didn't touch
-                is carried over unchanged from what was loaded, but any field you cleared out will be gone
-                from the replacement — check before overwriting if that matters).
-                <br><br>
-                <code>updatedEvents</code> is different again: it comes from the Enrich tab's checkers (e.g.
-                age ratings, missing event IDs) and events have no id to key it by, so each key is just
-                "<code>bucket#index</code>" from the file you had loaded there — not safe to trust if that
-                file's changed since. Use it to locate the event instead: match by name/date against the
-                corresponding array (<code>specificEvents</code> / <code>musicEvents</code> /
-                <code>poetryEvents</code>) and replace that whole object, same as the other
-                <code>updated*</code> entries.
-                <br><br>
-                <code>updatedTours</code> and <code>updatedRepertoireShows</code> also come from the age
-                rating checker, but tours and repertoire shows <strong>do</strong> have a real key — a date
-                within their <code>tour_dates</code>/<code>show_dates</code> has no description of its own,
-                so a found age cue always belongs to the whole tour/show, not one date in its list. These
-                behave like <code>updatedFestivals</code>/<code>updatedPodcasts</code>: replace the matching
-                entry in <code>tours</code>/<code>repertoire_shows</code> wholesale, by that same key.
-                <br><br>
-                <strong>Tours / shows edited via "Edit existing"</strong> follow the "Edited tours / shows as" choice
-                below. <em>Changes only</em> gives <code>tourChanges</code> / <code>repertoireShowChanges</code>, keyed
-                by tour/show key, with instruction-style parts: <code>append_to_tour_dates</code> (new date entries
-                to add to the end of the list), <code>replace_in_tour_dates</code> (each has the feed
-                <code>index</code> and a <code>was</code> date/venue for locating it, plus the complete replacement
-                <code>record</code>), <code>remove_from_tour_dates</code>, <code>set_fields</code> (top-level fields
-                to set) and <code>delete_fields</code> (same names with <code>show_dates</code> for shows).
-                <em>Full record</em> gives <code>updatedTours</code> / <code>updatedRepertoireShows</code> — drop-in
-                replacements, as above. <code>index</code> is the position in the file you loaded the form from.
+                Generate JSON from records added to batch. THis partial feed can then be merged elsewhere into main data feed. <em>Send for review</em> sends the data to site admin; use <tt>haveadate</tt> if prompted for a key/password to submit data.
             </div>
             <div class="output-actions">
                 <label style="font-weight:normal; display:inline-flex; align-items:center; gap:6px; margin-right:10px;">
