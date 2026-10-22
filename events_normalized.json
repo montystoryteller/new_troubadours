@@ -12576,6 +12576,18 @@
       "eventId": "20261114-maria-credali-eastcott-community-centre-swindon"
     },
     {
+      "name": "Tales for the Dark Tide of the Year [P. D. Brown]",
+      "showname": "Tales for the Dark Tide of the Year",
+      "date": "17/11/2026",
+      "venue_id": "the-beehive-shipley",
+      "performer_id": "p-d-brown",
+      "eventId": "20261117-p-d-brown-the-beehive-shipley",
+      "date_added": "22/10/2026",
+      "time": "7.30pm",
+      "fb_event": "1688570812478773",
+      "isSpecial": true
+    },
+    {
       "name": "Baba Yaga [Ben Haggarty & Sarah-Liisa Wilkinson & Steph Brittain]",
       "showname": "Baba Yaga",
       "date": "19/11/2026",
@@ -19615,6 +19627,18 @@
         53.06777,
         -2.52281
       ]
+    },
+    "the-beehive-shipley": {
+      "id": "the-beehive-shipley",
+      "name": "The Beehive, Shipley",
+      "venue_type": "Other / unknown",
+      "city": "Shipley",
+      "postcode": "BD18 3HH",
+      "full_address": "1 Saltaire Road, Shipley, BD18 3HH",
+      "email": "beehive@inglenookinns.co.uk",
+      "facebook": "beehive1sr",
+      "instagram": "thebeehive.1",
+      "description": "Traditional pub, additional function room and great beer garden."
     },
     "kirkgate-centre-shipley": {
       "id": "kirkgate-centre-shipley",
