@@ -2353,6 +2353,16 @@ function initMap(elementId, onMoveEnd) {
 const CACHE_BUCKET_HOURS = 24;
 
 /**
+ * Maximum age of the localStorage copy of the events data. Older than this
+ * and loadEventsData() ignores it and fetches from the network (the old copy
+ * is kept as an offline fallback for handleEventsLoadFailure()). This is what
+ * guarantees visitors never see data older than this, even if the background
+ * header check fails or the server sends no ETag/Last-Modified.
+ * 24h = daily; use 48h for "no more than a couple of days".
+ */
+const EVENTS_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+/**
  * Cache keys for localStorage. Centralized to avoid duplication.
  * @type {Object}
  */
@@ -2555,6 +2565,14 @@ async function loadEventsData(cacheBuster) {
             );
           }
           const { timestamp, data } = parsed;
+          if (
+            typeof timestamp !== "number" ||
+            Date.now() - timestamp > EVENTS_CACHE_MAX_AGE_MS
+          ) {
+            const expiredErr = new Error("Cached events data has expired");
+            expiredErr.expired = true;
+            throw expiredErr;
+          }
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
           applyRepertoireInheritance(eventsData);
@@ -2581,14 +2599,20 @@ async function loadEventsData(cacheBuster) {
           };
         } catch (e) {
           console.warn(`${e.message} — fetching fresh copy instead`);
-          localStorage.removeItem(CACHE_KEYS.DATA);
+          // An expired copy is kept (it's valid JSON) so it can still serve as
+          // an offline fallback; only genuinely broken copies are discarded.
+          if (!e.expired) localStorage.removeItem(CACHE_KEYS.DATA);
         }
       }
     }
 
     // Fetch fresh data from network
     const version = cacheBuster || getAutoCacheVersion();
-    const response = await fetch(`events_normalized.json?v=${version}`);
+    // cache: "no-cache" = always revalidate with the server (a cheap 304 if
+    // unchanged) rather than trusting whatever the HTTP cache holds.
+    const response = await fetch(`events_normalized.json?v=${version}`, {
+      cache: "no-cache",
+    });
     if (!response.ok) {
       const reason = `Live feed returned HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`;
       console.error(reason);
@@ -3120,6 +3144,7 @@ async function checkForNewerEventsDataBackground() {
     // Do a HEAD request to check the server headers without downloading the body
     const headResponse = await fetch("events_normalized.json", {
       method: "HEAD",
+      cache: "no-store",
     });
     if (!headResponse.ok) {
       flagBackgroundFeedDegraded(
@@ -3153,7 +3178,9 @@ async function checkForNewerEventsDataBackground() {
 
     // If there's a newer version, fetch and update cache silently
     if (needsRefresh) {
-      const response = await fetch(`events_normalized.json?v=${Date.now()}`);
+      const response = await fetch(`events_normalized.json?v=${Date.now()}`, {
+        cache: "no-store",
+      });
       if (!response.ok) {
         flagBackgroundFeedDegraded(
           `Live feed returned ${response.status} while fetching an update`,
