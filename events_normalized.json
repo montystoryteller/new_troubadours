@@ -12197,6 +12197,32 @@
       "isSpecial": true
     },
     {
+      "name": "Witchy Tales [Marianna Portela]",
+      "showname": "Witchy Tales",
+      "date": "28/10/2026",
+      "venue_id": "irthlingborough-library",
+      "performer_id": "marianna-portela",
+      "eventId": "20261028-marianna-portela-irthlingborough-library",
+      "date_added": "22/10/2026",
+      "time": "Doors 6.30pm, Start 7pm",
+      "structured_time": [
+        {
+          "type": "doors",
+          "time": "6.30pm"
+        },
+        {
+          "type": "start",
+          "time": "7pm"
+        }
+      ],
+      "price": "£10",
+      "description": "An evening of myth, folklore and witch tales for grown-ups\n\n\n\nAs the nights grow darker and Halloween approaches, join storyteller Marianna Portela for an evening of witchy stories drawn from myth, folklore and traditional tales.\n\n\n\nAcross cultures and centuries, stories of witches have carried our fears, our fascination and our ideas about women, power, wisdom and the unknown. Come and gather for an evening of strange, magical and perhaps slightly unsettling tales, shared as stories have been for generations — told aloud, in the company of others.\n\n\n\nTickets £10 includes refreshments\n\n\n\nPlease book your tickets at the desk or email\n\n\n\nIrthlingborough.libraryplus@northnorthants.gov.uk\n\n\n\nTickets must be paid for in advance and are non-refundable\n\n\n\nSuitable for ages 16+ (Under 18s must be accompanied by an adult)\n\n\n\nDuration: approximately 75–90 minutes",
+      "age_rating": "16+",
+      "min_age": 16,
+      "ticket_url": "https://tockify.com/nccevents/detail/6568/1793214000000?",
+      "isSpecial": true
+    },
+    {
       "name": "The Ghost Light [Owen Staton]",
       "showname": "The Ghost Light",
       "date": "28/10/2026",
@@ -12568,39 +12594,39 @@
       "isSpecial": true,
       "eventId": "20261119-ben-haggarty-jacksons-lane-london"
     },
-        {
-          "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland [Lisa Schneidau]",
-          "showname": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
-          "date": "19/11/2026",
-          "venue_id": "st-saviours-hall",
-          "performer_id": "lisa-schneidau",
-          "eventId": "20261119-lisa-schneidau-st-saviours-hall",
-          "date_added": "21/10/2026",
-          "time": "6pm",
-          "price": "£6",
-          "description": "Following the wheel of the year, storyteller & ecologist Lisa Schneidau brings our trees alive through their stories & songs\n\n\n\nJoin the author, storyteller and ecologist Lisa Schneidau for an evening of song and stories, in the stunning St Saviour's Hall on Lambhay Hill on the Hoe.\n\n\n\nTickets are £6 - including refreshments.\n\n\n\nCopies of Lisa'a new book - Tree Folk will be available to purchase on the night.\n\n\n\nThis event is part of Plymouth Tree People's schedule of events for National Tree Week. There will also be a talk by Jon Stokes on the trees of Britains and Ireland on 27th Nov and a showing of No Trees, No Seas on 25th Nov at the Plymouth Arts Cinema.\n\n\n\nWhat is a folk tale, but a tangled woodland of words, where anything could happen?\n\n\n\nEver since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us and inspired us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nTake a fresh look at the tree-folk you share your life with, and discover their stories in this enchanting book.\n\n\n\n“Lisa knows exactly how to charm the leaves off a tree.” Selvedge magazine\n\n\n\nPlease arrive 10 minutes before the start time.\n\n\n\nSt Saviour's Hall does not have step-free access, and the toilet is down several stairs.\n\n\n\nSnacks, hot drinks and a glass of wine are complimentary.\n\n\n\nThis event is not appropriate for children under 12. All children under 18 must be supervised by an adult.",
-          "event_flyer": "2026_10_17-schneidau_trees-plymouth.webp",
-          "ticket_url": "https://www.eventbrite.co.uk/e/tree-folk-tree-folk-tales-songs-and-lore-from-britain-ireland-tickets-2003298044378",
-          "isSpecial": true
-        },
-        {
-          "name": "Stories of Trees, Fire & Folklore [Lisa Schneidau & Rebecca Beattie]",
-          "showname": "Stories of Trees, Fire & Folklore",
-          "date": "20/11/2026",
-          "venue_id": "the-bookery-crediton",
-          "performer_ids": [
-            "lisa-schneidau",
-            "rebecca-beattie"
-          ],
-          "eventId": "20261120-lisa-schneidau-the-bookery-crediton",
-          "date_added": "21/10/2026",
-          "time": "7pm",
-          "price": "£5 (+ £0.42)",
-          "description": "Winter rituals and woodland traditions.\n\n\n\nThe Bookery is delighted to welcome two acclaimed Dartmoor authors, Lisa Schneidau and Rebecca Beattie, for a captivating winter evening exploring folklore, nature, seasonal traditions and our enduring relationship with the landscape. Inspired by their new books, Tree Folk and The Season of Frost and Fire, the event will bring together two writers who share a deep connection to Dartmoor and a fascination with the ways people have long understood and celebrated nature through story, ritual and imagination.\n\n\n\nAs the evenings draw in and winter approaches, their conversation will range from ancient woodland tales and seasonal customs to winter rituals, forgotten goddesses and the enduring power of folklore. Together they will explore how stories have helped generations of people make sense of the natural world, marking the changing seasons and deepening our connection to the landscapes around us.",
-          "event_flyer": "2026_11_20_schneidau_tree_bookery.jpg",
-          "ticket_url": "https://www.ticketsource.com/thebookery/lisa-schneidau-amp-rebecca-beattie-roots-and-rituals-stories-of-trees-fire-and-folklore/e-qrajqm",
-          "isSpecial": true
-        },
+    {
+      "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland [Lisa Schneidau]",
+      "showname": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
+      "date": "19/11/2026",
+      "venue_id": "st-saviours-hall",
+      "performer_id": "lisa-schneidau",
+      "eventId": "20261119-lisa-schneidau-st-saviours-hall",
+      "date_added": "21/10/2026",
+      "time": "6pm",
+      "price": "£6",
+      "description": "Following the wheel of the year, storyteller & ecologist Lisa Schneidau brings our trees alive through their stories & songs\n\n\n\nJoin the author, storyteller and ecologist Lisa Schneidau for an evening of song and stories, in the stunning St Saviour's Hall on Lambhay Hill on the Hoe.\n\n\n\nTickets are £6 - including refreshments.\n\n\n\nCopies of Lisa'a new book - Tree Folk will be available to purchase on the night.\n\n\n\nThis event is part of Plymouth Tree People's schedule of events for National Tree Week. There will also be a talk by Jon Stokes on the trees of Britains and Ireland on 27th Nov and a showing of No Trees, No Seas on 25th Nov at the Plymouth Arts Cinema.\n\n\n\nWhat is a folk tale, but a tangled woodland of words, where anything could happen?\n\n\n\nEver since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us and inspired us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nTake a fresh look at the tree-folk you share your life with, and discover their stories in this enchanting book.\n\n\n\n“Lisa knows exactly how to charm the leaves off a tree.” Selvedge magazine\n\n\n\nPlease arrive 10 minutes before the start time.\n\n\n\nSt Saviour's Hall does not have step-free access, and the toilet is down several stairs.\n\n\n\nSnacks, hot drinks and a glass of wine are complimentary.\n\n\n\nThis event is not appropriate for children under 12. All children under 18 must be supervised by an adult.",
+      "event_flyer": "2026_10_17-schneidau_trees-plymouth.webp",
+      "ticket_url": "https://www.eventbrite.co.uk/e/tree-folk-tree-folk-tales-songs-and-lore-from-britain-ireland-tickets-2003298044378",
+      "isSpecial": true
+    },
+    {
+      "name": "Stories of Trees, Fire & Folklore [Lisa Schneidau & Rebecca Beattie]",
+      "showname": "Stories of Trees, Fire & Folklore",
+      "date": "20/11/2026",
+      "venue_id": "the-bookery-crediton",
+      "performer_ids": [
+        "lisa-schneidau",
+        "rebecca-beattie"
+      ],
+      "eventId": "20261120-lisa-schneidau-the-bookery-crediton",
+      "date_added": "21/10/2026",
+      "time": "7pm",
+      "price": "£5 (+ £0.42)",
+      "description": "Winter rituals and woodland traditions.\n\n\n\nThe Bookery is delighted to welcome two acclaimed Dartmoor authors, Lisa Schneidau and Rebecca Beattie, for a captivating winter evening exploring folklore, nature, seasonal traditions and our enduring relationship with the landscape. Inspired by their new books, Tree Folk and The Season of Frost and Fire, the event will bring together two writers who share a deep connection to Dartmoor and a fascination with the ways people have long understood and celebrated nature through story, ritual and imagination.\n\n\n\nAs the evenings draw in and winter approaches, their conversation will range from ancient woodland tales and seasonal customs to winter rituals, forgotten goddesses and the enduring power of folklore. Together they will explore how stories have helped generations of people make sense of the natural world, marking the changing seasons and deepening our connection to the landscapes around us.",
+      "event_flyer": "2026_11_20_schneidau_tree_bookery.jpg",
+      "ticket_url": "https://www.ticketsource.com/thebookery/lisa-schneidau-amp-rebecca-beattie-roots-and-rituals-stories-of-trees-fire-and-folklore/e-qrajqm",
+      "isSpecial": true
+    },
     {
       "name": "Dumnonian Tales [Martin Shaw]",
       "showname": "Dumnonian Tales",
@@ -14105,6 +14131,19 @@
       "latlon": [
         52.24021,
         -0.88846
+      ]
+    },
+    "irthlingborough-library": {
+      "id": "irthlingborough-library",
+      "name": "Irthlingborough Library",
+      "venue_type": "Library",
+      "city": "Irthlingborough",
+      "postcode": "NN9 5PU",
+      "full_address": "Irthlingborough Library, High St, Irthlingborough, NN9 5PU",
+      "url": "https://www.northnorthants.gov.uk/our-libraries/irthlingborough-library",
+      "latlon": [
+        52.32468,
+        -0.61482
       ]
     },
     "quaker-meeting-house-northampton": {
@@ -22082,6 +22121,14 @@
       "name": "Alim Kamara",
       "url": "https://www.alimkamara.com/",
       "bio": "Alim Kamara is a British-Sierra Leonean rapper and storyteller. As a child living in Sierra Leone, Alim would listen to Djelis (storytellers), admiring the way they weaved lessons through their tales. Stories quickly became central to his life, and when he moved to London and started his music career, he used this same technique to achieve number one singles in both Sierra Leone and Nigeria.\n\n\n\nHe established Storie Storie to share the traditional African stories of his childhood in the UK. Through the organisation, he performs and runs workshops through schools, businesses and festivals.\n\n\n\nAlim and his inspirational speakers share cultural and life issues through storytelling that demonstrates success, disappointments, persistence and hard work. They share the tools that empower listeners to feel happy, express themselves and succeed."
+    },
+    "marianna-portela": {
+      "id": "marianna-portela",
+      "name": "Marianna Portela",
+      "url": "https://mariannaportela.com/en",
+      "bio": "Woman, storyteller, cantadora, asker, listener. Actress, poet, seeker, jester. Female. Mother. Brazilian immigrant. Latina. Researcher of the Feminine. Empowerer of Women, conductor of Circles. Jungian analyst. Oraculist - or Communicator of the Divine Feminine Archetypes (I lake chatting with Goddesses). Gemini with Rising Gemini.\n\n\n\nThe fabric of which I am made is intertwined by all these (and many other) characteristics, which are merged and revealed in my work.",
+      "facebook": "historiascurativas",
+      "instagram": "historiascurativas"
     },
     "alastair-k-daniel": {
       "id": "alastair-k-daniel",
