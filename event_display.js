@@ -2869,11 +2869,17 @@ function getEventURLParams() {
   // Nothing usable in the URL — caller falls back to the default view.
   if (!start && !q) return null;
 
-  const storyclubs = params.get("storyclubs") === "1";
-  const special = params.get("special") === "1";
+  // generateShareableURL() omits any filter that matches its default, so a
+  // param that is ABSENT means "use the default" — not "off". Only a
+  // param that is present is read literally ("1" = on, anything else = off).
+  const readFilter = (name, defaultValue) =>
+    params.has(name) ? params.get(name) === "1" : defaultValue;
+
+  const storyclubs = readFilter("storyclubs", EVENT_FILTER_DEFAULTS.storyclubs);
+  const special = readFilter("special", EVENT_FILTER_DEFAULTS.special);
   const typeParams = {};
-  EVENT_TYPE_FILTERS.forEach(({ param }) => {
-    typeParams[param] = params.get(param) === "1";
+  EVENT_TYPE_FILTERS.forEach(({ param, default: def }) => {
+    typeParams[param] = readFilter(param, def);
   });
   const pinmap = params.get("pinmap") === "1";
   // hidecancelled defaults to true (checked) when absent from URL
@@ -2886,21 +2892,14 @@ function getEventURLParams() {
   const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
   const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
   const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
-  // If none are selected, default storyclubs/special (and any type filter
-  // with noneSelectedFallback: true, e.g. folk/sessions) to true.
-  const noneSelected =
-    !storyclubs &&
-    !special &&
-    EVENT_TYPE_FILTERS.every(({ param }) => !typeParams[param]);
-
   const result = {
     // A bare "?q=..." link (no start param) has no date range of its own —
     // the caller falls back to the current week for the date inputs, since
     // the search itself always covers today through +2 years regardless.
     startDate: start ? new Date(start) : null,
     endDate: end ? new Date(end) : null,
-    storyclubs: noneSelected ? true : storyclubs,
-    special: noneSelected ? true : special,
+    storyclubs: storyclubs,
+    special: special,
     pinmap: pinmap,
     hidecancelled: hidecancelled,
     hidepast: hidepast,
@@ -2910,9 +2909,8 @@ function getEventURLParams() {
     zoom: zoom,
     searchTerm: q,
   };
-  EVENT_TYPE_FILTERS.forEach(({ param, noneSelectedFallback }) => {
-    result[param] =
-      noneSelected && noneSelectedFallback ? true : typeParams[param];
+  EVENT_TYPE_FILTERS.forEach(({ param }) => {
+    result[param] = typeParams[param];
   });
   return result;
 }

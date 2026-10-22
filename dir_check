@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# ./dir_check . ./js
+DIR1="${1:?Usage: ./compare-js.sh dir1 dir2}"
+DIR2="${2:?Usage: ./compare-js.sh dir1 dir2}"
+
+for f in "$DIR1"/*.js; do
+    [ -f "$f" ] || continue
+
+    name="${f##*/}"
+
+    if [ ! -f "$DIR2/$name" ]; then
+        echo "NO      $name (missing in dir2)"
+    elif cmp -s "$f" "$DIR2/$name"; then
+        echo "YES     $name"
+    else
+        echo "NO      $name"
+    fi
+done

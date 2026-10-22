@@ -867,8 +867,9 @@ function renderPerformer() {
         }
       }
     });
-  } else if (members.length === 1) {
-    // Single declared member — link it
+  } else if (members.length === 1 && !isTroupe(performer)) {
+    // Single declared member — link it (troupes keep a plain name and get a
+    // member chip below instead, so a one-member troupe still lists its member)
     const a = document.createElement("a");
     a.href = `performers.html?performer=${encodeURIComponent(members[0])}`;
     a.textContent = performer.name;
@@ -878,8 +879,9 @@ function renderPerformer() {
     nameEl.textContent = performer.name;
   }
 
-  // Also render member chips beneath the name when performer_ids are declared
-  if (members.length > 1) {
+  // Also render member chips beneath the name when performer_ids are declared.
+  // Troupes always list every declared member, even if there is only one.
+  if (members.length > 1 || (isTroupe(performer) && members.length >= 1)) {
     const chipsDiv = document.createElement("div");
     chipsDiv.className = "performer-member-chips";
     members.forEach((id) => {
