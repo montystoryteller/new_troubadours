@@ -1,13 +1,27 @@
 #!/bin/bash
-# 1) Block the commit if a staged JSON feed is invalid.
-# 2) Bump ?v= on HTML references for any JS/CSS file being committed.
+# 1) Compare matching JS files in two directories.
+# 2) Block the commit if a staged JSON feed is invalid.
+# 3) Bump ?v= on HTML references for any JS/CSS file being committed.
 
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
+# ---- 1. Compare JS / CSS files ----
+./dir_check  "js" "." "./js"
+if [ $? -ne 0 ]; then
+  echo "pre-commit: commit blocked because JS files differ." >&2
+  exit 1
+fi
+
+./dir_check "css" "." "./css"
+if [ $? -ne 0 ]; then
+  echo "pre-commit: commit blocked because CSS files differ." >&2
+  exit 1
+fi
+
 staged_all=$(git diff --cached --name-only --diff-filter=ACMR)
 
-# ---- 1. JSON validity (checks the STAGED version, not your working copy) ----
-JSON_FILES="events_normalized.json"   # space-separated; add others if you like
+# ---- 2. JSON validity (checks the STAGED version, not your working copy) ----
+JSON_FILES="events_normalized.json"
 
 json_failed=0
 for f in $JSON_FILES; do
@@ -32,7 +46,7 @@ if [ "$json_failed" -ne 0 ]; then
   exit 1
 fi
 
-# ---- 2. Cache-bust bump ----
+# ---- 3. Cache-bust bump ----
 staged=$(echo "$staged_all" | grep -E '\.(js|css)$' || true)
 [ -z "$staged" ] && exit 0
 

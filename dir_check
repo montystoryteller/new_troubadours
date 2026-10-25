@@ -1,19 +1,55 @@
 #!/bin/bash
 
-# ./dir_check . ./js
-DIR1="${1:?Usage: ./compare-js.sh dir1 dir2}"
-DIR2="${2:?Usage: ./compare-js.sh dir1 dir2}"
+# Usage: ./dir_check js . ./js
 
-for f in "$DIR1"/*.js; do
+TYPE="${1:?Usage: ./dir_check js|css dir1 dir2}"
+DIR1="${2:?Usage: ./dir_check js|css dir1 dir2}"
+DIR2="${3:?Usage: ./dir_check js|css dir1 dir2}"
+
+case "$TYPE" in
+    js)  EXT="js" ;;
+    css) EXT="css" ;;
+    *)
+        echo "ERROR: Type must be js or css."
+        exit 2
+        ;;
+esac
+
+DIFF_FOUND=0
+
+# Check files in DIR1 against DIR2
+for f in "$DIR1"/*."$EXT"; do
     [ -f "$f" ] || continue
-
     name="${f##*/}"
+    other="$DIR2/$name"
 
-    if [ ! -f "$DIR2/$name" ]; then
-        echo "NO      $name (missing in dir2)"
-    elif cmp -s "$f" "$DIR2/$name"; then
-        echo "YES     $name"
+    if [ ! -f "$other" ]; then
+        echo "MISSING IN DIR2  $name"
+        DIFF_FOUND=1
+    elif ! cmp -s "$f" "$other"; then
+        echo "DIFFERENT        $name"
+        DIFF_FOUND=1
     else
-        echo "NO      $name"
+        echo "SAME             $name"
     fi
 done
+
+# Check for files existing only in DIR2
+for f in "$DIR2"/*."$EXT"; do
+    [ -f "$f" ] || continue
+    name="${f##*/}"
+
+    if [ ! -f "$DIR1/$name" ]; then
+        echo "MISSING IN DIR1  $name"
+        DIFF_FOUND=1
+    fi
+done
+
+if [ "$DIFF_FOUND" -ne 0 ]; then
+    echo "ERROR: $TYPE directories differ."
+    exit 1
+fi
+
+echo "All $TYPE files match."
+exit 0
+```
