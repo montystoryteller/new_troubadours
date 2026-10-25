@@ -12298,6 +12298,21 @@
       "isSpecial": true
     },
     {
+      "name": "Halloween Tales [Woolly Tellers]",
+      "showname": "Halloween Tales",
+      "date": "29/10/2026",
+      "venue_id": "horse-and-plough-bingham",
+      "performer_id": "woolly-tellers",
+      "eventId": "20261029-woolly-tellers-horse-and-plough-bingham",
+      "date_added": "25/10/2026",
+      "time": "6.30pm",
+      "price": "£8",
+      "description": "All Hallows Eve or the feast of Samhain. Better know many as Halloween.\n\n\n\nThe Celts believed it was when the light half of the years met the dark half of the year.\n\n\n\nFor one night the worlds were joined, and the spirits could pass back and forth. Join Dave Brookes of The Woolly Tellers for dark stories and tales of Halloween",
+      "event_flyer": "2026_10_29_woolly_halloween.jpg",
+      "ticket_url": "https://gifts.castlerockbrewery.co.uk/shop/woolly-tellers-at-horse-plough-halloween-tales",
+      "isSpecial": true
+    },
+    {
       "name": "Darklove — Storytelling for Adults [Justine de Mierre]",
       "showname": "Storytelling for Adults",
       "date": "29/10/2026",
@@ -12721,6 +12736,19 @@
       "venue_id": "quaker-meeting-house-northampton",
       "performer_id": "",
       "eventId": "20261202-unknown-performer-quaker-meeting-house-northampton"
+    },
+    {
+      "name": "Christmas Tales [Woolly Tellers]",
+      "showname": "Christmas Tales",
+      "date": "06/12/2026",
+      "venue_id": "fox-grapes-nottingham",
+      "performer_id": "woolly-tellers",
+      "eventId": "20261206-woolly-tellers-fox-grapes-nottingham",
+      "date_added": "25/10/2026",
+      "time": "Doors open 5pm for a 6pm start",
+      "price": "£10 advance, £12 on the door",
+      "ticket_url": "https://gifts.castlerockbrewery.co.uk/shop/christmas-tales-with-the-woolly-tellers",
+      "isSpecial": true
     },
     {
       "name": "TBC [Dominic Kelly]",
