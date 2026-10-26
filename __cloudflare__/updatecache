@@ -76,6 +76,11 @@
 #                                                  after 7 days. Pages: 50, /50, performers.html?performer=x or a full URL; exact match.
 #                                                  Lists the entries and asks for YES first (--yes skips). --resolved --all clears the log.
 #        ./updatecache --quota                     is the gatekeeper holding renders back after 429s? (exit status 3 = paused)
+#        ./updatecache --touch-recent [N] [--hours H] [--days D] [--dry-run] [--no-indexnow]
+#                                                  pick N (default 10) RANDOM healthy sitemap pages whose snapshot was written in the last H hours
+#                                                  (default 24, NT_RECENT_HOURS); those with no <lastmod> in meta:lastmod, or one older than D days
+#                                                  (default 14), are stamped with today's date, then sent to IndexNow. No renders, no browser time.
+#                                                  --dry-run shows what it would do. Stops if meta:lastmod can't be read (NT_LASTMOD_INIT=1 starts empty).
 #        ./updatecache --daily [N]                 the daily routine with a budget of N renders (default 30, or NT_DAILY_RENDERS): checks the
 #                                                  pause, shows last day's unhealthy renders, then spends the budget in this order, each step
 #                                                  getting whatever the earlier ones left: --repair (up to N), --fill-missing, --refresh-stale
@@ -2231,6 +2236,112 @@ resolved_cmd() {
   exit 0
 }
 
+# --touch-recent [N] [--hours H] [--days D] [--dry-run] [--no-indexnow]
+# Picks N (default 10) RANDOM snapshots that were written in the last H hours (default 24, NT_RECENT_HOURS),
+# are healthy, and are sitemap pages (one identity param). If a page has no <lastmod> in meta:lastmod, or its
+# lastmod is more than D days old (default 14), it is stamped with today's date. The picked URLs are then sent
+# to IndexNow (a failed submission stays queued in ~/.updatecache-indexnow). No renders, no browser time.
+touch_recent_cmd() {
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  command -v python3 >/dev/null || { echo "python3 is required" >&2; exit 1; }
+  NT_KV_NAMESPACE_ID="${NT_KV_NAMESPACE_ID:-ed745137e08841a5825c67079f7c4c43}"
+  local n=10 hours="${NT_RECENT_HOURS:-24}" days=14 dry=0 idx=1 a prev=""
+  for a in "$@"; do
+    case "$prev" in
+      --hours) hours="$a"; prev=""; continue ;;
+      --days)  days="$a";  prev=""; continue ;;
+    esac
+    case "$a" in
+      --hours|--days) prev="$a" ;;
+      --dry-run)      dry=1 ;;
+      --no-indexnow)  idx=0 ;;
+      ''|*[!0-9]*)    echo "Unknown argument '$a' (usage: --touch-recent [N] [--hours H] [--days D] [--dry-run] [--no-indexnow])" >&2; exit 1 ;;
+      *)              [ "$a" -ge 1 ] && n="$a" ;;
+    esac
+  done
+
+  local tmp; tmp=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-touch.XXXXXX")
+  trap 'rm -rf "$tmp"' EXIT
+
+  read_epochs
+  kv_list_json "render:https://$HOST/" > "$tmp/listing.json" || exit 1
+
+  # The current lastmod map. If it can't be read we STOP: writing back a map built from nothing
+  # would wipe every other page's date. NT_LASTMOD_INIT=1 allows starting from an empty map.
+  if ! kv_get_json meta:lastmod object > "$tmp/lastmod.json"; then
+    if [ "${NT_LASTMOD_INIT:-0}" = "1" ]; then echo '{}' > "$tmp/lastmod.json"
+    else
+      echo "Could not read meta:lastmod from KV (missing, or a wrangler problem). Stopping so nothing is overwritten." >&2
+      echo "Check 'npx wrangler whoami'; NT_LASTMOD_INIT=1 starts from an empty map if it really doesn't exist yet." >&2
+      exit 1
+    fi
+  fi
+
+  python3 - "$tmp" "$HOST" "$hours" "$days" "$n" "$EPOCH_HARD" "$TTL_MS" <<'PY' || exit 1
+import json, random, re, sys, time, datetime, urllib.parse
+tmp, host, hours, days, n, hard, ttl = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), float(sys.argv[6]), float(sys.argv[7])
+listing = json.load(open(f"{tmp}/listing.json"))
+lastmod = json.load(open(f"{tmp}/lastmod.json"))
+base = f"render:https://{host}/"
+# path -> identity param: the same pages the sitemap lists (SITEMAP_ENTRIES in gatekeeper.js)
+SITEMAP = {"/performers.html": "performer", "/venues.html": "venue", "/storyclub.html": "club",
+           "/promoters.html": "promoter", "/festival.html": "festival", "/tour_guide.html": "tour",
+           "/event.html": "event"}
+now = time.time() * 1000
+today = datetime.datetime.now(datetime.timezone.utc).date()
+cutoff = (today - datetime.timedelta(days=days)).isoformat()
+date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+cands, recent = [], 0
+for k in listing:
+    name = k.get("name", "")
+    if not name.startswith(base): continue
+    m = k.get("metadata") or {}
+    ts = m.get("ts")
+    if ts is None and k.get("expiration"): ts = k["expiration"] * 1000 - ttl
+    if not ts or ts < hard or ts < now - hours * 3600000: continue      # not recently written
+    if m.get("retry") or m.get("health") != "ok": continue               # old page kept / unhealthy render
+    u = urllib.parse.urlsplit(name[len("render:"):])
+    params = urllib.parse.parse_qsl(u.query, keep_blank_values=True)     # decodes "+" and %xx like the sitemap keys
+    if len(params) != 1 or SITEMAP.get(u.path) != params[0][0] or not params[0][1]: continue
+    value = params[0][1]
+    if u.path == "/tour_guide.html" and value.startswith("rep:"): continue   # deprecated key, not in the sitemap
+    recent += 1
+    mapkey = f"{u.path}?{params[0][0]}={value}"                          # exactly what sitemapResponse looks up
+    cur = lastmod.get(mapkey)
+    if isinstance(cur, str) and date_re.match(cur) and cur >= cutoff: continue   # has a recent lastmod already
+    cands.append((mapkey, f"https://{host}{u.path}?{u.query.replace('+', '%20')}", cur))
+picks = random.sample(cands, min(n, len(cands)))
+for mapkey, _, _ in picks: lastmod[mapkey] = today.isoformat()
+open(f"{tmp}/picks.txt", "w").write("".join(url + "\n" for _, url, _ in picks))
+open(f"{tmp}/picks.tsv", "w").write("".join(f"{cur or 'none'}\t{url}\n" for _, url, cur in picks))
+json.dump(lastmod, open(f"{tmp}/new-lastmod.json", "w"), separators=(",", ":"))
+print(f"{recent} sitemap page(s) written in the last {hours:g}h; {len(cands)} have no lastmod or one older than {days} days; picking {len(picks)}.")
+PY
+
+  if [ ! -s "$tmp/picks.txt" ]; then echo "Nothing to stamp."; exit 0; fi
+  echo "old lastmod -> $(date -u +%F):"
+  awk -F'\t' '{ printf "  %-10s %s\n", $1, $2 }' "$tmp/picks.tsv"
+  [ "$dry" = "1" ] && { echo "(dry run: nothing written, nothing sent)"; exit 0; }
+
+  # Write the map back. (Read-modify-write: a stamp the gatekeeper writes in the few seconds between our read
+  # and this put would be lost; the page would simply have no new date until its next --delta render.)
+  if ! run_with_timeout "${NT_KV_TIMEOUT:-60}" npx wrangler kv key put meta:lastmod \
+         --path "$tmp/new-lastmod.json" --namespace-id "$NT_KV_NAMESPACE_ID" --remote >/dev/null 2>&1; then
+    echo "Could not write meta:lastmod; nothing stamped, nothing sent to IndexNow." >&2; exit 1
+  fi
+  echo "Stamped $(grep -c . "$tmp/picks.txt") page(s) in meta:lastmod (the sitemap is cached up to 6h)."
+
+  [ "$idx" = "1" ] || exit 0
+  if bash "$(cd "$(dirname "$0")" && pwd)/indexnow.sh" -f "$tmp/picks.txt"; then
+    echo "Sent to IndexNow."
+  else
+    local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}"
+    cat "$tmp/picks.txt" >> "$unsub"; awk 'NF && !seen[$0]++' "$unsub" > "$tmp/u" && mv "$tmp/u" "$unsub"
+    echo "IndexNow did not accept them; queued in $unsub for the next --indexnow run." >&2
+  fi
+  exit 0
+}
+
 trap autoresolve_flush EXIT
 case "$1" in
   --list-performers|--list-performer)  LIST_ONLY=1; dispatch performer ;;
@@ -2259,6 +2370,7 @@ case "$1" in
   --purge-orphans)                     purge_orphans "${@:2}" ;;
   --quota)                             quota_cmd ;;
   --daily)                             daily_cmd "${@:2}" ;;
+  --touch-recent)                      touch_recent_cmd "${@:2}" ;;
   --resolved)                          resolved_cmd "${@:2}" ;;
   --performer|--performers)            dispatch performer ;;
   --venue|--venues)                    dispatch venue ;;
@@ -2285,7 +2397,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--oldest] [--indexnow] / --list-stale [N] [type] / --list-expiring / --list-retry / --list-orphans / --purge-orphans / --quota / --daily [N])" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--oldest] [--indexnow] / --list-stale [N] [type] / --list-expiring / --list-retry / --list-orphans / --purge-orphans / --quota / --daily [N] / --touch-recent [N])" >&2
   exit 1
 fi
 
