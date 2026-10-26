@@ -11,6 +11,8 @@
 // capped there (flag in KV under lock:quota, count under lock:strikes). A successful
 // render resets the count; "time limit exceeded" (daily cap) goes straight to midnight.
 // Also serves /sitemap.xml, generated from the meta:keys index in KV.
+// Snapshots are passed through stripHiddenStates() when served, so crawlers don't read hidden
+// "Loading..." / "not found" UI states and empty section headings as page content.
 // Broken event links: when a crawler's render comes back as the page's "not found" state (or as
 // an outdated-id redirect, see urlVerdict()), the crawler gets a real 404 (or a 301 to the right
 // event) instead of a 200, and the verdict is remembered for 2 h (nf:<url>) so repeat pings of
@@ -30,7 +32,7 @@
 //    render on them. Googlebot executes JS itself.
 //  - Everyone else (SEO scrapers etc.): straight to the origin page.
 const RENDER_BOT_RE =
-  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot/i;
+  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot|DuckAssistBot|OAI-SearchBot|PerplexityBot|Claude-SearchBot/i;
 const CACHE_ONLY_BOT_RE = /googlebot|yandexbot|baiduspider|slurp/i;
 
 const ASSET_EXTENSION_RE =
@@ -127,7 +129,7 @@ async function verdictResponse(verdict, normUrl, request, html = null) {
     "x-prerendered": "true",
   };
   if (html) {
-    return new Response(html, {
+    return new Response(await stripHiddenStates(html), {
       status: 404,
       headers: { "content-type": "text/html; charset=utf-8", ...headers },
     });
@@ -495,6 +497,43 @@ function markPrerendered(html) {
 function stripLegacyBadge(html) {
   if (!html.includes("cf-prerender-badge")) return html;
   return html.replace(/\s*<div id="cf-prerender-badge"[\s\S]*?<\/div>/, "");
+}
+
+// Hidden UI states leak into crawler snapshots as plain text ("Loading performer... [Hard
+// refresh...]", "Performer not found.", empty section headings), because display:none elements
+// are still in the DOM. A text-extracting bot reads them as content. Strip them at serve time
+// (HTMLRewriter), so existing KV snapshots are cleaned too and no render is needed.
+//  - Only elements whose inline style hides them are removed. A VISIBLE #notFoundState (a real
+//    not-found page) or #todayEventsState (event.html with no ?event=) is left alone.
+//  - Both "display:none" (as authored in the .html) and "display: none" (as serialised after JS
+//    sets .style.display) are matched.
+//  - Collapsed/expandable content (description "more...", collapsed date lists) is NOT touched:
+//    bots benefit from seeing it. Only the three state ids, hide-when-empty .content-section
+//    blocks and empty <details> sections are stripped.
+// Idempotent, so it is safe to run on already-stripped HTML. Falls back to the input on error.
+const HIDDEN_STYLE_ATTRS = ['[style*="display:none"]', '[style*="display: none"]'];
+const STRIP_SELECTORS = [
+  ...["loadingState", "notFoundState", "todayEventsState"].flatMap((id) =>
+    HIDDEN_STYLE_ATTRS.map((h) => `#${id}${h}`),
+  ),
+  ...HIDDEN_STYLE_ATTRS.map((h) => `.content-section${h}`),
+  ...HIDDEN_STYLE_ATTRS.map((h) => `details${h}`),
+];
+async function stripHiddenStates(html) {
+  try {
+    let rw = new HTMLRewriter();
+    for (const sel of STRIP_SELECTORS) {
+      rw = rw.on(sel, {
+        element(el) {
+          el.remove();
+        },
+      });
+    }
+    return await rw.transform(new Response(html)).text();
+  } catch (err) {
+    console.log("stripHiddenStates failed", String(err));
+    return html;
+  }
 }
 
 // Canonical form of the URL: path plus the identity params for that page,
@@ -1274,7 +1313,7 @@ export default {
         }
       }
       logGate(request, tier, normUrl, outcome);
-      return htmlResponse(stripLegacyBadge(entry.html), {
+      return htmlResponse(await stripHiddenStates(stripLegacyBadge(entry.html)), {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
         "x-prerender-stale": stale ? "true" : "false",
         "x-prerender-ts": String(entry.ts),
@@ -1347,7 +1386,7 @@ export default {
         health: health?.status,
       });
       ctx.waitUntil(storeSnapshot(env, key, html));
-      return htmlResponse(html, {
+      return htmlResponse(await stripHiddenStates(html), {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
       });
     }
