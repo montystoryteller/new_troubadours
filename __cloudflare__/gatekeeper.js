@@ -162,7 +162,8 @@ const ONLY_IF_OLDER_HEADER = "x-only-if-older-than";
 // Sent (value = DEBUG_SECRET) together with x-force-render ONLY by renders that follow a real
 // content update (`updatecache --delta`). A successful, healthy render then stamps the page's
 // <lastmod> in the sitemap (meta:lastmod). Routine refreshes (prewarm rotation, --refresh-stale,
-// --fill-missing, bot-triggered refreshes) never send it, so they never move a lastmod.
+// --fill-missing, bot-triggered refreshes) never send it, so they never MOVE a lastmod (they only
+// give a page its first one if it has none: see stampLastmod's onlyIfMissing).
 const UPDATED_HEADER = "x-content-updated";
 // Sent (value = DEBUG_SECRET) together with x-force-render by `updatecache --force`. The forced
 // render then ignores a recorded pause (lock:quota) and TRIES the renderer anyway. Use it when
@@ -892,12 +893,16 @@ async function markStale(env, key) {
   }
 }
 
-async function refresh(env, key, targetUrl, attempts = 1, why = "?") {
+// seedLastmod: after a snapshot is healthily STORED, give its sitemap entry a <lastmod> if it has none.
+async function refresh(env, key, targetUrl, attempts = 1, why = "?", seedLastmod = true) {
   const result = await renderWithRetry(env, targetUrl, attempts, why);
   if (result.html) {
     const s = await storeSnapshot(env, key, result.html);
     result.stored = s.stored;
     result.kept = s.kept;
+    if (s.stored && seedLastmod) {
+      result.seededLastmod = await stampLastmod(env, new URL(targetUrl), result.health, true);
+    }
   }
   return result;
 }
@@ -937,8 +942,11 @@ const SITEMAP_CACHE_SECONDS = 60 * 60 * 6;
 // ── lastmod ──────────────────────────────────────────────────
 // meta:lastmod = JSON { "<path>?<param>=<key>": "YYYY-MM-DD" }, e.g.
 //   "/performers.html?performer=ailsa-dixon": "2026-10-13"
-// Written only when a render that followed a content update succeeded (UPDATED_HEADER), so the
-// date means "the snapshot crawlers get now contains the update". A render that failed, hit the
+// Moved only when a render that followed a content update succeeded (UPDATED_HEADER), so the
+// date means "the snapshot crawlers get now contains the update". SEEDED once, with the date of the first
+// healthy stored render, for pages that have no date yet (any refresh path: prewarm, bg-refresh, crawler
+// miss, --fill-missing...): so every sitemap entry gradually gets a <lastmod>, and a routine refresh
+// never changes one that exists. A render that failed, hit the
 // Browser Run quota (429 / x-quota-exhausted) or came back unhealthy stamps nothing; the page
 // then stays pending in updatecache and keeps its previous lastmod until a render succeeds.
 // One KV read + at most one write per stamped page; renders are quota-limited to a few dozen a
@@ -950,10 +958,22 @@ const LASTMOD_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Map-key for a normalised page URL, or null if the page isn't one the sitemap lists
 // (or carries more than its one identity param).
+// One exception: a repertoire show is cached (and rendered by updatecache) as
+// tour_guide.html?performer=<p>&tour=R-<show>, but the sitemap lists it as ?tour=R-<show>, so that
+// two-param form maps to the sitemap's key.
 function lastmodKeyFor(normUrl) {
   for (const [, path, param] of SITEMAP_ENTRIES) {
     if (normUrl.pathname !== path) continue;
     const params = [...normUrl.searchParams];
+    if (
+      path === "/tour_guide.html" &&
+      params.length === 2 &&
+      params[0][0] === "performer" &&
+      params[1][0] === "tour" &&
+      params[0][1] &&
+      params[1][1].startsWith(REPERTOIRE_TOUR_PREFIX)
+    )
+      return `${path}?tour=${params[1][1]}`;
     if (params.length !== 1 || params[0][0] !== param || !params[0][1])
       return null;
     return `${path}?${param}=${params[0][1]}`;
@@ -973,12 +993,17 @@ function healthAllowsLastmod(health) {
 }
 
 // Returns the stamped date, or null if nothing was written. Never throws.
-async function stampLastmod(env, normUrl, health) {
+// onlyIfMissing (SEEDING, used after a routine healthy refresh): write only when the page has no valid
+// date yet, and return null if it already has one. So each sitemap entry slowly gets a <lastmod> as it is
+// refreshed, but a routine refresh never MOVES an existing date (only a content update does, see above).
+async function stampLastmod(env, normUrl, health, onlyIfMissing = false) {
   try {
     const mapKey = lastmodKeyFor(normUrl);
     if (!mapKey || !healthAllowsLastmod(health)) return null;
     const today = new Date().toISOString().slice(0, 10);
     const map = (await env.RENDER_CACHE.get(LASTMOD_KEY, "json")) || {};
+    if (onlyIfMissing && typeof map[mapKey] === "string" && LASTMOD_DATE_RE.test(map[mapKey]))
+      return null; // already has a date: leave it
     if (map[mapKey] === today) return today; // already stamped today: no write
     map[mapKey] = today;
     const keys = Object.keys(map);
@@ -1235,7 +1260,7 @@ export default {
         );
       }
       // The prewarm is the one caller that may retry (spaced past the 10s limit).
-      const result = await refresh(env, key, normUrl.toString(), 3, "forced");
+      const result = await refresh(env, key, normUrl.toString(), 3, "forced", !updated);
       if (result.html) {
         // Stamp only after a successful render (never on 429 / quota / failure, which return below).
         const lastmod = updated
@@ -1244,13 +1269,16 @@ export default {
         logGate(request, "forced", normUrl, "forced-rendered", {
           health: result.health?.status,
           ...(updated ? { lastmod: lastmod || "not-stamped" } : {}),
+          ...(result.seededLastmod ? { lastmodSeeded: result.seededLastmod } : {}),
         });
         return htmlResponse(result.html, {
           "cache-control": "no-store",
           // false = this render was NOT written (unhealthy); x-snapshot-kept = the old page stays.
           "x-snapshot-stored": result.stored ? "true" : "false",
           ...(result.kept ? { "x-snapshot-kept": "true" } : {}),
-          ...(lastmod ? { "x-lastmod": lastmod } : {}),
+          ...(lastmod || result.seededLastmod
+            ? { "x-lastmod": lastmod || result.seededLastmod }
+            : {}),
           ...(result.health
             ? {
                 "x-page-health": result.health.status,
@@ -1388,7 +1416,11 @@ export default {
       logGate(request, tier, normUrl, "miss-rendered", {
         health: health?.status,
       });
-      ctx.waitUntil(storeSnapshot(env, key, html));
+      ctx.waitUntil(
+        storeSnapshot(env, key, html).then((s) =>
+          s.stored ? stampLastmod(env, normUrl, health, true) : null,
+        ),
+      );
       return htmlResponse(await stripHiddenStates(html), {
         "cache-control": `public, max-age=${CLIENT_MAX_AGE_SECONDS}`,
       });
