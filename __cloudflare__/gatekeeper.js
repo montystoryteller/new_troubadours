@@ -32,8 +32,11 @@
 //    render on them. Googlebot executes JS itself.
 //  - Everyone else (SEO scrapers etc.): straight to the origin page.
 const RENDER_BOT_RE =
-  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot|DuckAssistBot|OAI-SearchBot|PerplexityBot|Claude-SearchBot/i;
-const CACHE_ONLY_BOT_RE = /googlebot|yandexbot|baiduspider|slurp/i;
+  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot|DuckAssistBot/i;
+// User-triggered fetchers (a person asked an AI assistant to open a page): none of them run JS, so
+// they benefit from a snapshot, but their traffic is unpredictable, so they never spend a render.
+const CACHE_ONLY_BOT_RE =
+  /googlebot|yandexbot|baiduspider|slurp|OAI-SearchBot|PerplexityBot|Claude-SearchBot|Claude-User|ChatGPT-User|Perplexity-User|MistralAI-User/i;
 
 const ASSET_EXTENSION_RE =
   /\.(js|mjs|css|png|jpe?g|gif|svg|webp|ico|avif|woff2?|ttf|eot|json|xml|txt|map|mp4|webm|pdf)$/i;
