@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!--
+  NEW TROUBADOURS: EVENTS DATA GUIDE (live version)
+  Upload this file to the same folder as events-schema.json on the site. It reads the schema each time
+  it opens, so record types, fields, required marks and links update by themselves when the schema changes.
+  What is hand-written (friendly names, map positions, plain-English field wording) is in the script,
+  under "DISPLAY SETTINGS". Edit that only when you want to change the wording or layout.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>New Troubadours: how the events data fits together</title>
+<style>
+/* ---------- COLOURS ----------
+   Palette taken from the site's shared-styles.css (story green, music indigo, poetry magenta,
+   troupe brown). Variables are defined once here and used everywhere below.
+     --ev  green   = shows and festivals      --rc  brown   = regular nights
+     --dir indigo  = people and places        --ex  magenta = extras (books, podcasts...)
+   The rest of :root also sets safe-area padding so the page clears phone notches. */
+:root{--bg:#f5f5f5;--card:#fff;--ink:#333;--muted:#666;--line:#d9d9d9;--ev:#2e7d32;--rc:#795548;--dir:#443cd7;--ex:#d6006e;--evbg:#e8f5e9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Dark mode: same variable names, lighter/darker values. Applied automatically when the
+   reader's device is in dark mode (and can be forced with data-theme="dark"/"light" on <html>). */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1c;--card:#262626;--ink:#eee;--muted:#a5a5a5;--line:#444;--ev:#66bb6a;--rc:#bcaaa4;--dir:#9a94ff;--ex:#ff6fb0;--evbg:#1f2e20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1c1c;--card:#262626;--ink:#eee;--muted:#a5a5a5;--line:#444;--ev:#66bb6a;--rc:#bcaaa4;--dir:#9a94ff;--ex:#ff6fb0;--evbg:#1f2e20;color-scheme:dark}
+/* ---------- BASE PAGE ---------- */
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Arial,Helvetica,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.7rem;margin:8px 0 6px;text-align:left}
+.lead{max-width:68ch;margin:0 0 14px;color:var(--muted)}
+/* ---------- TABS (the two view switchers) ---------- */
+.tabs{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+.tabs button{font:inherit;padding:9px 18px;border:2px solid var(--ev);background:var(--card);color:var(--ev);border-radius:6px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ev);color:#fff}
+:root[data-theme="dark"] .tabs button[aria-selected="true"]{color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs button[aria-selected="true"]{color:#111}}
+/* ---------- MAP VIEW ---------- */
+/* Colour key above the diagram. Each <span> takes its swatch colour from --c (set by .g-xx below). */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.9rem;margin:0 0 10px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+/* Group classes: put class "g-ev" (etc.) on any element and its --c colour becomes that group's
+   colour. Used by legend swatches, map boxes, the info panel and the field cards. */
+.g-ev{--c:var(--ev)}.g-rc{--c:var(--rc)}.g-dir{--c:var(--dir)}.g-ex{--c:var(--ex)}
+/* Scroll box around the diagram so it scrolls sideways on narrow phones instead of shrinking. */
+.mapwrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+svg{display:block;min-width:780px;width:100%;height:auto}
+/* .e = an arrow (edge); .n = a box (node). When something is clicked the SVG gets class "has":
+   everything fades, then connected arrows/boxes (.on) and the clicked box (.sel) are restored. */
+.e{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.55;transition:opacity .15s}
+.n rect{fill:var(--card);stroke:var(--c);stroke-width:2.5}
+.n text{fill:var(--ink);font-size:15px;text-anchor:middle;pointer-events:none}
+.n{cursor:pointer;transition:opacity .15s}
+.n:focus{outline:none}.n:focus rect{stroke-width:5}
+svg.has .e{opacity:.06}svg.has .e.on{opacity:1;stroke-width:2.4;stroke:var(--ink)}
+svg.has .n{opacity:.3}svg.has .n.on{opacity:1}
+svg.has .n.sel rect{fill:var(--c)}svg.has .n.sel text{fill:#fff;font-weight:bold}
+#mk{fill:var(--muted)}
+/* Info panel under the diagram (its left border takes the colour of the selected group). */
+.panel{margin-top:12px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c,var(--line));border-radius:10px;padding:14px 18px;min-height:96px}
+.panel h2{margin:0 0 4px;font-size:1.15rem;text-align:left;font-style:normal}
+.panel p{margin:4px 0 8px}
+.panel ul{margin:4px 0 8px;padding-left:20px}
+.panel .k{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+/* Small grey chip behind inline <code> in panels and notes. */
+.panel code,.lead code,.note code{font-family:Consolas,Menlo,monospace;font-size:.86rem;background:var(--bg);padding:1px 5px;border-radius:4px}
+
+/* ---------- FIELD GUIDE VIEW ---------- */
+/* .bar = search row; .grid = responsive card layout; details.card = one record type;
+   .f = one field row; .sub = sub-heading inside a card; .ref = coloured jump-link tag;
+   .req = the * marking a required field. */
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bar input{font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);flex:1;min-width:220px;max-width:420px}
+.note{font-size:.9rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px;align-items:start}
+details.card{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:10px;padding:0}
+details.card>summary{cursor:pointer;padding:12px 16px;font-weight:bold;font-size:1.05rem;list-style-position:inside}
+details.card .in{padding:0 16px 14px}
+.intro{margin:0 0 8px;color:var(--muted);font-size:.95rem}
+.sub{margin:12px 0 4px;font-weight:bold;font-size:.92rem;border-bottom:1px solid var(--line);padding-bottom:3px}
+.f{padding:6px 0;border-bottom:1px dotted var(--line);font-size:.93rem}
+.f:last-child{border-bottom:0}
+.f code{font-family:Consolas,Menlo,monospace;font-size:.86rem;background:var(--bg);padding:1px 5px;border-radius:4px}
+.req{color:var(--ex);font-weight:bold;margin-left:2px}
+.ref{display:inline-block;margin-left:6px;font-size:.82rem;color:var(--c);border:1px solid var(--c);border-radius:10px;padding:0 8px;text-decoration:none}
+.ref:hover{background:var(--c);color:#fff}
+/* ---------- CONNECTION DIAGRAM (top of the Fields tab) ----------
+   .chips = row of record buttons; .conn = the panel holding the diagram for the selected record.
+   Inside the SVG: .n = a neighbouring record (clickable), .cc = the selected record in the middle,
+   .cl = an arrow, .cf = the field name written on it, .hd = column headings, .em = empty-side message. */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.chips button{font:inherit;font-size:.9rem;padding:5px 12px;border:2px solid var(--c);background:var(--card);color:var(--ink);border-radius:16px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--c);color:#fff}
+:root[data-theme="dark"] .chips button[aria-pressed="true"]{color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chips button[aria-pressed="true"]{color:#111}}
+.conn{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:10px;padding:12px 16px;margin-bottom:16px}
+.conn h2{margin:0 0 2px;font-size:1.2rem;text-align:left;font-style:normal}
+.conn .intro{max-width:80ch}
+.conn .mapwrap{border:0;background:none}
+.conn svg{min-width:900px}
+.hd{font:bold 13px Arial,sans-serif;fill:var(--muted)}
+.cl{fill:none;stroke:var(--muted);stroke-width:1.6}
+.cf{font:12px Consolas,Menlo,monospace;fill:var(--ink);text-anchor:middle}
+.cc rect{fill:var(--bg);stroke:var(--c);stroke-width:4}
+.cc text{fill:var(--ink);text-anchor:middle;font-size:17px;font-weight:bold}
+.cc .sb{font-size:12px;font-weight:normal;fill:var(--muted)}
+.em{font:italic 13px Arial,sans-serif;fill:var(--muted)}
+
+/* Makes the HTML 'hidden' attribute always win (used by tabs and search filtering). */
+[hidden]{display:none!important}
+.hl{box-shadow:0 0 0 3px var(--c)}
+@media (max-width:600px){h1{font-size:1.4rem}}
+body.wait .tabs,body.wait section{display:none}
+.status{font-size:.9rem;color:var(--muted);margin:8px 0}
+.f.x{display:none}.showx .f.x{display:block}
+</style>
+</head>
+<body class="wait">
+<!-- ===== PAGE CONTENT ===== -->
+<main>
+<h1>How the New Troubadours events data fits together</h1>
+<p class="lead">The site keeps its listings in one data file. It is organised into types of record, such as performers, venues and tours, and records point to each other instead of repeating details. Use the map to see the connections, or the field guide to see what each record holds.</p>
+<div class="status" id="status" role="status">Loading the latest schema…</div>
+<!-- Tab buttons. Clicking one shows its matching section below (wired up at the end of the script). -->
+<div class="tabs" role="tablist">
+<button role="tab" id="t1" aria-selected="true" aria-controls="v1">How records connect</button>
+<button role="tab" id="t2" aria-selected="false" aria-controls="v2">Fields by record</button>
+</div>
+
+<!-- VIEW 1: the connection map. The <svg id="g"> is empty here; the script fills it with
+     arrows and boxes. The <marker> in <defs> is the arrowhead shape. -->
+<section id="v1" role="tabpanel" aria-labelledby="t1">
+<div class="legend"><span class="g-ev">Shows and festivals</span><span class="g-rc">Regular nights</span><span class="g-dir">People and places</span><span class="g-ex">Extras</span></div>
+<div class="mapwrap"><svg id="g" viewBox="0 0 960 540" role="img" aria-label="Diagram of record types and how they link"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path id="mk" d="M0 0L10 5L0 10z"/></marker></defs></svg></div>
+<div class="panel" id="panel"><h2>Click any box</h2><p>Each arrow means “points to”. For example, a tour date points to a venue, so the venue’s address is stored once and every event there can use it. Clicking a box highlights its connections and lists them here.</p></div>
+</section>
+
+<!-- VIEW 2: the field guide. Starts hidden. The cards are generated by the script into #cards. -->
+<section id="v2" role="tabpanel" aria-labelledby="t2" hidden>
+<div class="bar"><input id="q" type="search" placeholder="Search fields, e.g. price, venue, flyer" aria-label="Search fields"><span class="note"><span class="req">*</span> = needed for the record to work. Coloured tags switch the diagram and card to the record they point to. Most other fields are optional.</span><label class="note"><input type="checkbox" id="rare"> Show rare and legacy fields</label></div>
+<!-- Record buttons and the connection diagram for the selected record (both filled in by the script, part 4b). -->
+<div class="chips" id="chips" role="group" aria-label="Pick a record"></div>
+<div class="conn" id="conn" aria-live="polite"></div>
+<div class="grid" id="cards"></div>
+<p class="note">Dates are written DD/MM/YYYY. Every performer, venue, club and so on has a short id, such as <code>daniel-morden</code>. That id is what other records use to refer to it.</p>
+</section>
+</main>
+<script>
+/* =====================================================================
+   HOW THIS PAGE WORKS (live version)
+   On load it fetches the schema (SCHEMA_URL below) and BUILDS everything from it:
+     - one card per record type, listing every field, which are required, and which point to
+       other records (so new fields and new record types appear automatically);
+     - the arrows on the map and in the connection diagram (a field counts as a link when its
+       description says "Key into `venues`" etc., or its name ends _id / _ids and matches a record type).
+   Only the friendly presentation is written by hand, in the DISPLAY SETTINGS just below:
+     DISPLAY  box labels, colours, positions and descriptions for the map
+     NOTES    plain-English wording for field names (anything missing falls back to the schema's
+              own first sentence, so nothing is ever blank)
+   Host this file in the same folder as the schema, or set SCHEMA_URL to the full address.
+   ===================================================================== */
+const SCHEMA_URL='events-schema.json';
+const GN={ev:'Shows and festivals',rc:'Regular nights',dir:'People and places',ex:'Extras'};
+
+// ===== DISPLAY SETTINGS (edit these to change how things look; the structure comes from the schema) =====
+// DISPLAY: id -> [label, group (ev/rc/dir/ex), x, y on the 960-wide map, description]. New record types
+// not listed here get a default box in an extra row at the bottom of the map.
+const DISPLAY={
+tours:['Tours','ev',100,60,'A run of dates by one act, such as an autumn tour. Each date has its own venue, time and price.'],
+rep:['Repertoire shows','ev',290,60,'A show that an artist performs again and again at different places, such as “Dauntless”. It holds the show’s description once, with a list of dates.'],
+oneoff:['One-off events','ev',480,60,'Single events: a guest at a club night, a standalone show, a gig or a poetry night. There are three lists (storytelling, music, poetry) with the same shape.'],
+fest:['Festivals','ev',670,60,'Multi-day festivals, with stages, line-up and a running order.'],
+pod:['Podcasts','ex',860,200,'Podcast series and their episodes, each tagged with the performers featured.'],
+clubs:['Clubs','rc',150,200,'Story clubs that meet on a pattern, such as “3rd Tuesday”. They can have a convenor, regular tellers and booked guests.'],
+regular:['Folk nights, sessions, workshops','rc',860,420,'Other regular nights (folk, Irish music, poetry) plus one-off workshops.'],
+promo:['Promoters','dir',200,330,'The organisations that put events on, with the venues they use and the artists they book.'],
+perf:['Performers','dir',460,330,'Storytellers, musicians, poets, bands and duos. The most connected record: nearly everything points to it.'],
+venue:['Venues','dir',720,330,'Places events happen: name, address, map position, links.'],
+pub:['Publishers','ex',210,480,'Publishing houses, listed once and shared by all their books.'],
+books:['Books','ex',380,480,'Books by a performer, shown on their profile.'],
+merch:['Merchandise','ex',550,480,'CDs, vinyl, T-shirts and so on, shown on a performer’s profile.']};
+const ORDER=['tours','rep','oneoff','fest','clubs','regular','perf','venue','promo','pod','books','merch','pub'];   // card order
+// MERGE: schema top-level list -> the box it appears in (several lists can share one box).
+const MERGE={specificEvents:'oneoff',musicEvents:'oneoff',poetryEvents:'oneoff',folkNights:'regular',irishSessions:'regular',poetryNights:'regular',workshops:'regular',repertoire_shows:'rep',festivals:'fest',podcasts:'pod',performers:'perf',venues:'venue',promoters:'promo',publishers:'pub'};
+const UNION=['oneoff'];                       // boxes whose merged lists have the same shape, shown as one field list
+const OWN={books:'books',merch:'merch'};      // fields holding sub-records that deserve their own box
+// LINKS: field names that point to a list, where the schema text and naming don't already say so.
+const LINKS={club:'clubs',promoter:'promoters',wider_event:'festivals',headliner:'performers',host_id:'performers',repertoire_id:'repertoire_shows',convenor:'performers',regular_tellers:'performers'};
+// EW: optional plain wording for an arrow, "from>to". Missing ones show the field names instead.
+const EW={'tours>perf':'performed by','tours>venue':'each date is held at','tours>promo':'put on by','tours>rep':'can reuse the details of','tours>clubs':'dates can belong to a club night','rep>perf':'performed by','rep>venue':'each date is held at','rep>promo':'put on by','rep>clubs':'dates can belong to a club night','oneoff>perf':'headliners and support acts','oneoff>venue':'held at','oneoff>promo':'put on by','oneoff>clubs':'can be a guest night at a club','oneoff>fest':'can be part of a festival','fest>venue':'held at','fest>perf':'line-up','clubs>venue':'meets at','clubs>perf':'convenor, regular tellers and booked guests','clubs>promo':'run by','promo>venue':'regularly uses','promo>perf':'regularly books','promo>clubs':'also run as a club','pod>perf':'features as guests','perf>books':'has written','perf>merch':'sells','books>pub':'published by','books>perf':'co-authors','merch>perf':'credited performers','regular>venue':'held at','regular>clubs':'workshops can belong to a club'};
+// NOTES: plain-English meaning of a field, by name. 'box.field' (e.g. 'fest.schedule') overrides for one box.
+const NOTES={name:'Name',title:'Title',tour_name:'Full title, e.g. “Dauntless (2026)”','tours.name':'Short show name',showname:'Short title',description:'About it',tour_description:'The long description',bio:'Short biography',type:'Kind or role, in a word or two',url:'Website',website:'Website',facebook:'Facebook page',facebook_group:'Facebook group',instagram:'Instagram',youtube:'YouTube channel',email:'Email',tickets_url:'Ticket link',ticket_url:'Ticket link',ticketing_url:'Ticket shop',fb_event:'Facebook event',event_url:'The event’s own web page',link:'Link',performer_id:'Who performs',performer_ids:'Everyone on the bill, or the members of a group',support_performer_ids:'Support acts',other_performer_ids:'Guests and co-headliners',headliner:'Someone else tops the bill that night',venue_id:'Where it is held',promoter_id:'Who put it on',club:'Club night it belongs to',wider_event:'The festival it belongs to',repertoire_id:'Borrow details from a repertoire show',date:'Date, or several nights in a row',dates:'All the dates of a series',datetimes:'Dates with their own times, for multi-day runs',time:'Start time',price:'Ticket price',event_flyer:'Poster',event_flyers:'Posters',touring_event_flyer:'Poster for the whole run',touring_event_flyers:'Posters for the whole run',club_flyer:'Poster',club_flyers:'Posters',video_trailer:'YouTube trailer',age_rating:'Who it suits',min_age:'Minimum age',event_warning:'Content notes',isCancelled:'Yes if cancelled',isSoldOut:'Yes if sold out',isSpecial:'Yes for a special event',isMusic:'Yes for a music event',isPoetry:'Yes for a poetry event',isBand:'Yes for a band',musician:'Yes for a musician',poet:'Yes for a spoken-word poet',troupe:'Yes for a duo or group',isStoryWalk:'Yes for a guided walk rather than a stage show',isTouringShow:'Yes if it travels',isClub:'Yes if this promoter is also a story club',isPromoter:'Yes if the club also promotes events',online:'Online, in person or both',openslots:'Yes if there are open floor spots',inheritClubData:'Yes to fill in venue, time and price from the club when left blank',eventId:'Permanent link name (made automatically if blank)',tour_dates:'The stops on the tour',show_dates:'The dates of the show',support:'Support acts',schedule:'The pattern, e.g. “3rd Tuesday”','fest.schedule':'Running order: day, time, stage, title, performer, host',exceptions:'Dates to skip',convenor:'Who runs the club',regular_tellers:'Regular performers',feature_slots:'Booked guests, by date',themes:'A theme for particular nights',promoter_venues:'Venues they regularly use',promoter_artists:'Performers they regularly book',promoter_link:'Their website',venue_type:'Kind of place: pub, village hall, theatre, bookshop, online…',city:'Town or city',postcode:'Postcode',full_address:'Full address',latlon:'Map position (latitude and longitude)',location:'Place, in words',books:'Their books',merch:'CDs and other merchandise',podcast:'Podcasts they run',podcast_appearances:'Guest spots on other people’s podcasts',youtube_videos:'Videos of their work',same_as:'Says “this profile is really that person”',aliases:'Other names',members:'Names of the group members',subtitle:'Subtitle',year:'Year',isbn:'ISBN',cover:'Cover image',publisher_id:'Publisher',buy_url:'Where to buy',publication_url:'The publisher’s page for the book',label:'Record label',label_no:'Catalogue number',start_date:'First day',end_date:'Last day',short_name:'Short name',price_note:'Price notes',age_bands:'Age groups catered for',performers:'Line-up, each with a role',performers_tbc:'Yes if the line-up is still to come',stages:'The stages or rooms',podcast_id:'Short id',series_title:'Series name',presenter:'Who presents it',format:'e.g. a telling or an interview',items:'The episodes',enclosureUrl:'Link to the audio file',pubDate:'Publication date',duration:'Length',image:'Image',storiesWelcome:'Yes if storytellers are welcome',byInvitation:'Yes if invitation only',leader:'Who leads it',cost:'Price',course_flyer:'Poster',venue_url:'Venue website',alternate_locations:'Other places it sometimes meets',geocode_missing:'Yes if the map position still needs finding'};
+const HIDE=/^\s*(\[TO DO|LEGACY|DEPRECATED|RESERVED|Rare\b|Legacy\b|Older equivalent|Variant spelling)|DEPRECATED|Deprecated in favour/;   // schema wording that marks a field as rare/legacy
+
+// ===== BUILDING EVERYTHING FROM THE SCHEMA =====
+let N,E,L,R,order,nm;   // map boxes, map arrows, diagram links, field cards, card order, lookup by id
+const hum=s=>s.replace(/_/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2').toLowerCase();
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+// First sentence of a schema description, tidied. Blank if it only talks about code.
+const sum=(d,p)=>{let t=(d||'').replace(/`/g,'').replace(/\be\.g\./g,'e.g').replace(/\bi\.e\./g,'i.e');const m=t.match(/^(.*?[.!?])(\s|$)/);t=(m?m[1]:t).replace(/^\[TO DO[^\]]*\]\s*/,'');if(/\(\)|\.js\b|\bparse[A-Z]|\bapply[A-Z]/.test(t))t='';if(t.length>150)t=t.slice(0,147)+'…';return t||(p&&p.type==='boolean'?'Yes/no':'')};
+
+function start(S){
+  const D=S.$defs||{},P=S.properties||{},cols={},EM={},defs={};
+  const dn=r=>r&&r.$ref?r.$ref.split('/').pop():null;
+  // 1. Record lists = top-level properties that hold records (an array of, or an object keyed by, a $ref).
+  for(const[k,v]of Object.entries(P)){const r=dn(v.items)||dn(v.additionalProperties);if(r&&D[r])cols[k]=r}
+  for(const[k,d]of Object.entries(cols)){const id=MERGE[k]||k;(defs[id]=defs[id]||[]).push([k,d])}
+  // Sub-records with their own box (books, merch): found through the field that holds them.
+  for(const arr of Object.values(defs))for(const[,d]of arr)for(const[k,p]of Object.entries(D[d].properties||{})){
+    const it=p.items||(typeof p.additionalProperties==='object'?p.additionalProperties:null);
+    if(OWN[k]&&dn(it)&&D[dn(it)]&&!defs[OWN[k]])defs[OWN[k]]=[[k,dn(it)]]}
+  // 2. Which list does a field point at? Returns a box id, or ''.
+  const target=(k,desc)=>{
+    let t=LINKS[k];
+    if(!t){const m=desc.match(/keys? (?:in|into) (?:the )?(?:top-level )?`(\w+)`/i);t=m&&m[1]}
+    if(!t&&/_ids?$/.test(k)){const b=k.replace(/_ids?$/,'');t=Object.keys(cols).find(c=>c.startsWith(b)||b.endsWith('_'+c.replace(/s$/,''))||b===c.replace(/s$/,''))}
+    return t&&cols[t]?(MERGE[t]||t):'';
+  };
+  const edge=(a,b,f)=>{if(!b||a===b)return;const k=a+'>'+b;(EM[k]=EM[k]||[]);if(!EM[k].includes(f))EM[k].push(f)};
+  const fmt=r=>`${r[0]}|${String(r[1]).replace(/\|/g,'/')}|${r[2]}|${r[3]?'*':''}|${r[4]?'x':''}`;   // 'field|meaning|links to|*|x(rare)'
+  // 3. Turn a set of properties into field rows (plus extra groups for nested lists of sub-records).
+  function rowsFor(props,req,pre,node){
+    const rows=[],groups=[];
+    for(const[k,p0]of Object.entries(props||{})){
+      const rd=p0.$ref?(D[dn(p0)]||{}):{},p={...rd,...p0},desc=p0.description||rd.description||'';
+      const rare=p.deprecated===true||HIDE.test(desc);
+      const it=p.items||(typeof p.additionalProperties==='object'?p.additionalProperties:null),sub=it&&(it.$ref?D[dn(it)]:it);
+      const note=NOTES[node+'.'+k]||NOTES[k]||sum(desc,p),own=OWN[k];
+      if(sub&&sub.properties){                        // a list/set of sub-records
+        rows.push(fmt([pre+k,note,own||'',req.includes(k),rare]));
+        if(own){if(!rare)edge(node,own,pre+k)}
+        else{const r=rowsFor(sub.properties,sub.required||[],pre+k+'[].',node);groups.push(['Each '+hum(k).replace(/s$/,''),...r.rows],...r.groups)}
+        continue;
+      }
+      const t=target(k,desc);
+      if(t&&!rare)edge(node,t,pre+k);
+      rows.push(fmt([pre+k,note,t&&t!==node?t:'',req.includes(k),rare]));
+    }
+    return{rows,groups};
+  }
+  // 4. One card per box. Boxes made of several lists get one sub-heading per list, unless listed in UNION.
+  R={};
+  for(const[id,arr]of Object.entries(defs)){
+    const lists=UNION.includes(id)||arr.length===1?[['',arr]]:arr.map(a=>[cap(hum(a[0])),[a]]),gs=[];
+    for(const[head,items]of lists){
+      const dl=items.map(a=>D[a[1]]),props={};
+      dl.forEach(d=>Object.entries(d.properties||{}).forEach(([k,v])=>{if(!props[k])props[k]=v}));
+      const req=Object.keys(props).filter(k=>dl.every(d=>(d.required||[]).includes(k)));
+      const r=rowsFor(props,req,'',id);gs.push([head,...r.rows],...r.groups);
+    }
+    R[id]=[null,'',gs];
+  }
+  // 5. Boxes for the map: configured ones where known, default boxes for anything new.
+  order=[...ORDER.filter(i=>defs[i]),...Object.keys(defs).filter(i=>!ORDER.includes(i))];
+  let j=0,maxY=480;
+  N=order.map(id=>{
+    const c=DISPLAY[id],first=Object.keys(cols).find(k=>(MERGE[k]||k)===id);
+    if(c){R[id][0]=c[0];R[id][1]=c[4];return[id,...c]}
+    const x=110+200*(j%5),y=560+70*Math.floor(j/5);j++;maxY=Math.max(maxY,y);
+    const d=sum((P[first]||{}).description||'')||'A record type found in the schema.';
+    R[id][0]=cap(hum(id));R[id][1]=d;return[id,R[id][0],'ex',x,y,d];
+  });
+  nm=Object.fromEntries(N.map(n=>[n[0],n]));
+  E=[];L=[];
+  for(const[k,f]of Object.entries(EM)){const[a,b]=k.split('>');E.push([a,b,EW[k]||f.join(', ')]);L.push([a,b,f.join(', ')])}
+  document.getElementById('g').setAttribute('viewBox','0 0 960 '+(maxY>480?maxY+60:540));
+  document.getElementById('status').innerHTML=`Built from the live schema <code>${SCHEMA_URL}</code>${S.title?' ('+S.title+')':''} just now: ${N.length} record types, ${E.length} links. Reload to pick up changes.`;
+  document.body.classList.remove('wait');
+  init();
+}
+
+// ===== DRAWING (runs once the schema has loaded) =====
+function init(){
+// ---------- 2. DRAWING THE MAP ----------
+const svg=document.getElementById('g');
+const W=132,H=46;   // box width and height; change these to make all boxes bigger or smaller
+// Works out where an arrow should start/end so it touches the edge of a box rather than its centre.
+// n = the box, c = the arrow's curve control point, gap = small space left before the box.
+function clip(n,c,gap){const dx=c.x-n.x,dy=c.y-n.y;let s=Math.min(dx?(W/2)/Math.abs(dx):1e9,dy?(H/2)/Math.abs(dy):1e9);s+=gap/Math.hypot(dx,dy);return{x:n.x+dx*s,y:n.y+dy*s}}
+// Splits a long label into two lines so it fits inside a box.
+function wrap(t){if(t.length<=18)return[t];const w=t.split(' ');let a='',i=0;while(i<w.length&&(a+' '+w[i]).trim().length<=15){a=(a+' '+w[i]).trim();i++}return[a,w.slice(i).join(' ')]}
+// Build the SVG markup as one string. Arrows first, so boxes are drawn on top of them.
+// For each arrow: find the two box centres, bend the line slightly sideways (a quadratic curve),
+// trim both ends to the box edges, and add a hover tooltip (<title>) describing the link.
+let h='';
+E.forEach(([a,b,l],i)=>{const A={x:nm[a][3],y:nm[a][4]},B={x:nm[b][3],y:nm[b][4]};const mx=(A.x+B.x)/2,my=(A.y+B.y)/2,dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy),o=len*.1;const c={x:mx-dy/len*o,y:my+dx/len*o};const s=clip(A,c,0),e=clip(B,c,5);
+h+=`<path class="e" data-a="${a}" data-b="${b}" marker-end="url(#ar)" d="M${s.x.toFixed(1)} ${s.y.toFixed(1)}Q${c.x.toFixed(1)} ${c.y.toFixed(1)} ${e.x.toFixed(1)} ${e.y.toFixed(1)}"><title>${nm[a][1]} ${l} ${nm[b][1]}</title></path>`});
+// Now the boxes: a rounded rectangle plus its (possibly two-line) label. tabindex/role make them
+// reachable and usable from the keyboard.
+N.forEach(([id,lab,g,x,y])=>{const ls=wrap(lab);h+=`<g class="n g-${g}" data-id="${id}" tabindex="0" role="button" aria-label="${lab}"><rect x="${x-W/2}" y="${y-H/2}" width="${W}" height="${H}" rx="9"/>`+ls.map((t,i)=>`<text x="${x}" y="${y+5+(ls.length>1?(i?9:-9):0)}">${t}</text>`).join('')+`</g>`});
+svg.insertAdjacentHTML('beforeend',h);
+// The info panel under the map. `home` remembers its starting text so it can be restored.
+const panel=document.getElementById('panel');
+const home=panel.innerHTML;
+// Select (or deselect) a box. Clicking the same box twice, or calling sel(null), clears the selection.
+// Selecting: fades everything, highlights this box + connected boxes + their arrows,
+// then fills the info panel with the description and the lists of outgoing/incoming links.
+function sel(id){
+ if(!id||svg.dataset.sel===id){svg.dataset.sel='';svg.classList.remove('has');svg.querySelectorAll('.on,.sel').forEach(e=>e.classList.remove('on','sel'));panel.innerHTML=home;panel.className='panel';panel.style.removeProperty('--c');return}
+ svg.dataset.sel=id;svg.classList.add('has');const on=new Set([id]);
+ svg.querySelectorAll('.e').forEach(p=>{const m=p.dataset.a===id||p.dataset.b===id;p.classList.toggle('on',m);if(m){on.add(p.dataset.a);on.add(p.dataset.b)}});
+ svg.querySelectorAll('.n').forEach(n=>{n.classList.toggle('on',on.has(n.dataset.id));n.classList.toggle('sel',n.dataset.id===id)});
+ const n=nm[id];const out=E.filter(e=>e[0]===id),inn=E.filter(e=>e[1]===id);
+ let t=`<h2>${n[1]}</h2><p>${n[5]}</p>`;
+ if(out.length)t+=`<p class="k">Points to</p><ul>`+out.map(e=>`<li>${nm[e[1]][1]}: ${e[2]}</li>`).join('')+`</ul>`;
+ if(inn.length)t+=`<p class="k">Pointed to by</p><ul>`+inn.map(e=>`<li>${nm[e[0]][1]}: ${e[2]}</li>`).join('')+`</ul>`;
+ t+=`<p class="k"><a href="#" id="seef">See the fields for this record</a></p>`;
+ panel.innerHTML=t;panel.className='panel g-'+n[2];
+ document.getElementById('seef').onclick=ev=>{ev.preventDefault();go(id)};
+}
+// Mouse/touch: clicking a box selects it; clicking empty space clears. Keyboard: Enter or Space on a focused box.
+svg.addEventListener('click',e=>{const n=e.target.closest('.n');sel(n?n.dataset.id:null)});
+svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const n=e.target.closest('.n');if(n){e.preventDefault();sel(n.dataset.id)}}});
+
+// ---------- 4. DRAWING THE CARDS ----------
+// The order the cards appear in. Rearrange these ids to reorder the page.
+// Build one collapsible card per id in `order`, from the data in R.
+// Each field becomes a row with its name in <code>, a * if required, its meaning, and (if it points
+// to another record) a coloured tag that jumps to that record's card.
+const cards=document.getElementById('cards');
+cards.innerHTML=order.map(id=>{const[t,intro,groups]=R[id],g=nm[id][2];
+ return `<details class="card g-${g}" id="c-${id}"><summary>${t}</summary><div class="in"><p class="intro">${intro}</p>`+groups.map(gr=>(gr[0]?`<div class="sub">${gr[0]}</div>`:'')+gr.slice(1).map(s=>{const[k,d,r,q,x]=s.split('|');return `<div class="f${x?' x':''}"><code>${k}</code>${q?'<span class="req" title="needed">*</span>':''} ${d}${r?`<a class="ref g-${nm[r][2]}" href="#c-${r}" data-go="${r}">${nm[r][1]}</a>`:''}</div>`}).join('')).join('')+`</div></details>`}).join('');
+cards.addEventListener('click',e=>{const a=e.target.closest('.ref');if(a){e.preventDefault();focusCard(a.dataset.go)}});
+// Scrolls to a card, opens it, and flashes an outline round it so the reader can see where they landed.
+function focusCard(id){pick(id,true)}
+// ---------- 4b. CONNECTION DIAGRAM (top of the Fields tab) ----------
+// Shows ONE record in the middle, the records that point to it on the left, and the records it points
+// to on the right, with the linking field written on each arrow. Click a neighbour to re-centre on it.
+// L lists every link as:  [from id, to id, field name(s) separated by ", "]
+// Use "thing[].field" when the field sits inside a list of sub-records (e.g. each tour date).
+// When you add a link here, add the matching arrow to E (the first map) too.
+const chips=document.getElementById('chips'),conn=document.getElementById('conn');
+// One button per record type, in the same order as the cards.
+chips.innerHTML=order.map(id=>`<button class="g-${nm[id][2]}" data-id="${id}" aria-pressed="false">${nm[id][1]}</button>`).join('');
+chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick(b.dataset.id,false)});
+conn.addEventListener('click',e=>{const n=e.target.closest('.n');if(n)pick(n.dataset.id,false)});
+conn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const n=e.target.closest('.n');if(n){e.preventDefault();pick(n.dataset.id,false)}}});
+// Vertical layout of one column of links. Each link gets a slot tall enough for its field names (one per
+// line, above the arrow). yl is the height of the arrow line. Returns the slots and the column's total height.
+function lay(rows){let y=40;const items=rows.map(r=>{const k=r[2].split(', '),yl=y+k.length*14+24;y=Math.max(yl+30,y+66);return{r,k,yl}});return{items,end:y}}
+// A clickable box for a neighbouring record, left edge at x, centred vertically on cy.
+function chip(id,x,cy){const ls=wrap(nm[id][1]);return `<g class="n g-${nm[id][2]}" data-id="${id}" tabindex="0" role="button" aria-label="Show ${nm[id][1]}"><rect x="${x}" y="${cy-22}" width="150" height="44" rx="9"/>`+ls.map((t,i)=>`<text x="${x+75}" y="${cy+5+(ls.length>1?(i?9:-9):0)}">${t}</text>`).join('')+`</g>`}
+// Builds the whole panel (heading, description, SVG) for one record, as an HTML string.
+function drawConn(id){
+  const n=nm[id],A=lay(L.filter(r=>r[1]===id&&r[0]!==id)),B=lay(L.filter(r=>r[0]===id&&r[1]!==id));
+  const Hh=Math.max(A.end,B.end,150),CX=500,CW=190,L0=CX-CW/2,R0=CX+CW/2;   // centre column geometry
+  let s=`<defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>`
+   +`<text class="hd" x="10" y="20">Other records that point to this one</text><text class="hd" x="990" y="20" text-anchor="end">Records this one points to</text>`;
+  // One arrow + its field names + the neighbour's box. side 'in' = neighbour points at us; 'out' = we point at it.
+  const row=(o,side)=>{const other=side==='in'?o.r[0]:o.r[1],x1=side==='in'?160:R0,x2=side==='in'?L0:840,xm=(x1+x2)/2;
+    return `<path class="cl" d="M${x1} ${o.yl}H${x2}" marker-end="url(#ar3)"/>`
+     +o.k.map((t,i)=>`<text class="cf" x="${xm}" y="${o.yl-8-14*(o.k.length-1-i)}">${t}</text>`).join('')
+     +chip(other,side==='in'?10:840,o.yl)};
+  s+=A.items.map(o=>row(o,'in')).join('')+B.items.map(o=>row(o,'out')).join('');
+  if(!A.items.length)s+=`<text class="em" x="10" y="64">Nothing links to this record.</text>`;
+  if(!B.items.length)s+=`<text class="em" x="620" y="64">This record doesn’t link to other records.</text>`;
+  // The selected record: a tall box in the middle with its name and group.
+  const ls=wrap(n[1]),cy=30+(Hh-30)/2;
+  s+=`<g class="cc g-${n[2]}"><rect x="${L0}" y="30" width="${CW}" height="${Hh-30}" rx="12"/>`
+   +ls.map((t,i)=>`<text x="${CX}" y="${cy-(ls.length-1)*10+i*20}">${t}</text>`).join('')
+   +`<text class="sb" x="${CX}" y="${cy+ls.length*10+8}">${GN[n[2]]}</text></g>`;
+  return `<h2>${n[1]}</h2><p class="intro">${n[5]}</p><div class="mapwrap"><svg viewBox="0 0 1000 ${Hh+10}" role="img" aria-label="Records linked to ${n[1]}">${s}</svg></div>`
+   +(id==='perf'?`<p class="note">Performers can also link to other performers: group members through <code>performer_ids</code>, and old or duplicate profiles through <code>same_as</code>.</p>`:'')
+   +`<p class="note">Click any record in the diagram to switch to it. <code>[]</code> means the field sits inside a list, such as each date of a tour.</p>`;
+}
+// Select a record: redraw the diagram, mark its button, move its card to the top of the grid and open it.
+// scroll=true (used by the coloured tags and the map's "See the fields" link) also scrolls to the diagram.
+function pick(id,scroll){
+  const q=document.getElementById('q');if(q.value){q.value='';q.dispatchEvent(new Event('input'))}   // clear any search so nothing is hidden
+  conn.className='conn g-'+nm[id][2];conn.innerHTML=drawConn(id);
+  chips.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
+  cards.querySelectorAll('details.card').forEach(c=>{c.style.order=c.id==='c-'+id?-1:0});
+  const c=document.getElementById('c-'+id);c.hidden=false;c.open=true;
+  if(scroll){conn.scrollIntoView({behavior:'smooth',block:'start'});c.classList.add('hl');setTimeout(()=>c.classList.remove('hl'),1400)}
+}
+pick(order[0],false);   // start on the first record (change to e.g. pick('perf',false) to start elsewhere)
+document.getElementById('rare').addEventListener('change',e=>cards.classList.toggle('showx',e.target.checked));
+
+// Search box: hides fields that don't contain the typed text, hides sub-headings left with no
+// visible fields, hides cards with no matches (unless the card title matches), and opens matching cards.
+document.getElementById('q').addEventListener('input',e=>{const v=e.target.value.trim().toLowerCase();
+ cards.querySelectorAll('details.card').forEach(c=>{let any=false;c.querySelectorAll('.f').forEach(f=>{const m=!v||f.textContent.toLowerCase().includes(v);f.hidden=!m;if(m)any=true});c.querySelectorAll('.sub').forEach(s=>{let n=s.nextElementSibling,vis=false;while(n&&n.classList.contains('f')){if(!n.hidden)vis=true;n=n.nextElementSibling}s.hidden=!vis});c.hidden=!!v&&!any&&!c.querySelector('summary').textContent.toLowerCase().includes(v);if(v&&any)c.open=true})});
+// ---------- 5. TABS ----------
+// Pairs of [tab button id, section id]. tab(i) shows section i and hides the other.
+const T=[['t1','v1'],['t2','v2']];
+function tab(i){T.forEach(([t,v],j)=>{document.getElementById(t).setAttribute('aria-selected',j===i);document.getElementById(v).hidden=j!==i})}
+T.forEach(([t],i)=>document.getElementById(t).onclick=()=>tab(i));
+// Used by the "See the fields for this record" link in the map's info panel: switch to the
+// field guide, clear any search, and jump to that record's card.
+function go(id){tab(1);document.getElementById('q').value='';document.getElementById('q').dispatchEvent(new Event('input'));setTimeout(()=>focusCard(id),50)}
+
+}
+
+// ===== LOADING THE SCHEMA =====
+function fail(e){
+  document.getElementById('status').innerHTML='Couldn’t load <code>'+SCHEMA_URL+'</code> ('+e.message+'). This page needs to sit on the same site as the schema. To try it now, choose a saved copy of the file: <input type="file" id="pick" accept=".json,application/json">';
+  document.getElementById('pick').onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{start(JSON.parse(r.result))}catch(x){fail(x)}};r.readAsText(f)};
+}
+fetch(SCHEMA_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(start).catch(fail);
+
+</script>
+</body>
+</html>
