@@ -115,6 +115,14 @@ details.card .in{padding:0 16px 14px}
 body.wait .tabs,body.wait section{display:none}
 .status{font-size:.9rem;color:var(--muted);margin:8px 0}
 .f.x{display:none}.showx .f.x{display:block}
+/* Cards: a nested list of sub-records (e.g. each tour date) is indented with a coloured rule. */
+.sub.nested,.f.n{margin-left:12px;padding-left:12px;border-left:3px solid var(--c)}
+.sub.nested{margin-top:14px;border-bottom:0;padding-top:2px}
+.sub.nested .note{font-weight:normal}
+/* Diagram: dashed box = a nested list inside the selected record. */
+.cc .sb2{fill:var(--card);stroke:var(--c);stroke-width:1.8;stroke-dasharray:6 4}
+.cc .sl{text-anchor:start;font-size:13px}
+.cc .ss{text-anchor:start;font-size:11px;font-weight:normal;fill:var(--muted)}
 </style>
 </head>
 <body class="wait">
@@ -250,6 +258,7 @@ function start(S){
       const req=Object.keys(props).filter(k=>dl.every(d=>(d.required||[]).includes(k)));
       const r=rowsFor(props,req,'',id);gs.push([head,...r.rows],...r.groups);
     }
+    if(gs.length>1&&!gs[0][0])gs[0][0]='The record itself';   // lets the card separate the record's own fields from nested lists
     R[id]=[null,'',gs];
   }
   // 5. Boxes for the map: configured ones where known, default boxes for anything new.
@@ -321,7 +330,7 @@ svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const n=e.ta
 // to another record) a coloured tag that jumps to that record's card.
 const cards=document.getElementById('cards');
 cards.innerHTML=order.map(id=>{const[t,intro,groups]=R[id],g=nm[id][2];
- return `<details class="card g-${g}" id="c-${id}"><summary>${t}</summary><div class="in"><p class="intro">${intro}</p>`+groups.map(gr=>(gr[0]?`<div class="sub">${gr[0]}</div>`:'')+gr.slice(1).map(s=>{const[k,d,r,q,x]=s.split('|');return `<div class="f${x?' x':''}"><code>${k}</code>${q?'<span class="req" title="needed">*</span>':''} ${d}${r?`<a class="ref g-${nm[r][2]}" href="#c-${r}" data-go="${r}">${nm[r][1]}</a>`:''}</div>`}).join('')).join('')+`</div></details>`}).join('');
+ return `<details class="card g-${g}" id="c-${id}"><summary>${t}</summary><div class="in"><p class="intro">${intro}</p>`+groups.map(gr=>(gr[0]?`<div class="sub${gr[0].startsWith('Each ')?' nested':''}">${gr[0]}${gr[0].startsWith('Each ')?' <span class="note">(a list inside the record)</span>':''}</div>`:'')+gr.slice(1).map(s=>{const[k,d,r,q,x]=s.split('|');return `<div class="f${x?' x':''}${gr[0].startsWith('Each ')?' n':''}"><code>${k}</code>${q?'<span class="req" title="needed">*</span>':''} ${d}${r?`<a class="ref g-${nm[r][2]}" href="#c-${r}" data-go="${r}">${nm[r][1]}</a>`:''}</div>`}).join('')).join('')+`</div></details>`}).join('');
 cards.addEventListener('click',e=>{const a=e.target.closest('.ref');if(a){e.preventDefault();focusCard(a.dataset.go)}});
 // Scrolls to a card, opens it, and flashes an outline round it so the reader can see where they landed.
 function focusCard(id){pick(id,true)}
@@ -337,33 +346,55 @@ chips.innerHTML=order.map(id=>`<button class="g-${nm[id][2]}" data-id="${id}" ar
 chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick(b.dataset.id,false)});
 conn.addEventListener('click',e=>{const n=e.target.closest('.n');if(n)pick(n.dataset.id,false)});
 conn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const n=e.target.closest('.n');if(n){e.preventDefault();pick(n.dataset.id,false)}}});
-// Vertical layout of one column of links. Each link gets a slot tall enough for its field names (one per
-// line, above the arrow). yl is the height of the arrow line. Returns the slots and the column's total height.
-function lay(rows){let y=40;const items=rows.map(r=>{const k=r[2].split(', '),yl=y+k.length*14+24;y=Math.max(yl+30,y+66);return{r,k,yl}});return{items,end:y}}
+// Vertical layout of one column of links, starting at height y0. Each link gets a slot tall enough for its
+// field names (one per line, above the arrow). yl is the height of the arrow line. Returns the slots and the end height.
+function lay(rows,y0){let y=y0;const items=rows.map(r=>{const k=r[2].split(', '),yl=y+k.length*14+24;y=Math.max(yl+30,y+66);return{r,k,yl}});return{items,end:y}}
 // A clickable box for a neighbouring record, left edge at x, centred vertically on cy.
 function chip(id,x,cy){const ls=wrap(nm[id][1]);return `<g class="n g-${nm[id][2]}" data-id="${id}" tabindex="0" role="button" aria-label="Show ${nm[id][1]}"><rect x="${x}" y="${cy-22}" width="150" height="44" rx="9"/>`+ls.map((t,i)=>`<text x="${x+75}" y="${cy+5+(ls.length>1?(i?9:-9):0)}">${t}</text>`).join('')+`</g>`}
 // Builds the whole panel (heading, description, SVG) for one record, as an HTML string.
+// The selected record is a tall box in the middle. Records pointing AT it are on the left. Records it points
+// to are on the right, in sections: first the record's OWN fields, then one dashed box per nested list of
+// sub-records (e.g. "Each tour date"), with that list's links drawn from inside its dashed box.
 function drawConn(id){
-  const n=nm[id],A=lay(L.filter(r=>r[1]===id&&r[0]!==id)),B=lay(L.filter(r=>r[0]===id&&r[1]!==id));
-  const Hh=Math.max(A.end,B.end,150),CX=500,CW=190,L0=CX-CW/2,R0=CX+CW/2;   // centre column geometry
+  const n=nm[id],CX=500,CW=230,L0=CX-CW/2,R0=CX+CW/2,IN=16;           // IN = how far the dashed boxes sit inside the edge
+  const A=lay(L.filter(r=>r[1]===id&&r[0]!==id),40);
+  // Split outgoing fields by where they live: '' = on the record itself, otherwise the nested list's name.
+  const secs=[];
+  L.filter(r=>r[0]===id&&r[1]!==id).forEach(r=>r[2].split(', ').forEach(f=>{
+    const key=f.includes('[].')?f.split('[].')[0]:'';
+    let s=secs.find(x=>x.key===key);if(!s){s={key,rows:[]};secs.push(s)}
+    let row=s.rows.find(x=>x[1]===r[1]);if(!row){row=[id,r[1],[]];s.rows.push(row)}
+    row[2].push(key?f.slice(key.length+3):f)}));                       // inside a dashed box the list name is dropped from the label
+  secs.sort((a,b)=>(a.key?1:0)-(b.key?1:0));                            // the record's own links first
+  const hasSub=secs.some(x=>x.key);let y=40;
+  secs.forEach(s=>{
+    if(s.key){y=Math.max(y+6,hasSub?118:0);s.top=y;y+=28}              // room above the first dashed box for the record's title
+    const r=lay(s.rows.map(x=>[x[0],x[1],x[2].join(', ')]),y);s.items=r.items;y=r.end;
+    if(s.key){s.bot=y-8;y+=6}
+  });
+  const Hh=Math.max(A.end,y,150);
   let s=`<defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>`
    +`<text class="hd" x="10" y="20">Other records that point to this one</text><text class="hd" x="990" y="20" text-anchor="end">Records this one points to</text>`;
   // One arrow + its field names + the neighbour's box. side 'in' = neighbour points at us; 'out' = we point at it.
-  const row=(o,side)=>{const other=side==='in'?o.r[0]:o.r[1],x1=side==='in'?160:R0,x2=side==='in'?L0:840,xm=(x1+x2)/2;
+  const row=(o,side,sub)=>{const other=side==='in'?o.r[0]:o.r[1],x1=side==='in'?160:(sub?R0-IN:R0),x2=side==='in'?L0:840,xm=(x1+x2)/2;
     return `<path class="cl" d="M${x1} ${o.yl}H${x2}" marker-end="url(#ar3)"/>`
      +o.k.map((t,i)=>`<text class="cf" x="${xm}" y="${o.yl-8-14*(o.k.length-1-i)}">${t}</text>`).join('')
      +chip(other,side==='in'?10:840,o.yl)};
-  s+=A.items.map(o=>row(o,'in')).join('')+B.items.map(o=>row(o,'out')).join('');
-  if(!A.items.length)s+=`<text class="em" x="10" y="64">Nothing links to this record.</text>`;
-  if(!B.items.length)s+=`<text class="em" x="620" y="64">This record doesn’t link to other records.</text>`;
-  // The selected record: a tall box in the middle with its name and group.
-  const ls=wrap(n[1]),cy=30+(Hh-30)/2;
+  // Centre box first (so arrows and dashed boxes sit on top of it), then the dashed sub-record boxes.
+  const ls=wrap(n[1]),cy=30+(Hh-30)/2,ty=hasSub?56:cy-(ls.length-1)*10;
   s+=`<g class="cc g-${n[2]}"><rect x="${L0}" y="30" width="${CW}" height="${Hh-30}" rx="12"/>`
-   +ls.map((t,i)=>`<text x="${CX}" y="${cy-(ls.length-1)*10+i*20}">${t}</text>`).join('')
-   +`<text class="sb" x="${CX}" y="${cy+ls.length*10+8}">${GN[n[2]]}</text></g>`;
+   +ls.map((t,i)=>`<text x="${CX}" y="${ty+i*20}">${t}</text>`).join('')
+   +`<text class="sb" x="${CX}" y="${ty+(ls.length-1)*20+18}">${GN[n[2]]}${hasSub?' (the record itself)':''}</text>`
+   +secs.filter(x=>x.key).map(x=>`<rect class="sb2" x="${L0+IN}" y="${x.top}" width="${CW-2*IN}" height="${x.bot-x.top}" rx="8"/><text class="sl" x="${L0+IN+10}" y="${x.top+18}">Each ${hum(x.key).replace(/s$/,'')}</text><text class="ss" x="${L0+IN+10}" y="${x.top+33}">a list inside each record</text>`).join('')
+   +`</g>`;
+  s+=A.items.map(o=>row(o,'in')).join('');
+  secs.forEach(sec=>sec.items.forEach(o=>{s+=row(o,'out',!!sec.key)}));
+  if(!A.items.length)s+=`<text class="em" x="10" y="64">Nothing links to this record.</text>`;
+  if(!secs.length)s+=`<text class="em" x="620" y="64">This record doesn’t link to other records.</text>`;
   return `<h2>${n[1]}</h2><p class="intro">${n[5]}</p><div class="mapwrap"><svg viewBox="0 0 1000 ${Hh+10}" role="img" aria-label="Records linked to ${n[1]}">${s}</svg></div>`
+   +(hasSub?`<p class="note">Dashed boxes are lists held inside each record, such as the dates of a tour. Their links are drawn from the dashed box; the other links belong to the record itself.</p>`:'')
    +(id==='perf'?`<p class="note">Performers can also link to other performers: group members through <code>performer_ids</code>, and old or duplicate profiles through <code>same_as</code>.</p>`:'')
-   +`<p class="note">Click any record in the diagram to switch to it. <code>[]</code> means the field sits inside a list, such as each date of a tour.</p>`;
+   +`<p class="note">Click any record in the diagram to switch to it.</p>`;
 }
 // Select a record: redraw the diagram, mark its button, move its card to the top of the grid and open it.
 // scroll=true (used by the coloured tags and the map's "See the fields" link) also scrolls to the diagram.
