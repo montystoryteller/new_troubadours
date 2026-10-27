@@ -210,6 +210,16 @@ setCanonical("club");
 })();
 
 async function renderPage(data, clubId) {
+  // An old (previous_id) club id: forward to the club's current URL, keeping
+  // any other query params. replace() so Back doesn't bounce into the redirect.
+  const currentId = resolveClubId(clubId);
+  if (clubId && currentId !== clubId) {
+    const url = new URL(location.href);
+    url.searchParams.set("club", currentId);
+    location.replace(url.toString());
+    return;
+  }
+
   const clubRecord = data.clubs.find((e) => e.club === clubId) || null;
 
   if (!clubRecord && !clubId) {

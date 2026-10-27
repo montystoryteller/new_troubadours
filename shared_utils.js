@@ -2576,6 +2576,7 @@ async function loadEventsData(cacheBuster) {
           const { eventsData, venuesLookup, performersLookup, toursLookup } =
             data;
           applyRepertoireInheritance(eventsData);
+          applyClubPreviousIds(eventsData);
           applyClubInheritance(eventsData);
           applyDatesAlias(eventsData);
           applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -2628,6 +2629,7 @@ async function loadEventsData(cacheBuster) {
       return handleEventsLoadFailure(reason);
     }
     applyRepertoireInheritance(eventsData);
+    applyClubPreviousIds(eventsData);
     applyClubInheritance(eventsData);
     applyDatesAlias(eventsData);
     applyPerformerAliases(eventsData);
@@ -2702,6 +2704,7 @@ function handleEventsLoadFailure(reason) {
       const { timestamp, data } = JSON.parse(cached);
       const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
+      applyClubPreviousIds(eventsData);
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -2886,6 +2889,74 @@ function applyDatesAlias(eventsData) {
 // more likely to be wrong than right. Add it explicitly per-record if a
 // guest night really does just reuse the club's booking link.
 const CLUB_INHERITABLE_FIELDS = ["venue_id", "time", "price", "facebook"];
+
+// ---------------------------------------------------------------------------
+// Club previous ids (clubs[].previous_id) — TEMPORARY handler for renamed ids
+// ---------------------------------------------------------------------------
+
+/**
+ * old club id -> current club id, rebuilt by applyClubPreviousIds() every time
+ * the events data loads. Empty when no club declares a `previous_id`.
+ */
+let CLUB_PREVIOUS_ID_MAP = {};
+
+/**
+ * Current club id for `id`: unchanged if it is already a live id, the
+ * replacement if it is a declared `previous_id`, else the input as given.
+ * Pages use this to forward old ?club= links (see storyclub.js).
+ * @param {string} id
+ * @returns {string}
+ */
+function resolveClubId(id) {
+  return (id && CLUB_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * Lets a club be renamed without breaking anything that still uses the old
+ * id. A club record may carry `previous_id` (a string, or an array of
+ * strings for more than one rename): it is the id the club used to have.
+ * At load time this
+ *   1. builds CLUB_PREVIOUS_ID_MAP (old -> current), and
+ *   2. rewrites any record that still references an old id to the current one
+ *      — specificEvents/musicEvents/poetryEvents `.club`, tour dates
+ *      `.club` / legacy `.club_event`, and repertoire show dates `.club` —
+ *      so every downstream consumer only ever sees the current id.
+ * An old id that is ALSO a live club id is never remapped (the live club
+ * wins), so a stale previous_id can't hijack another club. Idempotent and
+ * safe to call repeatedly, like applyClubInheritance(), which it must run
+ * before. Remove this (and the previous_id fields) once old links are gone.
+ * @param {object} eventsData
+ */
+function applyClubPreviousIds(eventsData) {
+  const clubs = eventsData?.clubs || [];
+  const live = new Set(clubs.map((c) => c?.club).filter(Boolean));
+  const map = {};
+  clubs.forEach((c) => {
+    if (!c?.club || isBlankValue(c.previous_id)) return;
+    [].concat(c.previous_id).forEach((old) => {
+      if (typeof old === "string" && old && !live.has(old)) map[old] = c.club;
+    });
+  });
+  CLUB_PREVIOUS_ID_MAP = map;
+  if (Object.keys(map).length === 0) return;
+
+  const fix = (rec) => {
+    if (!rec || typeof rec !== "object") return;
+    if (map[rec.club]) rec.club = map[rec.club];
+    if (map[rec.club_event]) rec.club_event = map[rec.club_event];
+  };
+  CLUB_REFERENCING_EVENT_KEYS.forEach((key) =>
+    (eventsData[key] || []).forEach(fix),
+  );
+  Object.values(eventsData.tours || {}).forEach((tour) => {
+    fix(tour);
+    (tour?.tour_dates || []).forEach(fix);
+  });
+  Object.values(eventsData.repertoire_shows || {}).forEach((show) => {
+    fix(show);
+    (show?.show_dates || []).forEach(fix);
+  });
+}
 
 // Top-level arrays whose entries can reference a club via `.club` and so
 // are eligible for this inheritance (once they also opt in with
@@ -3202,6 +3273,7 @@ async function checkForNewerEventsDataBackground() {
         return;
       }
       applyRepertoireInheritance(eventsData);
+      applyClubPreviousIds(eventsData);
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData);

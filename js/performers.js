@@ -576,7 +576,7 @@ setCanonical("performer");
   // location.replace() keeps this page out of the history, so Back doesn't
   // bounce straight into the redirect.
   if (performer.isClub) {
-    const clubSlug = performer.club || performerId;
+    const clubSlug = resolveClubId(performer.club || performerId);
     if ((eventsData.clubs || []).some((c) => c && c.club === clubSlug)) {
       const url = new URL("storyclub.html", window.location.href);
       url.search = "";
