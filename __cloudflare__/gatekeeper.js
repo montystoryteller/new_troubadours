@@ -416,7 +416,8 @@ const KEYS_MEMORY_MS = 5 * 60 * 1000;
 const KEY_CHECKS = {
   "/performers": { performer: "performers" },
   "/venues": { venue: "venues" },
-  "/storyclub": { club: "clubs" },
+  // clubs_previous = retired ids (clubs[].previous_id): known pages, but kept out of "clubs" so the sitemap never lists them
+  "/storyclub": { club: ["clubs", "clubs_previous"] },
   "/promoters": { promoter: "promoters" },
   "/festival": { festival: "festivals" },
   "/tour_guide": { tour: "tours", performer: "performers" },
@@ -444,7 +445,9 @@ async function isKnownPage(env, normUrl) {
     for (const [param, listName] of Object.entries(checks)) {
       const value = normUrl.searchParams.get(param);
       if (value === null) continue;
-      if (sets[listName] && !sets[listName].has(value)) return false;
+      // listName may be one list or several; known if ANY present list has the key
+      const present = [].concat(listName).map((n) => sets[n]).filter(Boolean);
+      if (present.length && !present.some((set) => set.has(value))) return false;
     }
   } catch (err) {
     console.log("key index failed", String(err));

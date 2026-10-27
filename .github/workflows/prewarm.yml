@@ -77,8 +77,12 @@ jobs:
               tours: ((.tours | keys) + ((.repertoire_shows // {}) | keys | map("R-" + .))),
               events: ([allevents] | unique | map(select((evdate // "99999999") >= (now - 2592000 | strftime("%Y%m%d"))))),
               clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
-                      | map(select(. != "" and . != "other")) | unique)
-            }' 2>/dev/null) && [ -n "$index" ] && break
+                      | map(select(. != "" and . != "other")) | unique),
+              # clubs[].previous_id: retired club ids, in their own list (see ./updatecache build_index)
+              clubs_previous: ([.clubs[]? | .previous_id? | (strings, (arrays | .[] | strings))]
+                               | map(select(. != "")) | unique)
+            }
+            | if (.clubs_previous | length) == 0 then del(.clubs_previous) else . end' 2>/dev/null) && [ -n "$index" ] && break
             index=""
           done
 

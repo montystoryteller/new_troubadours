@@ -228,8 +228,14 @@ build_index() {
       # dated within the last NT_SITEMAP_EVENT_DAYS (30) days or later; ids with no readable date are kept.
       events: ([allevents] | unique | map(select((evdate // "99999999") >= (now - 2592000 | strftime("%Y%m%d"))))),
       clubs: ([.clubs[].club?] + [.. | objects | .club? | strings]
-              | map(select(type == "string" and . != "" and . != "other")) | unique)
-    }'
+              | map(select(type == "string" and . != "" and . != "other")) | unique),
+      # clubs[].previous_id (string or list): retired club ids. Kept in their OWN list, not in "clubs", so the gatekeeper
+      # lets storyclub.html?club=<old id> through to the page (which redirects) but the sitemap never lists old URLs.
+      clubs_previous: ([.clubs[]? | .previous_id? | (strings, (arrays | .[] | strings))]
+                       | map(select(. != "")) | unique)
+    }
+    # the sync endpoint rejects empty lists, so leave the key out when no club has a previous_id
+    | if (.clubs_previous | length) == 0 then del(.clubs_previous) else . end'
 }
 
 # Download the events JSON to <outfile> and build the index from it into NEW_INDEX.
