@@ -12363,6 +12363,22 @@
       "isSpecial": true
     },
     {
+      "name": "Tales & Ales — Halloween special [P. D. Brown]",
+      "showname": "Tales & Ales — Halloween special",
+      "performer_id": "p-d-brown",
+      "date": "31/10/2026",
+      "price": "£5 (+ £1)",
+      "time": "7.30-9pm",
+      "date_added": "27/10/2026",
+      "description": "Hear five tales of terror straight from master storyteller P D Brown! Including the elder tree witch and the great-grandmothers feast!!!\n\n\n\nA night you won't forget!\n\n\n\nAll told by master storyteller P.D.Brown",
+      "venue_id": "angels-cut-darlington",
+      "ticket_url": "https://www.skiddle.com/whats-on/Darlington/Angels-Cut-Bar/Tales--Ales---Halloween-special/42824000",
+      "event_flyer": "",
+      "isSpecial": true,
+      "fb_event": 1082216347933751,
+      "eventId": "20261031-p-d-brown-angels-cut-darlington"
+    },
+    {
       "name": "Ghost Stories and Fabulous Feasting [Sophie Snell]",
       "showname": "Ghost Stories and Fabulous Feasting",
       "date": "31/10/2026",
