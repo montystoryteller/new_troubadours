@@ -1078,6 +1078,12 @@ async function displayEvents(startDate, endDate) {
     console.error("Events data not loaded");
     return;
   }
+  // Safety net: never expand an invalid or absurd range (hand-typed date
+  // inputs, or a malformed ?start=/&end= in a link).
+  if (!isUsableDate(startDate) || !isUsableDate(endDate)) {
+    console.warn("displayEvents: ignoring invalid date range", startDate, endDate);
+    return;
+  }
 
   allEventsData = [];
   markers = map ? clearMarkers(map, markers) : [];
@@ -2375,12 +2381,52 @@ function getActiveDateRange() {
   const startInput = document.getElementById("startDate").value;
   const endInput = document.getElementById("endDate").value;
   if (!startInput) return null;
+  // A half-typed or out-of-range date (see isUsableDate) is treated as "not
+  // set" rather than expanded into a huge, page-freezing range.
+  if (!parseIsoDateInput(startInput)) return null;
+  if (endInput && !parseIsoDateInput(endInput)) return null;
 
   const startDate = new Date(startInput);
   const endDate = endInput
     ? new Date(endInput)
     : getWeekEnd(getWeekStart(startDate));
   return { startDate, endDate };
+}
+
+// ── Date-input sanity checks ────────────────────────────────────────────
+// <input type="date"> fires "change" as soon as day/month/year are all
+// filled, so typing a new year digit by digit passes through real-but-absurd
+// dates (0002, 0020, 0202 …) before reaching 2026. Acting on those used to
+// reset the other date and ask displayEvents() to expand ~2000 years of
+// recurring events, freezing the page. Only dates inside this window are
+// ever acted on; anything else is ignored until the typing settles.
+const DATE_INPUT_MIN_YEAR = 2000;
+const DATE_INPUT_MAX_YEARS_AHEAD = 10;
+
+/** Is `d` a valid Date with a year inside the supported window? */
+function isUsableDate(d) {
+  if (!(d instanceof Date) || isNaN(d)) return false;
+  const y = d.getFullYear();
+  return (
+    y >= DATE_INPUT_MIN_YEAR &&
+    y <= new Date().getFullYear() + DATE_INPUT_MAX_YEARS_AHEAD
+  );
+}
+
+/**
+ * Strictly parse a date input's "YYYY-MM-DD" value to a local-midnight Date.
+ * Returns null for empty, malformed (e.g. a 5-digit year) or out-of-window
+ * values.
+ */
+function parseIsoDateInput(str) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str || "");
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  // Reject rolled-over days (31 Feb etc.) as well as out-of-window years.
+  if (d.getMonth() !== Number(m[2]) - 1 || d.getDate() !== Number(m[3])) {
+    return null;
+  }
+  return isUsableDate(d) ? d : null;
 }
 
 function clearSearch() {
@@ -2657,6 +2703,8 @@ function setActiveMode(mode) {
 }
 
 function updateDateInputs(startDate, endDate) {
+  clearTimeout(pendingDateChangeTimer); // a pending typed change is now stale
+  pendingDateChange = null;
   // formatDateForInput() defined in shared_utils.js
   document.getElementById("startDate").value = formatDateForInput(startDate);
   document.getElementById("endDate").value = formatDateForInput(endDate);
@@ -2702,7 +2750,14 @@ function showWeek(weeksAhead = 1) {
 function showDateRange(clearActiveButton = true) {
   const range = getActiveDateRange();
   if (!range) {
-    alert("Please select at least a start date");
+    const hasValue =
+      document.getElementById("startDate").value ||
+      document.getElementById("endDate").value;
+    alert(
+      hasValue
+        ? `Please enter valid dates (years ${DATE_INPUT_MIN_YEAR}–${new Date().getFullYear() + DATE_INPUT_MAX_YEARS_AHEAD})`
+        : "Please select at least a start date",
+    );
     return;
   }
   displayEvents(range.startDate, range.endDate);
@@ -2721,18 +2776,20 @@ function parseDateInputs() {
   const endInput = document.getElementById("endDate").value;
   if (!startInput) return null;
 
-  const [sy, sm, sd] = startInput.split("-").map(Number);
-  const startDate = new Date(sy, sm - 1, sd);
-  const endDate = endInput
-    ? (() => {
-        const [ey, em, ed] = endInput.split("-").map(Number);
-        return new Date(ey, em - 1, ed);
-      })()
-    : null;
+  // Either field holding a half-typed / out-of-range date (e.g. year 0002
+  // mid-typing) => null, so the change handlers do nothing at all: no reset
+  // of the other field and no re-render. See isUsableDate().
+  const startDate = parseIsoDateInput(startInput);
+  if (!startDate) return null;
+  let endDate = null;
+  if (endInput) {
+    endDate = parseIsoDateInput(endInput);
+    if (!endDate) return null;
+  }
   return { startDate, endDate };
 }
 
-function handleStartDateChange() {
+function applyStartDateChange() {
   const parsed = parseDateInputs();
   if (!parsed) return;
   const { startDate, endDate } = parsed;
@@ -2745,7 +2802,7 @@ function handleStartDateChange() {
   showDateRange(true);
 }
 
-function handleEndDateChange() {
+function applyEndDateChange() {
   const parsed = parseDateInputs();
   if (!parsed) return;
   const { startDate, endDate } = parsed;
@@ -2757,6 +2814,48 @@ function handleEndDateChange() {
   }
   showDateRange(true);
 }
+
+// ── Debounced date-input handling ───────────────────────────────────────
+// A date input fires "change" the moment day+month+year are all filled, so
+// retyping the end MONTH from 08 to 11 passes through 01 (a complete, valid,
+// but unintended date) on the way. Acting on each step could reset the other
+// date or re-render for a value that was never meant. So changes are only
+// applied once the field has been quiet for a moment — or immediately when
+// focus leaves the field or Enter is pressed. (Calendar-picker picks are
+// applied after the same short pause.)
+const DATE_CHANGE_DEBOUNCE_MS = 900;
+let pendingDateChange = null;
+let pendingDateChangeTimer = null;
+
+function scheduleDateChange(applyFn) {
+  clearTimeout(pendingDateChangeTimer);
+  pendingDateChange = applyFn;
+  pendingDateChangeTimer = setTimeout(flushDateChange, DATE_CHANGE_DEBOUNCE_MS);
+}
+
+function flushDateChange() {
+  clearTimeout(pendingDateChangeTimer);
+  const fn = pendingDateChange;
+  pendingDateChange = null;
+  if (fn) fn();
+}
+
+function handleStartDateChange() {
+  scheduleDateChange(applyStartDateChange);
+}
+
+function handleEndDateChange() {
+  scheduleDateChange(applyEndDateChange);
+}
+
+["startDate", "endDate"].forEach((id) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("blur", flushDateChange);
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") flushDateChange();
+  });
+});
 
 /**
  * Default values mirror the fallbacks getEventURLParams() applies when a
@@ -2910,8 +3009,10 @@ function getEventURLParams() {
     // A bare "?q=..." link (no start param) has no date range of its own —
     // the caller falls back to the current week for the date inputs, since
     // the search itself always covers today through +2 years regardless.
-    startDate: start ? new Date(start) : null,
-    endDate: end ? new Date(end) : null,
+    // A malformed / absurd ?start= or ?end= is dropped (falls back to the
+    // current week) rather than handed on as an Invalid/year-0002 Date.
+    startDate: start && isUsableDate(new Date(start)) ? new Date(start) : null,
+    endDate: end && isUsableDate(new Date(end)) ? new Date(end) : null,
     storyclubs: storyclubs,
     special: special,
     pinmap: pinmap,
