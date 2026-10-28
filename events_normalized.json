@@ -3115,6 +3115,8 @@
           "price": "£15 (+ £1.50)",
           "ticket_url": "https://www.gigantic.com/gaz-brookfield-tickets/leicester-the-international/2026-10-28-19-30",
           "isSpecial": true,
+          "event_flyer": "2026_10_28_gaz_brookfield_n_bsydes.jpg",
+          "other_performer_ids": ["b-sydes"],
           "eventId": "T-gaz-brookfield-autumn-2026-20261028-the-international-leicester"
         },
         {
@@ -3124,6 +3126,10 @@
           "price": "£16 (+ £1.60)",
           "ticket_url": "https://wegottickets.com/af/671/f/16192",
           "isSpecial": true,
+          "other_performer_ids": [
+            "b-sydes"
+          ],
+          "event_flyer": "2026_10_28_gaz_brookfield_n_bsydes.jpg",
           "eventId": "T-gaz-brookfield-autumn-2026-20261029-greystones-sheffield"
         },
         {
@@ -3133,6 +3139,10 @@
           "price": "£15 (+ £1.50)",
           "ticket_url": "https://wegottickets.com/af/671/f/16191",
           "isSpecial": true,
+          "other_performer_ids": [
+            "b-sydes"
+          ],
+          "event_flyer": "2026_10_28_gaz_brookfield_n_bsydes.jpg",
           "eventId": "T-gaz-brookfield-autumn-2026-20261030-gullivers-manchester"
         },
         {
@@ -23085,6 +23095,14 @@
       "instagram": "MexicanDaveMusic",
       "musician": true,
       "bio": "Mexican Dave is a rising folk-punk artist based in Bristol. Following the release of his debut EP, Kinda Wasted, he has taken his energetic performances across the UK, playing everywhere from intimate pubs and cozy house shows to renowned venues and major festivals like 2000 Trees, Beautiful Days, Barnstomper and Here for the Music."
+    },
+    "b-sydes": {
+      "id": "b-sydes",
+      "name": "B-Sydes",
+      "url": "https://www.b-sydes.co.uk/",
+      "facebook": "bsydesmusic",
+      "musician": true,
+      "bio": "Modern and authentic punk-tinged, folk-infused acoustica delivered with power, personality, and purpose. Ben Sydes (yes, it’s not just a clever stage name) has been capturing the hearts and minds of audiences since his first EPs and critically acclaimed albums. Having shared the stage with Frank Turner, Gaz Brookfield, Ferocious Dog, Beans On Toast, Nick Parker, Crazy Arm, and countless others, he’s honed his craft and found his authentic voice."
     },
     "joe-solo": {
       "id": "joe-solo",
