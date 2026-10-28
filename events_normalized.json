@@ -6739,6 +6739,18 @@
       "venue_id": "seven-stars-falmouth"
     },
     {
+      "name": "Hearth Tales",
+      "schedule": "2nd sunday",
+      "time": "7-9pm",
+      "link": "https://www.hearthhold.org/",
+      "facebook": "",
+      "club": "hearthtales",
+      "convenor": "paul-w-davey",
+      "description": "Join us for myths, folk tales, fairy stories, wonder tales, local legends and yarns. It's our chance to leave behind our busy lives for a Once Upon Time evening together. No booking needed, just a small donation to help cover costs.",
+      "tickets_url": "",
+      "venue_id": "old-schools-hatherleigh"
+    },
+    {
       "name": "Matlock Storytelling Cafe",
       "schedule": "1st friday",
       "facebook": "MatlockStorytellingCafe",
@@ -12532,6 +12544,19 @@
       "venue_id": "ropetackle-arts-centre-shoreham",
       "performer_id": "minnie-wilkinson",
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
+    },
+    {
+      "name": "Hearth Tales West Devon Winter Tour [Paul W Davey]",
+      "showname": "Hearth Tales West Devon Winter Tour",
+      "date": "11/11/2026",
+      "venue_id": "the-black-river-inn-black-torrington",
+      "performer_id": "paul-w-davey",
+      "eventId": "20261111-paul-w-davey-the-black-river-inn-black-torrington",
+      "date_added": "28/10/2026",
+      "time": "7.00-9.30pm",
+      "description": "Join us for myths, folk tales, fairy stories, wonder tales all told for adults. It's a chance to leave behind our busy lives for an enchanting Once Upon Time evening together. No booking needed, donations gratefully accepted.",
+      "event_flyer": "2026_11_11_hearth_tales.jpg",
+      "isSpecial": true
     },
     {
       "name": "Tree Folk — Storytelling Session [Lisa Schneidau]",
@@ -19512,6 +19537,31 @@
         -0.14534
       ]
     },
+    "old-schools-hatherleigh": {
+      "id": "old-schools-hatherleigh",
+      "name": "Old Schools, Hatherleigh",
+      "city": "Okehampton",
+      "postcode": "EX20 3JN",
+      "full_address": "Old Schools, Market Street, Hatherleigh, EX20 3JN",
+      "url": "",
+      "latlon": [
+        50.82176,
+        -4.07257
+      ]
+    },
+    "the-black-river-inn-black-torrington": {
+      "id": "the-black-river-inn-black-torrington",
+      "name": "The Black River Inn, Black Torrington",
+      "venue_type": "Pub / bar / café",
+      "city": "Black Torrington",
+      "postcode": "EX21 5PT",
+      "full_address": "The Black River Inn, Broad Street, Black Torrington, EX21 5PT",
+      "url": "https://www.blackriverinn.co.uk/",
+      "latlon": [
+        50.8289,
+        -4.18028
+      ]
+    },
     "the-cornish-bank": {
       "id": "the-cornish-bank",
       "name": "The Cornish Bank",
@@ -22484,6 +22534,17 @@
       "name": "Liam Goodman",
       "instagram": "liamgoodmanmusic",
       "bio": "'Just a guy with a guitar'. Folk musician from Bristol."
+    },
+    "paul-w-davey": {
+      "id": "paul-w-davey",
+      "name": "Paul W Davey",
+      "url": "https://www.hearthhold.org/",
+      "email": "borage@hearthhold.org",
+      "bio": "Paul W Davey, aka Borage, lives near Okehampton in west Devon, just north of Dartmoor, where he works as a veg grower / market gardener with his partner, alongside undertaking \"Hearth\" work. Working close to the soil, stewarding land and growing food is important for his health and wellbeing and is a foundation for how he roots into community.",
+      "facebook": "paul.w.davey",
+      "aliases": [
+        "Borage"
+      ]
     },
     "shonaleigh": {
       "id": "shonaleigh",
