@@ -2811,16 +2811,26 @@ function generateShareableURL(startDate, endDate) {
   });
 
   // The map view is only worth sharing if the person has deliberately pinned
-  // it — otherwise the page auto-fits the map to whatever's displayed, so
-  // lat/lng/zoom would just be dead weight in the URL.
+  // it, or has explicitly ticked "Include map view in link" — otherwise the
+  // page auto-fits the map to whatever's displayed, so lat/lng/zoom would
+  // just be dead weight in the URL.
   const pinned = document.getElementById("pinMapView").checked;
-  if (pinned) {
-    params.set("pinmap", "1");
+  const includeMap = !!document.getElementById("includeMapInLink")?.checked;
+  if (pinned) params.set("pinmap", "1");
+  if (pinned || includeMap) {
     if (map) {
       const center = map.getCenter();
       params.set("lat", center.lat.toFixed(5));
       params.set("lng", center.lng.toFixed(5));
       params.set("zoom", map.getZoom());
+    } else if (pinnedMapView) {
+      // Map hasn't loaded yet, but a view was supplied by an incoming link.
+      const c = pinnedMapView.center;
+      const cLat = Array.isArray(c) ? c[0] : c.lat;
+      const cLng = Array.isArray(c) ? c[1] : c.lng;
+      params.set("lat", Number(cLat).toFixed(5));
+      params.set("lng", Number(cLng).toFixed(5));
+      params.set("zoom", pinnedMapView.zoom);
     }
   }
 
@@ -2889,9 +2899,13 @@ function getEventURLParams() {
   const hidepastParam = params.get("hidepast");
   const hidepast = hidepastParam === "1";
   const hidesoldout = params.get("hidesoldout") === "1";
-  const zoom = params.get("zoom") ? parseInt(params.get("zoom"), 10) : 6;
-  const lat = params.get("lat") ? parseFloat(params.get("lat")) : 53.0;
-  const lng = params.get("lng") ? parseFloat(params.get("lng")) : 0.0;
+  // No fallback defaults: "absent from the link" must be distinguishable from
+  // "present", so a link without a map view doesn't pin a made-up one.
+  const zoom = parseInt(params.get("zoom"), 10);
+  const lat = parseFloat(params.get("lat"));
+  const lng = parseFloat(params.get("lng"));
+  const hasMapView =
+    Number.isFinite(zoom) && Number.isFinite(lat) && Number.isFinite(lng);
   const result = {
     // A bare "?q=..." link (no start param) has no date range of its own —
     // the caller falls back to the current week for the date inputs, since
@@ -2904,9 +2918,10 @@ function getEventURLParams() {
     hidecancelled: hidecancelled,
     hidepast: hidepast,
     hidesoldout: hidesoldout,
-    lat: lat,
-    lng: lng,
-    zoom: zoom,
+    hasMapView: hasMapView,
+    lat: hasMapView ? lat : null,
+    lng: hasMapView ? lng : null,
+    zoom: hasMapView ? zoom : null,
     searchTerm: q,
   };
   EVENT_TYPE_FILTERS.forEach(({ param }) => {
@@ -3060,28 +3075,30 @@ function refreshEventsData() {
 
       updateDateInputs(startDate, endDate);
 
-      document.getElementById("pinMapView").checked = urlParams.pinmap;
       document.getElementById("hideCancelled").checked =
         urlParams.hidecancelled;
       const hidePastEl = document.getElementById("hidePastEvents");
       if (hidePastEl) hidePastEl.checked = urlParams.hidepast || false;
       document.getElementById("hideSoldOutEvents").checked =
         urlParams.hidesoldout || false;
-      console.log("pinmap", urlParams, urlParams.pinmap);
-      mapViewPinned = urlParams.pinmap;
-
-      // Apply specific map view if provided
-      // (The map may not exist yet — it loads lazily. A pinned view is
-      // applied by fitMapToEvents() via pinnedMapView once it does; an
-      // unpinned one was always overridden by fitMapToEvents() anyway.)
-      if (urlParams.lat && urlParams.lng && urlParams.zoom) {
-        if (map) map.setView([urlParams.lat, urlParams.lng], urlParams.zoom);
-        if (mapViewPinned) {
-          pinnedMapView = {
-            center: [urlParams.lat, urlParams.lng],
-            zoom: urlParams.zoom,
-          };
-        }
+      // Map view. (The map may not exist yet — it loads lazily — so the
+      // view is held in pinnedMapView and applied by fitMapToEvents() once
+      // it does.) A link carrying lat/lng/zoom needs the view held,
+      // otherwise fitMapToEvents() would override it as soon as events are
+      // displayed; so such a link also ticks "Pin current map view".
+      // Unticking it returns to auto-fit.
+      const pinBox = document.getElementById("pinMapView");
+      if (urlParams.hasMapView) {
+        mapViewPinned = true;
+        pinnedMapView = {
+          center: [urlParams.lat, urlParams.lng],
+          zoom: urlParams.zoom,
+        };
+        pinBox.checked = true;
+        if (map) map.setView(pinnedMapView.center, pinnedMapView.zoom);
+      } else {
+        mapViewPinned = urlParams.pinmap;
+        pinBox.checked = urlParams.pinmap;
       }
 
       //  restore search term
