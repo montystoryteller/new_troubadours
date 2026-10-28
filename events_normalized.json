@@ -2311,6 +2311,7 @@
       "name": "DAUNTLESS — Grace O'Malley, Pirate Queen [Debs Newbold]",
       "showname": "DAUNTLESS — Grace O'Malley, Pirate Queen",
       "performer_id": "debs-newbold",
+      "video_trailer": "https://www.youtube.com/watch?v=aBjt93dDzOs",
       "show_dates": [
         {
           "date": "07/10/2026",
@@ -12466,6 +12467,23 @@
       "eventId": "20261104-baden-prince-quaker-meeting-house-northampton"
     },
     {
+      "name": "Tales After Dark — Gunpowder & Treason [Olivia Armstrong & Kate Corkery]",
+      "showname": "Tales After Dark — Gunpowder & Treason",
+      "date": "05/11/2026",
+      "venue_id": "west-horsley-place-guildford",
+      "performer_ids": [
+        "olivia-armstrong",
+        "kate-corkery"
+      ],
+      "eventId": "20261105-olivia-armstrong-west-horsley-place-guildford",
+      "date_added": "28/10/2026",
+      "time": "18:00-21:30",
+      "price": "£20",
+      "description": "Tales After Dark is our series of intimate evening storytelling experiences for adults, each with a different theme, new tales to experience and time for a tipple.\n\n\n\nOn Bonfire Night, join resident storyteller Olivia Armstrong for one of West Horsley Place's favourite tales - the true life adventure of a shadowy footman who changed the course of history forever.\n\n\n\nOur Guest storyteller is the Queen of Irish mythology and legend, the inimitable Kate Corkery who will be chilling the blood and warming the heart with seasonally unsettling dark Celtic folklore.\n\n\n\nOur storytelling evenings combine history, myth and magic in a friendly atmosphere of enchantment. Arrive as a stranger but leave as a friend.\n\n\n\nExplore the manor house after hours, with exclusive access to its ancient library, historic Stone Hall (once graced by Henry VIII), and magical Drawing Room. Fans of BBC Ghosts, will love seeing the house at night.",
+      "ticket_url": "https://westhorsleyplace.org/whats-on/tales-after-dark-1",
+      "isSpecial": true
+    },
+    {
       "name": "The Killers of Eden: Tales of a Shared World [Julian Burnell]",
       "showname": "The Killers of Eden: Tales of a Shared World",
       "date": "05/11/2026",
@@ -12668,6 +12686,22 @@
       "description": "Winter rituals and woodland traditions.\n\n\n\nThe Bookery is delighted to welcome two acclaimed Dartmoor authors, Lisa Schneidau and Rebecca Beattie, for a captivating winter evening exploring folklore, nature, seasonal traditions and our enduring relationship with the landscape. Inspired by their new books, Tree Folk and The Season of Frost and Fire, the event will bring together two writers who share a deep connection to Dartmoor and a fascination with the ways people have long understood and celebrated nature through story, ritual and imagination.\n\n\n\nAs the evenings draw in and winter approaches, their conversation will range from ancient woodland tales and seasonal customs to winter rituals, forgotten goddesses and the enduring power of folklore. Together they will explore how stories have helped generations of people make sense of the natural world, marking the changing seasons and deepening our connection to the landscapes around us.",
       "event_flyer": "2026_11_20_schneidau_tree_bookery.jpg",
       "ticket_url": "https://www.ticketsource.com/thebookery/lisa-schneidau-amp-rebecca-beattie-roots-and-rituals-stories-of-trees-fire-and-folklore/e-qrajqm",
+      "isSpecial": true
+    },
+    {
+      "name": "Tales fron the Ancient Silk Road [Sarah Rundle]",
+      "showname": "Tales fron the Ancient Silk Road",
+      "date": "19/11/2026",
+      "venue_id": "ham-library-richmond",
+      "performer_id": "sarah-rundle",
+      "eventId": "20261119-sarah-rundle-ham-library-richmond",
+      "date_added": "28/10/2026",
+      "time": "6pm",
+      "price": "£8",
+      "description": "Warm up on an autumn evening with enchanting tales from the ancient Silk Road. Journey through Eastern and Central Asia discovering stories shaped by centuries of travel, trade, and cultural exchange. These timeless tales of love, greed, courage, and wisdom bring to life ogres, wolves, monsters, and clever tricksters; as travellers seek their fortunes, test friendships, and narrowly escape danger. Suitable for visitors aged 11+.",
+      "age_rating": "11+",
+      "min_age": 11,
+      "ticket_url": "https://www2.richmond.gov.uk/richmondbookings/Details.aspx?Id=55265",
       "isSpecial": true
     },
     {
@@ -19967,6 +20001,18 @@
         -0.1384
       ]
     },
+    "ham-library-richmond": {
+      "id": "ham-library-richmond",
+      "name": "Ham Library, Richmond",
+      "full_address": "Ham Library, Ham St, Richmond, TW10 7HR",
+      "city": "Richmond",
+      "postcode": "TW10 7HR",
+      "url": "https://www.richmond.gov.uk/ham_library",
+      "latlon": [
+        51.43789,
+        -0.31324
+      ]
+    },
     "colchester-arts-centre": {
       "id": "colchester-arts-centre",
       "name": "Colchester Arts Centre",
@@ -20020,6 +20066,19 @@
       "latlon": [
         51.74717,
         -2.21702
+      ]
+    },
+    "west-horsley-place-guildford": {
+      "id": "west-horsley-place-guildford",
+      "name": "West Horsley Place, Guildford",
+      "full_address": "West Horsley Place, Epsom Road, West Horsley, KT24 6AN",
+      "city": "West Horsley, Guildford",
+      "postcode": "KT24 6AN",
+      "url": "https://westhorsleyplace.org/",
+      "description": "Where the past is living, nature flourishes & creativity thrives.\n\n\n\nOur historic estate is a space for everyone — where creativity thrives and wellbeing is nurtured.\n\n\n\nThe landscape is open daily for the community, with free parking to support time outdoors and a stronger connection with nature.\n\n\n\nThe Manor House opens to the public through a programme of guided tours, performances and events, bringing it to life throughout the year.",
+      "latlon": [
+        51.26587,
+        -0.44183
       ]
     },
     "star-inn-guildford": {
@@ -22546,6 +22605,12 @@
       "aliases": [
         "Borage"
       ]
+    },
+    "olivia-armstrong": {
+      "id": "olivia-armstrong",
+      "name": "Olivia Armstrong",
+      "url": "https://oliviaarmstrongstoryteller.com/",
+      "bio": "Professional storyteller, based in London and originally from Northern Ireland, Oliva Armstrong works with all ages and communities. From museums to universities, broadcasters to libraries, caves to castles,Olivia is your one-stop shop for storytelling.\n\n\n\nOlivia has an extensive repertoire of traditional folktales and historical stories, and is frequently commissioned to create site-specific original stories."
     },
     "shonaleigh": {
       "id": "shonaleigh",
