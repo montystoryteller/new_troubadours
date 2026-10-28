@@ -1951,6 +1951,54 @@
             });
         }
 
+        // ── URL validation ───────────────────────────────────────────────────
+        // Any <input type="url"> (static or dynamically built): on change, flag
+        // (red border + tooltip, non-blocking) anything that isn't
+        // http(s)://host.tld/... with no spaces. Facebook / Instagram fields
+        // also accept a bare username, and a SIMPLE profile link on those
+        // domains (one path segment, optional trailing "/", no ?args, no
+        // /groups/ etc.) is reduced to just that username.
+        const URL_RE = /^https?:\/\/[^\s\/?#]+\.[^\s\/?#]{2,}(?:[\/?#]\S*)?$/i;
+        const FB_RE = /^https?:\/\/(?:www\.|m\.)?(?:facebook\.com|fb\.com)\/([^\/?#\s]+)\/?$/i;
+        const IG_RE = /^https?:\/\/(?:www\.)?instagram\.com\/([^\/?#\s]+)\/?$/i;
+        const NOT_A_HANDLE = new Set(["groups", "pages", "events", "profile.php", "p", "reel", "reels", "explore", "stories"]);
+        const HANDLE_RE = /^@?[\w.\-]+$/;
+        const FB_FIELD_IDS = new Set(["ev-facebook", "festival-facebook", "perf-facebook", "venue-facebook", "promoter-facebook", "club-facebook"]);
+        const IG_FIELD_IDS = new Set(["perf-instagram", "venue-instagram", "club-instagram"]);
+
+        function cleanUrlValue(input) {
+            let v = input.value.trim();
+            const social = FB_FIELD_IDS.has(input.id) ? FB_RE : IG_FIELD_IDS.has(input.id) ? IG_RE : null;
+            if (social) {
+                const m = v.match(social);
+                if (m && !NOT_A_HANDLE.has(m[1].toLowerCase())) v = m[1];
+            }
+            const valid = !v || URL_RE.test(v) || (social && HANDLE_RE.test(v));
+            return { value: v, valid };
+        }
+
+        // What "open in new tab" should open (a bare username would otherwise
+        // resolve relative to this page).
+        function linkTargetForInput(input) {
+            const v = input.value.trim();
+            if (!v) return null;
+            if (FB_FIELD_IDS.has(input.id) && !URL_RE.test(v)) { const u = normaliseFacebookUrl(v); return u === "#" ? null : u; }
+            if (IG_FIELD_IDS.has(input.id) && !URL_RE.test(v)) { const u = normaliseInstagramUrl(v); return u === "#" ? null : u; }
+            return URL_RE.test(v) ? sanitizeUrl(v) : null;
+        }
+
+        document.addEventListener("change", (e) => {
+            const el = e.target;
+            if (!(el instanceof HTMLInputElement) || el.type !== "url" || el.readOnly) return;
+            const { value, valid } = cleanUrlValue(el);
+            if (value !== el.value) {
+                el.value = value;
+                el.dispatchEvent(new Event("input", { bubbles: true })); // refresh open-link button etc.
+            }
+            el.style.borderColor = valid ? "" : "#c62828";
+            el.title = valid ? "" : "Not a valid link — expected https://example.com/… (no spaces)";
+        });
+
         // Wraps a URL <input> (wherever it already lives in the DOM) with a
         // small icon button that opens its current value in a new tab —
         // disabled while the field is empty or fails sanitizeUrl(). Used for
@@ -1974,11 +2022,11 @@
             wrap.appendChild(btn);
 
             function update() {
-                btn.disabled = !sanitizeUrl(urlInput.value.trim());
+                btn.disabled = !linkTargetForInput(urlInput);
             }
             urlInput.addEventListener("input", update);
             btn.addEventListener("click", () => {
-                const safeUrl = sanitizeUrl(urlInput.value.trim());
+                const safeUrl = linkTargetForInput(urlInput);
                 if (safeUrl) window.open(safeUrl, "_blank", "noopener,noreferrer");
             });
             update();

@@ -1,6 +1,6 @@
 #!/bin/bash
 # 1) Compare matching JS files in two directories.
-# 2) Block the commit if a staged JSON feed is invalid.
+# 2) Block the commit if a staged JSON feed is invalid, or has bad dates/URLs.
 # 3) Bump ?v= on HTML references for any JS/CSS file being committed.
 
 cd "$(git rev-parse --show-toplevel)" || exit 1
@@ -43,6 +43,18 @@ done
 
 if [ "$json_failed" -ne 0 ]; then
   echo "pre-commit: commit blocked. Fix the JSON above (or use --no-verify)." >&2
+  exit 1
+fi
+
+# ---- 2b. Date + URL checks on the STAGED JSON (see _secret_/check_events_data.py) ----
+data_failed=0
+for f in $JSON_FILES; do
+  echo "$staged_all" | grep -qx "$f" || continue
+  git show ":$f" | python3 ./_secret_/check_events_data.py "$f" || data_failed=1
+done
+
+if [ "$data_failed" -ne 0 ]; then
+  echo "pre-commit: commit blocked. Fix the dates/URLs above (or use --no-verify)." >&2
   exit 1
 fi
 
