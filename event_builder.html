@@ -1561,6 +1561,45 @@
             </div>
 
             <div class="enrich-section">
+                <h3>📅 Invalid dates in other fields</h3>
+                <p class="field-hint">
+                    The date scan above covers each event's, tour date's and repertoire show date's main
+                    <code>date</code>. This one checks the rest, for a value that isn't a real
+                    <code>DD/MM/YYYY</code> date (two-digit day and month; 31/04 and 29/02 in a non-leap year
+                    both fail) or that looks like a typo (before 2000, or more than 2 years ahead):
+                    <code>date_added</code> on events, tour dates, show dates and festivals; an event's
+                    <code>dates</code> list and the date part of each <code>datetimes</code> entry; a
+                    workshop's <code>date</code>; and a festival's <code>start_date</code> /
+                    <code>end_date</code> (an end before its start is flagged too). Report only — fix them
+                    in the JSON or via the relevant form. These are the same rules the pre-commit hook
+                    enforces.
+                </p>
+                <button class="btn-add-batch" id="enrich-datefields-scan-btn" disabled>Scan other date
+                    fields</button>
+                <div id="enrich-datefields-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>🔗 Malformed URLs</h3>
+                <p class="field-hint">
+                    Checks every link field anywhere in the data (<code>url</code>, <code>link</code>,
+                    <code>website</code>, <code>ticket_url</code>, <code>tickets_url</code>,
+                    <code>ticketing_url</code>, <code>promoter_link</code>, <code>event_url</code>,
+                    <code>festival_url</code>, <code>venue_url</code>, <code>video_trailer</code>,
+                    <code>podcast_url</code>, <code>audio_url</code>, <code>episode_url</code>,
+                    <code>enclosureUrl</code>, <code>yt_url</code>, <code>buy_url</code>,
+                    <code>publication_url</code>) is a full <code>http(s)://host.tld/…</code> address with no
+                    spaces. <code>facebook</code>, <code>facebook_group</code> and <code>instagram</code> may
+                    also be a bare username (or <code>groups/name</code> for Facebook). Flyer and cover
+                    fields are filenames and aren't checked. Report only — same rules as the pre-commit
+                    hook.
+                </p>
+                <button class="btn-add-batch" id="enrich-urlcheck-scan-btn" disabled>Scan for malformed
+                    URLs</button>
+                <div id="enrich-urlcheck-results"></div>
+            </div>
+
+            <div class="enrich-section">
                 <h3>🔞 Possible age ratings</h3>
                 <p class="field-hint">
                     Scans event/music/poetry descriptions, plus tour and repertoire show descriptions, with
@@ -6926,6 +6965,8 @@
             { group: "Problems", label: "Multi-date records with an explicit eventId", btn: "enrich-multidate-eventid-scan-btn", boxes: ["enrich-multidate-eventid-results"] },
             { group: "Problems", label: "Orphaned club/promoter/venue/performer ids", btn: "enrich-orphan-scan-btn", boxes: ["enrich-orphan-results"] },
             { group: "Problems", label: "Unparseable or implausible dates", btn: "enrich-datequality-scan-btn", boxes: ["enrich-datequality-results"] },
+            { group: "Problems", label: "Invalid dates in other fields", btn: "enrich-datefields-scan-btn", boxes: ["enrich-datefields-results"] },
+            { group: "Problems", label: "Malformed URLs", btn: "enrich-urlcheck-scan-btn", boxes: ["enrich-urlcheck-results"] },
             { group: "Problems", label: "Missing or malformed coordinates", btn: "enrich-latlon-scan-btn", boxes: ["enrich-latlon-results"] },
             { group: "Problems", label: "Missing postcodes", btn: "enrich-postcode-scan-btn", boxes: ["enrich-postcode-results", "enrich-postcode-unresolved"] },
             { group: "Problems", label: "Possible duplicate venues", btn: "enrich-dupe-scan-btn", boxes: ["enrich-dupe-results"] },
@@ -7080,6 +7121,8 @@
                 document.getElementById("enrich-promoter-fill-scan-btn").disabled = false;
                 document.getElementById("enrich-orphan-scan-btn").disabled = false;
                 document.getElementById("enrich-datequality-scan-btn").disabled = false;
+                document.getElementById("enrich-datefields-scan-btn").disabled = false;
+                document.getElementById("enrich-urlcheck-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-format-scan-btn").disabled = false;
@@ -7105,6 +7148,8 @@
                 document.getElementById("enrich-promoter-fill-scan-btn").disabled = true;
                 document.getElementById("enrich-orphan-scan-btn").disabled = true;
                 document.getElementById("enrich-datequality-scan-btn").disabled = true;
+                document.getElementById("enrich-datefields-scan-btn").disabled = true;
+                document.getElementById("enrich-urlcheck-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-format-scan-btn").disabled = true;
@@ -8084,6 +8129,154 @@
             if (batchTouched) refreshBatchSummary();
             alert(`Applied ${applied} date fix(es) to the loaded data and added them to the batch below. Use "Generate from batch" for just these, or "Download full enriched JSON" above for the whole file.`);
             markEnrichedDataDirty();
+        });
+
+        // -- Invalid dates in other fields + malformed URLs (report only) ------
+        // Same rules as the pre-commit hook (_secret_/check_events_data.py), so
+        // what the hook would block on is what these scans list.
+        const STRICT_DATE_RE = /^\d{2}\/\d{2}\/\d{4}$/;
+        function strictDateIssue(s) {
+            if (typeof s !== "string") return "not a string";
+            if (!STRICT_DATE_RE.test(s.trim())) return "not in DD/MM/YYYY format (two-digit day and month)";
+            return checkDateString(s); // calendar validity + before-2000 / far-future typo flags
+        }
+        const scanEntries = c => Array.isArray(c) ? c.map((v, i) => [i, v])
+            : (c && typeof c === "object" ? Object.entries(c) : []);
+        const scanName = r => (r && typeof r === "object"
+            && (r.showname || r.name || r.tour_name || r.club || r.id || r.title)) || "(untitled)";
+
+        function renderValidationResults(resultsEl, found, emptyMsg) {
+            resultsEl.innerHTML = "";
+            if (!found.length) {
+                resultsEl.innerHTML = `<div class="enrich-empty">${emptyMsg}</div>`;
+                return;
+            }
+            found.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = `
+                    <div class="enrich-result-main">
+                        <div class="enrich-result-name">${escapeHtml(String(f.name))} <span style="font-weight:normal;color:#999;">(${escapeHtml(f.where)})</span></div>
+                        <div class="enrich-result-reasons"><code>${escapeHtml(f.field)}</code> ${f.value !== undefined ? `"${escapeHtml(String(f.value))}" — ` : ""}${escapeHtml(f.issue)}</div>
+                    </div>`;
+                resultsEl.appendChild(row);
+            });
+        }
+
+        function collectOtherDateIssues(data) {
+            const out = [];
+            const add = (where, rec, field, value) => {
+                const issue = strictDateIssue(value);
+                if (issue) out.push({ where, name: scanName(rec), field, value, issue });
+            };
+            const addIfSet = (where, rec, field, value) => {
+                if (value !== undefined && value !== null && value !== "") add(where, rec, field, value);
+            };
+            ["specificEvents", "musicEvents", "poetryEvents", "workshops"].forEach(bucket => {
+                scanEntries(data[bucket]).forEach(([i, rec]) => {
+                    if (!rec || typeof rec !== "object") return;
+                    const where = `${bucket}[${i}]`;
+                    addIfSet(where, rec, "date_added", rec.date_added);
+                    if (Array.isArray(rec.dates)) rec.dates.forEach(d => addIfSet(where, rec, "dates", d));
+                    if (Array.isArray(rec.datetimes)) {
+                        // entries look like "04/04/2026 : 2.00pm" -- check the date part
+                        rec.datetimes.forEach(d => {
+                            if (typeof d === "string") addIfSet(where, rec, "datetimes", d.split(":")[0].trim());
+                        });
+                    }
+                    // an event's own `date` is covered by the scan above; workshops' isn't
+                    if (bucket === "workshops") {
+                        (Array.isArray(rec.date) ? rec.date : [rec.date]).forEach(d => addIfSet(where, rec, "date", d));
+                    }
+                });
+            });
+            [["tours", "tour_dates"], ["repertoire_shows", "show_dates"]].forEach(([bucket, sub]) => {
+                scanEntries(data[bucket]).forEach(([key, rec]) => {
+                    scanEntries(rec && rec[sub]).forEach(([j, row]) => {
+                        if (row && typeof row === "object") {
+                            addIfSet(`${bucket}[${key}].${sub}[${j}]`, rec, "date_added", row.date_added);
+                        }
+                    });
+                });
+            });
+            const toDate = s => {
+                const m = STRICT_DATE_RE.test(s || "") && String(s).split("/").map(Number);
+                if (!m) return null;
+                const d = new Date(m[2], m[1] - 1, m[0]);
+                return d.getMonth() === m[1] - 1 && d.getDate() === m[0] ? d : null;
+            };
+            scanEntries(data.festivals).forEach(([key, rec]) => {
+                if (!rec || typeof rec !== "object") return;
+                const where = `festivals[${key}]`;
+                addIfSet(where, rec, "start_date", rec.start_date);
+                addIfSet(where, rec, "end_date", rec.end_date);
+                addIfSet(where, rec, "date_added", rec.date_added);
+                const a = toDate(rec.start_date), b = toDate(rec.end_date);
+                if (a && b && b < a) {
+                    out.push({ where, name: scanName(rec), field: "end_date", value: rec.end_date,
+                        issue: `is before start_date (${rec.start_date})` });
+                }
+            });
+            return out;
+        }
+
+        const URL_SCAN_KEYS = new Set(["url", "link", "website", "ticket_url", "tickets_url", "ticketing_url",
+            "promoter_link", "event_url", "festival_url", "venue_url", "video_trailer", "podcast_url",
+            "audio_url", "episode_url", "enclosureUrl", "yt_url", "buy_url", "publication_url"]);
+        const SOCIAL_SCAN_KEYS = new Set(["facebook", "facebook_group", "instagram"]);
+        const FB_PATH_RE = /^(?:groups|pages|people)\/[\w.\-%]+\/?$/i;
+
+        function urlScanProblem(value, key) {
+            if (value === null || value === undefined || value === "") return "";
+            if (typeof value !== "string") return `should be a string, not ${Array.isArray(value) ? "an array" : typeof value}`;
+            const v = value.trim();
+            if (SOCIAL_SCAN_KEYS.has(key) && (HANDLE_RE.test(v) || (key !== "instagram" && FB_PATH_RE.test(v)))) return "";
+            if (v !== value) return "has leading/trailing whitespace";
+            if (/\s/.test(v)) return "contains a space";
+            if (!URL_RE.test(v)) return `not a valid http(s) link${SOCIAL_SCAN_KEYS.has(key) ? " or username" : ""}`;
+            return "";
+        }
+
+        function collectUrlIssues(data) {
+            const out = [];
+            const walkUrls = (node, where, name) => {
+                if (Array.isArray(node)) {
+                    node.forEach((v, i) => walkUrls(v, `${where}[${i}]`, name));
+                } else if (node && typeof node === "object") {
+                    Object.entries(node).forEach(([k, v]) => {
+                        if (URL_SCAN_KEYS.has(k) || SOCIAL_SCAN_KEYS.has(k)) {
+                            const issue = urlScanProblem(v, k);
+                            if (issue) out.push({ where, name, field: k, value: v, issue });
+                        } else {
+                            walkUrls(v, `${where}.${k}`, name);
+                        }
+                    });
+                }
+            };
+            Object.entries(data).forEach(([bucket, coll]) => {
+                if (coll && typeof coll === "object") {
+                    scanEntries(coll).forEach(([key, rec]) => walkUrls(rec, `${bucket}[${key}]`, scanName(rec)));
+                }
+            });
+            return out;
+        }
+
+        document.getElementById("enrich-datefields-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-datefields-results");
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            renderValidationResults(resultsEl, collectOtherDateIssues(enrichedData), "No invalid dates found in these fields.");
+        });
+
+        document.getElementById("enrich-urlcheck-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-urlcheck-results");
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            renderValidationResults(resultsEl, collectUrlIssues(enrichedData), "No malformed URLs found.");
         });
 
         // -- Possible age ratings (report only — events have no stable id) ------
