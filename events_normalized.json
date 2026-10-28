@@ -3116,7 +3116,9 @@
           "ticket_url": "https://www.gigantic.com/gaz-brookfield-tickets/leicester-the-international/2026-10-28-19-30",
           "isSpecial": true,
           "event_flyer": "2026_10_28_gaz_brookfield_n_bsydes.jpg",
-          "other_performer_ids": ["b-sydes"],
+          "other_performer_ids": [
+            "b-sydes"
+          ],
           "eventId": "T-gaz-brookfield-autumn-2026-20261028-the-international-leicester"
         },
         {
@@ -5783,7 +5785,7 @@
           "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261119-chapel-arts-centre-bath"
         },
         {
-          "date": "20/11.2026",
+          "date": "20/11/2026",
           "venue_id": "steam-and-whistle",
           "time": "Doors 7pm, start 7.30pm",
           "price": "£18 (+ £1.80)",
@@ -13490,7 +13492,7 @@
       "schedule": "3rd thursday",
       "time": "7-9pm",
       "price": "Free (donations appreciated)",
-      "location": "Burwell Day centre, Burwell, Cambridge, CB25 0DR",
+      "venue_id": "burwell-day-centre-cambridge",
       "venue_url": "https://burwelldaycentre.co.uk/",
       "exceptions": [
         "22/01/2026"
@@ -13504,7 +13506,7 @@
       "name": "Spoken Word at Monkton Arts",
       "schedule": "3rd thursday",
       "time": "3.30-5pm",
-      "location": "Monkton Arts, Ryde, Isle of Wight, PO33 1JP",
+      "venue_id": "monkton-arts-ryde",
       "venue_url": "https://burwelldaycentre.co.uk/",
       "exceptions": [
         "26/02/2026",
@@ -13926,7 +13928,7 @@
       "full_address": "The Lobster Pot, 7-11, The Square, Strangford, Downpatrick, Northern Ireland, BT30 7ND",
       "city": "Downpatrick",
       "postcode": "BT30 7ND",
-      "facebook": "lobsterpotstrangford/",
+      "facebook": "lobsterpotstrangford",
       "description": "Seafood Restaurant in Strangford, Downpatrick, where seafood lovers indulge in delicious dishes like seafood chowder, scampi, and fresh lobster. Enjoy our cozy beer garden and don't miss out on our famous pecan pie.",
       "latlon": [
         54.3709,
@@ -14853,6 +14855,19 @@
         -1.22619
       ]
     },
+    "burwell-day-centre-cambridge": {
+      "id": "burwell-day-centre-cambridge",
+      "name": "Burwell Day Centre, Cambridge",
+      "venue_type": "Other / unknown",
+      "city": "Cambridge",
+      "postcode": "CB25 0DR",
+      "full_address": "Burwell & District Day Centre, Ash Grove, Parsonage Close, Burwell, Cambridge, CB25 0DR",
+      "url": "https://burwelldaycentre.co.uk/",
+      "latlon": [
+        52.27661,
+        0.32461
+      ]
+    },
     "the-hoops-barton": {
       "id": "the-hoops-barton",
       "name": "The Hoops, Barton",
@@ -15323,6 +15338,20 @@
       "latlon": [
         50.48129,
         -3.77984
+      ]
+    },
+    "monkton-arts-ryde": {
+      "id": "monkton-arts-ryde",
+      "name": "Monkton Arts, Ryde",
+      "venue_type": "Other / unknown",
+      "city": "Ryde, Isle of Wight",
+      "postcode": "PO33 1JP",
+      "full_address": "Monkton Arts, 11, East St, Ryde, Isle of Wight, PO33 1JP",
+      "url": "https://www.monktonarts.co.uk/",
+      "email": "monktonarts@gmail.com",
+      "latlon": [
+        50.72981,
+        -1.15353
       ]
     },
     "better-days-cafe-ventnor": {
@@ -16458,7 +16487,7 @@
       "full_address": "Castle Inn, 28 Prospect Place, Swindon, SN1 3LQ",
       "city": "Swindon",
       "postcode": "SN1 3LQ",
-      "facebook": "swindonoldtownpublichouse/",
+      "facebook": "swindonoldtownpublichouse",
       "description": "A great little back street pub with all the goodies & lovely Courtyard Garden. Live Music, A Great range of Beers, Wines & Spirits.",
       "latlon": [
         51.5551,
@@ -20032,7 +20061,7 @@
       "postcode": "CO1 1NF",
       "url": "https://colchesterartscentre.com/",
       "facebook": "ColchesterArtsCentre",
-      "instagram": "colchartscentre/",
+      "instagram": "colchartscentre",
       "description": "How do you describe a venue that can put children's entertainer Palfi the Clown on, on the same day as Cradle of Filth? Where a Vinyl listening session in the morning becomes a comedy club in the evening, where folk enthusiasts can sit happily knitting (and they do!) in the exact same spot a ferocious mosh pit of teenage dancing takes place the following night?  And where the beautiful historic architecture of St Mary's Church dating back over a thousand years, plays host to some of the newest comics, most modern choreographers, some of the coolest DJ's and some of the freshest talent in Britain.\n\n\n\nOur passion to present new work bringing great bands and comics to Colchester burns more brightly than ever.  Our business is all about fresh ideas, new acts, new art forms and vibrant new ways of working.  We can't stand still. We embrace the new, the quirky the original - and yes, the surreal!",
       "latlon": [
         51.88863,
@@ -21392,7 +21421,7 @@
     "hannah-sneyd": {
       "id": "hannah-sneyd",
       "name": "Hannah Sneyd",
-      "url": "hanu_oh",
+      "instagram": "hanu_oh",
       "bio": "Hannah Sneyd is a storyteller and healer based in the Dartmoor wilds. Her original stories arrive on the wind and thread a canny path between the familiar and the fantastical."
     },
     "royal-tales-story-club-sutton-coldfield": {
