@@ -12733,6 +12733,21 @@
       "isSpecial": true
     },
     {
+      "name": "YORK STORY BAR - ft. Tim Ralphs [Tim Ralphs]",
+      "showname": "YORK STORY BAR - ft. Tim Ralphs",
+      "date": "21/11/2026",
+      "venue_id": "the-cyclist-york",
+      "performer_id": "tim-ralphs",
+      "eventId": "20261121-tim-ralphs-the-cyclist-york",
+      "date_added": "29/10/2026",
+      "time": "7:30PM - 10:30PM",
+      "price": "£10 (+ £0.84), £7  (+ £0.59) concession, £4 (+ £0.34) super-concession (e.g. students)",
+      "description": "Welcome to the first ever YORK STORY BAR, where all the stories go to hang out! The scene is The Cyclist cafe-bar at Cycle Heaven. But we'll be going to less angelic places....\n\n\n\nLocal storytellers and musicians Lara McClure and Adderstone (as well as a couple of surprises), will warm you up with some dark tales and songs to mark the nights closing in. Then charge your glass and settle in for our headline storyteller extraordinaire Tim Ralphs, with a show that's perfect for Viking-central York:\n\n\n\nCAN THE MOUNTAINS LOVE THE SEA?\nYou are invited to a wedding at York Story Bar! There's a ruthless Giantess outside who wants to kill us all. Loki's going to do something disgusting with a goat. But it's all in aid of the most unlikely marriage the world will ever see - ruthless Skadi, daughter of murdered Thiazi, will wed Njord, the peaceful God of the Sea. You might think that this curious union is unlikely to lead to happiness ever after, but it would be rude to say anything, the bar is well stocked and, come bloodshed or bliss, we’ll be watching from ringside seats.\n\n\n\nCan the Mountains Love the Sea? is Tim Ralphs' brand new adaptation of The Marriage of Njord and Skadi, a Norse myth brimful of anger, magic and adult humour. This is no happy-ever-after story, this is a tale that gets to the beating heart of an ancient myth and finds truths that ring through the ages.",
+      "ticket_url": "https://www.ticketsource.com/adderstone/york-story-bar-ft-tim-ralphs/e-aobbaax",
+      "fb_event": "1829837864829318",
+      "isSpecial": true
+    },
+    {
       "name": "Marion Leeper & Lynette Hill [ + Tales Tattled & Told tellers]",
       "showname": "Marion Leeper & Lynette Hill",
       "date": "21/11/2026",
@@ -19671,6 +19686,19 @@
       "latlon": [
         53.74069,
         -2.01405
+      ]
+    },
+    "the-cyclist-york": {
+      "id": "the-cyclist-york",
+      "name": "The Cyclist, York",
+      "full_address": "The Cyclist @ Cycle Heaven, 31 Hospital Fields Rd, Fulford, York, YO10 4FS",
+      "city": "York",
+      "postcode": "YO10 4FS",
+      "url": "https://www.cycle-heaven.co.uk/service/our-cafe/",
+      "description": "The Cyclist is a café in a cycle shop, a really good cycle shop, we hasten to add, but our aims and values are simply that, a café in a cycle shop… a really good café in a really good cycle shop…we hasten to add!",
+      "latlon": [
+        53.94555,
+        -1.07809
       ]
     },
     "studio-theatre-royal-york": {
