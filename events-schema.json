@@ -380,6 +380,11 @@
           "type": "string",
           "description": "Performer's own website."
         },
+        "isPromoter": {
+          "type": "boolean",
+          "default": false,
+          "description": "true when this performer also promotes events in their own right. They are then listed in the promoters directory (promoters.html) under their performer id even with no `promoters` entry, with name, bio (as description), url, facebook and ticketing_url filled in from this record. If a `promoters[id]` record exists the two are merged, promoter fields winning. The performer is listed among the promoter's artists, linking back to their performer page. Events only count as promoted when they carry the matching `promoter_id`. If the id is also a club, the club takes precedence."
+        },
         "bio": {
           "type": "string"
         },

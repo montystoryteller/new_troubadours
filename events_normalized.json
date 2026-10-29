@@ -12738,6 +12738,7 @@
       "date": "21/11/2026",
       "venue_id": "the-cyclist-york",
       "performer_id": "tim-ralphs",
+      "promoter_id": "adderstone",
       "eventId": "20261121-tim-ralphs-the-cyclist-york",
       "date_added": "29/10/2026",
       "time": "7:30PM - 10:30PM",
@@ -21182,6 +21183,7 @@
       "facebook": "adderstone.duo",
       "instagram": "adderstone.duo",
       "youtube": "https://www.youtube.com/@Adderstone",
+      "isPromoter": true,
       "bio": "Looking through an adderstone, you see life differently. Leftfield folk & music-infused storytelling. Storyteller-musicians. Cath Heinemeyer & Gemma McDermott, York."
     },
     "sheema-mukherjee": {

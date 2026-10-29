@@ -138,6 +138,8 @@ function formatDateRange(dates) {
 // A promoter and a story club can be the same organisation:
 //   - promoters[id].isClub  === true, with id also a clubs[].club id, and/or
 //   - clubs[].isPromoter    === true (no promoters[] record required).
+// A performer can be a promoter too: performers[id].isPromoter === true (no
+// promoters[] record required). If the id is also a club, the club wins.
 // Either side is enough. The result is one effective record per promoter id:
 // the promoter's own fields win, the club fills any gaps (name, description,
 // website / facebook / tickets / email), and the club's venue, its
@@ -206,9 +208,36 @@ function buildPromoterRegistry(data) {
     if (c?.club && c.isPromoter && !base[c.club]) base[c.club] = {};
   });
 
+  // Performers that declare themselves promoters get an entry even with no record.
+  const performers = data.performers || {};
+  Object.entries(performers).forEach(([id, p]) => {
+    if (p?.isPromoter && !base[id]) base[id] = {};
+  });
+
   const registry = {};
   Object.entries(base).forEach(([id, rec]) => {
     const club = rec.isClub || clubsById[id]?.isPromoter ? clubsById[id] : null;
+    const performer =
+      !club && performers[id]?.isPromoter ? performers[id] : null;
+    if (performer) {
+      // Promoter's own fields win; the performer fills any gaps. Events are
+      // still matched by promoter_id only (see collectPromoterEvents), so
+      // gigs the performer merely plays are not shown as promoted. The
+      // performer is listed among the artists, which doubles as the link
+      // back to their performer page.
+      registry[id] = {
+        ...rec,
+        name: rec.name || performer.name,
+        description: rec.description || performer.bio,
+        promoter_link: rec.promoter_link || rec.url || performer.url,
+        facebook: rec.facebook || normaliseFacebookUrl(performer.facebook),
+        ticketing_url:
+          rec.ticketing_url || performer.ticketing_url || performer.tickets_url,
+        promoter_artists: uniq(rec.promoter_artists || [], [id]),
+        _performer: performer,
+      };
+      return;
+    }
     if (!club) {
       registry[id] = rec;
       return;
