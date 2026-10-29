@@ -23,6 +23,7 @@
 //   RENDERER      service binding -> renderer worker
 //   RENDER_CACHE  KV namespace
 //   DEBUG_SECRET  secret
+//   BOT_STATS     D1 database (optional): per-bot, per-page hit counts; see "bot stats"
 
 // Bot tiers. Browser Run time is scarce (free plan: 10 browser-minutes/day), so
 // only bots that benefit get a live render.
@@ -606,6 +607,135 @@ function logGate(request, tier, normUrl, outcome, extra = {}) {
   });
 }
 
+// ── bot stats (D1) ───────────────────────────────────────────
+// Counts page requests from identified bots (the two regexes at the top), one row per
+// UTC day + bot + page, in D1 (binding BOT_STATS, schema in bot_stats.sql). "page" is the
+// normalised path + identity params with any .html stripped, so /venues.html?venue=x and
+// /venues?venue=x count together. Forced/prewarm requests and asset fetches are never counted.
+// Writes run in ctx.waitUntil and swallow errors: stats can never slow down or break a page.
+// Read the report with:  curl -H "x-bot-report: $DEBUG_SECRET" "https://<site>/?days=30"
+const BOT_REPORT_HEADER = "x-bot-report";
+const statPage = (u) => u.pathname.replace(/\.html$/, "") + u.search;
+
+async function recordBotHit(env, request, normUrl) {
+  if (!env.BOT_STATS) return;
+  try {
+    const now = Date.now();
+    await env.BOT_STATS.prepare(
+      `INSERT INTO bot_hits (day, bot, page, hits, first_seen, last_seen)
+       VALUES (?1, ?2, ?3, 1, ?4, ?4)
+       ON CONFLICT (day, bot, page) DO UPDATE SET hits = hits + 1, last_seen = ?4`,
+    )
+      .bind(new Date(now).toISOString().slice(0, 10), botName(request), statPage(normUrl), now)
+      .run();
+  } catch (err) {
+    console.log("bot stat write failed", String(err));
+  }
+}
+
+// Page type for the coverage breakdown: "/venues?venue=x" -> "/venues". Pages with no query
+// (the home page and the bare listing pages) share one group.
+const pageType = (p) => {
+  const i = p.indexOf("?");
+  return i < 0 ? "(home + listing pages)" : p.slice(0, i);
+};
+
+// Every page the sitemap lists, in statPage() form: the denominator for "how much of the site".
+async function knownPageSet(env) {
+  const idx = (await env.RENDER_CACHE.get(KEYS_KEY, "json")) || {};
+  const set = new Set(["/"]);
+  for (const p of SITEMAP_STATIC_PAGES) set.add(p.replace(/\.html$/, ""));
+  for (const [name, path, param] of SITEMAP_ENTRIES) {
+    for (const key of Array.isArray(idx[name]) ? idx[name] : []) {
+      if (name === "tours" && key.startsWith(LEGACY_REPERTOIRE_TOUR_PREFIX)) continue;
+      const u = new URL(SITE_ORIGIN + path);
+      u.searchParams.append(param, key);
+      set.add(statPage(u));
+    }
+  }
+  return set;
+}
+
+async function botReportResponse(request, env) {
+  if (!env.BOT_STATS) return new Response("BOT_STATS binding missing", { status: 501 });
+  const days = Math.min(
+    Math.max(Number(new URL(request.url).searchParams.get("days")) || 30, 1),
+    365,
+  );
+  const since = new Date(Date.now() - (days - 1) * 864e5).toISOString().slice(0, 10);
+  const { results: rows } = await env.BOT_STATS.prepare(
+    `SELECT bot, page, SUM(hits) AS hits FROM bot_hits WHERE day >= ?1 GROUP BY bot, page`,
+  )
+    .bind(since)
+    .all();
+  const known = await knownPageSet(env);
+  const pct = (n) => (known.size ? Math.round((n / known.size) * 1000) / 10 : null);
+  const pctOf = (n, d) => (d ? Math.round((n / d) * 1000) / 10 : null);
+  // Coverage per page type: how many of the type's sitemap pages were hit, by any bot and by each bot.
+  const typeTotals = new Map(); // type -> sitemap pages of that type
+  for (const p of known) typeTotals.set(pageType(p), (typeTotals.get(pageType(p)) || 0) + 1);
+  const typeHit = new Map(); // type -> Set of its pages hit by any bot
+  const typeBotHit = new Map(); // type -> Map(bot -> distinct pages hit)
+
+  const bots = {};
+  const pages = new Map();
+  for (const r of rows) {
+    const isKnown = known.has(r.page);
+    const b = (bots[r.bot || "(unnamed)"] ||= { hits: 0, pagesHit: 0, sitemapPagesHit: 0 });
+    b.hits += r.hits;
+    b.pagesHit++;
+    if (isKnown) {
+      b.sitemapPagesHit++;
+      const t = pageType(r.page);
+      if (!typeHit.has(t)) typeHit.set(t, new Set());
+      typeHit.get(t).add(r.page);
+      if (!typeBotHit.has(t)) typeBotHit.set(t, new Map());
+      const tb = typeBotHit.get(t);
+      const botKey = r.bot || "(unnamed)";
+      tb.set(botKey, (tb.get(botKey) || 0) + 1); // rows are unique per bot + page
+    }
+    const p = pages.get(r.page) || { page: r.page, hits: 0, bots: [], inSitemap: isKnown };
+    p.hits += r.hits;
+    p.bots.push(r.bot);
+    pages.set(r.page, p);
+  }
+  const all = [...pages.values()];
+  const byHits = (a, b) => b.hits - a.hits;
+  const inSitemap = all.filter((p) => p.inSitemap);
+  const outside = all.filter((p) => !p.inSitemap);
+  const neverHit = [...known].filter((p) => !pages.has(p));
+  const byType = [...typeTotals]
+    .map(([type, total]) => {
+      const hit = typeHit.get(type)?.size || 0;
+      const perBot = {};
+      for (const [bot, n] of typeBotHit.get(type) || []) {
+        perBot[bot] = { hit: n, coveragePercent: pctOf(n, total) };
+      }
+      return { type, total, hit, coveragePercent: pctOf(hit, total), perBot };
+    })
+    .sort((x, y) => y.total - x.total);
+
+  const body = {
+    since,
+    days,
+    sitemapPages: known.size,
+    sitemapPagesHitByAnyBot: inSitemap.length,
+    coveragePercent: pct(inSitemap.length),
+    perBot: Object.entries(bots)
+      .map(([bot, b]) => ({ bot, ...b, coveragePercent: pct(b.sitemapPagesHit) }))
+      .sort(byHits),
+    // Sitemap coverage by page type: byType[].perBot lists only bots that hit at least one page of it.
+    byType,
+    topPages: [...all].sort(byHits).slice(0, 50),
+    // Hit by a bot but not in the sitemap: listing pages, outdated event ids, bad/probed keys.
+    notInSitemap: { count: outside.length, top: [...outside].sort(byHits).slice(0, 50) },
+    neverHit: { count: neverHit.length, sample: neverHit.slice(0, 200) },
+  };
+  return new Response(JSON.stringify(body, null, 2), {
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  });
+}
+
 const cacheKeyFor = (normUrl) => "render:" + normUrl.toString();
 
 // Invalidation timestamps (see above). One KV read.
@@ -939,6 +1069,21 @@ const SITEMAP_ENTRIES = [
   // so every other event page still renders for crawlers exactly as before.
   ["events", "/event.html", "event"],
 ];
+// Top-level pages with no identity param (listing / hub pages). Listed in the sitemap without a
+// <lastmod> (lastmodKeyFor() only knows param pages). /event.html is left out on purpose: with no
+// ?event= it shows the "today's events" state.
+const SITEMAP_STATIC_PAGES = [
+  "/storyclub.html",
+  "/promoters.html",
+  "/performers.html",
+  "/venues.html",
+  "/festival.html",
+  "/event_guide.html",
+  "/tour_guide.html",
+  "/flyers.html",
+  "/media.html",
+  "/books_merch.html",
+];
 const SITEMAP_MAX_URLS = 50000; // protocol limit per file
 const SITEMAP_CACHE_SECONDS = 60 * 60 * 6;
 
@@ -1053,6 +1198,7 @@ async function sitemapResponse(request, env) {
     console.log("sitemap: lastmod read failed", String(err));
   }
   const urls = [{ loc: `${SITE_ORIGIN}/` }];
+  for (const p of SITEMAP_STATIC_PAGES) urls.push({ loc: `${SITE_ORIGIN}${p}` });
   for (const [name, path, param] of SITEMAP_ENTRIES) {
     const list = Array.isArray(idx[name]) ? [...idx[name]].sort() : [];
     for (const key of list) {
@@ -1187,6 +1333,11 @@ export default {
       });
     }
 
+    // Bot hit report (see "bot stats" above). One D1 query, no KV writes.
+    if (isAuthorized(request, env, BOT_REPORT_HEADER)) {
+      return botReportResponse(request, env);
+    }
+
     // Mark ONE page stale without removing it or using any browser time.
     if (isAuthorized(request, env, MARK_STALE_HEADER)) {
       const existing = await env.RENDER_CACHE.get(key, "json");
@@ -1214,6 +1365,9 @@ export default {
     if (!forced && (!tier || !looksLikeHtmlRequest(request, url))) {
       return fetch(request);
     }
+
+    // An identified bot asked for a page: count it (not forced/prewarm requests, which are ours).
+    if (!forced) ctx.waitUntil(recordBotHit(env, request, normUrl));
 
     // Forced render (used by the prewarm workflow): always render live and
     // overwrite the stored snapshot.
