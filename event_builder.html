@@ -1315,6 +1315,11 @@
                 <label>Load JSON file</label>
                 <div>
                     <input type="file" id="enrich-file-input" accept="application/json,.json">
+                    <div style="margin:6px 0;">or
+                        <button type="button" class="btn-secondary-action" id="enrich-load-site-btn"
+                            title="Re-reads the same events_normalized.json this page loaded at start-up">Load the site's
+                            current events_normalized.json</button>
+                    </div>
                     <div class="field-hint" id="enrich-load-status">No file loaded yet.</div>
                 </div>
             </div>
@@ -7094,15 +7099,17 @@
 
         document.getElementById("enrich-health-btn").addEventListener("click", runHealthCheck);
 
-        document.getElementById("enrich-file-input").addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        // Shared by "Load JSON file" and "Load the site's current data": both
+        // end up here with the raw JSON text, so every scanner behaves
+        // identically whichever way the data arrived (including the
+        // duplicate-key scan, which needs the original text).
+        async function loadEnrichSource(label, getText) {
             const statusEl = document.getElementById("enrich-load-status");
             try {
-                const text = await file.text();
+                const text = await getText();
                 enrichedData = JSON.parse(text);
                 enrichedRawText = text;
-                renderLoadReport(statusEl, file, file.size, enrichedData);
+                renderLoadReport(statusEl, { name: label }, text.length, enrichedData);
                 // updatedEvents/updatedTours/updatedRepertoireShows are all
                 // derived from *this* loaded file (updatedEvents by array
                 // position, the other two by key) — stale against whatever
@@ -7139,7 +7146,7 @@
             } catch (err) {
                 enrichedData = null;
                 enrichedRawText = null;
-                statusEl.textContent = `Couldn't read that file as JSON: ${err.message}`;
+                statusEl.textContent = `Couldn't load ${label} as JSON: ${err.message}`;
                 document.getElementById("enrich-postcode-scan-btn").disabled = true;
                 document.getElementById("enrich-venuetype-scan-btn").disabled = true;
                 document.getElementById("enrich-latlon-scan-btn").disabled = true;
@@ -7165,6 +7172,27 @@
                 document.getElementById("enrich-health-results").textContent = "";
                 document.getElementById("enrich-download-all-btn").disabled = true;
             }
+        }
+
+        document.getElementById("enrich-file-input").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) loadEnrichSource(file.name, () => file.text());
+        });
+
+        // The page's own copy of the data: re-reads the same events_normalized.json
+        // the builder loaded at start-up (revalidated, so it's the current
+        // version). Deliberately NOT the in-memory object the page built from
+        // it -- that has had repertoire/club inheritance, aliases and the
+        // dates->date alias applied (see loadEventsData() in shared_utils.js),
+        // so scanning it would report fields that aren't in the file, and
+        // fixes/downloads would write that inflated data back out.
+        document.getElementById("enrich-load-site-btn").addEventListener("click", () => {
+            document.getElementById("enrich-load-status").textContent = "Loading the site's events_normalized.json…";
+            loadEnrichSource("the site's events_normalized.json", async () => {
+                const res = await fetch(`events_normalized.json?v=${Date.now()}`, { cache: "no-cache" });
+                if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? " " + res.statusText : ""}`);
+                return res.text();
+            });
         });
 
         function markEnrichedDataDirty() {
