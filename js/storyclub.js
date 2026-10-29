@@ -154,6 +154,23 @@ const scheduledOccurrencesInRange =
 const scheduledDatesInRange = RecurrenceEngine.scheduledDatesInRange;
 const nextMeetingDate = RecurrenceEngine.nextMeetingDate;
 const nextOccurrence = RecurrenceEngine.nextOccurrence;
+
+// Directory-card version of nextOccurrence(). The engine reports a
+// rescheduled meeting as TWO entries — "moved_from" (the usual date, which
+// is not happening) and "moved_to" (the replacement date, which is). The
+// card should lead with the replacement and say it has moved, rather than
+// treating the usual date as a plain cancellation, so "moved_from" entries
+// are skipped here. Genuine cancellations are still returned as cancelled.
+function nextOccurrenceForCard(schedule, exceptions) {
+  const from = getTodayMidnight();
+  const to = new Date(from);
+  to.setMonth(to.getMonth() + 6);
+  return (
+    scheduledOccurrencesInRange(schedule, from, to, exceptions || [])
+      .filter((o) => o.status !== "moved_from")
+      .find((o) => o.date >= from) || null
+  );
+}
 const prevMeetingDate = RecurrenceEngine.prevMeetingDate;
 
 // ── Main ──────────────────────────────────────────────────────────────────
@@ -1528,7 +1545,7 @@ async function renderDirectory(data) {
   // date, kept for the existing sort/feature-slot lookups.
   const today = getTodayMidnight();
   const clubIndex = clubs.map((c) => {
-    const nextOcc = nextOccurrence(c.schedule, c.exceptions);
+    const nextOcc = nextOccurrenceForCard(c.schedule, c.exceptions);
     // Clubs with alternate_locations rotate venue by month parity — resolve
     // against the next occurrence (or today, if none) rather than always
     // using the club's own (possibly placeholder) venue_id.
@@ -1588,7 +1605,8 @@ async function renderDirectory(data) {
         to,
         c.exceptions || [],
       );
-      if (occurrences.length === 0) return false;
+      if (occurrences.filter((o) => o.status !== "moved_from").length === 0)
+        return false;
     }
     return true;
   };
@@ -2006,7 +2024,12 @@ async function renderDirectory(data) {
 
         const card = document.createElement("div");
         card.className =
-          "event" + (entry.nextOcc?.isCancelled ? " event-cancelled" : "");
+          "event" +
+          (entry.nextOcc?.isCancelled
+            ? " event-cancelled"
+            : entry.nextOcc?.status === "moved_to"
+              ? " event-moved"
+              : "");
         card.id = "club-card-" + c.club;
         card.style.cursor = "pointer";
         card.onclick = () => (location.href = `storyclub.html?club=${c.club}`);
@@ -2035,6 +2058,16 @@ async function renderDirectory(data) {
               : "");
 
           card.appendChild(s);
+        }
+
+        // Rescheduled meeting: say so, and say what the usual date was
+        if (entry.nextOcc?.status === "moved_to" && entry.nextOcc.movedFrom) {
+          const note = document.createElement("div");
+          note.className = "club-moved-notice";
+          note.textContent =
+            "📅 Date changed this month — usually " +
+            formatDate(entry.nextOcc.movedFrom);
+          card.appendChild(note);
         }
 
         // Featured guest for the next meeting date

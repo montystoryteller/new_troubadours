@@ -631,3 +631,23 @@
 .club-trailer .event-video-wrapper {
     max-width: 100%;
 }
+
+/* ── Rescheduled meeting (date moved from the usual one) ─────
+   A positive "heads-up" look — amber accent, normal card — as opposed
+   to the red striped .event-cancelled treatment in shared-styles.css. */
+.club-list-grid .event.event-moved {
+    border-left: 4px solid #f9a825;
+    background: #fffdf3;
+}
+
+.club-moved-notice {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 9px;
+    background: #fff3cd;
+    color: #7a5600;
+    border: 1px solid #f9a825;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: bold;
+}
