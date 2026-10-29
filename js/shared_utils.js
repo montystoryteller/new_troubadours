@@ -2316,12 +2316,43 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
  * @returns {L.Map}
  */
 function initMap(elementId, onMoveEnd) {
+  // On touch screens a one-finger drag on the map would hijack page
+  // scrolling (the map fills most of the screen, so it's easy to start a
+  // scroll on it). So: one finger scrolls the page, two fingers pan/zoom
+  // the map (Leaflet's pinch handler pans as well as zooms). Mouse users
+  // are unaffected.
+  const isTouchOnly =
+    window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+
   const map = L.map(elementId, {
     maxBounds: UK_IRELAND_BOUNDS,
     maxBoundsViscosity: 1.0,
     minZoom: 5,
     maxZoom: 16,
+    dragging: !isTouchOnly,
   }).setView([53.0, -2.0], 6);
+
+  if (isTouchOnly) {
+    const container = map.getContainer();
+    const hint = document.createElement("div");
+    hint.className = "map-gesture-hint";
+    hint.textContent = "Use two fingers to move the map";
+    container.appendChild(hint);
+    let hideTimer = null;
+    container.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches.length !== 1) {
+          hint.classList.remove("visible");
+          return;
+        }
+        hint.classList.add("visible");
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => hint.classList.remove("visible"), 1500);
+      },
+      { passive: true },
+    );
+  }
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
