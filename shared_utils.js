@@ -2608,6 +2608,7 @@ async function loadEventsData(cacheBuster) {
             data;
           applyRepertoireInheritance(eventsData);
           applyClubPreviousIds(eventsData);
+          applyVenueAndPromoterPreviousIds(eventsData, { toursLookup });
           applyClubInheritance(eventsData);
           applyDatesAlias(eventsData);
           applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -2661,6 +2662,7 @@ async function loadEventsData(cacheBuster) {
     }
     applyRepertoireInheritance(eventsData);
     applyClubPreviousIds(eventsData);
+    applyVenueAndPromoterPreviousIds(eventsData);
     applyClubInheritance(eventsData);
     applyDatesAlias(eventsData);
     applyPerformerAliases(eventsData);
@@ -2736,6 +2738,7 @@ function handleEventsLoadFailure(reason) {
       const { eventsData, venuesLookup, performersLookup, toursLookup } = data;
       applyRepertoireInheritance(eventsData);
       applyClubPreviousIds(eventsData);
+      applyVenueAndPromoterPreviousIds(eventsData, { toursLookup });
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -2987,6 +2990,146 @@ function applyClubPreviousIds(eventsData) {
     fix(show);
     (show?.show_dates || []).forEach(fix);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Venue / promoter previous ids (venues[id].previous_id, promoters[id].previous_id)
+// — TEMPORARY handler for renamed ids, same idea as the club one above
+// ---------------------------------------------------------------------------
+
+/** old venue id -> current venue id, rebuilt on every events-data load. */
+let VENUE_PREVIOUS_ID_MAP = {};
+/** old promoter id -> current promoter id, rebuilt on every events-data load. */
+let PROMOTER_PREVIOUS_ID_MAP = {};
+
+// Keys that hold a venue / promoter id (or a list of them) anywhere in the
+// events data: venue_id on events, clubs, tour/show dates, festivals and
+// alternate_locations.{even,odd}; promoter_venues on promoter records;
+// promoter_id / promoter on anything promoted. Values are only rewritten when
+// they equal a declared previous id, so an unrelated string is never touched.
+const VENUE_REF_KEYS = ["venue_id"];
+const VENUE_REF_LIST_KEYS = ["promoter_venues"];
+const PROMOTER_REF_KEYS = ["promoter_id", "promoter"];
+
+/**
+ * Current venue id for `id`: unchanged if already live, the replacement if it
+ * is a declared `previous_id`. Pages use this to forward old ?venue= links.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolveVenueId(id) {
+  return (id && VENUE_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * Current promoter id for `id` (see resolveVenueId). Forwards old ?promoter= links.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolvePromoterId(id) {
+  return (id && PROMOTER_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * old -> current map from a registry of `{ id: record }` where a record may
+ * carry `previous_id` (string or array of strings). An old id that is ALSO a
+ * live id is never remapped (the live record wins). If two records claim the
+ * same old id, the first wins and a warning is logged.
+ */
+function buildPreviousIdMap(registry, label) {
+  const map = {};
+  Object.entries(registry || {}).forEach(([id, rec]) => {
+    if (!rec || isBlankValue(rec.previous_id)) return;
+    [].concat(rec.previous_id).forEach((old) => {
+      if (typeof old !== "string" || !old || old === id || registry[old]) return;
+      if (map[old] && map[old] !== id) {
+        console.warn(
+          `${label} previous_id "${old}" is claimed by both "${map[old]}" and "${id}" — keeping "${map[old]}"`,
+        );
+        return;
+      }
+      map[old] = id;
+    });
+  });
+  return map;
+}
+
+/**
+ * The promoter registry as buildPromoterRegistry() (promoters.js) sees it:
+ * promoters{} plus any club that is also a promoter (clubs[].isPromoter, or
+ * promoters[id].isClub). Such a promoter shares its id with the club, so the
+ * club's previous_id is its previous_id too unless the promoter record sets
+ * its own.
+ */
+function promoterRegistryForPreviousIds(eventsData) {
+  const reg = { ...(eventsData?.promoters || {}) };
+  (eventsData?.clubs || []).forEach((c) => {
+    if (!c?.club) return;
+    const rec = reg[c.club];
+    if (!(c.isPromoter || rec?.isClub)) return;
+    reg[c.club] = { ...rec, previous_id: rec?.previous_id ?? c.previous_id };
+  });
+  return reg;
+}
+
+/** Rewrites venue/promoter references under `root` through `map`, in place. */
+function rewriteIdReferences(root, map, keys, listKeys) {
+  const canon = (v) => (typeof v === "string" && map[v]) || v;
+  (function walk(node) {
+    if (Array.isArray(node)) {
+      node.forEach(walk);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    keys.forEach((k) => {
+      if (typeof node[k] === "string") node[k] = canon(node[k]);
+    });
+    listKeys.forEach((k) => {
+      if (Array.isArray(node[k])) node[k] = [...new Set(node[k].map(canon))];
+    });
+    Object.keys(node).forEach((k) => walk(node[k]));
+  })(root);
+}
+
+/**
+ * Lets a venue or promoter be renamed without breaking anything that still
+ * uses the old id. A record in `venues` / `promoters` may carry `previous_id`
+ * (a string, or an array of strings for more than one rename). At load time
+ * this
+ *   1. builds VENUE_PREVIOUS_ID_MAP / PROMOTER_PREVIOUS_ID_MAP (old -> current),
+ *   2. rewrites every reference to an old id to the current one (see
+ *      VENUE_REF_KEYS / PROMOTER_REF_KEYS above), so downstream code only ever
+ *      sees current ids.
+ * Pages forward old ?venue= / ?promoter= URLs with resolveVenueId() /
+ * resolvePromoterId(). Idempotent and safe to call repeatedly; it must run
+ * before applyClubInheritance(), which copies a club's venue_id onto events.
+ * Remove this (and the previous_id fields) once old links are gone.
+ * @param {object} eventsData
+ * @param {{toursLookup?: object}} [lookups] - a separate copy of
+ *   eventsData.tours (as when loaded back from the localStorage cache).
+ */
+function applyVenueAndPromoterPreviousIds(eventsData, lookups = {}) {
+  VENUE_PREVIOUS_ID_MAP = buildPreviousIdMap(eventsData?.venues, "Venue");
+  PROMOTER_PREVIOUS_ID_MAP = buildPreviousIdMap(
+    promoterRegistryForPreviousIds(eventsData),
+    "Promoter",
+  );
+  const roots = [eventsData, lookups.toursLookup].filter(Boolean);
+  if (Object.keys(VENUE_PREVIOUS_ID_MAP).length) {
+    roots.forEach((r) =>
+      rewriteIdReferences(
+        r,
+        VENUE_PREVIOUS_ID_MAP,
+        VENUE_REF_KEYS,
+        VENUE_REF_LIST_KEYS,
+      ),
+    );
+  }
+  if (Object.keys(PROMOTER_PREVIOUS_ID_MAP).length) {
+    roots.forEach((r) =>
+      rewriteIdReferences(r, PROMOTER_PREVIOUS_ID_MAP, PROMOTER_REF_KEYS, []),
+    );
+  }
 }
 
 // Top-level arrays whose entries can reference a club via `.club` and so
@@ -3305,6 +3448,7 @@ async function checkForNewerEventsDataBackground() {
       }
       applyRepertoireInheritance(eventsData);
       applyClubPreviousIds(eventsData);
+      applyVenueAndPromoterPreviousIds(eventsData);
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData);

@@ -416,10 +416,10 @@ const KEYS_MEMORY_MS = 5 * 60 * 1000;
 // path (no .html) -> { url param -> index list name }
 const KEY_CHECKS = {
   "/performers": { performer: "performers" },
-  "/venues": { venue: "venues" },
-  // clubs_previous = retired ids (clubs[].previous_id): known pages, but kept out of "clubs" so the sitemap never lists them
+  "/venues": { venue: ["venues", "venues_previous"] },
+  // *_previous = retired ids (clubs/venues/promoters[].previous_id): known pages, but kept out of the main list so the sitemap never lists them
   "/storyclub": { club: ["clubs", "clubs_previous"] },
-  "/promoters": { promoter: "promoters" },
+  "/promoters": { promoter: ["promoters", "promoters_previous"] },
   "/festival": { festival: "festivals" },
   "/tour_guide": { tour: "tours", performer: "performers" },
 };

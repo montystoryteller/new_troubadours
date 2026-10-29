@@ -15485,6 +15485,7 @@
     },
     "asylum-chapel-london": {
       "id": "asylum-chapel-london",
+      "previous_id": "asylum-chapel",
       "name": "Asylum Chapel",
       "city": "London",
       "postcode": "SE15 2SQ",

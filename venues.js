@@ -787,6 +787,16 @@ setCanonical("venue");
     return;
   }
 
+  // An old (previous_id) venue id: forward to the venue's current URL, keeping
+  // any other query params. replace() so Back doesn't bounce into the redirect.
+  const currentVenueId = resolveVenueId(venueId);
+  if (currentVenueId !== venueId) {
+    const url = new URL(location.href);
+    url.searchParams.set("venue", currentVenueId);
+    location.replace(url.toString());
+    return;
+  }
+
   eventsData = loaded.eventsData;
   venuesLookup = loaded.venuesLookup;
   performersLookup = loaded.performersLookup;

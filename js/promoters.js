@@ -952,6 +952,18 @@ setCanonical("promoter");
     return;
   }
 
+  // An old (previous_id) promoter id: forward to the promoter's current URL,
+  // keeping any other query params. replace() so Back doesn't bounce.
+  if (promoterId) {
+    const currentPromoterId = resolvePromoterId(promoterId);
+    if (currentPromoterId !== promoterId) {
+      const url = new URL(location.href);
+      url.searchParams.set("promoter", currentPromoterId);
+      location.replace(url.toString());
+      return;
+    }
+  }
+
   eventsData = result.eventsData;
   promotersLookup = buildPromoterRegistry(eventsData);
   festivalsLookup = eventsData.festivals || {};
