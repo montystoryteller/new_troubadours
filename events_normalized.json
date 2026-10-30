@@ -2940,12 +2940,10 @@
           "showname": "Storytelling Sunday: Vampires",
           "date": "25/10/2026",
           "venue_id": "love-shack-london",
-          "support_performer_ids": [
-            "vanessa-woolf"
-          ],
-          "eventId": "20261025-unknown-performer-love-shack-london",
+          "eventId": "20261025-vanessa-woolf-performer-love-shack-london",
           "date_added": "02/10/2026",
           "time": "2-4pm",
+          "performer_id": "vanessa-woolf",
           "club": "connection-with-wonder",
           "price": "£0 (+ £1.55)",
           "description": "A full length performance plus limited five-minute guest storyteller spots. THE VIY (Gogol's Vampire) Live storytelling and music. Climb through the bookcase into another world for a Sunday afternoon with a psychedelic vampire witch. Journey into the darker side of Ukranian folklore, horror, wonder and magic  … inspired by Gogol's short story The Viy.\n\n\n\nOur venue is exceptionally beautiful, and you are welcome to come in costume.",
@@ -7337,11 +7335,7 @@
       "time": "7.30-9",
       "facebook": "ABitCrack",
       "club": "abitcrack",
-      "convenor": [
-        "chris-bostock",
-        "malcolm-green",
-        "pat-renton"
-      ],
+      "convenor": ["chris-bostock", "malcolm-green", "pat-renton"],
       "venue_id": "the-chillingham-arms",
       "feature_slots": [
         [
