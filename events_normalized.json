@@ -7337,6 +7337,11 @@
       "time": "7.30-9",
       "facebook": "ABitCrack",
       "club": "abitcrack",
+      "convenor": [
+        "chris-bostock",
+        "malcolm-green",
+        "pat-renton"
+      ],
       "venue_id": "the-chillingham-arms",
       "feature_slots": [
         [
@@ -22682,6 +22687,24 @@
       "name": "Olivia Armstrong",
       "url": "https://oliviaarmstrongstoryteller.com/",
       "bio": "Professional storyteller, based in London and originally from Northern Ireland, Oliva Armstrong works with all ages and communities. From museums to universities, broadcasters to libraries, caves to castles,Olivia is your one-stop shop for storytelling.\n\n\n\nOlivia has an extensive repertoire of traditional folktales and historical stories, and is frequently commissioned to create site-specific original stories."
+    },
+    "chris-bostock": {
+      "id": "chris-bostock",
+      "name": "Chris Bostock",
+      "url": "https://chrisbostock.co.uk/",
+      "bio": "Chris is a professional Storyteller and Theatre Worker. His background is in Teaching, Theatre and Theatre in Education. He tells traditional tales from many different cultures, to listeners of all ages. His stories are chosen to entertain, excite and encourage listeners to dream with open eyes.... and then to become storytellers themselves. His work in Schools complements National Curriculum attainment targets and supports Teachers' creative and linguistic requirements for their pupils. Chris also runs Training Courses in Storytelling for Teachers and Librarians."
+    },
+    "malcolm-green": {
+      "id": "malcolm-green",
+      "name": "Malcolm Green",
+      "url": "https://www.malcolm-green.co.uk/",
+      "bio": "Malcom Green's practice as a storyteller has been informed by his first encounter with oral storytelling some 40 years ago in a village in Cameroon, were he was moved by the power of the story to create a sense of community.\n\n\n\nDrawing on that, the purpose of his storytelling today is to take people deeply into the world so that they experience being a part of it, in all its elements, both human and more than human. And from this to know our inter-connectedness, with all its wonder, mystery, grief and joy.\n\n\n\nThis applies, whether it be the written or spoken word, with school children or with adults, in workshop or performance. The endeavour to create a sense of connection with life and a belonging to place is rooted in the stories he tells."
+    },
+    "pat-renton": {
+      "id": "pat-renton",
+      "name": "Pat Renton",
+      "url": "https://www.abitcrack.com/project/pat-renton/",
+      "bio": "Pat Renton has worked as a storyteller for over 25 years and has gathered stories from many cultures across the world.\n\n\n\nShe believes that the beauty of stories is that they are for everyone and over the past years she has had the experience of working with all ages and in all kinds of places. Drawing people into the world of story is a magical thing to do."
     },
     "shonaleigh": {
       "id": "shonaleigh",
