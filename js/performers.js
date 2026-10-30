@@ -1289,7 +1289,7 @@ function renderPerformer() {
   renderUpcomingSection(myTours, myTouringShows, allOther, myFestivals);
 
   // Flyer gallery — collects all flyers across tours, shows and events
-  renderFlyerGallery(myTours, myTouringShows, allOther);
+  renderFlyerGallery(myTours, myTouringShows, allOther, performer);
 
   // If this is a troupe, render each alias config as a collapsible sub-section
   if (isTroupe(performer)) {
@@ -1567,11 +1567,11 @@ function makePerfFlyerThumb(flyerName, label, extraClass) {
   return wrap;
 }
 
-function renderFlyerGallery(myTours, myTouringShows, allOther) {
+function renderFlyerGallery(myTours, myTouringShows, allOther, performerRec) {
   const items = [];
   const seen = new Set();
 
-  function add(flyerName, label, dateStr, isMusic, isPast, isPoetry) {
+  function add(flyerName, label, dateStr, isMusic, isPast, isPoetry, sortDate) {
     if (!flyerName?.trim()) return;
     const key = flyerName.trim() + "|" + (dateStr || "");
     if (seen.has(key)) return;
@@ -1580,6 +1580,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
       src: BASE_FLYER + sanitizeFlyerName(flyerName.trim()),
       label: label || "",
       dateStr: dateStr || "",
+      sortDate: sortDate || null,
       isMusic: !!isMusic,
       isPoetry: !!isPoetry,
       isPast: !!isPast,
@@ -1614,6 +1615,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
         tour.isMusic,
         allPast,
         tour.isPoetry,
+        representativeTourDate(tour),
       );
     });
     (tour.tour_dates || []).forEach((td) => {
@@ -1626,6 +1628,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
           tour.isMusic,
           d && d < today,
           tour.isPoetry,
+          d,
         );
       });
     });
@@ -1635,7 +1638,15 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
   myTouringShows.forEach(([, ts]) => {
     const tsFlyer = ts.touring_event_flyer || ts.event_flyer;
     if (tsFlyer?.trim()) {
-      add(tsFlyer, ts.showname || ts.name, "", false, false, false);
+      add(
+        tsFlyer,
+        ts.showname || ts.name,
+        "",
+        false,
+        false,
+        false,
+        representativeShowDate(ts),
+      );
     }
     (ts.show_dates || []).forEach((sd) => {
       const d = parseDateString(sd.date);
@@ -1647,6 +1658,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
           false,
           d && d < today,
           false,
+          d,
         );
       });
     });
@@ -1663,11 +1675,52 @@ function renderFlyerGallery(myTours, myTouringShows, allOther) {
         !!e.isMusic,
         d && d < today,
         !!e.isPoetry,
+        d,
       );
     });
   });
 
+  // Performer's own flyers (performer.flyers) — general artwork or flyers
+  // for gigs that aren't (yet) in the events data, e.g. festival slots.
+  // Each entry is a filename string or { flyer, label } (aliases src/path/
+  // filename and caption/title also accepted, same as event_flyers). A
+  // YYYY_MM_DD filename prefix (parseDatedClubFlyer(), shared_utils.js)
+  // supplies the card's date and greys it once past. Skipped if the same
+  // file is already in the gallery via a tour/show/event record.
+  if (Array.isArray(performerRec?.flyers)) {
+    performerRec.flyers.forEach((entry) => {
+      const filename =
+        typeof entry === "string"
+          ? entry
+          : entry?.flyer || entry?.src || entry?.path || entry?.filename;
+      const customLabel =
+        typeof entry === "object" && entry
+          ? entry.label || entry.caption || entry.title
+          : "";
+      if (!filename?.trim()) return;
+      const src = BASE_FLYER + sanitizeFlyerName(filename.trim());
+      if (items.some((i) => i.src === src)) return;
+      const d = parseDatedClubFlyer(filename);
+      add(
+        filename,
+        customLabel || performerRec.name,
+        d ? formatShortDate(d) : "",
+        performerRec.musician || performerRec.isBand,
+        d && d < today,
+        performerRec.poet,
+        d,
+      );
+    });
+  }
+
   if (items.length === 0) return;
+
+  // Date order across everything above (tours, shows, events and the
+  // performer's own dated flyers): soonest upcoming first, then most recent
+  // past, undated last — the same ordering as the event lists on this page.
+  // Array#sort is stable, so ties and undated items keep the order they
+  // were added in.
+  items.sort(upcomingFirstThenRecent((i) => i.sortDate));
 
   // Store globally so lightbox can navigate
   perfGalleryItems = items;

@@ -474,6 +474,19 @@
             "monty-storyteller"
           ]
         },
+        "flyers": {
+          "$ref": "#/$defs/eventFlyersList",
+          "description": "Flyers/posters for this performer, shown in the flyer gallery on their profile page (performers.html), alongside any flyers picked up from their tours, touring shows and events. Use it for artwork that isn't attached to a record in the events data, e.g. a festival slot. Same shape as `event_flyers`: each entry is a filename string (looked up in storyclub_assets/event_flyers/) or an object {flyer, label}. A filename prefixed YYYY_MM_DD (e.g. '2026_08_07_monty-storyteller-giaf.png') is shown with that date and greyed once it has passed. A file already shown via an event/tour record is not repeated. Read by renderFlyerGallery() in performers.js.",
+          "examples": [
+            [
+              "2026_08_07_monty-storyteller-giaf.png",
+              {
+                "flyer": "2026_08_21_protest_days_flyer_bdays_rebeltent.png",
+                "label": "Beautiful Days, Rebel Tent"
+              }
+            ]
+          ]
+        },
         "podcastX": {
           "type": "string",
           "description": "[TO DO — looks like a stray/disabled copy of `podcast`: one record (owen-staton) has a podbean URL under this name, so it is not read as a podcast link. Confirm whether it should be renamed to `podcast`.]"

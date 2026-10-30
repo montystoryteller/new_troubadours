@@ -12244,6 +12244,7 @@
       "time": "7pm",
       "description": "When every audience has gone home, one light remains burning on the stage.\nThe Ghost Light...\n\n\n\nFor generations it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light—an evening of live storytelling in one of the most atmospheric places imaginable: Pontardawe Arts Centre.",
       "ticket_url": "https://pontardaweartscentre.com/shows/the-ghost-light-with-owen-staton/",
+      "isSoldOut": true,
       "isSpecial": true,
       "eventId": "20261028-owen-staton-the-welfare-ystradgynlais"
     },
@@ -21112,7 +21113,8 @@
       "id": "monty-storyteller",
       "name": "Monty Storyteller (Tony \"Monty\" Hirst)",
       "url": "https://montystoryteller.org/",
-      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst, aka Monty Storyeller, has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in teas tents at music festivals around the country. A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate."
+      "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst, aka Monty Storyeller, has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in tea tents and acoustic stages, at music festivals around the country. 2026 festival highlights include sets at: Three Rivers Music Festival, Trowbridge Festival, Wickham Festival, Gig in a Field (GIAF), Beautiful Days (Rebel Tent).  A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate.",
+      "flyers": ["2026_08_07_monty-storyteller-giaf.png", "2026_08_21_protest_days_flyer_bdays_rebeltent.png"]
     },
     "amelia-ace-armande": {
       "id": "amelia-ace-armande",
