@@ -86,25 +86,42 @@
 
 .events-list {
     background: white;
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-height: 600px;
-    overflow-y: auto;
+    /* The panel itself doesn't scroll: the toolbar (.events-list-header)
+       stays fixed at the top and only #eventsList below it scrolls, so
+       cards are cut off cleanly at the toolbar's bottom edge instead of
+       sliding past underneath it. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-/* Small bar above the actual list of event cards, holding the event
-   status toggles (past/cancelled/sold out — as opposed to the category
+/* Bar above the actual list of event cards, holding the event status
+   toggles (past/cancelled/sold out — as opposed to the category
    checkboxes like "Story clubs" or "Music events", which stay up in the
-   main filter row). Lives outside the #eventsList div that
-   renderEventsList() clears and rebuilds on every filter change, so it
-   stays put at the top of the panel instead of disappearing on redraw. */
+   main filter row) and the "map zoomed in" notice. Lives outside the
+   #eventsList div that renderEventsList() clears and rebuilds on every
+   filter change, so it stays put instead of disappearing on redraw. */
 .events-list-header {
+    flex: 0 0 auto;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 4px 16px;
-    margin-bottom: 12px;
+    gap: 6px 16px;
+    padding: 12px 20px 10px;
+    background: white;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+/* The scrolling part: the event cards. */
+.events-list #eventsList {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 20px 20px;
 }
 
 .hide-past-label,
@@ -568,4 +585,125 @@
     .new-event-card {
         max-width: 100%;
     }
+}
+
+
+/* =============================================================
+   10. MAP RESET (events page)
+   "Map zoomed in" notice in the pinned list toolbar, plus the reset
+   button under the map's zoom buttons. Both call resetMapView() in
+   event_display.js. The notice is shown only while the list is being
+   narrowed to the zoomed map area (see updateMapFilterNotice()).
+   ============================================================= */
+
+.map-filter-notice {
+    flex: 1 1 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #5d4037;
+    font-size: 0.85em;
+}
+
+/* An explicit rule is needed: the display:flex above would otherwise
+   beat the browser's own [hidden] { display: none }. */
+.map-filter-notice[hidden] {
+    display: none;
+}
+
+.page-events .map-reset-btn {
+    padding: 6px 12px;
+    min-height: 34px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    background-color: var(--theme-green-dark);
+    color: white;
+}
+
+.page-events .map-reset-btn:hover {
+    background-color: #1b5e20;
+}
+
+/* Reset button in the Leaflet control column. Leaflet's own
+   `.leaflet-bar a` rules size the 26/30px square; this just centres the
+   icon in it. */
+.page-events .map-reset-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    cursor: pointer;
+}
+
+
+/* =============================================================
+   11. PAST EVENT CARDS (events page only)
+   Overrides for the `.event.date-past` rules in shared-styles.css, which
+   the tour and festival pages also use — so the fixes live here, scoped
+   to .page-events, and leave those pages exactly as they were.
+
+   Background: every past card renders as the same light grey, because
+   the plain-card rule in shared-styles.css (specificity 0,4,0) outranks
+   the per-type gradient rules (0,3,0). The More info / Flyer / Video /
+   Bio buttons on the coloured card types (special / music / folk /
+   poetry / session) are translucent white with white text, which
+   disappears against that light grey. Plain club cards use a solid
+   green button, which is why those stayed readable.
+
+   Cancelled / rescheduled cards keep their own striped look and
+   already have a solid dark-green button, so they're excluded.
+   ============================================================= */
+
+/* No " — past" suffix on the event name: the greyed-out card already
+   says it. */
+.page-events .event.date-past .event-name::after {
+    content: none !important;
+}
+
+/* Solid dark-green buttons with white text on every past card, whatever
+   its type. (Dark green rather than the lighter theme green, which is
+   only ~2.8:1 against white.) */
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-expand-btn {
+    background: var(--theme-green-dark);
+    color: #fff;
+}
+
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-expand-btn:hover {
+    background: #1b5e20;
+}
+
+/* Icons on past cards. The shared past rule forces `fill: #aaa` on every
+   icon, which is too pale on the grey card and actively breaks the two
+   stroke-based outline icons (email, "view event page" link): they're
+   drawn with fill="none" and a currentColor stroke, so filling them #aaa
+   turns the envelope into a solid grey block the same colour as its own
+   outline — the flap line vanishes. Website is a solid (fill-based)
+   glyph; email and link stay outlines, coloured via `color`. */
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-website svg {
+    fill: #555 !important;
+    color: #555 !important;
+}
+
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) :is(.event-email, .event-link) svg {
+    fill: none !important;
+    color: #555 !important;
+}
+
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-link {
+    color: #555 !important;
+}
+
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) .event-website:hover svg {
+    fill: var(--theme-green-dark) !important;
+}
+
+.page-events .event.date-past:not(.event-cancelled):not(.event-rescheduled) :is(.event-email, .event-link):hover svg {
+    color: var(--theme-green-dark) !important;
 }

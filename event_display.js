@@ -67,6 +67,7 @@ function ensureMapInitialized() {
   mapInitPromise = loadLeaflet()
     .then(() => {
       map = initMap("map", updateMapView);
+      addResetMapControl();
       map.invalidateSize();
       redrawAllMarkers();
       fitMapToEvents();
@@ -1314,6 +1315,10 @@ function createMarkerForEvent(eventData) {
 function updateMapView() {
   // Filter events by map bounds
   const bounds = map.getBounds();
+  // How many located events fall outside the current map area (and so are
+  // left out of the list). Drives the "map zoomed in — reset" notice in the
+  // pinned list toolbar; see updateMapFilterNotice().
+  let hiddenByMap = 0;
   const visibleEvents = allEventsData.filter((event) => {
     // Always show festivals — they span multiple days/locations and
     // shouldn't be hidden just because the map isn't centred on them
@@ -1327,13 +1332,81 @@ function updateMapView() {
       return true;
     }
     if (!event.coords) return false;
-    return bounds.contains([event.coords.lat, event.coords.lon]);
+    const inView = bounds.contains([event.coords.lat, event.coords.lon]);
+    if (!inView) hiddenByMap++;
+    return inView;
   });
 
   console.log(
     `Events in map view: ${visibleEvents.length} of ${allEventsData.length}`,
   );
-  renderEventsList(visibleEvents);
+  renderEventsList(visibleEvents, hiddenByMap);
+}
+
+/**
+ * Show or hide the "map zoomed in" notice in the pinned list toolbar.
+ * Zooming the map (e.g. by clicking an event card) narrows the list to the
+ * events inside the map area, which is easy to miss — especially on mobile,
+ * where the map sits above the list and is usually scrolled out of view —
+ * so say so, and offer a one-tap way back (resetMapView()).
+ * @param {number} hiddenCount events with coordinates outside the map area
+ */
+function updateMapFilterNotice(hiddenCount) {
+  const notice = document.getElementById("mapFilterNotice");
+  const text = document.getElementById("mapFilterNoticeText");
+  if (!notice || !text) return;
+  if (hiddenCount > 0) {
+    text.textContent = `Map zoomed in: ${hiddenCount} event${hiddenCount === 1 ? "" : "s"} outside this area not shown.`;
+    notice.hidden = false;
+  } else {
+    notice.hidden = true;
+  }
+}
+
+/**
+ * Take the map back to its overall view: fit every event in the current
+ * date range (or, if the visitor has pinned a view, return to that pinned
+ * view — fitMapToEvents() handles both). The map's own moveend handler
+ * (updateMapView) then restores the full list and clears the notice.
+ */
+function resetMapView() {
+  if (!map) return;
+  fitMapToEvents();
+}
+
+/**
+ * Adds a small "reset view" button under the map's zoom buttons — the
+ * map-side counterpart of the "Reset map view" button in the list toolbar.
+ * Called once, right after the (lazily loaded) map is created.
+ */
+function addResetMapControl() {
+  if (!map || !window.L) return;
+  const ResetControl = L.Control.extend({
+    options: { position: "topleft" },
+    onAdd() {
+      const bar = L.DomUtil.create(
+        "div",
+        "leaflet-bar leaflet-control map-reset-control",
+      );
+      const btn = L.DomUtil.create("a", "map-reset-control-btn", bar);
+      btn.href = "#";
+      btn.setAttribute("role", "button");
+      btn.title = "Reset map view (show all events)";
+      btn.setAttribute("aria-label", "Reset map view");
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">' +
+        '<path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6" fill="none" ' +
+        'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
+        'stroke-linejoin="round"/></svg>';
+      L.DomEvent.disableClickPropagation(bar);
+      L.DomEvent.on(btn, "click", (e) => {
+        L.DomEvent.preventDefault(e);
+        resetMapView();
+      });
+      return bar;
+    },
+  });
+  new ResetControl().addTo(map);
 }
 
 function toggleEventExpandable(eventId, event) {
@@ -2194,8 +2267,13 @@ function createFestivalElement(fest) {
   return div;
 }
 
-function renderEventsList(eventsToShow) {
+// hiddenByMap: how many located events are being left out because they're
+// outside the current map area. Only updateMapView() passes a non-zero
+// value; every other caller renders the full list for the date range, so
+// the default of 0 clears the "map zoomed in" notice.
+function renderEventsList(eventsToShow, hiddenByMap = 0) {
   const eventsList = document.getElementById("eventsList");
+  updateMapFilterNotice(hiddenByMap);
 
   if (eventsToShow.length === 0) {
     eventsList.innerHTML =

@@ -21,7 +21,7 @@
          never delay the page's text content or first paint. The preconnect
          above just warms the connection up in the background. -->
     <link rel="stylesheet" href="/css/shared-styles.css?v=202610291125">
-    <link rel="stylesheet" href="/css/events-styles.css?v=202610291125">
+    <link rel="stylesheet" href="/css/events-styles.css?v=202610301027">
 </head>
 
 <body class="page-events">
@@ -164,6 +164,19 @@
         </div>
         <div class="events-list">
             <div class="events-list-header">
+                <!-- Shown only while the map is zoomed in far enough that
+                     events outside the map area are being left out of the
+                     list (see updateMapFilterNotice() in event_display.js).
+                     Lives in this pinned bar so the way back is always in
+                     reach, even on mobile where the map is scrolled
+                     off-screen above the list. -->
+                <div class="map-filter-notice" id="mapFilterNotice" role="status" hidden>
+                    <span id="mapFilterNoticeText"></span>
+                    <button type="button" class="map-reset-btn" onclick="resetMapView()"
+                        title="Zoom the map back out so every event in this date range is shown">
+                        ↩ Reset map view
+                    </button>
+                </div>
                 <label class="hide-past-label" id="hidePastEventsLabel">
                     <input type="checkbox" id="hidePastEvents" onchange="filterEvents()">
                     Hide past events
@@ -309,7 +322,7 @@
 
     <script src="/js/recurrence-engine.js?v=202610272132"></script>
     <script src="/js/shared_utils.js?v=202610291619"></script>
-    <script src="/js/event_display.js?v=202610282246"></script>
+    <script src="/js/event_display.js?v=202610301027"></script>
 </body>
 
 </html>
