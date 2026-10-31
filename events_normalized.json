@@ -12409,23 +12409,6 @@
       "isDinner": true
     },
     {
-      "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
-      "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
-      "date": "18/11/2026",
-      "venue_id": "old-woollen-leeds",
-      "performer_id": "graeme-cooke",
-      "eventId": "20261118-graeme-cooke-old-woollen-leeds",
-      "date_added": "31/10/2026",
-      "time": "7-11pm",
-      "price": "£14 (+ £1.87)",
-      "description": "Storytelling for adults: An evening of tales of the 'Good' Folk. All the usual faerie favourites - sex, violence, and fiddle music.\n\n\n\nTales of the Faeries: Lust, Loss and Hollow Hills — Storytelling for adults\n\n\n\nJoin storyteller Graeme Cooke (Tales of Britain and Ireland podcast) for an evening of tales of the 'Good' Folk, with music from Alice Nicholls.\n\n\n\nExpect all your usual faerie favourites - sex, violence, fiddle music, obligatory liminality, child abduction and very thorough housework. With nary a gossamer wing in sight. Iron will be provided but you'll have to turn your own clothes inside out.\n\n\n\nTales drawn from British and Irish Folklore and Myth, all told with humour, wandering asides and above all else a great love for the stories.",
-      "age_rating": "Ages 16+ (Adult Themes)",
-      "min_age": 16,
-      "event_flyer": "2026_11_18_graeme_cooke_fairy.webp",
-      "ticket_url": "https://www.eventbrite.co.uk/e/tales-of-the-faeries-lust-loss-and-hollow-hills-tickets-1996479793807",
-      "isSpecial": true
-    },
-    {
       "name": "Victorian Ghost Stories [Time Jump Histories]",
       "showname": "Victorian Ghost Stories",
       "date": "31/10/2026",
@@ -12612,6 +12595,24 @@
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
     },
     {
+      "name": "Jeckyll and Hyde",
+      "showname": "Jeckyll and Hyde",
+      "date": "10/11/2026",
+      "performer_ids": [
+        "amelia-ace-armande",
+        "joshua-crisp"
+      ],
+      "venue_id": "hillcrest-community-centre-newhaven",
+      "eventId": "20261110-amelia-ace-armande-hillcrest-community-centre-newhaven",
+      "date_added": "31/10/2026",
+      "time": "7.30-9.30pm",
+      "club": "guesthouseST",
+      "price": "From £10",
+      "description": "Award-winning performers Amelia Ace Armande and Joshua Crisp reanimate the classic Gothic thriller by Robert Louis Stevenson. Blending the original text with sinuous physicality, dark humour and clever prop puppetry, they morph seamlessly between characters, and conjure up the misty, murky streets of Stevenson’s Victorian London.\n\n\n\nUtterson the lawyer has a strange case on his hands. One involving blackmail, murder most foul — and his close friend Doctor Henry Jekyll.\n\n\n\nOn the surface, it seems as though Doctor Jekyll & Mr Hyde couldn't be more different from one another. But there is a dark secret that binds the two men together. One that Utterson cannot get to the bottom of…\n\n\n\nIn this tense two-hander, through snatches of conversation, interview and confession, we uncover the grisly facts that link the celebrated doctor to the monstrous Mr Hyde. But in this fantastical narrative, what can possibly be the truth?",
+      "ticket_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge/2359097",
+      "isSpecial": true
+    },
+    {
       "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
       "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
       "date": "11/11/2026",
@@ -12698,6 +12699,23 @@
       "date_added": "22/10/2026",
       "time": "7.30pm",
       "fb_event": "1688570812478773",
+      "isSpecial": true
+    },
+    {
+      "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "date": "18/11/2026",
+      "venue_id": "old-woollen-leeds",
+      "performer_id": "graeme-cooke",
+      "eventId": "20261118-graeme-cooke-old-woollen-leeds",
+      "date_added": "31/10/2026",
+      "time": "7-11pm",
+      "price": "£14 (+ £1.87)",
+      "description": "Storytelling for adults: An evening of tales of the 'Good' Folk. All the usual faerie favourites - sex, violence, and fiddle music.\n\n\n\nTales of the Faeries: Lust, Loss and Hollow Hills — Storytelling for adults\n\n\n\nJoin storyteller Graeme Cooke (Tales of Britain and Ireland podcast) for an evening of tales of the 'Good' Folk, with music from Alice Nicholls.\n\n\n\nExpect all your usual faerie favourites - sex, violence, fiddle music, obligatory liminality, child abduction and very thorough housework. With nary a gossamer wing in sight. Iron will be provided but you'll have to turn your own clothes inside out.\n\n\n\nTales drawn from British and Irish Folklore and Myth, all told with humour, wandering asides and above all else a great love for the stories.",
+      "age_rating": "Ages 16+ (Adult Themes)",
+      "min_age": 16,
+      "event_flyer": "2026_11_18_graeme_cooke_fairy.webp",
+      "ticket_url": "https://www.eventbrite.co.uk/e/tales-of-the-faeries-lust-loss-and-hollow-hills-tickets-1996479793807",
       "isSpecial": true
     },
     {
@@ -12941,6 +12959,22 @@
       "club": "stealingthunder",
       "isSpecial": true,
       "eventId": "20261212-dominic-kelly-brigsteer-village-hall-kendal"
+    },
+    {
+      "name": "Gawain and the Green Knight - a new storytelling for the Solstice [Lisa Schneidau]",
+      "showname": "Gawain and the Green Knight - a new storytelling for the Solstice",
+      "date": "13/12/2026",
+      "venue_id": "endecott-house",
+      "performer_id": "lisa-schneidau",
+      "eventId": "20261213-lisa-schneidau-endecott-house",
+      "date_added": "31/10/2026",
+      "time": "7.30-9.30pm",
+      "price": "From £12",
+      "description": "Gawain and the Green Knight\n\n\n\nA new storytelling for the Solstice\n\n\n\nby Lisa Schneidau\n\n\n\n“Who’ll spring from his seat and take this weapon?”\n\n\n\nA giant appears at the New Year feast with a deadly challenge. Does Gawain have what it takes to stay alive?\n\n\n\nLisa Schneidau tells a new version of the medieval Arthurian tale, laced with tree folklore and midwinter magic.\n\n\n\nOf all the trees that are in the wood, the Holly bears the crown\n\n\n\nThis is performance storytelling in the folk tradition. Age advisory 14+. There will be a short interval, seasonal refreshments will be available.\n\n\n\nLisa Schneidau is a storyteller, folklorist and author based on Dartmoor. Her new book Tree Folk: tree folklore, song and lore from Britain and Ireland is published on November by the History Press. www.lisaschneidau.co.uk",
+      "age_rating": "14+",
+      "min_age": 14,
+      "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2467961",
+      "isSpecial": true
     },
     {
       "name": "Tales for the Turning of the Year [Wonder Night Cafe]",
@@ -13197,6 +13231,23 @@
       "price": "£10",
       "isSpecial": true,
       "eventId": "20270320-joshua-crisp-town-hall-bishops-castle"
+    },
+    {
+      "name": "Beowulf: Hugh Lupton at Moor Barton Wilding NEW DATE",
+      "showname": "Beowulf: Hugh Lupton at Moor Barton Wilding NEW DATE",
+      "date": "13/04/2027",
+      "venue_id": "moor-barton-wilding",
+      "performer_id": "hugh-lupton",
+      "eventId": "20270413-hugh-lupton-moor-barton-wilding",
+      "date_added": "31/10/2026",
+      "time": "7.30-9.30pm",
+      "club": "dartmoorStorytellers",
+      "price": "From £13",
+      "description": "*** please note this is a new date following postponement of the event in September. ****\n\n\n\nDartmoor Storytellers and Moor Barton Wilding present\n\n\n\nBeowulf by Hugh Lupton\n\n\n\nBeowulf is the oldest story in the English language — and it still has the power to raise the hairs on the back of the neck! It tells of a hero's life, a life that is mapped by three tremendous blood-curdling encounters.\n\n\n\nAs a young man Beowulf defeats the monster Grendel and his even more terrifying Mother, the original creatures from the Black Lagoon. Then, as an old man, he tries his strength against a gold guarding Fire-Drake (a dragon). Alongside these adrenalin-charged encounters the story explores the journey we all make from the seeming invincibility of youth to the heroic vulnerability of old age.\n\n\n\nThe story has had a tremendous effect on the imagination of many writers and poets, most notably J.R.R. Tolkien. Without Beowulf there would have been no Lord of the Rings.",
+      "age_rating": "16+",
+      "min_age": 16,
+      "ticket_url": "https://www.tickettailor.com/events/lisaschneidau/2185165",
+      "isSpecial": true
     },
     {
       "name": "Kulkolka [Ronnie Conboy]",
@@ -14497,6 +14548,13 @@
         50.6732037,
         -3.8410961
       ]
+    },
+    "endecott-house": {
+      "id": "endecott-house",
+      "name": "Endecott House",
+      "full_address": "Endecott House, Chagford, TQ13 8AJ",
+      "city": "Chagford",
+      "postcode": "TQ13 8AJ"
     },
     "the-chillingham-arms": {
       "id": "the-chillingham-arms",
@@ -21327,7 +21385,7 @@
       "id": "hugh-lupton",
       "name": "Hugh Lupton",
       "url": "https://hughlupton.co.uk/",
-      "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry.",
+      "bio": "Hugh Lupton is an award-winning storyteller, performer and author. He is also a poet and lyricist. His work spans over 35 years, working on both solo projects and in partnership with other artists, writers, musicians, illustrators and performers.\n\n\n\nHe has toured both nationally and internationally and has performed at the RSC, the National Theatre and the Barbican, as well as at schools, community venues and arts centres the length and breadth of Britain. His repertoire ranges from Greek epic to Grimms Fairy Tales, from Norse and Celtic myth to East Anglian folk-tales, from the Great War to John Clare. Thematically his work often explores our place in the landscape and the deep cultural memories we carry. Hugh is based in Norfolk.",
       "podcast_appearances": [
         {
           "podcast": "Talking Walking",
