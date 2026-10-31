@@ -1345,6 +1345,26 @@
                 <div id="enrich-health-results"></div>
             </div>
 
+            <div class="enrich-section" id="enrich-ticket-section">
+                <h3>🎟️ Ticket sync</h3>
+                <p class="field-hint">
+                    Load <code>new_event_data.json</code>, the single file written by <code>ticket_sync.py</code>
+                    (same shape as a builder export). Ticked new events and venues go into the batch. For
+                    <code>updatedEvents</code> you need the feed loaded above: each field that differs from the
+                    loaded record is a row, and ticked ones are written into the loaded copy and listed as an updated
+                    event. Update keys are positions in the feed, so load the same feed file the script was run on —
+                    a key whose record doesn't match is flagged and can't be applied.
+                </p>
+                <div class="btn-row">
+                    <label>new_event_data.json <input type="file" accept=".json,application/json" id="enrich-ticket-input"></label>
+                </div>
+                <button class="btn-add-batch" id="enrich-ticket-load-btn">Load ticket sync file</button>
+                <div id="enrich-ticket-results"></div>
+                <div class="btn-row" id="enrich-ticket-actions" style="display:none;">
+                    <button class="btn-secondary-action" id="enrich-ticket-apply-btn">Add / apply checked rows</button>
+                </div>
+            </div>
+
             <div class="enrich-section">
                 <h3>🧹 Formatting cleanup</h3>
                 <p class="field-hint">
@@ -6679,6 +6699,17 @@
             return `${m[1].toUpperCase()} ${m[2].toUpperCase()}`;
         }
 
+        // UK postcode, or failing that an Irish Eircode ("V92 WE22", "D6W 1AB").
+        // Only used by the address parser below -- extractUKPostcode itself is
+        // left alone since the missing-postcode scanner relies on it.
+        function extractPostcodeOrEircode(text) {
+            const uk = extractUKPostcode(text);
+            if (uk) return uk;
+            if (!text) return null;
+            const m = text.match(/\b([ACDEFHKNPRTVWXY]\d{2}|D6W)\s*([0-9ACDEFHKNPRTVWXY]{4})\b/i);
+            return m ? `${m[1].toUpperCase()} ${m[2].toUpperCase()}` : null;
+        }
+
         // Parses a comma-separated full address for a trailing postcode and
         // the town/locality just before it — e.g.
         // "16 High Street, Ryde, Isle of Wight, PO33 2NA" →
@@ -6696,7 +6727,7 @@
             const parts = address.split(",").map(s => s.trim()).filter(Boolean);
             if (parts.length < 2) return null;
             const last = parts[parts.length - 1];
-            const postcode = extractUKPostcode(last);
+            const postcode = extractPostcodeOrEircode(last);
             if (!postcode) return null;
             // Whitespace-insensitive comparison so an unspaced postcode
             // ("PO332NA") still counts as "the whole segment", not just
@@ -6728,6 +6759,31 @@
                 if (!postcodeInput.value.trim()) postcodeInput.value = guess.postcode;
             }
             addressInput.addEventListener("input", autofillBlankFields);
+
+            // Manual "try again": unlike the automatic fill above, this
+            // overwrites town and postcode with whatever the address text
+            // parses to right now -- for when the address has been edited
+            // after the first attempt (e.g. a trailing county removed).
+            const reparseBtn = document.createElement("button");
+            reparseBtn.type = "button";
+            reparseBtn.className = "btn-secondary-action";
+            reparseBtn.textContent = "↻ Re-parse town / postcode";
+            const reparseMsg = document.createElement("span");
+            reparseMsg.className = "field-hint";
+            reparseMsg.style.marginLeft = "8px";
+            reparseBtn.addEventListener("click", () => {
+                const guess = parseTownPostcodeFromAddress(addressInput.value);
+                if (!guess) {
+                    reparseMsg.textContent = "No postcode found: the last comma-separated part needs to be just a postcode.";
+                    return;
+                }
+                cityInput.value = guess.town;
+                postcodeInput.value = guess.postcode;
+                [cityInput, postcodeInput].forEach(i => i.dispatchEvent(new Event("input", { bubbles: true })));
+                reparseMsg.textContent = `Set town "${guess.town}", postcode "${guess.postcode}".`;
+            });
+            addressInput.insertAdjacentElement("afterend", reparseMsg);
+            addressInput.insertAdjacentElement("afterend", reparseBtn);
 
             function checkAgainstLoadedRecord() {
                 if (!warnEl) return;
@@ -7142,7 +7198,9 @@
                 document.getElementById("enrich-multidate-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-dateconsistency-scan-btn").disabled = false;
                 document.getElementById("enrich-download-all-btn").disabled = true;
-                runHealthCheck();
+                // Health check is deliberately manual: it clicks every scanner
+                // and fills every section below, which is a lot to land on
+                // just from loading a file. Use the "Run health check" button.
             } catch (err) {
                 enrichedData = null;
                 enrichedRawText = null;
@@ -10066,6 +10124,193 @@
             }
             alert(message);
             markEnrichedDataDirty();
+        });
+
+        // -- Ticket sync (ticket_sync.py output: new_event_data.json) --------
+        // File shape = a builder export: newVenues {id: rec}, specificEvents [recs],
+        // updatedEvents {"<bucket>#<index>": full replacement record}.
+        // New events -> batch.clubs, new venues -> newVenues, accepted field
+        // changes -> loaded enrichedData + updatedEvents.
+        document.getElementById("enrich-ticket-load-btn").addEventListener("click", async () => {
+            const resultsEl = document.getElementById("enrich-ticket-results");
+            const actionsEl = document.getElementById("enrich-ticket-actions");
+            const esc = (v) => String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const show = (v) => {
+                if (v == null || v === "") return "(blank)";
+                const t = typeof v === "object" ? JSON.stringify(v) : String(v);
+                return esc(t.length > 160 ? t.slice(0, 160) + "…" : t);
+            };
+            resultsEl.innerHTML = "";
+            actionsEl.style.display = "none";
+            const file = document.getElementById("enrich-ticket-input").files[0];
+            if (!file) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Choose new_event_data.json first.</div>';
+                return;
+            }
+            let data;
+            try {
+                data = JSON.parse(await file.text());
+                if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("top level isn't an object");
+            } catch (err) {
+                resultsEl.innerHTML = `<div class="enrich-empty">Couldn't read ${esc(file.name)}: ${esc(err.message)}</div>`;
+                return;
+            }
+            const newEvents = Array.isArray(data.specificEvents) ? data.specificEvents : [];
+            const venues = (data.newVenues && typeof data.newVenues === "object") ? data.newVenues : {};
+            const updates = (data.updatedEvents && typeof data.updatedEvents === "object") ? data.updatedEvents : {};
+            const evName = (r) => (r && (r.showname || r.name)) || "(untitled)";
+            const evDate = (r) => Array.isArray(r && r.date) ? r.date.join(", ") : (r && r.date) || "";
+
+            const addRow = (html, extra) => {
+                const row = document.createElement("div");
+                row.className = "enrich-result-row";
+                row.innerHTML = html;
+                if (extra) Object.assign(row, extra);
+                resultsEl.appendChild(row);
+                return row;
+            };
+            const addNote = (name, detail, bad) => addRow(
+                `<div class="enrich-result-main"><div class="enrich-result-name">${name}</div>` +
+                `<div class="enrich-result-detail"${bad ? ' style="color:#c62828;"' : ""}>${detail}</div></div>`);
+            const addHeading = (text) => {
+                const h = document.createElement("div");
+                h.className = "enrich-result-name";
+                h.style.margin = "10px 0 4px";
+                h.textContent = text;
+                resultsEl.appendChild(h);
+            };
+            let rowCount = 0;
+
+            // ---- new events
+            if (newEvents.length) {
+                addHeading(`New events (${newEvents.length})`);
+                const inBatch = new Set((batch.clubs || []).map(r => r.eventId).filter(Boolean));
+                const inFeed = new Set();
+                if (enrichedData) ["specificEvents", "musicEvents", "poetryEvents"].forEach(bk => (enrichedData[bk] || []).forEach(r => { if (r && r.eventId) inFeed.add(r.eventId); }));
+                newEvents.forEach(rec => {
+                    const warn = rec.eventId && inFeed.has(rec.eventId) ? "⚠ this eventId is already in the loaded feed"
+                        : rec.eventId && inBatch.has(rec.eventId) ? "⚠ this eventId is already in the batch" : "";
+                    addRow(`
+                        <input type="checkbox" ${warn ? "" : "checked"} class="enrich-ticket-event-check">
+                        <div class="enrich-result-main">
+                            <div class="enrich-result-name">${esc(evName(rec))}</div>
+                            <div class="enrich-result-detail">${esc(evDate(rec))} · ${esc(rec.venue_id || "no venue")} · ${esc(rec.price || "no price")} · ${esc(rec.eventId || "")}</div>
+                            ${warn ? `<div class="enrich-result-reasons" style="color:#c62828;">${warn}</div>` : ""}
+                        </div>`, { _ticketEvent: rec });
+                    rowCount++;
+                });
+            }
+
+            // ---- new venues
+            const venueIds = Object.keys(venues);
+            if (venueIds.length) {
+                addHeading(`New venues (${venueIds.length})`);
+                venueIds.forEach(id => {
+                    const rec = venues[id] || {};
+                    const warn = (enrichedData && enrichedData.venues && enrichedData.venues[id]) ? "⚠ a venue with this id is already in the loaded feed"
+                        : newVenues[id] ? "⚠ a venue with this id is already in the batch" : "";
+                    addRow(`
+                        <input type="checkbox" ${warn ? "" : "checked"} class="enrich-ticket-venue-check">
+                        <div class="enrich-result-main">
+                            <div class="enrich-result-name">${esc(rec.name || id)} (${esc(id)})</div>
+                            <div class="enrich-result-detail">${esc(rec.full_address || [rec.city, rec.postcode].filter(Boolean).join(", "))}${rec.latlon ? "" : " · no latlon"}</div>
+                            ${warn ? `<div class="enrich-result-reasons" style="color:#c62828;">${warn}</div>` : ""}
+                        </div>`, { _ticketVenueId: id, _ticketVenue: rec });
+                    rowCount++;
+                });
+            }
+
+            // ---- updates to existing events
+            const updateKeys = Object.keys(updates);
+            if (updateKeys.length) {
+                addHeading(`Updates to existing events (${updateKeys.length})`);
+                updateKeys.forEach(key => {
+                    const rec = updates[key] || {};
+                    const m = /^(\w+)#(\d+)$/.exec(key);
+                    if (!enrichedData) {
+                        addNote(esc(evName(rec)), `Load a feed above to apply this update (${esc(key)}).`, true);
+                        rowCount++;
+                        return;
+                    }
+                    const target = m && (enrichedData[m[1]] || [])[parseInt(m[2], 10)];
+                    if (!target) {
+                        addNote(esc(evName(rec)), `⚠ ${esc(key)}: nothing at that position in the loaded feed. Load the feed file the script was run on.`, true);
+                        rowCount++;
+                        return;
+                    }
+                    const same = (rec.eventId && target.eventId) ? rec.eventId === target.eventId
+                        : ["name", "date", "venue_id"].every(f => JSON.stringify(rec[f]) === JSON.stringify(target[f]));
+                    if (!same) {
+                        addNote(esc(evName(rec)), `⚠ ${esc(key)}: the loaded feed has a different event there (${esc(evName(target))}, ${esc(evDate(target))}), so this update was made against another version of the feed. Not applied.`, true);
+                        rowCount++;
+                        return;
+                    }
+                    const diffs = Object.keys(rec).filter(f => JSON.stringify(rec[f]) !== JSON.stringify(target[f]));
+                    if (!diffs.length) {
+                        addNote(esc(evName(target)), `${esc(key)}: the loaded feed already has all of these values.`, false);
+                        rowCount++;
+                        return;
+                    }
+                    diffs.forEach(f => {
+                        addRow(`
+                            <input type="checkbox" checked class="enrich-ticket-update-check">
+                            <div class="enrich-result-main">
+                                <div class="enrich-result-name">${esc(evName(target))} — ${esc(f)}</div>
+                                <div class="enrich-result-detail">
+                                    <span style="color:#c62828;text-decoration:line-through;">${show(target[f])}</span>
+                                    → <span style="color:#2e7d32;">${show(rec[f])}</span>
+                                </div>
+                                <div class="enrich-result-reasons">${esc(key)} · ${esc(evDate(target))}</div>
+                            </div>`, { _ticketUpdate: { key, bucket: m[1], index: parseInt(m[2], 10), target, field: f, value: rec[f] } });
+                        rowCount++;
+                    });
+                });
+            }
+
+            if (!rowCount) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Nothing in this file: no new events, venues or updates.</div>';
+                return;
+            }
+            addResultsCollapseToggle(resultsEl, rowCount, "row");
+            if (resultsEl.querySelector("input[type=checkbox]")) actionsEl.style.display = "";
+        });
+
+        document.getElementById("enrich-ticket-apply-btn").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#enrich-ticket-results .enrich-result-row");
+            let evCount = 0, venCount = 0, updCount = 0;
+            const touched = new Map();
+            rows.forEach(row => {
+                const cb = row.querySelector("input[type=checkbox]");
+                if (!cb || !cb.checked || row._ticketDone) return;
+                if (row._ticketEvent) {
+                    batch.clubs.push(JSON.parse(JSON.stringify(row._ticketEvent)));
+                    evCount++;
+                } else if (row._ticketVenue) {
+                    newVenues[row._ticketVenueId] = JSON.parse(JSON.stringify(row._ticketVenue));
+                    venCount++;
+                } else if (row._ticketUpdate && enrichedData) {
+                    const u = row._ticketUpdate;
+                    // Guard against a feed reloaded since these rows were built.
+                    if ((enrichedData[u.bucket] || [])[u.index] !== u.target) return;
+                    u.target[u.field] = JSON.parse(JSON.stringify(u.value));
+                    touched.set(u.key, u);
+                    updCount++;
+                } else return;
+                row._ticketDone = true;
+                cb.checked = false;
+                cb.disabled = true;
+            });
+            if (!evCount && !venCount && !updCount) {
+                alert("No rows checked.");
+                return;
+            }
+            touched.forEach(u => {
+                delete updatedEvents[u.key];
+                updatedEvents[u.key] = JSON.parse(JSON.stringify(u.target));
+            });
+            if (updCount) markEnrichedDataDirty();
+            refreshBatchSummary();
+            alert(`Added ${evCount} event(s) and ${venCount} venue(s) to the batch; applied ${updCount} field change(s) to the loaded feed.`);
         });
 
         (async () => {
