@@ -7335,7 +7335,11 @@
       "time": "7.30-9",
       "facebook": "ABitCrack",
       "club": "abitcrack",
-      "convenor": ["chris-bostock", "malcolm-green", "pat-renton"],
+      "convenor": [
+        "chris-bostock",
+        "malcolm-green",
+        "pat-renton"
+      ],
       "venue_id": "the-chillingham-arms",
       "feature_slots": [
         [
@@ -12405,6 +12409,23 @@
       "isDinner": true
     },
     {
+      "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "date": "18/11/2026",
+      "venue_id": "old-woollen-leeds",
+      "performer_id": "graeme-cooke",
+      "eventId": "20261118-graeme-cooke-old-woollen-leeds",
+      "date_added": "31/10/2026",
+      "time": "7-11pm",
+      "price": "£14 (+ £1.87)",
+      "description": "Storytelling for adults: An evening of tales of the 'Good' Folk. All the usual faerie favourites - sex, violence, and fiddle music.\n\n\n\nTales of the Faeries: Lust, Loss and Hollow Hills — Storytelling for adults\n\n\n\nJoin storyteller Graeme Cooke (Tales of Britain and Ireland podcast) for an evening of tales of the 'Good' Folk, with music from Alice Nicholls.\n\n\n\nExpect all your usual faerie favourites - sex, violence, fiddle music, obligatory liminality, child abduction and very thorough housework. With nary a gossamer wing in sight. Iron will be provided but you'll have to turn your own clothes inside out.\n\n\n\nTales drawn from British and Irish Folklore and Myth, all told with humour, wandering asides and above all else a great love for the stories.",
+      "age_rating": "Ages 16+ (Adult Themes)",
+      "min_age": 16,
+      "event_flyer": "2026_11_18_graeme_cooke_fairy.webp",
+      "ticket_url": "https://www.eventbrite.co.uk/e/tales-of-the-faeries-lust-loss-and-hollow-hills-tickets-1996479793807",
+      "isSpecial": true
+    },
+    {
       "name": "Victorian Ghost Stories [Time Jump Histories]",
       "showname": "Victorian Ghost Stories",
       "date": "31/10/2026",
@@ -12433,6 +12454,20 @@
       "min_age": 12,
       "event_flyer": "2026_10_21_riikka-palonen-stars.webp",
       "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-and-the-beginning-of-time-tickets-2000460700807",
+      "isSpecial": true
+    },
+    {
+      "name": "Forvie's Terrifying Tales from the North East - Adults only storytelling [Pauline Cordiner]",
+      "showname": "Forvie's Terrifying Tales from the North East - Adults only storytelling",
+      "date": "01/11/2026",
+      "venue_id": "forvie-visitor-centre-collieston",
+      "performer_id": "pauline-cordiner",
+      "eventId": "20261101-pauline-cordiner-forvie-visitor-centre-collieston",
+      "date_added": "31/10/2026",
+      "time": "8-9pm",
+      "price": "Free",
+      "description": "Join storyteller Pauline Cordiner for an hour of her favourite ghost stories from The North East and Beyond...\n\n\n\nSunday 1st November from 8 to 9pm at Forvie National Nature Reserve.\n\n\n\nPlease cancel if you can't make it so your ticket can be offered to someone else.\n\n\n\nFor more information, call Forvie on 01358 751330 or email forvie@nature.scot.",
+      "ticket_url": "https://www.eventbrite.com/e/forvies-terrifying-tales-from-the-north-east-adults-only-storytelling-tickets-2003232129224",
       "isSpecial": true
     },
     {
@@ -12577,6 +12612,22 @@
       "eventId": "20261109-minnie-wilkinson-ropetackle-arts-centre-shoreham"
     },
     {
+      "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
+      "date": "11/11/2026",
+      "venue_id": "shakespeares-sheffield",
+      "performer_id": "graeme-cooke",
+      "eventId": "20261111-graeme-cooke-shakespeares-sheffield",
+      "date_added": "31/10/2026",
+      "time": "7-10.30pm",
+      "description": "Storytelling for adults: An evening of tales of the 'Good' Folk. All the usual faerie favourites - sex, violence, and fiddle music.\n\n\n\nTales of the Faeries: Lust, Loss and Hollow Hills — Storytelling for adults\n\n\n\nJoin storyteller Graeme Cooke (Tales of Britain and Ireland podcast) for an evening of tales of the 'Good' Folk, with music from Alice Nicholls.\n\n\n\nExpect all your usual faerie favourites - sex, violence, fiddle music, obligatory liminality, child abduction and very thorough housework. With nary a gossamer wing in sight. Iron will be provided but you'll have to turn your own clothes inside out.\n\n\n\nTales drawn from British and Irish Folklore and Myth, all told with humour, wandering asides and above all else a great love for the stories.",
+      "age_rating": "Ages 16+ (Adult Themes)",
+      "min_age": 16,
+      "ticket_url": "https://www.eventbrite.co.uk/e/tales-of-the-faeries-lust-loss-and-hollow-hills-tickets-2000578659625",
+      "isSoldOut": true,
+      "isSpecial": true
+    },
+    {
       "name": "Hearth Tales West Devon Winter Tour [Paul W Davey]",
       "showname": "Hearth Tales West Devon Winter Tour",
       "date": "11/11/2026",
@@ -12681,6 +12732,20 @@
       "description": "Following the wheel of the year, storyteller & ecologist Lisa Schneidau brings our trees alive through their stories & songs\n\n\n\nJoin the author, storyteller and ecologist Lisa Schneidau for an evening of song and stories, in the stunning St Saviour's Hall on Lambhay Hill on the Hoe.\n\n\n\nTickets are £6 - including refreshments.\n\n\n\nCopies of Lisa'a new book - Tree Folk will be available to purchase on the night.\n\n\n\nThis event is part of Plymouth Tree People's schedule of events for National Tree Week. There will also be a talk by Jon Stokes on the trees of Britains and Ireland on 27th Nov and a showing of No Trees, No Seas on 25th Nov at the Plymouth Arts Cinema.\n\n\n\nWhat is a folk tale, but a tangled woodland of words, where anything could happen?\n\n\n\nEver since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us and inspired us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nTake a fresh look at the tree-folk you share your life with, and discover their stories in this enchanting book.\n\n\n\n“Lisa knows exactly how to charm the leaves off a tree.” Selvedge magazine\n\n\n\nPlease arrive 10 minutes before the start time.\n\n\n\nSt Saviour's Hall does not have step-free access, and the toilet is down several stairs.\n\n\n\nSnacks, hot drinks and a glass of wine are complimentary.\n\n\n\nThis event is not appropriate for children under 12. All children under 18 must be supervised by an adult.",
       "event_flyer": "2026_10_17-schneidau_trees-plymouth.webp",
       "ticket_url": "https://www.eventbrite.co.uk/e/tree-folk-tree-folk-tales-songs-and-lore-from-britain-ireland-tickets-2003298044378",
+      "isSpecial": true
+    },
+    {
+      "name": "Tales of King Arthur",
+      "showname": "Tales of King Arthur",
+      "date": "20/11/2026",
+      "venue_id": "sandleheath-methodist-chapel-fordingbridge",
+      "eventId": "20261120-unknown-performer-sandleheath-methodist-chapel-fordingbridge",
+      "date_added": "31/10/2026",
+      "time": "7-9pm",
+      "club": "storytellingambassadors",
+      "description": "An evening of Stories from our Storytelling Ambassadors, followed by a fish & chips supper.\n\n\n\nTales of King Arthur\n\n\n\nLet us welcome you in for a night of myth and magic.\n\n\n\nSettle in as our professional storytellers weave spellbinding tales of chivalry, betrayal, and the timeless magic of King Arthur’s court. The evening concludes with a classic fish and chip supper!\n\n\n\nDouble the Magic: Bring a friend and save—enjoy a special discount when you buy 2 tickets together.",
+      "event_flyer": "2026_11_20_ambassadors_arthur.webp",
+      "ticket_url": "https://www.eventbrite.co.uk/e/storytelling-supper-tickets-2002608623301",
       "isSpecial": true
     },
     {
@@ -18279,6 +18344,17 @@
         0.75828
       ]
     },
+    "sandleheath-methodist-chapel-fordingbridge": {
+      "id": "sandleheath-methodist-chapel-fordingbridge",
+      "name": "Sandleheath Methodist Chapel, Fordingbridge",
+      "full_address": "Sandleheath Methodist Chapel, Alderholt Road, Fordingbridge, SP6 1PT",
+      "city": "Fordingbridge",
+      "postcode": "SP6 1PT",
+      "latlon": [
+        50.93234,
+        -1.82664
+      ]
+    },
     "woodgreen-village-hall": {
       "id": "woodgreen-village-hall",
       "name": "Woodgreen Village Hall",
@@ -18712,6 +18788,19 @@
         1.27135
       ]
     },
+    "old-woollen-leeds": {
+      "id": "old-woollen-leeds",
+      "name": "Old Woollen, Leeds",
+      "full_address": "Old Woollen, Sunny Bank Mills, 83-85, Town Street, Leeds, LS28 5UJ",
+      "city": "Leeds",
+      "postcode": "LS28 5UJ",
+      "url": "https://oldwoollen.co.uk/home",
+      "description": "A 500-capacity venue in Leeds, presenting the finest music, comedy & theatre",
+      "latlon": [
+        53.81406,
+        -1.67142
+      ]
+    },
     "wharf-chambers-leeds": {
       "id": "wharf-chambers-leeds",
       "name": "Wharf Chambers, Leeds",
@@ -18860,6 +18949,18 @@
       "latlon": [
         57.14689,
         -2.09751
+      ]
+    },
+    "forvie-visitor-centre-collieston": {
+      "id": "forvie-visitor-centre-collieston",
+      "name": "Forvie Visitor Centre, Collieston",
+      "full_address": "Forvie Visitor Centre, Forvie National Nature Reserve, Collieston, AB41 8RU",
+      "city": "Collieston",
+      "postcode": "AB41 8RU",
+      "url": "https://www.nature.scot/enjoying-outdoors/visit-our-nature-reserves/forvie-nnr/forvie-nnr-visiting-reserve",
+      "latlon": [
+        57.35221,
+        -1.942
       ]
     },
     "krakatoa-aberdeen": {
@@ -19217,6 +19318,18 @@
       "latlon": [
         50.72569,
         -1.84226
+      ]
+    },
+    "shakespeares-sheffield": {
+      "id": "shakespeares-sheffield",
+      "name": "Shakespeare's, Sheffield",
+      "full_address": "Shakespeare's, 146-148, Gibraltar Street, Sheffield, S3 8UB",
+      "city": "Sheffield",
+      "postcode": "S3 8UB",
+      "url": "https://facebook.com/ShakespearesShf",
+      "latlon": [
+        53.38682,
+        -1.4715
       ]
     },
     "sheffield-plate": {
@@ -21114,7 +21227,10 @@
       "name": "Monty Storyteller (Tony \"Monty\" Hirst)",
       "url": "https://montystoryteller.org/",
       "bio": "Isle of Wight based traditional storyteller, Tony 'Monty' Hirst, aka Monty Storyeller, has been a listener of tales for over thirty years and a teller for five. Coming up through the ranks of folk nights and open mics, he regularly performs his own shows, as well as telling pop up tales in tea tents and acoustic stages, at music festivals around the country. 2026 festival highlights include sets at: Three Rivers Music Festival, Trowbridge Festival, Wickham Festival, Gig in a Field (GIAF), Beautiful Days (Rebel Tent).  A keen collaborator, he performs with contemporary folk duo Berlingo Flick, folk singer Sue Cain, and folk punk fiddle player, Sophie Kate.",
-      "flyers": ["2026_08_07_monty-storyteller-giaf.png", "2026_08_21_protest_days_flyer_bdays_rebeltent.png"]
+      "flyers": [
+        "2026_08_07_monty-storyteller-giaf.png",
+        "2026_08_21_protest_days_flyer_bdays_rebeltent.png"
+      ]
     },
     "amelia-ace-armande": {
       "id": "amelia-ace-armande",
@@ -22322,6 +22438,16 @@
       "name": "Sheeha Blackhall",
       "url": "https://sheenablackhall.blogspot.com/",
       "bio": "Sheena Blackhall is a writer, illustrator, traditional ballad singer and storyteller in North East Scotland."
+    },
+    "graeme-cooke": {
+      "id": "graeme-cooke",
+      "name": "Graeme Cooke",
+      "url": "https://talesofbritainandireland.com/",
+      "bio": "Graeme Cooke is a storyteller from Sheffield and tells folktales from across Britain and Ireland, in no particular order.\n\n\n\nHe presents Tales of Britain and Ireland podcast and is now taking these tales live.\n\n\n\nTales told with humour, wandering asides and above all else a great love for the stories, and while children might enjoy some of them they are very much for adults.",
+      "facebook": "TalesofBritainandIreland",
+      "podcast": "https://talesofbritainandireland.com/category/podcast-episode/",
+      "instagram": "tales_of_britain_and_ireland",
+      "tickets_url": "https://www.eventbrite.co.uk/o/72555678233"
     },
     "pauline-cordiner": {
       "id": "pauline-cordiner",
