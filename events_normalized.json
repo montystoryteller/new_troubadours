@@ -7297,6 +7297,15 @@
       "venue_id": "guide-dog-pub-southampton"
     },
     {
+      "name": "Winchburgh Storytellers",
+      "schedule": "last tuesday",
+      "time": "7.30-9pm",
+      "email": "winchburghstorytellers@cantab.net",
+      "description": "Winchburgh Storytellers is a space to come, listen to oral storytelling, tell stories, meet old friends and make new ones.",
+      "club": "winchburghStorytellers",
+      "venue_id": "winchburgh-community-centre"
+    },
+    {
       "name": "Abergavenny and Beyond Zooming Storytelling Circle",
       "schedule": "4th monday",
       "time": "Link open at 6.45pm, stories from 7pm",
@@ -13828,6 +13837,21 @@
       "latlon": [
         55.94151,
         -3.18175
+      ]
+    },
+    "winchburgh-community-centre": {
+      "id": "winchburgh-community-centre",
+      "name": "Winchburgh Community Centre",
+      "venue_type": "Village / community hall",
+      "city": "Winchburgh",
+      "postcode": "EH52 6RW",
+      "club_flyer": "club_winchburgh.jpg",
+      "description": "A chance to get together with new people/old friends, get some practice telling each other stories and hear some new tales.\n\n\n\nA place to practice oral storytelling rather than reading aloud.\n\n\n\nMaximum 10 min per story\n\n\n\nAll welcome to listen - no heckling!",
+      "full_address": "Winchburgh Community Centre, Craigton Place, Winchburgh, EH52 6RW",
+      "url": "https://www.westlothian.gov.uk/article/35875/Winchburgh-Community-Centre",
+      "latlon": [
+        55.95708,
+        -3.45836
       ]
     },
     "pavilion-theatre-glasgow": {
