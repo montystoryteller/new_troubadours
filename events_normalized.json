@@ -12642,30 +12642,15 @@
       "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland [Lisa Schneidau]",
       "showname": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
       "date": "10/11/2026",
-      "venue_id": "first-draft-books",
+      "venue_id": "first-draft-books-bovey-tracey",
       "performer_id": "lisa-schneidau",
-      "eventId": "20261110-lisa-schneidau-first-draft-books",
+      "eventId": "20261110-lisa-schneidau-first-draft-books-bovey-tracey",
       "date_added": "02/11/2026",
       "time": "6:30pm",
       "price": "Free (booking required)",
       "description": "Join us in the bookshop for a very special book event with storyteller, ecologist & author Lisa Schneidau in celebration of her new book, Tree Folk: Tree Folk Tales, Songs & Lore from Britain and Ireland.\n\n\n\nLisa will share some of Britain and Ireland's rich heritage of folk tales, history, knowledge and song about trees. Following the wheel of the year, she will bring our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth. Following the talk, you will be able to ask your questions and pick up a signed copy of Lisa's new book.\n\n\n\nThis event is free, but advanced booking is required.\n\n\n\nFirst Draft Books, 54 Fore Street, Bovey Tracey TQ13 9AE. 6.30 - 8.00pm.",
       "event_flyer": "",
       "ticket_url": "https://www.eventbrite.co.uk/e/tree-folk-a-book-talk-with-lisa-schneidau-tickets-2001046377582",
-      "isSpecial": true
-    },
-    {
-      "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland [Lisa Schneidau]",
-      "showname": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
-      "date": "12/11/2026",
-      "venue_id": "waterstones-plymouth",
-      "performer_id": "lisa-schneidau",
-      "eventId": "20261112-lisa-schneidau-waterstones-plymouth",
-      "date_added": "02/11/2026",
-      "time": "4pm",
-      "price": "Free",
-      "description": "Join Lisa at this informal book event to learn more about her new book Tree Folk: tree folk tales, songs and lore from Britain and Ireland.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nFree event, no ticket required.\n\n\n\nWaterstones, Drakes Circus, Plymouth, Devon.",
-      "event_flyer": "",
-      "ticket_url": "https://www.waterstones.com/events/tree-folk-folklore-story-telling/plymouth-drake-circus",
       "isSpecial": true
     },
     {
@@ -14012,6 +13997,23 @@
       "latlon": [
         52.18721,
         0.9946
+      ]
+    },
+    "first-draft-books-bovey-tracey": {
+      "id": "first-draft-books-bovey-tracey",
+      "name": "First Draft Books, Bovey Tracey",
+      "venue_type": "Bookshop",
+      "city": "Bovey Tracey",
+      "postcode": "TQ13 9AE",
+      "full_address": "First Draft Books, 54 Fore Street, Bovey Tracey, TQ13 9AE",
+      "url": "https://firstdraftbooks.co.uk/",
+      "email": "hello@firstdraftbooks.co.uk",
+      "facebook": "https://www.facebook.com/profile.php?id=61550612432746",
+      "instagram": "firstdraftdevon",
+      "description": "First Draft Books, an independent bookshop for curious readers of all ages, based in Bovey Tracey & popping up around South Devon.",
+      "latlon": [
+        50.5941,
+        -3.67466
       ]
     },
     "ship-inn-exeter": {
