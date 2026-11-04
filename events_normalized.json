@@ -2838,57 +2838,57 @@
         }
       ]
     },
-    "mexican-dave-mexican-dave": {
+    "mexican-dave-autumn-winter-2026": {
       "tour_name": "Mexican Dave — Autumn/Winter Tour 2026",
       "tour_dates": [
         {
           "date": "27/09/2026",
           "venue_id": "toms-tap-brewhouse",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261027-toms-tap-brewhouse"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261027-toms-tap-brewhouse"
         },
         {
           "date": "22/10/2026",
           "venue_id": "castle-inn-swindon",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261022-castle-inn-swindon"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261022-castle-inn-swindon"
         },
         {
           "date": "23/10/2026",
           "venue_id": "barn-ells-bar-truro",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261023-barn-ells-bar-truro"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261023-barn-ells-bar-truro"
         },
         {
           "date": "24/10/2026",
           "venue_id": "cider-box-bristol",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261024-cider-box-bristol"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261024-cider-box-bristol"
         },
         {
           "date": "04/11/2026",
           "venue_id": "cafe-kino-bristol",
           "isSpecial": true,
           "ticket_url": "https://www.headfirstbristol.co.uk/whats-on/cafe-kino/wed-4-nov-black-guy-fawkes-mexican-dave-emilia-slade-162574#/e162574",
-          "eventId": "T-mexican-dave-mexican-dave-20261104-cafe-kino-bristol"
+          "eventId": "T-mexican-dave-autumn-winter-2026-2026-20261104-cafe-kino-bristol"
         },
         {
           "date": "06/11/2026",
           "venue_id": "bitterns-station-bunker178-southampton",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261106-bitterns-station-bunker178-southampton"
+          "eventId": "T-mexican-dave-autumn-winter-2026-dave-20261106-bitterns-station-bunker178-southampton"
         },
         {
           "date": "14/11/2026",
           "venue_id": "bodega-nottingham",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261114-bodega-nottingham"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261114-bodega-nottingham"
         },
         {
           "date": "05/12/2026",
           "venue_id": "the-croft-bristol",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-mexican-dave-20261205-bodega-nottingham"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261205-bodega-nottingham"
         }
       ],
       "name": "Mexican Dave",
@@ -13669,6 +13669,24 @@
       "date_added": "25/08/2026",
       "isMusic": true,
       "eventId": "20261017-3-daft-monkeys-keay-theatre-st-austell"
+    },
+    {
+      "name": "Gaz Brookfield + support (Nick Parker, Hushwing) [Gaz Brookfield]",
+      "showname": "Gaz Brookfield + support",
+      "date": "13/12/2026",
+      "venue_id": "tree-house-frome",
+      "performer_id": "gaz-brookfield",
+      "support_performer_ids": [
+        "nick-parker",
+        "hushwing"
+      ],
+      "eventId": "20261213-gaz-brookfield-tree-house-frome",
+      "date_added": "04/11/2026",
+      "price": "£10 (+ £2)",
+      "description": "West Country-based Gaz Brookfield has spent the last 15 years relentlessly touring the UK and beyond, building a fiercely loyal following and earning a reputation as one of the hardest-working musicians on the independent scene.\n\n\n\nWith two UK number one albums to his name, including 2023’s Morning Walking Club, which topped the Official UK Folk Albums Chart, and 2025’s Waiting for Wisdom, which reached number one in the Official UK Download Charts, Gaz’s achievements are all the more remarkable considering he’s done it entirely on his own terms.\n\n\n\nThe first independent musician to sell out Bristol’s legendary Fleece, Bierkeller and 1,000-capacity SWX, Gaz has built his success without a record label, manager or agent. Just a guitar, a van and an unwavering determination to keep doing things his own way.\n\n\n\nNow he brings his unmistakable blend of acoustic folk, punk spirit, humour and heartfelt songwriting to the intimate surroundings of The Tree House!",
+      "event_flyer": "2026_12_13_gaz_frome_tree_house.jpg",
+      "ticket_url": "https://www.cheeseandgrain.com/events/gaz-brookfield-nick-parker-live-at-the-treehouse/",
+      "isMusic": true
     }
   ],
   "folkNights": [
@@ -23678,6 +23696,15 @@
       "instagram": "jess_silk",
       "musician": true,
       "bio": "Jess Silk is a guitarist, singer and songwriter from the Black Country. Her passionate and melodic brand of folk/punk music gets people sitting up and listening. Armed only with an increasingly sticker-covered acoustic guitar, lyrics right from the heart and a distinctive, powerful voice that many don't expect, Jess plays to audiences up and down the UK and has shared stages with many well known names among the folk/punk scene."
+    },
+    "hushwing": {
+      "id": "hushwing",
+      "name": "Hushwing",
+      "musician": true,
+      "url": "https://www.hushwingofficial.com/",
+      "bio": "Hushwing are a Frome-based contemporary alternative indie-folk band formed by musicians Jack and Izzy.\n\n\n\nBuilt around rich vocal harmonies, thoughtful songwriting and an intimate, atmospheric sound, their music draws heavily on travel, nature and their own personal relationship. Blending delicate folk textures with a modern indie sensibility, Hushwing create songs that feel both reflective and expansive, with a strong sense of place and emotion running throughout.\nThe band have been steadily building a reputation on the local live circuit and were recently hand-picked to support acclaimed indie-folk trio Flyte, marking an exciting step forward for the emerging Frome act.\n\n\n\nWith their warm harmonies, understated arrangements and deeply personal songwriting, Hushwing are quickly establishing themselves as one of the area’s most promising new bands.",
+      "facebook_group": "hushwingofficial",
+      "instagram": "hushwingofficial"
     },
     "mexican-dave": {
       "id": "mexican-dave",
