@@ -667,7 +667,7 @@ function setPageHeadingMode(isDetail, detailTitleId, detailRevertTag) {
 // an empty .share-badge is hidden by CSS (shared-styles.css).
 // ---------------------------------------------------------------------------
 
-const BADGE_IMAGE_BASE = "https://newtroubadours.org/badges/";
+const BADGE_IMAGE_BASE = `${window.location.origin}/badges/`;
 
 // type -> the URL param that identifies the entity, badge image, and the
 // text used for its alt attribute.

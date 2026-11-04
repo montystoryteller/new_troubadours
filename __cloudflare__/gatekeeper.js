@@ -93,6 +93,10 @@ function urlVerdict(health) {
   return null;
 }
 
+// A "move" to the id the URL already carries is not a move (it would be a 301 to itself).
+const isSelfMove = (verdict, normUrl) =>
+  verdict?.kind === "moved" && verdict.id === normUrl.searchParams.get("event");
+
 async function readVerdict(env, normUrl) {
   try {
     return await env.RENDER_CACHE.get(verdictKeyFor(normUrl), "json");
@@ -1513,7 +1517,7 @@ export default {
     // Googlebot included, without spending a render. One KV read, event pages only.
     if (verdictAllowed(normUrl)) {
       const known = await readVerdict(env, normUrl);
-      if (known?.kind === "gone" || known?.kind === "moved") {
+      if ((known?.kind === "gone" || known?.kind === "moved") && !isSelfMove(known, normUrl)) {
         logGate(request, tier, normUrl, `miss-${known.kind}-cached`);
         return verdictResponse(known, normUrl, request);
       }
@@ -1553,7 +1557,8 @@ export default {
       1,
       "miss",
     );
-    const verdict = html && verdictAllowed(normUrl) ? urlVerdict(health) : null;
+    let verdict = html && verdictAllowed(normUrl) ? urlVerdict(health) : null;
+    if (isSelfMove(verdict, normUrl)) verdict = null;
     if (verdict) {
       logGate(request, tier, normUrl, `miss-${verdict.kind}`, {
         health: health?.status,

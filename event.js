@@ -154,28 +154,24 @@ function findEventById(eventId) {
 // string (tourId and venueId can both contain hyphens, which would make
 // that fragile) — the prefix is only used to pick which pool to loop over.
 function findTourOrShowDateEventById(eventId) {
-  if (eventId.startsWith(TOUR_EVENT_ID_PREFIX)) {
-    for (const [tourId, tour] of Object.entries(toursLookup || {})) {
-      for (const tourDate of tour.tour_dates || []) {
-        if (resolveTourDateEventId(tourId, tourDate) === eventId) {
-          return buildEventRecordFromTourDate(tourId, tour, tourDate);
-        }
+  // No prefix gate: resolve*EventId() returns the date's explicit `eventId`
+  // when it has one (which carries no "T-"/"R-" prefix), else the generated
+  // T-/R- id. Comparing the full id is exact, so the prefix isn't needed to
+  // pick a pool.
+  for (const [tourId, tour] of Object.entries(toursLookup || {})) {
+    for (const tourDate of tour.tour_dates || []) {
+      if (resolveTourDateEventId(tourId, tourDate) === eventId) {
+        return buildEventRecordFromTourDate(tourId, tour, tourDate);
       }
     }
-    return null;
   }
 
-  if (eventId.startsWith(SHOW_EVENT_ID_PREFIX)) {
-    for (const [tsId, ts] of Object.entries(
-      eventsData.repertoire_shows || {},
-    )) {
-      for (const showDate of ts.show_dates || []) {
-        if (resolveShowDateEventId(tsId, showDate) === eventId) {
-          return buildEventRecordFromShowDate(tsId, ts, showDate);
-        }
+  for (const [tsId, ts] of Object.entries(eventsData.repertoire_shows || {})) {
+    for (const showDate of ts.show_dates || []) {
+      if (resolveShowDateEventId(tsId, showDate) === eventId) {
+        return buildEventRecordFromShowDate(tsId, ts, showDate);
       }
     }
-    return null;
   }
 
   return null;
@@ -1194,12 +1190,15 @@ let initialSearchTerm = "";
     if (resolvedByFuzzyMatch) {
       const canonicalId =
         eventRecord.eventId || resolveEventId(eventRecord, eventRecord._date);
-      showOutdatedLinkNotice(eventIdParam);
-      // Machine-readable token first: the gatekeeper reads "nt-redirect:<id>"
-      // out of the health reason and answers crawlers with a 301 to that id.
-      PageHealth.addWarning(
-        `nt-redirect:${canonicalId} (outdated event link, matched by date and venue)`,
-      );
+      // Only a real move: never announce (or 301 to) the id we already have.
+      if (canonicalId !== eventIdParam) {
+        showOutdatedLinkNotice(eventIdParam);
+        // Machine-readable token first: the gatekeeper reads "nt-redirect:<id>"
+        // out of the health reason and answers crawlers with a 301 to that id.
+        PageHealth.addWarning(
+          `nt-redirect:${canonicalId} (outdated event link, matched by date and venue)`,
+        );
+      }
     }
 
     const hostVenue = venuesLookup[eventRecord.venue_id] || null;
