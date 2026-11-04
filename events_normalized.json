@@ -2873,6 +2873,16 @@
           "eventId": "T-mexican-dave-autumn-winter-2026-20261104-cafe-kino-bristol"
         },
         {
+          "date": "05/11/2026",
+          "venue_id": "calamity-tank-london",
+          "isSpecial": true,
+          "event_flyer": "2026_11_05_black_guy_fawkes_calamity_tank.jpg",
+          "other_performer_ids": [
+            "katacombs"
+          ],
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261105-calamity-tank-london"
+        },
+        {
           "date": "06/11/2026",
           "venue_id": "bitterns-station-bunker178-southampton",
           "isSpecial": true,
@@ -2893,7 +2903,7 @@
       ],
       "name": "Mexican Dave",
       "performer_id": "mexican-dave",
-      "touring_event_flyer": "tour_mexican_dave_autumn-winter-2026.jpg",
+      "touring_event_flyers":[ "tour_mexican_dave_autumn-winter-2026.jpg", "tour_mexican_dave_last_2026.jpg"],
       "isMusic": true
     },
     "hannah-moore-winter-calling": {
@@ -20525,6 +20535,20 @@
       "latlon": [
         52.13917,
         -0.4742
+      ]
+    },
+    "calamity-tank-london": {
+      "id": "calamity-tank-london",
+      "name": "Calamity Tank, London",
+      "venue_type": "Other / unknown",
+      "city": "London",
+      "postcode": "E11 4RE",
+      "full_address": "Calamity tank, 1, Station Approach, Leytonstone, E11 4RE",
+      "instagram": "calamitytank",
+      "description": "Calamity Tank is an industrial-style bar nestled in a Leytonstone railway arch, serving as a hub for the local punk and alternative scene. The space balances a relaxed pub atmosphere with a gritty, intimate stage for grassroots live music and DJ sets. It offers a no-frills environment centered around craft beer and community-driven entertainment.",
+      "latlon": [
+        51.56311,
+        0.00928
       ]
     },
     "aces-eights-london": {
