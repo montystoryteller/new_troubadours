@@ -2459,6 +2459,52 @@
       "description": "Born a princess. Raised a prince. Reborn a warrior.\n\n\n\nMaking a pact with the God of Destruction is always going to have consequences. But in a world of cosmic matchmakers, divine curses and secrets set to explode, every arrow must eventually reach its target.\n\n\n\nOne of the most radical figures of the Indian epic, the Mahabharata, Shikandi's boundary-shattering story follows the journey of a soul who battled across lifetimes to settle old scores, dancing the karmic tightrope while playing with fire.\n\n\n\nWith music by maverick sitar player, Sheema Mukherjee, this is a pulse-pounding, hair-raising, heart-lifting mythological rollercoaster, soaring between the worlds of gods and mortals to break the rules and defy destiny.",
       "isSpecial": true
     },
+    "simon-tozer-dartmoor-tales-giants-hounds": {
+      "name": "Dartmoor Tales, Giants & Hounds",
+      "showname": "Dartmoor Tales, Giants & Hounds",
+      "show_dates": [
+        {
+          "date": "03/11/2026",
+          "venue_id": "brunswick-arms",
+          "time": "19:00-21:00 – doors open 18:30",
+          "price": "£8.00 – £12.00",
+          "ticket_url": "https://devonauthor.co.uk/product/dartmoor-tales-giants-hounds-dawlish-3rd-nov/",
+          "event_flyer": "2026_11_03_tozer_dartmoor.webp",
+          "eventId": "R-simon-tozer-dartmoor-tales-giants-hounds-20261103-brunswick-arms"
+        },
+        {
+          "date": "10/11/2026",
+          "venue_id": "wickham-hall",
+          "time": "19:00-21:00 – doors open 18:30",
+          "price": "£8.00 – £12.00",
+          "ticket_url": "https://devonauthor.co.uk/product/dartmoor-tales-giants-hounds-bovey-tracey-10-nov/",
+          "event_flyer": "2026_11_10_tozer_dartmoor.webp",
+          "eventId": "R-simon-tozer-dartmoor-tales-giants-hounds-20261110-wickham-hall"
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "countess-wear-village-hall",
+          "time": "19:00-21:00 – doors open 18:30",
+          "price": "£8.00 – £12.00",
+          "ticket_url": "https://devonauthor.co.uk/product/dartmoor-tales-giants-hounds-countess-wear-20-nov/",
+          "event_flyer": "2026_11_20_tozer_dartmoor.webp",
+          "eventId": "R-simon-tozer-dartmoor-tales-giants-hounds-20261120-countess-wear-village-hall"
+        },
+        {
+          "date": "23/11/2026",
+          "venue_id": "moor-imagination-collective-buckfastleigh",
+          "time": "19:00-21:00 – doors open 18:30",
+          "price": "£8.00 – £12.00",
+          "ticket_url": "https://devonauthor.co.uk/product/dartmoor-tales-giants-hounds-buckfastleigh-23-nov/",
+          "event_flyer": "2026_11_23_tozer_dartmoor.webp",
+          "eventId": "R-simon-tozer-dartmoor-tales-giants-hounds-20261123-moor-imagination-collective-buckfastleigh"
+        }
+      ],
+      "performer_id": "simon-tozer",
+      "description": "An atmospheric evening of live storytelling with local author Simon Tozer, bringing to life the ancient legends of Dartmoor.\n\n\n\nBeyond the towns and villages of Devon lies a landscape steeped in centuries of legend. A place where giants once walked, witches cast their spells and terrifying hounds were said to hunt across the lonely moors.\n\n\n\nJoin Devon author and storyteller Simon Tozer for a journey into the fascinating, mysterious and sometimes frightening world of Dartmoor folklore.\n\n\n\nDuring the first half of the evening, we’ll meet some of Dartmoor’s legendary giants, including Bowerman, and discover how extraordinary stories grew around the moor’s ancient granite formations and prehistoric landscape.\n\n\n\nAfter the interval, we’ll turn to the darker legends: the ghostly Wisht Hounds, the Wild Hunt and the infamous Squire Richard Cabell, whose story became entwined with the inspiration for The Hound of the Baskervilles.\n\n\n\nBlending traditional storytelling with local history, humour and the enduring mysteries of Dartmoor, this promises to be a fascinating evening for lovers of folklore, Devon history and a good tale.",
+      "touring_event_flyer": "tour_dartmoor_tales_wild_hunt.jpg",
+      "isSpecial": true
+    },
     "lucy-lill-doom-scrolls": {
       "name": "Doom Scrolls — The Never Ending Prophecies of the Sibyls [Lucy Lill]",
       "showname": "Doom Scrolls — The Never Ending Prophecies of the Sibyls",
@@ -14037,6 +14083,19 @@
         0.9946
       ]
     },
+    "wickham-hall": {
+      "id": "wickham-hall",
+      "name": "Wickham Hall",
+      "full_address": "Wickham Hall, 23 Ashburton Rd, Bovey Tracey, TQ13 9BY",
+      "city": "Bovey Tracey",
+      "postcode": "TQ13 9BY",
+      "url": "https://www.slsj.co.uk/wickham-hall/",
+      "description": "St John’s Church Hall (Wickham Hall) on Ashburton Road in Bovey Tracey is available to hire at very reasonable rates.",
+      "latlon": [
+        50.58705,
+        -3.67875
+      ]
+    },
     "first-draft-books-bovey-tracey": {
       "id": "first-draft-books-bovey-tracey",
       "name": "First Draft Books, Bovey Tracey",
@@ -14052,6 +14111,19 @@
       "latlon": [
         50.5941,
         -3.67466
+      ]
+    },
+    "countess-wear-village-hall": {
+      "id": "countess-wear-village-hall",
+      "name": "Countess Wear Village Hall",
+      "full_address": "Countess Wear Village Hall, 28 School Lane, Countess Wear, Exeter, EX2 6LB",
+      "city": "Countess Wear, Exeter",
+      "postcode": "EX2 6LB",
+      "url": "https://countesswearvillagehallcom.wordpress.com/",
+      "description": "A friendly village hall for the community run by local volunteers",
+      "latlon": [
+        50.70331,
+        -3.50186
       ]
     },
     "ship-inn-exeter": {
@@ -20809,6 +20881,19 @@
         -2.32394
       ]
     },
+    "brunswick-arms": {
+      "id": "brunswick-arms",
+      "name": "Brunswick Arms",
+      "full_address": "Brunswick Arms, 10 Brunswick Place, Dawlish, EX7 9PB",
+      "city": "Dawlish",
+      "postcode": "EX7 9PB",
+      "url": "https://thebrunswickarms.co.uk/",
+      "description": "Proudly serving great food, quality drinks and a warm local welcome, we’re the perfect place to relax, eat well and enjoy good company.",
+      "latlon": [
+        50.58033,
+        -3.46949
+      ]
+    },
     "exeter-guildhall": {
       "id": "exeter-guildhall",
       "name": "Exeter Guildhall",
@@ -22803,6 +22888,28 @@
       "bio": "Woman, storyteller, cantadora, asker, listener. Actress, poet, seeker, jester. Female. Mother. Brazilian immigrant. Latina. Researcher of the Feminine. Empowerer of Women, conductor of Circles. Jungian analyst. Oraculist - or Communicator of the Divine Feminine Archetypes (I lake chatting with Goddesses). Gemini with Rising Gemini.\n\n\n\nThe fabric of which I am made is intertwined by all these (and many other) characteristics, which are merged and revealed in my work.",
       "facebook": "historiascurativas",
       "instagram": "historiascurativas"
+    },
+    "simon-tozer": {
+      "id": "simon-tozer",
+      "name": "Simon Tozer",
+      "url": "https://devonauthor.co.uk/",
+      "bio": "Simon Tozer was born and raised in Highweek, a village tucked between the South Devon coast and the edge of Dartmoor. His roots run deep—on both sides of his family, he can trace his ancestry in South Devon back to the 1500s. With DNA revealing he’s 80–90% Devonian, it’s no surprise that the land, its stories, and its waters have shaped every part of his life.\n\n\n\nSimon is also an experienced public speaker who loves nothing more than bringing stories to life and connecting with readers who share his passion for nature, heritage, and the hidden magic of place.",
+      "facebook": "simon.tozer.author",
+      "books": [
+        {
+          "title": "Rivers of the Teign",
+          "subtitle": "Walks, Swims, History & Tales",
+          "description": "From tiny streams tumbling from the high moors to the broad tidal waters of the Teign Estuary, Rivers of the Teign is an invitation to follow the water and discover the landscapes, stories and hidden places that lie along its banks.\n\n\n\nA a river is about much more than the water flowing through it.\n\n\n\nAlong the way, I delve into the history and archaeology of the Teign and its valleys, from prehistoric settlements, stone circles and hillforts to medieval communities, mills, mines, quarries, railways and industries that once depended upon the river.\n\n\n\nYou’ll discover the wildlife and ecology of the Teign, the plants and creatures that make their homes beside and within its waters, and some of the challenges our rivers face today.\n\n\n\nThere are legends, local tales, poems and personal stories, too — because for me these rivers have never simply been lines on a map.",
+          "buy_url": "https://devonauthor.co.uk/product/rivers-of-the-teign-walks-swims-history-tales/"
+        },
+        {
+          "title": "Rivers of the Dart",
+          "subtitle": "Walks, Swims, History & Tales",
+          "description": "The River Dart and its many tributaries have shaped the landscape, history and folklore of South Devon for centuries. In this richly detailed and deeply personal guide, Devonian author Simon Tozer explores the waterways that have been woven through his life since childhood—from the high moor to the sea at Dartmouth.\n\n\n\nSteeped in family memories and decades of exploration, this guide captures the unique spirit of the Dart and its tributaries. Whether you are a walker, a swimmer, a lover of local history or simply someone who feels the pull of moving water, this book will lead you to hidden places, beautiful pools, and unforgettable stretches of river.",
+          "buy_url": "https://devonauthor.co.uk/product/rivers-of-the-dart-walks-swims-history-tales/"
+        }
+      ],
+      "instagram": "devon_author"
     },
     "alastair-k-daniel": {
       "id": "alastair-k-daniel",
