@@ -3756,7 +3756,7 @@
           "ticket_url": "https://www.fatsoma.com/e/ir8ktw25/punk-shop-sounds-at-the-vic",
           "event_flyer": "2026_11_12_the_dirt_derby.webp",
           "fb_event": 2202544757168143,
-          "description": "After the postpunk anarcho collision course meeting in 2025 at Revolution all dayer in Stoke Both duos Interrobang and The Dirt have gone on to share a stage numerous times in 2026.\nThey now collaborate on this DIY affair at The Vic venue in Derby. A co- revolutionary noise feature gig. With more to follow.\n\n\n\nInterrobang are synth based motorik post punk to dance to.. Tagged the punk shop boys, this is social observation and a political angst to dance too.\n\n\n\nThey comprise of Dunstan Bruce (Chumbawamba) and Griff (regular fries) who are currently touring album 'rethink everything'.\n\n\n\nThe Dirt are a marital sonic psychpunk duo who blend guitar loops with heavy beats and fast firing lyrics. Fusing genres yet standing apart with a unique ywt familiar sound. Monkeypunch is their current work and its like a love child of suicide and spaceman3...",
+          "description": "After the postpunk anarcho collision course meeting in 2025 at Revolution all dayer in Stoke. Both duos Interrobang and The Dirt have gone on to share a stage numerous times in 2026.\nThey now collaborate on this DIY affair at The Vic venue in Derby. A co- revolutionary noise feature gig. With more to follow.\n\n\n\nInterrobang are synth based motorik post punk to dance to.. Tagged the punk shop boys, this is social observation and a political angst to dance too.\n\n\n\nThey comprise of Dunstan Bruce (Chumbawamba) and Griff (regular fries) who are currently touring album 'rethink everything'.\n\n\n\nThe Dirt are a marital sonic psychpunk duo who blend guitar loops with heavy beats and fast firing lyrics. Fusing genres yet standing apart with a unique ywt familiar sound. Monkeypunch is their current work and its like a love child of suicide and spaceman3...",
           "isSpecial": true,
           "eventId": "T-the-dirt-november-dates-2026-20261112-victoria-inn-derby"
         },
@@ -3788,6 +3788,37 @@
       "touring_event_flyer": "dates_the_dirt_nov_2026.jpg",
       "isSpecial": true
     },
+"the-dirt-december-dates-2026": {
+  "tour_name": "The Dirt — December Dates, 2026",
+  "isPoetry": true,
+  "tour_dates": [
+        {
+          "date": "10/12/2026",
+          "venue_id": "hallamshire-hotel-sheffield",
+          "time": "7.30pm",
+          "price": "£9 (+ £0.90)",
+          "ticket_url": "https://www.seetickets.com/event/interrobang-the-dirt-the-puncturists/hallamshire-hotel/3654676",
+          "description": "Interrobang?! / The Dirt / The Puncturists",
+          "isSpecial": true,
+          "eventId": "T-the-dirt-december-dates-2026-20261210-hallamshire-hotel-sheffield"
+        },
+        {
+          "date": "12/12/2026",
+          "venue_id": "salty-dog-northwich",
+          "time": "7-11pm",
+          "price": "£10 (+ £1)",
+          "ticket_url": "https://www.fatsoma.com/e/tn66behn/xmas-xplosion-nervous-twitch-tv-face-the-dirt",
+          "isSpecial": true,
+          "event_flyer": "2026_12_12_dirt_northwich.avif",
+          "eventId": "T-the-dirt-december-dates-2026-20261212-salty-dog-northwich"
+        }
+  ],
+  "name": "The Dirt — December Dates, 2026",
+  "performer_id": "the-dirt",
+  "tour_description": "December 2026, live dates.",
+  "touring_event_flyer": "dates_the_dirt_dec_2026.jpg",
+  "isSpecial": true
+},
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
@@ -20299,6 +20330,19 @@
         -5.06774
       ]
     },
+        "hallamshire-hotel-sheffield": {
+          "id": "hallamshire-hotel-sheffield",
+          "name": "Hallamshire Hotel, Sheffield",
+          "venue_type": "Pub / bar / café",
+          "city": "Sheffield",
+          "postcode": "S1 4ET",
+          "full_address": "Hallamshire Hotel, West Street, City Centre, Sheffield, S1 4ET",
+          "url": "https://hallamshirehotel.pub/",
+          "latlon": [
+            53.38061,
+            -1.47794
+          ]
+        },
     "greystones-sheffield": {
       "id": "greystones-sheffield",
       "name": "Greystones, Sheffield",
@@ -20370,6 +20414,22 @@
       "latlon": [
         51.23514,
         -2.31298
+      ]
+    },
+    "salty-dog-northwich": {
+      "id": "salty-dog-northwich",
+      "name": "Salty Dog, Northwich",
+      "venue_type": "Pub / bar / café",
+      "city": "Northwich",
+      "postcode": "CW9 5BY",
+      "full_address": "The Salty Dog, 21-23 High Street, Northwich, CW9 5BY",
+      "url": "https://salty-dog.co.uk/the-salty-dog",
+      "facebook": "saltydogpub",
+      "instagram": "saltydogpub",
+      "description": "At The Salty Dog, we're passionate about live music. Our stage hosts a dynamic array of talented artists spanning various genres, promising a diverse musical journey for every patron. From intimate acoustic sessions to high-energy Punk shows, we curate an ever-changing lineup to satisfy every musical palate.\n\n\n\nElevate your senses with our carefully curated craft beer selection. Our taps flow with a rotating array of local and international brews, each chosen for its unique flavor profile and quality. Whether you're a seasoned beer enthusiast or just exploring the world of craft brews, our extensive menu has something to tickle every taste bud.\n\n\n\nLocated on the Northwich High Street, The Salty Dog welcomes music lovers, beer connoisseurs, and anyone seeking a vibrant atmosphere.",
+      "latlon": [
+        53.26084,
+        -2.51528
       ]
     },
     "the-live-rooms-chester": {
