@@ -3728,6 +3728,66 @@
       "video_trailer": "https://www.youtube.com/watch?v=WFqTYu88j_s",
       "isSpecial": true
     },
+    "the-dirt-the-dirt-november-dates-2026": {
+      "tour_name": "The Dirt — November Dates, 2026",
+      "isPoetry": true,
+      "tour_dates": [
+        {
+          "date": "06/11/2026",
+          "venue_id": "chaplins-the-cellar-bar-bournemouth",
+          "isSpecial": true,
+          "eventId": "T-the-dirt-the-dirt-november-dates-2026-20261106-chaplins-the-cellar-bar-bournemouth"
+        },
+        {
+          "date": "07/11/2026",
+          "venue_id": "poco-loco-chatham",
+          "time": "9:00PM",
+          "price": "£5.00 (+ £0.38)",
+          "ticket_url": "https://www.ticketsource.com/livemusicevent/the-d-rt-the-spike-direction-effect-gas-amp-acid/e-mvodqg",
+          "isSpecial": true,
+          "event_flyer": "2026_11_07_the_dirt_poco_loco.webp",
+          "eventId": "T-the-dirt-the-dirt-november-dates-2026-20261107-poco-loco-chatham"
+        },
+        {
+          "date": "12/11/2026",
+          "venue_id": "victoria-inn-derby",
+          "time": "7.30pm",
+          "price": "£10 (+ £1)",
+          "ticket_url": "https://www.fatsoma.com/e/ir8ktw25/punk-shop-sounds-at-the-vic",
+          "event_flyer": "2026_11_12_the_dirt_derby.webp",
+          "fb_event": 2202544757168143,
+          "description": "After the postpunk anarcho collision course meeting in 2025 at Revolution all dayer in Stoke Both duos Interrobang and The Dirt have gone on to share a stage numerous times in 2026.\nThey now collaborate on this DIY affair at The Vic venue in Derby. A co- revolutionary noise feature gig. With more to follow.\n\n\n\nInterrobang are synth based motorik post punk to dance to.. Tagged the punk shop boys, this is social observation and a political angst to dance too.\n\n\n\nThey comprise of Dunstan Bruce (Chumbawamba) and Griff (regular fries) who are currently touring album 'rethink everything'.\n\n\n\nThe Dirt are a marital sonic psychpunk duo who blend guitar loops with heavy beats and fast firing lyrics. Fusing genres yet standing apart with a unique ywt familiar sound. Monkeypunch is their current work and its like a love child of suicide and spaceman3...",
+          "isSpecial": true,
+          "eventId": "T-the-dirt-the-dirt-november-dates-2026-20261112-victoria-inn-derby"
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "apothecary-banbury",
+          "time": "7:00pm, start time: 7:30pm",
+          "price": "Free / donation £5 (+ £0.50)",
+          "ticket_url": "https://wegottickets.com/f/22769",
+          "description": "Hailing from Oxford, the HorMones are a fearless all-women feminist punk band whose members took up instruments later in life and haven't looked back. With infectious enthusiasm, punk attitude, and a passion for empowering others, they're guaranteed to get the room buzzing.\n\n\n\nThe Dirt are a Manchester-based psych-punk duo blending spoken-word intensity, driving rhythms, distorted guitars and experimental electronics. Known for their raw energy and thought-provoking lyrics, they fuse post-punk attitude with psychedelic noise to create a powerful and unpredictable live experience.\n\n\n\nAztec Death Whistle are an experimental psychedelic rock outfit known for immersive grooves, free-flowing improvisation, and electrifying live performances that defy expectations.",
+          "isSpecial": true,
+          "eventId": "T-the-dirt-the-dirt-november-dates-2026-20261120-apothecary-banbury"
+        },
+        {
+          "date": "28/11/2026",
+          "venue_id": "the-grayston-unity-halifax",
+          "time": "8pm",
+          "price": "£10 (£11)",
+          "ticket_url": "https://thegraystonunity.co.uk/event/the-dirt-front-page-news-the-actionists/",
+          "description": "The Dirt – A DIY.. pennines based marital Alt sonic psych punk duo..\n\n\n\nThey bring big bags of heavy guitar “loops” – distortion – fuzz and punchy percussion with a storm splattering of fast firing Lyrics… and energy!!..\n\n\n\nSachiko- The Rickenbacker weilding guitarist uses 2 full pedal boards and loop station to full spell binding effect..\n\n\n\nJack – Percussionist of heavy live drum loops and mesmerizing vocal dexterity..\n\n\n\nA unique genre pending sound yet familiar vibe to punk and psych heads. Its full on Love child of Suicide and The Fall.. with a spaceman3 impressionable cousin vibe.\n\n\n\nAnd Although a two piece it hits like a full band!..\n\n\n\nCome see what the Fuzz is about!!\n\n\n\nsupport from Front Page News & The Actionists.\n\n\n\nFront Page News are a young fuzz fuelled 4 piece rock band from Leeds!\n\n\n\nThe Actionists are a genre-defying duo from Halifax, consisting of art punk performance poet Keiron Higgins and dance producer, Cuban Boy and pop star Ricardo Autobahn.",
+          "isSpecial": true,
+          "event_flyer": "2026_11_08_the_dirt_grayston_unity.avif",
+          "eventId": "T-the-dirt-the-dirt-november-dates-2026-20261128-the-grayston-unity-halifax"
+        }
+      ],
+      "name": "The Dirt — November Dates, 2026",
+      "performer_id": "the-dirt",
+      "tour_description": "November 2026, live dates.",
+      "touring_event_flyer": "dates_the_dirt_nov_2026.jpg",
+      "isSpecial": true
+    },
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
@@ -16854,6 +16914,20 @@
         -1.48631
       ]
     },
+    "victoria-inn-derby": {
+      "id": "victoria-inn-derby",
+      "name": "Victoria Inn, Derby",
+      "venue_type": "Pub / bar / café",
+      "city": "Derby",
+      "postcode": "DE1 2RR",
+      "full_address": "The Victoria Inn, 12 Midland Place, Derby, DE1 2RR",
+      "url": "https://www.thevicderby.co.uk/",
+      "description": "The Victoria Inn is just off of Midland Place just across the road from Derby’s Railway Station. We have newly been refurbished and reopened in July 2022 by John Smith and Emma Middleton.\n\n\n\nOur bar always has 6 real ales which rotate and change weekly and 12 traditional ciders. Along with keg beers and a plentiful selection of spirits.\n\n\n\nWe have live music every Friday and Saturday hosting local musicians.﻿Every Monday we hold a quiz at 8 o’clock, followed by a round of Bingo and a round of play your cards right.",
+      "latlon": [
+        52.91673,
+        -1.46473
+      ]
+    },
     "thomson-vosper-bakewell": {
       "id": "thomson-vosper-bakewell",
       "name": "Thomson & Vosper, Bakewell",
@@ -17004,6 +17078,23 @@
       "latlon": [
         51.46113,
         -2.59325
+      ]
+    },
+    "apothecary-banbury": {
+      "id": "apothecary-banbury",
+      "name": "Apothecary, Banbury",
+      "venue_type": "Pub / bar / café",
+      "city": "Banbury",
+      "postcode": "OX16 5JH",
+      "full_address": "Apothecary Tap, 10-11 Butchers Row, Banbury, OX16 5JH",
+      "url": "https://www.theapothecarytap.com/",
+      "email": "apothecaryrob@gmail.com",
+      "facebook": "Theapothecarytap",
+      "instagram": "theapothecarytap",
+      "description": "The Apothecary Tap is Banbury's only specialist craft beer bar and bottle shop, music and comedy venue.\n\n\n\nOpened in April 2019, it is run by husband and wife team Rob and Karen. We specialise in small batch craft beers from independent brewers, both local and from around the globe, including a wide range of vegan, vegetarian and gluten free beers.\nThe Apothecary Tap grew out of our passion for craft beer and the desire to bring this to Banbury.\n\n\n\nWe are proud to be the home of Atic Comedy and to work in collaboration with Strummer Room Records for our original live music events. All music and comedy enquiries should be made directly to them.",
+      "latlon": [
+        52.06204,
+        -1.33597
       ]
     },
     "burton-taylor-studio-oxford": {
@@ -19504,6 +19595,23 @@
         -0.94336
       ]
     },
+    "the-grayston-unity-halifax": {
+      "id": "the-grayston-unity-halifax",
+      "name": "The Grayston Unity, Halifax",
+      "venue_type": "Other / unknown",
+      "city": "Halifax",
+      "postcode": "HX1 1PU",
+      "full_address": "The Grayson Unity, 8 Horton St, Halifax, HX1 1PU",
+      "url": "https://thegraystonunity.co.uk/",
+      "email": "bookings.graystonunity@gmail.com",
+      "facebook": "thegraystonunity",
+      "instagram": "graystonunity",
+      "description": "The Grayston Unity is an independent bar and live music venue in Halifax, open since 2016.\n\n\n\nAlongside the bar there’s a 110-capacity music room, a 14-capacity snug and a roof terrace, hosting live music, film, spoken word, art and creative writing.\n\n\n\nFind us at 8 Horton Street, a short walk from Halifax railway station and The Piece Hall — ideal for drinks before or after a Piece Hall gig.",
+      "latlon": [
+        53.72086,
+        -1.85878
+      ]
+    },
     "black-dyke-mills-bradford": {
       "id": "black-dyke-mills-bradford",
       "name": "Black Dyke Mills, Bradford",
@@ -19598,6 +19706,21 @@
       "latlon": [
         52.024415,
         0.2404241
+      ]
+    },
+    "poco-loco-chatham": {
+      "id": "poco-loco-chatham",
+      "name": "Poco Loco, Chatham",
+      "venue_type": "Other / unknown",
+      "city": "Chatham",
+      "postcode": "ME4 4DS",
+      "full_address": "Poco Loco, 58-60 High St, Chatham, ME4 4DS",
+      "url": "https://pocoloco.live/",
+      "ticketing_url": "https://www.ticketsource.com/whats-on/chatham/poco-loco",
+      "description": "Poco Loco Bar is a family run, grassroots live performance venue & home to Spanish/Mexican restaurant ‘Tacos & Tapas’.\n\n\n\nBy day grab a beer or a coffee, maybe some tapas and relax. By night catch a band or performance while you eat, or party till late.\n\n\n\nHome to a whole host of budding local talent, since 2008 and touring acts from all over the world. Poco Loco is at the heart of Medway’s music and alternative scene. From indie rock to gypsy jazz, funk and soul to heavy rock and burlesque to spoken world, you will find it all at Poco Loco Bar.\n\n\n\nOur diversity, openness and acceptance is a big part of who we are, and we are proud to welcome you all to our ‘little crazy’ Poco Loco Bar.",
+      "latlon": [
+        51.38344,
+        0.52063
       ]
     },
     "free-range-canterbury": {
@@ -23761,6 +23884,21 @@
       "bio": "Hushwing are a Frome-based contemporary alternative indie-folk band formed by musicians Jack and Izzy.\n\n\n\nBuilt around rich vocal harmonies, thoughtful songwriting and an intimate, atmospheric sound, their music draws heavily on travel, nature and their own personal relationship. Blending delicate folk textures with a modern indie sensibility, Hushwing create songs that feel both reflective and expansive, with a strong sense of place and emotion running throughout.\nThe band have been steadily building a reputation on the local live circuit and were recently hand-picked to support acclaimed indie-folk trio Flyte, marking an exciting step forward for the emerging Frome act.\n\n\n\nWith their warm harmonies, understated arrangements and deeply personal songwriting, Hushwing are quickly establishing themselves as one of the area’s most promising new bands.",
       "facebook_group": "hushwingofficial",
       "instagram": "hushwingofficial"
+    },
+    "the-dirt": {
+      "id": "the-dirt",
+      "name": "The Dirt",
+      "musician": true,
+      "poet": true,
+      "url": "https://thedirt71.bandcamp.com/",
+      "bio": "The Dirt are a transglobal collaboration between Japanese musician Sachiko and partner Jack (aka Leon the pig Farmer), a spoken word artist living in Manchester UK. they combine Psych shoe gaze guitars, electronic rhythms and abrasive spoken verse to full genre bending effect.",
+      "facebook": "thedirtpsychzone",
+      "youtube_videos": [
+        {
+          "story_name": "The Dirt in Leeds 02.10.26 at Wharf chambers",
+          "yt_url": "https://www.youtube.com/watch?v=Sqtyb2V8lpY"
+        }
+      ]
     },
     "mexican-dave": {
       "id": "mexican-dave",
