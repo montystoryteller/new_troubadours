@@ -6779,7 +6779,7 @@
       "club": "beestontales",
       "isPromoter": true,
       "price": "£9 OTD; £7.50 (+ £0.50); £6 (+ £0.50) online",
-      "tickets_url": "https://www.tickettailor.com/events/beestontales/",
+      "ticketing_url": "https://www.tickettailor.com/events/beestontales/",
       "venue_id": "our-lady-of-the-assumption-church-hall-beeston",
       "feature_slots": [
         [
@@ -6806,7 +6806,6 @@
       "time": "7.30pm",
       "facebook": "https://www.facebook.com/groups/1180975245625238",
       "club": "storiesatthestars",
-      "tickets_url": "",
       "venue_id": "seven-stars-falmouth"
     },
     {
@@ -6818,7 +6817,6 @@
       "club": "hearthtales",
       "convenor": "paul-w-davey",
       "description": "Join us for myths, folk tales, fairy stories, wonder tales, local legends and yarns. It's our chance to leave behind our busy lives for a Once Upon Time evening together. No booking needed, just a small donation to help cover costs.",
-      "tickets_url": "",
       "venue_id": "old-schools-hatherleigh"
     },
     {
@@ -6826,7 +6824,7 @@
       "schedule": "1st friday",
       "facebook": "MatlockStorytellingCafe",
       "club": "matlockSCafe",
-      "tickets_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/",
+      "ticketing_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/",
       "venue_id": "imperial-rooms-matlock"
     },
     {
@@ -6907,7 +6905,7 @@
       "facebook": "SettleStories",
       "time": "",
       "club": "settle-stories",
-      "tickets_url": "https://www.ticketsource.com/settle-stories/"
+      "ticketing_url": "https://www.ticketsource.com/settle-stories/"
     },
     {
       "name": "Haworth storytelling circle",
@@ -7098,6 +7096,7 @@
       "time": "7.30pm",
       "venue_id": "st-johns-church-hall-worcester-park",
       "link": "https://www.surreystorytellers.co.uk",
+      "ticketing_url": "https://surreystorytellers.co.uk/booking/",
       "facebook": "https://www.facebook.com/groups/366190587003",
       "club": "threeheadsinawell"
     },
@@ -7111,7 +7110,7 @@
       "description": "Traditional tales from local and visiting tellers in Bletchley.",
       "venue_id": "rectory-cottages-bletchley",
       "isPromoter": true,
-      "tickets_url": "https://wegottickets.com/TravelingwordsProductions",
+      "ticketing_url": "https://wegottickets.com/TravelingwordsProductions",
       "feature_slots": [
         [
           "21/03/2026",
@@ -7248,7 +7247,7 @@
       "facebook": "ploughstorytelling",
       "email": "storytelling.plough@gmail.com",
       "club": "plough-story-circle",
-      "tickets_url": "https://www.theploughartscentre.org.uk/event/plough-storytelling-circle-0",
+      "ticketing_url": "https://www.theploughartscentre.org.uk/event/plough-storytelling-circle-0",
       "video_trailer": "https://www.youtube.com/watch?v=wY3-ZmWK5oY",
       "price": "£2.50 incl. refreshments and cake",
       "venue_id": "st-annes-arts-community-centre-barnstaple"
@@ -7303,7 +7302,7 @@
       "exceptions": [
         "08/2026"
       ],
-      "tickets_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge",
+      "ticketing_url": "https://www.tickettailor.com/events/xanthegreshamknightguesthousethegoddesslounge",
       "venue_id": "hillcrest-community-centre-newhaven",
       "feature_slots": [
         [
@@ -13029,6 +13028,22 @@
       "isSpecial": true
     },
     {
+      "name": "Island of Love [Polis Loizou]",
+      "showname": "Island of Love",
+      "date": "27/11/2026",
+      "time": "7.30pm",
+      "club": "threeheadsinawell",
+      "price": "£10 full price; £7 concession",
+      "description": " Surrey Story Tellers welcomes Sarah Cantrill telling King Athelstan: an historically funny retelling of the first King of England’s journey from vulnerable boy to powerful ruler, blending with with the weight of a turbulent age. Through battles, family politics and the brutal realities of Saxon Britain, the story explores both the absurdity and the darkness of a life shaped by war, ambition and destiny. Historically grounded, emotionally rich and shot through with humour and song, this telling uncovers the man behind the crown in the very place he was crowned — Kingston.\n\n\n\nThis month we are in-person only. Tickets can be purchased on the door or booked in advance.",
+      "event_flyer": "2026_11_27_threeheads_athelstan.jpg",
+      "ticket_url": "https://surreystorytellers.co.uk/booking/",
+      "isSpecial": true,
+      "venue_id": "st-johns-church-hall-worcester-park",
+      "performer_id": "sarah-cantrill",
+      "date_added": "04/11/2026",
+      "eventId": "20261127-sarah-cantrill-st-johns-church-hall-worcester-park"
+    },
+    {
       "name": "Spiderwebs and Starlight: Tales of the Night Sky [Holly Medland & Sue Bailey]",
       "showname": "Spiderwebs and Starlight: Tales of the Night Sky",
       "date": "01/12/2026",
@@ -13682,7 +13697,7 @@
       "venue_id": "orepool-inn-sling",
       "facebook": "musicaltraditionsclub",
       "folk_id": "thenewmusicaltraditionsclub",
-      "tickets_url": "https://wegottickets.com/thenewmusicaltraditionsclub"
+      "ticketing_url": "https://wegottickets.com/thenewmusicaltraditionsclub"
     },
     {
       "name": "Forest Folk Night",
@@ -16824,7 +16839,7 @@
       "city": "Blackburn",
       "postcode": "BB1 7JN",
       "full_address": "Bureau Centre for the Arts, Blackburn, BB1 7JN",
-      "tickets_url": "https://www.ticketsource.com/the-bureau-centre-for-the-arts",
+      "ticketing_url": "https://www.ticketsource.com/the-bureau-centre-for-the-arts",
       "url": "https://www.ticketsource.co.uk/whats-on/blackburn/the-bureau-centre-for-the-arts/the-steed-of-bells-storytelling-performance-colin-rowan-and-iris-skipworth/2026-02-21/19:30/t-yzakplp?ref=montystoryteller.org",
       "latlon": [
         53.7501,
@@ -19606,7 +19621,7 @@
       "city": "Bournemouth",
       "postcode": "BH8 8AD",
       "full_address": "Bear Cavem 24-26 Holdenhurst Rd, Bournemouth, BH8 8AD",
-      "tickets_url": "https://wegottickets.com/bearsbarandbearcave",
+      "ticketing_url": "https://wegottickets.com/bearsbarandbearcave",
       "facebook": "bearcavegigs",
       "latlon": [
         50.72281,
@@ -20425,7 +20440,7 @@
       "postcode": "HD1 2SP",
       "full_address": "The Parish, The Old Courthouse, Queen Street, Huddersfield, HD1 2SP",
       "url": "https://www.parishpub.co.uk/",
-      "tickets_url": "https://parishevents.seetickets.com/search/all",
+      "ticketing_url": "https://parishevents.seetickets.com/search/all",
       "description": "Loud music, big food, good peeople.\n\n\n\nYour friendly neighbourhood Parish. A pub, kitchen and live music venue in the middle of Huddersfield.",
       "latlon": [
         53.64447,
@@ -22322,14 +22337,14 @@
       "id": "merl-fluin",
       "name": "Merl Fluin",
       "instagram": "merlfluin",
-      "tickets_url": "https://www.tickettailor.com/events/merlfluin",
+      "ticketing_url": "https://www.tickettailor.com/events/merlfluin",
       "bio": "Merl Fluin specialises in storytelling for grown-ups: folk tales, fairy tales, magical tales, dark and creepy tales... wonders and horrors to thrill you and chill you (and sometimes both at once). I also perform tales from the vast treasury of Buddhist tradition, from the Buddha's life story to the mysteries of Zen and beyond."
     },
     "holly-medland": {
       "id": "holly-medland",
       "name": "Holly Medland",
       "url": "https://www.hollythestoryteller.com/",
-      "tickets_url": "https://www.ticketsource.com/storytelling",
+      "ticketing_url": "https://www.ticketsource.com/storytelling",
       "bio": "Holly is a storyteller who lives on the beautiful Isle of Wight.\n\n\n\nShe tells all sorts of stories - from favourite childhood fairytales to strange local legends - and has brought these stories to adults and children in all sorts of places including museums, pubs, bookshops, festivals, schools and forests."
     },
     "sue-bailey": {
@@ -22805,7 +22820,7 @@
       "facebook": "TalesofBritainandIreland",
       "podcast": "https://talesofbritainandireland.com/category/podcast-episode/",
       "instagram": "tales_of_britain_and_ireland",
-      "tickets_url": "https://www.eventbrite.co.uk/o/72555678233"
+      "ticketing_url": "https://www.eventbrite.co.uk/o/72555678233"
     },
     "pauline-cordiner": {
       "id": "pauline-cordiner",
@@ -22916,6 +22931,12 @@
       "name": "Alastair K. Daniel",
       "url": "https://www.akdaniel.co.uk/",
       "bio": "Alastair K Daniel is an international storyteller, artist-educator and long-standing member of Surrey Storytellers. He often performs under the banner of 'The Story Tent'."
+    },
+    "sarah-cantrill": {
+      "id": "sarah-cantrill",
+      "name": "Sarah Cantrill",
+      "url": "https://thestorytellerandthemountain.substack.com/p/welcome",
+      "bio": "Sarah Cantrill is the Artistic Director, Founder and Lead Storyteller for the Kingston-based children’s theatre company, Story Storks.  She works closely with All Saints Church and Kingston Museum, and is on a mission to tell anyone who will listen the amazing stories of Kingston, the place she calls home. "
     },
     "simon-heywood": {
       "id": "simon-heywood",
