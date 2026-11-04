@@ -2903,7 +2903,10 @@
       ],
       "name": "Mexican Dave",
       "performer_id": "mexican-dave",
-      "touring_event_flyers":[ "tour_mexican_dave_autumn-winter-2026.jpg", "tour_mexican_dave_last_2026.jpg"],
+      "touring_event_flyers": [
+        "tour_mexican_dave_autumn-winter-2026.jpg",
+        "tour_mexican_dave_last_2026.jpg"
+      ],
       "isMusic": true
     },
     "hannah-moore-winter-calling": {
@@ -13103,6 +13106,21 @@
       "isSpecial": true
     },
     {
+      "name": "The Winter Cherries & Other Seasonal Tales [Monty Storyteller (Tony \"Monty\" Hirst)]",
+      "showname": "The Winter Cherries & Other Seasonal Tales",
+      "date": "08/12/2026",
+      "venue_id": "crown-sceptre-ross",
+      "performer_id": "monty-storyteller",
+      "eventId": "20261208-monty-storyteller-crown-sceptre-ross",
+      "date_added": "04/11/2026",
+      "time": "Doors at 7, first story 7.30pm",
+      "price": "£5",
+      "description": "Join Monty (Storyteller) for another evening of traditional tales at the Crown & Sceptre, Ross-on-Wye.\n\n\n\nSet includes:\n\n\n\n- Sir Cleges & the Winter Cherries\n- Sir Gawain & the Green Knight\n- The Cursed Dancers of Colbeck\n- The Juniper Tree\n\n\n\nThere may be merch..",
+      "event_flyer": "2026_12_08_crown_sceptre_winter_cherries.png",
+      "ticket_url": "https://www.tickettailor.com/events/montystoryteller/2504311",
+      "isSpecial": true
+    },
+    {
       "name": "Christmas Ghost Talk & Spooky Stories with Supper [Marc Tuckey]",
       "showname": "Christmas Ghost Talk & Spooky Stories with Supper",
       "date": "10/12/2026",
@@ -13176,6 +13194,20 @@
       "performer_id": "polis-loizou",
       "date_added": "15/09/2026",
       "eventId": "20261216-polis-loizou-unknown-venue"
+    },
+    {
+      "name": "Tales for Winter Nights [Monty Storyteller (Tony \"Monty\" Hirst)]",
+      "showname": "Tales for Winter Nights",
+      "date": "17/12/2026",
+      "venue_id": "carvel-lane-coffee-house-cowes",
+      "performer_id": "monty-storyteller",
+      "eventId": "20261217-monty-storyteller-carvel-lane-coffee-house-cowes",
+      "date_added": "04/11/2026",
+      "time": "Doors 7pm for 7.30pm start",
+      "price": "£7",
+      "description": "An evening of tales for a Winter's night in Cowes most intimate storytelling venue.\n\n\n\nBooking essential from the venue.",
+      "event_flyer": "2026_12_17_carvel_winter.png",
+      "isSpecial": true
     },
     {
       "name": "Winter's Dream — Storytelling for Winter Solstice [Henry Everett and Hannah Sneyd]",
