@@ -1266,10 +1266,10 @@
             <div class="field-row">
                 <label>Ticketing page</label>
                 <div>
-                    <input type="url" id="club-tickets-url" placeholder="(optional) saved as tickets_url">
-                    <div class="field-hint">Always saved as <code>tickets_url</code>, the standard name for this.
+                    <input type="url" id="club-tickets-url" placeholder="(optional) saved as ticketing_url">
+                    <div class="field-hint">Always saved as <code>ticketing_url</code>, the standard name for this.
                         One existing club uses the older spelling <code>ticketing_url</code> instead — editing
-                        that club reads its value in here, and saving converges it onto <code>tickets_url</code>.</div>
+                        that club reads its value in here, and saving converges it onto <code>ticketing_url</code>.</div>
                 </div>
             </div>
 
@@ -1608,7 +1608,7 @@
                 <h3>🔗 Malformed URLs</h3>
                 <p class="field-hint">
                     Checks every link field anywhere in the data (<code>url</code>, <code>link</code>,
-                    <code>website</code>, <code>ticket_url</code>, <code>tickets_url</code>,
+                    <code>website</code>, <code>ticket_url</code>,
                     <code>ticketing_url</code>, <code>promoter_link</code>, <code>event_url</code>,
                     <code>festival_url</code>, <code>venue_url</code>, <code>video_trailer</code>,
                     <code>podcast_url</code>, <code>audio_url</code>, <code>episode_url</code>,
@@ -5381,7 +5381,7 @@
             document.getElementById("perf-facebook").value = record.facebook || "";
             document.getElementById("perf-facebook-group").value = record.facebook_group || "";
             document.getElementById("perf-instagram").value = record.instagram || "";
-            document.getElementById("perf-tickets-url").value = record.tickets_url || "";
+            document.getElementById("perf-tickets-url").value = record.ticketing_url || "";
             ticketUrlLinkUpdaters["perf-tickets-url"]?.();
             document.getElementById("perf-aliases").value = (record.aliases || []).join(", ");
             document.getElementById("perf-musician").checked = !!record.musician;
@@ -5455,7 +5455,7 @@
             if (Object.keys(merch).length) record.merch = merch;
             batch.podcastEpisodeAdditions.push(...podcastEpisodeAdditions);
             if (instagram) record.instagram = instagram;
-            if (ticketsUrl) record.tickets_url = ticketsUrl;
+            if (ticketsUrl) record.ticketing_url = ticketsUrl;
             if (aliasesRaw) record.aliases = aliasesRaw.split(",").map(s => s.trim()).filter(Boolean);
             if (document.getElementById("perf-musician").checked) record.musician = true;
             if (document.getElementById("perf-poet").checked) record.poet = true;
@@ -5502,7 +5502,7 @@
             document.getElementById("venue-postcode").value = record.postcode || "";
             document.getElementById("venue-full-address").value = record.full_address || "";
             document.getElementById("venue-url").value = record.url || "";
-            document.getElementById("venue-tickets-url").value = record.tickets_url || "";
+            document.getElementById("venue-tickets-url").value = record.ticketing_url || "";
             ticketUrlLinkUpdaters["venue-tickets-url"]?.();
             document.getElementById("venue-email").value = record.email || "";
             document.getElementById("venue-facebook").value = record.facebook || "";
@@ -5572,7 +5572,7 @@
             if (postcode) record.postcode = postcode;
             if (fullAddress) record.full_address = fullAddress;
             if (url) record.url = url;
-            if (ticketsUrl) record.tickets_url = ticketsUrl;
+            if (ticketsUrl) record.ticketing_url = ticketsUrl;
             if (email) record.email = email;
             if (facebook) record.facebook = facebook;
             if (instagram) record.instagram = instagram;
@@ -5863,7 +5863,7 @@
         // form manages itself; anything else on an edited record
         // (feature_slots, location, geocode_missing, themes, legacy flyers…)
         // is carried over untouched.
-        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "tickets_url", "ticketing_url", "email", "online", "isPromoter"];
+        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "ticketing_url", "email", "online", "isPromoter"];
         let clubKeyAutoValue = "";
         let clubVenueField;
 
@@ -5978,7 +5978,7 @@
             if (text("club-link")) record.link = text("club-link");
             if (text("club-facebook")) record.facebook = text("club-facebook");
             if (text("club-instagram")) record.instagram = text("club-instagram");
-            if (text("club-tickets-url")) record.tickets_url = text("club-tickets-url");
+            if (text("club-tickets-url")) record.ticketing_url = text("club-tickets-url");
             if (text("club-email")) record.email = text("club-email");
             if (document.getElementById("club-online").checked) record.online = true;
             if (document.getElementById("club-is-promoter").checked) record.isPromoter = true;
@@ -8306,7 +8306,7 @@
             return out;
         }
 
-        const URL_SCAN_KEYS = new Set(["url", "link", "website", "ticket_url", "tickets_url", "ticketing_url",
+        const URL_SCAN_KEYS = new Set(["url", "link", "website", "ticket_url", "ticketing_url", "ticketing_url",
             "promoter_link", "event_url", "festival_url", "venue_url", "video_trailer", "podcast_url",
             "audio_url", "episode_url", "enclosureUrl", "yt_url", "buy_url", "publication_url"]);
         const SOCIAL_SCAN_KEYS = new Set(["facebook", "facebook_group", "instagram"]);
@@ -9951,7 +9951,7 @@
                 // like "sef.townsend" produced "https://sef.townsend" —
                 // nonsense, and not a formatting problem to begin with,
                 // since a bare handle there is the correct, intended shape.
-                ["url", "tickets_url"].forEach(field => {
+                ["url", "ticketing_url"].forEach(field => {
                     if (v[field]) {
                         const after = fixMissingUrlScheme(v[field]);
                         addIfChanged(`venues.${id}.${field}`, v[field], after, () => { v[field] = after; });
@@ -9968,7 +9968,7 @@
                 });
                 // Same reasoning as venues above — facebook/facebook_group/
                 // instagram excluded deliberately, not an oversight.
-                ["url", "tickets_url"].forEach(field => {
+                ["url", "ticketing_url"].forEach(field => {
                     if (p[field]) {
                         const after = fixMissingUrlScheme(p[field]);
                         addIfChanged(`performers.${id}.${field}`, p[field], after, () => { p[field] = after; });

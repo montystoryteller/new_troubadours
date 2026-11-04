@@ -675,6 +675,21 @@ async function renderPage(data, clubId) {
   });
   if (iconsRow.children.length) header.appendChild(iconsRow);
 
+  // Club's own ticket shop/organiser page, if it has one.
+  const clubTicketsHref = clubRecord.ticketing_url
+    ? sanitizeUrl(clubRecord.ticketing_url)
+    : null;
+  if (clubTicketsHref) {
+    const tl = document.createElement("a");
+    tl.href = clubTicketsHref;
+    tl.target = "_blank";
+    tl.rel = "noopener noreferrer";
+    tl.textContent = "🎟 Tickets";
+    tl.className = "club-tickets-link";
+    tl.style.cssText = "display:inline-block;margin:6px 0;font-size:0.9em;";
+    header.appendChild(tl);
+  }
+
   // A club that is also a promoter has its own page in the promoters directory.
   if (clubRecord.isPromoter) {
     const pl = document.createElement("a");
@@ -2094,7 +2109,7 @@ async function renderDirectory(data) {
         const meta = document.createElement("div");
         meta.style.cssText =
           "display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;";
-        const linkSrc = c.link || c.website || c.tickets_url;
+        const linkSrc = c.link || c.website || c.ticketing_url;
         if (linkSrc) {
           const a = icon(ICON_SVG.website, linkSrc, "event-website", "Website");
           // Match the grey color used in the single-club header

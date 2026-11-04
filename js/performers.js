@@ -983,6 +983,7 @@ function renderPerformer() {
       : "",
     "website",
   );
+  addPerformerLink(performer.ticketing_url, "🎟 Tickets", "tickets");
   addPerformerLink(performer.facebook, "Facebook", "facebook");
   addPerformerLink(performer.facebook_group, "Facebook group", "facebook_group");
   addPerformerLink(performer.instagram, "Instagram", "instagram");
