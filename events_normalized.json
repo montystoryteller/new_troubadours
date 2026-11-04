@@ -2876,11 +2876,11 @@
           "date": "05/11/2026",
           "venue_id": "calamity-tank-london",
           "isSpecial": true,
-          "event_flyer": "2026_11_05_black_guy_fawkes_calamity_tank.jpg",
           "other_performer_ids": [
             "katacombs"
           ],
-          "eventId": "T-mexican-dave-autumn-winter-2026-20261105-calamity-tank-london"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261105-calamity-tank-london",
+          "event_flyer": "2026_11_05_black_guy_fawkes_calamity_tank.jpg"
         },
         {
           "date": "06/11/2026",
