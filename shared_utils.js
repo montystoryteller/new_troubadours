@@ -2282,49 +2282,72 @@ function createTicketsElement(eventData, past = false, soldOut = false) {
 // ---------------------------------------------------------------------------
 
 /**
+ * True on touch-only devices (phones/tablets) — used to give maps
+ * two-finger gestures so a one-finger drag scrolls the page instead of
+ * getting trapped by the map.
+ * @returns {boolean}
+ */
+function isTouchOnlyDevice() {
+  return !!(
+    window.matchMedia && window.matchMedia("(pointer: coarse)").matches
+  );
+}
+
+/**
+ * Two-finger map gestures for touch screens. On a phone a map that fills
+ * much of the screen hijacks page scrolling the moment a finger lands on it,
+ * so: one finger scrolls the page, two fingers pan/zoom the map (Leaflet's
+ * pinch handler pans as well as zooms). Mouse users are unaffected.
+ *
+ * The map must have been created with `dragging: !isTouchOnlyDevice()`
+ * (dragging can't be switched off after the fact without losing the pinch
+ * pan). This adds the "Use two fingers to move the map" hint — styled by
+ * .map-gesture-hint in shared-styles.css — which flashes when someone drags
+ * with one finger. No-op on non-touch devices.
+ *
+ * @param {L.Map} map
+ */
+function addTwoFingerMapHint(map) {
+  if (!isTouchOnlyDevice()) return;
+
+  const container = map.getContainer();
+  const hint = document.createElement("div");
+  hint.className = "map-gesture-hint";
+  hint.textContent = "Use two fingers to move the map";
+  container.appendChild(hint);
+
+  let hideTimer = null;
+  container.addEventListener(
+    "touchmove",
+    (e) => {
+      if (e.touches.length !== 1) {
+        hint.classList.remove("visible");
+        return;
+      }
+      hint.classList.add("visible");
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => hint.classList.remove("visible"), 1500);
+    },
+    { passive: true },
+  );
+}
+
+/**
  * Initialise a Leaflet map centred on the UK, constrained to UK/Ireland bounds.
  * @param {string}   elementId   - The HTML element id for the map container.
  * @param {Function} onMoveEnd   - Callback fired on map 'moveend' events.
  * @returns {L.Map}
  */
 function initMap(elementId, onMoveEnd) {
-  // On touch screens a one-finger drag on the map would hijack page
-  // scrolling (the map fills most of the screen, so it's easy to start a
-  // scroll on it). So: one finger scrolls the page, two fingers pan/zoom
-  // the map (Leaflet's pinch handler pans as well as zooms). Mouse users
-  // are unaffected.
-  const isTouchOnly =
-    window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-
   const map = L.map(elementId, {
     maxBounds: UK_IRELAND_BOUNDS,
     maxBoundsViscosity: 1.0,
     minZoom: 5,
     maxZoom: 16,
-    dragging: !isTouchOnly,
+    dragging: !isTouchOnlyDevice(),
   }).setView([53.0, -2.0], 6);
 
-  if (isTouchOnly) {
-    const container = map.getContainer();
-    const hint = document.createElement("div");
-    hint.className = "map-gesture-hint";
-    hint.textContent = "Use two fingers to move the map";
-    container.appendChild(hint);
-    let hideTimer = null;
-    container.addEventListener(
-      "touchmove",
-      (e) => {
-        if (e.touches.length !== 1) {
-          hint.classList.remove("visible");
-          return;
-        }
-        hint.classList.add("visible");
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => hint.classList.remove("visible"), 1500);
-      },
-      { passive: true },
-    );
-  }
+  addTwoFingerMapHint(map);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",

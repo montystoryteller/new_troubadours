@@ -267,7 +267,7 @@ function renderAllVenues() {
       const strong = document.createElement("strong");
       strong.textContent = v.name;
       item.appendChild(strong);
-      if (v.city) {
+      if (v.city && !nameContainsTown(v.name, v.city)) {
         const city = document.createElement("span");
         city.className = "dir-search-item-meta";
         city.textContent = v.city;
@@ -567,7 +567,7 @@ function renderAllVenues() {
           ptypes.size > 0
             ? `<br>${[...ptypes].map((t) => PTYPE_DEFS.find((p) => p.key === t)?.label || t).join(" · ")}`
             : "";
-        const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city ? "<br>" + escapeHtml(v.city) : ""}<br><em style="color:${colour}">${vtype}</em>${ptypeLine}`;
+        const popup = `<strong>${escapeHtml(v.name)}</strong>${v.city && !nameContainsTown(v.name, v.city) ? "<br>" + escapeHtml(v.city) : ""}<br><em style="color:${colour}">${vtype}</em>${ptypeLine}`;
         const marker = L.circle(v.latlon, {
           radius: 3000,
           fillColor: colour,
@@ -1237,7 +1237,14 @@ function renderInfoTable() {
 
 function initVenueMap() {
   const [lat, lon] = venue.latlon;
-  map = L.map("map", { minZoom: 5, maxZoom: 18 }).setView([lat, lon], 14);
+  map = L.map("map", {
+    minZoom: 5,
+    maxZoom: 18,
+    // Touch screens: one finger scrolls the page, two move the map
+    // (see addTwoFingerMapHint() in shared_utils.js).
+    dragging: !isTouchOnlyDevice(),
+  }).setView([lat, lon], 14);
+  addTwoFingerMapHint(map);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
@@ -1245,7 +1252,10 @@ function initVenueMap() {
   const marker = L.marker([lat, lon]).addTo(map);
   marker
     .bindPopup(
-      `<strong>${escapeHtml(venue.name)}</strong><br>${escapeHtml(venue.city || "")}`,
+      `<strong>${escapeHtml(venue.name)}</strong>` +
+        (nameContainsTown(venue.name, venue.city)
+          ? ""
+          : `<br>${escapeHtml(venue.city || "")}`),
     )
     .openPopup();
 }
@@ -1534,7 +1544,7 @@ function renderNearbyVenues() {
     a.textContent = v.name;
     row.appendChild(a);
 
-    if (v.city) {
+    if (v.city && !nameContainsTown(v.name, v.city)) {
       const city = document.createElement("span");
       city.className = "nearby-city";
       city.textContent = v.city;

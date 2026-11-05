@@ -1584,6 +1584,7 @@ function renderPage() {
   renderEventFlyers(ev);
   renderPerformerSection(ev);
   renderPerformerUpcomingEvents(ev);
+  renderMapDirections(hostVenue);
   renderVenueDescription(hostVenue);
   renderInfoTable(hostVenue);
   // Built via resolveEventId(ev, ev._date) rather than the raw ?event= the
@@ -2153,12 +2154,108 @@ function renderInfoTable(hostVenue) {
 }
 
 // ---------------------------------------------------------------------------
+// Directions links, under the map (Google / Apple / Waze — see
+// buildDirectionsLinks() below). Sits between the map and the venue
+// description in the Map panel.
+// ---------------------------------------------------------------------------
+
+function renderMapDirections(hostVenue) {
+  const existing = document.getElementById("eventMapDirections");
+  if (existing) existing.remove();
+
+  const links = buildDirectionsLinks(hostVenue);
+  if (!links.length) return;
+
+  const row = document.createElement("div");
+  row.id = "eventMapDirections";
+  row.className = "event-directions";
+
+  const label = document.createElement("span");
+  label.className = "event-directions-label";
+  label.textContent = "Get directions:";
+  row.appendChild(label);
+
+  links.forEach(({ label: text, href }) => {
+    const a = document.createElement("a");
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "event-directions-link";
+    a.textContent = text;
+    row.appendChild(a);
+  });
+
+  const desc = document.getElementById("venueDescription");
+  const mapEl = document.getElementById("map-container");
+  if (desc) desc.insertAdjacentElement("beforebegin", row);
+  else if (mapEl) mapEl.insertAdjacentElement("afterend", row);
+}
+
+// Map-app links for getting to a venue. Uses the venue's lat/lon when it has
+// one (most accurate pin), otherwise falls back to its address text +
+// postcode. On a phone, these open the installed maps app ready for satnav;
+// Apple Maps is only offered on Apple devices.
+function buildDirectionsLinks(venue) {
+  if (!venue) return [];
+
+  const hasCoords = hasLatlon(venue);
+  const coords = hasCoords ? `${venue.latlon[0]},${venue.latlon[1]}` : null;
+  const addressText = [
+    venue.full_address || [venue.name, venue.city].filter(Boolean).join(", "),
+    venue.postcode,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const dest = coords || addressText;
+  if (!dest) return [];
+  const q = encodeURIComponent(dest);
+
+  const links = [
+    {
+      label: "Google Maps",
+      href: `https://www.google.com/maps/dir/?api=1&destination=${q}`,
+    },
+  ];
+
+  // Apple Maps only opens the app on Apple devices (iPhone/iPad/Mac — iPadOS
+  // reports itself as "Macintosh"); elsewhere it just lands on a website, so
+  // it's hidden.
+  if (isAppleDevice()) {
+    links.push({
+      label: "Apple Maps",
+      href: `https://maps.apple.com/?daddr=${q}`,
+    });
+  }
+
+  links.push({
+    label: "Waze",
+    href: coords
+      ? `https://waze.com/ul?ll=${q}&navigate=yes`
+      : `https://waze.com/ul?q=${q}&navigate=yes`,
+  });
+
+  return links;
+}
+
+function isAppleDevice() {
+  return /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent || "");
+}
+
+// ---------------------------------------------------------------------------
 // Map (mirrors venues.js's initVenueMap(), for the host venue)
 // ---------------------------------------------------------------------------
 
 function initEventMap(hostVenue) {
   const [lat, lon] = hostVenue.latlon;
-  map = L.map("map", { minZoom: 5, maxZoom: 18 }).setView([lat, lon], 14);
+  map = L.map("map", {
+    minZoom: 5,
+    maxZoom: 18,
+    // Touch screens: one finger scrolls the page, two move the map
+    // (see addTwoFingerMapHint() in shared_utils.js).
+    dragging: !isTouchOnlyDevice(),
+  }).setView([lat, lon], 14);
+  addTwoFingerMapHint(map);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);

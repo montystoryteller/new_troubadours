@@ -416,6 +416,45 @@ a.event-performer-name:hover {
     color: #fff;
 }
 
+/* ── Directions links, under the map (event.js's renderMapDirections() /
+   buildDirectionsLinks()) — "Get directions:" label + separate pills for
+   Google / Apple / Waze. Each pill carries its own margin as well as the
+   flex gap so they stay apart even if flex is overridden. */
+.event-directions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.event-directions-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #444;
+    margin-right: 2px;
+}
+
+.event-directions .event-directions-link {
+    display: inline-block;
+    margin: 2px 4px 2px 0;
+    padding: 6px 14px;
+    border: 1px solid var(--theme-green-dark);
+    border-radius: 16px;
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.event-directions .event-directions-link:hover {
+    background: var(--theme-green-dark);
+    color: #fff;
+}
+
 /* ── Venue description, under the map ────────────────────────── */
 .event-venue-description {
     margin-top: 14px;
