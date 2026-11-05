@@ -5442,7 +5442,7 @@
       ],
       "performer_id": "3-daft-monkeys",
       "tour_description": "25th anniversary and new double album release tour — Ebb and Flow",
-      "touring_event_flyer": "tour_3daftmonkeys_autumn_2026.jpg",
+      "touring_event_flyers": ["tour_3daftmonkeys_autumn_2026.jpg", "tour-3daftmonkeys-ebb-flow.jpg"],
       "isMusic": true
     },
     "sorrel-nation-creeping-thyme-2026": {
@@ -23951,7 +23951,7 @@
       "musician": true,
       "poet": true,
       "url": "https://thedirt71.bandcamp.com/",
-      "bio": "The Dirt are a transglobal collaboration between Japanese musician Sachiko and partner Jack (aka Leon the pig Farmer), a spoken word artist living in Manchester UK. they combine Psych shoe gaze guitars, electronic rhythms and abrasive spoken verse to full genre bending effect.",
+      "bio": "The Dirt are a transglobal collaboration between Japanese musician Sachiko and partner Jack (aka Leon the pig Farmer), a spoken word artist living in Manchester UK. they combine Psych shoe gaze guitars, electronic rhythms and abrasive spoken verse to full genre bending effect.\n\n\n\n[Editor's note: I'm listing them as poetry 'cos it's poetry over music to my ear, and I'd rather it in this category than music, which tends more towards the folk'n'acoustic...]",
       "facebook": "thedirtpsychzone",
       "youtube_videos": [
         {
