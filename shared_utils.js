@@ -737,7 +737,7 @@ function renderShareBadge(type, id, extraParams = {}) {
   const badgeHtml = buildBadgeHtml(type, url);
   mount.innerHTML =
     badgeHtml +
-    `<a href="#" id="shareBadgeCopy" class="badge-copy-link">Copy badge HTML</a>` +
+    `<a href="#" id="shareBadgeCopy" class="badge-copy-link">Link to here from your website — copy badge HTML</a>` +
     `<span id="shareBadgeCopyMessage" class="badge-copy-message"></span>`;
   wireBadgeCopyButton("shareBadgeCopy", "shareBadgeCopyMessage", badgeHtml);
 }
