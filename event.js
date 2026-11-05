@@ -2155,8 +2155,8 @@ function renderInfoTable(hostVenue) {
 
 // ---------------------------------------------------------------------------
 // Directions links, under the map (Google / Apple / Waze — see
-// buildDirectionsLinks() below). Sits between the map and the venue
-// description in the Map panel.
+// buildDirectionsLinks() below). Sits straight under the map in the Map
+// panel, ahead of the venue details table and venue description.
 // ---------------------------------------------------------------------------
 
 function renderMapDirections(hostVenue) {
@@ -2185,10 +2185,11 @@ function renderMapDirections(hostVenue) {
     row.appendChild(a);
   });
 
-  const desc = document.getElementById("venueDescription");
+  // Straight after the map, ahead of the venue details table.
   const mapEl = document.getElementById("map-container");
-  if (desc) desc.insertAdjacentElement("beforebegin", row);
-  else if (mapEl) mapEl.insertAdjacentElement("afterend", row);
+  const table = document.getElementById("venueInfoTable");
+  if (mapEl) mapEl.insertAdjacentElement("afterend", row);
+  else if (table) table.insertAdjacentElement("beforebegin", row);
 }
 
 // Map-app links for getting to a venue. Uses the venue's lat/lon when it has

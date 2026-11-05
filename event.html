@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="/css/shared-styles.css?v=202610291125">
     <link rel="stylesheet" href="/css/venue-styles.css?v=202610201948">
-    <link rel="stylesheet" href="/css/event-styles.css?v=202611050058">
+    <link rel="stylesheet" href="/css/event-styles.css?v=202611050104">
 </head>
 
 <body class="page-event">
@@ -117,10 +117,15 @@
                     </div>
 
                     <div class="content-section">
-                        <h3 class="section-heading">Map</h3>
+                        <h3 class="section-heading">Map &amp; venue</h3>
                         <div id="map-container">
                             <div id="map"></div>
                         </div>
+                        <!-- "Get directions" row is inserted straight after #map-container
+                             by event.js's renderMapDirections(), so the order is:
+                             map → directions → venue details → venue description. -->
+                        <!-- Populated by event.js's renderInfoTable(). -->
+                        <div id="venueInfoTable" class="venue-info-table"></div>
                         <!-- Populated by event.js's renderVenueDescription() when the
                              host venue record has its own description text. -->
                         <div id="venueDescription" class="event-venue-description" style="display:none;"></div>
@@ -148,11 +153,6 @@
                 <div id="performerUpcomingSection" class="content-section" style="display:none;">
                     <h3 class="section-heading">More by this performer</h3>
                     <div id="performerUpcomingList"></div>
-                </div>
-
-                <div class="content-section">
-                    <h3 class="section-heading">Venue details</h3>
-                    <div id="venueInfoTable" class="venue-info-table"></div>
                 </div>
 
                 <div id="nearbyEventsSection" class="content-section" style="display:none;">
@@ -201,7 +201,7 @@
 
     <script src="/js/recurrence-engine.js?v=202610272132"></script>
     <script src="/js/shared_utils.js?v=202611050058"></script>
-    <script src="/js/event.js?v=202611050058"></script>
+    <script src="/js/event.js?v=202611050104"></script>
 </body>
 
 </html>

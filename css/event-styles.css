@@ -455,6 +455,11 @@ a.event-performer-name:hover {
     color: #fff;
 }
 
+/* Venue details table, now inside the Map panel (below the directions row) */
+.left-col-split .venue-info-table {
+    margin-top: 14px;
+}
+
 /* ── Venue description, under the map ────────────────────────── */
 .event-venue-description {
     margin-top: 14px;
