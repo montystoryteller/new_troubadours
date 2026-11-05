@@ -1449,7 +1449,7 @@ function showEventNotFound(badId, suggestions) {
       const venue = venuesLookup[c.venueId];
       const meta = [
         formatMediumDate(c.date),
-        venue && [venue.name, venue.city].filter(Boolean).join(", "),
+        venue && venueDisplayName(venue),
       ]
         .filter(Boolean)
         .join(" \u2022 ");
@@ -1556,8 +1556,7 @@ function renderPage() {
   if (hostVenue) {
     const a = document.createElement("a");
     a.href = `venues.html?venue=${encodeURIComponent(ev.venue_id)}`;
-    a.textContent =
-      hostVenue.name + (hostVenue.city ? `, ${hostVenue.city}` : "");
+    a.textContent = venueDisplayName(hostVenue);
     venueDiv.appendChild(a);
   }
 
@@ -1572,6 +1571,8 @@ function renderPage() {
     tourLink.textContent = `Part of ${ev._sourceTourName} — see all dates \u2192`;
     venueDiv.appendChild(tourLink);
   }
+
+  renderHeroPerformerButtons(ev, venueDiv);
 
   if (ev.description && ev.description.trim()) {
     const descDiv = document.getElementById("eventDescription");
@@ -1602,6 +1603,35 @@ function renderPage() {
     renderNearbyVenues(nearby);
     renderNearbyEvents(nearby, getTodayMidnight());
   }
+}
+
+// ---------------------------------------------------------------------------
+// Performer buttons in the hero — one button-style link per credited
+// performer (performer_ids, or the single performer_id), pointing at that
+// performer's performers.html page. Inserted straight after the venue line
+// so event.html needs no extra markup.
+// ---------------------------------------------------------------------------
+
+function renderHeroPerformerButtons(ev, afterEl) {
+  const existing = document.getElementById("eventPerformerButtons");
+  if (existing) existing.remove();
+
+  const ids = performerIdsOf(ev).filter((id) => performersLookup[id]);
+  if (!ids.length || !afterEl) return;
+
+  const row = document.createElement("div");
+  row.id = "eventPerformerButtons";
+  row.className = "event-performer-buttons";
+
+  ids.forEach((id) => {
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.className = "event-performer-btn";
+    a.textContent = performersLookup[id].name;
+    row.appendChild(a);
+  });
+
+  afterEl.insertAdjacentElement("afterend", row);
 }
 
 // ---------------------------------------------------------------------------
@@ -1787,13 +1817,35 @@ function renderPerformerSection(ev) {
   const container = document.getElementById("performerInfo");
   container.innerHTML = "";
 
-  const performer = ev.performer_id ? performersLookup[ev.performer_id] : null;
-  const name = (performer && performer.name) || ev.performer || null;
-  if (!name) {
-    section.style.display = "none";
+  // performer_ids (plural) for co-headlined bills, performer_id (singular)
+  // otherwise — performerIdsOf() in shared_utils.js normalises both.
+  const ids = performerIdsOf(ev).filter((id) => performersLookup[id]);
+
+  if (ids.length) {
+    ids.forEach((id) => {
+      container.appendChild(buildPerformerCard(id, performersLookup[id]));
+    });
+    section.style.display = "";
     return;
   }
-  section.style.display = "";
+
+  // No resolvable performer record — fall back to the free-text name, if any.
+  if (ev.performer) {
+    container.appendChild(buildPerformerCard(null, null, ev.performer));
+    section.style.display = "";
+    return;
+  }
+
+  section.style.display = "none";
+}
+
+// One performer's card: avatar, name (linked when there's a record),
+// musician/poet badges, bio, website and "View full profile" link.
+function buildPerformerCard(performerId, performer, fallbackName) {
+  const card = document.createElement("div");
+  card.className = "event-performer-card";
+
+  const name = (performer && performer.name) || fallbackName || performerId;
 
   const header = document.createElement("div");
   header.className = "event-performer-header";
@@ -1809,10 +1861,14 @@ function renderPerformerSection(ev) {
   avatar.textContent = initials;
   header.appendChild(avatar);
 
+  const profileHref = performerId
+    ? `performers.html?performer=${encodeURIComponent(performerId)}`
+    : null;
+
   const nameWrap = document.createElement("div");
-  if (ev.performer_id && performer) {
+  if (profileHref && performer) {
     const a = document.createElement("a");
-    a.href = `performers.html?performer=${encodeURIComponent(ev.performer_id)}`;
+    a.href = profileHref;
     a.className = "event-performer-name";
     a.textContent = name;
     nameWrap.appendChild(a);
@@ -1842,13 +1898,13 @@ function renderPerformerSection(ev) {
   }
 
   header.appendChild(nameWrap);
-  container.appendChild(header);
+  card.appendChild(header);
 
   if (performer && performer.bio && performer.bio.trim()) {
     const bioDiv = document.createElement("div");
     bioDiv.className = "event-performer-bio";
     appendParagraphs(bioDiv, performer.bio);
-    container.appendChild(bioDiv);
+    card.appendChild(bioDiv);
   }
 
   if (performer && performer.url) {
@@ -1862,17 +1918,19 @@ function renderPerformerSection(ev) {
       a.textContent = href
         .replace(/^https?:\/\/(www\.)?/, "")
         .replace(/\/$/, "");
-      container.appendChild(a);
+      card.appendChild(a);
     }
   }
 
-  if (ev.performer_id && performer) {
+  if (profileHref && performer) {
     const profileLink = document.createElement("a");
-    profileLink.href = `performers.html?performer=${encodeURIComponent(ev.performer_id)}`;
+    profileLink.href = profileHref;
     profileLink.className = "event-performer-profile-link";
     profileLink.textContent = "View full profile \u2192";
-    container.appendChild(profileLink);
+    card.appendChild(profileLink);
   }
+
+  return card;
 }
 
 // ---------------------------------------------------------------------------
@@ -1904,6 +1962,11 @@ function performerRecordMatches(obj, performerId, compoundIds) {
   )
     return true;
   if (obj.performer_id && compoundIds.has(obj.performer_id)) return true;
+  if (
+    Array.isArray(obj.performer_ids) &&
+    obj.performer_ids.some((id) => compoundIds.has(id))
+  )
+    return true;
   return false;
 }
 
@@ -1992,22 +2055,44 @@ const PERFORMER_UPCOMING_MAX = 6;
 
 function renderPerformerUpcomingEvents(ev) {
   const section = document.getElementById("performerUpcomingSection");
-  if (!ev.performer_id || !performersLookup[ev.performer_id]) {
+  const ids = performerIdsOf(ev).filter((id) => performersLookup[id]);
+  if (!ids.length) {
     section.style.display = "none";
     return;
   }
 
-  const upcoming = collectUpcomingEventsForPerformer(
-    ev.performer_id,
-    getTodayMidnight(),
-  ).slice(0, PERFORMER_UPCOMING_MAX);
+  // Merge every credited performer's upcoming dates, de-duplicated (two
+  // performers on the same night would otherwise list it twice).
+  const today = getTodayMidnight();
+  const seen = new Set();
+  const upcoming = ids
+    .flatMap((id) => collectUpcomingEventsForPerformer(id, today))
+    .filter((entry) => {
+      const d = entry.data || {};
+      const label =
+        d.eventId ||
+        d.name ||
+        (d.tour && d.tour.name) ||
+        (d.ts && d.ts.name) ||
+        "";
+      const key = `${entry.type}|${+entry.date}|${entry.venueId}|${label}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => a.date - b.date)
+    .slice(0, PERFORMER_UPCOMING_MAX);
 
   if (!upcoming.length) {
     section.style.display = "none";
     return;
   }
 
-  const performerLabel = performersLookup[ev.performer_id].name;
+  const names = ids.map((id) => performersLookup[id].name);
+  const performerLabel =
+    names.length > 1
+      ? `${names.slice(0, -1).join(", ")} & ${names[names.length - 1]}`
+      : names[0];
   section.querySelector(".section-heading").textContent =
     `More by ${performerLabel}`;
 
@@ -2081,7 +2166,10 @@ function initEventMap(hostVenue) {
   const marker = L.marker([lat, lon]).addTo(map);
   marker
     .bindPopup(
-      `<strong>${escapeHtml(hostVenue.name)}</strong><br>${escapeHtml(hostVenue.city || "")}`,
+      `<strong>${escapeHtml(hostVenue.name)}</strong>` +
+        (nameContainsTown(hostVenue.name, hostVenue.city)
+          ? ""
+          : `<br>${escapeHtml(hostVenue.city || "")}`),
     )
     .openPopup();
 }
@@ -2109,7 +2197,7 @@ function renderNearbyVenues(nearby) {
     a.textContent = v.name;
     row.appendChild(a);
 
-    if (v.city) {
+    if (v.city && !nameContainsTown(v.name, v.city)) {
       const city = document.createElement("span");
       city.className = "nearby-city";
       city.textContent = v.city;

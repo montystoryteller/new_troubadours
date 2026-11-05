@@ -1257,8 +1257,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
     const venueLine = document.createElement("a");
     venueLine.className = "event-row-venue";
     venueLine.href = `venues.html?venue=${encodeURIComponent(entry.venueId)}`;
-    venueLine.textContent =
-      entry.venue.name + (entry.venue.city ? `, ${entry.venue.city}` : "");
+    venueLine.textContent = venueDisplayName(entry.venue);
     detail.appendChild(venueLine);
   }
 
@@ -1282,16 +1281,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
     }
 
     // Performer link
-    if (e.performer_id && performersLookup[e.performer_id]) {
-      const perf = performersLookup[e.performer_id];
-      const p = document.createElement("div");
-      p.className = "event-row-performer";
-      const a = document.createElement("a");
-      a.href = `performers.html?performer=${encodeURIComponent(e.performer_id)}`;
-      a.textContent = perf.name;
-      p.appendChild(a);
-      detail.appendChild(p);
-    }
+    appendPerformerLinks(detail, e);
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
@@ -1330,16 +1320,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
       detail.appendChild(t);
     }
 
-    if (tour.performer_id && performersLookup[tour.performer_id]) {
-      const perf = performersLookup[tour.performer_id];
-      const p = document.createElement("div");
-      p.className = "event-row-performer";
-      const a = document.createElement("a");
-      a.href = `performers.html?performer=${encodeURIComponent(tour.performer_id)}`;
-      a.textContent = perf.name;
-      p.appendChild(a);
-      detail.appendChild(p);
-    }
+    appendPerformerLinks(detail, tour);
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
@@ -1375,16 +1356,7 @@ function renderEventRow(container, entry, isPast, options = {}) {
       detail.appendChild(t);
     }
 
-    if (ts.performer_id && performersLookup[ts.performer_id]) {
-      const perf = performersLookup[ts.performer_id];
-      const p = document.createElement("div");
-      p.className = "event-row-performer";
-      const a = document.createElement("a");
-      a.href = `performers.html?performer=${encodeURIComponent(ts.performer_id)}`;
-      a.textContent = perf.name;
-      p.appendChild(a);
-      detail.appendChild(p);
-    }
+    appendPerformerLinks(detail, ts);
 
     const badges = document.createElement("div");
     badges.className = "badge-row";
@@ -3545,6 +3517,30 @@ function performerIdsOf(entity) {
 }
 
 /**
+ * Appends a `.event-row-performer` line to `detail` linking every credited
+ * performer (performer_ids, or the single performer_id) that exists in
+ * performersLookup. Multiple performers are joined with " & ". No-op when
+ * none resolve.
+ *
+ * @param {HTMLElement} detail - the event row's detail container
+ * @param {object} entity - record carrying performer_id / performer_ids
+ */
+function appendPerformerLinks(detail, entity) {
+  const ids = performerIdsOf(entity).filter((id) => performersLookup[id]);
+  if (!ids.length) return;
+  const p = document.createElement("div");
+  p.className = "event-row-performer";
+  ids.forEach((id, i) => {
+    if (i) p.appendChild(document.createTextNode(" & "));
+    const a = document.createElement("a");
+    a.href = `performers.html?performer=${encodeURIComponent(id)}`;
+    a.textContent = performersLookup[id].name;
+    p.appendChild(a);
+  });
+  detail.appendChild(p);
+}
+
+/**
  * Resolve a performer ID to its display record.
  * If the ID belongs to a troupe configuration (has a "troupe" field),
  * return the parent troupe record instead, so names and URLs are shown
@@ -4166,8 +4162,39 @@ function createCollapsibleMap(
  */
 function nameWithTown(name, town) {
   if (!town || !town.trim()) return name;
-  if (name.toLowerCase().includes(town.trim().toLowerCase())) return name;
+  if (nameContainsTown(name, town)) return name;
   return `${name}, ${town.trim()}`;
+}
+
+/**
+ * True if `name` already mentions `town`, ignoring case and treating
+ * hyphens/extra whitespace as equivalent ("Ross-on-Wye" matches
+ * "ross on wye"). Used to avoid showing the town twice, e.g.
+ * "Crown & Sceptre, Ross-on-Wye, Ross-on-Wye".
+ * @param {string|null|undefined} name
+ * @param {string|null|undefined} town
+ * @returns {boolean}
+ */
+function nameContainsTown(name, town) {
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/[-\u2010-\u2015]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  const t = norm(town);
+  return !!t && norm(name).includes(t);
+}
+
+/**
+ * "Venue name, Town" for display, without repeating the town when the
+ * venue's name already includes it. Accepts a venue record.
+ * @param {{name?: string, city?: string}|null|undefined} venue
+ * @returns {string}
+ */
+function venueDisplayName(venue) {
+  if (!venue) return "";
+  return nameWithTown(venue.name || "", venue.city);
 }
 
 /**

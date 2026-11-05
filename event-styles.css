@@ -382,6 +382,40 @@ a.event-performer-name:hover {
     text-decoration: underline;
 }
 
+/* One card per credited performer (event.js's buildPerformerCard()) —
+   co-headlined bills carry performer_ids, so the panel can stack several.
+   A single-performer event renders one card and none of this applies. */
+.event-performer-card + .event-performer-card {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--theme-green-border-alt, #c8e6c9);
+}
+
+/* ── Performer buttons in the hero (event.js's renderHeroPerformerButtons())
+   One pill-style link per credited performer, under the venue line. */
+.event-performer-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.event-performer-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    background: var(--theme-green);
+    color: #fff;
+    text-decoration: none;
+}
+
+.event-performer-btn:hover {
+    background: #388e3c;
+    color: #fff;
+}
+
 /* ── Venue description, under the map ────────────────────────── */
 .event-venue-description {
     margin-top: 14px;
