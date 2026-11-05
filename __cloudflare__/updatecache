@@ -7,6 +7,11 @@
 #                                                  that you didn't submit). Pages that didn't
 #                                                  render (quota, errors) stay in ~/.updatecache-pending for next time.
 #        ./updatecache --list-new                  the same delta as URLs, changing nothing (dry run)
+#        ./updatecache --touch-tour <tour-key> [N] [--indexnow] [--dry-run] [--all-dates]
+#                                                  a tour (or R-<show>) whose CONTENT changed but whose key / event ids did not (events migrated into
+#                                                  tour_dates, edited text or flyer): --delta can't see that. Re-renders its tour page, performers,
+#                                                  venues, clubs/promoters and every date's event.html (dates from today on; --all-dates for all),
+#                                                  stamps <lastmod>, and with --indexnow submits what rendered OK. --dry-run lists the URLs only.
 #        ./updatecache --sync-keys                 rebuild the valid-key index only (after data changes)
 #        ./updatecache --status                    cached / uncached / total counts for every page type
 #        ./updatecache --count-missing             hits / misses table: every URL in https://newtroubadours.org/sitemap.xml PLUS the base
@@ -1666,7 +1671,7 @@ dispatch() {
 #   meta:keys; pages of the performers/venues/clubs/promoters of any NEW event are re-rendered too (and so IndexNow'd);
 #   events aren't in that index, so their ids are kept in a second KV key,
 #   meta:delta-events (written by --delta; seeded on the first run, no events are "new" then).
-# Plain (non-repertoire) tour pages have no known URL pattern here and are not rendered.
+# New plain tour keys are rendered as tour_guide.html?tour=<key>; a tour that gained dates is re-rendered too.
 # New pages are remembered in a pending file (NT_PENDING_FILE, default ~/.updatecache-pending)
 # until they have rendered successfully, so a quota stop or failed render never loses them.
 #   delta_cmd <list|run> [N] [--indexnow]
@@ -1723,7 +1728,9 @@ delta_cmd() {
       (d("venues")     | "\($h)/venues.html?venue=\(@uri)"),
       (d("promoters")  | "\($h)/promoters.html?promoter=\(@uri)"),
       (d("festivals")  | "\($h)/festival.html?festival=\(@uri)"),
-      (d("clubs")      | "\($h)/storyclub.html?club=\(@uri)")
+      (d("clubs")      | "\($h)/storyclub.html?club=\(@uri)"),
+      (d("tours")      | select((startswith("R-") or startswith("rep:")) | not)
+                       | "\($h)/tour_guide.html?tour=\(@uri)")
   ' > "$dt/urls.txt"
 
   # New repertoire shows (R-<show>): need the performer, found the same way as --list-repertoire
@@ -1806,7 +1813,8 @@ def perfs: [ (.performer_id? | strings),
     | ([$chain[] | perfs[]] | unique | map(select($pks[.] == true))) as $pp
     | ([$d.venue_id? // empty | strings | select(. != "")]) as $vv
     | ($pp[] | "\($h)/performers.html?performer=\(@uri)"),
-      ($vv[] | select($vks[.] == true) | "\($h)/venues.html?venue=\(@uri)") ] as $second
+      ($vv[] | select($vks[.] == true) | "\($h)/venues.html?venue=\(@uri)"),
+      (select($g.pre == "T-") | "\($h)/tour_guide.html?tour=\($g.k | @uri)") ] as $second
 | ($first + $second) | unique | .[]
 JQEND
         links_jq="$JQ_TOUR_DEFS"$'\n'"$links_jq"
@@ -1841,7 +1849,7 @@ JQEND
   n_rel=$(grep -c . "$dt/rel_urls.txt")
   echo "$n_new new page(s) vs the worker's index, $n_pending still pending from earlier; $total to render." >&2
   [ "$n_rel" -gt 0 ] && echo "($n_rel performer/venue/club/promoter page(s) are included because new events were added to them.)" >&2
-  [ "${skipped_tours:-0}" -gt 0 ] && echo "($skipped_tours new plain tour key(s) not rendered: no URL pattern known here.)" >&2
+  [ "${skipped_tours:-0}" -gt 0 ] && echo "($skipped_tours new plain tour key(s) included as tour_guide.html?tour=<key>.)" >&2
   [ -n "$ev_note" ] && echo "$ev_note" >&2
 
   if [ "$mode" = "list" ]; then
@@ -2242,6 +2250,147 @@ resolved_cmd() {
   exit 0
 }
 
+# --touch-tour <tour-key> [N] [--indexnow] [--dry-run] [--all-dates]
+# For a tour (or repertoire show, R-<show>) whose CONTENT changed but whose key and event ids did not (events
+# migrated into tour_dates, a description or flyer edited, a venue swapped...): --delta can't see that, so this
+# lists every page the tour affects, queues them in the pending file, re-renders them (as a content update:
+# sitemap <lastmod> stamped) and, with --indexnow, sends the ones that rendered OK to IndexNow.
+#   pages: the tour page; the performers of the tour and of each date (performer_id / performer_ids /
+#   support_performer_ids / other_performer_ids); each date's venue; the club / promoter pages the tour or its
+#   dates name; and event.html for every date (its explicit eventId, else the generated T-/R- id).
+# Dates before today are left out unless --all-dates. Keys with no record in the JSON are dropped.
+# Only THIS tour's pages are rendered (older entries in the pending file wait for the next --delta). Pages that
+# don't render (quota, errors) stay pending. Does not touch the key index or the event baseline.
+touch_tour_cmd() {
+  local key="" limit=0 do_idx=0 dry=0 all_dates=0 a
+  for a in "$@"; do
+    case "$a" in
+      --indexnow)  do_idx=1 ;;
+      --dry-run)   dry=1 ;;
+      --all-dates) all_dates=1 ;;
+      --*)         echo "Unknown option '$a' (usage: --touch-tour <tour-key> [N] [--indexnow] [--dry-run] [--all-dates])" >&2; exit 1 ;;
+      ''|*[!0-9]*) [ -z "$key" ] && key="$a" || { echo "Only one tour key at a time (got '$key' and '$a')." >&2; exit 1; } ;;
+      *)           limit="$a" ;;
+    esac
+  done
+  [ -n "$key" ] || { echo "Usage: $0 --touch-tour <tour-key> [N] [--indexnow] [--dry-run] [--all-dates]" >&2; exit 1; }
+  command -v jq >/dev/null || { echo "jq is required" >&2; exit 1; }
+  local pending="${NT_PENDING_FILE:-$HOME/.updatecache-pending}"
+  DT=$(mktemp -d "${TMPDIR:-/tmp}/updatecache-touchtour.XXXXXX")
+  trap 'autoresolve_flush; rm -rf "$DT"' EXIT
+  local dt="$DT"
+
+  note "Fetching the events JSON..."
+  load_events_and_index "$dt/events.json" || { echo "Could not fetch/parse the events JSON (set NT_EVENTS_JSON?)" >&2; exit 1; }
+
+  # which kind of key is it? tour (T-) or repertoire show (R-; a leading "R-" / the DEPRECATED "rep:" is fine)
+  local kind="" k="$key"
+  if jq -e --arg k "$k" '(.tours // {}) | has($k)' "$dt/events.json" >/dev/null 2>&1; then
+    kind=T
+  else
+    k="${k#R-}"; k="${k#rep:}"
+    if jq -e --arg k "$k" '(.repertoire_shows // {}) | has($k)' "$dt/events.json" >/dev/null 2>&1; then kind=R; fi
+  fi
+  [ -n "$kind" ] || { echo "'$key' is not a key under tours or repertoire_shows in the events JSON; nothing done." >&2; exit 1; }
+
+  local tt_jq
+  read -r -d '' tt_jq <<'JQEND'
+def lymd: (if type == "array" then .[-1] else . end) | select(type == "string") | split("/") | select(length == 3) | map(tonumber? // empty) | select(length == 3) | "\(.[2])\(.[1] | pad)\(.[0] | pad)";
+def perfs: [ (.performer_id? | strings),
+             ((.performer_ids?, .support_performer_ids?, .other_performer_ids?) | arrays | .[] | strings) ];
+def keyset(f): (f | keys | map({(.): true}) | add // {});
+. as $root
+| keyset(.performers // {}) as $pks
+| keyset(.venues // {}) as $vks
+| keyset(.promoters // {}) as $prom
+| ((.clubs // []) | map(select((.club // "") != "") | {(.club): true}) | add // {}) as $clubs
+| (if $kind == "R"
+     then {pre: "R-", t: .repertoire_shows[$key], ds: (.repertoire_shows[$key].show_dates // [])}
+     else {pre: "T-", t: .tours[$key],            ds: (.tours[$key].tour_dates // [])} end) as $g
+| ($g.ds | map(select($all == 1 or ((.date | lymd) // "99999999") >= $today))
+         | sort_by((.date | ymd) // "99999999")) as $ds
+| ([$g.t] + $ds | map(select(type == "object"))) as $chain
+| ((($pks | keys) | map(. as $p | select($key | startswith($p + "-"))) | sort_by(length) | last) as $rperf
+    | if $kind == "R" and $rperf != null then [$rperf] else [] end) as $rp
+| (([$chain[] | perfs[]] + $rp) | unique | map(select($pks[.] == true))) as $pp
+| ([$ds[] | .venue_id? | strings | select(. != "" and $vks[.] == true)] | unique) as $vv
+| ([$chain[] | (.club?, .club_event?) | strings | select(. != "" and $clubs[.] == true)] | unique) as $cc
+| (([$chain[] | (.promoter_id?, .promoter?) | strings | select(. != "")] + $cc) | unique | map(select($prom[.] == true))) as $pr
+| (if $kind == "T"
+     then "\($h)/tour_guide.html?tour=\($key | @uri)"
+     else ((($pks | keys) | map(. as $p | select($key | startswith($p + "-"))) | sort_by(length) | last) as $perf
+           | select($perf != null)
+           | "\($h)/tour_guide.html?performer=\($perf | @uri)&tour=\("R-" + $key | @uri)") end),
+  ($pp[] | "\($h)/performers.html?performer=\(@uri)"),
+  ($ds[] | ((.eventId? | select(type == "string" and . != "")) // ((.date | ymd) as $dd | "\($g.pre)\($key)-\($dd)-\(vid)"))
+         | "\($h)/event.html?event=\(@uri)"),
+  ($vv[] | "\($h)/venues.html?venue=\(@uri)"),
+  ($cc[] | "\($h)/storyclub.html?club=\(@uri)"),
+  ($pr[] | "\($h)/promoters.html?promoter=\(@uri)")
+JQEND
+  jq -r --arg h "https://$HOST" --arg key "$k" --arg kind "$kind" --arg today "$(date +%Y%m%d)" \
+        --argjson all "$all_dates" "$JQ_TOUR_DEFS"$'\n'"$tt_jq" "$dt/events.json" 2>"$dt/jq.err" \
+    | awk 'NF && !seen[$0]++' > "$dt/all.txt"
+  if [ ! -s "$dt/all.txt" ]; then
+    echo "No pages found for '$key'$([ "$all_dates" = 1 ] || echo ' (try --all-dates if every date is in the past)')." >&2
+    [ -s "$dt/jq.err" ] && cat "$dt/jq.err" >&2
+    exit 1
+  fi
+  local total n_ev
+  total=$(grep -c . "$dt/all.txt"); n_ev=$(grep -c '/event\.html' "$dt/all.txt")
+  echo "$kind $k: $total page(s) to refresh ($n_ev event page(s)$([ "$all_dates" = 1 ] || echo ', dates from today on'))." >&2
+
+  if [ $dry -eq 1 ]; then
+    cat "$dt/all.txt"
+    echo "(dry run: nothing was changed.)" >&2
+    exit 0
+  fi
+
+  # 1. remember the work first, so a quota stop or a failed render never loses it
+  { [ -s "$pending" ] && cat "$pending"; cat "$dt/all.txt"; } | awk 'NF && !seen[$0]++' > "$dt/pending.new" && cp "$dt/pending.new" "$pending"
+
+  # 2. render THIS tour's pages as a content update (stamps <lastmod>), NT_DELAY apart, stop at the quota or after N
+  : > "$dt/ok.txt"
+  RENDERED_FILE="$dt/ok.txt"
+  NT_MARK_UPDATED=1
+  local i=0 url
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    [ "$limit" -gt 0 ] && [ $i -ge "$limit" ] && break
+    [ $i -gt 0 ] && sleep "$DELAY"
+    i=$((i + 1))
+    render_one "$url" "$i" || break
+  done < "$dt/all.txt"
+  unset RENDERED_FILE NT_MARK_UPDATED
+
+  # 3. what rendered comes off the pending list; the rest stays for the next --delta
+  grep -vxFf "$dt/ok.txt" "$pending" > "$dt/pending.left" || true
+  cp "$dt/pending.left" "$pending"
+  local n_ok n_left
+  n_ok=$(grep -c . "$dt/ok.txt"); n_left=$(grep -vxFf "$dt/ok.txt" "$dt/all.txt" | grep -c . || true)
+  echo "Rendered OK: $n_ok of $total.$( [ "${n_left:-0}" -gt 0 ] && echo " ${n_left} not rendered (still in $pending; ./updatecache --delta renders them later).")"
+
+  # 4. same IndexNow waiting list --delta uses
+  local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}"
+  [ -s "$dt/ok.txt" ] && { cat "$dt/ok.txt" >> "$unsub"; awk 'NF && !seen[$0]++' "$unsub" > "$dt/unsub.tmp" && mv "$dt/unsub.tmp" "$unsub"; }
+  local n_unsub=0
+  [ -s "$unsub" ] && n_unsub=$(grep -c . "$unsub")
+  if [ $do_idx -eq 1 ]; then
+    if [ "$n_unsub" -gt 0 ]; then
+      if bash "$(cd "$(dirname "$0")" && pwd)/indexnow.sh" -f "$unsub"; then
+        : > "$unsub"
+      else
+        echo "IndexNow did not accept everything; the $n_unsub URL(s) stay in $unsub for the next --indexnow run." >&2
+      fi
+    else
+      echo "Nothing waiting to be sent to IndexNow."
+    fi
+  elif [ "$n_unsub" -gt 0 ]; then
+    echo "$n_unsub rendered URL(s) waiting for IndexNow (in $unsub). Send them any time with: ./updatecache --delta --indexnow"
+  fi
+  exit 0
+}
+
 # --touch-recent [N] [--hours H] [--days D] [--dry-run] [--no-indexnow]
 # Picks N (default 10) RANDOM snapshots that were written in the last H hours (default 24, NT_RECENT_HOURS),
 # are healthy, and are sitemap pages (one identity param). If a page has no <lastmod> in meta:lastmod, or its
@@ -2388,6 +2537,7 @@ case "$1" in
   --event|--events)                    dispatch event ;;
   --delta)                             delta_cmd run "${@:2}" ;;
   --list-new)                          delta_cmd list "${@:2}" ;;
+  --touch-tour)                        touch_tour_cmd "${@:2}" ;;
   --stale|--purge|--purge-only)        ;;   # handled below
   --*) echo "Unknown option: $1 (see the usage notes at the top of this script)" >&2; exit 1 ;;
 esac
@@ -2403,7 +2553,7 @@ case "$1" in
 esac
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--oldest] [--indexnow] / --list-stale [N] [type] / --list-expiring / --list-retry / --list-orphans / --purge-orphans / --quota / --daily [N] / --touch-recent [N])" >&2
+  echo "Usage: $0 [--list-<type>s | --<type> [N] | --count-missing | --list-missing | --fill-missing [N]]  (types: performer venue storyclub festival promoter booksmerch repertoire event) [--stale | --purge | --purge-only] <page-or-url> [...]  (or --soft-purge-all / --hard-purge-all / --refresh-stale [N] [type] [--oldest] [--indexnow] / --list-stale [N] [type] / --list-expiring / --list-retry / --list-orphans / --purge-orphans / --quota / --daily [N] / --touch-recent [N] / --touch-tour <tour-key>)" >&2
   exit 1
 fi
 
