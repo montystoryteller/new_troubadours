@@ -7515,6 +7515,16 @@
       "venue_id": "various"
     },
     {
+      "name": "Tales & Ales, (Bath Storytelling Circle)",
+      "schedule": "3rd monday",
+      "time": "8-10p",
+      "link": "http://www.firesprings.org.uk/bath-storytelling-circle",
+      "club": "bath-storytelling-circle",
+      "club_flyer": "club_tales_ales_bath_raven_3rd_mon.webp",
+      "description": "les & Ales is the monthly gathering of the Bath Storytelling Circle, a group of storytellers, folk singers, poets and raconteurs from the Bath area and beyond who meet to celebrate the modern practice of the ancient art of storytelling in all its forms. Regular performers are from the local community and include professional as well as amateur contributors, long-term residents of the area and local students. Occasional performers can and do drop in from all over the world. From its origin (December 1999), the Circle has had only one rule: contributions must be from memory or extemporary, not read from text or prompted from notes.\n\n\n\nPerformers are nothing without an audience, which is why the Circle welcomes one and all, whether you have a tale to tell, an anecdote to share, a song to sing, or simply wish to listen. One reason people say they find the Circle an enjoyable evening's entertainment is the diversity of subject material and the range of styles from regulars and newcomers alike: traditional folk tales, contemporary poetry, comedy anecdotes, ballads ancient and modern can all be heard - and every evening is different.\n\n\n\nIf you wish to perform, let the evening's Master of Ceremonies know when you arrive to secure a place on the 'list'. We ask performers to keep individual items to under ten minutes. Do also come along just to listen, relax in friendly surroundings, and simply enjoy the companionship. You may find yourself inspired to tell a tale or sing a song of your own before the end of the evening.\n\n\n\nThe Circle's Tales & Ales gatherings are open and inclusive, and entry is free - on the understanding that those attending will avail themselves of the fine ale (and perhaps also the wholesome food) on sale at The Raven, a cosy, CAMRA-rated pub in central Bath (on the corner of Queen Street and Quiet Street). Tales & Ales is usually hosted by David Metcalfe, with the Circle's previous regular MC's being Kevan Manwaring and its founder Anthony Nanson, all of Fire Springs storytellers.",
+      "venue_id": "raven-pub-bath"
+    },
+    {
       "name": "Southampton Story Club",
       "schedule": "1st thursday",
       "time": "8-10pm",
@@ -19948,6 +19958,20 @@
       "latlon": [
         51.60244,
         -1.55634
+      ]
+    },
+    "raven-pub-bath": {
+      "id": "raven-pub-bath",
+      "name": "Raven Pub, Bath",
+      "full_address": "Raven Pub, Queen St , Bath, BA1 1HE",
+      "city": "Bath",
+      "postcode": "BA1 1HE",
+      "url": "https://theravenofbath.co.uk/",
+      "facebook": "ravenpubbath",
+      "description": "The Raven is a cherished Free House - distinguishing us from many other pubs in the UK by our independence from brewery affiliations or other businesses. This means that we can provide you with the service and the products that we enjoy ourselves. The range and quality of what we offer is entirely up to us and we are proud of our offering.\n\n\n\b Bath Storytelling Circle (Tales & Ales) meet on top floor (Library), 3rd Monday, 8pm.",
+      "latlon": [
+        51.38316,
+        -2.36193
       ]
     },
     "the-mission-theatre-bath": {
