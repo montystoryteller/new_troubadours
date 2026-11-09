@@ -23,9 +23,11 @@ jobs:
       # is still stale tomorrow and gets picked up then.
       MAX_RENDERS: "40"
       # Skip pages whose snapshot is younger than this (seconds).
-      # Base pages (no ?args) are re-rendered about every other day; the many
-      # ?arg pages on a slower cycle. Tune ARG_REFRESH_AFTER to your budget:
-      # roughly  cycle_days = number_of_pages / MAX_RENDERS.
+      # Base pages (no ?args) are re-rendered every day; the many ?arg pages only
+      # once they are older than ARG_REFRESH_AFTER, and then STALEST FIRST (the
+      # gatekeeper's x-list-stale list). Pages refreshed by an edit have a young
+      # snapshot, so they drop to the back of the queue instead of being rendered twice.
+      # Roughly  cycle_days = number_of_pages / (MAX_RENDERS - base pages - retries).
       BASE_REFRESH_AFTER: "79200"   # 22h
       ARG_REFRESH_AFTER: "432000"    # 5 days
       # Seconds to wait between browser renders. 15 on the free plan; 1-2 on
@@ -34,7 +36,7 @@ jobs:
       # At most this many of the MAX_RENDERS go to pages whose last render was unhealthy (the
       # gatekeeper kept their old snapshot and flagged them). They are retried first, after the
       # base pages; a page that stays unhealthy is dropped from this list after 3 attempts.
-      MAX_RETRY_RENDERS: "10"
+      MAX_RETRY_RENDERS: "5"
       FULL_REFRESH: ${{ inputs.full_refresh }}
 
     steps:
@@ -148,7 +150,19 @@ jobs:
             | grep -E '^https?://' | sed -E "s#^https?://[^/]+#${SITE}#" \
             | head -n "$MAX_RETRY_RENDERS" > "$retry" || true
           echo "Retry list (last render unhealthy, old page kept): $(grep -c . "$retry" || true) pages"
-          mapfile -t urls < <(cat "$base" "$retry" "$rotated" | awk '!seen[$0]++')
+          # Stale pages, STALEST FIRST (gatekeeper x-list-stale: oldest snapshot day first, storyclubs
+          # before other pages of the same day; leaves out retry-flagged pages and event pages dated
+          # more than 30 days ago). They go after the base pages and the retries, and before the
+          # rotation, which stays as the fallback (it also reaches pages with no snapshot at all, and
+          # is all that runs if the gatekeeper is old and ignores the header). Never blocks the run.
+          stale=$(mktemp)
+          curl -s --max-time 60 -H "x-list-stale: ${SECRET}" \
+              -H "x-stale-base-after: ${BASE_REFRESH_AFTER}" \
+              -H "x-stale-arg-after: ${ARG_REFRESH_AFTER}" \
+              -H "x-stale-limit: $(( MAX_RENDERS * 3 ))" "$SITE/" \
+            | grep -E '^https?://' | sed -E "s#^https?://[^/]+#${SITE}#" > "$stale" || true
+          echo "Stale list (stalest first): $(grep -c . "$stale" || true) pages"
+          mapfile -t urls < <(cat "$base" "$retry" "$stale" "$rotated" | awk '!seen[$0]++')
           echo "Total URLs: ${#urls[@]}"
 
           full="${FULL_REFRESH:-false}"

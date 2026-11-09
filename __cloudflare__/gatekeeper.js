@@ -63,6 +63,12 @@ const CLIENT_MAX_AGE_SECONDS = 60 * 60;
 const MAX_UNHEALTHY_RETRIES = 3;
 // GET with this header (value = DEBUG_SECRET): flagged URLs still worth retrying, one per line.
 const RETRY_LIST_HEADER = "x-list-retry";
+// GET with this header (value = DEBUG_SECRET): stale pages, stalest first, one URL per line (see
+// buildStaleList). Optional headers: x-stale-base-after / x-stale-arg-after (seconds a snapshot may
+// reach before it counts as stale: pages without / with a ?query) and x-stale-limit (max lines).
+// Flagged-for-retry pages are left out (the retry list has them) and so are event pages dated more
+// than 30 days ago (the sitemap's cut-off: those are allowed to fade away).
+const STALE_LIST_HEADER = "x-list-stale";
 const isHealthyStatus = (s) => !s || s === "ok" || s === "n/a";
 
 // ── broken-URL verdicts (404 / 301 for crawlers) ─────────────
@@ -467,6 +473,54 @@ function botTier(request) {
   if (RENDER_BOT_RE.test(ua)) return "render";
   if (CACHE_ONLY_BOT_RE.test(ua)) return "cache";
   return null;
+}
+
+// ── stale list (x-list-stale) ────────────────────────────────
+// yyyymmdd inside an event id (T-/R-/structured ids), or from a legacy <name>-<epoch ms> id; null if none.
+// Same rule as `evdate` in ./updatecache (JQ_OLD_EVENT_DEFS) and the key-index builder.
+function eventIdYmd(id) {
+  let m = /(?:^|-)(20\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01]))(?:-|$)/.exec(id);
+  if (m) return m[1];
+  m = /-(\d{12,14})$/.exec(id);
+  if (m) {
+    const d = new Date(Number(m[1]));
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10).replace(/-/g, "");
+  }
+  return null;
+}
+
+// An /event.html?event=<id> page whose id is dated more than 30 days before `now` (ms).
+function isOldEventUrl(url, now) {
+  const m = /\/event\.html\?event=([^&]*)/.exec(url);
+  if (!m) return false;
+  let id = m[1];
+  try { id = decodeURIComponent(id); } catch {}
+  const d = eventIdYmd(id);
+  if (!d) return false;
+  return d < new Date(now - 30 * 86400000).toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+// rows: [{ url, ts, retry, fails }]. Returns the URLs that need a refresh, stalest first:
+// ts older than the soft/hard purge epoch (ts 0 = marked stale), or older than the threshold for
+// its kind. Ordered by the DAY the snapshot was written, then storyclub pages before the rest
+// (equally stale -> storyclubs first), then by exact ts.
+function buildStaleList(rows, { now, soft, hard, baseAfterMs, argAfterMs, limit }) {
+  const epoch = Math.max(soft, hard);
+  const out = [];
+  for (const r of rows) {
+    if (r.retry && (r.fails || 0) < MAX_UNHEALTHY_RETRIES) continue; // the retry list handles these
+    if (isOldEventUrl(r.url, now)) continue;
+    const after = r.url.includes("?") ? argAfterMs : baseAfterMs;
+    if (r.ts < epoch || now - r.ts >= after) out.push(r);
+  }
+  const rank = (u) => (/\/storyclub\.html\?/.test(u) ? 0 : 1);
+  out.sort(
+    (a, b) =>
+      Math.floor(a.ts / 86400000) - Math.floor(b.ts / 86400000) ||
+      rank(a.url) - rank(b.url) ||
+      a.ts - b.ts
+  );
+  return out.slice(0, limit).map((r) => r.url);
 }
 
 function isAuthorized(request, env, headerName) {
@@ -1332,6 +1386,51 @@ export default {
       } while (cursor);
       rows.sort((a, b) => a.fails - b.fails || a.ts - b.ts);
       return new Response(rows.map((r) => r.url).join("\n") + (rows.length ? "\n" : ""), {
+        status: 200,
+        headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+      });
+    }
+
+    // Stale pages, stalest first (see STALE_LIST_HEADER). One KV listing, no per-key reads; the
+    // age comes from the key metadata (falls back to expiry - TTL for entries written before ts
+    // was kept in the metadata, as ./updatecache does).
+    if (isAuthorized(request, env, STALE_LIST_HEADER)) {
+      const num = (h, d) => {
+        const n = Number(request.headers.get(h));
+        return n > 0 ? n : d;
+      };
+      const rows = [];
+      let cursor;
+      do {
+        const page = await env.RENDER_CACHE.list({ prefix: "render:", cursor });
+        for (const k of page.keys) {
+          const m = k.metadata;
+          const ts =
+            typeof m?.ts === "number"
+              ? m.ts
+              : k.expiration
+              ? k.expiration * 1000 - KV_TTL_SECONDS * 1000
+              : null;
+          if (ts === null) continue;
+          rows.push({
+            url: k.name.slice("render:".length),
+            ts,
+            retry: !!m?.retry,
+            fails: m?.fails || 0,
+          });
+        }
+        cursor = page.list_complete ? undefined : page.cursor;
+      } while (cursor);
+      const { soft, hard } = await getEpochs(env);
+      const urls = buildStaleList(rows, {
+        now: Date.now(),
+        soft,
+        hard,
+        baseAfterMs: num("x-stale-base-after", 79200) * 1000,
+        argAfterMs: num("x-stale-arg-after", 432000) * 1000,
+        limit: num("x-stale-limit", 200),
+      });
+      return new Response(urls.join("\n") + (urls.length ? "\n" : ""), {
         status: 200,
         headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
       });
