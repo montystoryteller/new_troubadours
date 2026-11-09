@@ -416,6 +416,19 @@ a.event-performer-name:hover {
     color: #fff;
 }
 
+/* Club button, in the same row as the performer buttons (event.js's
+   buildClubButton()) — outlined so it reads as the club, not a performer. */
+.event-performer-btn.event-club-btn {
+    background: var(--theme-green-bg);
+    color: var(--theme-green-dark);
+    border: 1px solid var(--theme-green-dark);
+}
+
+.event-performer-btn.event-club-btn:hover {
+    background: var(--theme-green-dark);
+    color: #fff;
+}
+
 /* ── Directions links, under the map (event.js's renderMapDirections() /
    buildDirectionsLinks()) — "Get directions:" label + separate pills for
    Google / Apple / Waze. Each pill carries its own margin as well as the

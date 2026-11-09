@@ -1626,6 +1626,31 @@ function renderPage() {
 }
 
 // ---------------------------------------------------------------------------
+// Club button in the hero — for an event that belongs to a club night (its
+// record carries `club`, or the deprecated alias `club_event`), builds a
+// button-style link to that club's storyclub.html page, labelled with the
+// club's name. Added to the same row as the performer buttons by
+// renderHeroPerformerButtons() below. Returns null for events with no club,
+// or whose club id doesn't resolve to a record in eventsData.clubs.
+// ---------------------------------------------------------------------------
+
+function buildClubButton(ev) {
+  const rawId = ev.club || ev.club_event;
+  if (!rawId) return null;
+
+  // resolveClubId() forwards a renamed club's old id to its current one.
+  const clubId = resolveClubId(rawId);
+  const clubRecord = (eventsData?.clubs || []).find((c) => c?.club === clubId);
+  if (!clubRecord) return null;
+
+  const a = document.createElement("a");
+  a.href = `storyclub.html?club=${encodeURIComponent(clubId)}`;
+  a.className = "event-performer-btn event-club-btn";
+  a.textContent = clubRecord.name;
+  return a;
+}
+
+// ---------------------------------------------------------------------------
 // Performer buttons in the hero — one button-style link per credited
 // performer (performer_ids, or the single performer_id), pointing at that
 // performer's performers.html page. Inserted straight after the venue line
@@ -1637,7 +1662,8 @@ function renderHeroPerformerButtons(ev, afterEl) {
   if (existing) existing.remove();
 
   const ids = performerIdsOf(ev).filter((id) => performersLookup[id]);
-  if (!ids.length || !afterEl) return;
+  const clubBtn = buildClubButton(ev);
+  if ((!ids.length && !clubBtn) || !afterEl) return;
 
   const row = document.createElement("div");
   row.id = "eventPerformerButtons";
@@ -1650,6 +1676,8 @@ function renderHeroPerformerButtons(ev, afterEl) {
     a.textContent = performersLookup[id].name;
     row.appendChild(a);
   });
+
+  if (clubBtn) row.appendChild(clubBtn);
 
   afterEl.insertAdjacentElement("afterend", row);
 }
