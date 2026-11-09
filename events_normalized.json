@@ -7012,6 +7012,14 @@
       "venue_id": "imperial-rooms-matlock"
     },
     {
+      "name": "York Story Bar",
+      "schedule": "",
+      "time": "",
+      "facebook": "",
+      "club": "yorkstorybar",
+      "venue_id": "the-cyclist-york"
+    },
+    {
       "name": "Sheffield Story Forge",
       "schedule": "3rd tuesday",
       "time": "7pm",
@@ -13115,6 +13123,7 @@
       "venue_id": "the-cyclist-york",
       "performer_id": "tim-ralphs",
       "promoter_id": "adderstone",
+      "club": "yorkstorybar",
       "eventId": "20261121-tim-ralphs-the-cyclist-york",
       "date_added": "29/10/2026",
       "time": "7:30PM - 10:30PM",
