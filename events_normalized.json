@@ -18626,6 +18626,23 @@
         -2.70711
       ]
     },
+    "wild-about-story": {
+      "id": "wild-about-story",
+      "name": "Wild About Story",
+      "venue_type": "https://www.wildaboutstory.co.uk/",
+      "city": "Mawdesley, nr. Wigan",
+      "postcode": "L40 3SY",
+      "full_address": "Wild About Story, Cedar Farm, Back Lane, Mawdesley, L40 3SY",
+      "url": "https://www.wildaboutstory.co.uk/",
+      "email": "tracey@wildaboutstory.co.uk",
+      "facebook": "wildaboutstory",
+      "instagram": "wildaboutstory",
+      "description": "Wild About Story is an independent bookshop, established by Tracey Collins, housing a range of beautiful and carefully curated books.\n\n\n\nStarting from just a renovated library trolley, Wild About Story is now an enchanting book nook at Cedar farm in West Lancashire, that recognises the importance of storytelling in all forms as a way of passing down tradition, folklore and wonder to each new generation.\n\n\n\n\nWe believe that stories sung or read (and especially stories told aloud from memory) have a special magical power. We would love to welcome you into the shop, to browse and rediscover the wonder of stories.\n\n\n\nJust 10 mins from the M6 at Junction 27 in Lancashire, located in a community of small creative businesses at Cedar Farm. It's a good stopping off point if one wishes to avoid motorway services and support indie businesses.\n\n\n\nTue - Sat, 11:00 am - 5:00 pm\n\n\n\nSunday, 12:30 pm - 5:00 pm",
+      "latlon": [
+        53.62043,
+        -2.76571
+      ]
+    },
     "gregson-community-arts-centre": {
       "id": "gregson-community-arts-centre",
       "name": "Gregson Community & Arts Centre",
