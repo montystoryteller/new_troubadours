@@ -3788,10 +3788,10 @@
       "touring_event_flyer": "dates_the_dirt_nov_2026.jpg",
       "isSpecial": true
     },
-"the-dirt-december-dates-2026": {
-  "tour_name": "The Dirt — December Dates, 2026",
-  "isPoetry": true,
-  "tour_dates": [
+    "the-dirt-december-dates-2026": {
+      "tour_name": "The Dirt — December Dates, 2026",
+      "isPoetry": true,
+      "tour_dates": [
         {
           "date": "10/12/2026",
           "venue_id": "hallamshire-hotel-sheffield",
@@ -3812,13 +3812,13 @@
           "event_flyer": "2026_12_12_dirt_northwich.avif",
           "eventId": "T-the-dirt-december-dates-2026-20261212-salty-dog-northwich"
         }
-  ],
-  "name": "The Dirt — December Dates, 2026",
-  "performer_id": "the-dirt",
-  "tour_description": "December 2026, live dates.",
-  "touring_event_flyer": "dates_the_dirt_dec_2026.jpg",
-  "isSpecial": true
-},
+      ],
+      "name": "The Dirt — December Dates, 2026",
+      "performer_id": "the-dirt",
+      "tour_description": "December 2026, live dates.",
+      "touring_event_flyer": "dates_the_dirt_dec_2026.jpg",
+      "isSpecial": true
+    },
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
@@ -5444,7 +5444,10 @@
       ],
       "performer_id": "3-daft-monkeys",
       "tour_description": "25th anniversary and new double album release tour — Ebb and Flow",
-      "touring_event_flyers": ["tour_3daftmonkeys_autumn_2026.jpg", "tour-3daftmonkeys-ebb-flow.jpg"],
+      "touring_event_flyers": [
+        "tour_3daftmonkeys_autumn_2026.jpg",
+        "tour-3daftmonkeys-ebb-flow.jpg"
+      ],
       "isMusic": true
     },
     "sorrel-nation-creeping-thyme-2026": {
@@ -8371,6 +8374,21 @@
       "venue_id": "dragon-theatre-barmouth",
       "performer_id": "dragon-storytellers",
       "eventId": "20251205-dragon-storytellers-dragon-theatre-barmouth"
+    },
+    {
+      "name": "Gawain and the Green Knight and Other Winter Tales",
+      "showname": "Gawain and the Green Knight and Other Winter Tales",
+      "date": "05/12/2026",
+      "venue_id": "the-mint-house-pevensey",
+      "performer_id": "jon-mason",
+      "eventId": "20261205-jon-mason-the-mint-house-pevensey",
+      "date_added": "09/11/2026",
+      "time": "Doors at 7:15 PM, show 7:30 PM - 9:30 PM",
+      "price": "£10",
+      "description": "Warm the darkest of winter nights with a feast of old tales told by master storyteller, Jon Norman Mason!\n\n\n\nA solo storytelling show for the season, leading you into Arthurian legend retold and interwoven with sparkling stories from midwinters past. Gawain, knight of Arthur's court, takes up a fate-filled challenge from a stranger wreathed in green; it will lead him far from feast and fellowship, through winds and wilds, to a castle in a forest - but while help lies in strange places, dangers come from both outside and within. Intertwined with frost-touched folktales from far and near, this is a spoken-word feast of magic, firelight and the depths of the greenwood.",
+      "event_flyer": "2026_12_05_jon_mason_green_knight_pevensey.jpg",
+      "ticket_url": "https://www.eventbrite.co.uk/e/gawain-and-the-green-knight-and-other-winter-tales-with-jon-norman-mason-tickets-2004084043322",
+      "isSpecial": true
     },
     {
       "name": "Tales of Winter Magic - evening storytelling and Mummers' play",
@@ -12860,7 +12878,7 @@
       "price": "£10",
       "description": "Come all you fisher-folk and fill your guts with a hearty helping of folklore and folk music from East Anglia, descaled by award-winning storyteller Minnie Wilkinson. Prepare to be hooked by tales of ancient queens and bags of bones, hulls bursting with herring and something strange in the water — but that's another kettle of fish. One might even call it fishy. But don't worry about that for now. You're welcome here, so come in and warm your cockles. Just don't take more than your fair share — or someone will have your guts for garters.",
       "promoter_link": "",
-      "event_flyer": "",
+      "event_flyer": "2026_11_09_wilkinson_gutted_ropetackle.jpg",
       "ticket_url": "https://ropetacklecentre.co.uk/events/ropetackle-storytellers-gutted-stories-from-east-anglia/",
       "isSpecial": true,
       "date_added": "07/09/2026",
@@ -12932,6 +12950,20 @@
       "event_flyer": "2026_11_13_sneyd_selkie.jpg",
       "ticket_url": "https://calstockarts.org/event/november-13-a-new-story-telling-show-with-hannah-snyed/",
       "isSpecial": true
+    },
+    {
+      "name": "Frost and Fire — Storytelling from Finnish Folklore [Jon Mason]",
+      "showname": "Frost and Fire — Storytelling from Finnish Folklore",
+      "date": "14/11/2026",
+      "venue_id": "west-rocks-hotel-eastbourne",
+      "performer_id": "jon-mason",
+      "eventId": "20261114-jon-mason-west-rocks-hotel-eastbourne",
+      "date_added": "09/11/2026",
+      "time": "Arrive from 6:30pm, storytelling starts 8:30pm",
+      "description": "Specially-chosen stories from the Kalevala, Finland’s national epic, telling of gods, tricksters, the Sun and Moon and the Hag of the North…\n\n\n\nTickets £45, includes homemade Asian food and a drink – arrive from 6:30, storytelling starts 8:30. Email wrhmanager@gmail.com to book.",
+      "event_flyer": "2026_11_14_jon_mason_eastbourne.jpg",
+      "isSpecial": true,
+      "isDinner": true
     },
     {
       "name": "Greek Myths and Legends [Maria Credali]",
@@ -13137,7 +13169,7 @@
       "time": "7.30pm",
       "club": "threeheadsinawell",
       "price": "£10 full price; £7 concession",
-      "description": " Surrey Story Tellers welcomes Sarah Cantrill telling King Athelstan: an historically funny retelling of the first King of England's journey from vulnerable boy to powerful ruler, blending with with the weight of a turbulent age. Through battles, family politics and the brutal realities of Saxon Britain, the story explores both the absurdity and the darkness of a life shaped by war, ambition and destiny. Historically grounded, emotionally rich and shot through with humour and song, this telling uncovers the man behind the crown in the very place he was crowned — Kingston.\n\n\n\nThis month we are in-person only. Tickets can be purchased on the door or booked in advance.",
+      "description": "Surrey Story Tellers welcomes Sarah Cantrill telling King Athelstan: an historically funny retelling of the first King of England's journey from vulnerable boy to powerful ruler, blending with with the weight of a turbulent age. Through battles, family politics and the brutal realities of Saxon Britain, the story explores both the absurdity and the darkness of a life shaped by war, ambition and destiny. Historically grounded, emotionally rich and shot through with humour and song, this telling uncovers the man behind the crown in the very place he was crowned — Kingston.\n\n\n\nThis month we are in-person only. Tickets can be purchased on the door or booked in advance.",
       "event_flyer": "2026_11_27_threeheads_athelstan.jpg",
       "ticket_url": "https://surreystorytellers.co.uk/booking/",
       "isSpecial": true,
@@ -13763,9 +13795,10 @@
       "price": "£12.50(+£1.30)",
       "isMusic": true,
       "isSpecial": true,
+      "performer_id": "jess-silk",
       "event_flyer": "jess-silk-sept-2026.png",
       "venue_id": "katie-fitzgeralds-stourbridge",
-      "eventId": "20260926-unknown-performer-katie-fitzgeralds-stourbridge"
+      "eventId": "20260926-jess-silk-katie-fitzgeralds-stourbridge"
     },
     {
       "name": "3 Daft Monkeys",
@@ -13783,12 +13816,13 @@
       "name": "Jess Silk",
       "date": "27/09/2026",
       "time": "4pm",
+      "performer_id": "jess-silk",
       "ticket_url": "https://www.bandsintown.com/e/107889447",
       "isMusic": true,
       "event_flyer": "jess-silk-sept-2026.png",
       "isSpecial": true,
       "venue_id": "foxtails-chorley",
-      "eventId": "20260927-unknown-performer-foxtails-chorley"
+      "eventId": "20260927-jess-silk-foxtails-chorley"
     },
     {
       "name": "Jess Silk",
@@ -15206,6 +15240,19 @@
       "latlon": [
         53.63325,
         -1.74774
+      ]
+    },
+    "the-mint-house-pevensey": {
+      "id": "the-mint-house-pevensey",
+      "name": "The Mint House, Pevensey",
+      "full_address": "The Mint House, High Street, Pevensey, BN24 5LF",
+      "city": "Pevensey",
+      "postcode": "BN24 5LF",
+      "url": "https://www.minthousepevensey.co.uk/",
+      "description": "At The Mint House - Home of Sussex Folklore, we believe in doing heritage differently - making the past alive, the present vibrant, and the future inclusive.\n\n\n\nWe are explorers of all folklore from Morris dancing to memes, sharers of untold stories, and champions of intangible cultural heritage. Rooted in history yet driven by creativity, we honour the myths, traditions, and crafts that shape our identity.\n\n\n\nWe are a gathering place for all - artists, makers, historians, and seekers. Whether through exhibitions, storytelling, craft, tattoo culture, or immersive events, we welcome every voice, every background, every path.\n\n\n\nWe are a living archive of heritage, not a museum but a community that keeps evolving. We collect, create, and share the tales and traditions that connect us to the land and to one another.\n\n\n\nWe are The Mint House: Home of Sussex Folklore —where history, creativity, and community meet.",
+      "latlon": [
+        50.82041,
+        0.33712
       ]
     },
     "the-yellow-book-brighton": {
@@ -19729,6 +19776,19 @@
         -0.4666
       ]
     },
+    "west-rocks-hotel-eastbourne": {
+      "id": "west-rocks-hotel-eastbourne",
+      "name": "West Rocks Hotel, Eastbourne",
+      "full_address": "West Rocks Hotel, 46 Grand Parade, Eastbourne, BN21 4DL",
+      "city": "Eastbourne",
+      "postcode": "BN21 4DL",
+      "url": "https://www.westrockshotel.com/",
+      "description": "A light-filled Victorian seaside hotel between the sea and the South Downs, where heritage meets coastal tones, natural materials, and ever-changing light. Modern, stylish, and welcoming, it’s proudly LGBTQ+ inclusive and family-friendly, with pet-friendly suites, a private beach club, and safe spaces for children. Relax in sea-facing lounges and enjoy a sophisticated atmosphere where thoughtful design and effortless comfort come together.",
+      "latlon": [
+        50.76374,
+        0.2876
+      ]
+    },
     "the-birley-centre-eastboune": {
       "id": "the-birley-centre-eastboune",
       "name": "The Birley Centre, Eastboune",
@@ -20358,19 +20418,19 @@
         -5.06774
       ]
     },
-        "hallamshire-hotel-sheffield": {
-          "id": "hallamshire-hotel-sheffield",
-          "name": "Hallamshire Hotel, Sheffield",
-          "venue_type": "Pub / bar / café",
-          "city": "Sheffield",
-          "postcode": "S1 4ET",
-          "full_address": "Hallamshire Hotel, West Street, City Centre, Sheffield, S1 4ET",
-          "url": "https://hallamshirehotel.pub/",
-          "latlon": [
-            53.38061,
-            -1.47794
-          ]
-        },
+    "hallamshire-hotel-sheffield": {
+      "id": "hallamshire-hotel-sheffield",
+      "name": "Hallamshire Hotel, Sheffield",
+      "venue_type": "Pub / bar / café",
+      "city": "Sheffield",
+      "postcode": "S1 4ET",
+      "full_address": "Hallamshire Hotel, West Street, City Centre, Sheffield, S1 4ET",
+      "url": "https://hallamshirehotel.pub/",
+      "latlon": [
+        53.38061,
+        -1.47794
+      ]
+    },
     "greystones-sheffield": {
       "id": "greystones-sheffield",
       "name": "Greystones, Sheffield",
@@ -22120,7 +22180,7 @@
           "isbn": "9781846864063",
           "cover": "",
           "title": "The Adventures of Achilles",
-          "description": "The boyhood of Achilles, the causes of the Trojan War, the events of the Iliad and the wooden horse, told as a gripping narrative by two of Britain's most acclaimed storytellers.  ",
+          "description": "The boyhood of Achilles, the causes of the Trojan War, the events of the Iliad and the wooden horse, told as a gripping narrative by two of Britain's most acclaimed storytellers.",
           "year": null,
           "buy_url": "https://burningshed.com/hugh-lupton-daniel-morden_the-adventures-of-achilles_book?"
         },
@@ -23505,6 +23565,17 @@
       "name": "Shonaleigh",
       "url": "https://shonaleigh.uk/",
       "bio": "Word weaver, tradition bearer and educator\n\n\n\nShonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working."
+    },
+    "tatterhoodtales": {
+      "canonical": "mary-baxter",
+      "name": "Tatterhood Tales"
+    },
+    "mary-baxter": {
+      "id": "mary-baxter",
+      "name": "Mary Baxter",
+      "url": "https://marytatterhoodtales.wordpress.com/",
+      "instagram": "tatterhoodtales",
+      "bio": "Storyteller and graduate of the 3 year storytelling apprenticeship scheme run out of the Scottish Storytelling Centre/ TRACS in Edinburgh, on a mission to develop an increasing awareness of traditional storytelling in West Lothian over the next few years, spreading outwards from the Winchburgh Storytellers."
     },
     "raggedy-jack": {
       "id": "raggedy-jack",

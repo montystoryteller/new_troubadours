@@ -243,10 +243,11 @@ const PageHealth = (() => {
     ready = true;
     if (readyMs == null) readyMs = performance.now() - startedAt;
     render();
-    console.log(
-      `[page-health] ${status()} after ${Math.round(readyMs)}ms`,
-      { errors: [...errors], problems, warnings },
-    );
+    console.log(`[page-health] ${status()} after ${Math.round(readyMs)}ms`, {
+      errors: [...errors],
+      problems,
+      warnings,
+    });
   }
 
   /**
@@ -888,7 +889,10 @@ function facebookLinkSpecs(obj) {
   const out = [];
   const seen = new Set();
   const add = (kind, href) => {
-    const key = href.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/+$/, "").toLowerCase();
+    const key = href
+      .replace(/^https?:\/\/(www\.)?/i, "")
+      .replace(/\/+$/, "")
+      .toLowerCase();
     if (!href || href === "#" || seen.has(key)) return;
     seen.add(key);
     out.push({ kind, href });
@@ -1293,6 +1297,15 @@ function renderEventRow(container, entry, isPast, options = {}) {
       badges.appendChild(makeBadge("badge-poetry", "Poetry"));
     } else {
       badges.appendChild(makeBadge("badge-special", "Story show"));
+    }
+    if (e.isDinner) {
+      // Reuses badge-special's styling; badge-dinner is a hook for later tweaks.
+      badges.appendChild(
+        makeBadge(
+          "badge-special badge-dinner",
+          "\u{1F37D}\uFE0F Dinner included",
+        ),
+      );
     }
     if (e.price) {
       badges.appendChild(makeBadge("badge-price", e.price));
@@ -1868,8 +1881,11 @@ function parseEventTimes(text) {
     // and not part of a range) — handled below by requiring am/pm or minutes
     // unless exactly a range/lone hour.
     found.push({
-      h, min, ap: m[3] ? m[3].toLowerCase() : null,
-      hasMin: !!m[2], index: m.index,
+      h,
+      min,
+      ap: m[3] ? m[3].toLowerCase() : null,
+      hasMin: !!m[2],
+      index: m.index,
     });
   }
   if (!found.length) return null;
@@ -1915,7 +1931,13 @@ function icsResolveTimes(o) {
       end: new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1),
     };
   }
-  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), t.start[0], t.start[1]);
+  const start = new Date(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+    t.start[0],
+    t.start[1],
+  );
   const end = t.end
     ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), t.end[0], t.end[1])
     : new Date(start.getTime() + 2 * 3600 * 1000);
@@ -1965,9 +1987,16 @@ function buildIcs(o) {
     "METHOD:PUBLISH",
   ];
   if (!allDay) lines.push(...ICS_VTIMEZONE_LONDON);
-  lines.push("BEGIN:VEVENT", `UID:${o.uid}@newtroubadours.org`, `DTSTAMP:${stamp}`);
+  lines.push(
+    "BEGIN:VEVENT",
+    `UID:${o.uid}@newtroubadours.org`,
+    `DTSTAMP:${stamp}`,
+  );
   if (allDay) {
-    lines.push(`DTSTART;VALUE=DATE:${icsDate(start)}`, `DTEND;VALUE=DATE:${icsDate(end)}`);
+    lines.push(
+      `DTSTART;VALUE=DATE:${icsDate(start)}`,
+      `DTEND;VALUE=DATE:${icsDate(end)}`,
+    );
   } else {
     lines.push(
       `DTSTART;TZID=Europe/London:${icsLocalStamp(start)}`,
@@ -1976,16 +2005,24 @@ function buildIcs(o) {
   }
   lines.push(`SUMMARY:${icsEscape(o.title)}`);
   if (o.location) lines.push(`LOCATION:${icsEscape(o.location)}`);
-  const desc = [o.time ? `Time: ${o.time}` : "", o.description || "", o.url ? `More info: ${o.url}` : ""]
-    .filter(Boolean).join("\n");
+  const desc = [
+    o.time ? `Time: ${o.time}` : "",
+    o.description || "",
+    o.url ? `More info: ${o.url}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
   if (desc) lines.push(`DESCRIPTION:${icsEscape(desc)}`);
   if (o.url) lines.push(`URL:${o.url}`);
   lines.push(o.cancelled ? "STATUS:CANCELLED" : "STATUS:CONFIRMED");
   if (!allDay) {
     // Gentle reminder 2 hours before (users can change/remove it).
     lines.push(
-      "BEGIN:VALARM", "ACTION:DISPLAY",
-      `DESCRIPTION:${icsEscape(o.title)}`, "TRIGGER:-PT2H", "END:VALARM",
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      `DESCRIPTION:${icsEscape(o.title)}`,
+      "TRIGGER:-PT2H",
+      "END:VALARM",
     );
   }
   lines.push("END:VEVENT", "END:VCALENDAR");
@@ -1998,8 +2035,13 @@ function buildIcs(o) {
  */
 function buildCalendarLinks(o) {
   const { allDay, start, end } = icsResolveTimes(o);
-  const details = [o.time ? `Time: ${o.time}` : "", o.description || "", o.url ? `More info: ${o.url}` : ""]
-    .filter(Boolean).join("\n");
+  const details = [
+    o.time ? `Time: ${o.time}` : "",
+    o.description || "",
+    o.url ? `More info: ${o.url}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
   const g = new URLSearchParams({
     action: "TEMPLATE",
     text: o.title || "",
@@ -2010,7 +2052,8 @@ function buildCalendarLinks(o) {
     location: o.location || "",
     ctz: "Europe/London",
   });
-  const iso = (d) => `${d.getFullYear()}-${icsPad(d.getMonth() + 1)}-${icsPad(d.getDate())}T${icsPad(d.getHours())}:${icsPad(d.getMinutes())}:00`;
+  const iso = (d) =>
+    `${d.getFullYear()}-${icsPad(d.getMonth() + 1)}-${icsPad(d.getDate())}T${icsPad(d.getHours())}:${icsPad(d.getMinutes())}:00`;
   const ol = new URLSearchParams({
     path: "/calendar/action/compose",
     rru: "addevent",
@@ -2105,7 +2148,8 @@ function flagPrerenderPreference(record) {
 
 function showNotFound() {
   document.getElementById("loadingState").style.display = "none";
-  document.getElementById("notFoundState").style.display = "";  PageHealth.markNotFound();
+  document.getElementById("notFoundState").style.display = "";
+  PageHealth.markNotFound();
 }
 
 /**
@@ -3036,7 +3080,8 @@ function buildPreviousIdMap(registry, label) {
   Object.entries(registry || {}).forEach(([id, rec]) => {
     if (!rec || isBlankValue(rec.previous_id)) return;
     [].concat(rec.previous_id).forEach((old) => {
-      if (typeof old !== "string" || !old || old === id || registry[old]) return;
+      if (typeof old !== "string" || !old || old === id || registry[old])
+        return;
       if (map[old] && map[old] !== id) {
         console.warn(
           `${label} previous_id "${old}" is claimed by both "${map[old]}" and "${id}" — keeping "${map[old]}"`,
@@ -3273,7 +3318,8 @@ function applyPerformerAliases(eventsData, lookups = {}) {
 
   registries.forEach((reg) => {
     Object.entries(reg).forEach(([id, rec]) => {
-      if (!rec || typeof rec.same_as !== "string" || !rec.same_as.trim()) return;
+      if (!rec || typeof rec.same_as !== "string" || !rec.same_as.trim())
+        return;
       const target = rec.same_as.trim();
       if (target === id) return;
       const targetRec = registries.some((r) => r[target]);
@@ -3291,7 +3337,8 @@ function applyPerformerAliases(eventsData, lookups = {}) {
   performerAliasMap = map;
   if (eventsData) eventsData.performer_aliases = map;
 
-  const canon = (id) => (typeof id === "string" ? resolvePerformerAlias(id) : id);
+  const canon = (id) =>
+    typeof id === "string" ? resolvePerformerAlias(id) : id;
 
   function rewrite(node) {
     if (Array.isArray(node)) {
@@ -3694,7 +3741,9 @@ function describeSchedule(schedule) {
     case "every":
       return day ? `every ${day}` : "weekly";
     case "monthly":
-      return day ? `${String(schedule.occurrence || "1st").toLowerCase()} ${day} of the month` : "monthly";
+      return day
+        ? `${String(schedule.occurrence || "1st").toLowerCase()} ${day} of the month`
+        : "monthly";
     default:
       return "";
   }

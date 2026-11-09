@@ -1238,6 +1238,10 @@
         "isSpecial": {
           "type": "boolean"
         },
+        "isDinner": {
+          "type": "boolean",
+          "description": "Marks a special event as including a meal (dinner/supper) in the ticket, e.g. a ghost talk with two-course supper. Set by the builder's \"Dinner / supper included\" checkbox on the Special event kind."
+        },
         "isCancelled": {
           "type": "boolean",
           "default": false

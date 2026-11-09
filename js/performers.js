@@ -1439,6 +1439,7 @@ function renderUpcomingSection(
     items.push({
       date: d,
       title: e.showname || e.name,
+      tag: e.isDinner ? "Dinner included" : null,
       time,
       venueId: e.venue_id,
       ticketUrl: e.ticket_url,
@@ -3803,6 +3804,9 @@ function renderEventRow(container, event) {
   }
   if (event.isSpecial && !event.isMusic && !event.isPoetry) {
     badges.appendChild(makeBadge("badge-special", "Story show"));
+  }
+  if (event.isDinner) {
+    badges.appendChild(makeBadge("badge-special badge-dinner", "\u{1F37D}\uFE0F Dinner included"));
   }
   if (isPast) {
     badges.appendChild(makeBadge("badge-past", "Past"));

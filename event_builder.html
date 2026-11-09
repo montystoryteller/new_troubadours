@@ -398,6 +398,7 @@
                 <label>Flags</label>
                 <div class="checkbox-row">
                     <label><input type="checkbox" id="ev-special" checked> Special event</label>
+                    <label id="ev-dinner-label"><input type="checkbox" id="ev-dinner"> Dinner / supper included</label>
                     <label><input type="checkbox" id="ev-cancelled"> Cancelled</label>
                     <label><input type="checkbox" id="ev-soldout"> Sold out</label>
                 </div>
@@ -1878,7 +1879,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js?v=202610272132"></script>
     <script src="/js/recurrence-engine.js?v=202610272132"></script>
-    <script src="/js/shared_utils.js?v=202611050058"></script>
+    <script src="/js/shared_utils.js?v=202611091606"></script>
     <script src="/js/shared_guessers.js?v=202610272132"></script>
     <script>
         // ── Loaded lookups + session-created entities ───────────────────────
@@ -4241,6 +4242,7 @@
                 batch.poetryEvents.push(record);
             } else {
                 if (document.getElementById("ev-special").checked) record.isSpecial = true;
+                if (document.getElementById("ev-dinner").checked) record.isDinner = true;
                 batch.clubs.push(record);
             }
 
@@ -4257,6 +4259,7 @@
             document.getElementById("ev-date-added-today").checked = false;
             document.getElementById("ev-date-added").readOnly = false;
             document.getElementById("ev-special").checked = true;
+            document.getElementById("ev-dinner").checked = false;
             document.getElementById("ev-cancelled").checked = false;
             document.getElementById("ev-soldout").checked = false;
             // Strip any leftover pink prefill highlight from a previous
@@ -4347,7 +4350,10 @@
 
             setChecked("ev-cancelled", record.isCancelled, false);
             setChecked("ev-soldout", record.isSoldOut, false);
-            if (kind === "story") setChecked("ev-special", record.isSpecial, true);
+            if (kind === "story") {
+                setChecked("ev-special", record.isSpecial, true);
+                setChecked("ev-dinner", record.isDinner, false);
+            }
         }
 
         // ── Tour form ────────────────────────────────────────────────────────

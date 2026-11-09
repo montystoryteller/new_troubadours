@@ -116,7 +116,7 @@ function resolvableFlatEvents(list) {
 // (tourId/tsId + date) and don't have a standalone event.html permalink —
 // see buildSearchIndex() below, which links those to tour_guide.html instead.
 function findEventById(eventId) {
-  const target = eventId;   // params.get() already decoded it — don't decode again (i.e. avoid decodeURIComponent(eventId) here)
+  const target = eventId; // params.get() already decoded it — don't decode again (i.e. avoid decodeURIComponent(eventId) here)
   const pools = [
     eventsData.specificEvents,
     eventsData.musicEvents,
@@ -207,7 +207,11 @@ function legacyTimestampScore(ts, date) {
 function findEventByLegacyId(eventId) {
   const m = LEGACY_EVENT_ID_RE.exec(eventId);
   if (!m) return null;
-  const norm = (s) => String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
+  const norm = (s) =>
+    String(s || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
   const wantedName = norm(m[1]);
   const ts = Number(m[2]);
 
@@ -246,7 +250,9 @@ function findEventByLegacyId(eventId) {
     }
   }
 
-  for (const [tsId, show] of Object.entries(eventsData.repertoire_shows || {})) {
+  for (const [tsId, show] of Object.entries(
+    eventsData.repertoire_shows || {},
+  )) {
     const names = [show.showname, show.name].map(norm);
     if (!names.includes(wantedName)) continue;
     for (const showDate of show.show_dates || []) {
@@ -401,7 +407,10 @@ function findEventIdMatches(badId) {
   const dateVenueHits = scored.filter(
     (c) => c.sameDate && c.sameVenue && !c.nameClash,
   );
-  const longestVenue = Math.max(0, ...dateVenueHits.map((c) => c.venueId.length));
+  const longestVenue = Math.max(
+    0,
+    ...dateVenueHits.map((c) => c.venueId.length),
+  );
   const strong = dateVenueHits.filter((c) => c.venueId.length === longestVenue);
   let auto = null;
   if (strong.length === 1) auto = strong[0];
@@ -548,10 +557,7 @@ function syncSearchStateToUrl(term) {
   if (trimmed) {
     url.searchParams.set("q", trimmed);
     url.searchParams.set("time", eventSearchTimeFilter);
-    url.searchParams.set(
-      "types",
-      [...activeSearchTypeCategories()].join(","),
-    );
+    url.searchParams.set("types", [...activeSearchTypeCategories()].join(","));
   } else {
     url.searchParams.delete("q");
     url.searchParams.delete("time");
@@ -878,7 +884,11 @@ function renderSearchResultsList(term, index, today, keepVisible = false) {
     title.textContent = entry.displayName;
     [
       [entry.isCancelled, "Cancelled", "event-badge-cancelled"],
-      [!entry.isCancelled && entry.isSoldOut, "Sold out", "event-badge-sold-out"],
+      [
+        !entry.isCancelled && entry.isSoldOut,
+        "Sold out",
+        "event-badge-sold-out",
+      ],
     ].forEach(([show, text, cls]) => {
       if (!show) return;
       const badge = document.createElement("span");
@@ -949,7 +959,8 @@ function initSearchTypeFilters() {
     checkbox.value = category;
     // Priority: URL override (a shared link) > stored preference > default.
     checkbox.checked =
-      urlTypeFilterOverride && typeof urlTypeFilterOverride[category] === "boolean"
+      urlTypeFilterOverride &&
+      typeof urlTypeFilterOverride[category] === "boolean"
         ? urlTypeFilterOverride[category]
         : typeof stored[category] === "boolean"
           ? stored[category]
@@ -1182,7 +1193,8 @@ let initialSearchTerm = "";
       checks: [
         [
           "event name is empty",
-          () => document.getElementById("eventName").textContent.trim().length > 0,
+          () =>
+            document.getElementById("eventName").textContent.trim().length > 0,
         ],
       ],
     });
@@ -1447,10 +1459,7 @@ function showEventNotFound(badId, suggestions) {
       a.textContent = c.title;
       li.appendChild(a);
       const venue = venuesLookup[c.venueId];
-      const meta = [
-        formatMediumDate(c.date),
-        venue && venueDisplayName(venue),
-      ]
+      const meta = [formatMediumDate(c.date), venue && venueDisplayName(venue)]
         .filter(Boolean)
         .join(" \u2022 ");
       if (meta) li.append(` \u2014 ${meta}`);
@@ -1512,7 +1521,7 @@ function showTodayEvents() {
 function renderPage() {
   const ev = eventRecord;
   const name = ev.showname || ev.name;
-  
+
   const performerIds = performerIdsOf(ev);
   const performerNames = performerIds
     .map((id) => performersLookup[id]?.name)
@@ -1550,6 +1559,16 @@ function renderPage() {
     .filter(Boolean)
     .join(" • ");
   document.getElementById("eventMeta").textContent = metaParts;
+  if (ev.isDinner) {
+    const metaEl = document.getElementById("eventMeta");
+    metaEl.appendChild(document.createElement("br"));
+    metaEl.appendChild(
+      makeBadge(
+        "badge-special badge-dinner",
+        "\u{1F37D}\uFE0F Dinner included",
+      ),
+    );
+  }
 
   const hostVenue = venuesLookup[ev.venue_id] || null;
   const venueDiv = document.getElementById("eventVenue");
@@ -1725,8 +1744,12 @@ function renderTicketsFlyersVideo(ev) {
       date: ev._date,
       time: ev.time,
       title: ev.showname || ev.name,
-      description: (ev.description || "").replace(/\n{2,}/g, "\n").slice(0, 500),
-      location: hostVenue ? [hostVenue.name, addr].filter(Boolean).join(", ") : "",
+      description: (ev.description || "")
+        .replace(/\n{2,}/g, "\n")
+        .slice(0, 500),
+      location: hostVenue
+        ? [hostVenue.name, addr].filter(Boolean).join(", ")
+        : "",
       url: `${location.origin}${location.pathname}?event=${encodeURIComponent(id)}`,
     };
     const links = buildCalendarLinks(calOpts);
