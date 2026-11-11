@@ -33,11 +33,11 @@
 //    render on them. Googlebot executes JS itself.
 //  - Everyone else (SEO scrapers etc.): straight to the origin page.
 const RENDER_BOT_RE =
-  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot|DuckAssistBot/i;
+  /bingbot|duckduckbot|applebot|facebookexternalhit|facebot|twitterbot|linkedinbot|discordbot|slackbot|telegrambot|whatsapp|pinterestbot|redditbot|Claude-User|ChatGPT-User|Perplexity-User|DuckAssistBot/i;
 // User-triggered fetchers (a person asked an AI assistant to open a page): none of them run JS, so
 // they benefit from a snapshot, but their traffic is unpredictable, so they never spend a render.
 const CACHE_ONLY_BOT_RE =
-  /googlebot|yandexbot|baiduspider|slurp|OAI-SearchBot|PerplexityBot|Claude-SearchBot|Claude-User|ChatGPT-User|Perplexity-User|MistralAI-User/i;
+  /googlebot|yandexbot|baiduspider|slurp|OAI-SearchBot|PerplexityBot|Claude-SearchBot|MistralAI-User/i;
 
 const ASSET_EXTENSION_RE =
   /\.(js|mjs|css|png|jpe?g|gif|svg|webp|ico|avif|woff2?|ttf|eot|json|xml|txt|map|mp4|webm|pdf)$/i;
@@ -45,7 +45,7 @@ const ASSET_EXTENSION_RE =
 // A snapshot younger than this is served as-is. Older ones are STILL served,
 // and a render-tier bot request may trigger one background refresh, but only
 // if it wins the global render cooldown (see LOCK_KEY below).
-const FRESH_SECONDS = 60 * 60 * 120; // refresh-if-requested after ~5 days
+const FRESH_SECONDS = 60 * 60 * 24 * 5; // refresh-if-requested after ~5 days
 // Keep entries much longer than the freshness window: if a snapshot expired,
 // there would be nothing to serve and a scarce live render would be needed.
 const KV_TTL_SECONDS = 60 * 60 * 24 * 90; // keep stale copies for 90 days (safety net; the prewarm rotation refreshes every page well within this)
