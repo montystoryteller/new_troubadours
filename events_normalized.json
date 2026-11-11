@@ -7553,6 +7553,17 @@
       "venue_id": "guide-dog-pub-southampton"
     },
     {
+      "name": "The Slate Storytelling Cafe",
+      "club": "the-slate-storytelling-cafe",
+      "schedule": "2nd tuesday",
+      "time": "7-9pm",
+      "venue_id": "dolawel-house-blaenau-ffestiniog",
+      "description": "Come and share a traditional, historical or personal story, of just listen! All welcome!",
+      "flyers": [
+        "2026_12_08_the_slate_dolawel.jpg"
+      ]
+    },
+    {
       "name": "Winchburgh Storytellers",
       "schedule": "last tuesday",
       "time": "7.30-9pm",
@@ -13451,7 +13462,7 @@
     {
       "name": "Winter's Dream — Storytelling for Winter Solstice [Henry Everett and Hannah Sneyd]",
       "showname": "Winter's Dream — Storytelling for Winter Solstice",
-      "date": "31/01/2026",
+      "date": "18/12/2026",
       "date_added": "03/11/2026",
       "time": "Doors 6.30pm, show 7-9pm",
       "price": "",
@@ -13460,6 +13471,7 @@
       "venue_id": "moor-imagination-collective-buckfastleigh",
       "performer_id": "henry-everett-and-hannah-sneyd",
       "age_rating": "Family friendly",
+      "event_flyer": "2026_12_18_everett_sneyd_mic.jpg",
       "eventId": "20261218-henry-everett-and-hannah-sneyd-moor-imagination-collective-buckfastleigh"
     },
     {
@@ -13717,6 +13729,24 @@
       "description": "Join us to celebrate the Spring Equinox, a time of renewal and new beginnings as the natural world awakens from winter. For our ancient ancestors, the arrival of spring marked an important turning point in the year, bringing the promise of new growth and longer days.\n\n\n\nJonathon Huet will host an evening of storytelling and ritual, exploring ancient Celtic traditions and the stories that connect us to the land and our ancestors. Gathered together in our great roundhouse, we will journey through the tales of Banbha, the first woman to step upon the land, Macha, the mother of the early peoples of Britain and Ireland, and Talitu, remembered in ancient tradition for clearing the woodlands for agriculture.\n\n\n\nThrough these stories, we will explore the awakening of the Green World, the power of the sacred landscape and the relationship between people, nature and the land that sustains us. The evening will include ritual and chant to welcome the spring, reflecting on the natural world's evolution and the beginnings of early farming.\n\n\n\nGather with friends and like-minded souls for a thoughtful and atmospheric evening, celebrating the changing season and our enduring connection to the natural world.\n\n\n\nThere will also be an opportunity to enjoy a drink from our bar and purchase refreshments from the farm shop throughout the evening.",
       "ticket_url": "https://butserancientfarm.ticketsolve.com/shows/1173695811/events",
       "event_url": "https://www.butserancientfarm.co.uk/whats-on/calendar/spring-equinox-storytelling",
+      "isSpecial": true
+    },
+    {
+      "name": "Beasts [Corinne Harragin]",
+      "showname": "Beasts",
+      "date": [
+        "08/04/2027",
+        "09/04/2027",
+        "10/04/2027"
+      ],
+      "venue_id": "wardrobe-theatre-bristol",
+      "performer_id": "corinne-harragin",
+      "date_added": "11/11/2026",
+      "time": "7.30pm",
+      "price": "£15 (incl. £1 booking fee)",
+      "description": "Devils, lovers, and old women with tricks up their sleeves… a new solo storytelling show created and performed by Corinne Harragin (Troubled Waters)\nAcclaimed Bristol-based storyteller, Corinne Harragin, returns to The Wardrobe Theatre with Beasts, a new collection of wild, unruly tales drawn from the darker corners of folk and fairy tradition. Expect trickery, transformation and bedevilment. Gold flames, iron sparks and shapeshifting. Cunning beasts and foolish humans. Tales where nothing is quite as it seems, and justice rarely arrives by the obvious route.\n\n\n\nFunny and fiery, with a touch of the grotesque, Beasts explores what happens when the rules begin to break down – when disguises slip and something elemental starts to stir.\n\n\n\nFollowing her year-long tour of Troubled Waters across 30 venues, culminating in a month-long run at the Scottish Storytelling Centre for Edinburgh Festival Fringe, Corinne Harragin returns to The Wardrobe Theatre with new work. Come for the devils and the mischief. Stay for the golden hairs, sacred herbs and whatever else might crawl out of the fire.",
+      "event_flyer": "show_beasts_corinne_harragin.jpg",
+      "ticket_url": "https://thewardrobetheatre.com/shows/beasts/",
       "isSpecial": true
     },
     {
@@ -15897,6 +15927,20 @@
       "latlon": [
         51.48493,
         -0.1627
+      ]
+    },
+    "dolawel-house-blaenau-ffestiniog": {
+      "id": "dolawel-house-blaenau-ffestiniog",
+      "name": "Dolawel House, Blaenau Ffestiniog",
+      "venue_type": "Other / unknown",
+      "city": "Blaenau Ffestiniog",
+      "postcode": "LL41 3HS",
+      "full_address": "Dolawel House, Rhiwbrufdir, Blaenau Ffestiniog, LL41 3HS",
+      "email": "evelvn@stiwdiodolawel.org",
+      "description": "Dewch i rannu stori draddodiadol, hanesyddol neu bersonal, neu dim and awranda! Croeso I bawb!\n\n\n\nCome and share a traditional, historical or personal story, of just listen! All welcome!",
+      "latlon": [
+        52.99815,
+        -3.9427
       ]
     },
     "dragon-theatre-barmouth": {
