@@ -12724,6 +12724,17 @@
       "isSpecial": true
     },
     {
+      "name": "Beowulf",
+      "showname": "Beowulf",
+      "date": "31/10/2026",
+      "venue_id": "felin-uchaf",
+      "eventId": "20261031-unknown-performer-felin-uchaf",
+      "time": "19:00 – 21:00",
+      "description": "Join us in Caffi'r Felin for a candlelit evening telling of the story of Beowulf.\n\n\n\nThe oldest written tale in the English language - a mighty hero of the Danes who comes to face evil in its many guises and so to win great renown. Dragonslayer and leader of men - the story traces his adventures from young warrior to greybeard across the Baltic lands. An epic tale through song, music, poetry, and spellbinding storytelling.\n\n\n\nDoors open at 6.30, storytelling starts at 7pm.\n\n\n\nHot & cold drinks, snacks and homemade cakes will be available to purchase during the evening.\n\n\n\n*Limited seating, please make sure to purchase your tickets online beforehand (no tickets at the door). If you would like to come along but to pay cash instead please contact us directly through email info@felinwales.org specifying your name and how many tickets you would like reserved.",
+      "event_url": "https://www.felinwales.org/event-details-registration/beowulf",
+      "isSpecial": true
+    },
+    {
       "name": "Of Stars, Bears And The Beginning Of Time [Riika Polonen]",
       "showname": "Of Stars, Bears And The Beginning Of Time",
       "date": "31/10/2026",
@@ -12991,6 +13002,19 @@
       "eventId": "20261114-maria-credali-eastcott-community-centre-swindon"
     },
     {
+      "name": "Candlelit Storytelling — The Tooth and the Toe Bone",
+      "showname": "Candlelit Storytelling — The Tooth and the Toe Bone",
+      "date": "15/11/2026",
+      "venue_id": "felin-uchaf",
+      "eventId": "20261115-unknown-performer-felin-uchaf",
+      "date_added": "11/11/2026",
+      "time": "Doors 6.30, show 19:00 – 20:50",
+      "price": "£10 (+ £0.25) / £5 (+ £0.13)",
+      "description": "oin us in Caffi'r Felin for an evening telling of The Tooth and the Toe Bone - a spellbinding and moving tale from the indigenous Guatemalan Mayan tradition. It follows the story of an orphaned boy and his journey into the world of magic and healing. An epic adventure - from rejection and betrayal to honour and love.\n\n\n\nDoors open at 6.30, storytelling starts at 7pm.\n\n\n\nHot & cold drinks, and homemade cakes will be available to purchase during the evening.\n\n\n\n*Limited seating, please make sure to purchase your tickets online beforehand",
+      "ticket_url": "https://www.felinwales.org/event-details-registration/candlelit-storytelling-the-tooth-and-the-toe-bone",
+      "isSpecial": true
+    },
+    {
       "name": "Cassandra [Ailsa Dixon]",
       "showname": "Cassandra - Written and performed by Ailsa Dixon",
       "date": "17/11/2026",
@@ -13189,6 +13213,20 @@
       "eventId": "20261127-sarah-cantrill-st-johns-church-hall-worcester-park"
     },
     {
+      "name": "Advent Spiral Celebration",
+      "showname": "Advent Spiral Celebration",
+      "date": "29/11/2026",
+      "venue_id": "felin-uchaf",
+      "eventId": "20261129-unknown-performer-felin-uchaf",
+      "date_added": "11/11/2026",
+      "time": "16:30 – 18:30",
+      "price": "Free (donations welcome)",
+      "description": "Advent Spiral Celebration, Felin Uchaf Roundhouse\n\n\n\nSeasonal stories and music\n\n\n\nFree event (any donations on the night greatly appreciated!)\n\n\n\nAll ages welcome\n\n\n\nLight refreshments will be shared around",
+      "age_rating": "All ages welcome",
+      "event_url": "https://www.felinwales.org/event-details-registration/advent-spiral-celebration-dathlur-adfent",
+      "isSpecial": true
+    },
+    {
       "name": "Spiderwebs and Starlight: Tales of the Night Sky [Holly Medland & Sue Bailey]",
       "showname": "Spiderwebs and Starlight: Tales of the Night Sky",
       "date": "01/12/2026",
@@ -13368,6 +13406,19 @@
       "price": "£7",
       "description": "An evening of tales for a Winter's night in Cowes most intimate storytelling venue.\n\n\n\nBooking essential from the venue.",
       "event_flyer": "2026_12_17_carvel_winter.png",
+      "isSpecial": true
+    },
+    {
+      "name": "Midwinter Storytelling",
+      "showname": "Midwinter Storytelling",
+      "date": "20/12/2026",
+      "venue_id": "felin-uchaf",
+      "eventId": "20261220-unknown-performer-felin-uchaf",
+      "date_added": "11/11/2026",
+      "time": "19:00 – 20:50",
+      "price": "£10.00 (+ £0.25) / £5.00 (+ £0.13)",
+      "description": "Join us in Caffi'r Felin for a seasonal feast of Candlelit Tales to celebrate the old year's turning and Christmas festival.\n\n\n\nA winter's journey through time and traditions!\n\n\n\nDoors open at 6.30, storytelling starts at 7pm.\n\n\n\nHot & cold drinks, and homemade cakes will be available to purchase during the evening.\n\n\n\n*Limited seating, please make sure to purchase your tickets online beforehand (no tickets at the door)",
+      "ticket_url": "https://www.felinwales.org/event-details-registration/midwinter-storytelling-2",
       "isSpecial": true
     },
     {
@@ -20775,6 +20826,21 @@
       "city": "Broad Street Presteigne",
       "postcode": "LD8 2AD"
     },
+    "felin-uchaf": {
+      "id": "felin-uchaf",
+      "name": "Felin Uchaf",
+      "venue_type": "Roundhouse",
+      "city": "Pwllheli",
+      "postcode": "LL53 8HS",
+      "full_address": "Menter Y Felin Uchaf, Rhoshirwaun, Pwllheli, LL53 8HS",
+      "url": "https://www.felinwales.org/",
+      "facebook": "felinuchaf",
+      "description": "An oasis nestled within woodland and hedgerows planted up to 23 years ago, providing seclusion and immersion in nature. Home to several beautiful eco-buildings, a productive garden, a farm & craft shop, and a bustling cafe! Enjoy plenty of walks around the woodland paths, orchards and meadow fields. Stay with us during the Spring & Summer season to enjoy in all its glory. Freely explore the gardens, the Observatory and the Big Storytelling Roundhouse all year round!\n\n\n\nThe Site and Management is currently run by volunteers and funds from events go back into the project.",
+      "latlon": [
+        52.83063,
+        -4.66181
+      ]
+    },
     "late-lounge-rhyl": {
       "id": "late-lounge-rhyl",
       "name": "Late Lounge, Rhyl",
@@ -24421,13 +24487,13 @@
       "url": "https://www.melrosequartet.co.uk/",
       "bio": "The Melrose Quartet (Nancy Kerr, James Fagan, Jess Arrowsmith, Richard Arrowsmith) are known for their carousing Folk chorus songs, lively dance tunes, ancient stories and modern pieces."
     },
-        "jonathon-huet": {
-          "id": "jonathon-huet",
-          "name": "Jonathon Huet",
-          "url": "https://www.walkwithtrees.com/",
-          "bio": "Jonathon Huet, Woodland Bard, Tree and Plant folklore Specialist. Explorer of Nature through Story, Poetry and Meditation.",
-          "facebook": "walkwithtrees"
-        },
+    "jonathon-huet": {
+      "id": "jonathon-huet",
+      "name": "Jonathon Huet",
+      "url": "https://www.walkwithtrees.com/",
+      "bio": "Jonathon Huet, Woodland Bard, Tree and Plant folklore Specialist. Explorer of Nature through Story, Poetry and Meditation.",
+      "facebook": "walkwithtrees"
+    },
     "suzanne-and-jake-thomas": {
       "id": "suzanne-and-jake-thomas",
       "name": "Suzanne and Jake Thomas",
