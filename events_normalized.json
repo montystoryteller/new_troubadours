@@ -13279,6 +13279,23 @@
       "eventId": "20261202-unknown-performer-quaker-meeting-house-northampton"
     },
     {
+      "name": "A Dance with the Minotaur’s Sister [Steph Brittain]",
+      "showname": "A Dance with the Minotaur’s Sister",
+      "date": "04/12/2026",
+      "venue_id": "imperial-rooms-matlock",
+      "performer_id": "steph-brittain",
+      "eventId": "20261204-steph-brittain-imperial-rooms-matlock",
+      "date_added": "11/11/2026",
+      "time": "7:30 PM - 10:00 PM",
+      "club": "matlock-story-club",
+      "price": "£8 (+ £1) / u25/skint £3 (+ £1) / online £6.50 (+ £1)",
+      "description": "A Dance with the Minotaur’s Sister by Steph Brittain\n\n\n\nA King breaks a promise\n\n\n\nA Queen takes passion in hand\n\n\n\nA Prince becomes a feared prisoner\n\n\n\nAnd a Princess dances and pulses with life.\n\n\n\nHere's a midwinter treat for you. How about being transported from the greyness and cold of a Derbyshire winter to the dazzling azure skies and clear warm seas of Greece. We can do that for you, no problem. T'is but a mere step away. Join storyteller Steph Brittain as she follows Ariadne’s journey as it unravels through the maze of love, betrayal, loss, joy and the bulls and the bees.\n\n\n\nBefore the thread and before the tangled and twisted maze, there was Ariadne full of life and rhythm.\n\n\n\nFrom a dance floor in the forest and the labyrinth's twisting and tangled passages to the starry skies of the Island of Naxos, Steph Brittain weaves an intricate tapestry of love, strength and courage.\n\n\n\nA Dance with the Minotaur’s Sister is a retelling of an ancient Greek myth through the eyes of Ariadne and her Brother the Minotaur. A story of a bull, a boy, his Sister and what happens when a hero leaves.",
+      "age_rating": "16+",
+      "min_age": 16,
+      "ticket_url": "https://www.tickettailor.com/events/matlockstorytellingcafe/2525638",
+      "isSpecial": true
+    },
+    {
       "name": "Tales of Winter Magic [Red Phoenix]",
       "showname": "Tales of Winter Magic",
       "date": "04/12/2026",
