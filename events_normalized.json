@@ -12731,6 +12731,7 @@
       "eventId": "20261031-unknown-performer-felin-uchaf",
       "time": "19:00 – 21:00",
       "description": "Join us in Caffi'r Felin for a candlelit evening telling of the story of Beowulf.\n\n\n\nThe oldest written tale in the English language - a mighty hero of the Danes who comes to face evil in its many guises and so to win great renown. Dragonslayer and leader of men - the story traces his adventures from young warrior to greybeard across the Baltic lands. An epic tale through song, music, poetry, and spellbinding storytelling.\n\n\n\nDoors open at 6.30, storytelling starts at 7pm.\n\n\n\nHot & cold drinks, snacks and homemade cakes will be available to purchase during the evening.\n\n\n\n*Limited seating, please make sure to purchase your tickets online beforehand (no tickets at the door). If you would like to come along but to pay cash instead please contact us directly through email info@felinwales.org specifying your name and how many tickets you would like reserved.",
+      "event_flyer": "2026_10_31_beowulf_felin_uchaf.jpg",
       "event_url": "https://www.felinwales.org/event-details-registration/beowulf",
       "isSpecial": true
     },
@@ -13008,6 +13009,7 @@
       "venue_id": "felin-uchaf",
       "eventId": "20261115-unknown-performer-felin-uchaf",
       "date_added": "11/11/2026",
+      "event_flyer": "2026_11_15_candlelit_tooth_toebone_felin_uchaf.jpg",
       "time": "Doors 6.30, show 19:00 – 20:50",
       "price": "£10 (+ £0.25) / £5 (+ £0.13)",
       "description": "oin us in Caffi'r Felin for an evening telling of The Tooth and the Toe Bone - a spellbinding and moving tale from the indigenous Guatemalan Mayan tradition. It follows the story of an orphaned boy and his journey into the world of magic and healing. An epic adventure - from rejection and betrayal to honour and love.\n\n\n\nDoors open at 6.30, storytelling starts at 7pm.\n\n\n\nHot & cold drinks, and homemade cakes will be available to purchase during the evening.\n\n\n\n*Limited seating, please make sure to purchase your tickets online beforehand",
@@ -15887,6 +15889,7 @@
     "butser-ancient-farm-hampshire": {
       "id": "butser-ancient-farm-hampshire",
       "name": "Butser Ancient Farm",
+      "venue_type": "Roundhouse",
       "city": "Hampshire",
       "postcode": "PO8 0BG",
       "full_address": "Butser Ancient Farm, Hampshire, PO8 0BG",
@@ -15936,6 +15939,7 @@
     "cranborne-earthouse": {
       "id": "cranborne-earthouse",
       "name": "Cranborne Earthhouse",
+      "venue_type": "Roundhouse",
       "city": "Cranborne, nr. Swindon",
       "postcode": "BH21 5RP",
       "full_address": "Cranborne Earthhouse, Ancient Technology Centre, Damerham Road, Wimborne, Dorset, BH21 5RP",
