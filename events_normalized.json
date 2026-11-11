@@ -2768,7 +2768,7 @@
       "name": "Tree Folk: Tree folk tales, songs and lore from Britain & Ireland",
       "performer_id": "lisa-schneidau",
       "tour_description": "Book Tour — Tree Folk Tales, Songs and Lore from Britain and Ireland\n\n\n\nWhat is a folk tale, but a tangled woodland of words, where anything could happen? Ever since the last ice melted, trees have been our constant companions. Trees have transformed us, protected us, inspired us and created bridges for us. They will continue to shape our lives as we walk into an uncertain future.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth. Take a fresh look at the tree folk you share your life with, and discover their stories.",
-      "touring_event_flyer": "",
+      "touring_event_flyer": "booktour_lisa_schneidau_trees_2026.jpg",
       "isSpecial": true,
       "tour_dates": [
         {
@@ -2813,7 +2813,8 @@
           "time": "7pm",
           "price": "Free with book ticket (£17.99 RRP)",
           "description": "This event is brought to you by FOLDE Dorset in partnership with the Grosvenor Arms.\n\n\n\nThe islands of Britain and Ireland hold a rich heritage of folk tales, history, knowledge and song about trees. It is a living heritage, changing all the time through the circling year as oak and rowan are joined by spruce and plane, and as old stories are reworked and new ones created.\n\n\n\nFollowing the wheel of the year, storyteller and ecologist Lisa Schneidau brings our trees alive through their stories and songs, whether they are rooted in rural magic or modern myth.\n\n\n\nThrough a 'book ticket' you can pre-order a copy of Tree Folk from FOLDE (RRP £17.99) and get a free ticket for the event.\n\n\n\nThe Grosvenor Arms, Shaftesbury, SP7 8JA.",
-          "ticket_url": "https://www.ticketsource.com/folde-dorset/tree-folk-an-evening-with-lisa-schneidau/e-jplymo"
+          "ticket_url": "https://www.ticketsource.com/folde-dorset/tree-folk-an-evening-with-lisa-schneidau/e-jplymo",
+          "event_flyer": "2026_11_17_lisa_schneidau_shaftesbury.jpg"
         },
         {
           "date": "19/11/2026",
@@ -5467,6 +5468,7 @@
           "venue_id": "the-golden-hinde-london",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_10_27_sorrel_nation.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261027-the-golden-hinde-london"
         },
         {
@@ -5474,6 +5476,7 @@
           "venue_id": "trinity-theatre-tunbridge-wells",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_11_01_sorrel_nation.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261101-trinity-theatre-tunbridge-wells"
         },
         {
@@ -5481,6 +5484,7 @@
           "venue_id": "acapela-studio-cardiff",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_11_08_sorrel_nation.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261108-acapela-studio-cardiff"
         },
         {
@@ -5495,6 +5499,7 @@
           "venue_id": "town-hall-live-kirton-in-lindsey",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_11_20_sorrel_nation.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261120-town-hall-live-kirton-in-lindsey"
         },
         {
@@ -5509,6 +5514,7 @@
           "venue_id": "the-attic-southampton",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_11_12_sorrel_nation.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261126-the-attic-southampton"
         },
         {
@@ -7113,7 +7119,9 @@
       "schedule": "2nd wednesday",
       "facebook": "https://www.facebook.com/profile.php?id=100069787464247",
       "club": "torrianostorynight",
-      "venue_id": "torriano-meeting-house-london"
+      "venue_id": "torriano-meeting-house-london",
+      "isLapsed": true,
+      "end_date": "11/2026"
     },
     {
       "name": "Chester Triple Spiral Storytellers",
