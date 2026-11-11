@@ -683,6 +683,9 @@ function buildTourMergedEvent(tour, tourKey, tourDate) {
     video_trailer: tourDate.video_trailer || tour.video_trailer || null,
     fb_event: tourDate.fb_event || null,
     ticket_url: tourDate.ticket_url || null,
+    // Per-date event page link (tourDate.event_url) — createEventData()
+    // maps this to `link`, which renders as the website icon.
+    event_url: tourDate.event_url || null,
     isCancelled: !!tourDate.isCancelled,
     isSoldOut: !!tourDate.isSoldOut,
   };

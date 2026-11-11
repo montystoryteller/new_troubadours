@@ -153,6 +153,12 @@
 #   --hard-purge-all     treat EVERY snapshot as missing (asks for confirmation).
 #                        Bots get the plain origin page until pages are re-rendered.
 #
+#   --lastmod            (add to ANY rendering command) also stamp today's date as the sitemap <lastmod> of every page that
+#                        renders healthy (sends x-content-updated, as --delta / --touch-tour / explicit keys with --indexnow do).
+#                        Routine refreshes normally never move a lastmod. Just the stale part of --daily, with lastmod:
+#                        ./updatecache --refresh-stale 30 --oldest --skip-bad --skip-capped --no-old-events --lastmod
+#                        or the whole routine:  ./updatecache --daily 30 --lastmod
+#
 #   --force              (add to ANY rendering command) try the render even if the gatekeeper
 #                        has a quota / 429 pause recorded. e.g.
 #                        ./updatecache --performer halo-quin --indexnow --force
@@ -179,9 +185,12 @@ SECRET="${NT_DEBUG_SECRET:?Set NT_DEBUG_SECRET first to the DEBUG_SECRET of the 
 # command that renders (--performer, --delta, --fill-missing, --refresh-stale, plain page names).
 # Needs the gatekeeper.js that understands x-ignore-pause; an older worker simply ignores it.
 FORCE=0
+LASTMOD=0
 _args=()
 for _a in "$@"; do
-  if [ "$_a" = "--force" ]; then FORCE=1; else _args+=("$_a"); fi
+  if [ "$_a" = "--force" ]; then FORCE=1
+  elif [ "$_a" = "--lastmod" ]; then LASTMOD=1
+  else _args+=("$_a"); fi
 done
 set -- ${_args[@]+"${_args[@]}"}
 unset _args _a
@@ -396,7 +405,7 @@ render_one() {
   # stamp this page's <lastmod> in the sitemap after a successful, healthy render. Routine refreshes
   # leave it unset, so they never move a lastmod.
   local upd_hdr=()
-  [ "${NT_MARK_UPDATED:-0}" = "1" ] && upd_hdr=(-H "x-content-updated: $SECRET")
+  { [ "${NT_MARK_UPDATED:-0}" = "1" ] || [ "$LASTMOD" = "1" ]; } && upd_hdr=(-H "x-content-updated: $SECRET")
   # A 429 from the gatekeeper is either the DAILY quota (x-quota-exhausted: stop) or a short
   # back-off (x-render-paused: <seconds>: 2 min after the first 429 of the day, 20 min after the
   # second, 60 after the third). For a short one we wait it out and retry the same page once,
@@ -2152,6 +2161,7 @@ daily_cmd() {
   self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
   for a in "$@"; do [[ "$a" =~ ^[0-9]+$ ]] && [ "$a" -ge 1 ] && n="$a"; done
   [ "$FORCE" = "1" ] && fw=(--force)
+  [ "$LASTMOD" = "1" ] && fw+=(--lastmod)
   echo "== Daily maintenance: a budget of $n renders, spent in this order: repair, then pages with no snapshot, then oldest stale, then (last) stale event pages dated >30 days ago =="
   if [ "$FORCE" != "1" ]; then
     bash "$self" --quota; rc=$?

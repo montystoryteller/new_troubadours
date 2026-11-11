@@ -326,6 +326,15 @@
             </div>
 
             <div class="field-row">
+                <label>Event URL</label>
+                <div>
+                    <input type="url" id="ev-event-url" placeholder="(optional) the event's own web page">
+                    <div class="field-hint">Saved as <code>event_url</code> — the event's own page, as opposed to
+                        the ticket link or Facebook.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Facebook event ID</label>
                 <input type="text" id="ev-fb-event" placeholder="numeric id, optional">
             </div>
@@ -4207,6 +4216,7 @@
             const flyer = document.getElementById("ev-flyer").value.trim();
             const video = document.getElementById("ev-video").value.trim();
             const ticketUrl = document.getElementById("ev-ticket-url").value.trim();
+            const eventUrl = document.getElementById("ev-event-url").value.trim();
             const fbEvent = document.getElementById("ev-fb-event").value.trim();
             const facebook = document.getElementById("ev-facebook").value.trim();
             const dateAdded = document.getElementById("ev-date-added").value.trim();
@@ -4229,6 +4239,7 @@
             if (flyer) record.event_flyer = flyer;
             if (video) record.video_trailer = video;
             if (ticketUrl) record.ticket_url = ticketUrl;
+            if (eventUrl) record.event_url = eventUrl;
             if (fbEvent) record.fb_event = fbEvent;
             if (facebook) record.facebook = facebook;
             if (document.getElementById("ev-cancelled").checked) record.isCancelled = true;
@@ -4252,7 +4263,7 @@
 
         function clearEventForm() {
             ["ev-showname", "ev-name", "ev-date", "ev-event-id", "ev-date-added", "ev-time", "ev-club", "ev-promoter", "ev-wider-event", "ev-price",
-                "ev-description", "ev-age-rating", "ev-min-age", "ev-flyer", "ev-video", "ev-ticket-url", "ev-fb-event", "ev-facebook"]
+                "ev-description", "ev-age-rating", "ev-min-age", "ev-flyer", "ev-video", "ev-ticket-url", "ev-event-url", "ev-fb-event", "ev-facebook"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("ev-age-suggestion").style.display = "none";
             document.getElementById("ev-promoter-hint").style.display = "none";
@@ -4329,6 +4340,7 @@
             set("ev-flyer", record.event_flyer);
             set("ev-video", record.video_trailer);
             set("ev-ticket-url", record.ticket_url);
+            set("ev-event-url", record.event_url);
             set("ev-fb-event", record.fb_event);
             set("ev-facebook", record.facebook);
 
@@ -10369,7 +10381,7 @@
             // as everywhere else, for previewing a pasted link. The update
             // function is kept so populate*Form() can refresh it after
             // setting .value programmatically (see ticketUrlLinkUpdaters).
-            ["ev-ticket-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "club-link", "club-tickets-url", "club-facebook"].forEach(id => {
+            ["ev-ticket-url", "ev-event-url", "festival-ticket-url", "perf-tickets-url", "venue-tickets-url", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "club-link", "club-tickets-url", "club-facebook"].forEach(id => {
                 ticketUrlLinkUpdaters[id] = attachOpenLinkButton(document.getElementById(id));
             });
 

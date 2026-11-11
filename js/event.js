@@ -1697,10 +1697,21 @@ function renderTicketsFlyersVideo(ev) {
 
   // Tickets link + Facebook event icon (shared_utils.js's ICON_SVG.facebook)
   const hasTickets = !!ev.ticket_url;
+  const eventUrlSafe = ev.event_url ? sanitizeUrl(ev.event_url) : null;
+  const hasEventUrl = !!eventUrlSafe;
   const hasFbEvent = !!ev.fb_event;
-  if (hasTickets || hasFbEvent) {
+  if (hasTickets || hasEventUrl || hasFbEvent) {
     anyContent = true;
     ticketsDiv.style.display = "";
+
+    const addSep = () => {
+      if (ticketsDiv.childNodes.length) {
+        const sep = document.createElement("span");
+        sep.className = "separator";
+        sep.textContent = "|";
+        ticketsDiv.appendChild(sep);
+      }
+    };
 
     if (hasTickets) {
       const a = document.createElement("a");
@@ -1711,13 +1722,19 @@ function renderTicketsFlyersVideo(ev) {
       ticketsDiv.appendChild(a);
     }
 
+    // event_url: the event's own web page (distinct from tickets/Facebook)
+    if (hasEventUrl) {
+      addSep();
+      const a = document.createElement("a");
+      a.href = eventUrlSafe;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Event website";
+      ticketsDiv.appendChild(a);
+    }
+
     if (hasFbEvent) {
-      if (hasTickets) {
-        const sep = document.createElement("span");
-        sep.className = "separator";
-        sep.textContent = "|";
-        ticketsDiv.appendChild(sep);
-      }
+      addSep();
       const fbA = document.createElement("a");
       fbA.href = `https://www.facebook.com/events/${ev.fb_event}`;
       fbA.target = "_blank";

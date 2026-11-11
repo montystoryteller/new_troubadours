@@ -6878,6 +6878,7 @@
       "name": "Tales'n'Ales",
       "schedule": "3rd thursday",
       "time": "8-10pm",
+      "convenor": "suzanne-arnold",
       "club": "talesnales",
       "venue_id": "locks-inn-geldeston"
     },
@@ -13238,6 +13239,20 @@
       "eventId": "20261202-unknown-performer-quaker-meeting-house-northampton"
     },
     {
+      "name": "Tales of Winter Magic [Red Phoenix]",
+      "showname": "Tales of Winter Magic",
+      "date": "04/12/2026",
+      "venue_id": "butser-ancient-farm-hampshire",
+      "performer_id": "red-phoenix",
+      "eventId": "20261204-red-phoenix-butser-ancient-farm-hampshire",
+      "date_added": "11/11/2026",
+      "time": "17:30  19:30",
+      "price": "Child - £11.00, Adult - £19.50, Family ticket - £49.00",
+      "description": "Join us in the Great Roundhouse for a cosy after-school evening of winter storytelling with enchanting storyteller Red Phoenix.\n\n\n\nGather around the roaring fire and settle in for an uplifting collection of tales inspired by the magic, mystery and wonder of winter. With stories to make you laugh, spark your imagination and perhaps even join in, it’s a magical evening for the whole family.\n\n\n\nYou may even find yourself stepping into the story, with the chance to become part of a unique pantomime play!\n\n\n\nSurrounded by the warmth of the fire and the atmosphere of our ancient Roundhouse, it’s a lovely way to unwind after school and enjoy a little festive magic together as the evenings draw in.\n\n\n\nA bar will be available, serving a range of drinks, with hot drinks and snacks also available to purchase from our shop.",
+      "ticket_url": "https://butserancientfarm.ticketsolve.com/ticketbooth/shows/1173650569",
+      "isSpecial": true
+    },
+    {
       "name": "Christmas Tales [Woolly Tellers]",
       "showname": "Christmas Tales",
       "date": "06/12/2026",
@@ -13536,6 +13551,21 @@
       "eventId": "20270203-lisa-schneidau-quaker-meeting-house-northampton"
     },
     {
+      "name": "Boudicca: The Rebellious Life and Times of A Celtic Warrior Queen [Bernadette Russell]",
+      "showname": "Boudicca: The Rebellious Life and Times of A Celtic Warrior Queen",
+      "date": "05/02/2027",
+      "venue_id": "butser-ancient-farm-hampshire",
+      "performer_id": "bernadette-russell",
+      "eventId": "20270205-bernadette-russell-butser-ancient-farm-hampshire",
+      "date_added": "11/11/2026",
+      "time": "19:00  21:00",
+      "price": "£20.50",
+      "description": "Join Bernadette Russell around the fire for an evening of storytelling about the fiery and fearsome Boudicca, Queen of the Iceni tribe, who led a devastating revolt against the occupying forces of the Roman Empire in AD 60. With her army of 100,000 tribal warriors, she marched on Camulodunum (Colchester), Londinium (London), and Verulamium (St Albans), before the final battle in which she died, in her own words, “not fighting for my kingdom and wealth ... fighting as an ordinary person for my lost freedom, my bruised body, and my outraged daughters.”\n\n\n\nThrough songs, poems, magic and war cries, Bernadette brings the dramatic world of Boudicca and Roman Britain vividly to life. Gather around the fire and be transported back to those epic times as her story unfolds – a tale of courage, rebellion and freedom that will leave you uplifted and inspired by a woman who fought against all the odds and lived without compromise.\n\n\n\nBernadette Russell is a performance storyteller and the author of six non-fiction books. She is the creative writing tutor at Treadwell’s Books in London, and has previously told stories at many venues including Royal Albert Hall, Southbank Centre and National Theatre, as well as in the woods, parks and wild places of London, Brighton and her native Hampshire.\n\n\n\nThere will be a bar selling locally produced cider, mead and a range of alcoholic and non-alcoholic drinks. Hot drinks and snacks will also be available to purchase from our shop.",
+      "ticket_url": "https://butserancientfarm.ticketsolve.com/shows/1173692455/events",
+      "event_url": "https://www.butserancientfarm.co.uk/whats-on/calendar/bernadetterussell-boudicca",
+      "isSpecial": true
+    },
+    {
       "name": "Stephen Hobbs [ + Tales Tattled & Told tellers]",
       "showname": "Stephen Hobbs",
       "date": "07/02/2027",
@@ -13593,6 +13623,23 @@
       "price": "£10",
       "isSpecial": true,
       "eventId": "20270320-joshua-crisp-town-hall-bishops-castle"
+    },
+    {
+      "name": "A Spring Equinox Celebration",
+      "showname": "A Spring Equinox Celebration",
+      "date": "12/03/2027",
+      "venue_id": "butser-ancient-farm-hampshire",
+      "support_performer_ids": [
+        "jonathon-huet"
+      ],
+      "eventId": "20270312-unknown-performer-butser-ancient-farm-hampshire",
+      "date_added": "11/11/2026",
+      "time": "19:00  21:00",
+      "price": "£20.50",
+      "description": "Join us to celebrate the Spring Equinox, a time of renewal and new beginnings as the natural world awakens from winter. For our ancient ancestors, the arrival of spring marked an important turning point in the year, bringing the promise of new growth and longer days.\n\n\n\nJonathon Huet will host an evening of storytelling and ritual, exploring ancient Celtic traditions and the stories that connect us to the land and our ancestors. Gathered together in our great roundhouse, we will journey through the tales of Banbha, the first woman to step upon the land, Macha, the mother of the early peoples of Britain and Ireland, and Talitu, remembered in ancient tradition for clearing the woodlands for agriculture.\n\n\n\nThrough these stories, we will explore the awakening of the Green World, the power of the sacred landscape and the relationship between people, nature and the land that sustains us. The evening will include ritual and chant to welcome the spring, reflecting on the natural world's evolution and the beginnings of early farming.\n\n\n\nGather with friends and like-minded souls for a thoughtful and atmospheric evening, celebrating the changing season and our enduring connection to the natural world.\n\n\n\nThere will also be an opportunity to enjoy a drink from our bar and purchase refreshments from the farm shop throughout the evening.",
+      "ticket_url": "https://butserancientfarm.ticketsolve.com/shows/1173695811/events",
+      "event_url": "https://www.butserancientfarm.co.uk/whats-on/calendar/spring-equinox-storytelling",
+      "isSpecial": true
     },
     {
       "name": "Beowulf: Hugh Lupton at Moor Barton Wilding NEW DATE",
@@ -14005,6 +14052,7 @@
       "name": "Burwell Spoken Word",
       "schedule": "3rd thursday",
       "time": "7-9pm",
+      "email": "storyteller@malcolmbusby.co.uk",
       "price": "Free (donations appreciated)",
       "venue_id": "burwell-day-centre-cambridge",
       "venue_url": "https://burwelldaycentre.co.uk/",
@@ -23375,11 +23423,16 @@
       "url": "https://stephenhobbslive.weebly.com/",
       "bio": "Local teller with Tales Tattled and Told."
     },
-    "terrie-howey-moore": {
-      "id": "terrie-howey-moore",
-      "name": "Terrie Howey-Moore",
+    "red-phoenix": {
+      "id": "red-phoenix",
+      "name": "Red Phoenix",
       "bio": "Terrie Howey-Moore is also known as storyteller Red Phoenix (she was given that nickname as a heritage storyteller in Edinburgh). Terrie began her professional storytelling journey in 2003 and founded Red Phoenix in 2007, and has been performing in theatre and facilitating performance workshops since 1992. Awarded a Winston Churchill Fellowship in 2012 for cross-cultural mentoring of emerging storytellers across Canada and America, and earning a PhD in Storytelling in 2021**, she combines academic expertise with creative practice. She is a heritage specialist and has extensive experience working within the care sector, particularly SEND, as well as in education from early years through to university. Terrie is a performer, educator, writer and dramaturg, offering her skills freelance besides utilising them in her own performances and workshops.\n\n\n\nTerrie specialises in traditional oral storytelling told from memory. For her, storytelling is a shared art between teller and listener: the teller crafts the tale, guiding the listener through the story's landscape where the listener's own lived experience shapes their interpretation of the narrative; making each performance a unique interactive adventure and alive in its telling.",
       "url": "https://redphoenixstory.co.uk/"
+    },
+    "terrie-howey-moore": {
+      "id": "terrie-howey-moore",
+      "canonical": "red-phoenix",
+      "name": "Terrie Howey-Moore"
     },
     "jane-lambourne": {
       "id": "jane-lambourne",
@@ -23585,6 +23638,12 @@
       "name": "Pat Renton",
       "url": "https://www.abitcrack.com/project/pat-renton/",
       "bio": "Pat Renton has worked as a storyteller for over 25 years and has gathered stories from many cultures across the world.\n\n\n\nShe believes that the beauty of stories is that they are for everyone and over the past years she has had the experience of working with all ages and in all kinds of places. Drawing people into the world of story is a magical thing to do."
+    },
+    "suzanne-arnold": {
+      "id": "suzanne-arnold",
+      "name": "Suzanne Arnold",
+      "url": "https://suzannearnold.co.uk/",
+      "bio": "Suzanne Arnold is a Wild and Wise Woman, Weaver of Magic through Ceremony and Storytelling and a Holder of Sacred Space.\n\n\n\nSuzanne works intuitively with the energies of the Earth Cycles and the Elements, using nature-based, heart-led and soul-centred ceremony, ritual, story and more, holding space for individuals and groups, as they realign and reconnect with the energy of their heart and soul and give birth to their authentic selves."
     },
     "shonaleigh": {
       "id": "shonaleigh",
@@ -24362,6 +24421,13 @@
       "url": "https://www.melrosequartet.co.uk/",
       "bio": "The Melrose Quartet (Nancy Kerr, James Fagan, Jess Arrowsmith, Richard Arrowsmith) are known for their carousing Folk chorus songs, lively dance tunes, ancient stories and modern pieces."
     },
+        "jonathon-huet": {
+          "id": "jonathon-huet",
+          "name": "Jonathon Huet",
+          "url": "https://www.walkwithtrees.com/",
+          "bio": "Jonathon Huet, Woodland Bard, Tree and Plant folklore Specialist. Explorer of Nature through Story, Poetry and Meditation.",
+          "facebook": "walkwithtrees"
+        },
     "suzanne-and-jake-thomas": {
       "id": "suzanne-and-jake-thomas",
       "name": "Suzanne and Jake Thomas",
