@@ -1719,6 +1719,16 @@
           "type": "string",
           "description": "Note the plural name — distinct from specificEvent/musicEvent/poetryEvent's singular `ticket_url`. Deliberately NOT one of the fields applyClubInheritance() (shared_utils.js) copies onto events at this club: a guest night's booking page/capacity is often different from the club's own, so it's left for each event to set explicitly rather than defaulted."
         },
+        "isLapsed": {
+          "type": "boolean",
+          "default": false,
+          "description": "true when the club has stopped meeting (or is about to). Shown with a 'lapsed' notice on the club page and a 'Lapsed' badge in the directory (lapsed clubs are listed last, dimmed, with no map pin). With no `end_date`, no further meetings are generated from today. With an `end_date`, meetings are generated up to it and the club shows as 'winding up' until then. Past occurrences stay visible in history. See clubLapseInfo()/clubIsActiveOn() in shared_utils.js."
+        },
+        "end_date": {
+          "type": "string",
+          "description": "When a lapsed/ending club's meetings stop: 'MM/YYYY' (runs to the END of that month, e.g. '11/2026') or 'DD/MM/YYYY' (to the end of that day). No meetings are generated after it. An end_date already in the past marks the club lapsed even without isLapsed.",
+          "examples": ["11/2026", "30/11/2026"]
+        },
         "video_trailer": {
           "$ref": "#/$defs/youtubeUrl",
           "description": "Club-level YouTube trailer/promo video, shown inline in the header of the club's page in storyclub.html (after the About section). Not inherited by events at this club — specificEvents/show_dates carry their own video_trailer."
@@ -1737,7 +1747,7 @@
           "items": {
             "type": "string"
           },
-          "description": "LEGACY name for `club_flyers`, still used by 4 clubs (storytellingsunday, ease, plymouth-story-circle, quirkytales) — each with a single YYYY_MM_DD-prefixed one-off flyer. club_flyers is the name this schema says flyers.js/storyclub.js/venues.js/event_display.js read; if that's so, these 4 flyers are currently not being picked up and the field should be renamed in the data."
+          "description": "LEGACY name for `club_flyers`, still used by 4 clubs (storytellingsunday, ease, plymouth-story-circle, quirkytales) — each with a single YYYY_MM_DD-prefixed one-off flyer. getClubFlyers() (shared_utils.js) now reads both names and merges them, so storyclub.js and event_display.js pick these up; flyers.js and venues.js may still read club_flyers only, so renaming in the data is still tidier."
         },
         "ticketing_url": {
           "type": "string",

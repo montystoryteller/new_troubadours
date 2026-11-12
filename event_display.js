@@ -559,7 +559,7 @@ function createEventData(baseEvent, date, eventType) {
     eventData.exceptions = baseEvent.exceptions || null;
     eventData.club_flyer = baseEvent.club_flyer || null;
     eventData.club_dated_flyers = findDatedClubFlyers(
-      baseEvent.club_flyers,
+      getClubFlyers(baseEvent), // club_flyers + legacy `flyers`
       date,
     );
     eventData.feature_slots = baseEvent.feature_slots || null;
@@ -947,6 +947,8 @@ async function processRecurringEvents(events, eventType, startDate, endDate) {
 
     for (const occ of occurrences) {
       const date = occ.date;
+      // Lapsed club / past its end_date: no meetings after the cut-off.
+      if (!clubIsActiveOn(event, date)) continue;
       const eventData = createEventData(event, date, eventType);
 
       // Feature slots (unchanged)
@@ -2546,7 +2548,9 @@ async function searchRecurringEvents(
   for (const event of list || []) {
     const searchableText = buildRecurringEventSearchText(event);
     if (searchableText.includes(searchTerm)) {
-      const dates = parseSchedule(event.schedule, today, futureDate);
+      const dates = parseSchedule(event.schedule, today, futureDate).filter(
+        (d) => clubIsActiveOn(event, d),
+      );
       if (dates.length > 0) {
         const date = dates[0];
         const eventData = createEventData(event, date, eventType);
@@ -3476,7 +3480,10 @@ function collectNewlyAddedEvents(cutoff) {
   // --- 1. Recurring events (storyclubs) ---
   for (const ev of eventsData.clubs || []) {
     if (!isNewlyAdded(ev, cutoff)) continue;
-    const dates = parseSchedule(ev.schedule, today, sixMonths);
+    if (clubLapseInfo(ev, today).ended) continue; // lapsed: nothing to attend
+    const dates = parseSchedule(ev.schedule, today, sixMonths).filter((d) =>
+      clubIsActiveOn(ev, d),
+    );
     const useDate = dates.length > 0 ? dates[0] : today;
     push(
       createEventData(ev, useDate, "storyclub"),

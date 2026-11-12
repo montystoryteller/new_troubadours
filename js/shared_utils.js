@@ -1029,6 +1029,93 @@ function couldBeAtVenue(rec, vid) {
 }
 
 /**
+ * Parse a club's `end_date`: "MM/YYYY" (the club runs/ran until the END of
+ * that month) or "DD/MM/YYYY" (until the end of that day). Returns an
+ * end-of-day Date, or null if absent/unparseable.
+ * @param {string} str
+ * @returns {Date|null}
+ */
+function parseClubEndDate(str) {
+  if (!str || typeof str !== "string") return null;
+  const s = str.trim();
+  const m = s.match(/^(\d{1,2})\/(\d{4})$/);
+  if (m) {
+    const month = Number(m[1]);
+    const year = Number(m[2]);
+    if (month < 1 || month > 12) return null;
+    return new Date(year, month, 0, 23, 59, 59, 999); // last day of month
+  }
+  const d = parseDateString(s);
+  if (!d) return null;
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+/**
+ * Is a recurring club lapsed / ending? A club is flagged with
+ * `isLapsed: true` and may carry `end_date` (see events-schema.json). A
+ * lapsed club with no end_date has no further meetings from today; with an
+ * end_date, meetings continue up to the end of that date/month. An
+ * end_date in the past counts as lapsed even without the flag.
+ * @param {object} club
+ * @param {Date} [today]
+ * @returns {{lapsed: boolean, ended: boolean, cutoff: Date|null,
+ *            endDate: Date|null, endLabel: string}}
+ *   ended = no further meetings are possible; cutoff = last moment a
+ *   meeting can fall on (null = no limit).
+ */
+function clubLapseInfo(club, today) {
+  const t = today || getTodayMidnight();
+  const raw = club && typeof club.end_date === "string" ? club.end_date.trim() : "";
+  const endDate = parseClubEndDate(raw);
+  const flagged = !!(club && club.isLapsed);
+  if (!flagged && !endDate) {
+    return { lapsed: false, ended: false, cutoff: null, endDate: null, endLabel: "" };
+  }
+  const cutoff = endDate || new Date(t.getTime() - 1); // end of yesterday
+  const ended = cutoff < t;
+  let endLabel = "";
+  if (endDate) {
+    const my = raw.match(/^(\d{1,2})\/(\d{4})$/);
+    endLabel = my
+      ? `${MONTHS_LONG[Number(my[1]) - 1]} ${my[2]}`
+      : formatDate(endDate);
+  }
+  return { lapsed: flagged || ended, ended, cutoff, endDate, endLabel };
+}
+
+/**
+ * Can this club have a meeting on `date`? False once the date is past the
+ * club's lapse cutoff (see clubLapseInfo()). Always true for a live club.
+ * @param {object} club
+ * @param {Date} date
+ * @returns {boolean}
+ */
+function clubIsActiveOn(club, date) {
+  const info = clubLapseInfo(club);
+  return !info.cutoff || date <= info.cutoff;
+}
+
+/**
+ * All of a club's flyer filenames: `club_flyers[]` plus the legacy
+ * `flyers[]` name (used by a few records), trimmed and de-duplicated.
+ * Filenames prefixed YYYY_MM_DD are dated flyers (parseDatedClubFlyer()).
+ * @param {object} club
+ * @returns {string[]}
+ */
+function getClubFlyers(club) {
+  const out = [];
+  [club && club.club_flyers, club && club.flyers].forEach((list) => {
+    if (!Array.isArray(list)) return;
+    list.forEach((f) => {
+      const clean = typeof f === "string" ? f.trim() : "";
+      if (clean && !out.includes(clean)) out.push(clean);
+    });
+  });
+  return out;
+}
+
+/**
  * Builds the event.html permalink id for a one-off dated event
  * (specificEvents/musicEvents/poetryEvents only — tour dates, show dates,
  * club nights, and festivals don't have a standalone event.html page, see
@@ -1643,6 +1730,7 @@ function collectRecurringEventsForVenue(vid, from, to) {
         // ORIGINAL date before a reschedule — only "scheduled" and
         // "moved_to" represent something really happening on occ.date.
         if (occ.status === "cancelled" || occ.status === "moved_from") return;
+        if (!clubIsActiveOn(rec, occ.date)) return; // lapsed / past end_date
         if (resolveClubVenueId(rec, occ.date) !== vid) return;
         out.push({ type, date: occ.date, data: { club: rec }, category });
       });
