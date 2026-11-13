@@ -4,6 +4,21 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "wroot-rocks": {
+      "promoter_id": "wroot-rocks",
+      "name": "Wroot Rocks",
+      "description": "Husband and wife award winning independent music promoters, Wroot Rocks have been organising grass roots music events in the North Lincolnshire and South Yorkshire area since 2011.\n\n\n\nWroot Rocks are passionate about live music and making it accessible and affordable to all in a welcoming, friendly, inclusive, and safe environment. They are committed to grassroots ethos, to finding emerging acts, supporting artists, curating diverse and interesting line-ups, and creating genuine experiences, rather than just gigs for profit.\n\n\n\nWhere large venues are more likely to book bands on tour, with management, agents, and PR companies, Wroot Rocks seek out the interesting and the unusual (whether that be folk, alternative, punk or independent), and persuade them to bring their music to small venues in North Lincolnshire and South Yorkshire.\n\n\n\nIn addition to their two festivals, Ey Up Mi Duck and Gig in a Field, and their gigs in Wroot Village Hall, they are continually looking for new fun and innovative ways to share their love of music with the Wroot Rocks family. In 2025 they introduced Folk on the Water — three hour trips on a historic passenger riverboat with live music. They are also excited about our Day Gigging — their usual Village Hall gigs with amazing bands, bar, and food, but during the day, so everyine can all still have an early night!!",
+      "promoter_link": "https://www.wrootrocks.com/"
+    },
+        "songs-of-anger-and-redemption": {
+          "promoter_id": "songs-of-anger-and-redemption",
+          "name": "Songs of Anger and Redemption",
+          "ticketing_url": "https://wegottickets.com/SongsofAngerandRedemption",
+          "facebook": "https://www.facebook.com/groups/1770062253116087/",
+          "promoter_venues": [
+            "katie-fitzgeralds-stourbridge"
+          ]
+        },
     "50rpm": {
       "promoter_id": "50rpm",
       "name": "50rpm, Coatbridge",
@@ -5829,6 +5844,88 @@
       "name": "Sound of the Sirens",
       "performer_id": "sound-of-the-sirens",
       "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
+      "isMusic": true
+    },
+    "samantics-spoiler-alert-spring-2027": {
+      "tour_name": "Spoiler Alert, Spring Tour 2027",
+      "tour_dates": [
+        {
+          "date": "19/03/2027",
+          "venue_id": "katie-fitzgeralds-stourbridge",
+          "time": "Doors 6.30, start 8.15pm",
+          "price": "£12 (+ £1.20) / £10 (+ £1) / £14 (+ £1.40)",
+          "ticket_url": "https://wegottickets.com/af/671/f/32137",
+          "promoter_id": "songs-of-anger-and-redemption",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270319-katie-fitzgeralds-stourbridge"
+        },
+        {
+          "date": "20/03/2027",
+          "venue_id": "wheatsheaf-inn-chetwynd-aston",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£12 (+ £1.20) / £10 (+ £1) / £14 (+ £1.40)",
+          "ticket_url": "https://wegottickets.com/af/671/f/32014",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270320-wheatsheaf-inn-chetwynd-aston"
+        },
+        {
+          "date": "26/03/2027",
+          "venue_id": "the-pump-trowbridge",
+          "time": "7.30pm – Doors; 8pm – Samantics; 9pm – Samantics",
+          "price": "£10 / £12 / 14 adv",
+          "ticket_url": "https://thepumptrowbridge.co.uk/samantics-spoiler-alert-2/",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270326-the-pump-trowbridge"
+        },
+        {
+          "date": "02/04/2027",
+          "venue_id": "the-palladium-club-bideford",
+          "time": "Doors 8:00pm",
+          "price": "£10 Skint but Keen (+ £1) / £12 Full Price (+ £1.20) / £14 Feeling generous (+ £1.40)",
+          "ticket_url": "https://wegottickets.com/af/671/f/32221",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270402-the-palladium-club-bideford"
+        },
+        {
+          "date": "03/04/2027",
+          "venue_id": "barn-ells-bar-truro",
+          "time": "Doors: 7:30pm, start: 8:00pm",
+          "price": "£12 (+ £1.20) / £10 (+ £1) / £14 (+ £1.40)",
+          "ticket_url": "https://wegottickets.com/af/671/f/32015",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270403-barn-ells-bar-truro"
+        },
+        {
+          "date": "09/04/2027",
+          "venue_id": "riff-factory-stoke",
+          "time": "Doors at 19:00",
+          "price": "£14 (+ £1.40) / £12 (+ £1.20) / £10 (+ £1)",
+          "ticket_url": "https://www.gigantic.com/samantics-spoiler-alert-tickets/stoke-on-trent-riff-factory/2027-04-09-19-00",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270409-riff-factory-stoke"
+        },
+        {
+          "date": "10/04/2027",
+          "venue_id": "the-pit-at-newstead",
+          "time": "Doors: 7:00pm, start: 8:00pm",
+          "price": "£14 (+ £1.40) / £12 (+ £1.20) / £10 (+ £1)",
+          "ticket_url": "https://wegottickets.com/af/671/f/32018",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270410-the-pit-at-newstead"
+        },
+        {
+          "date": "11/04/2027",
+          "venue_id": "wyre-lady-party-boat",
+          "ticket_url": "https://www.wrootrocks.com/",
+          "promoter_id": "wroot-rocks",
+          "isSpecial": true,
+          "eventId": "T-samantics-spoiler-alert-spring-2027-20270411-wyre-lady-party-boat"
+        }
+      ],
+      "name": "Samantics — Spoiler Alert",
+      "performer_id": "samantics",
+      "tour_description": "After the success of the 'One Guy / Two Side' tour, Samantics and his acoustic alter ego are back on the road together for 'Spoiler Alert'. This time, in a sheer act of defiance and attempted sabotage, the Acoustic Antics will be opening the show each night playing brand new material from the forthcoming album, stripping them back to their core and sharing stories of whatever strange thought process or moment might have inspired them. This will then be followed by a possibly disgruntled Samantics who will be playing a fully looped set of songs spanning the last 12 years of his musical existence while he moans about the first guy who’s ruined any allure around the new album.\\n\\n\\n\\n​\\n\\n\\n\\nEach night is likely to be a chaotic unpredictable and potentially overly-honest evening of music and words that might make you think. May contain laughter, awkward chat, some uncomfortable truths and multiple hats.\\n\\n\\n\\nThese shows have 3 tiers of pricing. The full/suggested price is £12 but there is an option to pay a little less if it helps, or a little more if you wish, and if you feel you are in a position to do so.",
+      "touring_event_flyer": "tour_samantics_spring_2027.jpg",
       "isMusic": true
     },
     "jess-silk-spring-tour-2027": {
@@ -17441,6 +17538,22 @@
       "url": "",
       "latlon": []
     },
+      "wheatsheaf-inn-chetwynd-aston": {
+        "id": "wheatsheaf-inn-chetwynd-aston",
+        "name": "Wheatsheaf Inn, Chetwynd Aston",
+        "venue_type": "Pub / bar / café",
+        "city": "Shropshire",
+        "postcode": "TF10 9LF",
+        "full_address": "Wheatsheaf Inn, Chetwynd Aston, Shropshire, TF10 9LF",
+        "url": "https://wheatsheafinn.co.uk/",
+        "facebook": "Wheatsheaf.TF10",
+        "instagram": "wheatsheaf.tf10",
+        "description": "While we like some cover songs that \"everybody\" knows, we do love supporting singer songwriters making and touring their own music.",
+        "latlon": [
+          52.75464,
+          -2.36724
+        ]
+      },
     "ludlow-assembly-rooms-shropshire": {
       "id": "ludlow-assembly-rooms-shropshire",
       "name": "Ludlow Assembly Rooms",
@@ -17631,6 +17744,21 @@
       "latlon": [
         52.72851,
         -1.4661
+      ]
+    },
+    "wyre-lady-party-boat": {
+      "id": "wyre-lady-party-boat",
+      "name": "Wyre Lady Party Boat",
+      "venue_type": "Other / unknown",
+      "city": "Doncaster",
+      "postcode": "DN5 7NB",
+      "full_address": "Sprotbrough Lock, Nursery Lane, Sprotbrough, Doncaster, DN5 7NB",
+      "email": "sprotbroughriverboat@yahoo.co.uk",
+      "facebook": "partyboatyorkshire",
+      "description": "The Wyre Lady Partyboat Boat hire for all occasions, including birthday parties, weddings, baby showers, and corporate events. Various catering and entertainment options available.",
+      "latlon": [
+        53.50659,
+        -1.19231
       ]
     },
     "wroot-rocks": {
