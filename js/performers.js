@@ -1287,7 +1287,13 @@ function renderPerformer() {
   }
 
   // "Coming up" — merged upcoming dates, shown above the stats row
-  renderUpcomingSection(myTours, myTouringShows, allOther, myFestivals);
+  renderUpcomingSection(
+    myTours,
+    myTouringShows,
+    allOther,
+    myFestivals,
+    myGuestTours,
+  );
 
   // Flyer gallery — collects all flyers across tours, shows and events
   renderFlyerGallery(myTours, myTouringShows, allOther, performer);
@@ -1390,6 +1396,7 @@ function renderUpcomingSection(
   myTouringShows,
   allOther,
   myFestivals,
+  myGuestTours = [],
 ) {
   const today = getTodayMidnight();
   const items = [];
@@ -1401,6 +1408,35 @@ function renderUpcomingSection(
       items.push({
         date: d,
         title: tour.tour_name || tour.name,
+        href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+        time: td.time || tour.time || null,
+        venueId: td.venue_id,
+        ticketUrl: td.ticket_url,
+        record: tour,
+      });
+    });
+  });
+
+  // Tours where this performer is only a guest (other_performer_ids /
+  // support_performer_ids). Billing can differ per date, so only list the
+  // dates whose own bill actually includes this performer.
+  myGuestTours.forEach(([tourId, tour]) => {
+    (tour.tour_dates || []).forEach((td) => {
+      const d = parseDateString(td.date);
+      if (!d || d < today) return;
+      const isAdditional = getAdditionalPerformerIdsForDate(tour, td).includes(
+        performerId,
+      );
+      const isSupport = getSupportPerformerIdsForDate(tour, td).includes(
+        performerId,
+      );
+      if (!isAdditional && !isSupport) return;
+      items.push({
+        date: d,
+        title: tour.tour_name || tour.name,
+        tag: isAdditional && isDoubleHeadlineForDate(tour, td)
+          ? "Co-headline"
+          : null,
         href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
         time: td.time || tour.time || null,
         venueId: td.venue_id,

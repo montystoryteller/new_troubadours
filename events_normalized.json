@@ -5803,7 +5803,7 @@
           "price": "£16.65-£25",
           "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
           "isSpecial": true,
-          "event_flyer": "2026_11_21_sound_of_the_sirens_samantics.webp",
+          "event_flyers": ["2026_11_21_sound_of_the_sirens_samantics.webp", "2026_12_12_samantics_last_few.jpg"],
           "other_performer_ids": [
             "samantics"
           ],
@@ -14113,6 +14113,20 @@
       "date_added": "25/08/2026",
       "isMusic": true,
       "eventId": "20261017-3-daft-monkeys-keay-theatre-st-austell"
+    },
+    {
+      "name": "End of Year Shindig [Samantics]",
+      "showname": "End of Year Shindig",
+      "date": "12/12/2026",
+      "venue_id": "cavern-club-exeter",
+      "performer_id": "samantics",
+      "eventId": "20261212-samantics-cavern-club-exeter",
+      "date_added": "13/11/2026",
+      "time": "7-9.45pm",
+      "price": "£12 (+ £1.20)",
+      "event_flyers": ["2026_12_12_samantics_exeter.jpg", "2026_12_12_samantics_last_few.jpg"],
+      "ticket_url": "https://wegottickets.com/af/671/f/22649",
+      "isMusic": true
     },
     {
       "name": "Gaz Brookfield + support (Nick Parker, Hushwing) [Gaz Brookfield]",
