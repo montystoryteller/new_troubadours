@@ -2023,7 +2023,10 @@ function showPfSlide() {
   const item = _pfItems[_pfIdx];
   document.getElementById("pfImg").src = item.src;
   document.getElementById("pfImg").alt = item.label || "";
-  document.getElementById("pfCaption").textContent = item.label || "";
+  // Name plus date text (a range for a flyer shared by several dates);
+  // single-image fallbacks have no dateStr and show the name alone.
+  document.getElementById("pfCaption").textContent =
+    (item.label || "") + (item.dateStr ? ` · ${item.dateStr}` : "");
   document.getElementById("pfPrev").disabled = _pfIdx <= 0;
   document.getElementById("pfNext").disabled = _pfIdx >= _pfItems.length - 1;
 }
@@ -2066,22 +2069,112 @@ function makePerfFlyerThumb(flyerName, label, extraClass) {
 
 function renderFlyerGallery(myTours, myTouringShows, allOther, performerRec) {
   const items = [];
-  const seen = new Set();
+  const seen = new Map(); // filename -> the item already added for it
 
-  function add(flyerName, label, dateStr, isMusic, isPast, isPoetry, sortDate) {
+  // De-duplicated on the flyer FILENAME alone: the same file reused for
+  // several dates (or on both a tour and one of its dates) is ONE card.
+  // Every use is recorded in item.uses, and finaliseFlyerItem() below then
+  // works out the card's label, date text, past/upcoming state and sort
+  // date from all of them — so a flyer shared by 12 dates reads
+  // "12 Jan – 3 Mar", not just its first date.
+  //
+  // `span` is { start, end, isRange }: the Date(s) this use covers. Left
+  // out, it's just sortDate. A tour-level use passes the tour's first/last
+  // date with isRange: true (its dateStr is already a range).
+  function add(
+    flyerName,
+    label,
+    dateStr,
+    isMusic,
+    isPast,
+    isPoetry,
+    sortDate,
+    span,
+  ) {
     if (!flyerName?.trim()) return;
-    const key = flyerName.trim() + "|" + (dateStr || "");
-    if (seen.has(key)) return;
-    seen.add(key);
-    items.push({
-      src: BASE_FLYER + sanitizeFlyerName(flyerName.trim()),
+    const key = flyerName.trim();
+    const use = {
       label: label || "",
       dateStr: dateStr || "",
       sortDate: sortDate || null,
       isMusic: !!isMusic,
       isPoetry: !!isPoetry,
       isPast: !!isPast,
-    });
+      start: span ? span.start : sortDate || null,
+      end: span ? span.end : sortDate || null,
+      isRange: !!span?.isRange,
+    };
+    const existing = seen.get(key);
+    if (existing) {
+      existing.uses.push(use);
+      return;
+    }
+    const item = {
+      src: BASE_FLYER + sanitizeFlyerName(key),
+      uses: [use],
+      label: use.label,
+      dateStr: use.dateStr,
+      sortDate: use.sortDate,
+      isMusic: use.isMusic,
+      isPoetry: use.isPoetry,
+      isPast: use.isPast,
+    };
+    seen.set(key, item);
+    items.push(item);
+  }
+
+  /**
+   * Collapse an item's uses into its displayed fields. Single-use items are
+   * left exactly as add() set them.
+   *  - Past/upcoming: past only if EVERY use is past.
+   *  - Sort date + music/poetry colouring: from the "primary" use — the
+   *    soonest upcoming one, else the most recent past one.
+   *  - Label: the distinct names ("A + B", or "A + 2 more").
+   *  - Date text: the overall span of dates only (no count, no list).
+   */
+  function finaliseFlyerItem(item) {
+    const uses = item.uses;
+    if (uses.length < 2) return;
+
+    const time = (d) => (d ? d.getTime() : null);
+    const upcoming = uses.filter((u) => !u.isPast);
+    const pool = upcoming.length ? upcoming : uses;
+    const primary = [...pool].sort((x, y) => {
+      const tx = time(x.sortDate);
+      const ty = time(y.sortDate);
+      if (tx === null || ty === null) return (tx === null) - (ty === null);
+      return upcoming.length ? tx - ty : ty - tx;
+    })[0];
+
+    item.isPast = upcoming.length === 0;
+    item.sortDate = primary.sortDate;
+    item.isMusic = primary.isMusic;
+    item.isPoetry = primary.isPoetry;
+
+    const labels = [...new Set(uses.map((u) => u.label).filter(Boolean))];
+    item.label =
+      labels.length <= 2
+        ? labels.join(" + ")
+        : `${labels[0]} + ${labels.length - 1} more`;
+
+    const starts = uses.map((u) => time(u.start)).filter((t) => t !== null);
+    const ends = uses.map((u) => time(u.end)).filter((t) => t !== null);
+    if (starts.length === 0) {
+      item.dateStr = uses.find((u) => u.dateStr)?.dateStr || "";
+      return;
+    }
+    const min = new Date(Math.min(...starts));
+    const max = new Date(Math.max(...ends));
+    const fmt =
+      min.getFullYear() === max.getFullYear()
+        ? formatShortDate
+        : formatShortDateWithYear;
+    // Just the overall span — a flyer doesn't need to count or list every
+    // date it was used for.
+    item.dateStr =
+      min.getTime() === max.getTime()
+        ? fmt(min)
+        : `${fmt(min)} – ${fmt(max)}`;
   }
 
   const today = getTodayMidnight();
@@ -2089,8 +2182,8 @@ function renderFlyerGallery(myTours, myTouringShows, allOther, performerRec) {
   // Tours — tour-level flyer(s) first, then per-date flyer(s).
   // getTourLevelFlyers()/getEventLevelFlyers() (shared_utils.js) each
   // resolve to a de-duplicated list; add() itself also dedupes by
-  // flyerName+dateStr, so looping every flyer here is safe even if the
-  // same filename somehow appears in both places.
+  // flyer filename, so looping every flyer here is safe even if the
+  // same filename appears in both places (or on several dates).
   myTours.forEach(([, tour]) => {
     const dates = tour.tour_dates || [];
     const first = dates[0] ? parseDateString(dates[0].date) : null;
@@ -2113,6 +2206,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther, performerRec) {
         allPast,
         tour.isPoetry,
         representativeTourDate(tour),
+        { start: first, end: last, isRange: true },
       );
     });
     (tour.tour_dates || []).forEach((td) => {
@@ -2217,6 +2311,7 @@ function renderFlyerGallery(myTours, myTouringShows, allOther, performerRec) {
   // past, undated last — the same ordering as the event lists on this page.
   // Array#sort is stable, so ties and undated items keep the order they
   // were added in.
+  items.forEach(finaliseFlyerItem);
   items.sort(upcomingFirstThenRecent((i) => i.sortDate));
 
   // Store globally so lightbox can navigate
