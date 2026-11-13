@@ -6626,9 +6626,172 @@
         }
       ]
     },
+    "gaz-brookfield-almost-all-village-halls-tour-spring-2027": {
+      "tour_name": "Gaz Brookfield — Almost All Village Halls Tour, Spring 2027",
+      "tour_dates": [
+        {
+          "date": "12/02/2027",
+          "venue_id": "the-chester-tavern-kidderminster",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30614",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270212-the-chester-tavern-kidderminster"
+        },
+        {
+          "date": "13/02/2027",
+          "venue_id": "tretower-village-hall",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30615",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270213-tretower-village-hall"
+        },
+        {
+          "date": "19/02/2027",
+          "venue_id": "the-pit-at-newstead",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30617",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270219-the-pit-at-newstead"
+        },
+        {
+          "date": "20/02/2027",
+          "venue_id": "grafton-underwood-village-hall",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30618",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270220-grafton-underwood-village-hall"
+        },
+        {
+          "date": "26/02/2027",
+          "venue_id": "gupshill-manor-tewkesbury",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30620",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270226-gupshill-manor-tewkesbury"
+        },
+        {
+          "date": "27/02/2027",
+          "venue_id": "feniton-sports-social-club",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30621",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270227-feniton-sports-social-club"
+        },
+        {
+          "date": "05/03/2027",
+          "venue_id": "west-lavington-village-hall-devizes",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30622",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270305-west-lavington-village-hall-devizes"
+        },
+        {
+          "date": "06/03/2027",
+          "venue_id": "charlbury-corner-house-memorial-hall",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30623",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270306-charlbury-corner-house-memorial-hall"
+        },
+        {
+          "date": "12/03/2027",
+          "venue_id": "nunney-village-hall-frome",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30633",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270312-nunney-village-hall-frome"
+        },
+        {
+          "date": "13/03/2027",
+          "venue_id": "east-garston-village-hall-hungerford",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30624",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270313-east-garston-village-hall-hungerford"
+        },
+        {
+          "date": "19/03/2027",
+          "venue_id": "silchester-village-hall-reading",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30625",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270319-silchester-village-hall-reading"
+        },
+        {
+          "date": "20/03/2027",
+          "venue_id": "sixpenny-handley-village-hall",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30626",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270320-sixpenny-handley-village-hall"
+        },
+        {
+          "date": "26/03/2027",
+          "venue_id": "hook-village-hall-royal",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30627",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270326-hook-village-hall-royal"
+        },
+        {
+          "date": "03/04/2027",
+          "venue_id": "kingswood-village-hall-wotton",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30628",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270403-kingswood-village-hall-wotton"
+        },
+        {
+          "date": "08/04/2027",
+          "venue_id": "the-burton-institute-matlock",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30629",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270408-the-burton-institute-matlock"
+        },
+        {
+          "date": "09/04/2027",
+          "venue_id": "reeth-memorial-hall-richmond",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30631",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270409-reeth-memorial-hall-richmond"
+        },
+        {
+          "date": "10/04/2027",
+          "venue_id": "northern-quarter-huddersfield",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£15 (+ £1.50)",
+          "ticket_url": "https://wegottickets.com/af/671/f/30632",
+          "isSpecial": true,
+          "eventId": "T-gaz-brookfield-almost-all-village-halls-tour-spring-2027-20270410-northern-quarter-huddersfield"
+        }
+      ],
+      "name": "Gaz Brookfield — Almost All Village Halls Tour, Spring 2027",
+      "performer_id": "gaz-brookfield",
+      "tour_description": "Join two times number one selling folk musician Gaz Brookfield on his annual lap of the UK's village halls, (and other venues).",
+      "touring_event_flyer": "tour_gaz_brookfield_village_hall_spring_2027.jpg",
+      "isMusic": true
+    },
     "gaz-brookfield-almost-all-village-halls-2026": {
-      "name": "Gaz Brookfield — Almost All Village Halls Tour",
-      "tour_name": "Almost All Village Halls Tour",
+      "name": "Gaz Brookfield — Almost All Village Halls Tour, 2026",
+      "tour_name": "Almost All Village Halls Tour, 2026",
       "performer_id": "gaz-brookfield",
       "tour_description": "Following the success of his tenth studio album, Waiting For Wisdom, Gaz Brookfield takes to the road once again, bringing his chart topping blend of folk rock to the more rural parts of the country.",
       "tour_flyer": "tour_gazbrookfield_2026q1-2_a.jpg",
@@ -17774,6 +17937,21 @@
         -1.33597
       ]
     },
+        "charlbury-corner-house-memorial-hall": {
+          "id": "charlbury-corner-house-memorial-hall",
+          "name": "Charlbury Corner House & Memorial Hall",
+          "venue_type": "Village / community hall",
+          "city": "Charlbury, Oxford",
+          "postcode": "OX7 3PN",
+          "full_address": "Charlbury Corner House & Memorial Hall, Market Street, Charlbury, OX7 3PN",
+          "url": "https://charlburycornerhouse.co.uk/",
+          "email": "charlburycornerhouse@outlook.com",
+          "description": "Located in the heart of Charlbury only three minutes walk from the main car park. The Corner House is the ideal venue for meetings and group activities. A distinctive, historic building that was gifted to the town for recreational and educational purposes, it is home to the Cornerstone, The Garden Cafe and Charlbury Community Bookshop. The Memorial Hall, opened in 1956 in honour of those who served and those who lost their lives in two World Wars, is used on a daily basis for all manner of activities and events.\n\n\n\nOccupying a key position in the town centre, The Corner House is Grade II listed. It dates in part from the 17th Century or even earlier, with the Market Street facade added probably in the 1720s. In 1938, The Corner House was bought by Mr and Mrs C H Morris, then living at Lee Place, who in an act of great generosity gave it to the town at the end of the Second World War. Their intention to build a hall in what was then The Corner House garden as a memorial to Charlburians lost in the World Wars was realised about ten years later, bringing together the complex of buildings that we see today.",
+          "latlon": [
+            51.87302,
+            -1.48257
+          ]
+        },
     "burton-taylor-studio-oxford": {
       "id": "burton-taylor-studio-oxford",
       "name": "Burton Taylor Studio",
@@ -18104,7 +18282,7 @@
     },
     "the-chester-tavern-kidderminster": {
       "id": "the-chester-tavern-kidderminster",
-      "name": "The Chester Tavern",
+      "name": "The Chester Tavern, Kidderminster",
       "city": "Kidderminster",
       "postcode": "DY10 1TN",
       "full_address": "The Chester Tavern, Kidderminster, DY10 1TN",
@@ -19530,6 +19708,19 @@
       "latlon": [
         52.56657,
         -0.80951
+      ]
+    },
+    "east-garston-village-hall-hungerford": {
+      "id": "east-garston-village-hall-hungerford",
+      "name": "East Garston Village Hall, Hungerford",
+      "venue_type": "Village / community hall",
+      "city": "Hungerford",
+      "postcode": "RG17 7ER",
+      "full_address": "East Garston Village Hall, East Garston, Hungerford ,RG17 7ER",
+      "url": "https://www.eastgarstonvillagehall.co.uk/",
+      "latlon": [
+        51.48507,
+        -1.47553
       ]
     },
     "spencers-wood-village-hall": {
@@ -21196,6 +21387,21 @@
         -4.14288
       ]
     },
+      "nunney-village-hall-frome": {
+        "id": "nunney-village-hall-frome",
+        "name": "Nunney Village Hall, Frome",
+        "venue_type": "Village / community hall",
+        "city": "Frome",
+        "postcode": "BA11 4NR",
+        "full_address": "Nunney Village Hall, Berry Hill, Nunney, Frome, BA11 4NR",
+        "email": "bookings@nunneyvillagehall.com",
+        "facebook": "NunneyVillageHall",
+        "description": "The hall is available for (approximate figures):\n\n\n\n120 seated at tables\n160 mixed occupancy tables and dance\n120 comfortably-seated audience\n\n\n\nWe have a projector and screen plus blackout blinds on the windows, perfect for small film shows.\n\n\n\nWe also have a modern audio system which accepts multiple inputs and links with the display system for DVDs/Laptop output etc.\n\n\n\nThere is a professional DMX lighting rig for the stage (you need to supply your own control desk), and associated sound system (separate to the one mentioned above).\n\n\n\nDimensions: For reference, the Main Hall area is at least 8 metres across and around 14 metres long. The stage area is 6 metres across by 4 metres deep (excluding the front stage apron). Bouncy castles of up to 15-18 feet tend to work well.",
+        "latlon": [
+          51.20812,
+          -2.37623
+        ]
+      },
     "tree-house-frome": {
       "id": "tree-house-frome",
       "name": "Tree House, Frome",
@@ -21466,6 +21672,23 @@
       "latlon": [
         53.04217,
         -1.20877
+      ]
+    },
+    "northern-quarter-huddersfield": {
+      "id": "northern-quarter-huddersfield",
+      "name": "Northern Quarter, Huddersfield",
+      "venue_type": "Other / unknown",
+      "city": "Huddersfield",
+      "postcode": "HD1 1DU",
+      "full_address": "Northern Quarter, 28-30 Wood Street, Huddersfield, HD1 1DU",
+      "url": "https://nqhudds.org.uk/",
+      "email": "contact@nqhudds.org.uk",
+      "facebook": "NorthernQuarterHuddersfield",
+      "instagram": "northernquarter_huddersfield",
+      "description": "A night & day grassroots community venue, with live events, art, food and drink",
+      "latlon": [
+        53.64826,
+        -1.78209
       ]
     },
     "the-parish-huddersfield": {
