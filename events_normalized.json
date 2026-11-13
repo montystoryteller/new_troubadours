@@ -3194,6 +3194,12 @@
           "venue_id": "the-ropemakers-bridport",
           "isSpecial": true,
           "eventId": "T-jess-silk-winter-tour-2027-20270212-the-ropemakers-bridport"
+        },
+        {
+          "date": "14/02/2027",
+          "venue_id": "duke-of-wellington-shoreham-by-sea",
+          "isSpecial": true,
+          "eventId": "T-jess-silk-winter-tour-2027-20270214-duke-of-wellington-shoreham-by-sea"
         }
       ],
       "name": "Jess Silk Winter Tour 2027",
@@ -3514,12 +3520,12 @@
         },
         {
           "date": "12/12/2026",
-          "venue_id": "the-giffard-wolverhampton",
+          "venue_id": "the-giffard-arms-wolverhampton",
           "time": "7.30pm",
           "ticket_url": "https://www.ticketsource.com/livewireeventsandpromotions/livewire-presents-tony-wright-of-terrorvision/e-rggbmk?ref=montystoryteller.org",
           "event_flyer": "2026_12_12_tony_wright_giffard_arms.jpg",
           "isSpecial": true,
-          "eventId": "T-tony-wright-winter-2026-20261212-the-giffard-wolverhampton"
+          "eventId": "T-tony-wright-winter-2026-20261212-the-giffard-arms-wolverhampton"
         },
         {
           "date": "17/12/2026",
@@ -5716,6 +5722,185 @@
         }
       ]
     },
+      "sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour": {
+        "tour_name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
+        "tour_dates": [
+          {
+            "date": "15/01/2027",
+            "venue_id": "chapel-arts-centre-bath",
+            "time": "Doors 7.30pm, Start 8pm",
+            "price": "£18.50 (+ £1.90)",
+            "ticket_url": "https://wegottickets.com/af/671/f/25663",
+            "isSpecial": true,
+            "event_flyer": "2027_01_15_sound_sirens_bath.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270115-chapel-arts-centre-bath"
+          },
+          {
+            "date": "16/01/2027",
+            "venue_id": "marine-theatre-lyme-regis",
+            "time": "8pm",
+            "price": "£19.50 (+ £1.95) / Advance (members) £17.55 (+ £1.76)",
+            "ticket_url": "https://www.ticketsource.com/booking/select/lmvqnozkkamn",
+            "isSpecial": true,
+            "event_flyer": "2027_01_16_sound_sirens_lyme_regis.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270116-marine-theatre-lyme-regis"
+          },
+          {
+            "date": "23/01/2027",
+            "venue_id": "tree-house-frome",
+            "time": "19:00",
+            "price": "£18.50 (+ £2)",
+            "ticket_url": "https://www.cheeseandgrain.com/events/sound-of-the-sirens/",
+            "isSpecial": true,
+            "event_flyer": "2027_01_23_sound_sirens_frome.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270123-tree-house-frome"
+          },
+          {
+            "date": "29/01/2027",
+            "venue_id": "folklore-rooms-brighton",
+            "time": "20:00",
+            "price": "£16.50 (+ £1.75)",
+            "ticket_url": "https://meltingvinyl.seetickets.com/event/sound-of-sirens-special-guests/the-folklore-rooms/3705498",
+            "isSpecial": true,
+            "event_flyer": "2027_01_29_sound_sirens_brighton.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270129-folklore-rooms-brighton"
+          },
+          {
+            "date": "06/02/2027",
+            "venue_id": "the-quay-sudbury",
+            "time": "7.30pm",
+            "price": "£18.50 (+ £1.50)",
+            "ticket_url": "https://quaysudbury.com/events/sound-of-the-sirens/",
+            "isSpecial": true,
+            "event_flyer": "2027_02_06_sound_sirens_sudbury.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270206-the-quay-sudbury"
+          },
+          {
+            "date": "07/02/2027",
+            "venue_id": "green-note-london",
+            "time": "Doors open 7pm, Music starts 8.30pm",
+            "price": "£18.50",
+            "ticket_url": "https://www.greennote.co.uk/production/sound-of-the-sirens/",
+            "isSpecial": true,
+            "event_flyer": "2027_02_07_sound_sirens_green_note.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270207-green-note-london"
+          },
+          {
+            "date": "12/02/2027",
+            "venue_id": "rother-st-arts-house-stratford",
+            "time": "First Set 8pm - 8:45pm; Second Set 9:05pm - 9:50pm",
+            "price": "£19.00 (+ £1.00)",
+            "ticket_url": "https://rotherstreetarts.ticketsolve.com/ticketbooth/shows/1173692308",
+            "isSpecial": true,
+            "event_flyer": "2027_02_12_sound_sirens_stratford.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270212-rother-st-arts-house-stratford"
+          },
+          {
+            "date": "21/02/2027",
+            "venue_id": "alberts-shed-shrewsbury",
+            "time": "7pm",
+            "price": "£18.50",
+            "ticket_url": "https://albertsshed.co.uk/events/shrewsbury-sound-of-the-sirens-21-02-2027/",
+            "isSpecial": true,
+            "event_flyer": "2027_02_21_sound_sirens_alberts_shed.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270221-alberts-shed-shrewsbury"
+          },
+          {
+            "date": "16/04/2027",
+            "venue_id": "the-ruze-chippenham",
+            "time": "Doors & bar open at 6:30pm",
+            "price": "£19 in advance, £24 on the door",
+            "ticket_url": "https://theruze.co.uk/product/sound-of-the-sirens-friday-16th-april/",
+            "isSpecial": true,
+            "event_flyer": "2027_04_16_sound_sirens_chippenham.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270416-the-ruze-chippenham"
+          },
+          {
+            "date": "17/04/2027",
+            "venue_id": "bridgwater-arts-centre-bridgwater",
+            "time": "Bar Open 18.30, Theatre Doors 19.00, Show Starts 19.30",
+            "price": "£18.50 (+ £1.00)",
+            "ticket_url": "https://bridgwatertheatres.ticketsolve.com/ticketbooth/shows/1173692279",
+            "isSpecial": true,
+            "event_flyer": "2027_04_17_sound_sirens_bridgwater.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270417-bridgwater-arts-centre-bridgwater"
+          },
+          {
+            "date": "24/04/2027",
+            "venue_id": "reeth-memorial-hall-richmond",
+            "time": "Door time: 7:30pm, start time: 8:00pm",
+            "price": "£18.50 (+ £1.90)",
+            "ticket_url": "https://wegottickets.com/af/671/f/25663",
+            "isSpecial": true,
+            "event_flyer": "2027_04_24_sound_sirens_reeth.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270424-reeth-memorial-hall-richmond"
+          },
+          {
+            "date": "25/04/2027",
+            "venue_id": "the-cluny-newcastle",
+            "time": "Doors 7.30pm",
+            "price": "£18.50 (+ £1.85)",
+            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-cluny-2/3705311",
+            "isSpecial": true,
+            "event_flyer": "2027_04_25_sound_sirens_newcastle.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270425-the-cluny-newcastle"
+          },
+          {
+            "date": "01/05/2027",
+            "venue_id": "star-inn-guildford",
+            "time": "20:00",
+            "price": "£18.50 (+ £1.85)",
+            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-star-inn/3702056",
+            "isSpecial": true,
+            "event_flyer": "2027_05_01_sound_sirens_guildford.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270501-star-inn-guildford"
+          },
+          {
+            "date": "07/05/2027",
+            "venue_id": "the-acorn-penzance",
+            "time": "8:00 pm",
+            "price": "£18.50 (+ £1)",
+            "ticket_url": "https://www.theacornpenzance.com/events/sound-of-the-sirens/",
+            "isSpecial": true,
+            "event_flyer": "2027_05_07_sound_sirens_penzance.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270507-the-acorn-penzance"
+          },
+          {
+            "date": "08/05/2027",
+            "venue_id": "caryford-community-hall-somerset",
+            "time": "Doors 7pm, Start 7.30pm",
+            "price": "£18 (+ £1.80)",
+            "ticket_url": "https://wegottickets.com/af/671/f/26107",
+            "isSpecial": true,
+            "event_flyer": "2027_05_08_sound_sirens_somerset.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270508-caryford-community-hall-somerset"
+          },
+          {
+            "date": "14/05/2027",
+            "venue_id": "otford-memorial-hall-sevenoaks",
+            "time": "Doors 7pm, Start 7.30pm",
+            "ticket_url": "https://wegottickets.com/af/671/f/26049",
+            "isSpecial": true,
+            "event_flyer": "2027_05_14_sound_sirens_sevenoaks.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270514-otford-memorial-hall-sevenoaks"
+          },
+          {
+            "date": "21/05/2027",
+            "venue_id": "heartbreakers-southampton",
+            "time": "Door: 19:30, Start: 20:00",
+            "price": "£18.50 (+ £1.85)",
+            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/heartbreakers/3702586",
+            "isSpecial": true,
+            "event_flyer": "2027_05_21_sound_sirens_southampton.jpg",
+            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270521-heartbreakers-southampton"
+          }
+        ],
+        "name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
+        "performer_id": "sound-of-the-sirens",
+        "tour_description": "'The house that I grew in' Tour\n\n\n\nSound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood.\n\n\n\nHoning their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as 'one of the UK’s finest folk acts' not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.\n\n\n\nMartin & Wood are two of the hardest working musicians on the scene and wear their hearts very much on their sleeves in terms of their songwriting. The pair glide gracefully through laments of past relationships, and life experiences, as well as highlighting the important topics of the day, namely mental health awareness, and homelessness.\n\n\n\nWithout being pigeonholed into any stereotypical genre, the instrumentation of the band is vast, and varied. Martin (stage right) plays acoustic and high-strung (Nashville tuning) guitar, mandolin, and bass drum, while partner in crime Wood (stage left) plays acoustic and electric guitar, tambourine, snare drum, and the piano.",
+        "touring_event_flyer": "tour_sound_sirens_album_launch_2027.jpg",
+        "isMusic": true
+      },
     "sound-of-the-sirens-autumn-winter-2026": {
       "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
       "tour_dates": [
@@ -14145,6 +14330,25 @@
       "event_flyer": "2026_12_13_gaz_frome_tree_house.jpg",
       "ticket_url": "https://www.cheeseandgrain.com/events/gaz-brookfield-nick-parker-live-at-the-treehouse/",
       "isMusic": true
+    },
+    {
+      "name": "Jess Silk + Sam Draisey",
+      "showname": "Jess Silk + Sam Draisey",
+      "date": "18/06/2027",
+      "venue_id": "the-giffard-arms-wolverhampton",
+      "performer_id": "jess-silk",
+      "support_performer_ids": [
+        "sam-draisey"
+      ],
+      "eventId": "20270618-jess-silk-the-giffard-wolverhampton",
+      "date_added": "13/11/2026",
+      "time": "19:30-22:30",
+      "price": "£12",
+      "age_rating": "18+",
+      "min_age": 18,
+      "ticket_url": "https://ticket247.co.uk/Event/livewire-presents-jess-silk-at-the-giffard-arms-wolverhampton-570061",
+      "event_flyer": "2026_06_18_jess_silk_giffard_arms.jpg",
+      "isMusic": true
     }
   ],
   "folkNights": [
@@ -14824,6 +15028,23 @@
         -2.250251
       ]
     },
+      "bridgwater-arts-centre-bridgwater": {
+        "id": "bridgwater-arts-centre-bridgwater",
+        "name": "Bridgwater Arts Centre, Bridgwater",
+        "venue_type": "Arts centre / venue",
+        "city": "Bridgwater",
+        "postcode": "TA6 3DD",
+        "full_address": "Bridgwater Arts Centre, 11-13 Castle St, Bridgwater, TA6 3DD",
+        "url": "https://www.bridgwaterartscentre.co.uk/",
+        "email": "BAC@bridgwater-tc.gov.uk",
+        "facebook": "BridgwaterArtsCentre",
+        "instagram": "bridgwaterartscentre",
+        "description": "Situated in the heart of Bridgwater...\n\n\n\nThe Arts Centre has been in existence on the Castle Street site since 1946.\n\n\n\nWe run a vast programme of events, activities and community groups in a wide range of arts disciplines. Our facilities are available to hire, for professional and community organisations.\n\n\n\nThe Bar hosts a variety of groups and activities throughout the week including a quiz, acoustic and music history evenings.",
+        "latlon": [
+          51.12945,
+          -3.00231
+        ]
+      },
     "avalon-archaeology": {
       "id": "avalon-archaeology",
       "name": "Avalon Archaeology",
@@ -14896,6 +15117,21 @@
         -2.44342
       ]
     },
+        "marine-theatre-lyme-regis": {
+          "id": "marine-theatre-lyme-regis",
+          "name": "Marine Theatre, Lyme Regis",
+          "venue_type": "Theatre",
+          "city": "Lyme Regis",
+          "postcode": "DT7 3QB",
+          "full_address": "Marine Theatre, Church St, Lyme Regis, DT7 3QB",
+          "url": "https://www.marinetheatre.com/",
+          "facebook": "marinetheatrelymeregis",
+          "instagram": "marinetheatrelymeregis",
+          "latlon": [
+            50.72509,
+            -2.93143
+          ]
+        },
     "galley-lyme-regis": {
       "id": "galley-lyme-regis",
       "name": "Galley, Lyme Regis",
@@ -15265,6 +15501,20 @@
       "city": "Chagford",
       "postcode": "TQ13 8AJ"
     },
+    "the-cluny-newcastle": {
+      "id": "the-cluny-newcastle",
+      "name": "The Cluny, Newcastle",
+      "venue_type": "Other / unknown",
+      "city": "Ouseburn, Newcastle upon Tyne",
+      "postcode": "NE1 2PQ",
+      "full_address": "The Cluny, 36 Lime Street, Ouseburn Newcastle upon Tyne, NE1 2PQ",
+      "url": "https://thecluny.com/",
+      "email": "hello@thecluny.com",
+      "latlon": [
+        54.9751,
+        -1.59175
+      ]
+    },
     "the-chillingham-arms": {
       "id": "the-chillingham-arms",
       "name": "The Chillingham, South Heaton",
@@ -15532,6 +15782,17 @@
         50.82041,
         0.33712
       ]
+    },
+    "folklore-rooms-brighton": {
+      "id": "folklore-rooms-brighton",
+      "name": "Folklore Rooms, Brighton",
+      "venue_type": "Other / unknown",
+      "city": "Brighton",
+      "postcode": "BN1 3GJ",
+      "full_address": "The Folklore Rooms, 12 North St, Brighton, BN1 3GJ",
+      "url": "https://www.folkloresessions.co.uk/thefolklorerooms",
+      "email": "thefolklorerooms@gmail.com",
+      "description": "Brighton's premiere, intimate venue located right in the heart of the City.\n\n\n\nThe Folklore Rooms is a place for music lovers and performers to unite in a space dedicated to their craft.\n\n\n\nLocated in Central Brighton above The Quadrant Pub, our beautiful venue is perfect for intimate folk shows as well as full band shows. Our space is equipped with top of the line sound & lighting equipment, cared for by our dedicated team of in-house engineers.\n\n\n\nAt 60/70 capacity TFR is a beautifully intimate and unique performance space which is home to our monthly showcase nights, as well as wide range of shows and events.\n\n\n\nWith an unbeatable atmosphere, great selection of craft beers on tap, and shows seven nights a week, The Folklore Rooms is Brighton's music venue that delivers much more than just the show."
     },
     "the-yellow-book-brighton": {
       "id": "the-yellow-book-brighton",
@@ -16836,6 +17097,20 @@
         -0.11494
       ]
     },
+    "caryford-community-hall-somerset": {
+      "id": "caryford-community-hall-somerset",
+      "name": "Caryford Community Hall, Somerset",
+      "venue_type": "Village / community hall",
+      "city": "Castle Cary",
+      "postcode": "BA7 7JJ",
+      "full_address": "Caryford Community Hall, Ansford, Castle Cary, BA7 7JJ",
+      "url": "https://caryfordhall.co.uk/",
+      "description": "Caryford Community Hall (Ansford, Castle Cary, BA7 7JJ) is a large purpose-built facility with three spaces available for hire, either individually or in combination. The hall is suitable for hire by private individuals, community groups and businesses for a wide range of activities, meetings and events and also has established groups offering activities on either a weekly or monthly basis. It sits in extensive grounds with free off-road parking for approximately 80 vehicles (4 disabled places).\n\n\n\nOur Main Hall, Small Hall and Meeting Room available for hire by Individuals, Groups and Businesses\n\n\n\nEvents and Activities organised for the community, both by the Hall and by Local Community Groups",
+      "latlon": [
+        51.09526,
+        -2.51046
+      ]
+    },
     "the-backyard-theatre-watchet": {
       "id": "the-backyard-theatre-watchet",
       "name": "The Backyard Theatre",
@@ -16921,6 +17196,22 @@
         -3.52944
       ]
     },
+        "duke-of-wellington-shoreham-by-sea": {
+          "id": "duke-of-wellington-shoreham-by-sea",
+          "name": "Duke of Wellington, Shoreham-by-Sea",
+          "venue_type": "Other / unknown",
+          "city": "Shoreham-by-Sea",
+          "postcode": "BN43 6RE",
+          "full_address": "Duke of Wellington, 368 Brighton Road, Shoreham-by-Sea, BN43 6RE",
+          "url": "https://www.thewelly.co.uk/",
+          "email": "info@thewelly.co.uk",
+          "telephone": "01273 441297",
+          "description": "The Duke of Wellington is a vibrant and friendly local committed to safeguarding the traditions of fine beer and grassroots live music. As a freehold pub it stands out as a welcoming space extending into covered areas and a lovely beer garden at the back.\n\n\n\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nhome of live music\nThe home of live music in Shoreham-by-Sea\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nview what's on\nlocal legends\nFrom Local Legends to Rising Stars\nDrawing from a vibrant local music scene and bands from further afield, it has been an honor to platform a superb range of music that reflects our diverse customer base. From the promising young bands of the Shoreham Allstars, to veteran musicians who have been performing since the 70's ; our legendary sea shanty group 'the Wellington Wailers'; and, even the occasional celebrity... For full listings of events please check the Event calendar and find us on Facebook and Instagram for regular updates.",
+          "latlon": [
+            50.83288,
+            -0.2689
+          ]
+        },
     "ropetackle-arts-centre-shoreham": {
       "id": "ropetackle-arts-centre-shoreham",
       "name": "Ropetackle Arts Centre",
@@ -16959,7 +17250,7 @@
     },
     "the-acorn-penzance": {
       "id": "the-acorn-penzance",
-      "name": "The Acorn",
+      "name": "The Acorn, Penzance",
       "city": "Penzance",
       "postcode": "TR18 4BU",
       "full_address": "The Acorn, Penzance, TR18 4BU",
@@ -17979,6 +18270,23 @@
         -1.1378
       ]
     },
+    "rother-st-arts-house-stratford": {
+      "id": "rother-st-arts-house-stratford",
+      "name": "Rother St. Arts House, Stratford",
+      "city": "Stratford-upon-Avon",
+      "postcode": "CV37 6LU",
+      "full_address": "Rother St. Arts House, 14 Rother Street, Stratford-upon-Avon, CV37 6LU",
+      "url": "https://rotherstreetarts.org/",
+      "ticketing_url": "https://rotherstreetarts.ticketsolve.com/ticketbooth/shows",
+      "email": "info@rotherstreetarts.org",
+      "facebook": "https://www.facebook.com/profile.php?id=61579558103976",
+      "instagram": "rotherstreetartshouse",
+      "description": "The Home for the arts in Stratford-upon-Avon",
+      "latlon": [
+        52.19238,
+        -1.7107
+      ]
+    },
     "nellys-retro-vintage-stratford": {
       "id": "nellys-retro-vintage-stratford",
       "name": "Nelly's Retro & Vintage",
@@ -18791,6 +19099,18 @@
         -2.74988
       ]
     },
+    "alberts-shed-shrewsbury": {
+      "id": "alberts-shed-shrewsbury",
+      "name": "Alberts Shed, Shrewsbury",
+      "venue_type": "Other / unknown",
+      "city": "Shrewsbury",
+      "postcode": "SY1 1QJ",
+      "full_address": "Albert's Shed, 8 Barker St, Shrewsbury, SY1 1QJ",
+      "url": "https://albertsshed.co.uk/shrewsbury/",
+      "facebook": "albertloveslive",
+      "instagram": "albertloveslive",
+      "description": "Albert’s Shed in Shrewsbury and Southwater are the premier live music venues in Shropshire. Albert’s mission is to champion grassroots music locally and beyond."
+    },
     "arundells-salisbury": {
       "id": "arundells-salisbury",
       "name": "Arundells, Salisbury",
@@ -18897,6 +19217,20 @@
       "latlon": [
         52.01568,
         -4.83751
+      ]
+    },
+    "the-ruze-chippenham": {
+      "id": "the-ruze-chippenham",
+      "name": "The Ruze, Chippenham",
+      "venue_type": "Other / unknown",
+      "city": "Chippenham",
+      "postcode": "SN15 1HW",
+      "full_address": "The Ruze, 7 Union Road, Chippenham, SN15 1HW",
+      "url": "https://theruze.co.uk/",
+      "description": "The Ruze is a purpose-built live music and events venue in Chippenham, Wiltshire. We bring grassroots music and professional production together, giving artists a stage and audiences a reason to get closer.\n\n\n\nFrom live shows and studio sessions to private celebrations, corporate events and education programmes, our versatile spaces make room for ideas, collaboration and community.",
+      "latlon": [
+        51.46256,
+        -2.11741
       ]
     },
     "ustinov-theatre-royal": {
@@ -19571,6 +19905,21 @@
         -0.69017
       ]
     },
+    "otford-memorial-hall-sevenoaks": {
+      "id": "otford-memorial-hall-sevenoaks",
+      "name": "Otford Memorial Hall, Sevenoaks",
+      "venue_type": "Village / community hall",
+      "city": "Sevonoaks",
+      "postcode": "TN14 5PQ",
+      "full_address": "Otford Village Memorial Hall High Street, Otford, TN14 5PQ",
+      "url": "https://ovmh.org.uk/",
+      "email": "bookings@ovmh.org.uk",
+      "description": "One of the best maintained and most flexible halls available in the area, Otford Village Memorial Hall adjoins the picturesque 12 acres of Otford Recreation Ground.\n\n\n\n*With car parking for 120 cars outside the Hall, including two Electric Car Charging Points, Otford Village Memorial Hall provides the perfect venue for wedding receptions, children’s and adult parties, meetings and corporate functions.\n\n\n\nAn Induction Loop system has been installed for those with hearing difficulties along with full access and toilet facilities for disabled users.\n\n\n\nOur two Halls for Hire have easy to use sound systems. Just plug your USB Device in and you can play your own music. Superfast Wi-Fi Broadband is also installed.\n\n\n\nOur Players Hall has a Stage with attached Changing Rooms.",
+      "latlon": [
+        51.31303,
+        0.19016
+      ]
+    },
     "halstead-village-hall-sevenoaks": {
       "id": "halstead-village-hall-sevenoaks",
       "name": "Halstead Village Hall, Sevenoaks",
@@ -20057,6 +20406,19 @@
         53.76832,
         -1.84326
       ]
+    },
+    "heartbreakers-southampton": {
+      "id": "heartbreakers-southampton",
+      "name": "Heartbreakers, Southampton",
+      "venue_type": "Other / unknown",
+      "city": "Southampton",
+      "postcode": "SO14 1JX",
+      "full_address": "Heartbreakers, 7-9 Hanover Buildings, Southampton, SO14 1JX",
+      "url": "https://heartbreakers.uk/",
+      "email": "info@heartbreakers.uk",
+      "facebook": "Heartbreakers-Bar-Venue-1400182700051617",
+      "instagram": "heartbreakersbarvenue",
+      "description": "Heartbreakers is a response to Southampton's call of needing a suave, neon-clad Dive-bar that excels in cocktail creation and live music. With our late license we're the perfect place to sink into your technicolour Saturday night dream.\n\n\n\nHeartbreakers is able to accommodate a wide range of international touring acts as well as striving to support the fantastic local scene that Southampton has to offer. From The Last Dinner Party to Orlando Weeks, to The Magic Gang, Dry Cleaning, Psychedelic Porn Crumpets, Sea Girls, Working Men's Club, The Murder Capital, Willie J Healey to Our Girl and many more, Heartbreakers has hosted some of the best in the business on their way to stardom."
     },
     "the-attic-southampton": {
       "id": "the-attic-southampton",
@@ -21149,9 +21511,10 @@
         -2.13243
       ]
     },
-    "the-giffard-wolverhampton": {
-      "id": "the-giffard-wolverhampton",
-      "name": "The Giffard, Wolverhampton",
+    "the-giffard-arms-wolverhampton": {
+      "id": "the-giffard-arms-wolverhampton",
+      "previous_id": "the-giffard-wolverhampton",
+      "name": "The Giffard Arms, Wolverhampton",
       "city": "Wolverhampton",
       "postcode": "WV1 3NX",
       "full_address": "The Giffard Arms, 64 Victoria Street, Wolverhampton, WV1 3NX",
@@ -21233,6 +21596,23 @@
       "latlon": [
         51.43789,
         -0.31324
+      ]
+    },
+    "the-quay-sudbury": {
+      "id": "the-quay-sudbury",
+      "name": "The Quay, Sudbury",
+      "venue_type": "Theatre",
+      "city": "Sudbury",
+      "postcode": "CO10 2AN",
+      "full_address": "The Quay Theatre, Quay Lane, Sudbury, CO10 2AN",
+      "url": "https://quaysudbury.com/",
+      "ticketing_url": "https://quaytheatre.ticketsolve.com/ticketbooth/shows",
+      "facebook": "quaytheatre",
+      "instagram": "thequaytheatre",
+      "description": "The best small theatre experience in East Anglia\n\n\n\nThe Quay Theatre is a professional arts centre, and vibrant cultural hub to the Suffolk town of Sudbury.\n\n\n\nOccupying a charming Grade II-listed building nestled by the River Stour, The Quay hosts a wide range of top-class entertainment, including drama, live music, comedy, film, and much more. We are also a hub for many local clubs and organisations.",
+      "latlon": [
+        52.03474,
+        0.72759
       ]
     },
     "colchester-arts-centre": {
@@ -21339,6 +21719,22 @@
         -1.13201
       ]
     },
+    "the-met-bury": {
+      "id": "the-met-bury",
+      "name": "The Met, Bury",
+      "venue_type": "Other / unknown",
+      "city": "Bury",
+      "postcode": "BL9 0BW",
+      "full_address": "The Met, Market Street, Bury, BL9 0BW",
+      "url": "https://themet.org.uk/",
+      "facebook": "metbury",
+      "instagram": "metbury",
+      "description": "Situated in the heart of Bury, The Met’s spectacular Grade II listed building is within easy access of Manchester City Centre and only a short stroll from Bury’s public transport interchange.\n\n\n\nWith stunning performance and rehearsal spaces, a selection of private meeting rooms, conferencing spaces, office and hot desking facilities, as well as a professional recording studio, we welcome all of our visitors and users with pride.",
+      "latlon": [
+        53.59316,
+        -2.29716
+      ]
+    },
     "gullivers-manchester": {
       "id": "gullivers-manchester",
       "name": "Gullivers, Manchester",
@@ -21409,6 +21805,23 @@
       "latlon": [
         51.90323,
         -2.07914
+      ]
+    },
+    "green-note-london": {
+      "id": "green-note-london",
+      "name": "Green Note, London",
+      "venue_type": "Other / unknown",
+      "city": "London",
+      "postcode": "NW1 7AN",
+      "full_address": "Green Note, 106 Parkway, London, NW1 7AN",
+      "url": "https://www.greennote.co.uk/",
+      "email": "mail@greennote.co.uk",
+      "facebook": "GreenNoteMusic",
+      "instagram": "greennotemusic",
+      "description": "Green Note is a multiple award-winning live music venue and vegetarian café-bar, located in Camden Town, London (less than 5 mins walk from Camden Town tube station).  We are a unique, intimate, independent venue with a cosy vibe and friendly atmosphere. Founded in 2005 by two music-loving friends, we have become known as one of London’s top spots for folk and roots music, hosting gigs every night ranging from folk, Americana, country and bluegrass, to blues, roots, world, jazz and singer-songwriters. We welcome both local and touring acts, and over the years they have hosted the likes of Anais Michell, Michael Kiwanuka, Allison Russell, Jacob Collier, Ed Sheeran, The Magic Numbers, Amy Winehouse… and even the late Leonard Cohen!",
+      "latlon": [
+        51.53729,
+        -0.14595
       ]
     },
     "all-good-bookshop-wood-green": {
