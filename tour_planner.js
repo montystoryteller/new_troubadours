@@ -19,6 +19,7 @@ const { addDays, roadMiles, fmtMiles, fmtDrive, loadLeaflet, loadStart } = TourS
 const dkey = TourSupport.dateKey;
 
 const PLANNER = {
+  showCands: true, // grey markers for other possible venues on the map
   eventsData: null,
   venues: {},
   start: null, // { lat, lon, label }
@@ -817,7 +818,11 @@ function renderAll() {
   const allCb = el("input"); allCb.type = "checkbox"; allCb.checked = !!PLANNER.showAll;
   allCb.addEventListener("change", () => { PLANNER.showAll = allCb.checked; drawEdges(); });
   allLbl.append(allCb, " show all links");
-  bar.append(bestBtn, clearBtn, allLbl);
+  const candLbl = el("label", "planner-inline");
+  const candCb = el("input"); candCb.type = "checkbox"; candCb.checked = PLANNER.showCands !== false;
+  candCb.addEventListener("change", () => { PLANNER.showCands = candCb.checked; renderMap(); });
+  candLbl.append(candCb, " show other venues on map");
+  bar.append(bestBtn, clearBtn, allLbl, candLbl);
   if (PLANNER.best) {
     const isPool = PLANNER.mode === "pool";
     bar.appendChild(el("span", "ts-hint",
@@ -878,11 +883,7 @@ function renderAll() {
       if (!c.isAnchor && !near) {
         n.tabIndex = 0;
         n.setAttribute("role", "button");
-        const toggle = () => {
-          const cur = PLANNER.chosen.get(k);
-          if (cur && cur.id === c.id) PLANNER.chosen.delete(k); else PLANNER.chosen.set(k, c);
-          renderAll();
-        };
+        const toggle = () => toggleNode(c);
         n.addEventListener("click", toggle);
         n.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
       }
@@ -1045,10 +1046,51 @@ function renderItinerary() {
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
+/** Label for a day relative to the anchor ("+1", "−2") or, with no anchor,
+ *  to the first day of the period ("d3"). */
+function dayLabel(date) {
+  if (PLANNER.anchor) {
+    const n = Math.round((date - PLANNER.anchor.date) / 86400000);
+    return n === 0 ? "0" : n > 0 ? `+${n}` : `−${Math.abs(n)}`;
+  }
+  return `d${Math.round((date - PLANNER.days[0]) / 86400000) + 1}`;
+}
+
+/** Add/remove a gig from the tour (same rule as clicking it in the graph). */
+function toggleNode(c) {
+  const k = dkey(c.date);
+  const cur = PLANNER.chosen.get(k);
+  if (cur && cur.id === c.id) PLANNER.chosen.delete(k); else PLANNER.chosen.set(k, c);
+  renderAll();
+}
+
+/** Popup for a venue marker: every gig on offer there, with add/remove buttons. */
+function venuePopup(vid, nodes) {
+  const v = PLANNER.venues[vid] || {};
+  const box = el("div", "map-popup");
+  box.appendChild(el("strong", null, TourSupport.placeLabel(v) || vid));
+  [...nodes].sort((a, b) => a.date - b.date).forEach((c) => {
+    const row = el("div", "map-popup-row");
+    row.appendChild(el("span", "map-popup-day", dayLabel(c.date)));
+    row.appendChild(el("span", null, ` ${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${c.name}`));
+    if (!c.isAnchor) {
+      const ch = PLANNER.chosen.get(dkey(c.date));
+      const on = ch && ch.id === c.id;
+      const near = !on ? nearStop(c, orderedStops(), PLANNER.minSpread) : null;
+      const b = el("button", "map-popup-btn", on ? "Remove" : near ? `⛔ within ${PLANNER.minSpread} mi of ${near.name}` : "Add to tour");
+      b.type = "button";
+      b.disabled = !!near;
+      b.addEventListener("click", () => toggleNode(c));
+      row.appendChild(b);
+    }
+    box.appendChild(row);
+  });
+  return box;
+}
+
 async function renderMap() {
   const cont = document.getElementById("plannerMapWrap");
-  const stops = orderedStops();
-  if (!stops.length) { cont.style.display = "none"; return; }
+  if (!PLANNER.days.length) { cont.style.display = "none"; return; }
   cont.style.display = "";
   try {
     await loadLeaflet();
@@ -1057,7 +1099,33 @@ async function renderMap() {
   plannerMap.invalidateSize();
   if (plannerMapLayer) plannerMapLayer.remove();
   plannerMapLayer = L.layerGroup().addTo(plannerMap);
+  const stops = orderedStops();
+  const chosenIds = new Set(stops.map((c) => c.id));
   const pts = [];
+
+  // Other possible venues: one grey marker per venue, labelled with the day
+  // offset(s) it has a gig on. Click for the list of gigs and add/remove.
+  const venuesWithStop = new Set(stops.map((c) => c.venue_id));
+  const candPts = [];
+  if (PLANNER.showCands) {
+    const byVenue = new Map();
+    PLANNER.days.forEach((d) => (PLANNER.byDay.get(dkey(d)) || []).forEach((c) => {
+      if (!byVenue.has(c.venue_id)) byVenue.set(c.venue_id, []);
+      byVenue.get(c.venue_id).push(c);
+    }));
+    byVenue.forEach((nodes, vid) => {
+      if (venuesWithStop.has(vid)) return; // shown as a numbered stop below
+      const ll = latlonOf(nodes[0]);
+      candPts.push(ll);
+      const labs = [...new Set([...nodes].sort((a, b) => a.date - b.date).map((c) => dayLabel(c.date)))];
+      const text = labs.length > 3 ? labs.slice(0, 3).join(" ") + "…" : labs.join(" ");
+      L.marker(ll, { icon: L.divIcon({ className: "ts-pin cand", html: text, iconSize: [40, 20], iconAnchor: [20, 10] }) })
+        .bindTooltip(`${(PLANNER.venues[vid] || {}).name || vid} (${text})`)
+        .bindPopup(venuePopup(vid, nodes))
+        .addTo(plannerMapLayer);
+    });
+  }
+
   if (PLANNER.start) {
     const h = [PLANNER.start.lat, PLANNER.start.lon];
     pts.push(h);
@@ -1067,11 +1135,16 @@ async function renderMap() {
   stops.forEach((c, i) => {
     const ll = latlonOf(c);
     pts.push(ll);
-    L.marker(ll, { icon: L.divIcon({ className: "ts-pin", html: String(i + 1), iconSize: [26, 26] }) })
-      .bindTooltip(`${i + 1}. ${c.name} — ${formatDate(c.date)}`).addTo(plannerMapLayer);
+    const allHere = [];
+    PLANNER.days.forEach((d) => (PLANNER.byDay.get(dkey(d)) || []).forEach((n) => { if (n.venue_id === c.venue_id) allHere.push(n); }));
+    L.marker(ll, { icon: L.divIcon({ className: "ts-pin", html: String(i + 1), iconSize: [26, 26] }), zIndexOffset: 500 })
+      .bindTooltip(`${i + 1}. ${c.name} — ${formatDate(c.date)}`)
+      .bindPopup(venuePopup(c.venue_id, allHere.length ? allHere : [c]))
+      .addTo(plannerMapLayer);
   });
-  if (pts.length > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);
-  plannerMap.fitBounds(L.latLngBounds(pts).pad(0.25), { maxZoom: 11 });
+  if (stops.length + (PLANNER.start ? 1 : 0) > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);
+  const all = pts.concat(candPts);
+  if (all.length) plannerMap.fitBounds(L.latLngBounds(all).pad(0.2), { maxZoom: 11 });
 }
 
 // ── init ────────────────────────────────────────────────────────────────

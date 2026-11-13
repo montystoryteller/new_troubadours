@@ -9,7 +9,8 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
-    <link rel="stylesheet" href="/css/gig-crawl-styles.css?v=202611131449">
+    <link rel="stylesheet" href="/css/tour-support.css?v=202611132118">
+    <link rel="stylesheet" href="/css/gig-crawl-styles.css">
 </head>
 
 <body class="page-gig-crawl">
@@ -38,50 +39,53 @@
 
     <div id="gcApp" style="display:none;">
 
-        <section class="gc-panel">
+        <section class="ts-panel">
             <h3>When, and where are you?</h3>
-            <div class="gc-grid">
-                <label class="gc-field">From
+            <div class="ts-grid">
+                <label class="ts-field">From
                     <input id="gcFrom" type="date">
                 </label>
-                <label class="gc-field">To (up to 60 days)
+                <label class="ts-field">To (up to 60 days)
                     <input id="gcTo" type="date">
                 </label>
-                <label class="gc-field">Only within … miles of home (0 = anywhere)
+                <label class="ts-field">Only within … miles of home (0 = anywhere)
                     <input id="gcMaxHome" type="number" min="0" max="1000" value="0">
                 </label>
             </div>
-            <div class="gc-row">
-                <label class="gc-field" style="flex:1 1 240px;">Your town or postcode (optional)
+            <div class="ts-row">
+                <label class="ts-field" style="flex:1 1 240px;">Your town or postcode (optional)
                     <input id="gcStartInput" type="text" placeholder="e.g. Norwich, or NR1 3JU" autocomplete="off">
                 </label>
                 <button id="gcStartFind" type="button" class="gc-btn">Find</button>
                 <button id="gcStartLocate" type="button" class="gc-btn">📍 Use my location</button>
             </div>
             <div id="gcStartChoices"></div>
-            <div id="gcStartCurrent" class="gc-hint"></div>
-            <div class="gc-checks" id="gcCats">
+            <div id="gcStartCurrent" class="ts-hint"></div>
+            <div class="ts-checks" id="gcCats">
                 <label><input type="checkbox" value="story" checked> 📖 Storytelling</label>
                 <label><input type="checkbox" value="music" checked> 🎸 Music</label>
                 <label><input type="checkbox" value="poetry" checked> ✒️ Poetry</label>
                 <label><input type="checkbox" value="folk" checked> 🎻 Folk nights &amp; sessions</label>
             </div>
-            <div id="gcStatus" class="gc-status" role="status"></div>
+            <div class="ts-checks">
+                <label><input type="checkbox" id="gcShowScope" checked> 🗺️ Show the venues in scope on the map (grey; click one for its gigs)</label>
+            </div>
+            <div id="gcStatus" class="ts-status" role="status"></div>
         </section>
 
-        <div id="gcSummaryRow" class="gc-summary-row" hidden>
-            <section id="gcPlan" class="gc-panel"></section>
-            <section id="gcMapWrap" class="gc-panel" style="display:none;">
-                <div id="gcMap"></div>
+        <div id="gcSummaryRow" class="ts-summary-row" hidden>
+            <section id="gcPlan" class="ts-panel ts-plan"></section>
+            <section id="gcMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
+                <div id="gcMap" class="ts-map"></div>
             </section>
         </div>
 
-        <section id="gcNearby" class="gc-panel" hidden></section>
+        <section id="gcNearby" class="ts-panel" hidden></section>
 
-        <section class="gc-panel">
+        <section class="ts-panel">
             <h3 id="gcBrowseHead">Pick a gig you want to see</h3>
-            <div class="gc-row">
-                <label class="gc-field" style="flex:1 1 260px;">Search
+            <div class="ts-row">
+                <label class="ts-field" style="flex:1 1 260px;">Search
                     <input id="gcSearch" type="text" placeholder="performer, show, club or town…" autocomplete="off">
                 </label>
             </div>
@@ -97,8 +101,9 @@
     </div>
 
     <script src="/js/recurrence-engine.js"></script>
-    <script src="/js/shared_utils.js?v=202611131649"></script>
-    <script src="/js/gig_crawl.js?v=202611131449"></script>
+    <script src="/js/shared_utils.js"></script>
+    <script src="/js/tour_support.js"></script>
+    <script src="/js/gig_crawl.js?v=202611132118"></script>
 </body>
 
 </html>

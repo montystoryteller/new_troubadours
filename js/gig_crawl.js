@@ -10,16 +10,10 @@
  * RecurrenceEngine), specificEvents, musicEvents, poetryEvents and every
  * tour date. Geocoding: postcodes.io (browser-callable).
  *
- * NB: the distance/geocode/Leaflet helpers deliberately mirror
- * tour_planner.js; they could move into a shared file later.
+ * Shared helpers (distance, geocoding, saved start point, Leaflet loader)
+ * live in tour_support.js, shared with tour_planner.js.
  */
 
-const GC_GEO_API = "https://api.postcodes.io";
-const GC_START_KEY = "tourPlannerStart"; // shared with the tour planner
-const GC_LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
-const GC_LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
-const GC_ROAD = 1.3, GC_MPH = 45, GC_KM_MI = 0.621371;
-const GC_UK = { latMin: 49, latMax: 61, lonMin: -11, lonMax: 2.5 };
 const GC_CAT = { story: "📖 Story", music: "🎸 Music", poetry: "✒️ Poetry", folk: "🎻 Folk" };
 
 const GC = {
@@ -29,35 +23,21 @@ const GC = {
   chosen: new Map(), // dateKey -> event
   limit: 120,
 };
-let gcMap = null, gcLayer = null, gcLeafletP = null;
+let gcMap = null, gcLayer = null;
 
 // ── helpers ─────────────────────────────────────────────────────────────
-function gEl(tag, cls, text) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text != null) n.textContent = text;
-  return n;
-}
-const gKey = (d) => formatDateForInput(d);
-function gAdd(d, n) { const r = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); r.setHours(0, 0, 0, 0); return r; }
+const gEl = el; // shared_utils.js
+const gKey = TourSupport.dateKey;
+const gAdd = TourSupport.addDays;
+const gMiles = TourSupport.roadMiles;
+const gFmtMi = TourSupport.fmtMiles;
+const gFmtDrive = TourSupport.fmtDrive;
+const gPlace = TourSupport.placeLabel;
 function gParseInput(v) { if (!v) return null; const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d); }
 function gLL(e) { const v = GC.venues[e.venue_id]; return v && Array.isArray(v.latlon) ? v.latlon : null; }
 function gHome() { return GC.start ? [GC.start.lat, GC.start.lon] : null; }
-function gMiles(a, b) { return a && b ? haversineKm(a[0], a[1], b[0], b[1]) * GC_KM_MI * GC_ROAD : null; }
-function gFmtMi(m) { return m == null ? "?" : `${Math.round(m)} mi`; }
-function gFmtDrive(m) {
-  if (m == null) return "";
-  const mins = Math.round((m / GC_MPH) * 60), h = Math.floor(mins / 60);
-  return h ? `~${h}h ${String(mins % 60).padStart(2, "0")}m` : `~${mins}m`;
-}
-function gStatus(msg, err) { const s = document.getElementById("gcStatus"); s.textContent = msg || ""; s.className = "gc-status" + (err ? " error" : ""); }
-function gVenueOk(vid) {
-  const v = GC.venues[vid];
-  if (!v || !Array.isArray(v.latlon) || v.isClosedDown) return false;
-  if (/online|zoom/i.test(`${vid} ${v.name || ""} ${v.city || ""}`)) return false;
-  const [la, lo] = v.latlon;
-  return la >= GC_UK.latMin && la <= GC_UK.latMax && lo >= GC_UK.lonMin && lo <= GC_UK.lonMax;
-}
+function gStatus(msg, err) { const s = document.getElementById("gcStatus"); s.textContent = msg || ""; s.className = "ts-status" + (err ? " error" : ""); }
+function gVenueOk(vid) { return TourSupport.venueUsable(GC.venues, vid); }
 function gIds(e) {
   const a = (x) => (Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []);
   return [e.performer_id, ...a(e.performer_ids), ...a(e.other_performer_ids)].filter(Boolean);
@@ -66,9 +46,6 @@ function gPerformers(e) {
   const P = GC.data.performers || {};
   const names = gIds(e).map((id) => (P[id] ? P[id].name : null)).filter(Boolean);
   return names.length ? names.join(", ") : (typeof e.performer === "string" ? e.performer : "");
-}
-function gPlace(v) {
-  return [v.name, v.city && !String(v.name || "").toLowerCase().includes(String(v.city).toLowerCase()) ? v.city : ""].filter(Boolean).join(", ");
 }
 function gEventUrl(rec, date) {
   try {
@@ -151,60 +128,22 @@ function gPasses(ev, cats, maxHome) {
   return true;
 }
 
-// ── geocoding ───────────────────────────────────────────────────────────
-const GC_PC = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/;
-const GC_OC = /^[A-Za-z]{1,2}\d[A-Za-z\d]?$/;
-async function gGeoJson(path) {
-  const r = await fetch(`${GC_GEO_API}${path}`);
-  if (!r.ok && r.status !== 404) throw new Error(`Lookup failed (HTTP ${r.status})`);
-  return r.status === 404 ? null : r.json();
-}
-async function gGeocode(text) {
-  const q = text.trim();
-  if (!q) return [];
-  if (GC_PC.test(q)) {
-    const j = await gGeoJson(`/postcodes/${encodeURIComponent(q.replace(/\s+/g, ""))}`);
-    return j && j.result && j.result.latitude != null ? [{ lat: j.result.latitude, lon: j.result.longitude, label: j.result.postcode }] : [];
-  }
-  if (GC_OC.test(q)) {
-    const j = await gGeoJson(`/outcodes/${encodeURIComponent(q)}`);
-    if (j && j.result && j.result.latitude != null) return [{ lat: j.result.latitude, lon: j.result.longitude, label: j.result.outcode }];
-  }
-  const j = await gGeoJson(`/places?q=${encodeURIComponent(q)}&limit=8`);
-  return ((j && j.result) || []).filter((p) => p.latitude != null)
-    .map((p) => ({ lat: p.latitude, lon: p.longitude, label: [...new Set([p.name_1, p.county_unitary || p.region].filter(Boolean))].join(", ") }));
-}
+// ── start point ─────────────────────────────────────────────────────────
 function gSetStart(s) {
   GC.start = s;
-  try { localStorage.setItem(GC_START_KEY, JSON.stringify(s)); } catch (e) { /* optional */ }
+  TourSupport.saveStart(s);
   document.getElementById("gcStartCurrent").textContent = s ? `Start: ${s.label}` : "";
   gRenderAll();
 }
-async function gFindStart() {
-  const list = document.getElementById("gcStartChoices");
-  list.replaceChildren();
-  gStatus("Looking up location…");
-  try {
-    const res = await gGeocode(document.getElementById("gcStartInput").value);
-    if (!res.length) return gStatus("No match found — try a postcode or a nearby larger town.", true);
-    gStatus("");
-    if (res.length === 1) return gSetStart(res[0]);
-    list.appendChild(gEl("div", "gc-hint", "Did you mean…"));
-    res.forEach((r) => {
-      const b = gEl("button", "gc-choice", r.label);
-      b.type = "button";
-      b.addEventListener("click", () => { list.replaceChildren(); gSetStart(r); });
-      list.appendChild(b);
-    });
-  } catch (e) { gStatus(`${e.message}. You can still browse without a start point.`, true); }
+function gFindStart() {
+  return TourSupport.findPlace({
+    input: document.getElementById("gcStartInput"),
+    choices: document.getElementById("gcStartChoices"),
+    onPick: gSetStart, setStatus: gStatus,
+    failHint: "You can still browse without a start point.",
+  });
 }
-function gLocate() {
-  if (!navigator.geolocation) return gStatus("Location isn't available in this browser.", true);
-  gStatus("Asking for your location…");
-  navigator.geolocation.getCurrentPosition(
-    (p) => { gStatus(""); gSetStart({ lat: p.coords.latitude, lon: p.coords.longitude, label: "My location" }); },
-    () => gStatus("Couldn't get your location.", true), { timeout: 10000 });
-}
+function gLocate() { TourSupport.locate({ onPick: gSetStart, setStatus: gStatus }); }
 
 // ── period / reload ─────────────────────────────────────────────────────
 function gReload() {
@@ -261,13 +200,15 @@ function gRenderAll() {
 function gRenderBrowse() {
   const box = document.getElementById("gcBrowse");
   box.replaceChildren();
+  GC.browseList = [];
   if (!GC.periodFrom) return;
   const cats = gCats();
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
   const q = document.getElementById("gcSearch").value.trim().toLowerCase();
   let list = GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo && gPasses(e, cats, maxHome));
   if (q) list = list.filter((e) => `${e.title} ${e.performer} ${(GC.venues[e.venue_id] || {}).name} ${(GC.venues[e.venue_id] || {}).city}`.toLowerCase().includes(q));
-  if (!list.length) { box.appendChild(gEl("p", "gc-hint", "No events match — try widening the dates, categories or distance.")); return; }
+  GC.browseList = list;
+  if (!list.length) { box.appendChild(gEl("p", "ts-hint", "No events match — try widening the dates, categories or distance.")); return; }
   const total = list.length;
   list = list.slice(0, GC.limit);
   let lastKey = "", grid = null;
@@ -315,12 +256,13 @@ function gRefFor(date) {
 function gRenderNearby() {
   const sec = document.getElementById("gcNearby");
   sec.replaceChildren();
+  GC.scope = []; // gigs in reach of the plan, for the map
   if (!GC.anchor) { sec.hidden = true; return; }
   sec.hidden = false;
   sec.appendChild(gEl("h3", null, "Add more nights around your gig"));
-  const ctl = gEl("div", "gc-grid");
+  const ctl = gEl("div", "ts-grid");
   const mk = (label, id, val, min, max) => {
-    const l = gEl("label", "gc-field", label);
+    const l = gEl("label", "ts-field", label);
     const i = gEl("input"); i.type = "number"; i.id = id; i.min = min; i.max = max; i.value = val;
     i.addEventListener("change", () => {
       GC.before = Math.min(7, Math.max(0, parseInt(document.getElementById("gcBefore").value, 10) || 0));
@@ -332,7 +274,7 @@ function gRenderNearby() {
   };
   ctl.append(mk("Nights before", "gcBefore", GC.before, 0, 7), mk("Nights after", "gcAfter", GC.after, 0, 7), mk("Within … miles of the previous stop", "gcRadius", GC.radius, 5, 300));
   sec.appendChild(ctl);
-  sec.appendChild(gEl("p", "gc-hint", "Add one event per night. Distances are measured from your nearest chosen stop towards the gig you picked."));
+  sec.appendChild(gEl("p", "ts-hint", "Add one event per night. Distances are measured from your nearest chosen stop towards the gig you picked."));
 
   const cats = gCats();
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
@@ -353,6 +295,7 @@ function gRenderNearby() {
         .sort((a, b) => a.hop - b.hop);
       if (!cands.length) col.appendChild(gEl("div", "gc-none", `Nothing within ${GC.radius} mi`));
       cands.forEach(({ e, hop }) => {
+        GC.scope.push(e);
         const on = GC.chosen.get(k) && GC.chosen.get(k).id === e.id;
         col.appendChild(gCard(e, {
           chosen: on, hop, refName: ref.title,
@@ -382,11 +325,11 @@ function gRenderPlan() {
   const row = document.getElementById("gcSummaryRow");
   const box = document.getElementById("gcPlan");
   box.replaceChildren();
-  if (!GC.anchor) { row.hidden = true; return; }
   row.hidden = false;
+  if (!GC.anchor) { gRenderMap([]); return; }
   const stops = gStops(), home = gHome();
   box.appendChild(gEl("h3", null, "Your trip"));
-  const ol = gEl("ol", "gc-list");
+  const ol = gEl("ol", "ts-list");
   const lines = [];
   let prev = home, total = 0;
   stops.forEach((c) => {
@@ -401,7 +344,7 @@ function gRenderPlan() {
   const info = stops.length > 1 || home
     ? `Travel${home ? ` from and back to ${GC.start.label}` : " between stops"}: about ${gFmtMi(total)} (${gFmtDrive(total)} driving). `
     : "";
-  box.appendChild(gEl("p", "gc-total", info + "Estimates only — check a route planner, and the event's own page for times and booking."));
+  box.appendChild(gEl("p", "ts-total", info + "Estimates only — check a route planner, and the event's own page for times and booking."));
   const act = gEl("div", "gc-actions");
   const copy = gEl("button", "gc-btn", "📋 Copy plan"); copy.type = "button";
   copy.addEventListener("click", async () => {
@@ -438,35 +381,81 @@ function gDownloadIcs(stops) {
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
-function gLoadLeaflet() {
-  if (window.L) return Promise.resolve(window.L);
-  if (gcLeafletP) return gcLeafletP;
-  gcLeafletP = new Promise((resolve, reject) => {
-    const css = document.createElement("link"); css.rel = "stylesheet"; css.href = GC_LEAFLET_CSS; document.head.appendChild(css);
-    const s = document.createElement("script"); s.src = GC_LEAFLET_JS; s.async = true;
-    s.onload = () => resolve(window.L); s.onerror = () => reject(new Error("Leaflet could not be loaded"));
-    document.head.appendChild(s);
-  });
-  return gcLeafletP;
+function gToggle(e) {
+  const k = gKey(e.date), cur = GC.chosen.get(k);
+  if (cur && cur.id === e.id) GC.chosen.delete(k); else GC.chosen.set(k, e);
+  gRenderAll();
 }
+function gDayLabel(date) {
+  const n = Math.round((date - GC.anchor.date) / 86400000);
+  return n === 0 ? "0" : n > 0 ? `+${n}` : `−${Math.abs(n)}`;
+}
+/** Popup listing a venue's gigs, each with a button (plan around / add / remove). */
+function gVenuePopup(vid, events) {
+  const box = gEl("div", "map-popup");
+  box.appendChild(gEl("strong", null, gPlace(GC.venues[vid]) || vid));
+  [...events].sort((a, b) => a.date - b.date).forEach((e) => {
+    const row = gEl("div", "map-popup-row");
+    if (GC.anchor) row.appendChild(gEl("span", "map-popup-day", gDayLabel(e.date)));
+    row.appendChild(gEl("span", null, ` ${formatDate(e.date)}${e.time ? ", " + e.time : ""} — ${e.title}${e.performer ? " (" + e.performer + ")" : ""}`));
+    const b = gEl("button", "map-popup-btn");
+    b.type = "button";
+    if (!GC.anchor) {
+      b.textContent = "Plan around this gig";
+      b.addEventListener("click", () => gSetAnchor(e));
+    } else if (GC.anchor.id === e.id) {
+      b.textContent = "★ Your gig"; b.disabled = true;
+    } else {
+      const on = GC.chosen.get(gKey(e.date)) && GC.chosen.get(gKey(e.date)).id === e.id;
+      b.textContent = on ? "Remove" : "Add to plan";
+      b.addEventListener("click", () => gToggle(e));
+    }
+    row.appendChild(b);
+    box.appendChild(row);
+  });
+  return box;
+}
+
 async function gRenderMap(stops) {
   const wrap = document.getElementById("gcMapWrap");
-  if (!stops.length) { wrap.style.display = "none"; return; }
   wrap.style.display = "";
-  try { await gLoadLeaflet(); } catch (e) { wrap.style.display = "none"; return; }
+  try { await TourSupport.loadLeaflet(); } catch (e) { wrap.style.display = "none"; return; }
   if (!gcMap) gcMap = initMap("gcMap");
   gcMap.invalidateSize();
   if (gcLayer) gcLayer.remove();
   gcLayer = L.layerGroup().addTo(gcMap);
-  const pts = [], h = gHome();
-  if (h) { pts.push(h); L.marker(h, { icon: L.divIcon({ className: "gc-pin home", html: "⌂", iconSize: [26, 26] }) }).bindTooltip(GC.start.label).addTo(gcLayer); }
+  const pts = [], h = gHome(), extra = [];
+
+  // Venues in scope: before a gig is picked, every venue with a matching
+  // gig in the period (labelled with how many); afterwards, venues with a
+  // gig on a nearby night (labelled +1, −2 …). Click for the gigs.
+  const showScope = document.getElementById("gcShowScope").checked;
+  const stopVenues = new Set(stops.map((c) => c.venue_id));
+  if (showScope) {
+    const pool = GC.anchor ? (GC.scope || []) : (GC.browseList || []);
+    const byVenue = new Map();
+    pool.forEach((e) => { if (!byVenue.has(e.venue_id)) byVenue.set(e.venue_id, []); byVenue.get(e.venue_id).push(e); });
+    byVenue.forEach((evs, vid) => {
+      if (stopVenues.has(vid)) return;
+      const ll = gLL(evs[0]); extra.push(ll);
+      const text = GC.anchor
+        ? (() => { const l = [...new Set([...evs].sort((a, b) => a.date - b.date).map((e) => gDayLabel(e.date)))]; return l.length > 3 ? l.slice(0, 3).join(" ") + "…" : l.join(" "); })()
+        : String(evs.length);
+      L.marker(ll, { icon: L.divIcon({ className: "ts-pin cand", html: text, iconSize: [40, 20], iconAnchor: [20, 10] }) })
+        .bindTooltip(`${(GC.venues[vid] || {}).name || vid} (${GC.anchor ? text : evs.length + (evs.length === 1 ? " gig" : " gigs")})`)
+        .bindPopup(gVenuePopup(vid, evs)).addTo(gcLayer);
+    });
+  }
+  if (h) { pts.push(h); L.marker(h, { icon: L.divIcon({ className: "ts-pin home", html: "⌂", iconSize: [26, 26] }) }).bindTooltip(GC.start.label).addTo(gcLayer); }
   stops.forEach((c, i) => {
     const ll = gLL(c); pts.push(ll);
-    L.marker(ll, { icon: L.divIcon({ className: "gc-pin" + (GC.anchor && c.id === GC.anchor.id ? " anchor" : ""), html: String(i + 1), iconSize: [26, 26] }) })
-      .bindTooltip(`${i + 1}. ${c.title} — ${formatDate(c.date)}`).addTo(gcLayer);
+    const here = [c].concat((GC.scope || []).filter((e) => e.venue_id === c.venue_id && e.id !== c.id));
+    L.marker(ll, { icon: L.divIcon({ className: "ts-pin" + (GC.anchor && c.id === GC.anchor.id ? " anchor" : ""), html: String(i + 1), iconSize: [26, 26] }), zIndexOffset: 500 })
+      .bindTooltip(`${i + 1}. ${c.title} — ${formatDate(c.date)}`).bindPopup(gVenuePopup(c.venue_id, here)).addTo(gcLayer);
   });
-  if (pts.length > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(gcLayer);
-  gcMap.fitBounds(L.latLngBounds(pts).pad(0.25), { maxZoom: 11 });
+  if (stops.length + (h ? 1 : 0) > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(gcLayer);
+  const all = pts.concat(extra);
+  if (all.length) gcMap.fitBounds(L.latLngBounds(all).pad(0.2), { maxZoom: 11 });
 }
 
 // ── init ────────────────────────────────────────────────────────────────
@@ -474,15 +463,14 @@ async function gInit() {
   const res = await loadEventsData();
   if (!res) { document.getElementById("gcLoading").textContent = "Couldn't load events data."; return; }
   GC.data = res.eventsData; GC.venues = res.venuesLookup || {};
-  try {
-    const s = JSON.parse(localStorage.getItem(GC_START_KEY) || "null");
-    if (s && typeof s.lat === "number") { GC.start = s; document.getElementById("gcStartCurrent").textContent = `Start: ${s.label}`; }
-  } catch (e) { /* ignore */ }
+  const saved = TourSupport.loadStart();
+  if (saved) { GC.start = saved; document.getElementById("gcStartCurrent").textContent = `Start: ${saved.label}`; }
   const t0 = getTodayMidnight();
   document.getElementById("gcFrom").value = gKey(t0);
   document.getElementById("gcTo").value = gKey(gAdd(t0, 13));
   ["gcFrom", "gcTo"].forEach((id) => document.getElementById(id).addEventListener("change", gReload));
   document.getElementById("gcMaxHome").addEventListener("change", gRenderAll);
+  document.getElementById("gcShowScope").addEventListener("change", () => gRenderMap(gStops()));
   document.querySelectorAll("#gcCats input").forEach((i) => i.addEventListener("change", gRenderAll));
   document.getElementById("gcSearch").addEventListener("input", () => { GC.limit = 120; gRenderBrowse(); });
   document.getElementById("gcStartFind").addEventListener("click", gFindStart);
