@@ -20,6 +20,7 @@ const dkey = TourSupport.dateKey;
 
 const PLANNER = {
   showCands: true, // grey markers for other possible venues on the map
+  hideClose: false, // hide (rather than grey out) venues too close to a chosen stop
   eventsData: null,
   venues: {},
   start: null, // { lat, lon, label }
@@ -823,6 +824,13 @@ function renderAll() {
   candCb.addEventListener("change", () => { PLANNER.showCands = candCb.checked; renderMap(); });
   candLbl.append(candCb, " show other venues on map");
   bar.append(bestBtn, clearBtn, allLbl, candLbl);
+  if (PLANNER.minSpread > 0) {
+    const hideLbl = el("label", "planner-inline");
+    const hideCb = el("input"); hideCb.type = "checkbox"; hideCb.checked = !!PLANNER.hideClose;
+    hideCb.addEventListener("change", () => { PLANNER.hideClose = hideCb.checked; renderAll(); });
+    hideLbl.append(hideCb, ` hide venues within ${PLANNER.minSpread} mi of a stop`);
+    bar.appendChild(hideLbl);
+  }
   if (PLANNER.best) {
     const isPool = PLANNER.mode === "pool";
     bar.appendChild(el("span", "ts-hint",
@@ -857,7 +865,12 @@ function renderAll() {
     const col = el("div", "graph-col" + (nodes.length ? "" : " graph-col-rest"));
     col.appendChild(el("h4", null, nodes.length ? formatDate(date) : formatDate(date).replace(/ \d{4}$/, "")));
     if (!nodes.length) col.appendChild(el("div", "graph-none", "rest day"));
+    let hiddenClose = 0;
     nodes.forEach((c) => {
+      if (PLANNER.hideClose && !c.isAnchor) {
+        const chosenNow = PLANNER.chosen.get(k);
+        if (!(chosenNow && chosenNow.id === c.id) && nearStop(c, orderedStops(), PLANNER.minSpread)) { hiddenClose++; return; }
+      }
       const v = venueOf(c) || {};
       const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : ""));
       n.dataset.nid = c.id;
@@ -892,6 +905,7 @@ function renderAll() {
       nodeEls.set(c.id, n);
       col.appendChild(n);
     });
+    if (hiddenClose) col.appendChild(el("div", "graph-none", `${hiddenClose} hidden — within ${PLANNER.minSpread} mi of a stop`));
     inner.appendChild(col);
   });
   if (PLANNER.start) inner.appendChild(colHome("Return", "home-end"));
@@ -1113,8 +1127,10 @@ async function renderMap() {
       if (!byVenue.has(c.venue_id)) byVenue.set(c.venue_id, []);
       byVenue.get(c.venue_id).push(c);
     }));
-    byVenue.forEach((nodes, vid) => {
+    byVenue.forEach((nodes0, vid) => {
       if (venuesWithStop.has(vid)) return; // shown as a numbered stop below
+      const nodes = PLANNER.hideClose ? nodes0.filter((c) => !nearStop(c, stops, PLANNER.minSpread)) : nodes0;
+      if (!nodes.length) return;
       const ll = latlonOf(nodes[0]);
       candPts.push(ll);
       const labs = [...new Set([...nodes].sort((a, b) => a.date - b.date).map((c) => dayLabel(c.date)))];

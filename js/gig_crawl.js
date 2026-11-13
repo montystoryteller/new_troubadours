@@ -21,6 +21,7 @@ const GC = {
   start: null, anchor: null,
   before: 2, after: 2, radius: 40,
   chosen: new Map(), // dateKey -> event
+  filters: new Set(), // active night filters: "g:clubs", "g:folk", "p:<performer>"
   limit: 120,
 };
 let gcMap = null, gcLayer = null;
@@ -42,11 +43,12 @@ function gIds(e) {
   const a = (x) => (Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []);
   return [e.performer_id, ...a(e.performer_ids), ...a(e.other_performer_ids)].filter(Boolean);
 }
-function gPerformers(e) {
+function gPerformerNames(e) {
   const P = GC.data.performers || {};
   const names = gIds(e).map((id) => (P[id] ? P[id].name : null)).filter(Boolean);
-  return names.length ? names.join(", ") : (typeof e.performer === "string" ? e.performer : "");
+  return names.length ? [...new Set(names)] : (typeof e.performer === "string" && e.performer ? [e.performer] : []);
 }
+function gPerformers(e) { return gPerformerNames(e).join(", "); }
 function gEventUrl(rec, date) {
   try {
     const id = rec.eventId || resolveEventId(rec, date);
@@ -68,7 +70,7 @@ function gCollect(from, to) {
       if (typeof clubIsActiveOn === "function" && list === "clubs" && !clubIsActiveOn(rec, o.date)) return;
       push({
         id: `rec:${list}:${rec.club || rec.folk_id || rec.name}:${gKey(o.date)}`, cat, kind: "recurring",
-        title: rec.name, performer: "", date: o.date, time: rec.time || "",
+        title: rec.name, performer: "", performerList: [], group: list === "clubs" ? "clubs" : "folk", date: o.date, time: rec.time || "",
         venue_id: list === "clubs" ? resolveClubVenueId(rec, o.date) : rec.venue_id,
         url: rec.club ? `storyclub.html?club=${encodeURIComponent(rec.club)}` : "",
         ext: rec.link || rec.facebook || "", price: rec.price || "", soldOut: false,
@@ -82,7 +84,7 @@ function gCollect(from, to) {
     if (!d || d < from || d > to || e.online || e.cancelled || e.isCancelled) return;
     push({
       id: `ev:${e.eventId || e.name + gKey(d)}`, cat: e.isMusic ? "music" : e.isPoetry ? "poetry" : cat, kind: "event",
-      title: e.showname || e.name, performer: gPerformers(e), date: d, time: e.time || "",
+      title: e.showname || e.name, performer: gPerformers(e), performerList: gPerformerNames(e), group: null, date: d, time: e.time || "",
       venue_id: e.venue_id, url: gEventUrl(e, d), ext: e.ticket_url || e.event_url || e.fb_event || e.link || "",
       price: e.price || "", soldOut: !!e.isSoldOut,
     });
@@ -94,7 +96,7 @@ function gCollect(from, to) {
     push({
       id: `ev:${td.eventId || (t.tour_name || t.name) + gKey(d) + td.venue_id}`,
       cat: t.isMusic ? "music" : t.isPoetry ? "poetry" : "story", kind: "event",
-      title: t.tour_name || t.name, performer: gPerformers({ ...t, ...td }), date: d, time: td.time || t.time || "",
+      title: t.tour_name || t.name, performer: gPerformers({ ...t, ...td }), performerList: gPerformerNames({ ...t, ...td }), group: null, date: d, time: td.time || t.time || "",
       venue_id: td.venue_id, url: gEventUrl(td, d), ext: td.ticket_url || td.fb_event || "",
       price: td.price || t.price || "", soldOut: !!td.isSoldOut,
     });
@@ -131,7 +133,6 @@ function gPasses(ev, cats, maxHome) {
 // ── start point ─────────────────────────────────────────────────────────
 function gSetStart(s) {
   GC.start = s;
-  TourSupport.saveStart(s);
   document.getElementById("gcStartCurrent").textContent = s ? `Start: ${s.label}` : "";
   gRenderAll();
 }
@@ -232,6 +233,7 @@ function gRenderBrowse() {
 }
 
 function gSetAnchor(ev) {
+  if (!GC.anchor || GC.anchor.id !== ev.id) GC.filters = new Set();
   GC.anchor = ev;
   GC.chosen = new Map([[gKey(ev.date), ev]]);
   // make sure neighbours are loaded for this anchor even if near the period edge
@@ -253,10 +255,15 @@ function gRefFor(date) {
   return GC.anchor;
 }
 
+function gPassesFilter(e) {
+  if (!GC.filters.size) return true;
+  return (e.group && GC.filters.has("g:" + e.group)) || (e.performerList || []).some((n) => GC.filters.has("p:" + n));
+}
+
 function gRenderNearby() {
   const sec = document.getElementById("gcNearby");
   sec.replaceChildren();
-  GC.scope = []; // gigs in reach of the plan, for the map
+  GC.scope = []; // gigs in reach of the plan (after filters), for the map
   if (!GC.anchor) { sec.hidden = true; return; }
   sec.hidden = false;
   sec.appendChild(gEl("h3", null, "Add more nights around your gig"));
@@ -274,37 +281,81 @@ function gRenderNearby() {
   };
   ctl.append(mk("Nights before", "gcBefore", GC.before, 0, 7), mk("Nights after", "gcAfter", GC.after, 0, 7), mk("Within … miles of the previous stop", "gcRadius", GC.radius, 5, 300));
   sec.appendChild(ctl);
-  sec.appendChild(gEl("p", "ts-hint", "Add one event per night. Distances are measured from your nearest chosen stop towards the gig you picked."));
 
+  // Pass 1: what's in reach each night (before the performer/club filters)
   const cats = gCats();
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
-  const row = gEl("div", "gc-nights");
+  const nights = [];
   for (let i = -GC.before; i <= GC.after; i++) {
     const date = gAdd(GC.anchor.date, i), k = gKey(date);
     if (date < getTodayMidnight()) continue; // can't go to a night that's gone
-    const col = gEl("div", "gc-night" + (i === 0 ? " anchor" : ""));
-    col.appendChild(gEl("h4", null, formatDate(date) + (i === 0 ? "  ★" : "")));
-    if (i === 0) {
+    if (i === 0) { nights.push({ i, date, k }); continue; }
+    const ref = gRefFor(date), refLL = gLL(ref);
+    const cands = GC.events.filter((e) => gKey(e.date) === k && gPasses(e, cats, maxHome))
+      .map((e) => ({ e, hop: gMiles(refLL, gLL(e)) }))
+      .filter((x) => x.hop != null && x.hop <= GC.radius)
+      .sort((a, b) => a.hop - b.hop);
+    nights.push({ i, date, k, ref, cands });
+  }
+
+  // Filter buttons: all story clubs / folk nights in one go, then each performer in reach
+  const counts = { clubs: 0, folk: 0 }, perf = new Map();
+  nights.forEach((n) => (n.cands || []).forEach(({ e }) => {
+    if (e.group) counts[e.group]++;
+    (e.performerList || []).forEach((p) => perf.set(p, (perf.get(p) || 0) + 1));
+  }));
+  const chips = [];
+  if (counts.clubs) chips.push({ key: "g:clubs", label: `📖 All story clubs (${counts.clubs})` });
+  if (counts.folk) chips.push({ key: "g:folk", label: `🎻 All folk nights & sessions (${counts.folk})` });
+  [...perf.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .forEach(([name, n]) => chips.push({ key: "p:" + name, label: `${name} (${n})` }));
+  GC.filters = new Set([...GC.filters].filter((k) => chips.some((c) => c.key === k))); // drop filters no longer in scope
+  if (chips.length) {
+    const box = gEl("div", "gc-filters");
+    box.appendChild(gEl("div", "ts-hint", GC.filters.size
+      ? "Showing only gigs matching the highlighted buttons (click again to remove a filter)."
+      : "Narrow down by who's playing — click one or more (leave all off to see everything):"));
+    const wrap = gEl("div", "gc-chips");
+    chips.forEach((c) => {
+      const b = gEl("button", "gc-chip" + (GC.filters.has(c.key) ? " on" : ""), c.label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", GC.filters.has(c.key) ? "true" : "false");
+      b.addEventListener("click", () => { if (GC.filters.has(c.key)) GC.filters.delete(c.key); else GC.filters.add(c.key); gRenderAll(); });
+      wrap.appendChild(b);
+    });
+    if (GC.filters.size) {
+      const clr = gEl("button", "gc-chip clear", "✕ Clear filters"); clr.type = "button";
+      clr.addEventListener("click", () => { GC.filters = new Set(); gRenderAll(); });
+      wrap.appendChild(clr);
+    }
+    box.appendChild(wrap);
+    sec.appendChild(box);
+  }
+  sec.appendChild(gEl("p", "ts-hint", "Add one event per night. Distances are measured from your nearest chosen stop towards the gig you picked."));
+
+  // Pass 2: draw the nights (filters applied; a stop already in your plan always stays visible)
+  const row = gEl("div", "gc-nights");
+  nights.forEach((n) => {
+    const col = gEl("div", "gc-night" + (n.i === 0 ? " anchor" : ""));
+    col.appendChild(gEl("h4", null, formatDate(n.date) + (n.i === 0 ? "  ★" : "")));
+    if (n.i === 0) {
       col.appendChild(gCard(GC.anchor, { anchor: true }));
     } else {
-      const ref = gRefFor(date), refLL = gLL(ref);
-      col.appendChild(gEl("div", "gc-ref", `from ${ref.title}`));
-      const cands = GC.events.filter((e) => gKey(e.date) === k && gPasses(e, cats, maxHome))
-        .map((e) => ({ e, hop: gMiles(refLL, gLL(e)) }))
-        .filter((x) => x.hop != null && x.hop <= GC.radius)
-        .sort((a, b) => a.hop - b.hop);
-      if (!cands.length) col.appendChild(gEl("div", "gc-none", `Nothing within ${GC.radius} mi`));
-      cands.forEach(({ e, hop }) => {
+      col.appendChild(gEl("div", "ts-ref gc-ref", `from ${n.ref.title}`));
+      const chosenHere = GC.chosen.get(n.k);
+      const shown = n.cands.filter(({ e }) => gPassesFilter(e) || (chosenHere && chosenHere.id === e.id));
+      if (!shown.length) col.appendChild(gEl("div", "gc-none", n.cands.length ? "Nothing matches the filters" : `Nothing within ${GC.radius} mi`));
+      shown.forEach(({ e, hop }) => {
         GC.scope.push(e);
-        const on = GC.chosen.get(k) && GC.chosen.get(k).id === e.id;
+        const on = chosenHere && chosenHere.id === e.id;
         col.appendChild(gCard(e, {
-          chosen: on, hop, refName: ref.title,
-          button: { label: on ? "✓ In plan (remove)" : "Add to plan", fn: () => { if (on) GC.chosen.delete(k); else GC.chosen.set(k, e); gRenderAll(); } },
+          chosen: on, hop, refName: n.ref.title,
+          button: { label: on ? "✓ In plan (remove)" : "Add to plan", fn: () => gToggle(e) },
         }));
       });
     }
     row.appendChild(col);
-  }
+  });
   sec.appendChild(row);
 }
 
@@ -463,8 +514,7 @@ async function gInit() {
   const res = await loadEventsData();
   if (!res) { document.getElementById("gcLoading").textContent = "Couldn't load events data."; return; }
   GC.data = res.eventsData; GC.venues = res.venuesLookup || {};
-  const saved = TourSupport.loadStart();
-  if (saved) { GC.start = saved; document.getElementById("gcStartCurrent").textContent = `Start: ${saved.label}`; }
+  // No home location is assumed: it's only used once the visitor gives one on this page.
   const t0 = getTodayMidnight();
   document.getElementById("gcFrom").value = gKey(t0);
   document.getElementById("gcTo").value = gKey(gAdd(t0, 13));
