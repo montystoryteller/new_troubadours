@@ -1,0 +1,37 @@
+/* tour-support.css — styles shared by tour_planner.html and gig_crawl.html.
+   Extends shared-styles.css. Page-specific rules stay in
+   tour-planner-styles.css / gig-crawl-styles.css. */
+
+[hidden] { display: none !important; }
+
+/* cards / form layout */
+.ts-panel { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1); margin-bottom: 20px; }
+.ts-panel h3 { margin-top: 0; }
+.ts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 20px; }
+.ts-field { display: flex; flex-direction: column; gap: 4px; font-size: .9em; font-weight: 600; color: #444; }
+.ts-field input, .ts-field select { padding: 9px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; font-weight: normal; max-width: 100%; box-sizing: border-box; }
+.ts-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-top: 10px; }
+.ts-checks { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: .92em; }
+.ts-hint { color: #666; font-size: .85em; font-style: italic; margin: 6px 0; }
+.ts-status { min-height: 1.2em; margin: 8px 0; color: #555; }
+.ts-status.error { color: #b91c1c; }
+
+/* "did you mean…" place buttons (explicit text colour: shared-styles.css
+   gives <button> white text, which is invisible on a white background) */
+.ts-choice { color: #222; padding: 6px 12px; border: 1px solid #ccc; border-radius: 16px; background: #fff; cursor: pointer; margin: 2px 4px 2px 0; }
+.ts-choice:hover { background: var(--theme-green-bg, #f1f8f1); }
+
+/* "your tour" list + map side by side, above the detail */
+.ts-summary-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; margin-bottom: 20px; }
+.ts-summary-row > .ts-panel { margin-bottom: 0; flex: 1 1 360px; min-width: 0; box-sizing: border-box; }
+.ts-plan { max-height: 440px; overflow-y: auto; }
+.ts-plan:empty { display: none; }
+.ts-map-wrap { height: 440px; }
+.ts-map { height: 100%; border: 1px solid #ddd; border-radius: 4px; }
+.ts-list { padding-left: 1.3em; line-height: 1.55; }
+.ts-total { font-size: .9em; color: #444; }
+
+/* numbered map pins */
+.ts-pin { background: #2e7d32; color: #fff; border: 2px solid #fff; border-radius: 50%; width: 26px; height: 26px; line-height: 22px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.ts-pin.home { background: #1565c0; font-size: 15px; }
+.ts-pin.anchor { background: #f9a825; }

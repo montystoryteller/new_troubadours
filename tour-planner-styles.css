@@ -1,15 +1,4 @@
 /* Tour planner — extends shared-styles.css */
-.planner-panel { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1); margin-bottom: 20px; }
-.planner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 20px; }
-.planner-field { display: flex; flex-direction: column; gap: 4px; font-size: .9em; font-weight: 600; color: #444; }
-.planner-field input, .planner-field select { padding: 9px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; font-weight: normal; max-width: 100%; box-sizing: border-box; }
-.planner-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
-.planner-hint { color: #666; font-size: .85em; font-style: italic; margin: 6px 0; }
-.planner-status { min-height: 1.2em; margin: 8px 0; color: #555; }
-.planner-status.error { color: #b91c1c; }
-.planner-choice { color: #222; padding: 6px 12px; border: 1px solid #ccc; border-radius: 16px; background: #fff; cursor: pointer; margin: 2px 4px 2px 0; }
-.planner-choice:hover { background: var(--theme-green-bg, #f1f8f1); }
-.planner-checks { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: .9em; }
 .planner-day { background: #fff; padding: 14px 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1); margin-bottom: 14px; }
 .planner-day h3 { margin: 0 0 4px; }
 .planner-ref { font-size: .8em; color: #777; margin-bottom: 8px; }
@@ -24,12 +13,6 @@
 .planner-card-dist { font-size: .85em; color: #2e7d32; margin-top: 4px; }
 .planner-card-actions { display: flex; gap: 12px; align-items: center; margin-top: 8px; font-size: .88em; }
 .planner-pick { padding: 6px 12px; font-size: .85em; }
-.planner-list { padding-left: 1.3em; line-height: 1.6; }
-.planner-total { font-size: .9em; color: #444; }
-#plannerMapWrap { height: 420px; }
-#plannerMap { height: 100%; border: 1px solid #ddd; border-radius: 4px; }
-.planner-pin { background: #2e7d32; color: #fff; border: 2px solid #fff; border-radius: 50%; width: 26px; height: 26px; line-height: 22px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-.planner-pin.home { background: #1565c0; font-size: 15px; }
 
 /* ── Day-column graph ─────────────────────────────── */
 .planner-bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
@@ -64,7 +47,6 @@
 .graph-col.graph-col-rest { flex: 0 0 64px; }
 .graph-col.graph-col-rest h4 { font-size: .72em; color: #999; }
 .graph-inner { gap: 56px; }
-[hidden]{display:none !important}
 .graph-node-note { color: #6b4e00; font-size: .9em; margin-top: 2px; }
 .pool-list { max-height: 220px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; padding: 6px 10px; font-size: .85em; }
 .pool-item { display: block; padding: 2px 0; }
@@ -81,9 +63,5 @@ select[multiple] { min-height: 8em; }
 .picker-chip-x { border: 0; background: transparent; cursor: pointer; font-size: 1.1em; line-height: 1; color: #1b5e20; padding: 0 4px; }
 
 /* tour list + map sit side by side above the graph */
-.planner-summary-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; margin-bottom: 20px; }
-.planner-summary-row > .planner-panel { margin-bottom: 0; flex: 1 1 360px; min-width: 0; box-sizing: border-box; }
-#plannerItinerary:empty { display: none; }
-#plannerItinerary { max-height: 420px; overflow-y: auto; }
 .graph-node.too-close { opacity: .45; cursor: not-allowed; background: #f5f5f5; border-left-color: #bbb; }
 .graph-node.too-close:hover { box-shadow: none; background: #f5f5f5; }

@@ -14,13 +14,9 @@
  * Geocoding: postcodes.io (browser-callable, CORS-enabled, free).
  */
 
-const LEAFLET_JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
-const LEAFLET_CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
-const GEO_API = "https://api.postcodes.io";
-const START_KEY = "tourPlannerStart";
-const ROAD_FACTOR = 1.3; // straight-line -> rough road distance
-const AVG_MPH = 45; // for the drive-time estimate
-const KM_TO_MI = 0.621371;
+const { ROAD_FACTOR, KM_TO_MI } = TourSupport; // shared helpers live in tour_support.js
+const { addDays, roadMiles, fmtMiles, fmtDrive, loadLeaflet, loadStart } = TourSupport;
+const dkey = TourSupport.dateKey;
 
 const PLANNER = {
   eventsData: null,
@@ -39,37 +35,8 @@ const PLANNER = {
 
 let plannerMap = null;
 let plannerMapLayer = null;
-let leafletPromise = null;
 
 // ── tiny helpers ────────────────────────────────────────────────────────
-function el(tag, cls, text) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (text != null) n.textContent = text;
-  return n;
-}
-function dkey(d) {
-  return formatDateForInput(d);
-}
-function addDays(d, n) {
-  const r = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-  r.setHours(0, 0, 0, 0);
-  return r;
-}
-function roadMiles(a, b) {
-  if (!a || !b) return null;
-  return haversineKm(a[0], a[1], b[0], b[1]) * KM_TO_MI * ROAD_FACTOR;
-}
-function fmtMiles(m) {
-  return m == null ? "?" : `${Math.round(m)} mi`;
-}
-function fmtDrive(m) {
-  if (m == null) return "";
-  const mins = Math.round((m / AVG_MPH) * 60);
-  const h = Math.floor(mins / 60);
-  const mm = mins % 60;
-  return h ? `~${h}h ${String(mm).padStart(2, "0")}m` : `~${mm}m`;
-}
 function venueOf(c) {
   return PLANNER.venues[c.venue_id] || null;
 }
@@ -80,7 +47,7 @@ function latlonOf(c) {
 function setStatus(msg, isError) {
   const s = document.getElementById("plannerStatus");
   s.textContent = msg || "";
-  s.className = "planner-status" + (isError ? " error" : "");
+  s.className = "ts-status" + (isError ? " error" : "");
 }
 
 // ── candidate gathering ─────────────────────────────────────────────────
@@ -170,81 +137,20 @@ function gatherCandidates(from, to, includeOther) {
 }
 
 // ── geocoding ───────────────────────────────────────────────────────────
-const POSTCODE_RE = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/;
-const OUTCODE_RE = /^[A-Za-z]{1,2}\d[A-Za-z\d]?$/;
-
-async function geoJson(path) {
-  const r = await fetch(`${GEO_API}${path}`);
-  if (!r.ok && r.status !== 404) throw new Error(`Lookup failed (HTTP ${r.status})`);
-  return r.status === 404 ? null : r.json();
-}
-
-/** @returns {Promise<{lat:number,lon:number,label:string}[]>} */
-async function geocode(text) {
-  const q = text.trim();
-  if (!q) return [];
-  if (POSTCODE_RE.test(q)) {
-    const j = await geoJson(`/postcodes/${encodeURIComponent(q.replace(/\s+/g, ""))}`);
-    return j && j.result && j.result.latitude != null
-      ? [{ lat: j.result.latitude, lon: j.result.longitude, label: j.result.postcode }]
-      : [];
-  }
-  if (OUTCODE_RE.test(q)) {
-    const j = await geoJson(`/outcodes/${encodeURIComponent(q)}`);
-    if (j && j.result && j.result.latitude != null)
-      return [{ lat: j.result.latitude, lon: j.result.longitude, label: j.result.outcode }];
-  }
-  const j = await geoJson(`/places?q=${encodeURIComponent(q)}&limit=8`);
-  return ((j && j.result) || [])
-    .filter((p) => p.latitude != null)
-    .map((p) => ({
-      lat: p.latitude,
-      lon: p.longitude,
-      label: [...new Set([p.name_1, p.county_unitary || p.region].filter(Boolean))].join(", "),
-    }));
-}
-
-function saveStart() {
-  try { localStorage.setItem(START_KEY, JSON.stringify(PLANNER.start)); } catch (e) { /* optional */ }
-}
-function loadStart() {
-  try {
-    const s = JSON.parse(localStorage.getItem(START_KEY) || "null");
-    if (s && typeof s.lat === "number" && typeof s.lon === "number") return s;
-  } catch (e) { /* ignore */ }
-  return null;
-}
-
 function setStart(s) {
   PLANNER.start = s;
-  saveStart();
+  TourSupport.saveStart(PLANNER.start);
   document.getElementById("startCurrent").textContent = s ? `Start: ${s.label}` : "";
   renderAll();
 }
 
-async function findPlace(inputId, choicesId, onPick) {
-  const input = document.getElementById(inputId);
-  const list = document.getElementById(choicesId);
-  list.replaceChildren();
-  setStatus("Looking up location…");
-  try {
-    const res = await geocode(input.value);
-    if (!res.length) {
-      setStatus("No match found — try a postcode or a nearby larger town.", true);
-      return;
-    }
-    setStatus("");
-    if (res.length === 1) return onPick(res[0]);
-    list.appendChild(el("div", "planner-hint", "Did you mean…"));
-    res.forEach((r) => {
-      const b = el("button", "planner-choice", r.label);
-      b.type = "button";
-      b.addEventListener("click", () => { list.replaceChildren(); onPick(r); });
-      list.appendChild(b);
-    });
-  } catch (e) {
-    setStatus(`${e.message}. You can pick a venue as the start point instead.`, true);
-  }
+function findPlace(inputId, choicesId, onPick) {
+  return TourSupport.findPlace({
+    input: document.getElementById(inputId),
+    choices: document.getElementById(choicesId),
+    onPick, setStatus,
+    failHint: "You can pick a venue as the start point instead.",
+  });
 }
 function onFindStart() { return findPlace("startInput", "startChoices", setStart); }
 function setArea(a) {
@@ -253,13 +159,7 @@ function setArea(a) {
 }
 
 function onUseLocation() {
-  if (!navigator.geolocation) return setStatus("Location isn't available in this browser.", true);
-  setStatus("Asking for your location…");
-  navigator.geolocation.getCurrentPosition(
-    (p) => { setStatus(""); setStart({ lat: p.coords.latitude, lon: p.coords.longitude, label: "My location" }); },
-    () => setStatus("Couldn't get your location.", true),
-    { timeout: 10000 },
-  );
+  TourSupport.locate({ onPick: setStart, setStatus });
 }
 
 function fillVenueFallback() {
@@ -472,11 +372,11 @@ function renderPoolList() {
   box.replaceChildren();
   const pool = PLANNER.pool || [];
   if (!pool.length) {
-    box.appendChild(el("p", "planner-hint", "No venues found — choose at least one artist or tour (their gigs need a venue)."));
+    box.appendChild(el("p", "ts-hint", "No venues found — choose at least one artist or tour (their gigs need a venue)."));
     return;
   }
   const on = pool.filter((r) => r.on).length;
-  box.appendChild(el("p", "planner-hint", `${pool.length} venues in the pool (${on} included). Untick any you don't want.`));
+  box.appendChild(el("p", "ts-hint", `${pool.length} venues in the pool (${on} included). Untick any you don't want.`));
   const ul = el("div", "pool-list");
   pool.forEach((r) => {
     const v = PLANNER.venues[r.vid];
@@ -562,8 +462,7 @@ function fillPoolSelectors() {
  *  limits, then fewer gigs, and reports what it achieved. */
 /** Straight-line miles between two gigs' venues. */
 function crowMiles(a, b) {
-  const x = latlonOf(a), y = latlonOf(b);
-  return x && y ? haversineKm(x[0], x[1], y[0], y[1]) * KM_TO_MI : Infinity;
+  return TourSupport.crowMiles(latlonOf(a), latlonOf(b));
 }
 /** First stop (on a different day) within `miles` of gig c, or null. */
 function nearStop(c, stops, miles) {
@@ -669,14 +568,8 @@ function exactKRoute(G, relax) {
 }
 
 // ── build + render ──────────────────────────────────────────────────────
-const UK_BOUNDS = { latMin: 49, latMax: 61, lonMin: -11, lonMax: 2.5 };
 function isRealPlace(c) {
-  const v = venueOf(c);
-  const ll = latlonOf(c);
-  if (!v || !ll) return false;
-  if (/online|zoom/i.test(`${c.venue_id} ${v.name || ""} ${v.city || ""}`)) return false;
-  if (v.isClosedDown) return false;
-  return ll[0] >= UK_BOUNDS.latMin && ll[0] <= UK_BOUNDS.latMax && ll[1] >= UK_BOUNDS.lonMin && ll[1] <= UK_BOUNDS.lonMax;
+  return TourSupport.venueUsable(PLANNER.venues, c.venue_id);
 }
 function homeLL() {
   return PLANNER.start ? [PLANNER.start.lat, PLANNER.start.lon] : null;
@@ -908,7 +801,7 @@ function renderAll() {
   if (!PLANNER.days.length) return;
   PLANNER.best = PLANNER.mode === "pool" ? bestKRoute(PLANNER.gigsWanted, false, false) : shortestRoute(false, false);
 
-  const bar = el("div", "planner-panel planner-bar");
+  const bar = el("div", "ts-panel planner-bar");
   const bestBtn = el("button", "btn-primary", "⚡ Use shortest route");
   bestBtn.type = "button";
   bestBtn.disabled = !PLANNER.best;
@@ -927,16 +820,16 @@ function renderAll() {
   bar.append(bestBtn, clearBtn, allLbl);
   if (PLANNER.best) {
     const isPool = PLANNER.mode === "pool";
-    bar.appendChild(el("span", "planner-hint",
+    bar.appendChild(el("span", "ts-hint",
       (isPool ? `Shortest ${PLANNER.best.achieved}-gig route` : "Shortest route visiting a gig every possible day") +
       `: ${fmtMiles(PLANNER.best.miles)}${PLANNER.start ? " round trip" : ""}` +
       (isPool && PLANNER.best.achieved < PLANNER.best.wanted ? ` (only ${PLANNER.best.achieved} of ${PLANNER.best.wanted} gigs possible in this window)` : "") +
       (PLANNER.best.relaxed ? " (distance limits relaxed — no route fit them)" : "") +
       (PLANNER.best.spreadRelaxed ? ` (couldn't keep stops ${PLANNER.minSpread} mi apart in this window)` : "")));
   } else if (PLANNER.mode === "pool") {
-    bar.appendChild(el("span", "planner-hint", "No venues in the pool fit those dates, weekdays and area — widen the window, radius or untick the weekday rule."));
+    bar.appendChild(el("span", "ts-hint", "No venues in the pool fit those dates, weekdays and area — widen the window, radius or untick the weekday rule."));
   }
-  if (!PLANNER.start) bar.appendChild(el("span", "planner-hint", "Set a start point to include the journey home."));
+  if (!PLANNER.start) bar.appendChild(el("span", "ts-hint", "Set a start point to include the journey home."));
   wrap.appendChild(bar);
 
   const scroll = el("div", "graph-scroll");
@@ -1008,7 +901,7 @@ function renderAll() {
   inner.appendChild(svg);
   scroll.appendChild(inner);
   wrap.appendChild(scroll);
-  wrap.appendChild(el("p", "planner-hint",
+  wrap.appendChild(el("p", "ts-hint",
     "Click a gig to add it to your tour (click again to remove). Lines show estimated road miles to the neighbouring days' options; hover a gig to see its links."));
   renderItinerary();
   renderMap();
@@ -1117,7 +1010,7 @@ function renderItinerary() {
   const stops = orderedStops();
   if (stops.length < 1) {
     box.appendChild(el("h3", null, "Your tour"));
-    box.appendChild(el("p", "planner-hint", "No stops yet — click gigs in the columns below, or press “Use shortest route”."));
+    box.appendChild(el("p", "ts-hint", "No stops yet — click gigs in the columns below, or press “Use shortest route”."));
     return;
   }
   const home = homeLL();
@@ -1132,7 +1025,7 @@ function renderItinerary() {
     prev = ll;
   });
   box.appendChild(el("h3", null, "Your tour"));
-  const ol = el("ol", "planner-list");
+  const ol = el("ol", "ts-list");
   lines.forEach((t) => ol.appendChild(el("li", null, t)));
   box.appendChild(ol);
   const total = routeMiles(stops);
@@ -1141,7 +1034,7 @@ function renderItinerary() {
     const diff = total - PLANNER.best.miles;
     msg += diff > 1 ? ` The shortest all-days route is ${fmtMiles(PLANNER.best.miles)} (${fmtMiles(diff)} less).` : " That matches the shortest route.";
   }
-  box.appendChild(el("p", "planner-total", msg + " Estimates are straight-line x " + ROAD_FACTOR + " — check a route planner."));
+  box.appendChild(el("p", "ts-total", msg + " Estimates are straight-line x " + ROAD_FACTOR + " — check a route planner."));
   const copy = el("button", "btn-secondary", "📋 Copy itinerary");
   copy.type = "button";
   copy.addEventListener("click", async () => {
@@ -1152,22 +1045,6 @@ function renderItinerary() {
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
-function loadLeaflet() {
-  if (window.L) return Promise.resolve(window.L);
-  if (leafletPromise) return leafletPromise;
-  leafletPromise = new Promise((resolve, reject) => {
-    const css = document.createElement("link");
-    css.rel = "stylesheet"; css.href = LEAFLET_CSS_URL;
-    document.head.appendChild(css);
-    const s = document.createElement("script");
-    s.src = LEAFLET_JS_URL; s.async = true;
-    s.onload = () => resolve(window.L);
-    s.onerror = () => reject(new Error("Leaflet could not be loaded"));
-    document.head.appendChild(s);
-  });
-  return leafletPromise;
-}
-
 async function renderMap() {
   const cont = document.getElementById("plannerMapWrap");
   const stops = orderedStops();
@@ -1184,13 +1061,13 @@ async function renderMap() {
   if (PLANNER.start) {
     const h = [PLANNER.start.lat, PLANNER.start.lon];
     pts.push(h);
-    L.marker(h, { icon: L.divIcon({ className: "planner-pin home", html: "⌂", iconSize: [26, 26] }) })
+    L.marker(h, { icon: L.divIcon({ className: "ts-pin home", html: "⌂", iconSize: [26, 26] }) })
       .bindTooltip(PLANNER.start.label).addTo(plannerMapLayer);
   }
   stops.forEach((c, i) => {
     const ll = latlonOf(c);
     pts.push(ll);
-    L.marker(ll, { icon: L.divIcon({ className: "planner-pin", html: String(i + 1), iconSize: [26, 26] }) })
+    L.marker(ll, { icon: L.divIcon({ className: "ts-pin", html: String(i + 1), iconSize: [26, 26] }) })
       .bindTooltip(`${i + 1}. ${c.name} — ${formatDate(c.date)}`).addTo(plannerMapLayer);
   });
   if (pts.length > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plan a gig-going trip: pick a period, choose a storytelling, music or poetry gig you want to see, and find other events on nearby nights within easy reach.">
+    <title>Gig Crawl Planner - New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="/css/shared-styles.css">
+    <link rel="stylesheet" href="/css/gig-crawl-styles.css?v=202611131449">
+</head>
+
+<body class="page-gig-crawl">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="gig_crawl.html" aria-current="page">🎟️ Gig Crawl</a>
+        <a href="tour_guide.html">🎭 Tours &amp; Repertoire</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="books_merch.html">📚 Books &amp; Merch</a>
+        <a href="promoters.html">Promoters</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1>Gig Crawl Planner</h1>
+    <h2 class="tour-page-subtitle">Pick a gig you want to see, then find more events on nearby nights.</h2>
+
+    <p id="gcLoading" class="loading-state">Loading events…</p>
+
+    <div id="gcApp" style="display:none;">
+
+        <section class="gc-panel">
+            <h3>When, and where are you?</h3>
+            <div class="gc-grid">
+                <label class="gc-field">From
+                    <input id="gcFrom" type="date">
+                </label>
+                <label class="gc-field">To (up to 60 days)
+                    <input id="gcTo" type="date">
+                </label>
+                <label class="gc-field">Only within … miles of home (0 = anywhere)
+                    <input id="gcMaxHome" type="number" min="0" max="1000" value="0">
+                </label>
+            </div>
+            <div class="gc-row">
+                <label class="gc-field" style="flex:1 1 240px;">Your town or postcode (optional)
+                    <input id="gcStartInput" type="text" placeholder="e.g. Norwich, or NR1 3JU" autocomplete="off">
+                </label>
+                <button id="gcStartFind" type="button" class="gc-btn">Find</button>
+                <button id="gcStartLocate" type="button" class="gc-btn">📍 Use my location</button>
+            </div>
+            <div id="gcStartChoices"></div>
+            <div id="gcStartCurrent" class="gc-hint"></div>
+            <div class="gc-checks" id="gcCats">
+                <label><input type="checkbox" value="story" checked> 📖 Storytelling</label>
+                <label><input type="checkbox" value="music" checked> 🎸 Music</label>
+                <label><input type="checkbox" value="poetry" checked> ✒️ Poetry</label>
+                <label><input type="checkbox" value="folk" checked> 🎻 Folk nights &amp; sessions</label>
+            </div>
+            <div id="gcStatus" class="gc-status" role="status"></div>
+        </section>
+
+        <div id="gcSummaryRow" class="gc-summary-row" hidden>
+            <section id="gcPlan" class="gc-panel"></section>
+            <section id="gcMapWrap" class="gc-panel" style="display:none;">
+                <div id="gcMap"></div>
+            </section>
+        </div>
+
+        <section id="gcNearby" class="gc-panel" hidden></section>
+
+        <section class="gc-panel">
+            <h3 id="gcBrowseHead">Pick a gig you want to see</h3>
+            <div class="gc-row">
+                <label class="gc-field" style="flex:1 1 260px;">Search
+                    <input id="gcSearch" type="text" placeholder="performer, show, club or town…" autocomplete="off">
+                </label>
+            </div>
+            <div id="gcBrowse"></div>
+        </section>
+    </div>
+
+    <div class="about" id="colophon">
+        <p><em>Distances are straight-line estimates scaled for roads, not routed journeys — check a route planner and
+                the event's own page before you travel. Start-point lookups use <a
+                    href="https://postcodes.io/">postcodes.io</a>; your start point is kept only in your own
+                browser.</em></p>
+    </div>
+
+    <script src="/js/recurrence-engine.js"></script>
+    <script src="/js/shared_utils.js"></script>
+    <script src="/js/gig_crawl.js?v=202611131449"></script>
+</body>
+
+</html>
