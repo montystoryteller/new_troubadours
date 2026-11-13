@@ -1295,6 +1295,16 @@ function renderPerformer() {
     myGuestTours,
   );
 
+  // Venue map — collapsed until opened; Leaflet only loads at that point.
+  // Hidden entirely unless the performer has 2+ venues with coordinates.
+  renderPerformerMap(
+    myTours,
+    myGuestTours,
+    myTouringShows,
+    allOther,
+    myFestivals,
+  );
+
   // Flyer gallery — collects all flyers across tours, shows and events
   renderFlyerGallery(myTours, myTouringShows, allOther, performer);
 
@@ -1526,6 +1536,455 @@ function renderUpcomingSection(
     });
     list.parentNode.appendChild(moreBtn);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Venue map
+// One marker per venue (not per date), with filters for when (upcoming /
+// past / all) and what kind of appearance. Collapsed by default: the map
+// is only created — and Leaflet only downloaded — the first time the
+// panel is opened (createCollapsibleMap() + loadLeafletOnce(), both in
+// shared_utils.js). Marker colours follow the tour page: green for
+// upcoming, blue where the upcoming date is a music one, grey for past.
+// ---------------------------------------------------------------------------
+
+const PERF_MAP_TYPES = [
+  { key: "tour", label: "Tours" },
+  { key: "repertoire", label: "Repertoire" },
+  { key: "storywalk", label: "Story walks" },
+  { key: "appearance", label: "Other appearances" },
+  { key: "festival", label: "Festivals" },
+];
+
+/**
+ * Flatten everything renderPerformer() has gathered into one list of
+ * { type, venueId, date, dateLabel, isPast, isMusic, title, href } points,
+ * keeping only those whose venue has coordinates. Mirrors the sources (and
+ * the guest-billing rule) used by renderUpcomingSection().
+ */
+function collectPerformerMapPoints(
+  myTours,
+  myGuestTours,
+  myTouringShows,
+  allOther,
+  myFestivals,
+) {
+  const today = getTodayMidnight();
+  const points = [];
+
+  const add = (pt) => {
+    const venue = pt.venueId ? venuesLookup[pt.venueId] : null;
+    if (!venue || !Array.isArray(venue.latlon) || venue.latlon.length !== 2) {
+      return;
+    }
+    points.push(pt);
+  };
+
+  const dateFields = (dateStr) => {
+    const date = parseDateString(dateStr);
+    return {
+      date,
+      dateLabel: date ? formatMediumDate(date) : "Date TBC",
+      isPast: !!(date && date < today),
+    };
+  };
+
+  myTours.forEach(([tourId, tour]) => {
+    expandTourDates(tour.tour_dates).forEach((td) => {
+      add({
+        type: "tour",
+        venueId: td.venue_id,
+        ...dateFields(td.date),
+        isMusic: !!(td.isMusic ?? tour.isMusic),
+        title: tour.tour_name || tour.name,
+        groupKey: `tour:${tourId}`,
+        href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+      });
+    });
+  });
+
+  // Guest tours: only the dates whose own bill includes this performer.
+  myGuestTours.forEach(([tourId, tour]) => {
+    expandTourDates(tour.tour_dates).forEach((td) => {
+      const billed =
+        getAdditionalPerformerIdsForDate(tour, td).includes(performerId) ||
+        getSupportPerformerIdsForDate(tour, td).includes(performerId);
+      if (!billed) return;
+      add({
+        type: "tour",
+        venueId: td.venue_id,
+        ...dateFields(td.date),
+        isMusic: !!(td.isMusic ?? tour.isMusic),
+        title: tour.tour_name || tour.name,
+        groupKey: `tour:${tourId}`,
+        href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
+      });
+    });
+  });
+
+  myTouringShows.forEach(([tsId, ts]) => {
+    expandDateOrDates(ts.show_dates).forEach((sd) => {
+      add({
+        type: ts.isStoryWalk ? "storywalk" : "repertoire",
+        venueId: sd.venue_id,
+        ...dateFields(sd.date),
+        isMusic: false,
+        title: ts.showname || ts.name,
+        groupKey: `show:${tsId}`,
+        href: `tour_guide.html?tour=${encodeURIComponent(
+          TOUR_GUIDE_REPERTOIRE_TOUR_PREFIX + tsId,
+        )}`,
+      });
+    });
+  });
+
+  allOther.forEach((e) => {
+    // Same date rule as renderUpcomingSection(): plain .date, else the
+    // first of .datetimes ("DD/MM/YYYY : time").
+    let dateStr = e.date;
+    if (!parseDateString(dateStr) && Array.isArray(e.datetimes)) {
+      dateStr = (e.datetimes[0] || "").split(/\s*:\s*/)[0].trim();
+    }
+    const fields = dateFields(dateStr);
+    add({
+      type: "appearance",
+      venueId: e.venue_id,
+      ...fields,
+      // Past-ness for multi-date events follows their last date, as in the
+      // "Past appearances" list.
+      isPast: isPastFlatEvent(e),
+      isMusic: !!e.isMusic,
+      title: e.showname || e.name,
+      href:
+        e.date && e.name && fields.date
+          ? `event.html?event=${encodeURIComponent(resolveEventId(e, fields.date))}`
+          : null,
+    });
+  });
+
+  myFestivals.forEach(([fid, f]) => {
+    const start = parseDateString(f.start_date);
+    const end = parseDateString(f.end_date) || start;
+    add({
+      type: "festival",
+      venueId: f.venue_id,
+      date: start,
+      dateLabel:
+        start && end && start.toDateString() !== end.toDateString()
+          ? `${formatShortDate(start)} – ${formatShortDate(end)}`
+          : start
+            ? formatMediumDate(start)
+            : "Date TBC",
+      isPast: !!(end && end < today),
+      isMusic: false,
+      title: f.name,
+      href: `festival.html?festival=${encodeURIComponent(fid)}`,
+    });
+  });
+
+  return points;
+}
+
+/** Popup for one venue: its name plus the (filtered) dates there. */
+function buildPerformerMapPopup(venueId, pts) {
+  const venue = venuesLookup[venueId] || {};
+  const wrap = document.createElement("div");
+  wrap.className = "popup-content";
+
+  const h = document.createElement("h3");
+  const link = document.createElement("a");
+  link.href = `venues.html?venue=${encodeURIComponent(venueId)}`;
+  link.textContent = venue.name || venueId;
+  h.appendChild(link);
+  wrap.appendChild(h);
+
+  if (venue.full_address || venue.city) {
+    const addr = document.createElement("p");
+    addr.textContent = venue.full_address || venue.city;
+    wrap.appendChild(addr);
+  }
+
+  // Upcoming/TBC first (soonest first), then past (most recent first).
+  const sorted = [...pts].sort((a, b) => {
+    if (a.isPast !== b.isPast) return a.isPast ? 1 : -1;
+    const da = a.date ? a.date.getTime() : Infinity;
+    const db = b.date ? b.date.getTime() : Infinity;
+    return a.isPast ? db - da : da - db;
+  });
+
+  const MAX_SHOWN = 6;
+  const ul = document.createElement("ul");
+  ul.className = "perf-map-popup-dates";
+  sorted.slice(0, MAX_SHOWN).forEach((pt) => {
+    const li = document.createElement("li");
+    if (pt.isPast) li.className = "is-past";
+    const strong = document.createElement("strong");
+    strong.textContent = pt.dateLabel;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(" — "));
+    if (pt.href) {
+      const a = document.createElement("a");
+      a.href = pt.href;
+      a.textContent = pt.title;
+      li.appendChild(a);
+    } else {
+      li.appendChild(document.createTextNode(pt.title));
+    }
+    ul.appendChild(li);
+  });
+  wrap.appendChild(ul);
+
+  if (sorted.length > MAX_SHOWN) {
+    const more = document.createElement("p");
+    more.className = "perf-map-popup-more";
+    more.textContent = `+${sorted.length - MAX_SHOWN} more at this venue`;
+    wrap.appendChild(more);
+  }
+  return wrap;
+}
+
+function renderPerformerMap(
+  myTours,
+  myGuestTours,
+  myTouringShows,
+  allOther,
+  myFestivals,
+) {
+  const host = document.getElementById("perfMapSection");
+  if (!host) return;
+
+  const allPts = collectPerformerMapPoints(
+    myTours,
+    myGuestTours,
+    myTouringShows,
+    allOther,
+    myFestivals,
+  );
+  const venueCount = new Set(allPts.map((p) => p.venueId)).size;
+  if (venueCount < 2) return; // a one-venue map isn't worth the space
+
+  const hasUpcoming = allPts.some((p) => !p.isPast);
+  const hasPast = allPts.some((p) => p.isPast);
+  const typesPresent = PERF_MAP_TYPES.filter((t) =>
+    allPts.some((p) => p.type === t.key),
+  );
+
+  // Tours / repertoire shows / story walks, for the "Tour:" picker. Points
+  // from other sources (appearances, festivals) have no groupKey.
+  const groups = new Map(); // groupKey -> { title, pts }
+  allPts.forEach((p) => {
+    if (!p.groupKey) return;
+    if (!groups.has(p.groupKey)) groups.set(p.groupKey, { title: p.title, pts: [] });
+    groups.get(p.groupKey).pts.push(p);
+  });
+
+  const state = {
+    when: hasUpcoming ? "upcoming" : "all",
+    types: new Set(typesPresent.map((t) => t.key)),
+    group: "", // "" = no single tour selected
+  };
+
+  let map = null;
+  let markers = [];
+  let statusEl = null;
+
+  const whenOk = (p) =>
+    state.when === "all" || (state.when === "upcoming" ? !p.isPast : p.isPast);
+
+  // A selected tour overrides the Type chips (it's a narrower choice).
+  const visiblePoints = () =>
+    allPts.filter((p) =>
+      state.group
+        ? p.groupKey === state.group && whenOk(p)
+        : state.types.has(p.type) && whenOk(p),
+    );
+
+  function refresh() {
+    const pts = visiblePoints();
+    const byVenue = new Map();
+    pts.forEach((p) => {
+      if (!byVenue.has(p.venueId)) byVenue.set(p.venueId, []);
+      byVenue.get(p.venueId).push(p);
+    });
+
+    if (statusEl) {
+      statusEl.textContent =
+        pts.length === 0
+          ? "Nothing matches these filters"
+          : `${byVenue.size} ${byVenue.size === 1 ? "venue" : "venues"} · ` +
+            `${pts.length} ${pts.length === 1 ? "date" : "dates"}`;
+    }
+    if (!map) return;
+
+    markers = clearMarkers(map, markers);
+    const bounds = [];
+    byVenue.forEach((venuePts, venueId) => {
+      const [lat, lon] = venuesLookup[venueId].latlon;
+      const upcoming = venuePts.filter((p) => !p.isPast);
+      const past = upcoming.length === 0;
+      const colour = past
+        ? "#aaaaaa"
+        : upcoming.some((p) => !p.isMusic)
+          ? "#4CAF50"
+          : "#443cd7";
+      const marker = L.circleMarker([lat, lon], {
+        // Slightly larger where there are several dates at one venue.
+        radius: (past ? 6 : 8) + Math.min(venuePts.length - 1, 3),
+        fillColor: colour,
+        color: past ? "#999" : "#fff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: past ? 0.5 : 0.8,
+      }).addTo(map);
+      marker.venue_id = venueId;
+      marker.bindPopup(buildPerformerMapPopup(venueId, venuePts));
+      markers.push(marker);
+      bounds.push([lat, lon]);
+    });
+
+    if (bounds.length === 1) {
+      map.setView(bounds[0], 10);
+    } else if (bounds.length > 1) {
+      map.fitBounds(L.latLngBounds(bounds), { padding: [40, 40] });
+    }
+  }
+
+  // ── Filter bar ───────────────────────────────────────────────────────
+  const bar = document.createElement("div");
+  bar.className = "perf-map-filters";
+
+  const makeChip = (label, pressed, onClick) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "perf-map-chip";
+    b.textContent = label;
+    b.setAttribute("aria-pressed", String(pressed));
+    b.addEventListener("click", () => onClick(b));
+    return b;
+  };
+  const makeGroup = (label) => {
+    const g = document.createElement("div");
+    g.className = "perf-map-filter-group";
+    const l = document.createElement("span");
+    l.className = "perf-map-filter-label";
+    l.textContent = label;
+    g.appendChild(l);
+    bar.appendChild(g);
+    return g;
+  };
+
+  // When — single choice; only offered if there's both upcoming and past.
+  const whenChips = [];
+  const syncWhenChips = () =>
+    whenChips.forEach(([k, c]) =>
+      c.setAttribute("aria-pressed", String(k === state.when)),
+    );
+  if (hasUpcoming && hasPast) {
+    const g = makeGroup("Show:");
+    [
+      ["upcoming", "Upcoming"],
+      ["past", "Past"],
+      ["all", "All"],
+    ].forEach(([key, label]) => {
+      const chip = makeChip(label, state.when === key, () => {
+        state.when = key;
+        syncWhenChips();
+        refresh();
+      });
+      whenChips.push([key, chip]);
+      g.appendChild(chip);
+    });
+  }
+
+  // Tour — pick one tour / show to see just its dates. Offered only when
+  // there are 2+ (with one, the Type chips already say it all).
+  const typeChips = [];
+  const syncTypeChips = () =>
+    typeChips.forEach((c) => {
+      c.disabled = !!state.group;
+      c.classList.toggle("is-disabled", !!state.group);
+    });
+  if (groups.size >= 2) {
+    const g = makeGroup("Tour:");
+    const select = document.createElement("select");
+    select.className = "perf-map-select";
+    select.setAttribute("aria-label", "Show dates for one tour");
+    const all = document.createElement("option");
+    all.value = "";
+    all.textContent = "All";
+    select.appendChild(all);
+    // Tours with upcoming dates first (soonest first), then the rest A–Z.
+    const nextUpcoming = (grp) => {
+      const t = grp.pts
+        .filter((p) => !p.isPast && p.date)
+        .map((p) => p.date.getTime());
+      return t.length ? Math.min(...t) : Infinity;
+    };
+    [...groups.entries()]
+      .sort(
+        ([, a], [, b]) =>
+          nextUpcoming(a) - nextUpcoming(b) ||
+          a.title.localeCompare(b.title),
+      )
+      .forEach(([key, grp]) => {
+        const o = document.createElement("option");
+        o.value = key;
+        o.textContent = `${grp.title} (${grp.pts.length})`;
+        select.appendChild(o);
+      });
+    select.addEventListener("change", () => {
+      state.group = select.value;
+      // Don't strand the visitor on an empty map: if this tour has nothing
+      // upcoming, widen "Upcoming" to "All".
+      if (
+        state.group &&
+        state.when === "upcoming" &&
+        !groups.get(state.group).pts.some((p) => !p.isPast)
+      ) {
+        state.when = "all";
+        syncWhenChips();
+      }
+      syncTypeChips();
+      refresh();
+    });
+    g.appendChild(select);
+  }
+
+  // Type — toggles; only offered if the performer has 2+ kinds.
+  if (typesPresent.length >= 2) {
+    const g = makeGroup("Type:");
+    typesPresent.forEach((t) => {
+      const chip = makeChip(t.label, true, (c) => {
+        if (state.types.has(t.key)) state.types.delete(t.key);
+        else state.types.add(t.key);
+        c.setAttribute("aria-pressed", String(state.types.has(t.key)));
+        refresh();
+      });
+      typeChips.push(chip);
+      g.appendChild(chip);
+    });
+  }
+
+  statusEl = document.createElement("span");
+  statusEl.className = "perf-map-status";
+  statusEl.setAttribute("aria-live", "polite");
+  bar.appendChild(statusEl);
+  refresh(); // fills the status text; the map itself doesn't exist yet
+
+  host.style.display = "";
+  const handle = createCollapsibleMap(
+    host,
+    "perf-venue-map",
+    `Show map of venues (${venueCount})`,
+    380,
+    (m) => {
+      map = m;
+      refresh();
+    },
+    loadLeafletOnce, // downloaded on first open, not up front
+  );
+  const mapDiv = handle.details.querySelector(".dir-map-div");
+  handle.details.insertBefore(bar, mapDiv);
 }
 
 // ---------------------------------------------------------------------------

@@ -2465,6 +2465,60 @@ function addTwoFingerMapHint(map) {
 }
 
 /**
+ * UK/Ireland bounds, built on demand (requires Leaflet to be loaded).
+ * Same corners as UK_IRELAND_BOUNDS at the top of this file, which is only
+ * non-null when Leaflet was loaded by a blocking <script> tag before this
+ * file — not the case on pages that load it lazily.
+ * @returns {L.LatLngBounds}
+ */
+function ukIrelandBounds() {
+  return L.latLngBounds(
+    [49.5, -11.0], // SW corner (Atlantic)
+    [61.0, 2.5], // NE corner (North Sea)
+  );
+}
+
+/**
+ * Load Leaflet (CSS + JS from cdnjs) on demand, once. Resolves with
+ * window.L; safe to call repeatedly or when Leaflet is already present.
+ * Intended as createCollapsibleMap()'s loadMapLibrary argument, so a slow
+ * or unreachable CDN can never hold up a page's own content.
+ *
+ * Self-contained (state lives in this closure) so it can't collide with
+ * the page-level `leafletPromise` / LEAFLET_*_URL / loadLeaflet() that
+ * several page scripts still declare for themselves.
+ * @returns {Promise<typeof L>}
+ */
+const loadLeafletOnce = (() => {
+  let promise = null;
+  const JS_URL =
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
+  const CSS_URL =
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+  return function loadLeafletOnce() {
+    if (window.L) return Promise.resolve(window.L);
+    if (promise) return promise;
+    promise = new Promise((resolve, reject) => {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = CSS_URL;
+      document.head.appendChild(stylesheet);
+
+      const script = document.createElement("script");
+      script.src = JS_URL;
+      script.async = true;
+      script.onload = () => resolve(window.L);
+      script.onerror = () => {
+        promise = null; // allow a retry on the next open
+        reject(new Error("Leaflet could not be loaded"));
+      };
+      document.head.appendChild(script);
+    });
+    return promise;
+  };
+})();
+
+/**
  * Initialise a Leaflet map centred on the UK, constrained to UK/Ireland bounds.
  * @param {string}   elementId   - The HTML element id for the map container.
  * @param {Function} onMoveEnd   - Callback fired on map 'moveend' events.
@@ -2472,7 +2526,10 @@ function addTwoFingerMapHint(map) {
  */
 function initMap(elementId, onMoveEnd) {
   const map = L.map(elementId, {
-    maxBounds: UK_IRELAND_BOUNDS,
+    // UK_IRELAND_BOUNDS (top of file) is null on any page that lazy-loads
+    // Leaflet, because it's evaluated when this file loads — before `L`
+    // exists. Build it here instead, where Leaflet is guaranteed present.
+    maxBounds: UK_IRELAND_BOUNDS || ukIrelandBounds(),
     maxBoundsViscosity: 1.0,
     minZoom: 5,
     maxZoom: 16,

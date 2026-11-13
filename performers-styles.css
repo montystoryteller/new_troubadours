@@ -1752,3 +1752,105 @@ details.event-row-desc[open] > .event-row-desc-summary::before {
 .performer-club-roles a:hover {
     text-decoration: underline;
 }
+
+
+/* =============================================================
+   Venue map (renderPerformerMap() in performers.js)
+   The collapsible shell (.dir-card / .dir-map-summary /
+   .dir-map-div) comes from shared-styles.css.
+   ============================================================= */
+
+.perf-map-section {
+    margin: 0 0 16px;
+}
+
+.perf-map-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    padding: 4px 16px 12px;
+}
+
+.perf-map-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.perf-map-filter-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--theme-green-dark);
+}
+
+.perf-map-chip {
+    font: inherit;
+    font-size: 12px;
+    color: var(--theme-green-dark);
+    background: none;
+    border: 1px solid var(--theme-green-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    cursor: pointer;
+}
+
+.perf-map-chip:hover {
+    background: var(--theme-green-bg-alt);
+}
+
+.perf-map-chip[aria-pressed="true"] {
+    background: var(--theme-green-bg);
+    border-color: var(--theme-green-dark);
+    font-weight: bold;
+}
+
+.perf-map-select {
+    font: inherit;
+    font-size: 12px;
+    color: var(--theme-green-dark);
+    background: white;
+    border: 1px solid var(--theme-green-border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    max-width: 240px;
+}
+
+.perf-map-chip.is-disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.perf-map-chip.is-disabled:hover {
+    background: none;
+}
+
+.perf-map-status {
+    margin-left: auto;
+    font-size: 12px;
+    color: #666;
+}
+
+.perf-map-popup-dates {
+    margin: 6px 0 0;
+    padding-left: 16px;
+    font-size: 12px;
+}
+
+.perf-map-popup-dates li.is-past {
+    color: #888;
+}
+
+.perf-map-popup-more {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #666;
+}
+
+@media (max-width: 600px) {
+    .perf-map-status {
+        margin-left: 0;
+        flex-basis: 100%;
+    }
+}
