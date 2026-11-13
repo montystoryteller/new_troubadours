@@ -142,8 +142,18 @@ function gatherCandidates(from, to, includeOther) {
 function setStart(s) {
   PLANNER.start = s;
   TourSupport.saveStart(PLANNER.start);
-  document.getElementById("startCurrent").textContent = s ? `Start: ${s.label}` : "";
+  const currentDiv = document.getElementById("startCurrent");
+  const clearBtn = document.getElementById("startClear");
+  currentDiv.textContent = s ? `Start: ${s.label}` : "";
+  if (clearBtn) clearBtn.style.display = s ? "" : "none";
   renderAll();
+}
+
+function clearStart() {
+  setStart(null);
+  document.getElementById("startInput").value = "";
+  TourSupport.clearStart();
+  setStatus("Start location cleared.");
 }
 
 function findPlace(inputId, choicesId, onPick) {
@@ -457,6 +467,92 @@ function fillPoolSelectors() {
       .sort((a, b) => a.label.localeCompare(b.label)),
     PLANNER.pickTour);
   document.getElementById("poolPreview").addEventListener("click", () => { buildPool(); renderPoolList(); });
+  initMustPicker();
+}
+
+// ── must-visit places (pool mode) ───────────────────────────────────────
+PLANNER.mustRows = [];
+const MUST_FLEX = [[0, "exactly"], [1, "± 1 day"], [2, "± 2 days"], [3, "± 3 days"], [7, "± 7 days"]];
+function mustItems() {
+  const items = [], towns = new Map();
+  Object.entries(PLANNER.venues).forEach(([id, v]) => {
+    if (!TourSupport.venueUsable(PLANNER.venues, id)) return;
+    items.push({ type: "v", key: id, label: `${v.name}${v.city ? " — " + v.city : ""}` });
+    if (v.city) towns.set(v.city.trim().toLowerCase(), v.city.trim());
+  });
+  towns.forEach((name, k) => items.push({ type: "t", key: k, label: `📍 ${name} (any venue)` }));
+  return items.sort((a, b) => a.label.localeCompare(b.label));
+}
+function mustMatchIds(m) {
+  return Object.entries(PLANNER.venues)
+    .filter(([id, v]) => TourSupport.venueUsable(PLANNER.venues, id) &&
+      (m.type === "v" ? id === m.key : String(v.city || "").trim().toLowerCase() === m.key))
+    .map(([id]) => id);
+}
+function initMustPicker() {
+  const input = document.getElementById("mustFilter");
+  const results = document.getElementById("mustResults");
+  if (!input) return;
+  let items = null;
+  const draw = () => {
+    const q = input.value.trim().toLowerCase();
+    results.replaceChildren();
+    if (!q) { results.hidden = true; return; }
+    if (!items) items = mustItems();
+    const hits = items.filter((i) => i.label.toLowerCase().includes(q)).slice(0, 30);
+    results.hidden = false;
+    if (!hits.length) { results.appendChild(el("div", "picker-none", "No matches")); return; }
+    hits.forEach((i) => {
+      const b = el("button", "picker-result", "+ " + i.label);
+      b.type = "button";
+      b.addEventListener("click", () => {
+        const ps = document.getElementById("periodStart").value;
+        PLANNER.mustRows.push({ ...i, date: ps || "", flex: 0 });
+        input.value = ""; draw(); drawMustRows();
+      });
+      results.appendChild(b);
+    });
+  };
+  input.addEventListener("input", draw);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { input.value = ""; draw(); }
+    if (e.key === "Enter") { e.preventDefault(); const f = results.querySelector("button"); if (f) f.click(); }
+  });
+}
+function drawMustRows() {
+  const box = document.getElementById("mustRows");
+  box.replaceChildren();
+  PLANNER.mustRows.forEach((m, idx) => {
+    const row = el("div", "must-row");
+    row.appendChild(el("span", "must-label", "★ " + m.label));
+    const d = el("input"); d.type = "date"; d.value = m.date;
+    d.setAttribute("aria-label", "Target date for " + m.label);
+    d.addEventListener("change", () => { m.date = d.value; });
+    const f = el("select");
+    f.setAttribute("aria-label", "Flexibility for " + m.label);
+    MUST_FLEX.forEach(([n, t]) => { const o = el("option", null, t); o.value = n; if (n === m.flex) o.selected = true; f.appendChild(o); });
+    f.addEventListener("change", () => { m.flex = Number(f.value); });
+    const x = el("button", "must-x", "×"); x.type = "button"; x.setAttribute("aria-label", "Remove " + m.label);
+    x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); drawMustRows(); });
+    row.append(d, f, x);
+    box.appendChild(row);
+  });
+}
+/** Resolve the rows into {label, ids:Set, dayKeys:Set, lastIdx}; string = error. */
+function resolveMusts() {
+  const out = [];
+  for (const m of PLANNER.mustRows) {
+    if (!m.date) return `Choose a target date for “${m.label}”.`;
+    const [y, mo, dd] = m.date.split("-").map(Number);
+    const t = new Date(y, mo - 1, dd);
+    const idxs = [];
+    PLANNER.days.forEach((day, i) => { if (Math.abs(Math.round((day - t) / 86400000)) <= m.flex) idxs.push(i); });
+    if (!idxs.length) return `“${m.label}” (${formatDate(t)}${m.flex ? " ± " + m.flex : ""}) falls outside the tour period.`;
+    const ids = new Set(mustMatchIds(m));
+    if (!ids.size) return `No usable venue found for “${m.label}”.`;
+    out.push({ label: m.label, ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: idxs[idxs.length - 1] });
+  }
+  return out;
 }
 
 /** Cheapest set of exactly G gigs (one per day, any gaps up to MAXGAP days)
@@ -473,7 +569,7 @@ function nearStop(c, stops, miles) {
 }
 
 function bestKRoute(G, relax, relaxSpread) {
-  return PLANNER.distinct || PLANNER.minSpread > 0 ? beamKRoute(G, relax, relaxSpread) : exactKRoute(G, relax);
+  return PLANNER.distinct || PLANNER.minSpread > 0 || (PLANNER.musts || []).length ? beamKRoute(G, relax, relaxSpread) : exactKRoute(G, relax);
 }
 
 /** Same objective as exactKRoute but never revisits a venue. The "visited"
@@ -481,19 +577,28 @@ function bestKRoute(G, relax, relaxSpread) {
  *  few hundred partial tours per step) — near-optimal, not guaranteed. */
 function beamKRoute(G, relax, relaxSpread) {
   const h = homeLL();
+  const musts = PLANNER.musts || [];
+  const FULL = (1 << musts.length) - 1;
+  if (musts.length) G = Math.max(G, musts.length);
+  const bits = (n) => (n.must || []).reduce((m, i) => m | (1 << i), 0);
+  const pop = (m) => { let c = 0; while (m) { c += m & 1; m >>= 1; } return c; };
   const days = PLANNER.days.map((d) => ({ d, nodes: PLANNER.byDay.get(dkey(d)) || [] }));
-  const MAXGAP = 4, BEAM = 400, PER_NODE = 8;
+  const MAXGAP = 4, BEAM = 400, PER_NODE = 8, MUST_BONUS = 1000;
   const venueKey = (n) => n.venue_id;
+  // a state is dead if a still-unmet must-visit can no longer be reached
+  const alive = (st) => musts.every((m, i) => (st.mask >> i) & 1 || m.lastIdx > st.i);
   let layer = [];
   days.forEach((s, i) => s.nodes.forEach((n, j) => {
-    layer.push({ i, j, cost: h ? roadMiles(h, latlonOf(n)) : 0, stops: [n], seen: new Set([venueKey(n)]) });
+    layer.push({ i, j, mask: bits(n), cost: h ? roadMiles(h, latlonOf(n)) : 0, stops: [n], seen: new Set([venueKey(n)]) });
   }));
   const prune = (states) => {
     const per = new Map();
-    states.sort((a, b) => a.cost - b.cost);
+    const score = (st) => st.cost - MUST_BONUS * pop(st.mask);
+    states = states.filter(alive);
+    states.sort((a, b) => score(a) - score(b));
     const out = [];
     for (const st of states) {
-      const k = st.i + ":" + st.j;
+      const k = st.i + ":" + st.j + ":" + st.mask;
       const c = per.get(k) || 0;
       if (c >= PER_NODE) continue;
       per.set(k, c + 1);
@@ -515,7 +620,7 @@ function beamKRoute(G, relax, relaxSpread) {
           if (!relaxSpread && nearStop(n, st.stops, PLANNER.minSpread)) return;
           const leg = roadMiles(latlonOf(from), latlonOf(n));
           if (!relax && leg > PLANNER.maxHop * gap) return;
-          next.push({ i: i2, j, cost: st.cost + leg, stops: [...st.stops, n], seen: new Set([...st.seen, venueKey(n)]) });
+          next.push({ i: i2, j, mask: st.mask | bits(n), cost: st.cost + leg, stops: [...st.stops, n], seen: new Set([...st.seen, venueKey(n)]) });
         });
       }
     });
@@ -523,7 +628,7 @@ function beamKRoute(G, relax, relaxSpread) {
     layers.push(prune(next));
   }
   for (let g = layers.length; g >= 1; g--) {
-    const best = layers[g - 1].reduce((b, st) => (!b || finish(st) < finish(b) ? st : b), null);
+    const best = layers[g - 1].filter((st) => st.mask === FULL).reduce((b, st) => (!b || finish(st) < finish(b) ? st : b), null);
     if (best) return { stops: best.stops, miles: finish(best), relaxed: !!relax, spreadRelaxed: !!relaxSpread, achieved: g, wanted: G };
   }
   if (!relax) return beamKRoute(G, true, relaxSpread);
@@ -585,6 +690,7 @@ function onBuild() {
   PLANNER.minSpread = clamp(document.getElementById("minSpread").value, 0, 200, 0);
   PLANNER.includeOther = document.getElementById("includeOther").checked;
   PLANNER.mode = mode;
+  PLANNER.musts = [];
   PLANNER.anchor = null;
   PLANNER.days = [];
   const today = getTodayMidnight();
@@ -640,6 +746,9 @@ function onBuild() {
     const centre0 = PLANNER.area ? [PLANNER.area.lat, PLANNER.area.lon] : h;
     const pool = (PLANNER.pool || []).filter((r) => r.on);
     if (!pool.length) return setStatus("The venue pool is empty — choose artists or tours first.", true);
+    const musts = resolveMusts();
+    if (typeof musts === "string") return setStatus(musts, true);
+    PLANNER.musts = musts;
     PLANNER.byDay = new Map();
     PLANNER.days.forEach((d) => {
       const k = dkey(d);
@@ -665,6 +774,22 @@ function onBuild() {
         .concat(clubNodes)
         .filter((c) => !PLANNER.maxHome || !h || roadMiles(h, latlonOf(c)) <= PLANNER.maxHome);
       if (centre0) nodes = nodes.filter((c) => roadMiles(centre0, latlonOf(c)) <= PLANNER.radius);
+      // must-visit venues: always on offer within their date window, whatever the filters said
+      musts.forEach((m, mi) => {
+        if (!m.dayKeys.has(k)) return;
+        m.ids.forEach((vid) => {
+          const v = PLANNER.venues[vid];
+          let n = nodes.find((x) => x.kind === "venue" && x.venue_id === vid);
+          if (!n) {
+            if (!Array.isArray(v.latlon)) return;
+            const clash = clashes.get(vid);
+            n = { id: `pool:${vid}:${k}`, kind: "venue", name: v.name, date: d, time: "", venue_id: vid, link: v.url || "", clubId: null,
+              note: "★ must-visit" + (clash ? " · ⚠ also on: " + clash : "") };
+            nodes.push(n);
+          } else if (!/must-visit/.test(n.note || "")) n.note = "★ must-visit · " + (n.note || "");
+          n.must = [...(n.must || []), mi];
+        });
+      });
       nodes.sort((x, y) => (centre0 ? roadMiles(centre0, latlonOf(x)) - roadMiles(centre0, latlonOf(y)) : 0));
       PLANNER.byDay.set(k, nodes);
     });
@@ -838,7 +963,10 @@ function renderAll() {
       `: ${fmtMiles(PLANNER.best.miles)}${PLANNER.start ? " round trip" : ""}` +
       (isPool && PLANNER.best.achieved < PLANNER.best.wanted ? ` (only ${PLANNER.best.achieved} of ${PLANNER.best.wanted} gigs possible in this window)` : "") +
       (PLANNER.best.relaxed ? " (distance limits relaxed — no route fit them)" : "") +
+      (isPool && (PLANNER.musts || []).length ? ` · includes all ${PLANNER.musts.length} must-visit${PLANNER.musts.length > 1 ? "s" : ""}` : "") +
       (PLANNER.best.spreadRelaxed ? ` (couldn't keep stops ${PLANNER.minSpread} mi apart in this window)` : "")));
+  } else if (PLANNER.mode === "pool" && (PLANNER.musts || []).length) {
+    bar.appendChild(el("span", "ts-hint", "No route could include every must-visit place on those dates — widen their flexibility, the period, or untick “visit each venue only once”."));
   } else if (PLANNER.mode === "pool") {
     bar.appendChild(el("span", "ts-hint", "No venues in the pool fit those dates, weekdays and area — widen the window, radius or untick the weekday rule."));
   }
@@ -872,7 +1000,7 @@ function renderAll() {
         if (!(chosenNow && chosenNow.id === c.id) && nearStop(c, orderedStops(), PLANNER.minSpread)) { hiddenClose++; return; }
       }
       const v = venueOf(c) || {};
-      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : ""));
+      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : ""));
       n.dataset.nid = c.id;
       n.appendChild(el("div", "graph-node-name", c.name));
       n.appendChild(el("div", "graph-node-meta", [c.time, v.city || v.name].filter(Boolean).join(" · ")));
@@ -1057,6 +1185,28 @@ function renderItinerary() {
     catch (e) { copy.textContent = "Copy failed"; }
   });
   box.appendChild(copy);
+  const ics = el("button", "btn-secondary", "📅 Download calendar (.ics)");
+  ics.type = "button";
+  ics.style.marginLeft = "8px";
+  ics.addEventListener("click", () => {
+    let prevLL = home;
+    TourSupport.downloadIcs(stops.map((c) => {
+      const v = venueOf(c) || {};
+      const ll = latlonOf(c);
+      const leg = roadMiles(prevLL, ll);
+      prevLL = ll;
+      const proposed = c.kind === "venue";
+      const href = c.link ? new URL(c.link, location.href).href : "";
+      return {
+        date: c.date, uid: c.id,
+        title: (proposed ? "Gig (to arrange): " : "") + placeParts(c, v).join(", "),
+        location: TourSupport.icsLocation(v),
+        description: [c.time ? "Time: " + c.time : "", proposed ? "Proposed — not yet booked" : "",
+          c.note || "", leg != null ? `Leg: ${fmtMiles(leg)}, ${fmtDrive(leg)}` : "", href].filter(Boolean).join("\n"),
+      };
+    }), "tour.ics", "Tour Planner");
+  });
+  box.appendChild(ics);
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
@@ -1176,10 +1326,13 @@ async function initPlanner() {
   if (saved) {
     PLANNER.start = saved;
     document.getElementById("startCurrent").textContent = `Start: ${saved.label}`;
+    const clearBtn = document.getElementById("startClear");
+    if (clearBtn) clearBtn.style.display = "";
   }
   document.getElementById("startFind").addEventListener("click", onFindStart);
   document.getElementById("startInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onFindStart(); });
   document.getElementById("startLocate").addEventListener("click", onUseLocation);
+  document.getElementById("startClear").addEventListener("click", clearStart);
   document.getElementById("buildTour").addEventListener("click", onBuild);
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.getElementById("areaFind").addEventListener("click", () => findPlace("areaInput", "areaChoices", setArea));

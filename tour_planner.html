@@ -9,8 +9,8 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
-    <link rel="stylesheet" href="/css/tour-support.css?v=202611132118">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611131449">
+    <link rel="stylesheet" href="/css/tour-support.css">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611132138">
 </head>
 
 <body class="page-tour-planner">
@@ -102,6 +102,7 @@
                 </label>
                 <button id="startFind" type="button" class="btn-secondary">Find</button>
                 <button id="startLocate" type="button" class="btn-secondary">📍 Use my location</button>
+                <button id="startClear" type="button" class="btn-secondary" style="display:none;">✕ Clear</button>
             </div>
             <div class="ts-row">
                 <label class="ts-field" style="flex:1 1 240px;">…or start from a venue's town
@@ -142,6 +143,12 @@
                     <label><input type="checkbox" id="poolDistinct" checked> Visit each venue only once</label>
                     <label><input type="checkbox" id="poolAllClubs"> Also include every active story club</label>
                 </div>
+                <div class="ts-field" style="margin-top:10px;">Must-visit places (optional)
+                    <input id="mustFilter" type="text" placeholder="search a venue or town, then click to add…" autocomplete="off">
+                    <div id="mustResults" class="picker-results" hidden></div>
+                </div>
+                <div class="ts-hint">For each place choose a target date and how flexible you are: “exactly” pins it to that day, “± N days” lets the planner pick any day in that range. A town means any venue in it. The route is built so every must-visit is included (these places ignore the weekday rule and area radius).</div>
+                <div id="mustRows" class="must-rows"></div>
                 <div class="ts-row"><button id="poolPreview" type="button" class="btn-secondary">Preview venue pool</button></div>
                 <div id="poolList"></div>
             </div>
@@ -171,9 +178,9 @@
     </div>
 
     <script src="/js/recurrence-engine.js"></script>
-    <script src="/js/shared_utils.js?v=202611131649"></script>
-    <script src="/js/tour_support.js?v=202611131449"></script>
-    <script src="/js/tour_planner.js?v=202611132119"></script>
+    <script src="/js/shared_utils.js"></script>
+    <script src="/js/tour_support.js?v=202611132138"></script>
+    <script src="/js/tour_planner.js?v=202611132138"></script>
 </body>
 
 </html>

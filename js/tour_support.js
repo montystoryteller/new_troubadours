@@ -120,6 +120,9 @@ const TourSupport = (function () {
     } catch (e) { /* ignore */ }
     return null;
   }
+  function clearStart() {
+    try { localStorage.removeItem(START_KEY); } catch (e) { /* storage is optional */ }
+  }
 
   /**
    * Look up the text in `input`, then call onPick with the one match — or
@@ -176,12 +179,40 @@ const TourSupport = (function () {
     return leafletPromise;
   }
 
+  /** Escape text for an iCalendar property value. */
+  function icsEscape(s) {
+    return String(s || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  }
+  /** "Venue, address" without repeating the venue name when the address already has it. */
+  function icsLocation(v) {
+    v = v || {};
+    const a = v.full_address || v.city || "";
+    return a && v.name && a.toLowerCase().includes(String(v.name).split(",")[0].trim().toLowerCase()) ? a : [v.name, a].filter(Boolean).join(", ");
+  }
+  /** Download all-day calendar entries. items: [{date, title, location, description, uid}] */
+  function downloadIcs(items, filename, prodId) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+    const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+    const L = ["BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//New Troubadours//${prodId || "Tour"}//EN`, "CALSCALE:GREGORIAN"];
+    items.forEach((it, i) => {
+      L.push("BEGIN:VEVENT", `UID:nt-${i}-${ymd(it.date)}-${encodeURIComponent(it.uid || "x").slice(0, 40)}@newtroubadours`,
+        `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(it.date)}`, `DTEND;VALUE=DATE:${ymd(addDays(it.date, 1))}`,
+        `SUMMARY:${icsEscape(it.title)}`, `LOCATION:${icsEscape(it.location)}`, `DESCRIPTION:${icsEscape(it.description)}`, "END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    const blob = new Blob([L.join("\r\n")], { type: "text/calendar" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = filename || "tour.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
   return {
     ROAD_FACTOR, AVG_MPH, KM_TO_MI,
     addDays, dateKey,
     roadMiles, crowMiles, fmtMiles, fmtDrive,
     venueUsable, placeLabel,
-    geocode, saveStart, loadStart, findPlace, locate,
-    loadLeaflet,
+    geocode, saveStart, loadStart, clearStart, findPlace, locate,
+    loadLeaflet, icsEscape, icsLocation, downloadIcs,
   };
 })();

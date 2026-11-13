@@ -65,3 +65,11 @@ select[multiple] { min-height: 8em; }
 /* tour list + map sit side by side above the graph */
 .graph-node.too-close { opacity: .45; cursor: not-allowed; background: #f5f5f5; border-left-color: #bbb; }
 .graph-node.too-close:hover { box-shadow: none; background: #f5f5f5; }
+
+.must-rows { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 10px; }
+.must-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #f9a825; border-radius: 5px; padding: 6px 10px; font-size: .88em; color: #333; }
+.must-row .must-label { font-weight: 700; flex: 1 1 200px; }
+.must-row input, .must-row select { color: #222; background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 3px 6px; }
+.must-row .must-x { border: 0; background: transparent; color: #8d6e00; font-size: 1.2em; cursor: pointer; padding: 0 6px; }
+.graph-node.must { border-left-color: #f9a825; background: #fffde7; }
+.graph-node.must.chosen { background: #e8f5e9; }

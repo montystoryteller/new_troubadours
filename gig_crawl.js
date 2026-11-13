@@ -133,8 +133,17 @@ function gPasses(ev, cats, maxHome) {
 // ── start point ─────────────────────────────────────────────────────────
 function gSetStart(s) {
   GC.start = s;
-  document.getElementById("gcStartCurrent").textContent = s ? `Start: ${s.label}` : "";
+  const currentDiv = document.getElementById("gcStartCurrent");
+  const clearBtn = document.getElementById("gcStartClear");
+  currentDiv.textContent = s ? `Start: ${s.label}` : "";
+  if (clearBtn) clearBtn.style.display = s ? "" : "none";
   gRenderAll();
+}
+function gClearStart() {
+  gSetStart(null);
+  document.getElementById("gcStartInput").value = "";
+  TourSupport.clearStart();
+  gStatus("Start location cleared.");
 }
 function gFindStart() {
   return TourSupport.findPlace({
@@ -410,25 +419,16 @@ function gRenderPlan() {
   gRenderMap(stops);
 }
 
-function gIcsEsc(s) { return String(s || "").replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
 function gDownloadIcs(stops) {
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
-  const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//New Troubadours//Gig Crawl//EN", "CALSCALE:GREGORIAN"];
-  stops.forEach((c, i) => {
+  TourSupport.downloadIcs(stops.map((c) => {
     const v = GC.venues[c.venue_id] || {};
     const href = c.url ? new URL(c.url, location.href).href : c.ext;
-    L.push("BEGIN:VEVENT", `UID:gigcrawl-${i}-${ymd(c.date)}-${encodeURIComponent(c.id).slice(0, 40)}@newtroubadours`,
-      `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(c.date)}`, `DTEND;VALUE=DATE:${ymd(gAdd(c.date, 1))}`,
-      `SUMMARY:${gIcsEsc(c.title)}`, `LOCATION:${gIcsEsc([v.name, v.full_address || v.city].filter(Boolean).join(", "))}`,
-      `DESCRIPTION:${gIcsEsc([c.time ? "Time: " + c.time : "", c.performer, href].filter(Boolean).join("\n"))}`, "END:VEVENT");
-  });
-  L.push("END:VCALENDAR");
-  const blob = new Blob([L.join("\r\n")], { type: "text/calendar" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "gig-crawl.ics";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    return {
+      date: c.date, uid: c.id, title: c.title,
+      location: TourSupport.icsLocation(v),
+      description: [c.time ? "Time: " + c.time : "", c.performer, href].filter(Boolean).join("\n"),
+    };
+  }), "gig-crawl.ics", "Gig Crawl");
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
@@ -526,6 +526,7 @@ async function gInit() {
   document.getElementById("gcStartFind").addEventListener("click", gFindStart);
   document.getElementById("gcStartInput").addEventListener("keydown", (e) => { if (e.key === "Enter") gFindStart(); });
   document.getElementById("gcStartLocate").addEventListener("click", gLocate);
+  document.getElementById("gcStartClear").addEventListener("click", gClearStart);
   document.getElementById("gcLoading").style.display = "none";
   document.getElementById("gcApp").style.display = "";
   gReload();
