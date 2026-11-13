@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plan a UK storytelling tour around a story club: choose a club, a window of days either side and a start point, then build a route of nearby gigs.">
+    <title>Tour Planner - New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="/css/shared-styles.css">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611131047">
+</head>
+
+<body class="page-tour-planner">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Tours &amp; Repertoire</a>
+        <a href="tour_planner.html" aria-current="page">🧭 Tour Planner</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="books_merch.html">📚 Books &amp; Merch</a>
+        <a href="promoters.html">Promoters</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1>Tour Planner</h1>
+    <h2 class="tour-page-subtitle">Pick a story club and a window of days either side, then build a route from nearby
+        gigs.</h2>
+
+    <p id="plannerLoading" class="loading-state">Loading events…</p>
+
+    <div id="plannerForm" style="display:none;">
+        <div class="planner-panel">
+            <div class="planner-grid">
+                <label class="planner-field">Build around
+                    <select id="plannerMode">
+                        <option value="club">A club</option>
+                        <option value="venue">A venue</option>
+                        <option value="period">A period (and optionally an area)</option>
+                        <option value="pool">A venue pool from artists / tours</option>
+                    </select>
+                </label>
+                <label class="planner-field" data-modes="club">Anchor club
+                    <select id="anchorClub"></select>
+                </label>
+                <label class="planner-field" data-modes="venue" hidden>Anchor venue
+                    <select id="anchorVenue"></select>
+                </label>
+                <label class="planner-field" data-modes="club venue">Anchor gig / date
+                    <select id="anchorDate"></select>
+                </label>
+                <label class="planner-field" data-modes="club venue">Days before
+                    <input id="daysBefore" type="number" min="0" max="14" value="3">
+                </label>
+                <label class="planner-field" data-modes="club venue">Days after
+                    <input id="daysAfter" type="number" min="0" max="14" value="3">
+                </label>
+                <label class="planner-field" data-modes="period pool" hidden>From
+                    <input id="periodStart" type="date">
+                </label>
+                <label class="planner-field" data-modes="period pool" hidden>To (max 21 days)
+                    <input id="periodEnd" type="date">
+                </label>
+                <label class="planner-field" data-modes="period pool" hidden>Area radius (miles)
+                    <input id="areaRadius" type="number" min="5" max="500" value="60">
+                </label>
+                <label class="planner-field">Max miles between stops
+                    <input id="maxHop" type="number" min="5" max="500" value="60">
+                </label>
+                <label class="planner-field">Max miles from start (0 = no limit)
+                    <input id="maxHome" type="number" min="0" max="1000" value="0">
+                </label>
+                <label class="planner-field">Keep stops at least this far apart (miles, 0 = off)
+                    <input id="minSpread" type="number" min="0" max="200" value="0">
+                </label>
+            </div>
+
+            <div data-modes="period pool" hidden>
+                <div class="planner-row">
+                    <label class="planner-field" style="flex:1 1 240px;">Area centre (optional — defaults to your start point)
+                        <input id="areaInput" type="text" placeholder="e.g. Yorkshire Dales, or LS1 4AP" autocomplete="off">
+                    </label>
+                    <button id="areaFind" type="button" class="btn-secondary">Find</button>
+                    <button id="areaClear" type="button" class="btn-secondary">Use start point</button>
+                </div>
+                <div id="areaChoices"></div>
+                <div id="areaCurrent" class="planner-hint"></div>
+            </div>
+
+            <div class="planner-row">
+                <label class="planner-field" style="flex:1 1 240px;">Start: your town or postcode
+                    <input id="startInput" type="text" placeholder="e.g. Milton Keynes, or MK7 6AA" autocomplete="off">
+                </label>
+                <button id="startFind" type="button" class="btn-secondary">Find</button>
+                <button id="startLocate" type="button" class="btn-secondary">📍 Use my location</button>
+            </div>
+            <div class="planner-row">
+                <label class="planner-field" style="flex:1 1 240px;">…or start from a venue's town
+                    <select id="startVenue">
+                        <option value="">Choose…</option>
+                    </select>
+                </label>
+            </div>
+            <div id="startChoices"></div>
+            <div id="startCurrent" class="planner-hint"></div>
+
+
+            <div data-modes="pool" hidden>
+                <div class="planner-grid">
+                    <div class="planner-field">Artists whose venues to use
+                        <input id="poolPerfFilter" type="text" placeholder="search artists, then click to add…" autocomplete="off">
+                        <div id="poolPerfResults" class="picker-results" hidden></div>
+                        <div id="poolPerfChips" class="picker-chips"></div>
+                    </div>
+                    <div class="planner-field">…and/or tours
+                        <input id="poolTourFilter" type="text" placeholder="search tours, then click to add…" autocomplete="off">
+                        <div id="poolTourResults" class="picker-results" hidden></div>
+                        <div id="poolTourChips" class="picker-chips"></div>
+                    </div>
+                    <label class="planner-field">Gigs wanted
+                        <input id="gigsWanted" type="number" min="1" max="14" value="5">
+                    </label>
+                </div>
+                <div class="planner-hint">Search as many artists and tours as you like and click each to add it. Past and future gigs by the chosen artists/tours define the pool. Gigs at story clubs become club nights on the club's real dates; other venues use the weekday rule. The dates above set the window the tour must fit in.</div>
+                <div class="planner-hint">…or pool by type of act (adds to any selections above; a storyteller is any performer not marked as a musician or poet):</div>
+                <div class="planner-checks">
+                    <label><input type="checkbox" id="poolAll_storyteller"> All storytellers</label>
+                    <label><input type="checkbox" id="poolAll_musician"> All musicians</label>
+                    <label><input type="checkbox" id="poolAll_poet"> All poets</label>
+                </div>
+                <div class="planner-checks">
+                    <label><input type="checkbox" id="poolWeekday" checked> Only use a venue on a day of the week these artists have played it</label>
+                    <label><input type="checkbox" id="poolDistinct" checked> Visit each venue only once</label>
+                    <label><input type="checkbox" id="poolAllClubs"> Also include every active story club</label>
+                </div>
+                <div class="planner-row"><button id="poolPreview" type="button" class="btn-secondary">Preview venue pool</button></div>
+                <div id="poolList"></div>
+            </div>
+
+            <div class="planner-checks">
+                <label><input type="checkbox" id="includeOther"> Include folk nights, sessions and other one-off events</label>
+            </div>
+            <div class="planner-row">
+                <button id="buildTour" type="button" class="btn-primary">Build tour options</button>
+            </div>
+            <div id="plannerStatus" class="planner-status" role="status"></div>
+        </div>
+    </div>
+
+    <div id="plannerSummaryRow" class="planner-summary-row">
+        <div id="plannerItinerary" class="planner-panel"></div>
+        <div id="plannerMapWrap" class="planner-panel" style="display:none;">
+            <div id="plannerMap"></div>
+        </div>
+    </div>
+    <div id="plannerResults"></div>
+
+    <div class="about" id="colophon">
+        <p><em>Distances are straight-line estimates scaled for roads, not routed journeys — check a route planner
+            before you book. Start-point lookups use <a href="https://postcodes.io/">postcodes.io</a>; your start point
+            is kept only in your own browser.</em></p>
+    </div>
+
+    <script src="/js/recurrence-engine.js"></script>
+    <script src="/js/shared_utils.js"></script>
+    <script src="/js/tour_planner.js?v=202611131047"></script>
+</body>
+
+</html>
