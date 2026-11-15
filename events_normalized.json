@@ -13633,11 +13633,12 @@
       "isSpecial": true
     },
     {
-      "name": "YORK STORY BAR - ft. Tim Ralphs [Tim Ralphs]",
-      "showname": "YORK STORY BAR - ft. Tim Ralphs",
+      "name": "York Story Bar - ft. Tim Ralphs [Tim Ralphs]",
+      "showname": "York Story Bar - ft. Tim Ralphs",
       "date": "21/11/2026",
       "venue_id": "the-cyclist-york",
       "performer_id": "tim-ralphs",
+      "event_flyer": "2026_11_21_tim_ralphs_yoirk_story_bar.webp",
       "promoter_id": "adderstone",
       "club": "yorkstorybar",
       "eventId": "20261121-tim-ralphs-the-cyclist-york",
