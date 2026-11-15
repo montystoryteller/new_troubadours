@@ -4860,22 +4860,35 @@
           "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270127-alma-tavern-theatre"
         },
         {
-          "date": "28/01/2027",
+          "date": "22/01/2027",
           "venue_id": "ustinov-theatre-royal",
-          "ticket_url": "https://www.theatreroyal.org.uk/whats-on/?ven=2740",
-          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270128-ustinov-theatre-royal"
+          "ticket_url": "https://www.theatreroyal.org.uk/events/lilith/",
+          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270122-ustinov-theatre-royal"
         },
         {
-          "date": "29/01/2027",
+          "date": "23/01/2027",
           "venue_id": "ustinov-theatre-royal",
-          "ticket_url": "https://www.theatreroyal.org.uk/whats-on/?ven=2740",
-          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270129-ustinov-theatre-royal"
+          "ticket_url": "https://www.theatreroyal.org.uk/events/lilith/",
+          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270123-ustinov-theatre-royal"
         },
         {
           "date": "04/02/2027",
           "venue_id": "the-acorn-penzance",
           "ticket_url": "https://www.theacornpenzance.com/whats-on-at-the-acorn-theatre/",
           "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270204-the-acorn-penzance"
+        },
+        {
+          "date": "05/02/2027",
+          "venue_id": "bridport-arts-centre",
+          "ticket_url": "https://www.bridport-arts.com/whats-on",
+          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270205-bridport-arts-centre"
+        },
+        {
+          "date": "12/05/2027",
+          "venue_id": "moor-barton-wilding",
+          "ticket_url": "",
+          "club": "dartmoorStorytellers",
+          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270512-moor-barton-wilding"
         }
       ]
     },
@@ -18759,6 +18772,21 @@
       "latlon": [
         53.36492,
         -1.4859
+      ]
+    },
+    "bridport-arts-centre": {
+      "id": "bridport-arts-centre",
+      "name": "Bridport Arts Centre",
+      "venue_type": "Arts centre / venue",
+      "city": "Bridport",
+      "postcode": "DT6 3NR",
+      "full_address": "Bridport Arts Centre, 9 South Street, Bridport, DT6 3NR",
+      "url": "https://www.bridport-arts.com/",
+      "facebook": "bridportartscentre",
+      "instagram": "bridportarts",
+      "latlon": [
+        50.73295,
+        -2.75792
       ]
     },
     "bridport-community-orchard": {
