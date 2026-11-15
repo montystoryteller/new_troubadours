@@ -14512,6 +14512,19 @@
       "ticket_url": "https://ticket247.co.uk/Event/livewire-presents-jess-silk-at-the-giffard-arms-wolverhampton-570061",
       "event_flyer": "2026_06_18_jess_silk_giffard_arms.jpg",
       "isMusic": true
+    },
+    {
+      "name": "Sound of the Sirens [+ Slow for a Poet]",
+      "showname": "Sound of the Sirens [+ Slow for a Poet]",
+      "date": "23/04/2027",
+      "venue_id": "wroot-rocks",
+      "performer_id": "sound-of-the-sirens",
+      "eventId": "20270423-sound-of-the-sirens-wroot-rocks",
+      "date_added": "15/11/2026",
+      "price": "£18.50",
+      "ticket_url": "https://www.wrootrocks.com/store/p/sound-of-the-sirens",
+      "event_flyer": "2027_04_23_sound_sirens_wroot.jpg",
+      "isMusic": true
     }
   ],
   "folkNights": [
