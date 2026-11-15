@@ -500,8 +500,8 @@ unhealthy_pages_json() {
 # failures go on the pending list (the next --delta renders them), successes come off it, and
 # rendered URLs wait in the unsubmitted list until IndexNow has accepted them.
 update_finish() {
-  local pending="${NT_PENDING_FILE:-$HOME/.updatecache-pending}"
-  local unsub="${NT_UNSUBMITTED_FILE:-$HOME/.updatecache-indexnow}"
+  local pending="${NT_PENDING_FILE:-./.updatecache-pending}"
+  local unsub="${NT_UNSUBMITTED_FILE:-./.updatecache-indexnow}"
   local dt="$UPD_DIR" n_ok n_left n_unsub=0
   touch "$dt/ok.txt" "$dt/attempted.txt"
   grep -vxFf "$dt/ok.txt" "$dt/attempted.txt" > "$dt/failed.txt" || true
