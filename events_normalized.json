@@ -13534,6 +13534,20 @@
       "isSpecial": true
     },
     {
+      "name": "AwenRasa: A Collaboration Beyond Borders [shereen-saif]",
+      "showname": "AwenRasa: A Collaboration Beyond Borders",
+      "date": "18/11/2026",
+      "venue_id": "university-of-south-wales-cardiff",
+      "performer_ids": ["michael-harvey", "shereen-saif"],
+      "eventId": "20261118-michael-harvey-university-of-south-wales-cardiff",
+      "date_added": "15/11/2026",
+      "time": "3:30 PM - 5 PM",
+      "price": "Free (reservaion advised)",
+      "description": "International storytellers Michael Harvey (Wales) and Shereen Saif (India/UAE)\n\n\n\nInternational storytellers Michael Harvey (Wales) and Shereen Saif (India/UAE) come together for an interactive session of performance sharing and fireside conversation at the Centre for Storytelling, University of South Wales.\n\n\n\nDrawing on tales rooted in their respective cultural traditions, they explore their ongoing collaboration and the intersections between Awen, the Welsh creative concept of poetic inspiration, and Rasa, the Indian aesthetic principle of emotional experience. Expect a cross-cultural dialogue that delves into the art of storytelling, the role of the body in bringing stories to life, and the possibilities that emerge when creative traditions meet.",
+      "ticket_url": "https://www.eventbrite.co.uk/e/awenrasa-a-collaboration-beyond-borders-tickets-2004764050241",
+      "isSpecial": true
+    },
+    {
       "name": "Tales of the Faeries: Lust, Loss and Hollow Hills",
       "showname": "Tales of the Faeries: Lust, Loss and Hollow Hills",
       "date": "18/11/2026",
@@ -24324,6 +24338,14 @@
       "name": "Sarah Cantrill",
       "url": "https://thestorytellerandthemountain.substack.com/p/welcome",
       "bio": "Sarah Cantrill is the Artistic Director, Founder and Lead Storyteller for the Kingston-based children’s theatre company, Story Storks.  She works closely with All Saints Church and Kingston Museum, and is on a mission to tell anyone who will listen the amazing stories of Kingston, the place she calls home. "
+    },
+    "shereen-saif": {
+      "id": "shereen-saif",
+      "name": "Shereen Saif",
+      "url": "https://shereensaif.com/",
+      "bio": "Shereen Saif is a writer and performance maker working across theatre, dance, storytelling,\nconceptual art and site-responsive practice. Rooted in Indian performance traditions, her\nwork is driven by curiosity about people, places and the stories that shape us.",
+      "facebook": "shereen.saifudeen",
+      "instagram": "shereensaifme"
     },
     "simon-heywood": {
       "id": "simon-heywood",
