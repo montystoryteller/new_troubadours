@@ -3024,54 +3024,77 @@
     },
     "blabbermouth-storytelling-midwinter-a-ghost-story": {
       "tour_name": "Midwinter — A Ghost Story (Winter 2026)",
+      "touring_event_flyer": "tour_blabbermouth_midwinter_2026.jpg",
+      "tour_description": "Blabbermouth Storytelling presents an evening of seasonal ghost-storytelling to mark the festive period.\n\n\n\nThis winter, join award winning archaeologist and storyteller Dan Broadbent for an atmospheric telling of 'Midwinter', an original ghost-story inspired by myths and legends of the Winter Solstice and the eerie folklore of South West England's most mysterious prehistoric sites.\n\n\n\nTold in two-parts, and across thousands of years, expect tales within tales and a wealth of characters including Edwardian archaeologists, self-styed gurus, and ancient gods, in a spellbinding supernatural journey.\n\n\n\nThe show lasts approximately 90 minutes including a short interval. Suitable for adults and older children (recommended 13+) ",
       "tour_dates": [
         {
           "date": "10/12/2026",
           "venue_id": "the-assembly-rooms-glastonbury",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 / children £10",
           "isSpecial": true,
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2390164",
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261210-the-assembly-rooms-glastonbury"
         },
         {
           "date": "11/12/2026",
           "venue_id": "rise-frome",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 / children £10",
           "isSpecial": true,
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2390198",
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261211-rise-frome"
         },
         {
           "date": "13/12/2026",
           "venue_id": "exeter-guildhall",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 (+ £1) / children £10 (+ £1)",
           "isSpecial": true,
+          "ticket_url": "https://exetercornexchange.co.uk/whats-on/midwinter-a-ghost-story-in-two-parts/",
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261213-exeter-guildhall"
+        },
+        {
+          "date": "15/12/2026",
+          "venue_id": "tiverton-town-hall",
+          "price": "£15 (+ £1) / children £10 (+ £1)",
+          "isSpecial": true,
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2455999",
+          "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261215-tiverton-town-hall"
         },
         {
           "date": "17/12/2026",
           "venue_id": "town-hall-chard",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 / children £10",
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2456000",
           "isSpecial": true,
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261217-town-hall-chard"
         },
         {
           "date": "18/12/2026",
           "venue_id": "axbridge-town-hall",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 / children £10",
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2456001",
           "isSpecial": true,
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261218-axbridge-town-hall"
         },
         {
+          "date": "19/12/2026",
+          "venue_id": "market-house-castle-cary",
+          "price": "£15 / children £10",
+          "isSpecial": true,
+          "time": "7:30 PM - 9:00 PM",
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2456002",
+          "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261219-market-house-castle-cary"
+        },
+        {
           "date": "21/12/2026",
           "venue_id": "victoria-rooms-milverton",
-          "price": "£14 advance, £15 OTD",
+          "price": "£15 / children £10",
+          "ticket_url": "https://www.tickettailor.com/events/blabbermouthcommunitystorytelling/2456004",
           "isSpecial": true,
           "eventId": "T-blabbermouth-storytelling-midwinter-a-ghost-story-20261221-victoria-rooms-milverton"
         }
       ],
       "name": "Midwinter — A Ghost Story",
       "performer_id": "blabbermouth-storytelling",
-      "tour_description": "An evening of spine-tingling story-telling inspired by the folklore of the WInder Solstice.",
-      "touring_event_flyer": "tour_blabbermouth_midwinter_ghost_winter_2026.avif",
       "isSpecial": true
     },
     "paul-armfield-paul-armfield-autumn-tour-2026": {
@@ -17273,6 +17296,20 @@
         -0.11494
       ]
     },
+    "market-house-castle-cary": {
+      "id": "market-house-castle-cary",
+      "name": "The Market House, Castle Cary",
+      "venue_type": "Other / unknown",
+      "city": "Castle Cary",
+      "postcode": "BA7 7AH",
+      "full_address": "Market House, Market Place, Castle Cary, BA7 7AH",
+      "url": "https://markethousecastlecary.com/",
+      "description": "The Market House is the focal point of Castle Cary and is a Grade II* listed building dating from 1855. Originally used to host the town’s Market Traders, the building fell into disrepair as the markets petered out. Extensive renovation of The Market House was completed early in 2014 and this iconic building now offers internal and external areas to let for community and commercial events.\n\n\n\nSmall, intimate performances have been held on the staging area in The Shambles – seating can be arranged for up to 50 attendees and our range of spotlights and sockets help artists create the right ambience for their performance.",
+      "latlon": [
+        51.08946,
+        -2.51375
+      ]
+    },
     "caryford-community-hall-somerset": {
       "id": "caryford-community-hall-somerset",
       "name": "Caryford Community Hall, Somerset",
@@ -17876,7 +17913,7 @@
       "city": "Truro",
       "postcode": "TR4 8NU",
       "url": "https://www.facebook.com/groups/1346959472602866/",
-      "description": "The Barn and Ell's Bar is in Wheal Busy, between Blackwater and Chacewater in Cornish mining country.\nWe try our best to make it a very relaxed environment with comfy sofas, log fires and the best artists, both local and from afar.\nWe host events that are for members of this group. These are not ticketed, money is collected via a \" chip in the hat\", were a hat is passed around and all money collected is given to the artists.\nIn essence, this is a private party, open to friends of The Barn and Ell's Bar. 😊\nThere is no parking outside the barn, however there is parking at the Wheal Busy Mine about 5 minutes walk away. We specifically ask people to park here as anyone who comes down would soon be blocked in as you then would not be able to turn around, so please park as stated at Wheal busy mine xx Anyone with mobility issues please contact us and we'll try and accommodate. Unfortunately we are an old barn and as such are not wheelchair friendly, due to steps.",
+      "description": "The Barn and Ell's Bar is in Wheal Busy, between Blackwater and Chacewater in Cornish mining country.\nWe try our best to make it a very relaxed environment with comfy sofas, log fires and the best artists, both local and from afar.\nWe host events that are for members of this group. These are not ticketed, money is collected via a \" chip in the hat\", were a hat is passed around and all money collected is given to the artists.\nIn essence, this is a private party, open to friends of The Barn and Ell's Bar. 😊\nThere is no parking outside the barn, however there is parking at the Wheal Busy Mine about 5 minutes walk away. We specifically ask people to park here as anyone who comes down would soon be blocked in as you then would not be able to turn around, so please park as stated at Wheal busy mine. Anyone with mobility issues please contact us and we'll try and accommodate. Unfortunately we are an old barn and as such are not wheelchair friendly, due to steps.",
       "latlon": [
         50.2637,
         -5.17492
@@ -22256,6 +22293,18 @@
       "latlon": [
         50.72341,
         -3.53187
+      ]
+    },
+    "tiverton-town-hall": {
+      "id": "tiverton-town-hall",
+      "name": "Tiverton Town Hall",
+      "city": "Tiverton",
+      "postcode": "EX16 6PG",
+      "full_address": "Tiverton Town Hall, St Andrew Street, Tiverton, EX16 6PG",
+      "url": "https://tivertontowncouncil.gov.uk/town-hall",
+      "latlon": [
+        50.90231,
+        -3.4889
       ]
     },
     "town-hall-chard": {
