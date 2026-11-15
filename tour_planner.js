@@ -1207,6 +1207,25 @@ function renderItinerary() {
     }), "tour.ics", "Tour Planner");
   });
   box.appendChild(ics);
+  const records = () => TourSupport.buildRecords(stops, (c) => {
+    const v = venueOf(c) || {};
+    const ll = latlonOf(c);
+    const proposed = c.kind === "venue";
+    return {
+      title: c.name, kind: proposed ? "proposed venue" : c.kind, status: proposed ? "proposed" : "listed",
+      venue: v.name, address: v.full_address || "", town: v.city || "", postcode: v.postcode || "",
+      latitude: ll ? ll[0] : null, longitude: ll ? ll[1] : null,
+      link: c.link ? new URL(c.link, location.href).href : "", notes: c.note || "",
+    };
+  }, home);
+  const exp = el("span");
+  exp.style.marginLeft = "8px";
+  TourSupport.addExportButtons(exp, {
+    className: "btn-secondary", basename: "tour", getRecords: records,
+    getMeta: () => ({ page: "tour_planner", start: PLANNER.start ? { label: PLANNER.start.label, latitude: PLANNER.start.lat, longitude: PLANNER.start.lon } : null }),
+  });
+  exp.querySelectorAll("button").forEach((b, i) => { if (i) b.style.marginLeft = "8px"; });
+  box.appendChild(exp);
 }
 
 // ── map ─────────────────────────────────────────────────────────────────

@@ -207,6 +207,66 @@ const TourSupport = (function () {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  // ── data export (JSON / CSV) ─────────────────────────────────────────
+  function saveText(text, filename, mime) {
+    const blob = new Blob([text], { type: mime });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  /** Turn a page's stops into flat export rows and add the leg from the previous stop
+   *  (or from home for the first). base(c) -> {title, kind, status, performer, venue, address,
+   *  town, postcode, latitude, longitude, link, notes}; c.date must be a Date. */
+  function buildRecords(stops, base, home) {
+    let prev = home || null;
+    return stops.map((c, i) => {
+      const b = base(c);
+      const ll = b.latitude != null && b.longitude != null ? [b.latitude, b.longitude] : null;
+      const leg = prev && ll ? roadMiles(prev, ll) : null;
+      if (ll) prev = ll;
+      return {
+        stop: i + 1, date: iso(c.date), weekday: WEEKDAYS[c.date.getDay()], time: c.time || "",
+        title: b.title || "", kind: b.kind || "", status: b.status || "listed", performer: b.performer || "",
+        venue: b.venue || "", address: b.address || "", town: b.town || "", postcode: b.postcode || "",
+        latitude: b.latitude ?? "", longitude: b.longitude ?? "",
+        miles_from_previous: leg == null ? "" : Math.round(leg * 10) / 10,
+        drive_minutes_from_previous: leg == null ? "" : Math.round((leg / AVG_MPH) * 60),
+        link: b.link || "", notes: b.notes || "",
+      };
+    });
+  }
+  function csvCell(v) { return `"${String(v == null ? "" : v).replace(/"/g, '""')}"`; }
+  function toCsv(records) {
+    if (!records.length) return "";
+    const cols = Object.keys(records[0]);
+    return "\ufeff" + [cols.join(","), ...records.map((r) => cols.map((c) => csvCell(r[c])).join(","))].join("\r\n") + "\r\n";
+  }
+  function toJson(records, meta) {
+    const total = records.reduce((t, r) => t + (Number(r.miles_from_previous) || 0), 0);
+    return JSON.stringify({
+      source: "New Troubadours", generated: new Date().toISOString(), ...(meta || {}),
+      estimated_total_miles: Math.round(total * 10) / 10,
+      note: `Distances are straight-line x ${ROAD_FACTOR} estimates at ${AVG_MPH} mph, not routed journeys.`,
+      stops: records,
+    }, null, 2);
+  }
+  /** Add "JSON" and "CSV" download buttons to `parent`. getRecords() is called on click. */
+  function addExportButtons(parent, { className, getRecords, getMeta, basename }) {
+    [["{ } Download JSON", "json"], ["⬇ Download CSV", "csv"]].forEach(([label, kind]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = className || ""; b.textContent = label;
+      b.addEventListener("click", () => {
+        const rows = getRecords();
+        if (kind === "json") saveText(toJson(rows, getMeta ? getMeta() : {}), (basename || "tour") + ".json", "application/json");
+        else saveText(toCsv(rows), (basename || "tour") + ".csv", "text/csv;charset=utf-8");
+      });
+      parent.appendChild(b);
+    });
+  }
+
   return {
     ROAD_FACTOR, AVG_MPH, KM_TO_MI,
     addDays, dateKey,
@@ -214,5 +274,6 @@ const TourSupport = (function () {
     venueUsable, placeLabel,
     geocode, saveStart, loadStart, clearStart, findPlace, locate,
     loadLeaflet, icsEscape, icsLocation, downloadIcs,
+    saveText, buildRecords, toCsv, toJson, addExportButtons,
   };
 })();

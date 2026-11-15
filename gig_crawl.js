@@ -414,7 +414,22 @@ function gRenderPlan() {
   ics.addEventListener("click", () => gDownloadIcs(stops));
   const reset = gEl("button", "gc-btn", "Start again"); reset.type = "button";
   reset.addEventListener("click", () => { GC.anchor = null; GC.chosen = new Map(); gRenderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); });
-  act.append(copy, ics, reset);
+  act.append(copy, ics);
+  TourSupport.addExportButtons(act, {
+    className: "gc-btn", basename: "gig-crawl",
+    getRecords: () => TourSupport.buildRecords(stops, (c) => {
+      const v = GC.venues[c.venue_id] || {};
+      const ll = gLL(c);
+      return {
+        title: c.title, kind: c.kind || "", performer: c.performer || "",
+        venue: v.name, address: v.full_address || "", town: v.city || "", postcode: v.postcode || "",
+        latitude: ll ? ll[0] : null, longitude: ll ? ll[1] : null,
+        link: c.url ? new URL(c.url, location.href).href : (c.ext || ""),
+      };
+    }, home),
+    getMeta: () => ({ page: "gig_crawl", start: GC.start ? { label: GC.start.label, latitude: GC.start.lat, longitude: GC.start.lon } : null }),
+  });
+  act.append(reset);
   box.appendChild(act);
   gRenderMap(stops);
 }
