@@ -481,6 +481,16 @@ function buildPool() {
     const pn = (PLANNER.eventsData.performers || {})[g.pid];
     r.artists.add(pn ? pn.name : g.pid || "(unlisted performer)");
   });
+  // venues brought in from a suggested artist: use that artist's gigs there
+  (PLANNER.extraVenues || new Map()).forEach((src, vid) => {
+    poolEvidence(src, new Set(), new Set()).filter((g) => g.vid === vid).forEach((g) => {
+      const r = rowFor(g);
+      if (!r) return;
+      r.count++; r.wd[g.date.getDay()]++; r.extra = true;
+      const pn = (PLANNER.eventsData.performers || {})[g.pid];
+      r.artists.add(pn ? pn.name : g.pid || "(unlisted performer)");
+    });
+  });
   if (document.getElementById("poolAllClubs").checked) {
     clubs.forEach((rec, id) => {
       if (rows.has("c:" + id) || !isRealPlace({ venue_id: resolveClubVenueId(rec, null) })) return;
@@ -501,48 +511,248 @@ function refreshPool() {
   renderPoolMap(true);
   renderSimilar();
 }
+
+// ── venue explorer: who has played the pool's venues, and what is new to you ──
+PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, solo: null, hover: null };
+PLANNER.extraVenues = new Map(); // venue id -> Set(artist ids) added from a suggested artist
+PLANNER.primary = null;
+const ART_COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]; // colour-blind friendly
+const ART_OTHER = "#757575";
+
+/** The artist everything is compared against: the one chosen with ★, else the first added. */
+function primaryId() {
+  if (PLANNER.primary && PLANNER.pickPerf.has(PLANNER.primary)) return PLANNER.primary;
+  return [...PLANNER.pickPerf][0] || null;
+}
+function artistName(id) { const p = (PLANNER.eventsData.performers || {})[id]; return p ? p.name || id : id; }
+/** Selected artists in order (explicit picks first, then the performers of picked tours). */
+function selectedArtistIds() {
+  const out = [...PLANNER.pickPerf];
+  PLANNER.pickTour.forEach((tid) => {
+    const t = (PLANNER.eventsData.tours || {})[tid];
+    if (t) evIds(t).forEach((id) => { if (!out.includes(id)) out.push(id); });
+  });
+  const prim = primaryId();
+  return prim ? [prim, ...out.filter((i) => i !== prim)] : out;
+}
+/** Artists who have played the same venues as the selection, best overlap first. */
+function similarArtists() {
+  const idx = performerVenueIndex(), ed = PLANNER.eventsData;
+  const selected = new Set(selectedArtistIds());
+  const mine = new Set();
+  selected.forEach((id) => (idx.get(id) || new Map()).forEach((n, vid) => mine.add(vid)));
+  if (!selected.size || !mine.size) return [];
+  const out = [];
+  idx.forEach((venues, id) => {
+    if (selected.has(id)) return;
+    const p = (ed.performers || {})[id];
+    if (!p || p.isPromoter || p.isClub) return;
+    let shared = 0;
+    venues.forEach((n, vid) => { if (mine.has(vid)) shared++; });
+    if (shared) out.push({ id, name: p.name || id, shared });
+  });
+  return out.sort((a, b) => b.shared - a.shared || a.name.localeCompare(b.name));
+}
+
+/** Everything the explorer shows: pool rows plus venues only suggested artists have played. */
+function expModel() {
+  const idx = performerVenueIndex();
+  const sel = selectedArtistIds(), prim = primaryId();
+  const sim = similarArtists().slice(0, 8);
+  const colour = new Map();
+  [...sel, ...sim.map((o) => o.id)].forEach((id, i) => colour.set(id, i < ART_COLOURS.length ? ART_COLOURS[i] : ART_OTHER));
+  const has = (id, vid) => (idx.get(id) || new Map()).has(vid);
+  const pool = PLANNER.pool || [];
+  const rows = pool.map((r) => {
+    const by = sel.filter((id) => has(id, r.vid));
+    const group = !prim ? "all" : by.includes(prim) ? (by.length > 1 ? "shared" : "mine") : "new";
+    return { key: r.key, vid: r.vid, r, by, group, suggested: false, sources: [] };
+  });
+  const poolVids = new Set(pool.map((r) => r.vid));
+  const sugg = new Map();
+  sim.forEach((o) => (idx.get(o.id) || new Map()).forEach((n, vid) => {
+    if (poolVids.has(vid)) return;
+    if (!sugg.has(vid)) sugg.set(vid, new Set());
+    sugg.get(vid).add(o.id);
+  }));
+  const suggested = [...sugg.entries()].map(([vid, src]) => ({ key: "s:" + vid, vid, r: null, by: [], group: "new", suggested: true, sources: [...src] }));
+  return { sel, prim, sim, colour, rows, suggested };
+}
+function expLabel(x) {
+  const v = PLANNER.venues[x.vid] || {};
+  if (x.r && x.r.kind === "club") return `🎙 ${x.r.rec.name}${v.city ? " — " + v.city : ""}`;
+  return `${v.name || x.vid}${v.city && !String(v.name || "").includes(v.city) ? ", " + v.city : ""}`;
+}
+/** Apply the lens (set operation, soloed artist, sort); counts per group are taken before the group filter. */
+function expVisible(m) {
+  const e = PLANNER.exp, n = m.sel.length;
+  let all = [...m.rows, ...m.suggested].filter((x) => {
+    if (e.setop === "all" && !(!x.suggested && n > 0 && x.by.length === n)) return false;
+    if (e.setop === "two" && !(!x.suggested && x.by.length >= 2)) return false;
+    if (e.setop === "one" && !(!x.suggested && x.by.length === 1)) return false;
+    if (e.solo && !x.by.includes(e.solo) && !x.sources.includes(e.solo)) return false;
+    return true;
+  });
+  const counts = { all: all.length, mine: 0, shared: 0, new: 0 };
+  all.forEach((x) => { if (counts[x.group] !== undefined) counts[x.group]++; });
+  let shown = e.group === "all" || !m.prim ? all : all.filter((x) => x.group === e.group);
+  const start = PLANNER.start ? [PLANNER.start.lat, PLANNER.start.lon] : null;
+  const dist = (x) => { const v = PLANNER.venues[x.vid]; return start && v && Array.isArray(v.latlon) ? roadMiles(start, v.latlon) : Infinity; };
+  const cnt = (x) => (x.r ? x.r.count : 0) + x.by.length * 0.01 + x.sources.length * 0.001;
+  shown = [...shown].sort(e.sort === "az" ? (a, b) => expLabel(a).localeCompare(expLabel(b))
+    : e.sort === "near" && start ? (a, b) => dist(a) - dist(b) : (a, b) => cnt(b) - cnt(a));
+  return { shown, counts };
+}
+let expCardEls = new Map();
+
 function renderPoolList() {
   const box = document.getElementById("poolList");
   box.replaceChildren();
+  expCardEls = new Map();
   const sum = document.getElementById("poolSummary");
   const pool = PLANNER.pool || [];
+  const e = PLANNER.exp;
   if (!pool.length) {
     sum.textContent = "Choose artists, tours or types of act above and the venues they have played appear here.";
     return;
   }
-  const on = pool.filter((r) => r.on).length;
-  sum.textContent = `${pool.length} venues in the pool (${on} included). Untick any you don't want — or click a dot on the map.`;
-  const bar = el("div", "ts-row");
-  [["Include all", true], ["Include none", false]].forEach(([t, val]) => {
-    const b = el("button", "btn-secondary", t); b.type = "button";
-    b.addEventListener("click", () => { pool.forEach((r) => { r.on = val; }); renderPoolList(); renderPoolMap(false); });
-    bar.appendChild(b);
+  const m = expModel();
+  const vis = expVisible(m);
+  const newCount = m.prim ? vis.counts.new : 0;
+  sum.textContent = `${pool.length} venues in the pool (${pool.filter((r) => r.on).length} included)` +
+    (m.prim ? ` · ${newCount} new to ${artistName(m.prim)}` : "") + ". Untick any you don't want — or click a dot on the map.";
+
+  const head = el("button", "exp-toggle", `${e.open ? "▾" : "▸"} Venue explorer — ${vis.shown.length} shown`);
+  head.type = "button";
+  head.setAttribute("aria-expanded", String(e.open));
+  head.addEventListener("click", () => { e.open = !e.open; renderPoolList(); });
+  box.appendChild(head);
+  if (!e.open) return;
+
+  // artists: colour key, ★ primary, hover to highlight, click to solo
+  const arts = el("div", "exp-artists");
+  [...m.sel, ...m.sim.slice(0, 5).map((o) => o.id)].forEach((id) => {
+    const isSel = m.sel.includes(id);
+    const b = el("button", "exp-art" + (e.solo === id ? " solo" : "") + (isSel ? "" : " suggested"), "");
+    b.type = "button";
+    const dot = el("span", "exp-dot", (artistName(id) || "?").charAt(0).toUpperCase());
+    dot.style.background = m.colour.get(id) || ART_OTHER;
+    b.append(dot, " " + artistName(id) + (id === m.prim ? " ★" : isSel ? "" : " (suggested)"));
+    b.title = (isSel ? "Click to show only this artist's venues" : "Suggested: has played venues you have") + " · hover to highlight";
+    b.addEventListener("click", () => { e.solo = e.solo === id ? null : id; renderPoolList(); renderPoolMap(false); });
+    b.addEventListener("mouseenter", () => { e.hover = id; markExpHover(); renderPoolMap(false); });
+    b.addEventListener("mouseleave", () => { e.hover = null; markExpHover(); renderPoolMap(false); });
+    arts.appendChild(b);
   });
+  box.appendChild(arts);
+
+  // lens controls
+  const bar = el("div", "exp-bar");
+  if (m.prim) {
+    [["all", "All"], ["mine", `${artistName(m.prim)} only`], ["shared", "Shared"], ["new", "New to " + artistName(m.prim)]].forEach(([k, t]) => {
+      const b = el("button", "exp-chip" + (e.group === k ? " on" : ""), `${t} (${vis.counts[k]})`);
+      b.type = "button";
+      b.addEventListener("click", () => { e.group = k; renderPoolList(); renderPoolMap(false); });
+      bar.appendChild(b);
+    });
+  }
+  const sel = (label, key, opts, after) => {
+    const lab = el("label", "exp-sel", label + " ");
+    const s = el("select");
+    opts.forEach(([v, t]) => { const o = el("option", null, t); o.value = v; if (v === e[key]) o.selected = true; s.appendChild(o); });
+    s.addEventListener("change", () => { e[key] = s.value; if (after) after(); renderPoolList(); renderPoolMap(false); });
+    lab.appendChild(s);
+    return lab;
+  };
+  if (m.sel.length > 1) bar.appendChild(sel("Played by", "setop", [["any", "any selected artist"], ["all", "all selected artists"], ["two", "2 or more artists"], ["one", "only one artist"]]));
+  bar.appendChild(sel("Map colours", "colour", [["state", "included / excluded"], ["artist", "by artist"]]));
+  bar.appendChild(sel("Sort", "sort", [["count", "most played"], ["near", "nearest to start"], ["az", "A–Z"]]));
+  bar.appendChild(sel("View", "view", [["cards", "cards"], ["list", "compact list"]]));
   box.appendChild(bar);
-  const ul = el("div", "pool-list");
-  pool.forEach((r) => {
-    const v = PLANNER.venues[r.vid];
-    const lab = el("label", "pool-item" + (r.on ? "" : " off"));
-    const cb = el("input"); cb.type = "checkbox"; cb.checked = r.on;
-    cb.addEventListener("change", () => { r.on = cb.checked; lab.classList.toggle("off", !r.on); renderPoolMap(false); updatePoolSummary(); });
-    const who = r.artists.size ? ` (${[...r.artists].slice(0, 3).join(", ")}${r.artists.size > 3 ? "…" : ""})` : "";
-    const what = r.kind === "club"
-      ? `🎙 ${r.rec.name} — ${typeof r.rec.schedule === "string" ? r.rec.schedule : "club night"}${v.city ? ", " + v.city : ""}`
-      : `${v.name}${v.city ? ", " + v.city : ""} — ${wdLabel(r)}`;
-    lab.append(cb, " " + what + who);
-    ul.appendChild(lab);
+
+  const acts = el("div", "ts-row");
+  [["Include all", true], ["Include none", false]].forEach(([t, val]) => {
+    const b = el("button", "btn-secondary btn-small", t); b.type = "button";
+    b.addEventListener("click", () => { pool.forEach((r) => { r.on = val; }); renderPoolList(); renderPoolMap(false); });
+    acts.appendChild(b);
   });
-  box.appendChild(ul);
+  box.appendChild(acts);
+
+  const list = el("div", "exp-cards" + (e.view === "list" ? " compact" : ""));
+  if (!vis.shown.length) list.appendChild(el("div", "graph-none", "No venues match this lens."));
+  vis.shown.forEach((x) => {
+    const card = el("div", "exp-card" + (x.suggested ? " suggested" : "") + (x.r && !x.r.on ? " off" : ""));
+    card.dataset.key = x.key;
+    expCardEls.set(x.key, card);
+    const names = (x.suggested ? x.sources : x.by).map((id) => artistName(id));
+    const top = el("div", "exp-card-top");
+    if (!x.suggested) {
+      const cb = el("input"); cb.type = "checkbox"; cb.checked = x.r.on;
+      cb.setAttribute("aria-label", "Include " + expLabel(x));
+      cb.addEventListener("change", () => { x.r.on = cb.checked; card.classList.toggle("off", !x.r.on); updatePoolSummary(); renderPoolMap(false); });
+      top.appendChild(cb);
+    }
+    const dots = el("span", "exp-dots");
+    (x.suggested ? x.sources : x.by).forEach((id) => {
+      const d = el("span", "exp-dot sm", (artistName(id) || "?").charAt(0).toUpperCase());
+      d.style.background = m.colour.get(id) || ART_OTHER; d.title = artistName(id);
+      dots.appendChild(d);
+    });
+    top.append(dots, el("span", "exp-name", " " + expLabel(x)));
+    if (x.suggested || (m.prim && x.group === "new")) top.appendChild(el("span", "exp-new", "new to you"));
+    card.appendChild(top);
+    if (e.view !== "list") {
+      const meta = [];
+      if (x.r && x.r.kind === "venue") meta.push(wdLabel(x.r));
+      else if (x.r && x.r.kind === "club") meta.push(typeof x.r.rec.schedule === "string" ? x.r.rec.schedule : "club night");
+      if (names.length) meta.push((x.suggested ? "Via " : "Played by ") + names.slice(0, 4).join(", ") + (names.length > 4 ? "…" : ""));
+      else if (x.r && x.r.artists.size) meta.push("Played by " + [...x.r.artists].slice(0, 3).join(", "));
+      if (meta.length) card.appendChild(el("div", "exp-meta", meta.join(" · ")));
+      const row = el("div", "exp-actions");
+      const link = el("a", "exp-link", "Venue page ↗");
+      link.href = `venues.html?venue=${encodeURIComponent(x.vid)}`; link.target = "_blank"; link.rel = "noopener";
+      row.appendChild(link);
+      if (x.suggested) {
+        const add = el("button", "btn-secondary btn-small", "+ Add to pool"); add.type = "button";
+        add.addEventListener("click", () => addExtraVenue(x));
+        row.appendChild(add);
+      } else if (x.r.extra) {
+        const rm = el("button", "btn-secondary btn-small", "Remove"); rm.type = "button";
+        rm.addEventListener("click", () => { PLANNER.extraVenues.delete(x.vid); refreshPool(); });
+        row.appendChild(rm);
+      }
+      card.appendChild(row);
+    }
+    card.addEventListener("mouseenter", () => { e.hover = null; });
+    list.appendChild(card);
+  });
+  box.appendChild(list);
+}
+function markExpHover() {
+  const h = PLANNER.exp.hover;
+  const m = expModel();
+  expCardEls.forEach((card, key) => {
+    const x = [...m.rows, ...m.suggested].find((r) => r.key === key);
+    card.classList.toggle("dim", !!(h && x && !x.by.includes(h) && !x.sources.includes(h)));
+  });
+}
+/** Bring a suggested venue into the pool (using that artist's gigs there for its weekdays). */
+function addExtraVenue(x) {
+  PLANNER.extraVenues.set(x.vid, new Set(x.sources));
+  refreshPool();
 }
 function updatePoolSummary() {
   const pool = PLANNER.pool || [];
+  const prim = primaryId();
+  let tail = "";
+  if (prim) { const m = expModel(); tail = ` · ${expVisible(m).counts.new} new to ${artistName(prim)}`; }
   document.getElementById("poolSummary").textContent =
-    `${pool.length} venues in the pool (${pool.filter((r) => r.on).length} included). Untick any you don't want — or click a dot on the map.`;
+    `${pool.length} venues in the pool (${pool.filter((r) => r.on).length} included)${tail}. Untick any you don't want — or click a dot on the map.`;
 }
 
 let poolMap = null, poolLayer = null;
-/** Map of the venue pool: green = included, grey = excluded (click to toggle),
- *  plus the start/end points and the area circle. */
+/** Map of the venue pool. Colours show included/excluded, or who played where (by artist);
+ *  hollow rings are venues only a suggested artist has played (click to add). */
 async function renderPoolMap(fit) {
   const wrap = document.getElementById("poolMapWrap");
   const pool = PLANNER.pool || [];
@@ -553,18 +763,37 @@ async function renderPoolMap(fit) {
   poolMap.invalidateSize();
   if (poolLayer) poolLayer.remove();
   poolLayer = L.layerGroup().addTo(poolMap);
+  const e = PLANNER.exp, m = expModel(), vis = expVisible(m);
   const pts = [];
-  pool.forEach((r) => {
-    const v = PLANNER.venues[r.vid];
+  const hov = e.hover;
+  vis.shown.forEach((x) => {
+    const v = PLANNER.venues[x.vid];
     if (!v || !Array.isArray(v.latlon)) return;
     pts.push(v.latlon);
-    const m = L.circleMarker(v.latlon, {
-      radius: r.kind === "club" ? 8 : 6, color: "#fff", weight: 1.5,
-      fillColor: r.on ? (r.kind === "club" ? "#1b5e20" : "#43a047") : "#bdbdbd", fillOpacity: 0.95,
+    const fade = hov && !x.by.includes(hov) && !x.sources.includes(hov);
+    const firstCol = (id) => m.colour.get(id) || ART_OTHER;
+    let opts;
+    if (x.suggested) {
+      opts = { radius: 8, color: firstCol(x.sources[0]), weight: 3, dashArray: "3 3", fillColor: "#fff", fillOpacity: 0.2, opacity: fade ? 0.25 : 1 };
+    } else if (e.colour === "artist") {
+      const cols = x.by.map(firstCol);
+      opts = { radius: x.r.kind === "club" ? 9 : 7, fillColor: cols[0] || ART_OTHER, fillOpacity: x.r.on ? 0.95 : 0.3,
+        color: cols.length > 1 ? cols[1] : "#fff", weight: cols.length > 1 ? 4 : 1.5, opacity: fade ? 0.25 : 1 };
+      if (fade) opts.fillOpacity = 0.15;
+    } else {
+      opts = { radius: x.r.kind === "club" ? 8 : 6, color: "#fff", weight: 1.5,
+        fillColor: x.r.on ? (x.r.kind === "club" ? "#1b5e20" : "#43a047") : "#bdbdbd", fillOpacity: fade ? 0.2 : 0.95 };
+    }
+    const mk = L.circleMarker(v.latlon, opts);
+    const who = (x.suggested ? x.sources : x.by).map(artistName).join(", ");
+    mk.bindTooltip(`${expLabel(x)}${who ? " — " + who : ""}${x.suggested ? " · new to you (click to add)" : x.r.on ? "" : " (excluded)"}`);
+    mk.on("click", () => {
+      if (x.suggested) addExtraVenue(x);
+      else { x.r.on = !x.r.on; renderPoolList(); renderPoolMap(false); }
     });
-    m.bindTooltip(`${r.kind === "club" ? "🎙 " + r.rec.name + " — " : ""}${v.name}${v.city ? ", " + v.city : ""}${r.kind === "venue" ? " · " + wdLabel(r) : ""}${r.on ? "" : " (excluded)"}`);
-    m.on("click", () => { r.on = !r.on; renderPoolList(); renderPoolMap(false); });
-    m.addTo(poolLayer);
+    mk.on("mouseover", () => { const c = expCardEls.get(x.key); if (c) c.classList.add("hl"); });
+    mk.on("mouseout", () => { const c = expCardEls.get(x.key); if (c) c.classList.remove("hl"); });
+    mk.addTo(poolLayer);
   });
   const pin = (ll, html, label) => L.marker(ll, { icon: L.divIcon({ className: "ts-pin home", html, iconSize: [26, 26] }) }).bindTooltip(label).addTo(poolLayer);
   if (PLANNER.start) pin([PLANNER.start.lat, PLANNER.start.lon], "⌂", "Start: " + PLANNER.start.label);
@@ -604,22 +833,7 @@ function performerVenueIndex() {
 function renderSimilar() {
   const box = document.getElementById("poolSimilar");
   box.replaceChildren();
-  const ed = PLANNER.eventsData, idx = performerVenueIndex();
-  const selected = new Set(PLANNER.pickPerf);
-  PLANNER.pickTour.forEach((tid) => { const t = (ed.tours || {})[tid]; if (t) evIds(t).forEach((id) => selected.add(id)); });
-  const mine = new Set();
-  selected.forEach((id) => (idx.get(id) || new Map()).forEach((n, vid) => mine.add(vid)));
-  if (!selected.size || !mine.size) { box.hidden = true; return; }
-  const out = [];
-  idx.forEach((venues, id) => {
-    if (selected.has(id)) return;
-    const p = (ed.performers || {})[id];
-    if (!p || p.isPromoter || p.isClub) return;
-    let shared = 0;
-    venues.forEach((n, vid) => { if (mine.has(vid)) shared++; });
-    if (shared) out.push({ id, name: p.name || id, shared });
-  });
-  out.sort((a, b) => b.shared - a.shared || a.name.localeCompare(b.name));
+  const out = similarArtists();
   if (!out.length) { box.hidden = true; return; }
   box.hidden = false;
   box.appendChild(el("div", null, "Artists who have played the same venues — click to add:"));
@@ -639,7 +853,7 @@ function renderSimilar() {
 
 /** Search-and-add picker: type to filter, click a result to add it as a chip
  *  (click the chip's × to remove). `picked` is a Set kept in PLANNER. */
-function makePicker(prefix, items, picked, onChange) {
+function makePicker(prefix, items, picked, onChange, primary) {
   const changed = () => { if (onChange) onChange(); };
   const input = document.getElementById(`${prefix}Filter`);
   const results = document.getElementById(`${prefix}Results`);
@@ -648,7 +862,16 @@ function makePicker(prefix, items, picked, onChange) {
   const drawChips = () => {
     chips.replaceChildren();
     [...picked].forEach((id) => {
-      const c = el("span", "picker-chip", label.get(id) || id);
+      const isPrim = primary && primary.get() === id;
+      const c = el("span", "picker-chip" + (isPrim ? " primary" : ""), label.get(id) || id);
+      if (primary) {
+        const star = el("button", "picker-chip-star", isPrim ? "★" : "☆");
+        star.type = "button";
+        star.title = isPrim ? "Primary artist: everything is compared with their venues" : "Make this the primary artist";
+        star.setAttribute("aria-label", (isPrim ? "Primary artist " : "Make primary: ") + (label.get(id) || id));
+        star.addEventListener("click", () => { primary.set(id); drawChips(); changed(); });
+        c.appendChild(star);
+      }
       const x = el("button", "picker-chip-x", "×");
       x.type = "button";
       x.setAttribute("aria-label", `Remove ${label.get(id) || id}`);
@@ -694,7 +917,7 @@ function fillPoolSelectors() {
   Object.values(ed.tours || {}).forEach((t) => { if ((t.tour_dates || []).length) noteAll(t); });
   PLANNER._perfPicker = makePicker("poolPerf",
     [...perfs.entries()].map(([id, label]) => ({ id, label })).sort((a, b) => a.label.localeCompare(b.label)),
-    PLANNER.pickPerf, refreshPool);
+    PLANNER.pickPerf, refreshPool, { get: primaryId, set: (id) => { PLANNER.primary = id; } });
   makePicker("poolTour",
     Object.entries(ed.tours || {})
       .filter(([, t]) => (t.tour_dates || []).length)
