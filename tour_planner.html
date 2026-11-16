@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611132138">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611161034">
 </head>
 
 <body class="page-tour-planner">
@@ -39,85 +39,26 @@
     <p id="plannerLoading" class="loading-state">Loading events…</p>
 
     <div id="plannerForm" style="display:none;">
-        <div class="ts-panel">
-            <div class="ts-grid">
-                <label class="ts-field">Build around
-                    <select id="plannerMode">
-                        <option value="club">A club</option>
-                        <option value="venue">A venue</option>
-                        <option value="period">A period (and optionally an area)</option>
-                        <option value="pool">A venue pool from artists / tours</option>
-                    </select>
-                </label>
-                <label class="ts-field" data-modes="club">Anchor club
-                    <select id="anchorClub"></select>
-                </label>
-                <label class="ts-field" data-modes="venue" hidden>Anchor venue
-                    <select id="anchorVenue"></select>
-                </label>
-                <label class="ts-field" data-modes="club venue">Anchor gig / date
-                    <select id="anchorDate"></select>
-                </label>
-                <label class="ts-field" data-modes="club venue">Days before
-                    <input id="daysBefore" type="number" min="0" max="14" value="3">
-                </label>
-                <label class="ts-field" data-modes="club venue">Days after
-                    <input id="daysAfter" type="number" min="0" max="14" value="3">
-                </label>
-                <label class="ts-field" data-modes="period pool" hidden>From
-                    <input id="periodStart" type="date">
-                </label>
-                <label class="ts-field" data-modes="period pool" hidden>To (max 21 days)
-                    <input id="periodEnd" type="date">
-                </label>
-                <label class="ts-field" data-modes="period pool" hidden>Area radius (miles)
-                    <input id="areaRadius" type="number" min="5" max="500" value="60">
-                </label>
-                <label class="ts-field">Max miles between stops
-                    <input id="maxHop" type="number" min="5" max="500" value="60">
-                </label>
-                <label class="ts-field">Max miles from start (0 = no limit)
-                    <input id="maxHome" type="number" min="0" max="1000" value="0">
-                </label>
-                <label class="ts-field">Keep stops at least this far apart (miles, 0 = off)
-                    <input id="minSpread" type="number" min="0" max="200" value="0">
-                </label>
-            </div>
+        <div class="ts-panel ts-flow" id="plannerFlow">
 
-            <div data-modes="period pool" hidden>
-                <div class="ts-row">
-                    <label class="ts-field" style="flex:1 1 240px;">Area centre (optional — defaults to your start point)
-                        <input id="areaInput" type="text" placeholder="e.g. Yorkshire Dales, or LS1 4AP" autocomplete="off">
-                    </label>
-                    <button id="areaFind" type="button" class="btn-secondary">Find</button>
-                    <button id="areaClear" type="button" class="btn-secondary">Use start point</button>
-                </div>
-                <div id="areaChoices"></div>
-                <div id="areaCurrent" class="ts-hint"></div>
-            </div>
-
-            <div class="ts-row">
-                <label class="ts-field" style="flex:1 1 240px;">Start: your town or postcode
-                    <input id="startInput" type="text" placeholder="e.g. Milton Keynes, or MK7 6AA" autocomplete="off">
-                </label>
-                <button id="startFind" type="button" class="btn-secondary">Find</button>
-                <button id="startLocate" type="button" class="btn-secondary">📍 Use my location</button>
-                <button id="startClear" type="button" class="btn-secondary" style="display:none;">✕ Clear</button>
-            </div>
-            <div class="ts-row">
-                <label class="ts-field" style="flex:1 1 240px;">…or start from a venue's town
-                    <select id="startVenue">
-                        <option value="">Choose…</option>
-                    </select>
-                </label>
-            </div>
-            <div id="startChoices"></div>
-            <div id="startCurrent" class="ts-hint"></div>
-
-
-            <div data-modes="pool" hidden>
+            <section id="blkMode" class="flow-card">
+                <h3 class="flow-step" data-modes="pool" hidden>1 · Build around</h3>
                 <div class="ts-grid">
-                    <div class="ts-field">Artists whose venues to use
+                    <label class="ts-field">Build around
+                        <select id="plannerMode">
+                            <option value="club">A club</option>
+                            <option value="venue">A venue</option>
+                            <option value="period">A period (and optionally an area)</option>
+                            <option value="pool">A venue pool from artists / tours</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+
+            <section id="blkPool" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">3 · Whose venues should the tour use?</h3>
+                <div class="ts-grid">
+                    <div class="ts-field">Artists
                         <input id="poolPerfFilter" type="text" placeholder="search artists, then click to add…" autocomplete="off">
                         <div id="poolPerfResults" class="picker-results" hidden></div>
                         <div id="poolPerfChips" class="picker-chips"></div>
@@ -127,49 +68,203 @@
                         <div id="poolTourResults" class="picker-results" hidden></div>
                         <div id="poolTourChips" class="picker-chips"></div>
                     </div>
-                    <label class="ts-field">Gigs wanted
-                        <input id="gigsWanted" type="number" min="1" max="14" value="5">
-                    </label>
                 </div>
-                <div class="ts-hint">Search as many artists and tours as you like and click each to add it. Past and future gigs by the chosen artists/tours define the pool. Gigs at story clubs become club nights on the club's real dates; other venues use the weekday rule. The dates above set the window the tour must fit in.</div>
+                <div id="poolSimilar" class="pool-similar" hidden></div>
                 <div class="ts-hint">…or pool by type of act (adds to any selections above; a storyteller is any performer not marked as a musician or poet):</div>
                 <div class="ts-checks">
                     <label><input type="checkbox" id="poolAll_storyteller"> All storytellers</label>
                     <label><input type="checkbox" id="poolAll_musician"> All musicians</label>
                     <label><input type="checkbox" id="poolAll_poet"> All poets</label>
+                    <label><input type="checkbox" id="poolAllClubs"> Also include every active story club</label>
                 </div>
                 <div class="ts-checks">
                     <label><input type="checkbox" id="poolWeekday" checked> Only use a venue on a day of the week these artists have played it</label>
-                    <label><input type="checkbox" id="poolDistinct" checked> Visit each venue only once</label>
-                    <label><input type="checkbox" id="poolAllClubs"> Also include every active story club</label>
                 </div>
-                <div class="ts-field" style="margin-top:10px;">Must-visit places (optional)
+            </section>
+
+            <section id="blkPoolPreview" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">4 · Venue pool</h3>
+                <div id="poolSummary" class="ts-hint">Choose artists, tours or types of act above and the venues they have played appear here.</div>
+                <div class="pool-split">
+                    <div id="poolList" class="pool-listwrap"></div>
+                    <div id="poolMapWrap" class="pool-mapwrap" hidden><div id="poolMap" class="ts-map"></div></div>
+                </div>
+                <div class="ts-row"><button id="poolPreview" type="button" class="btn-secondary">Refresh venue pool</button></div>
+            </section>
+
+            <section id="blkDates" class="flow-card" data-modes="period pool" hidden>
+                <h3 class="flow-step" data-modes="pool" hidden>5 · Tour shape</h3>
+                <div class="ts-grid">
+                    <label class="ts-field">From
+                        <input id="periodStart" type="date">
+                    </label>
+                    <label class="ts-field">To (max 21 days)
+                        <input id="periodEnd" type="date">
+                    </label>
+                    <label class="ts-field" data-modes="pool" hidden>Gigs wanted
+                        <input id="gigsWanted" type="number" min="1" max="14" value="5">
+                    </label>
+                </div>
+            </section>
+
+            <section id="blkAnchor" class="flow-card" data-modes="club venue" hidden>
+                <div class="ts-grid">
+                    <label class="ts-field" data-modes="club">Anchor club
+                        <select id="anchorClub"></select>
+                    </label>
+                    <label class="ts-field" data-modes="venue" hidden>Anchor venue
+                        <select id="anchorVenue"></select>
+                    </label>
+                    <label class="ts-field" data-modes="club venue">Month
+                        <select id="anchorMonth"></select>
+                    </label>
+                    <label class="ts-field" data-modes="club venue">Anchor gig / date
+                        <select id="anchorDate"></select>
+                    </label>
+                </div>
+            </section>
+
+            <section id="blkStart" class="flow-card">
+                <h3 class="flow-step" data-modes="pool" hidden>2 · Start and end</h3>
+                <div class="ts-row">
+                    <label class="ts-field" style="flex:1 1 240px;">Start: your town or postcode
+                        <input id="startInput" type="text" placeholder="e.g. Milton Keynes, or MK7 6AA" autocomplete="off">
+                    </label>
+                    <button id="startFind" type="button" class="btn-secondary">Find</button>
+                    <button id="startLocate" type="button" class="btn-secondary">📍 Use my location</button>
+                    <button id="startClear" type="button" class="btn-secondary" style="display:none;">✕ Clear</button>
+                </div>
+                <div class="ts-row">
+                    <label class="ts-field" style="flex:1 1 240px;">…or start from a venue's town
+                        <select id="startVenue">
+                            <option value="">Choose…</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="startChoices"></div>
+                <div id="startCurrent" class="ts-hint"></div>
+                <div>
+                    <div class="ts-checks">
+                        <label><input type="checkbox" id="endSame" checked> Finish back at the start</label>
+                    </div>
+                    <div id="endBlock" hidden>
+                        <div class="ts-row">
+                            <label class="ts-field" style="flex:1 1 240px;">End: town or postcode
+                                <input id="endInput" type="text" placeholder="e.g. Leeds, or LS1 4AP" autocomplete="off">
+                            </label>
+                            <button id="endFind" type="button" class="btn-secondary">Find</button>
+                            <button id="endClear" type="button" class="btn-secondary" style="display:none;">✕ Clear</button>
+                        </div>
+                        <div id="endChoices"></div>
+                        <div id="endCurrent" class="ts-hint"></div>
+                    </div>
+                    <div class="ts-grid" data-modes="pool" hidden>
+                        <label class="ts-field">Max miles from the start to the first gig (blank = no limit)
+                            <input id="maxFirst" type="number" min="0" max="1000" placeholder="no limit">
+                        </label>
+                        <label class="ts-field">Max miles from the last gig to the end (blank = no limit)
+                            <input id="maxLast" type="number" min="0" max="1000" placeholder="no limit">
+                        </label>
+                    </div>
+                    <div class="ts-hint" data-modes="pool" hidden>Use these when you have to reach the first gig after work, or need to get home after the last one.</div>
+                </div>
+            </section>
+
+            <section id="blkArea" class="flow-card" data-modes="period pool" hidden>
+                <h3 class="flow-step" data-modes="pool" hidden>6 · Area (optional)</h3>
+                <div class="ts-grid">
+                    <label class="ts-field">Area radius (miles)
+                        <input id="areaRadius" type="number" min="5" max="500" value="60">
+                    </label>
+                </div>
+                <div class="ts-row">
+                    <label class="ts-field" style="flex:1 1 240px;">Area centre (optional — defaults to your start point)
+                        <input id="areaInput" type="text" placeholder="e.g. Yorkshire Dales, or LS1 4AP" autocomplete="off">
+                    </label>
+                    <button id="areaFind" type="button" class="btn-secondary">Find</button>
+                    <button id="areaClear" type="button" class="btn-secondary">Use start point</button>
+                </div>
+                <div id="areaChoices"></div>
+                <div id="areaCurrent" class="ts-hint"></div>
+            </section>
+
+            <section id="blkMust" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">7 · Must-visit places (optional)</h3>
+                <div class="ts-field">
                     <input id="mustFilter" type="text" placeholder="search a venue or town, then click to add…" autocomplete="off">
                     <div id="mustResults" class="picker-results" hidden></div>
                 </div>
                 <div class="ts-hint">For each place choose a target date and how flexible you are: “exactly” pins it to that day, “± N days” lets the planner pick any day in that range. A town means any venue in it. The route is built so every must-visit is included (these places ignore the weekday rule and area radius).</div>
                 <div id="mustRows" class="must-rows"></div>
-                <div class="ts-row"><button id="poolPreview" type="button" class="btn-secondary">Preview venue pool</button></div>
-                <div id="poolList"></div>
-            </div>
+            </section>
 
-            <div class="ts-checks">
-                <label><input type="checkbox" id="includeOther"> Include folk nights, sessions and other one-off events</label>
-            </div>
-            <div class="ts-row">
-                <button id="buildTour" type="button" class="btn-primary">Build tour options</button>
-            </div>
-            <div id="plannerStatus" class="ts-status" role="status"></div>
+            <section id="blkOther" class="flow-card" data-modes="club venue period" hidden>
+                <div class="ts-checks">
+                    <label><input type="checkbox" id="includeOther"> Include folk nights, sessions and other one-off events</label>
+                </div>
+            </section>
+
+            <section id="blkBuild" class="flow-card">
+                <div class="ts-row">
+                    <button id="buildTour" type="button" class="btn-primary">Build tour options</button>
+                </div>
+                <div id="plannerStatus" class="ts-status" role="status"></div>
+            </section>
         </div>
     </div>
 
     <div id="plannerSummaryRow" class="ts-summary-row">
-        <div id="plannerItinerary" class="ts-panel ts-plan"></div>
+        <div id="plannerLeft">
+            <div id="plannerItinerary" class="ts-panel ts-plan"></div>
+        <section id="plannerLive" class="ts-panel" hidden>
+            <h3>Filters <span class="ts-hint">— changes apply straight away to the map and columns; your picks are kept</span></h3>
+            <div class="live-group" data-modes="club venue" hidden>
+                <h4>When</h4>
+                <div class="ts-grid">
+                    <label class="ts-field">Days before the anchor gig
+                        <input id="daysBefore" type="number" min="0" max="14" value="3">
+                    </label>
+                    <label class="ts-field">Days after the anchor gig
+                        <input id="daysAfter" type="number" min="0" max="14" value="3">
+                    </label>
+                </div>
+            </div>
+            <div class="live-group">
+                <h4>Where</h4>
+                <div class="ts-grid">
+                    <label class="ts-field" data-modes="pool" hidden>Keep stops at least this many miles apart (0 = no minimum)
+                        <input id="minHop" type="number" min="0" max="300" value="25">
+                        <input id="minHopSlider" class="ts-slider" type="range" aria-label="Minimum miles apart">
+                    </label>
+                    <label class="ts-field" data-modes="pool" hidden>…measured between
+                        <select id="minScope">
+                            <option value="consecutive">consecutive gigs only</option>
+                            <option value="any">any two stops on the tour</option>
+                        </select>
+                    </label>
+                    <label class="ts-field">Max miles between stops (blank = no limit)
+                        <input id="maxHop" type="number" min="5" max="500" value="60">
+                        <input id="maxHopSlider" class="ts-slider" type="range" aria-label="Maximum miles between gigs">
+                    </label>
+                    <label class="ts-field">Max miles from start (0 = no limit)
+                        <input id="maxHome" type="number" min="0" max="1000" value="0">
+                    </label>
+                    <label class="ts-field" data-modes="club venue period" hidden>Don't revisit within this many miles of any stop (0 = off)
+                        <input id="minSpread" type="number" min="0" max="200" value="0">
+                    </label>
+                </div>
+                <div class="ts-checks" data-modes="pool" hidden>
+                    <label><input type="checkbox" id="poolDistinct" checked> Visit each venue only once</label>
+                </div>
+            </div>
+        </section>
+        </div>
         <div id="plannerMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
             <div id="plannerMap" class="ts-map"></div>
         </div>
     </div>
     <div id="plannerResults"></div>
+    <div id="plannerExport" class="ts-panel" hidden></div>
 
     <div class="about" id="colophon">
         <p><em>Distances are straight-line estimates scaled for roads, not routed journeys — check a route planner
@@ -179,8 +274,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611151214"></script>
-    <script src="/js/tour_planner.js?v=202611151214"></script>
+    <script src="/js/tour_support.js?v=202611151215"></script>
+    <script src="/js/tour_planner.js?v=202611161034"></script>
 </body>
 
 </html>

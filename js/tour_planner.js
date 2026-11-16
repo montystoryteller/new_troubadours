@@ -20,6 +20,12 @@ const dkey = TourSupport.dateKey;
 
 const PLANNER = {
   showCands: true, // grey markers for other possible venues on the map
+  showBest: true, // draw the suggested (orange) route
+  showBestOnMap: false, // ...also as a line on the map
+  reachMode: "grey", // venues out of range of the picks: show | grey | hide
+  hideUsed: false, // hide venues already on the tour (when each venue is visited once)
+  mapFollowsFilters: true, // map markers follow the column filters
+  collapsed: new Set(), // day keys showing only their pick
   hideClose: false, // hide (rather than grey out) venues too close to a chosen stop
   eventsData: null,
   venues: {},
@@ -29,6 +35,11 @@ const PLANNER = {
   after: 3,
   maxHop: 60, // road miles between consecutive stops
   maxHome: 0, // road miles from home; 0 = no limit
+  minHop: 0, // min road miles between consecutive gigs (pool mode)
+  maxFirst: Infinity, // max road miles start -> first gig (pool mode)
+  maxLast: Infinity, // max road miles last gig -> end (pool mode)
+  endSame: true, // finish where the tour started
+  end: null, // { lat, lon, label } when the end differs from the start
   includeOther: false,
   days: [], // Date[] across the window, chronological
   byDay: new Map(), // dateKey -> candidate[]
@@ -147,6 +158,93 @@ function setStart(s) {
   currentDiv.textContent = s ? `Start: ${s.label}` : "";
   if (clearBtn) clearBtn.style.display = s ? "" : "none";
   renderAll();
+  if (poolMap || currentMode() === "pool") renderPoolMap(false);
+}
+
+function setEnd(e) {
+  PLANNER.end = e;
+  document.getElementById("endCurrent").textContent = e ? `End: ${e.label}` : "";
+  document.getElementById("endClear").style.display = e ? "" : "none";
+  renderAll();
+  renderMap();
+  if (currentMode() === "pool") renderPoolMap(false);
+}
+function onEndSameChange() {
+  const same = document.getElementById("endSame").checked;
+  PLANNER.endSame = same;
+  document.getElementById("endBlock").hidden = same;
+  renderAll();
+  renderMap();
+  if (currentMode() === "pool") renderPoolMap(false);
+}
+
+/** Forget any built tour and empty the results area (itinerary, map, columns). */
+function clearResults() {
+  PLANNER.days = [];
+  PLANNER.byDay = new Map();
+  PLANNER.chosen = new Map();
+  PLANNER.collapsed = new Set();
+  PLANNER.best = null;
+  PLANNER.anchor = null;
+  PLANNER.musts = [];
+  PLANNER.mode = null;
+  renderAll();
+  renderItinerary();
+  renderMap();
+  const st = document.getElementById("plannerStatus");
+  if (st) st.textContent = "";
+}
+
+/** The distance-limits panel sits between the map and the columns once a tour has been built. */
+function updateLivePanel() {
+  const live = document.getElementById("plannerLive");
+  if (live) live.hidden = !PLANNER.days.length || PLANNER.mode !== currentMode();
+}
+let liveTimer = null;
+/** Re-read the limits and rebuild the options, keeping the user's picks that still exist. */
+function liveRebuild() {
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(() => {
+    if (!PLANNER.days.length || PLANNER.mode !== currentMode()) return;
+    const keep = [...PLANNER.chosen.values()];
+    PLANNER._rebuilding = true;
+    try { onBuild(); } finally { PLANNER._rebuilding = false; }
+    let changed = false;
+    keep.forEach((c) => {
+      if (PLANNER.chosen.has(dkey(c.date)) && PLANNER.chosen.get(dkey(c.date)).id === c.id) return;
+      const again = (PLANNER.byDay.get(dkey(c.date)) || []).find((n) => n.id === c.id);
+      if (again) { PLANNER.chosen.set(dkey(c.date), again); changed = true; }
+    });
+    if (changed) renderAll();
+  }, 200);
+}
+
+/** Range slider over a stepped scale, kept in sync with a number input.
+ *  atEnd: what the far-right position means ("" = blank/no limit for a max,
+ *  or the first scale value for a minimum). */
+function attachScaleSlider(inputId, sliderId, scale, isMax) {
+  const input = document.getElementById(inputId), sl = document.getElementById(sliderId);
+  if (!input || !sl) return;
+  const n = scale.length;
+  sl.min = 0; sl.max = isMax ? n : n - 1; sl.step = 1;
+  const fromInput = () => {
+    const raw = input.value.trim();
+    if (isMax && raw === "") return n;
+    const v = Number(raw);
+    let best = 0;
+    scale.forEach((x, i) => { if (Math.abs(x - v) < Math.abs(scale[best] - v)) best = i; });
+    return best;
+  };
+  const sync = () => { sl.value = String(fromInput()); sl.setAttribute("aria-valuetext", input.value.trim() === "" ? "no limit" : input.value + " miles"); };
+  sl.addEventListener("input", () => {
+    const i = Number(sl.value);
+    input.value = isMax && i >= n ? "" : String(scale[i]);
+    sl.setAttribute("aria-valuetext", input.value === "" ? "no limit" : input.value + " miles");
+    input.dispatchEvent(new Event("input", { bubbles: true })); // so the live filters react
+  });
+  input.addEventListener("input", sync);
+  if (isMax) input.placeholder = "no limit";
+  sync();
 }
 
 function clearStart() {
@@ -168,6 +266,7 @@ function onFindStart() { return findPlace("startInput", "startChoices", setStart
 function setArea(a) {
   PLANNER.area = a;
   document.getElementById("areaCurrent").textContent = a ? `Area centre: ${a.label}` : "";
+  if (currentMode() === "pool") renderPoolMap(false);
 }
 
 function onUseLocation() {
@@ -220,9 +319,14 @@ function currentMode() {
 }
 function setMode() {
   const m = currentMode();
+  const flow = document.getElementById("plannerFlow");
+  if (flow) { flow.classList.remove("mode-club", "mode-venue", "mode-period", "mode-pool"); flow.classList.add("mode-" + m); }
   document.querySelectorAll("[data-modes]").forEach((n) => {
     n.hidden = !n.dataset.modes.split(" ").includes(m);
   });
+  // changing what we build around invalidates everything downstream: clear it until rebuilt
+  if (PLANNER.days.length && PLANNER.mode && PLANNER.mode !== m) clearResults();
+  updateLivePanel();
   if (m === "venue" && !PLANNER._venueRows) buildVenueRows();
   fillAnchorDates();
 }
@@ -253,20 +357,30 @@ function buildVenueRows() {
 function fillAnchorDates() {
   const m = currentMode();
   const dsel = document.getElementById("anchorDate");
+  const msel = document.getElementById("anchorMonth");
   dsel.replaceChildren();
+  let items = []; // {date, label, value}
   if (m === "club") {
     const row = PLANNER._anchorRows[Number(document.getElementById("anchorClub").value)];
-    if (!row) return;
-    row.dates.forEach((d) => { const o = el("option", null, formatDate(d)); o.value = dkey(d); dsel.appendChild(o); });
+    if (row) items = row.dates.map((d) => ({ date: d, label: formatDate(d), value: dkey(d) }));
   } else if (m === "venue") {
     const row = (PLANNER._venueRows || [])[Number(document.getElementById("anchorVenue").value)];
-    if (!row) return;
-    row.cands.forEach((c, i) => {
-      const o = el("option", null, `${formatDate(c.date)} — ${c.name}`);
-      o.value = String(i);
-      dsel.appendChild(o);
-    });
+    if (row) items = row.cands.map((c, i) => ({ date: c.date, label: `${formatDate(c.date)} — ${c.name}`, value: String(i) }));
   }
+  // month filter: keep the choice if that month still exists for this club / venue
+  const monthKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  const months = [...new Map(items.map((i) => [monthKey(i.date), i.date])).entries()];
+  const prev = msel.value;
+  msel.replaceChildren();
+  const anyOpt = el("option", null, "Any month"); anyOpt.value = ""; msel.appendChild(anyOpt);
+  months.forEach(([k, d]) => {
+    const o = el("option", null, d.toLocaleString("en-GB", { month: "long", year: "numeric" }));
+    o.value = k; msel.appendChild(o);
+  });
+  if (months.some(([k]) => k === prev)) msel.value = prev;
+  items.filter((i) => !msel.value || monthKey(i.date) === msel.value).forEach((i) => {
+    const o = el("option", null, i.label); o.value = i.value; dsel.appendChild(o);
+  });
 }
 
 // ── venue pool (artists / tours -> venues + weekdays) ────────────────────
@@ -289,6 +403,8 @@ function performerClasses(pid) {
   return c;
 }
 
+const evIds = (e) => [e.performer_id, ...asIdList(e.performer_ids), ...asIdList(e.other_performer_ids), ...asIdList(e.support_performer_ids)].filter(Boolean);
+
 /** Every gig (past or future) usable as pool evidence. A gig counts if it
  *  involves an explicitly chosen artist or tour, OR if its act class
  *  (storyteller / musician / poet) is among `cats`. Gig-level music/poetry
@@ -297,7 +413,7 @@ function performerClasses(pid) {
 function poolEvidence(perfIds, tourIds, cats) {
   const ed = PLANNER.eventsData;
   const out = [];
-  const idsOf = (e) => [e.performer_id, ...asIdList(e.performer_ids), ...asIdList(e.other_performer_ids), ...asIdList(e.support_performer_ids)].filter(Boolean);
+  const idsOf = evIds;
   const classesFor = (ids, flagMusic, flagPoet) => {
     const c = new Set();
     ids.forEach((id) => performerClasses(id).forEach((x) => c.add(x)));
@@ -379,22 +495,36 @@ function buildPool() {
 function wdLabel(r) {
   return r.wd.map((n, i) => (n ? `${WD[i]}×${n}` : "")).filter(Boolean).join(" ");
 }
+function refreshPool() {
+  buildPool();
+  renderPoolList();
+  renderPoolMap(true);
+  renderSimilar();
+}
 function renderPoolList() {
   const box = document.getElementById("poolList");
   box.replaceChildren();
+  const sum = document.getElementById("poolSummary");
   const pool = PLANNER.pool || [];
   if (!pool.length) {
-    box.appendChild(el("p", "ts-hint", "No venues found — choose at least one artist or tour (their gigs need a venue)."));
+    sum.textContent = "Choose artists, tours or types of act above and the venues they have played appear here.";
     return;
   }
   const on = pool.filter((r) => r.on).length;
-  box.appendChild(el("p", "ts-hint", `${pool.length} venues in the pool (${on} included). Untick any you don't want.`));
+  sum.textContent = `${pool.length} venues in the pool (${on} included). Untick any you don't want — or click a dot on the map.`;
+  const bar = el("div", "ts-row");
+  [["Include all", true], ["Include none", false]].forEach(([t, val]) => {
+    const b = el("button", "btn-secondary", t); b.type = "button";
+    b.addEventListener("click", () => { pool.forEach((r) => { r.on = val; }); renderPoolList(); renderPoolMap(false); });
+    bar.appendChild(b);
+  });
+  box.appendChild(bar);
   const ul = el("div", "pool-list");
   pool.forEach((r) => {
     const v = PLANNER.venues[r.vid];
-    const lab = el("label", "pool-item");
+    const lab = el("label", "pool-item" + (r.on ? "" : " off"));
     const cb = el("input"); cb.type = "checkbox"; cb.checked = r.on;
-    cb.addEventListener("change", () => { r.on = cb.checked; });
+    cb.addEventListener("change", () => { r.on = cb.checked; lab.classList.toggle("off", !r.on); renderPoolMap(false); updatePoolSummary(); });
     const who = r.artists.size ? ` (${[...r.artists].slice(0, 3).join(", ")}${r.artists.size > 3 ? "…" : ""})` : "";
     const what = r.kind === "club"
       ? `🎙 ${r.rec.name} — ${typeof r.rec.schedule === "string" ? r.rec.schedule : "club night"}${v.city ? ", " + v.city : ""}`
@@ -404,9 +534,113 @@ function renderPoolList() {
   });
   box.appendChild(ul);
 }
+function updatePoolSummary() {
+  const pool = PLANNER.pool || [];
+  document.getElementById("poolSummary").textContent =
+    `${pool.length} venues in the pool (${pool.filter((r) => r.on).length} included). Untick any you don't want — or click a dot on the map.`;
+}
+
+let poolMap = null, poolLayer = null;
+/** Map of the venue pool: green = included, grey = excluded (click to toggle),
+ *  plus the start/end points and the area circle. */
+async function renderPoolMap(fit) {
+  const wrap = document.getElementById("poolMapWrap");
+  const pool = PLANNER.pool || [];
+  if (currentMode() !== "pool" || !pool.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  try { await loadLeaflet(); } catch (e) { wrap.hidden = true; return; }
+  if (!poolMap) poolMap = initMap("poolMap");
+  poolMap.invalidateSize();
+  if (poolLayer) poolLayer.remove();
+  poolLayer = L.layerGroup().addTo(poolMap);
+  const pts = [];
+  pool.forEach((r) => {
+    const v = PLANNER.venues[r.vid];
+    if (!v || !Array.isArray(v.latlon)) return;
+    pts.push(v.latlon);
+    const m = L.circleMarker(v.latlon, {
+      radius: r.kind === "club" ? 8 : 6, color: "#fff", weight: 1.5,
+      fillColor: r.on ? (r.kind === "club" ? "#1b5e20" : "#43a047") : "#bdbdbd", fillOpacity: 0.95,
+    });
+    m.bindTooltip(`${r.kind === "club" ? "🎙 " + r.rec.name + " — " : ""}${v.name}${v.city ? ", " + v.city : ""}${r.kind === "venue" ? " · " + wdLabel(r) : ""}${r.on ? "" : " (excluded)"}`);
+    m.on("click", () => { r.on = !r.on; renderPoolList(); renderPoolMap(false); });
+    m.addTo(poolLayer);
+  });
+  const pin = (ll, html, label) => L.marker(ll, { icon: L.divIcon({ className: "ts-pin home", html, iconSize: [26, 26] }) }).bindTooltip(label).addTo(poolLayer);
+  if (PLANNER.start) pin([PLANNER.start.lat, PLANNER.start.lon], "⌂", "Start: " + PLANNER.start.label);
+  const end = endPoint();
+  if (end && end !== PLANNER.start) pin([end.lat, end.lon], "⚑", "End: " + end.label);
+  const centre = PLANNER.area ? [PLANNER.area.lat, PLANNER.area.lon] : PLANNER.start ? [PLANNER.start.lat, PLANNER.start.lon] : null;
+  const rad = Number(document.getElementById("areaRadius").value);
+  if (centre && rad > 0 && (PLANNER.area || document.getElementById("areaRadius").dataset.touched)) {
+    L.circle(centre, { radius: (rad / ROAD_FACTOR) * 1609.344, color: "#1565c0", weight: 1.5, dashArray: "5 5", fill: false }).addTo(poolLayer);
+  }
+  if (fit && pts.length) poolMap.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 10 });
+}
+
+/** performer id -> Map(venue id -> gig count), from every gig and tour date. */
+function performerVenueIndex() {
+  if (PLANNER._pvIdx) return PLANNER._pvIdx;
+  const ed = PLANNER.eventsData, idx = new Map();
+  const note = (ids, vid) => {
+    if (!vid || !isRealPlace({ venue_id: vid })) return;
+    ids.forEach((id) => {
+      let m = idx.get(id);
+      if (!m) { m = new Map(); idx.set(id, m); }
+      m.set(vid, (m.get(vid) || 0) + 1);
+    });
+  };
+  ["specificEvents", "musicEvents", "poetryEvents"].forEach((l) => (ed[l] || []).forEach((e) => {
+    if (e.online || e.cancelled || e.isCancelled) return;
+    note(evIds(e), e.venue_id);
+  }));
+  Object.values(ed.tours || {}).forEach((t) => (t.tour_dates || []).forEach((td) => {
+    if (!td.cancelled && !td.isCancelled) note(evIds(t), td.venue_id);
+  }));
+  PLANNER._pvIdx = idx;
+  return idx;
+}
+/** Suggest artists whose venues overlap those of the artists/tours picked. */
+function renderSimilar() {
+  const box = document.getElementById("poolSimilar");
+  box.replaceChildren();
+  const ed = PLANNER.eventsData, idx = performerVenueIndex();
+  const selected = new Set(PLANNER.pickPerf);
+  PLANNER.pickTour.forEach((tid) => { const t = (ed.tours || {})[tid]; if (t) evIds(t).forEach((id) => selected.add(id)); });
+  const mine = new Set();
+  selected.forEach((id) => (idx.get(id) || new Map()).forEach((n, vid) => mine.add(vid)));
+  if (!selected.size || !mine.size) { box.hidden = true; return; }
+  const out = [];
+  idx.forEach((venues, id) => {
+    if (selected.has(id)) return;
+    const p = (ed.performers || {})[id];
+    if (!p || p.isPromoter || p.isClub) return;
+    let shared = 0;
+    venues.forEach((n, vid) => { if (mine.has(vid)) shared++; });
+    if (shared) out.push({ id, name: p.name || id, shared });
+  });
+  out.sort((a, b) => b.shared - a.shared || a.name.localeCompare(b.name));
+  if (!out.length) { box.hidden = true; return; }
+  box.hidden = false;
+  box.appendChild(el("div", null, "Artists who have played the same venues — click to add:"));
+  const chips = el("div", "pool-similar-chips");
+  out.slice(0, 10).forEach((o) => {
+    const b = el("button", "pool-sim-btn", `+ ${o.name} · ${o.shared} shared`);
+    b.type = "button";
+    b.addEventListener("click", () => {
+      PLANNER.pickPerf.add(o.id);
+      if (PLANNER._perfPicker) PLANNER._perfPicker.redraw();
+      refreshPool();
+    });
+    chips.appendChild(b);
+  });
+  box.appendChild(chips);
+}
+
 /** Search-and-add picker: type to filter, click a result to add it as a chip
  *  (click the chip's × to remove). `picked` is a Set kept in PLANNER. */
-function makePicker(prefix, items, picked) {
+function makePicker(prefix, items, picked, onChange) {
+  const changed = () => { if (onChange) onChange(); };
   const input = document.getElementById(`${prefix}Filter`);
   const results = document.getElementById(`${prefix}Results`);
   const chips = document.getElementById(`${prefix}Chips`);
@@ -418,7 +652,7 @@ function makePicker(prefix, items, picked) {
       const x = el("button", "picker-chip-x", "×");
       x.type = "button";
       x.setAttribute("aria-label", `Remove ${label.get(id) || id}`);
-      x.addEventListener("click", () => { picked.delete(id); drawChips(); drawResults(); });
+      x.addEventListener("click", () => { picked.delete(id); drawChips(); drawResults(); changed(); });
       c.appendChild(x);
       chips.appendChild(c);
     });
@@ -435,7 +669,7 @@ function makePicker(prefix, items, picked) {
       b.type = "button";
       b.addEventListener("click", () => {
         if (picked.has(i.id)) picked.delete(i.id); else picked.add(i.id);
-        drawChips(); drawResults(); input.focus();
+        drawChips(); drawResults(); input.focus(); changed();
       });
       results.appendChild(b);
     });
@@ -446,6 +680,7 @@ function makePicker(prefix, items, picked) {
     if (e.key === "Enter") { e.preventDefault(); const first = results.querySelector("button:not(.picked)"); if (first) first.click(); }
   });
   drawChips();
+  return { redraw: drawChips };
 }
 
 function fillPoolSelectors() {
@@ -457,16 +692,18 @@ function fillPoolSelectors() {
   const noteAll = (e) => { note(e.performer_id); asIdList(e.performer_ids).forEach(note); };
   ["specificEvents", "musicEvents", "poetryEvents"].forEach((l) => (ed[l] || []).forEach((e) => { if (e.venue_id) noteAll(e); }));
   Object.values(ed.tours || {}).forEach((t) => { if ((t.tour_dates || []).length) noteAll(t); });
-  makePicker("poolPerf",
+  PLANNER._perfPicker = makePicker("poolPerf",
     [...perfs.entries()].map(([id, label]) => ({ id, label })).sort((a, b) => a.label.localeCompare(b.label)),
-    PLANNER.pickPerf);
+    PLANNER.pickPerf, refreshPool);
   makePicker("poolTour",
     Object.entries(ed.tours || {})
       .filter(([, t]) => (t.tour_dates || []).length)
       .map(([id, t]) => ({ id, label: `${t.isMusic ? "♪ " : ""}${t.tour_name || t.name || id}` }))
       .sort((a, b) => a.label.localeCompare(b.label)),
-    PLANNER.pickTour);
-  document.getElementById("poolPreview").addEventListener("click", () => { buildPool(); renderPoolList(); });
+    PLANNER.pickTour, refreshPool);
+  document.getElementById("poolPreview").addEventListener("click", () => refreshPool(true));
+  ["poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"].forEach((id) =>
+    document.getElementById(id).addEventListener("change", () => refreshPool()));
   initMustPicker();
 }
 
@@ -569,14 +806,14 @@ function nearStop(c, stops, miles) {
 }
 
 function bestKRoute(G, relax, relaxSpread) {
-  return PLANNER.distinct || PLANNER.minSpread > 0 || (PLANNER.musts || []).length ? beamKRoute(G, relax, relaxSpread) : exactKRoute(G, relax);
+  return PLANNER.distinct || PLANNER.minSpread > 0 || PLANNER.minHop > 0 || (PLANNER.musts || []).length ? beamKRoute(G, relax, relaxSpread) : exactKRoute(G, relax);
 }
 
 /** Same objective as exactKRoute but never revisits a venue. The "visited"
  *  set breaks the simple DP, so this is a beam search (keeps the cheapest
  *  few hundred partial tours per step) — near-optimal, not guaranteed. */
 function beamKRoute(G, relax, relaxSpread) {
-  const h = homeLL();
+  const h = homeLL(), he = endLL();
   const musts = PLANNER.musts || [];
   const FULL = (1 << musts.length) - 1;
   if (musts.length) G = Math.max(G, musts.length);
@@ -589,6 +826,7 @@ function beamKRoute(G, relax, relaxSpread) {
   const alive = (st) => musts.every((m, i) => (st.mask >> i) & 1 || m.lastIdx > st.i);
   let layer = [];
   days.forEach((s, i) => s.nodes.forEach((n, j) => {
+    if (h && roadMiles(h, latlonOf(n)) > PLANNER.maxFirst) return;
     layer.push({ i, j, mask: bits(n), cost: h ? roadMiles(h, latlonOf(n)) : 0, stops: [n], seen: new Set([venueKey(n)]) });
   }));
   const prune = (states) => {
@@ -607,7 +845,8 @@ function beamKRoute(G, relax, relaxSpread) {
     }
     return out;
   };
-  const finish = (st) => st.cost + (h ? roadMiles(latlonOf(st.stops[st.stops.length - 1]), h) : 0);
+  const finish = (st) => st.cost + (he ? roadMiles(latlonOf(st.stops[st.stops.length - 1]), he) : 0);
+  const lastOk = (st) => !he || roadMiles(latlonOf(st.stops[st.stops.length - 1]), he) <= PLANNER.maxLast;
   const layers = [prune(layer)];
   for (let g = 2; g <= G; g++) {
     const next = [];
@@ -620,6 +859,7 @@ function beamKRoute(G, relax, relaxSpread) {
           if (!relaxSpread && nearStop(n, st.stops, PLANNER.minSpread)) return;
           const leg = roadMiles(latlonOf(from), latlonOf(n));
           if (!relax && leg > PLANNER.maxHop * gap) return;
+          if (!relaxSpread && leg < PLANNER.minHop) return;
           next.push({ i: i2, j, mask: st.mask | bits(n), cost: st.cost + leg, stops: [...st.stops, n], seen: new Set([...st.seen, venueKey(n)]) });
         });
       }
@@ -628,7 +868,7 @@ function beamKRoute(G, relax, relaxSpread) {
     layers.push(prune(next));
   }
   for (let g = layers.length; g >= 1; g--) {
-    const best = layers[g - 1].filter((st) => st.mask === FULL).reduce((b, st) => (!b || finish(st) < finish(b) ? st : b), null);
+    const best = layers[g - 1].filter((st) => st.mask === FULL && lastOk(st)).reduce((b, st) => (!b || finish(st) < finish(b) ? st : b), null);
     if (best) return { stops: best.stops, miles: finish(best), relaxed: !!relax, spreadRelaxed: !!relaxSpread, achieved: g, wanted: G };
   }
   if (!relax) return beamKRoute(G, true, relaxSpread);
@@ -636,7 +876,7 @@ function beamKRoute(G, relax, relaxSpread) {
 }
 
 function exactKRoute(G, relax) {
-  const h = homeLL();
+  const h = homeLL(), he = endLL();
   const days = PLANNER.days.map((d) => ({ d, nodes: PLANNER.byDay.get(dkey(d)) || [] }));
   const MAXGAP = 4;
   const INF = Infinity;
@@ -644,7 +884,7 @@ function exactKRoute(G, relax) {
   const dp = days.map((s) => s.nodes.map(() => new Array(G + 1).fill(INF)));
   const from = days.map((s) => s.nodes.map(() => new Array(G + 1).fill(null)));
   days.forEach((s, i) => s.nodes.forEach((n, j) => {
-    dp[i][j][1] = h ? roadMiles(h, latlonOf(n)) : 0;
+    dp[i][j][1] = h ? (roadMiles(h, latlonOf(n)) > PLANNER.maxFirst ? Infinity : roadMiles(h, latlonOf(n))) : 0;
     for (let i2 = Math.max(0, i - MAXGAP); i2 < i; i2++) {
       const gap = i - i2;
       days[i2].nodes.forEach((m, k) => {
@@ -660,7 +900,8 @@ function exactKRoute(G, relax) {
   for (let g = G; g >= 1; g--) {
     let best = INF, bi = -1, bj = -1;
     days.forEach((s, i) => s.nodes.forEach((n, j) => {
-      const c = dp[i][j][g] + (h ? roadMiles(latlonOf(n), h) : 0);
+      if (he && roadMiles(latlonOf(n), he) > PLANNER.maxLast) return;
+      const c = dp[i][j][g] + (he ? roadMiles(latlonOf(n), he) : 0);
       if (c < best) { best = c; bi = i; bj = j; }
     }));
     if (bi < 0) continue;
@@ -678,6 +919,9 @@ function exactKRoute(G, relax) {
 function isRealPlace(c) {
   return TourSupport.venueUsable(PLANNER.venues, c.venue_id);
 }
+/** Where the tour finishes: the start unless a separate end is set (pool mode). */
+function endPoint() { return PLANNER.endSame !== false ? PLANNER.start : PLANNER.end; }
+function endLL() { const e = endPoint(); return e ? [e.lat, e.lon] : null; }
 function homeLL() {
   return PLANNER.start ? [PLANNER.start.lat, PLANNER.start.lon] : null;
 }
@@ -685,9 +929,22 @@ function homeLL() {
 function onBuild() {
   const mode = currentMode();
   const clamp = (v, lo, hi, d) => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
-  PLANNER.maxHop = clamp(document.getElementById("maxHop").value, 5, 500, 60);
+  const mhRaw = document.getElementById("maxHop").value.trim();
+  PLANNER.maxHop = mhRaw === "" ? Infinity : clamp(mhRaw, 5, 500, 60);
+  const isPoolMode = mode === "pool";
+  const optMiles = (id) => { const v = document.getElementById(id).value.trim(); const n = clamp(v, 0, 1000, 0); return v === "" || !isPoolMode || !n ? Infinity : n; };
+  PLANNER.minHop = isPoolMode ? clamp(document.getElementById("minHop").value, 0, 300, 0) : 0;
+  const minAny = isPoolMode && document.getElementById("minScope").value === "any";
+  PLANNER.maxFirst = optMiles("maxFirst");
+  PLANNER.maxLast = optMiles("maxLast");
+  PLANNER.endSame = document.getElementById("endSame").checked;
+  if (!PLANNER.endSame && !PLANNER.end) return setStatus("Set an end location, or tick “Finish back at the start”.", true);
   PLANNER.maxHome = clamp(document.getElementById("maxHome").value, 0, 1000, 0);
   PLANNER.minSpread = clamp(document.getElementById("minSpread").value, 0, 200, 0);
+  if (isPoolMode) { // one setting: apart from consecutive gigs only, or from any stop
+    PLANNER.minSpread = minAny ? PLANNER.minHop : 0;
+    if (minAny) PLANNER.minHop = 0;
+  }
   PLANNER.includeOther = document.getElementById("includeOther").checked;
   PLANNER.mode = mode;
   PLANNER.musts = [];
@@ -821,9 +1078,21 @@ function onBuild() {
   });
   PLANNER.chosen = PLANNER.anchor ? new Map([[dkey(PLANNER.anchor.date), PLANNER.anchor]]) : new Map();
   PLANNER.hover = null;
-  if (!PLANNER.anchor && !centre) setStatus("Tip: set a start point or an area centre to keep a period search local.");
-  else if (mode !== "period" || span20ok()) setStatus("");
+  let tip = "";
+  if (!PLANNER.anchor && !centre) tip = "Tip: set a start point or an area centre to keep a period search local.";
+  else if (mode !== "period" || span20ok()) tip = "";
+  setStatus(tip);
   renderAll();
+  announceBuilt(tip);
+}
+
+/** Make it obvious that Build did something: say what was built and bring the results into view. */
+function announceBuilt(tip) {
+  if (PLANNER._rebuilding) return;
+  const n = [...PLANNER.byDay.values()].reduce((t, a) => t + a.length, 0);
+  setStatus(`✓ ${n} option${n === 1 ? "" : "s"} over ${PLANNER.days.length} days — your tour, the map and the filters are below, with the day columns underneath.${tip ? " " + tip : ""}`);
+  const row = document.getElementById("plannerSummaryRow");
+  if (row && row.scrollIntoView) row.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 function span20ok() { return !/limited to 21/.test(document.getElementById("plannerStatus").textContent); }
 
@@ -833,7 +1102,7 @@ function span20ok() { return !/limited to 21/.test(document.getElementById("plan
  *  apart. Returns {stops, miles, relaxed} or null. */
 function shortestRoute(relax, relaxSpread) {
   if (PLANNER.minSpread > 0 && !relaxSpread) return beamEveryDay(!!relax);
-  const h = homeLL();
+  const h = homeLL(), he = endLL();
   const stages = PLANNER.days
     .map((d) => ({ d, nodes: PLANNER.byDay.get(dkey(d)) || [] }))
     .filter((s) => s.nodes.length);
@@ -858,7 +1127,7 @@ function shortestRoute(relax, relaxSpread) {
   let bestJ = -1, best = INF;
   stages[last].nodes.forEach((n, j) => {
     if (cost[last][j] === INF) return;
-    const c = cost[last][j] + (h ? roadMiles(latlonOf(n), h) : 0);
+    const c = cost[last][j] + (he ? roadMiles(latlonOf(n), he) : 0);
     if (c < best) { best = c; bestJ = j; }
   });
   if (bestJ < 0) return relax ? null : shortestRoute(true, relaxSpread);
@@ -870,13 +1139,13 @@ function shortestRoute(relax, relaxSpread) {
 /** Fill-every-day route honouring the minimum spread (beam search; the
  *  exact DP can't track which places are already on the tour). */
 function beamEveryDay(relax) {
-  const h = homeLL();
+  const h = homeLL(), he = endLL();
   const stages = PLANNER.days
     .map((d) => ({ d, nodes: PLANNER.byDay.get(dkey(d)) || [] }))
     .filter((x) => x.nodes.length);
   if (!stages.length) return null;
   const BEAM = 400, PER_NODE = 8;
-  const finish = (st) => st.cost + (h ? roadMiles(latlonOf(st.stops[st.stops.length - 1]), h) : 0);
+  const finish = (st) => st.cost + (he ? roadMiles(latlonOf(st.stops[st.stops.length - 1]), he) : 0);
   const prune = (states) => {
     const per = new Map(); const out = [];
     states.sort((a, b) => a.cost - b.cost);
@@ -911,17 +1180,51 @@ function beamEveryDay(relax) {
 }
 
 function routeMiles(stops) {
-  const h = homeLL();
+  const h = homeLL(), he = endLL();
   let total = 0, p = h;
   stops.forEach((c) => { const ll = latlonOf(c); const leg = roadMiles(p, ll); if (leg != null) total += leg; p = ll; });
-  if (h) total += roadMiles(p, h) || 0;
+  if (he && p) total += roadMiles(p, he) || 0;
   return total;
 }
 
 // ── graph rendering ─────────────────────────────────────────────────────
 let nodeEls = new Map(); // node id -> element
+let mapMarkers = new Map(); // venue id -> leaflet marker (for hover linking)
+
+/** Is gig c out of range of the picks either side of it (max/min between gigs)? */
+function outOfReach(c, stops) {
+  if (c.isAnchor || !stops.length) return false;
+  const cl = latlonOf(c), k = dkey(c.date);
+  let prev = null, next = null;
+  for (const s of stops) {
+    if (dkey(s.date) === k) continue;
+    if (s.date < c.date) prev = s; else if (!next) next = s;
+  }
+  const bad = (st) => {
+    const gap = Math.max(1, Math.round(Math.abs(st.date - c.date) / 86400000));
+    const m = roadMiles(latlonOf(st), cl);
+    return m == null ? false : m > PLANNER.maxHop * gap || m < PLANNER.minHop;
+  };
+  return (prev && bad(prev)) || (next && bad(next)) || false;
+}
+/** Another stop (on a different day) already at this venue, when each venue is visited once. */
+function usedElsewhere(c, stops) {
+  if (!PLANNER.distinct || PLANNER.mode !== "pool") return null;
+  return stops.find((s) => dkey(s.date) !== dkey(c.date) && s.venue_id === c.venue_id) || null;
+}
+/** One verdict per gig for the column list and the map. */
+function nodeState(c, stops) {
+  const chosen = PLANNER.chosen.get(dkey(c.date));
+  if (chosen && chosen.id === c.id) return { hide: false };
+  const near = !c.isAnchor ? nearStop(c, stops, PLANNER.minSpread) : null;
+  const used = !c.isAnchor ? usedElsewhere(c, stops) : null;
+  const unreach = PLANNER.reachMode !== "show" && outOfReach(c, stops);
+  const hide = (near && PLANNER.hideClose) || (used && PLANNER.hideUsed) || (unreach && PLANNER.reachMode === "hide");
+  return { near, used, unreach, hide: !!hide };
+}
 
 function renderAll() {
+  updateLivePanel();
   const wrap = document.getElementById("plannerResults");
   wrap.replaceChildren();
   nodeEls = new Map();
@@ -929,46 +1232,74 @@ function renderAll() {
   PLANNER.best = PLANNER.mode === "pool" ? bestKRoute(PLANNER.gigsWanted, false, false) : shortestRoute(false, false);
 
   const bar = el("div", "ts-panel planner-bar");
-  const bestBtn = el("button", "btn-primary", "⚡ Use shortest route");
+  const chosenIdsNow = new Set([...PLANNER.chosen.values()].map((c) => c.id));
+  const bestPressed = !!PLANNER.best && PLANNER.best.stops.length === chosenIdsNow.size && PLANNER.best.stops.every((c) => chosenIdsNow.has(c.id));
+  const bestBtn = el("button", "btn-primary" + (bestPressed ? " pressed" : ""), bestPressed ? "✓ Shortest route selected (click to clear)" : "⚡ Use shortest route");
   bestBtn.type = "button";
+  bestBtn.setAttribute("aria-pressed", String(bestPressed));
   bestBtn.disabled = !PLANNER.best;
   bestBtn.addEventListener("click", () => {
     PLANNER.chosen = new Map();
-    PLANNER.best.stops.forEach((c) => PLANNER.chosen.set(dkey(c.date), c));
+    if (bestPressed) { if (PLANNER.anchor) PLANNER.chosen.set(dkey(PLANNER.anchor.date), PLANNER.anchor); }
+    else PLANNER.best.stops.forEach((c) => PLANNER.chosen.set(dkey(c.date), c));
     renderAll();
   });
   const clearBtn = el("button", "btn-secondary", PLANNER.anchor ? "Reset to anchor only" : "Clear choices");
   clearBtn.type = "button";
   clearBtn.addEventListener("click", () => { PLANNER.chosen = PLANNER.anchor ? new Map([[dkey(PLANNER.anchor.date), PLANNER.anchor]]) : new Map(); renderAll(); });
-  const allLbl = el("label", "planner-inline");
-  const allCb = el("input"); allCb.type = "checkbox"; allCb.checked = !!PLANNER.showAll;
-  allCb.addEventListener("change", () => { PLANNER.showAll = allCb.checked; drawEdges(); });
-  allLbl.append(allCb, " show all links");
-  const candLbl = el("label", "planner-inline");
-  const candCb = el("input"); candCb.type = "checkbox"; candCb.checked = PLANNER.showCands !== false;
-  candCb.addEventListener("change", () => { PLANNER.showCands = candCb.checked; renderMap(); });
-  candLbl.append(candCb, " show other venues on map");
-  bar.append(bestBtn, clearBtn, allLbl, candLbl);
-  if (PLANNER.minSpread > 0) {
-    const hideLbl = el("label", "planner-inline");
-    const hideCb = el("input"); hideCb.type = "checkbox"; hideCb.checked = !!PLANNER.hideClose;
-    hideCb.addEventListener("change", () => { PLANNER.hideClose = hideCb.checked; renderAll(); });
-    hideLbl.append(hideCb, ` hide venues within ${PLANNER.minSpread} mi of a stop`);
-    bar.appendChild(hideLbl);
+  const chk = (label, val, onChange) => {
+    const lbl = el("label", "planner-inline");
+    const cb = el("input"); cb.type = "checkbox"; cb.checked = !!val;
+    cb.addEventListener("change", () => onChange(cb.checked));
+    lbl.append(cb, " " + label);
+    return lbl;
+  };
+  bar.append(bestBtn, clearBtn,
+    chk("show suggested route", PLANNER.showBest, (v) => { PLANNER.showBest = v; renderAll(); }),
+    chk("show all links", PLANNER.showAll, (v) => { PLANNER.showAll = v; drawEdges(); }));
+  const filters = el("div", "planner-filters");
+  filters.appendChild(el("span", "planner-filter-title", "Columns:"));
+  const reachLbl = el("label", "planner-inline", "venues out of range of my picks: ");
+  const reachSel = el("select");
+  [["show", "show"], ["grey", "grey out"], ["hide", "hide"]].forEach(([v, t]) => { const o = el("option", null, t); o.value = v; if (v === PLANNER.reachMode) o.selected = true; reachSel.appendChild(o); });
+  reachSel.addEventListener("change", () => { PLANNER.reachMode = reachSel.value; renderAll(); });
+  reachLbl.appendChild(reachSel);
+  filters.appendChild(reachLbl);
+  if (PLANNER.minSpread > 0) filters.appendChild(chk(`hide venues within ${PLANNER.minSpread} mi of a stop`, PLANNER.hideClose, (v) => { PLANNER.hideClose = v; renderAll(); }));
+  if (PLANNER.distinct && PLANNER.mode === "pool") filters.appendChild(chk("hide venues already on the tour", PLANNER.hideUsed, (v) => { PLANNER.hideUsed = v; renderAll(); }));
+  const pickedDays = PLANNER.days.map(dkey).filter((k) => PLANNER.chosen.has(k));
+  if (pickedDays.length) {
+    const allCollapsed = pickedDays.every((k) => PLANNER.collapsed.has(k));
+    const colBtn = el("button", "btn-secondary btn-small", allCollapsed ? "Show all options" : "Only show my picks");
+    colBtn.type = "button";
+    colBtn.addEventListener("click", () => {
+      if (allCollapsed) PLANNER.collapsed.clear(); else pickedDays.forEach((k) => PLANNER.collapsed.add(k));
+      renderAll();
+    });
+    filters.appendChild(colBtn);
   }
+  bar.appendChild(filters);
+  const mapOpts = el("div", "planner-filters");
+  mapOpts.appendChild(el("span", "planner-filter-title", "Map:"));
+  mapOpts.append(
+    chk("other venues", PLANNER.showCands !== false, (v) => { PLANNER.showCands = v; renderMap(); }),
+    chk("follow the column filters", PLANNER.mapFollowsFilters, (v) => { PLANNER.mapFollowsFilters = v; renderMap(); }),
+    chk("suggested route line", PLANNER.showBestOnMap, (v) => { PLANNER.showBestOnMap = v; renderMap(); }));
+  bar.appendChild(mapOpts);
   if (PLANNER.best) {
     const isPool = PLANNER.mode === "pool";
     bar.appendChild(el("span", "ts-hint",
       (isPool ? `Shortest ${PLANNER.best.achieved}-gig route` : "Shortest route visiting a gig every possible day") +
-      `: ${fmtMiles(PLANNER.best.miles)}${PLANNER.start ? " round trip" : ""}` +
+      `: ${fmtMiles(PLANNER.best.miles)}${PLANNER.start && PLANNER.endSame !== false ? " round trip" : PLANNER.start || endPoint() ? " incl. start/end legs" : ""}` +
       (isPool && PLANNER.best.achieved < PLANNER.best.wanted ? ` (only ${PLANNER.best.achieved} of ${PLANNER.best.wanted} gigs possible in this window)` : "") +
       (PLANNER.best.relaxed ? " (distance limits relaxed — no route fit them)" : "") +
       (isPool && (PLANNER.musts || []).length ? ` · includes all ${PLANNER.musts.length} must-visit${PLANNER.musts.length > 1 ? "s" : ""}` : "") +
-      (PLANNER.best.spreadRelaxed ? ` (couldn't keep stops ${PLANNER.minSpread} mi apart in this window)` : "")));
+      (PLANNER.best.spreadRelaxed ? ` (couldn't keep stops ${PLANNER.minSpread || PLANNER.minHop} mi apart in this window)` : "")));
   } else if (PLANNER.mode === "pool" && (PLANNER.musts || []).length) {
     bar.appendChild(el("span", "ts-hint", "No route could include every must-visit place on those dates — widen their flexibility, the period, or untick “visit each venue only once”."));
   } else if (PLANNER.mode === "pool") {
-    bar.appendChild(el("span", "ts-hint", "No venues in the pool fit those dates, weekdays and area — widen the window, radius or untick the weekday rule."));
+    const lim = PLANNER.minHop > 0 || PLANNER.maxFirst < Infinity || PLANNER.maxLast < Infinity;
+    bar.appendChild(el("span", "ts-hint", "No route fits" + (lim ? " your distance limits (min/max between gigs, start and end)" : " those dates, weekdays and area") + " — widen the window, radius or limits, or untick the weekday rule."));
   }
   if (!PLANNER.start) bar.appendChild(el("span", "ts-hint", "Set a start point to include the journey home."));
   wrap.appendChild(bar);
@@ -976,29 +1307,36 @@ function renderAll() {
   const scroll = el("div", "graph-scroll");
   const inner = el("div", "graph-inner");
   inner.id = "graphInner";
-  const colHome = (label, id) => {
+  const colHome = (label, id, pt) => {
     const col = el("div", "graph-col graph-home-col");
     col.appendChild(el("h4", null, label));
-    const n = el("div", "graph-node home", PLANNER.start ? `⌂ ${PLANNER.start.label}` : "⌂ (no start set)");
+    const n = el("div", "graph-node home", pt ? `${id === "home-end" && PLANNER.endSame === false ? "⚑" : "⌂"} ${pt.label}` : "⌂ (no start set)");
     n.dataset.nid = id;
     nodeEls.set(id, n);
     col.appendChild(n);
     return col;
   };
-  if (PLANNER.start) inner.appendChild(colHome("Start", "home-start"));
+  if (PLANNER.start) inner.appendChild(colHome("Start", "home-start", PLANNER.start));
 
+  const stopsNow = orderedStops();
   PLANNER.days.forEach((date) => {
     const k = dkey(date);
     const nodes = PLANNER.byDay.get(k) || [];
     const col = el("div", "graph-col" + (nodes.length ? "" : " graph-col-rest"));
     col.appendChild(el("h4", null, nodes.length ? formatDate(date) : formatDate(date).replace(/ \d{4}$/, "")));
     if (!nodes.length) col.appendChild(el("div", "graph-none", "rest day"));
-    let hiddenClose = 0;
+    let hiddenClose = 0, hiddenOther = 0;
+    const pickHere = PLANNER.chosen.get(k);
+    if (pickHere) {
+      const tog = el("button", "col-collapse", PLANNER.collapsed.has(k) ? "show all" : "only my pick");
+      tog.type = "button";
+      tog.addEventListener("click", () => { if (PLANNER.collapsed.has(k)) PLANNER.collapsed.delete(k); else PLANNER.collapsed.add(k); renderAll(); });
+      col.appendChild(tog);
+    }
     nodes.forEach((c) => {
-      if (PLANNER.hideClose && !c.isAnchor) {
-        const chosenNow = PLANNER.chosen.get(k);
-        if (!(chosenNow && chosenNow.id === c.id) && nearStop(c, orderedStops(), PLANNER.minSpread)) { hiddenClose++; return; }
-      }
+      const st = nodeState(c, stopsNow);
+      if (PLANNER.collapsed.has(k) && pickHere && pickHere.id !== c.id) { hiddenOther++; return; }
+      if (st.hide) { hiddenClose++; return; }
       const v = venueOf(c) || {};
       const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : ""));
       n.dataset.nid = c.id;
@@ -1015,28 +1353,38 @@ function renderAll() {
       }
       const ch = PLANNER.chosen.get(k);
       if (ch && ch.id === c.id) n.classList.add("chosen");
-      const near = !c.isAnchor && !(ch && ch.id === c.id) ? nearStop(c, orderedStops(), PLANNER.minSpread) : null;
+      const near = !c.isAnchor && !(ch && ch.id === c.id) ? st.near : null;
       if (near) {
         n.classList.add("too-close");
         n.appendChild(el("div", "graph-node-note", `⛔ within ${PLANNER.minSpread} mi of ${near.name}`));
       }
-      if (PLANNER.best && PLANNER.best.stops.some((s) => s.id === c.id)) n.classList.add("on-best");
-      if (!c.isAnchor && !near) {
+      const used = !near && st.used;
+      if (used) {
+        n.classList.add("too-close");
+        n.appendChild(el("div", "graph-node-note", `⛔ already on the tour (${formatDate(used.date).replace(/ \d{4}$/, "")})`));
+      }
+      if (!near && !used && st.unreach && PLANNER.reachMode === "grey") {
+        n.classList.add("out-of-range");
+        n.appendChild(el("div", "graph-node-note", "out of range of your picks"));
+      }
+      if (PLANNER.showBest && PLANNER.best && PLANNER.best.stops.some((s) => s.id === c.id)) n.classList.add("on-best");
+      if (!c.isAnchor && !near && !used) {
         n.tabIndex = 0;
         n.setAttribute("role", "button");
         const toggle = () => toggleNode(c);
         n.addEventListener("click", toggle);
         n.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
       }
-      n.addEventListener("mouseenter", () => { PLANNER.hover = c.id; drawEdges(); });
-      n.addEventListener("mouseleave", () => { PLANNER.hover = null; drawEdges(); });
+      n.addEventListener("mouseenter", () => { PLANNER.hover = c.id; drawEdges(); markerHighlight(c.venue_id, true); });
+      n.addEventListener("mouseleave", () => { PLANNER.hover = null; drawEdges(); markerHighlight(c.venue_id, false); });
       nodeEls.set(c.id, n);
       col.appendChild(n);
     });
-    if (hiddenClose) col.appendChild(el("div", "graph-none", `${hiddenClose} hidden — within ${PLANNER.minSpread} mi of a stop`));
+    if (hiddenClose) col.appendChild(el("div", "graph-none", `${hiddenClose} hidden by the column filters`));
+    if (hiddenOther) col.appendChild(el("div", "graph-none", `${hiddenOther} other option${hiddenOther > 1 ? "s" : ""} hidden`));
     inner.appendChild(col);
   });
-  if (PLANNER.start) inner.appendChild(colHome("Return", "home-end"));
+  if (endPoint()) inner.appendChild(colHome(PLANNER.endSame === false ? "End" : "Return", "home-end", endPoint()));
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("class", "graph-edges");
@@ -1098,11 +1446,11 @@ function drawEdges() {
     const gap = Math.round((stages[i].d - stages[i - 1].d) / 86400000);
     stages[i - 1].nodes.forEach((m) => stages[i].nodes.forEach((n) => {
       const miles = roadMiles(latlonOf(m), latlonOf(n));
-      if (miles > PLANNER.maxHop * gap) return;
+      if (miles > PLANNER.maxHop * gap || miles < PLANNER.minHop) return;
       const bothChosen = chosenIds.has(m.id) && chosenIds.has(n.id);
       const touchesChosen = chosenIds.has(m.id) || chosenIds.has(n.id);
       const touchesHover = PLANNER.hover && (m.id === PLANNER.hover || n.id === PLANNER.hover);
-      const isBest = bestPairs.has(m.id + ">" + n.id);
+      const isBest = PLANNER.showBest && bestPairs.has(m.id + ">" + n.id);
       if (!(PLANNER.showAll || touchesChosen || touchesHover || isBest)) return;
       const cls = bothChosen ? "path" : touchesHover ? "hover" : isBest ? "best" : touchesChosen ? "near" : "faint";
       edge(m.id, n.id, miles, cls, bothChosen || touchesHover || touchesChosen || isBest);
@@ -1121,14 +1469,15 @@ function drawEdges() {
     }
   };
   extra(orderedStops(), "path");
-  if (PLANNER.best) extra(PLANNER.best.stops, "best");
+  if (PLANNER.best && PLANNER.showBest) extra(PLANNER.best.stops, "best");
   // home legs
   const h = homeLL();
   const stops = orderedStops();
-  if (h && stops.length && nodeEls.get("home-start")) {
-    edge("home-start", stops[0].id, roadMiles(h, latlonOf(stops[0])), "home", true);
+  const he = endLL();
+  if (stops.length) {
+    if (h && nodeEls.get("home-start")) edge("home-start", stops[0].id, roadMiles(h, latlonOf(stops[0])), "home", true);
     const l = stops[stops.length - 1];
-    edge(l.id, "home-end", roadMiles(latlonOf(l), h), "home", true);
+    if (he && nodeEls.get("home-end")) edge(l.id, "home-end", roadMiles(latlonOf(l), he), "home", true);
   }
 }
 window.addEventListener("resize", () => { try { drawEdges(); } catch (e) { /* ignore */ } });
@@ -1149,6 +1498,9 @@ function orderedStops() {
 function renderItinerary() {
   const box = document.getElementById("plannerItinerary");
   box.replaceChildren();
+  const xbox = document.getElementById("plannerExport"); // export buttons live at the end of the page
+  xbox.replaceChildren();
+  xbox.hidden = true;
   if (!PLANNER.days.length) return;
   const stops = orderedStops();
   if (stops.length < 1) {
@@ -1156,23 +1508,39 @@ function renderItinerary() {
     box.appendChild(el("p", "ts-hint", "No stops yet — click gigs in the columns below, or press “Use shortest route”."));
     return;
   }
-  const home = homeLL();
+  const home = homeLL(), endP = endPoint();
   const lines = [];
-  let prev = home;
-  stops.forEach((c) => {
+  let prev = home, prevStop = null;
+  const warn = (leg, first, c) => {
+    if (leg == null) return "";
+    const w = [];
+    if (first && leg > PLANNER.maxFirst) w.push(`over your ${PLANNER.maxFirst} mi limit from the start`);
+    if (!first && prevStop) {
+      const gap = Math.max(1, Math.round((c.date - prevStop.date) / 86400000));
+      if (leg > PLANNER.maxHop * gap) w.push("longer than your max between gigs");
+      if (leg < PLANNER.minHop) w.push(`closer than your ${PLANNER.minHop} mi minimum`);
+    }
+    return w.length ? "  ⚠ " + w.join("; ") : "";
+  };
+  stops.forEach((c, i) => {
     const ll = latlonOf(c);
     const leg = roadMiles(prev, ll);
     const v = venueOf(c) || {};
     lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}` +
-      (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : ""));
-    prev = ll;
+      (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : "") + warn(leg, i === 0, c));
+    prev = ll; prevStop = c;
   });
+  if (endP && prev) {
+    const lastLeg = roadMiles(prev, [endP.lat, endP.lon]);
+    if (lastLeg != null) lines.push(`${PLANNER.endSame !== false ? "Back at" : "Finish at"} ${endP.label}  [${fmtMiles(lastLeg)}, ${fmtDrive(lastLeg)}]` +
+      (lastLeg > PLANNER.maxLast ? `  ⚠ over your ${PLANNER.maxLast} mi limit to the end` : ""));
+  }
   box.appendChild(el("h3", null, "Your tour"));
   const ol = el("ol", "ts-list");
   lines.forEach((t) => ol.appendChild(el("li", null, t)));
   box.appendChild(ol);
   const total = routeMiles(stops);
-  let msg = `Total${home ? ` incl. journey from and back to ${PLANNER.start.label}` : ""}: ${fmtMiles(total)} (${fmtDrive(total)} driving).`;
+  let msg = `Total${home || endP ? ` incl. journey${home ? " from " + PLANNER.start.label : ""}${endP ? (PLANNER.endSame !== false ? " and back" : " to " + endP.label) : ""}` : ""}: ${fmtMiles(total)} (${fmtDrive(total)} driving).`;
   if (PLANNER.best && stops.length > 1) {
     const diff = total - PLANNER.best.miles;
     msg += diff > 1 ? ` The shortest all-days route is ${fmtMiles(PLANNER.best.miles)} (${fmtMiles(diff)} less).` : " That matches the shortest route.";
@@ -1184,10 +1552,12 @@ function renderItinerary() {
     try { await navigator.clipboard.writeText(lines.join("\n")); copy.textContent = "Copied ✓"; }
     catch (e) { copy.textContent = "Copy failed"; }
   });
-  box.appendChild(copy);
+  xbox.hidden = false;
+  xbox.appendChild(el("h3", null, "Take your tour away"));
+  xbox.appendChild(el("p", "ts-hint", "Copy it, add it to a calendar, or download the data to build your own plan."));
+  xbox.appendChild(copy);
   const ics = el("button", "btn-secondary", "📅 Download calendar (.ics)");
   ics.type = "button";
-  ics.style.marginLeft = "8px";
   ics.addEventListener("click", () => {
     let prevLL = home;
     TourSupport.downloadIcs(stops.map((c) => {
@@ -1206,7 +1576,6 @@ function renderItinerary() {
       };
     }), "tour.ics", "Tour Planner");
   });
-  box.appendChild(ics);
   const records = () => TourSupport.buildRecords(stops, (c) => {
     const v = venueOf(c) || {};
     const ll = latlonOf(c);
@@ -1219,13 +1588,13 @@ function renderItinerary() {
     };
   }, home);
   const exp = el("span");
-  exp.style.marginLeft = "8px";
   TourSupport.addExportButtons(exp, {
     className: "btn-secondary", basename: "tour", getRecords: records,
     getMeta: () => ({ page: "tour_planner", start: PLANNER.start ? { label: PLANNER.start.label, latitude: PLANNER.start.lat, longitude: PLANNER.start.lon } : null }),
   });
-  exp.querySelectorAll("button").forEach((b, i) => { if (i) b.style.marginLeft = "8px"; });
-  box.appendChild(exp);
+  exp.querySelectorAll("button").forEach((b, i) => { b.style.marginRight = "8px"; });
+  xbox.appendChild(ics);
+  xbox.appendChild(exp);
 }
 
 // ── map ─────────────────────────────────────────────────────────────────
@@ -1245,6 +1614,13 @@ function toggleNode(c) {
   const cur = PLANNER.chosen.get(k);
   if (cur && cur.id === c.id) PLANNER.chosen.delete(k); else PLANNER.chosen.set(k, c);
   renderAll();
+}
+
+/** Highlight a venue's map marker while its gig card is hovered. */
+function markerHighlight(vid, on) {
+  const m = mapMarkers.get(vid);
+  const e = m && m.getElement ? m.getElement() : null;
+  if (e) e.classList.toggle("hl", on);
 }
 
 /** Popup for a venue marker: every gig on offer there, with add/remove buttons. */
@@ -1282,6 +1658,7 @@ async function renderMap() {
   plannerMap.invalidateSize();
   if (plannerMapLayer) plannerMapLayer.remove();
   plannerMapLayer = L.layerGroup().addTo(plannerMap);
+  mapMarkers = new Map();
   const stops = orderedStops();
   const chosenIds = new Set(stops.map((c) => c.id));
   const pts = [];
@@ -1298,16 +1675,22 @@ async function renderMap() {
     }));
     byVenue.forEach((nodes0, vid) => {
       if (venuesWithStop.has(vid)) return; // shown as a numbered stop below
-      const nodes = PLANNER.hideClose ? nodes0.filter((c) => !nearStop(c, stops, PLANNER.minSpread)) : nodes0;
+      const nodes = PLANNER.mapFollowsFilters ? nodes0.filter((c) => !nodeState(c, stops).hide) : nodes0;
       if (!nodes.length) return;
       const ll = latlonOf(nodes[0]);
       candPts.push(ll);
       const labs = [...new Set([...nodes].sort((a, b) => a.date - b.date).map((c) => dayLabel(c.date)))];
-      const text = labs.length > 3 ? labs.slice(0, 3).join(" ") + "…" : labs.join(" ");
-      L.marker(ll, { icon: L.divIcon({ className: "ts-pin cand", html: text, iconSize: [40, 20], iconAnchor: [20, 10] }) })
-        .bindTooltip(`${(PLANNER.venues[vid] || {}).name || vid} (${text})`)
+      // small pin: the day offset when there is just one, else a count; full list on hover
+      const short = labs.length === 1 ? labs[0] : `${labs.length}×`;
+      const isMust = nodes.some((c) => c.must && c.must.length);
+      const faded = nodes.every((c) => { const st = nodeState(c, stops); return st.near || st.used || st.unreach; });
+      const m = L.marker(ll, { icon: L.divIcon({ className: "ts-pin cand sm" + (isMust ? " must" : "") + (faded ? " faded" : ""), html: short, iconSize: [24, 24], iconAnchor: [12, 12] }) })
+        .bindTooltip(`${(PLANNER.venues[vid] || {}).name || vid} — ${labs.join(" ")}`)
         .bindPopup(venuePopup(vid, nodes))
         .addTo(plannerMapLayer);
+      mapMarkers.set(vid, m);
+      m.on("mouseover", () => nodes.forEach((c) => { const e = nodeEls.get(c.id); if (e) e.classList.add("hl"); }));
+      m.on("mouseout", () => nodes.forEach((c) => { const e = nodeEls.get(c.id); if (e) e.classList.remove("hl"); }));
     });
   }
 
@@ -1317,17 +1700,29 @@ async function renderMap() {
     L.marker(h, { icon: L.divIcon({ className: "ts-pin home", html: "⌂", iconSize: [26, 26] }) })
       .bindTooltip(PLANNER.start.label).addTo(plannerMapLayer);
   }
+  const ePt = endPoint();
   stops.forEach((c, i) => {
     const ll = latlonOf(c);
     pts.push(ll);
     const allHere = [];
     PLANNER.days.forEach((d) => (PLANNER.byDay.get(dkey(d)) || []).forEach((n) => { if (n.venue_id === c.venue_id) allHere.push(n); }));
-    L.marker(ll, { icon: L.divIcon({ className: "ts-pin", html: String(i + 1), iconSize: [26, 26] }), zIndexOffset: 500 })
+    const sm = L.marker(ll, { icon: L.divIcon({ className: "ts-pin", html: String(i + 1), iconSize: [26, 26] }), zIndexOffset: 500 })
       .bindTooltip(`${i + 1}. ${c.name} — ${formatDate(c.date)}`)
       .bindPopup(venuePopup(c.venue_id, allHere.length ? allHere : [c]))
       .addTo(plannerMapLayer);
+    mapMarkers.set(c.venue_id, sm);
   });
+  if (ePt && stops.length) {
+    const eLL = [ePt.lat, ePt.lon];
+    pts.push(eLL);
+    if (PLANNER.endSame === false) {
+      L.marker(eLL, { icon: L.divIcon({ className: "ts-pin home", html: "⚑", iconSize: [26, 26] }) }).bindTooltip("End: " + ePt.label).addTo(plannerMapLayer);
+    }
+  }
   if (stops.length + (PLANNER.start ? 1 : 0) > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);
+  if (PLANNER.showBestOnMap && PLANNER.best && PLANNER.best.stops.length > 1) {
+    L.polyline(PLANNER.best.stops.map(latlonOf), { color: "#f9a825", weight: 3, dashArray: "2 7" }).addTo(plannerMapLayer);
+  }
   const all = pts.concat(candPts);
   if (all.length) plannerMap.fitBounds(L.latLngBounds(all).pad(0.2), { maxZoom: 11 });
 }
@@ -1353,6 +1748,22 @@ async function initPlanner() {
   document.getElementById("startLocate").addEventListener("click", onUseLocation);
   document.getElementById("startClear").addEventListener("click", clearStart);
   document.getElementById("buildTour").addEventListener("click", onBuild);
+  document.getElementById("endSame").addEventListener("change", onEndSameChange);
+  document.getElementById("endFind").addEventListener("click", () => findPlace("endInput", "endChoices", setEnd));
+  document.getElementById("endInput").addEventListener("keydown", (e) => { if (e.key === "Enter") findPlace("endInput", "endChoices", setEnd); });
+  document.getElementById("endClear").addEventListener("click", () => { setEnd(null); document.getElementById("endInput").value = ""; });
+  const rad = document.getElementById("areaRadius");
+  rad.addEventListener("input", () => { rad.dataset.touched = "1"; if (currentMode() === "pool") renderPoolMap(false); });
+  ["anchorClub", "anchorVenue", "anchorDate", "anchorMonth"].forEach((id) => {
+    document.getElementById(id).addEventListener("change", () => { if (PLANNER.days.length) clearResults(); });
+  });
+  document.getElementById("anchorMonth").addEventListener("change", fillAnchorDates);
+  ["maxHop", "minHop", "minScope", "maxHome", "minSpread", "poolDistinct", "daysBefore", "daysAfter"].forEach((id) => {
+    const e = document.getElementById(id);
+    e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
+  });
+  attachScaleSlider("maxHop", "maxHopSlider", [10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 150, 200, 300, 500], true);
+  attachScaleSlider("minHop", "minHopSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.getElementById("areaFind").addEventListener("click", () => findPlace("areaInput", "areaChoices", setArea));
   document.getElementById("areaInput").addEventListener("keydown", (e) => { if (e.key === "Enter") findPlace("areaInput", "areaChoices", setArea); });
