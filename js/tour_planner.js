@@ -69,7 +69,22 @@ function setStatus(msg, isError) {
  * coordinates. Returns Map(dateKey -> candidate[]).
  * candidate: {id, kind, name, date, time, venue_id, link}
  */
-function gatherCandidates(from, to, includeOther) {
+const ALL_KINDS = { club: 1, storyEvent: 1, music: 1, poetry: 1, folk: 1, session: 1 };
+/** Which kinds of event are ticked (non-pool modes). */
+function selectedCats() {
+  const on = (id) => { const c = document.getElementById(id); return !c || c.checked; };
+  const o = {};
+  if (on("catClub")) o.club = 1;
+  if (on("catStoryEvent")) o.storyEvent = 1;
+  if (on("catMusic")) o.music = 1;
+  if (on("catPoetry")) o.poetry = 1;
+  if (on("catFolk")) o.folk = 1;
+  if (on("catSession")) o.session = 1;
+  return o;
+}
+/** cats: true = every kind; false/undefined = story clubs only; or an object of kinds. */
+function gatherCandidates(from, to, cats) {
+  const C = cats === true ? ALL_KINDS : cats && typeof cats === "object" ? cats : { club: 1 };
   const ed = PLANNER.eventsData;
   const out = new Map();
   const add = (c) => {
@@ -81,11 +96,10 @@ function gatherCandidates(from, to, includeOther) {
     out.get(k).push(c);
   };
 
-  const recurring = [{ list: ed.clubs || [], kind: "club" }];
-  if (includeOther) {
-    recurring.push({ list: ed.folkNights || [], kind: "folk night" });
-    recurring.push({ list: ed.irishSessions || [], kind: "session" });
-  }
+  const recurring = [];
+  if (C.club) recurring.push({ list: ed.clubs || [], kind: "club" });
+  if (C.folk) recurring.push({ list: ed.folkNights || [], kind: "folk night" });
+  if (C.session) recurring.push({ list: ed.irishSessions || [], kind: "session" });
   recurring.forEach(({ list, kind }) => {
     list.forEach((rec) => {
       if (!rec.schedule) return;
@@ -113,15 +127,13 @@ function gatherCandidates(from, to, includeOther) {
   // Clubs' own one-off "special" nights are always included; other event
   // lists only when "include other events" is ticked.
   const oneOffs = [{ list: ed.specificEvents || [], kind: "event" }];
-  if (includeOther) {
-    oneOffs.push({ list: ed.musicEvents || [], kind: "music" });
-    oneOffs.push({ list: ed.poetryEvents || [], kind: "poetry" });
-  }
+  if (C.music) oneOffs.push({ list: ed.musicEvents || [], kind: "music" });
+  if (C.poetry) oneOffs.push({ list: ed.poetryEvents || [], kind: "poetry" });
   oneOffs.forEach(({ list, kind }) => {
     list.forEach((ev) => {
       const d = parseDateString(ev.date);
       if (!d || d < from || d > to) return;
-      if (kind === "event" && !ev.club && !includeOther) return;
+      if (kind === "event" && (ev.club ? !C.club : !C.storyEvent)) return;
       if (ev.cancelled || ev.isCancelled) return;
       const k = dkey(d);
       const vid = ev.venue_id;
@@ -353,6 +365,19 @@ function numberSteps() {
   });
 }
 
+/** Changing what the tour is built around starts afresh: forget the artists, pool and must-visits. */
+function resetPoolState() {
+  PLANNER.pickPerf.clear(); PLANNER.pickTour.clear();
+  PLANNER.extraVenues = new Map(); PLANNER.primary = null; PLANNER.pool = [];
+  PLANNER.exp.solo = null; PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
+  ["poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"].forEach((id) => { const c = document.getElementById(id); if (c) c.checked = false; });
+  ["poolPerfChips", "poolTourChips", "poolPerfResults", "poolTourResults"].forEach((id) => { const n = document.getElementById(id); if (n) n.replaceChildren(); });
+  ["poolPerfFilter", "poolTourFilter"].forEach((id) => { const n = document.getElementById(id); if (n) n.value = ""; });
+  const sim = document.getElementById("poolSimilar"); if (sim) { sim.hidden = true; sim.replaceChildren(); }
+  PLANNER.mustRows = []; drawMustRows();
+  renderPoolList(); renderPoolMap(false);
+}
+
 function setMode() {
   const m = currentMode();
   const flow = document.getElementById("plannerFlow");
@@ -363,6 +388,8 @@ function setMode() {
   // changing what we build around invalidates everything downstream: clear it until rebuilt
   if (PLANNER.days.length && PLANNER.mode && PLANNER.mode !== m) clearResults();
   updateLivePanel();
+  if (PLANNER._lastMode && PLANNER._lastMode !== m) resetPoolState();
+  PLANNER._lastMode = m;
   numberSteps();
   if (PLANNER._help) PLANNER._help.refresh();
   if (m === "venue" && !PLANNER._venueRows) buildVenueRows();
@@ -373,7 +400,7 @@ function setMode() {
 function buildVenueRows() {
   const today = getTodayMidnight();
   const to = addDays(today, 183);
-  const byDay = gatherCandidates(today, to, true);
+  const byDay = gatherCandidates(today, to, selectedCats());
   const byVenue = new Map();
   byDay.forEach((list) => list.forEach((c) => {
     if (!isRealPlace(c)) return;
@@ -389,7 +416,6 @@ function buildVenueRows() {
   const sel = document.getElementById("anchorVenue");
   sel.replaceChildren();
   rows.forEach((r, i) => { const o = el("option", null, r.label); o.value = String(i); sel.appendChild(o); });
-  sel.addEventListener("change", fillAnchorDates);
 }
 
 function fillAnchorDates() {
@@ -709,9 +735,12 @@ function renderPoolList() {
   box.appendChild(bar);
 
   const acts = el("div", "ts-row");
-  [["Include all", true], ["Include none", false]].forEach(([t, val]) => {
+  [[`Include all shown (${vis.shown.length})`, true], ["Exclude all shown", false]].forEach(([t, val]) => {
     const b = el("button", "btn-secondary btn-small", t); b.type = "button";
-    b.addEventListener("click", () => { pool.forEach((r) => { r.on = val; }); renderPoolList(); renderPoolMap(false); });
+    b.addEventListener("click", () => {
+      vis.shown.forEach((x) => { if (x.r) x.r.on = val; else if (val && x.suggested) PLANNER.extraVenues.set(x.vid, new Set(x.sources)); });
+      if (val && vis.shown.some((x) => x.suggested)) refreshPool(); else { renderPoolList(); renderPoolMap(false); }
+    });
     acts.appendChild(b);
   });
   box.appendChild(acts);
@@ -755,9 +784,13 @@ function renderPoolList() {
         add.addEventListener("click", () => addExtraVenue(x));
         row.appendChild(add);
       } else if (x.r.extra) {
-        const rm = el("button", "btn-secondary btn-small", "Remove"); rm.type = "button";
+        const rm = el("button", "btn-secondary btn-small", "Remove from pool"); rm.type = "button";
         rm.addEventListener("click", () => { PLANNER.extraVenues.delete(x.vid); refreshPool(); });
         row.appendChild(rm);
+      } else {
+        const tg = el("button", "btn-secondary btn-small", x.r.on ? "✓ In pool · remove" : "+ Add to pool"); tg.type = "button";
+        tg.addEventListener("click", () => { x.r.on = !x.r.on; renderPoolList(); renderPoolMap(false); });
+        row.appendChild(tg);
       }
       card.appendChild(row);
     }
@@ -1205,7 +1238,8 @@ function onBuild() {
     PLANNER.minSpread = minAny ? PLANNER.minHop : 0;
     if (minAny) PLANNER.minHop = 0;
   }
-  PLANNER.includeOther = document.getElementById("includeOther").checked;
+  PLANNER.includeOther = Object.keys(selectedCats()).some((k) => k !== "club");
+  if (mode !== "pool" && !Object.keys(selectedCats()).length) return setStatus("Tick at least one kind of event.", true);
   PLANNER.mode = mode;
   PLANNER.musts = [];
   PLANNER.anchor = null;
@@ -1251,7 +1285,7 @@ function onBuild() {
   const raw = gatherCandidates(
     PLANNER.days[0] < today ? today : PLANNER.days[0],
     PLANNER.days[PLANNER.days.length - 1],
-    mode === "pool" ? true : PLANNER.includeOther,
+    mode === "pool" ? true : selectedCats(),
   );
   const h = homeLL();
   if (mode === "pool") {
@@ -2032,6 +2066,12 @@ async function initPlanner() {
   }
   syncEndSame();
   setupCollapsibles();
+  document.getElementById("anchorVenue").addEventListener("change", fillAnchorDates);
+  document.querySelectorAll("#eventKinds input").forEach((cb) => cb.addEventListener("change", () => {
+    PLANNER._venueRows = null;
+    if (currentMode() === "venue") { buildVenueRows(); fillAnchorDates(); }
+    if (PLANNER.days.length) clearResults();
+  }));
   document.getElementById("startFind").addEventListener("click", onFindStart);
   document.getElementById("startInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onFindStart(); });
   document.getElementById("startLocate").addEventListener("click", onUseLocation);

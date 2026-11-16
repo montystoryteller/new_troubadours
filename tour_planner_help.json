@@ -49,8 +49,8 @@
   },
   {
     "step": "other-events",
-    "title": "Why include other events?",
-    "text": "By default the planner uses story club nights and their specials. Tick this to include folk nights, sessions and other one-off events."
+    "title": "Why choose kinds of event?",
+    "text": "By default the planner uses story club nights and their specials.\n\nTick other kinds to use venues and gigs from:\n\n- one-off story events\n- music events\n- poetry events\n- folk nights\n- Irish sessions\n\nIn \"a venue\" mode the same choice decides which venues appear in the list, so you can build around a music or poetry venue as easily as a story club."
   },
   {
     "step": "build",

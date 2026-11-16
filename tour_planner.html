@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162205">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162330">
 </head>
 
 <body class="page-tour-planner">
@@ -202,8 +202,14 @@
             </section>
 
             <section id="blkOther" data-step="other-events" class="flow-card" data-modes="club venue period" hidden>
-                <div class="ts-checks">
-                    <label><input type="checkbox" id="includeOther"> Include folk nights, sessions and other one-off events</label>
+                <div class="ts-hint">Kinds of event to use (for the venue list and the gigs around it):</div>
+                <div class="ts-checks" id="eventKinds">
+                    <label><input type="checkbox" id="catClub" checked> Story clubs</label>
+                    <label><input type="checkbox" id="catStoryEvent"> One-off story events</label>
+                    <label><input type="checkbox" id="catMusic"> Music events</label>
+                    <label><input type="checkbox" id="catPoetry"> Poetry events</label>
+                    <label><input type="checkbox" id="catFolk"> Folk nights</label>
+                    <label><input type="checkbox" id="catSession"> Irish sessions</label>
                 </div>
             </section>
 
@@ -280,7 +286,7 @@
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
     <script src="/js/tour_support.js?v=202611162330"></script>
-    <script src="/js/tour_planner.js?v=202611162205"></script>
+    <script src="/js/tour_planner.js?v=202611162212"></script>
 </body>
 
 </html>
