@@ -153,3 +153,14 @@ select[multiple] { min-height: 8em; }
 .exp-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 0 22px; }
 .exp-link { font-size: .9em; }
 .exp-cards.compact .exp-card { padding: 3px 8px; border-left-width: 3px; }
+
+/* "Explain this step" */
+.has-help { position: relative; }
+.flow-card.has-help { padding-top: 30px; }
+.help-btn { position: absolute; top: 6px; right: 10px; background: transparent; color: #1565c0; border: 0; font-size: .82em; cursor: pointer; text-decoration: underline; padding: 2px 4px; }
+.help-btn[hidden] { display: none; }
+.help-text { background: #f3f8ff; border-left: 4px solid #1565c0; border-radius: 4px; padding: 8px 12px; margin: 4px 0 10px; font-size: .9em; color: #333; }
+.help-text p { margin: .4em 0; } .help-text ul, .help-text ol { margin: .4em 0 .4em 1.2em; padding: 0; } .help-text h4 { margin: .5em 0 .2em; }
+
+/* step numbers are generated from on-screen order */
+h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}

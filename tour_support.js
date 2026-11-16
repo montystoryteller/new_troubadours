@@ -267,6 +267,106 @@ const TourSupport = (function () {
     });
   }
 
+  // ── small, safe markdown renderer + "Explain this step" help (built with DOM nodes, never innerHTML) ──
+  /** Inline markdown: **bold**, *italic*, `code`, [text](http/relative url). */
+  function mdInline(text, parent) {
+    const re = /(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const t = m[0];
+      let node;
+      if (t.startsWith("**")) { node = document.createElement("strong"); mdInline(t.slice(2, -2), node); }
+      else if (t.startsWith("`")) { node = document.createElement("code"); node.textContent = t.slice(1, -1); }
+      else if (t.startsWith("[")) {
+        const mm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(t);
+        const url = mm[2];
+        if (/^(https?:\/\/|[\w./?=&%#-]+$)/i.test(url) && !/^javascript:/i.test(url)) {
+          node = document.createElement("a"); node.href = url; node.textContent = mm[1];
+          if (/^https?:/i.test(url)) { node.target = "_blank"; node.rel = "noopener"; }
+        } else node = document.createTextNode(t);
+      } else { node = document.createElement("em"); mdInline(t.slice(1, -1), node); }
+      parent.appendChild(node);
+      last = m.index + t.length;
+    }
+    if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+  }
+  /** Block markdown: blank-line paragraphs, "- " / "* " bullet lists, "1. " numbered lists, "## " headings. */
+  function renderMarkdown(src) {
+    const root = document.createElement("div");
+    const blocks = String(src || "").replace(/\r\n?/g, "\n").split(/\n{2,}/);
+    blocks.forEach((blk) => {
+      const lines = blk.split("\n").filter((l) => l.trim() !== "");
+      if (!lines.length) return;
+      if (lines.every((l) => /^\s*[-*]\s+/.test(l))) {
+        const ul = document.createElement("ul");
+        lines.forEach((l) => { const li = document.createElement("li"); mdInline(l.replace(/^\s*[-*]\s+/, ""), li); ul.appendChild(li); });
+        root.appendChild(ul);
+      } else if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) {
+        const ol = document.createElement("ol");
+        lines.forEach((l) => { const li = document.createElement("li"); mdInline(l.replace(/^\s*\d+[.)]\s+/, ""), li); ol.appendChild(li); });
+        root.appendChild(ol);
+      } else if (/^#{1,4}\s+/.test(lines[0])) {
+        const h = document.createElement("h4"); mdInline(lines[0].replace(/^#{1,4}\s+/, ""), h); root.appendChild(h);
+        if (lines.length > 1) { const p = document.createElement("p"); mdInline(lines.slice(1).join(" "), p); root.appendChild(p); }
+      } else {
+        const p = document.createElement("p");
+        lines.forEach((l, i) => { if (i) p.appendChild(document.createElement("br")); mdInline(l, p); });
+        root.appendChild(p);
+      }
+    });
+    return root;
+  }
+  /** Load a JSON array of {id, title, text, modes?} and give each element with data-help-id
+   *  an "Explain this step" button that reveals the rendered text. getMode() picks the record
+   *  whose `modes` includes it (a record without `modes` applies to all). Safe if the file is missing. */
+  async function setupHelp(url, getMode) {
+    let records = [];
+    try {
+      const r = await fetch(url, { cache: "no-cache" });
+      if (!r.ok) return null;
+      records = await r.json();
+      if (!Array.isArray(records)) return null;
+    } catch (e) { return null; }
+    const pick = (id) => {
+      const mode = getMode ? getMode() : null;
+      const mine = records.filter((x) => x && (x.step || x.id) === id && typeof x.text === "string");
+      return mine.find((x) => Array.isArray(x.modes) && x.modes.includes(mode)) || mine.find((x) => !x.modes) || null;
+    };
+    const targets = [...document.querySelectorAll("[data-step],[data-help-id]")].map((host) => {
+      host.classList.add("has-help");
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "help-btn"; btn.textContent = "ⓘ Explain this step";
+      btn.setAttribute("aria-expanded", "false");
+      const box = document.createElement("div");
+      box.className = "help-text"; box.hidden = true;
+      const stepName = host.dataset.step || host.dataset.helpId;
+      box.id = "help-" + stepName;
+      btn.setAttribute("aria-controls", box.id);
+      const heading = host.querySelector(":scope > h3");
+      host.insertBefore(box, heading ? heading.nextSibling : host.firstChild);
+      host.insertBefore(btn, host.firstChild);
+      const draw = () => {
+        const rec = pick(stepName);
+        btn.hidden = !rec;
+        if (!rec) { box.hidden = true; btn.setAttribute("aria-expanded", "false"); return; }
+        box.replaceChildren();
+        if (rec.title) { const t = document.createElement("strong"); t.textContent = rec.title; box.appendChild(t); }
+        box.appendChild(renderMarkdown(rec.text));
+      };
+      btn.addEventListener("click", () => {
+        const open = box.hidden;
+        if (open) draw();
+        box.hidden = !open;
+        btn.setAttribute("aria-expanded", String(open));
+        btn.textContent = open ? "ⓘ Hide explanation" : "ⓘ Explain this step";
+      });
+      draw();
+      return { draw, box, btn };
+    });
+    return { refresh: () => targets.forEach((t) => { t.draw(); if (t.btn.hidden) t.box.hidden = true; }) };
+  }
+
   return {
     ROAD_FACTOR, AVG_MPH, KM_TO_MI,
     addDays, dateKey,
@@ -275,5 +375,6 @@ const TourSupport = (function () {
     geocode, saveStart, loadStart, clearStart, findPlace, locate,
     loadLeaflet, icsEscape, icsLocation, downloadIcs,
     saveText, buildRecords, toCsv, toJson, addExportButtons,
+    mdInline, renderMarkdown, setupHelp,
   };
 })();

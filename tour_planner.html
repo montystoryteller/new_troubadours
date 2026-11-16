@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611161251">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162159">
 </head>
 
 <body class="page-tour-planner">
@@ -41,8 +41,8 @@
     <div id="plannerForm" style="display:none;">
         <div class="ts-panel ts-flow" id="plannerFlow">
 
-            <section id="blkMode" class="flow-card">
-                <h3 class="flow-step" data-modes="pool" hidden>1 · Build around</h3>
+            <section id="blkMode" data-step="build-around" class="flow-card">
+                <h3 class="flow-step" data-modes="pool" hidden>Build around</h3>
                 <div class="ts-grid">
                     <label class="ts-field">Build around
                         <select id="plannerMode">
@@ -55,8 +55,8 @@
                 </div>
             </section>
 
-            <section id="blkPool" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">3 · Whose venues should the tour use?</h3>
+            <section id="blkPool" data-step="artists" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">Whose venues should the tour use?</h3>
                 <div class="ts-grid">
                     <div class="ts-field">Artists
                         <input id="poolPerfFilter" type="text" placeholder="search artists, then click to add…" autocomplete="off">
@@ -82,8 +82,8 @@
                 </div>
             </section>
 
-            <section id="blkPoolPreview" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">4 · Venue pool</h3>
+            <section id="blkPoolPreview" data-step="venue-pool" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">Venue pool</h3>
                 <div id="poolSummary" class="ts-hint">Choose artists, tours or types of act above and the venues they have played appear here.</div>
                 <div class="pool-split">
                     <div id="poolList" class="pool-listwrap"></div>
@@ -92,8 +92,8 @@
                 <div class="ts-row"><button id="poolPreview" type="button" class="btn-secondary">Refresh venue pool</button></div>
             </section>
 
-            <section id="blkDates" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step" data-modes="pool" hidden>5 · Tour shape</h3>
+            <section id="blkDates" data-step="dates" class="flow-card" data-modes="period pool" hidden>
+                <h3 class="flow-step" data-modes="pool" hidden>Tour shape</h3>
                 <div class="ts-grid">
                     <label class="ts-field">From
                         <input id="periodStart" type="date">
@@ -107,7 +107,7 @@
                 </div>
             </section>
 
-            <section id="blkAnchor" class="flow-card" data-modes="club venue" hidden>
+            <section id="blkAnchor" data-step="anchor" class="flow-card" data-modes="club venue" hidden>
                 <div class="ts-grid">
                     <label class="ts-field" data-modes="club">Anchor club
                         <select id="anchorClub"></select>
@@ -124,8 +124,8 @@
                 </div>
             </section>
 
-            <section id="blkStart" class="flow-card">
-                <h3 class="flow-step" data-modes="pool" hidden>2 · Start and end</h3>
+            <section id="blkStart" data-step="start-end" class="flow-card">
+                <h3 class="flow-step" data-modes="pool" hidden>Start and end</h3>
                 <div class="ts-row">
                     <label class="ts-field" style="flex:1 1 240px;">Start: your town or postcode
                         <input id="startInput" type="text" placeholder="e.g. Milton Keynes, or MK7 6AA" autocomplete="off">
@@ -170,8 +170,8 @@
                 </div>
             </section>
 
-            <section id="blkArea" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step" data-modes="pool" hidden>6 · Area (optional)</h3>
+            <section id="blkArea" data-step="area" class="flow-card" data-modes="period pool" hidden>
+                <h3 class="flow-step" data-modes="pool" hidden>Area (optional)</h3>
                 <div class="ts-grid">
                     <label class="ts-field">Area radius (miles)
                         <input id="areaRadius" type="number" min="5" max="500" value="60">
@@ -188,8 +188,8 @@
                 <div id="areaCurrent" class="ts-hint"></div>
             </section>
 
-            <section id="blkMust" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">7 · Must-visit places (optional)</h3>
+            <section id="blkMust" data-step="must-visits" class="flow-card" data-modes="pool" hidden>
+                <h3 class="flow-step">Must-visit places (optional)</h3>
                 <div class="ts-field">
                     <input id="mustFilter" type="text" placeholder="search a venue or town, then click to add…" autocomplete="off">
                     <div id="mustResults" class="picker-results" hidden></div>
@@ -198,13 +198,13 @@
                 <div id="mustRows" class="must-rows"></div>
             </section>
 
-            <section id="blkOther" class="flow-card" data-modes="club venue period" hidden>
+            <section id="blkOther" data-step="other-events" class="flow-card" data-modes="club venue period" hidden>
                 <div class="ts-checks">
                     <label><input type="checkbox" id="includeOther"> Include folk nights, sessions and other one-off events</label>
                 </div>
             </section>
 
-            <section id="blkBuild" class="flow-card">
+            <section id="blkBuild" data-step="build" class="flow-card">
                 <div class="ts-row">
                     <button id="buildTour" type="button" class="btn-primary">Build tour options</button>
                 </div>
@@ -216,7 +216,7 @@
     <div id="plannerSummaryRow" class="ts-summary-row">
         <div id="plannerLeft">
             <div id="plannerItinerary" class="ts-panel ts-plan"></div>
-        <section id="plannerLive" class="ts-panel" hidden>
+        <section id="plannerLive" data-step="filters" class="ts-panel" hidden>
             <h3>Filters <span class="ts-hint">— changes apply straight away to the map and columns; your picks are kept</span></h3>
             <div class="live-group" data-modes="club venue" hidden>
                 <h4>When</h4>
@@ -274,8 +274,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611151215"></script>
-    <script src="/js/tour_planner.js?v=202611161251"></script>
+    <script src="/js/tour_support.js?v=202611162159"></script>
+    <script src="/js/tour_planner.js?v=202611162159"></script>
 </body>
 
 </html>

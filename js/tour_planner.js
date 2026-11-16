@@ -317,6 +317,19 @@ function fillAnchorClubs() {
 function currentMode() {
   return document.getElementById("plannerMode").value;
 }
+/** Number the visible step headings by their on-screen order, so reordering steps never needs text edits. */
+function numberSteps() {
+  const cards = [...document.querySelectorAll("#plannerFlow > .flow-card")].filter((c) => !c.hidden);
+  cards.sort((a, b) => (parseInt(getComputedStyle(a).order, 10) || 0) - (parseInt(getComputedStyle(b).order, 10) || 0));
+  let n = 0;
+  cards.forEach((c) => {
+    const h = c.querySelector(":scope > h3.flow-step");
+    if (!h) return;
+    if (h.hidden) { delete h.dataset.num; return; }
+    h.dataset.num = String(++n);
+  });
+}
+
 function setMode() {
   const m = currentMode();
   const flow = document.getElementById("plannerFlow");
@@ -327,6 +340,8 @@ function setMode() {
   // changing what we build around invalidates everything downstream: clear it until rebuilt
   if (PLANNER.days.length && PLANNER.mode && PLANNER.mode !== m) clearResults();
   updateLivePanel();
+  numberSteps();
+  if (PLANNER._help) PLANNER._help.refresh();
   if (m === "venue" && !PLANNER._venueRows) buildVenueRows();
   fillAnchorDates();
 }
@@ -1995,6 +2010,8 @@ async function initPlanner() {
   document.getElementById("periodStart").value = dkey(t0);
   document.getElementById("periodEnd").value = dkey(addDays(t0, 6));
   setMode();
+  // optional "Explain this step" text, kept in tour_planner_help.json (one record per step)
+  TourSupport.setupHelp("tour_planner_help.json", currentMode).then((h) => { PLANNER._help = h; });
   document.getElementById("plannerLoading").style.display = "none";
   document.getElementById("plannerForm").style.display = "";
 }

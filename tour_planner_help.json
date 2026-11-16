@@ -1,0 +1,73 @@
+[
+  {
+    "step": "build-around",
+    "title": "Why start here?",
+    "text": "The planner can build a tour from several different starting points, and the choice decides which questions come next.\n\n- **A club** – you already have a story club night in mind and want the nights around it filled in.\n- **A venue** – you want to play a particular place and see what else is nearby.\n- **A period** – you know when you are free (and roughly where) but not yet which gigs.\n- **A venue pool** – you want a tour built from the kinds of venues other artists have played."
+  },
+  {
+    "step": "start-end",
+    "title": "Why set a start and end?",
+    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from.\n\n- The **start** is used to measure the first leg and to keep the search local.\n- Tick **Finish back at the start** for a round trip, or give a different **end** if you are not going home.\n\nNothing is stored on a server: your start point stays in your own browser."
+  },
+  {
+    "step": "start-end",
+    "modes": [
+      "pool"
+    ],
+    "title": "Why set a start and end?",
+    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from and where you need to end up.\n\n- The **start** and **end** are used to cost the journey to the first gig and home again.\n- Use the **first gig** and **last gig** limits if you have to get there after work, or must get home after the last show.\n\nNothing is stored on a server: your start point stays in your own browser."
+  },
+  {
+    "step": "anchor",
+    "title": "Why pick an anchor gig?",
+    "text": "An anchor is the one gig you are sure about. The planner builds outwards from it, looking at the days before and after for other gigs within reach.\n\nPick the **month** first to narrow the list of dates, then the **anchor gig / date**."
+  },
+  {
+    "step": "artists",
+    "title": "Why choose artists?",
+    "text": "Touring is easier when you copy what already works. If you are a similar size to other artists, the venues they have played are venues that book acts like you.\n\n- Add one or more **artists** or **tours**; the first artist you add is the **primary** one.\n- The ★ on a chip makes someone else the primary.\n- Or pool by **type of act** (all storytellers, musicians or poets).\n\nThe weekday rule keeps a venue to the days of the week these artists actually played it."
+  },
+  {
+    "step": "venue-pool",
+    "title": "Why preview the pool?",
+    "text": "Before building a route, check that the pool looks right.\n\n- Cards show each venue, who played it and on which weekdays.\n- **New to you** marks venues none of your chosen artists has played, but a similar artist has.\n- Untick venues you do not want, or click the dots on the map.\n\nThe lens controls (shared, only mine, played by all…) are for spotting overlap and gaps between artists."
+  },
+  {
+    "step": "dates",
+    "title": "Why set dates?",
+    "text": "The planner can only offer gigs that fall inside your window, so keep it as tight as you realistically can (at most 21 days).\n\nIn pool mode, **Gigs wanted** is how many dates you want the route to contain."
+  },
+  {
+    "step": "area",
+    "title": "Why limit the area?",
+    "text": "An area keeps a long period search from wandering across the whole country.\n\nIt defaults to your start point; give a different **centre** if you want to tour somewhere else, and a **radius** in road miles."
+  },
+  {
+    "step": "must-visits",
+    "title": "Why must-visits?",
+    "text": "Sometimes a tour has fixed points: a friend's gig, a venue that has invited you, a festival.\n\nAdd a **venue** or a **town**, set the date and how flexible you are (**exactly** or **± a few days**). The route is built so every must-visit is included."
+  },
+  {
+    "step": "other-events",
+    "title": "Why include other events?",
+    "text": "By default the planner uses story club nights and their specials. Tick this to include folk nights, sessions and other one-off events."
+  },
+  {
+    "step": "build",
+    "title": "What happens when I build?",
+    "text": "The planner gathers every gig that fits your choices and shows them as day columns, with a suggested shortest route.\n\nYou can then pick gigs yourself, change the filters and watch the map update. Nothing is booked – this is a planning tool."
+  },
+  {
+    "step": "filters",
+    "modes": [
+      "pool"
+    ],
+    "title": "Why these filters?",
+    "text": "These limits shape which routes are sensible, and they apply straight away.\n\n- **Keep stops apart** avoids playing to the same audience twice.\n- **Max miles between stops** keeps each hop drivable.\n- **Max miles from start** keeps the whole tour local.\n- **Visit each venue only once** stops the route returning to the same place."
+  },
+  {
+    "step": "filters",
+    "title": "Why these filters?",
+    "text": "These limits shape which gigs are sensible around your anchor, and they apply straight away.\n\n- **When** sets how many days either side of the anchor to look at.\n- **Where** limits how far apart gigs can be, and how far from your start.\n- **Don't revisit** hides places too close to ones you have already chosen."
+  }
+]
