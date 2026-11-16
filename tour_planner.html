@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162159">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162205">
 </head>
 
 <body class="page-tour-planner">
@@ -56,7 +56,7 @@
             </section>
 
             <section id="blkPool" data-step="artists" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">Whose venues should the tour use?</h3>
+                <h3 class="flow-step">Venue discovery: whose venues? <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button></h3>
                 <div class="ts-grid">
                     <div class="ts-field">Artists
                         <input id="poolPerfFilter" type="text" placeholder="search artists, then click to add…" autocomplete="off">
@@ -83,7 +83,7 @@
             </section>
 
             <section id="blkPoolPreview" data-step="venue-pool" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">Venue pool</h3>
+                <h3 class="flow-step">Your venue pool <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button></h3>
                 <div id="poolSummary" class="ts-hint">Choose artists, tours or types of act above and the venues they have played appear here.</div>
                 <div class="pool-split">
                     <div id="poolList" class="pool-listwrap"></div>
@@ -125,7 +125,9 @@
             </section>
 
             <section id="blkStart" data-step="start-end" class="flow-card">
-                <h3 class="flow-step" data-modes="pool" hidden>Start and end</h3>
+                <h3 class="flow-step">Start and end (optional) <button type="button" id="startToggle" class="flow-collapse" aria-expanded="false" aria-controls="startBody">Show</button></h3>
+                <div id="startSummary" class="ts-hint">No start set.</div>
+                <div id="startBody" hidden>
                 <div class="ts-row">
                     <label class="ts-field" style="flex:1 1 240px;">Start: your town or postcode
                         <input id="startInput" type="text" placeholder="e.g. Milton Keynes, or MK7 6AA" autocomplete="off">
@@ -145,7 +147,7 @@
                 <div id="startCurrent" class="ts-hint"></div>
                 <div>
                     <div class="ts-checks">
-                        <label><input type="checkbox" id="endSame" checked> Finish back at the start</label>
+                        <label><input type="checkbox" id="endSame" disabled> Finish back at the start</label> <span id="endSameHint" class="ts-hint">(set a start first)</span>
                     </div>
                     <div id="endBlock" hidden>
                         <div class="ts-row">
@@ -167,6 +169,7 @@
                         </label>
                     </div>
                     <div class="ts-hint" data-modes="pool" hidden>Use these when you have to reach the first gig after work, or need to get home after the last one.</div>
+                </div>
                 </div>
             </section>
 
@@ -249,8 +252,9 @@
                     <label class="ts-field">Max miles from start (0 = no limit)
                         <input id="maxHome" type="number" min="0" max="1000" value="0">
                     </label>
-                    <label class="ts-field" data-modes="club venue period" hidden>Don't revisit within this many miles of any stop (0 = off)
-                        <input id="minSpread" type="number" min="0" max="200" value="0">
+                    <label class="ts-field" data-modes="club venue period" hidden>Keep stops at least this many miles apart (0 = no minimum)
+                        <input id="minSpread" type="number" min="0" max="200" value="25">
+                        <input id="minSpreadSlider" class="ts-slider" type="range" aria-label="Minimum miles apart">
                     </label>
                 </div>
                 <div class="ts-checks" data-modes="pool" hidden>
@@ -261,6 +265,7 @@
         </div>
         <div id="plannerMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
             <div id="plannerMap" class="ts-map"></div>
+            <div id="plannerMapOpts" class="map-opts"></div>
         </div>
     </div>
     <div id="plannerResults"></div>
@@ -274,8 +279,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611162159"></script>
-    <script src="/js/tour_planner.js?v=202611162159"></script>
+    <script src="/js/tour_support.js?v=202611162330"></script>
+    <script src="/js/tour_planner.js?v=202611162205"></script>
 </body>
 
 </html>

@@ -78,7 +78,7 @@ select[multiple] { min-height: 8em; }
 .ts-flow { display: flex; flex-direction: column; gap: 14px; }
 .flow-card { border: 1px solid #eee; border-radius: 8px; padding: 12px 14px; background: #fcfcfc; }
 .flow-step { margin: 0 0 8px; font-size: 1.02em; color: #1b5e20; }
-#blkMode { order: 1; } #blkStart { order: 2; } #blkAnchor { order: 3; } #blkDates { order: 4; } #blkArea { order: 5; }
+#blkMode { order: 1; } #blkStart { order: 15; } #blkAnchor { order: 3; } #blkDates { order: 4; } #blkArea { order: 5; }
 #blkOther { order: 6; } #blkBuild { order: 20; } #blkPool, #blkPoolPreview, #blkMust { order: 10; }
 .mode-pool #blkPool { order: 3; } .mode-pool #blkPoolPreview { order: 4; } .mode-pool #blkDates { order: 5; }
 .mode-pool #blkArea { order: 6; } .mode-pool #blkMust { order: 7; }
@@ -164,3 +164,11 @@ select[multiple] { min-height: 8em; }
 
 /* step numbers are generated from on-screen order */
 h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
+
+/* collapsible cards, map options under the map */
+.flow-collapse { margin-left: 8px; font-size: .78em; font-weight: 600; color: #1b5e20; background: #fff; border: 1px solid #a5d6a7; border-radius: 12px; padding: 1px 10px; cursor: pointer; }
+.flow-card.collapsed > *:not(h3):not(.help-btn):not(.flow-summary) { display: none !important; }
+.flow-card .flow-summary[hidden] { display: none; }
+#plannerMapWrap { display: flex; flex-direction: column; gap: 8px; height: auto; align-self: flex-start; }
+#plannerMapWrap > #plannerMap { flex: none; height: 440px; }
+#plannerMapOpts .planner-filters { border-top: 0; padding-top: 0; }

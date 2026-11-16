@@ -157,6 +157,8 @@ function setStart(s) {
   const clearBtn = document.getElementById("startClear");
   currentDiv.textContent = s ? `Start: ${s.label}` : "";
   if (clearBtn) clearBtn.style.display = s ? "" : "none";
+  if (!s) PLANNER._endTouched = false;
+  syncEndSame();
   renderAll();
   if (poolMap || currentMode() === "pool") renderPoolMap(false);
 }
@@ -165,14 +167,34 @@ function setEnd(e) {
   PLANNER.end = e;
   document.getElementById("endCurrent").textContent = e ? `End: ${e.label}` : "";
   document.getElementById("endClear").style.display = e ? "" : "none";
+  updateStartSummary();
   renderAll();
   renderMap();
   if (currentMode() === "pool") renderPoolMap(false);
 }
+/** "Finish back at the start" only makes sense once a start is set: otherwise greyed out and unticked. */
+function syncEndSame() {
+  const cb = document.getElementById("endSame");
+  const hint = document.getElementById("endSameHint");
+  if (!PLANNER.start) { cb.checked = false; cb.disabled = true; if (hint) hint.hidden = false; }
+  else { cb.disabled = false; if (hint) hint.hidden = true; if (!PLANNER._endTouched) cb.checked = true; }
+  PLANNER.endSame = cb.checked;
+  document.getElementById("endBlock").hidden = cb.checked;
+  updateStartSummary();
+}
+function updateStartSummary() {
+  const box = document.getElementById("startSummary");
+  if (!box) return;
+  const s = PLANNER.start ? `Start: ${PLANNER.start.label}` : "No start set";
+  const e = PLANNER.endSame ? (PLANNER.start ? "finish back at the start" : "") : PLANNER.end ? `finish: ${PLANNER.end.label}` : (PLANNER.start ? "no set finish" : "");
+  box.textContent = e ? `${s} · ${e}` : s;
+}
 function onEndSameChange() {
+  PLANNER._endTouched = true;
   const same = document.getElementById("endSame").checked;
   PLANNER.endSame = same;
   document.getElementById("endBlock").hidden = same;
+  updateStartSummary();
   renderAll();
   renderMap();
   if (currentMode() === "pool") renderPoolMap(false);
@@ -322,10 +344,11 @@ function numberSteps() {
   const cards = [...document.querySelectorAll("#plannerFlow > .flow-card")].filter((c) => !c.hidden);
   cards.sort((a, b) => (parseInt(getComputedStyle(a).order, 10) || 0) - (parseInt(getComputedStyle(b).order, 10) || 0));
   let n = 0;
+  const numbered = currentMode() === "pool";
   cards.forEach((c) => {
     const h = c.querySelector(":scope > h3.flow-step");
     if (!h) return;
-    if (h.hidden) { delete h.dataset.num; return; }
+    if (h.hidden || !numbered) { delete h.dataset.num; return; }
     h.dataset.num = String(++n);
   });
 }
@@ -1176,7 +1199,6 @@ function onBuild() {
   PLANNER.maxFirst = optMiles("maxFirst");
   PLANNER.maxLast = optMiles("maxLast");
   PLANNER.endSame = document.getElementById("endSame").checked;
-  if (!PLANNER.endSame && !PLANNER.end) return setStatus("Set an end location, or tick “Finish back at the start”.", true);
   PLANNER.maxHome = clamp(document.getElementById("maxHome").value, 0, 1000, 0);
   PLANNER.minSpread = clamp(document.getElementById("minSpread").value, 0, 200, 0);
   if (isPoolMode) { // one setting: apart from consecutive gigs only, or from any stop
@@ -1523,7 +1545,8 @@ function renderAll() {
     chk("other venues", PLANNER.showCands !== false, (v) => { PLANNER.showCands = v; renderMap(); }),
     chk("follow the column filters", PLANNER.mapFollowsFilters, (v) => { PLANNER.mapFollowsFilters = v; renderMap(); }),
     chk("suggested route line", PLANNER.showBestOnMap, (v) => { PLANNER.showBestOnMap = v; renderMap(); }));
-  bar.appendChild(mapOpts);
+  const mapHost = document.getElementById("plannerMapOpts");
+  if (mapHost) mapHost.replaceChildren(mapOpts); else bar.appendChild(mapOpts);
   if (PLANNER.best) {
     const isPool = PLANNER.mode === "pool";
     bar.appendChild(el("span", "ts-hint",
@@ -1965,6 +1988,32 @@ async function renderMap() {
   if (all.length) plannerMap.fitBounds(L.latLngBounds(all).pad(0.2), { maxZoom: 11 });
 }
 
+/** Collapse buttons: start/end body, and the venue-discovery cards (with a one-line summary while collapsed). */
+function setupCollapsibles() {
+  const st = document.getElementById("startToggle"), body = document.getElementById("startBody");
+  if (st && body) st.addEventListener("click", () => {
+    const open = body.hidden; body.hidden = !open;
+    st.setAttribute("aria-expanded", String(open)); st.textContent = open ? "Hide" : "Show";
+  });
+  const summaryOf = {
+    blkPool: () => { const n = document.querySelectorAll("#poolPerfChips .picker-chip, #poolTourChips .picker-chip").length; const types = document.querySelectorAll("#blkPool .ts-checks input[type=checkbox]:checked:not(#poolWeekday)").length; return n || types ? `${n} artist/tour selection${n === 1 ? "" : "s"}${types ? ` + ${types} type-of-act option${types === 1 ? "" : "s"}` : ""}.` : "Nothing chosen yet."; },
+    blkPoolPreview: () => (document.getElementById("poolSummary") || {}).textContent || "",
+  };
+  Object.keys(summaryOf).forEach((id) => {
+    const card = document.getElementById(id), btn = card && card.querySelector(".flow-collapse");
+    if (!btn) return;
+    const sum = el("div", "flow-summary ts-hint"); sum.hidden = true;
+    card.querySelector(":scope > h3").after(sum);
+    btn.addEventListener("click", () => {
+      const collapse = !card.classList.contains("collapsed");
+      card.classList.toggle("collapsed", collapse);
+      sum.hidden = !collapse; if (collapse) sum.textContent = summaryOf[id]();
+      btn.setAttribute("aria-expanded", String(!collapse)); btn.textContent = collapse ? "Expand" : "Collapse";
+      if (!collapse && poolMap) setTimeout(() => poolMap.invalidateSize(), 50);
+    });
+  });
+}
+
 // ── init ────────────────────────────────────────────────────────────────
 async function initPlanner() {
   const result = await loadEventsData();
@@ -1981,6 +2030,8 @@ async function initPlanner() {
     const clearBtn = document.getElementById("startClear");
     if (clearBtn) clearBtn.style.display = "";
   }
+  syncEndSame();
+  setupCollapsibles();
   document.getElementById("startFind").addEventListener("click", onFindStart);
   document.getElementById("startInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onFindStart(); });
   document.getElementById("startLocate").addEventListener("click", onUseLocation);
@@ -2001,6 +2052,7 @@ async function initPlanner() {
     e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
   });
   attachScaleSlider("maxHop", "maxHopSlider", [10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 150, 200, 300, 500], true);
+  attachScaleSlider("minSpread", "minSpreadSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
   attachScaleSlider("minHop", "minHopSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.getElementById("areaFind").addEventListener("click", () => findPlace("areaInput", "areaChoices", setArea));
