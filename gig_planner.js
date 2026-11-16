@@ -39,16 +39,59 @@ function gLL(e) { const v = GC.venues[e.venue_id]; return v && Array.isArray(v.l
 function gHome() { return GC.start ? [GC.start.lat, GC.start.lon] : null; }
 function gStatus(msg, err) { const s = document.getElementById("gcStatus"); s.textContent = msg || ""; s.className = "ts-status" + (err ? " error" : ""); }
 function gVenueOk(vid) { return TourSupport.venueUsable(GC.venues, vid); }
-function gIds(e) {
-  const a = (x) => (Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []);
-  return [e.performer_id, ...a(e.performer_ids), ...a(e.other_performer_ids)].filter(Boolean);
+function gArr(x) { return Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []; }
+
+/**
+ * Who is on the bill, by role.
+ *   head    – performer_id + performer_ids (co-headline), plus other_performer_ids
+ *             when the record is flagged isDoubleHeadline
+ *   support – support_performer_ids (a lesser billing than the headliner)
+ *   also    – other_performer_ids (no billing relationship assumed)
+ * A performer appears once, in the highest role they hold. A troupe's members
+ * are not repeated on the card beside the troupe itself (they stay in `all`,
+ * so searching or filtering by a member's name still works).
+ * Callers pass a merged record for tour dates ({ ...tour, ...tourDate }), so a
+ * date's own support_performer_ids overrides the tour's, as the schema says.
+ * Returns { head, support, also, all } as display names, and { ids } with the
+ * performer ids per role (the hook for "played with" relationships later).
+ */
+function gBill(e) {
+  const P = (GC.data && GC.data.performers) || {};
+  const nameOf = (id) => (P[id] && P[id].name) || null;
+  const members = (id) => (P[id] && Array.isArray(P[id].performer_ids) ? P[id].performer_ids : []);
+  const co = !!e.isDoubleHeadline;
+  const seen = new Set();
+  const take = (list) => list.filter((id) => id && !seen.has(id) && seen.add(id));
+  const ids = {
+    head: take([e.performer_id, ...gArr(e.performer_ids), ...(co ? gArr(e.other_performer_ids) : [])]),
+    support: take(gArr(e.support_performer_ids)),
+    also: take(co ? [] : gArr(e.other_performer_ids)),
+  };
+  const hidden = new Set(); // troupe members shown via their troupe's own name
+  ids.head.forEach((id) => members(id).forEach((m) => { if (m !== id && ids.head.includes(m)) hidden.add(m); }));
+  const names = (list, skip) => [...new Set(list.filter((id) => !(skip && skip.has(id))).map(nameOf).filter(Boolean))];
+  const bill = {
+    head: names(ids.head, hidden), support: names(ids.support), also: names(ids.also),
+    all: names([...ids.head, ...ids.support, ...ids.also]), ids,
+  };
+  if (!bill.all.length && typeof e.performer === "string" && e.performer) { bill.head = [e.performer]; bill.all = [e.performer]; }
+  return bill;
 }
-function gPerformerNames(e) {
-  const P = GC.data.performers || {};
-  const names = gIds(e).map((id) => (P[id] ? P[id].name : null)).filter(Boolean);
-  return names.length ? [...new Set(names)] : (typeof e.performer === "string" && e.performer ? [e.performer] : []);
+function gPerformerNames(e) { return gBill(e).all; }
+function gPerformers(e) { const b = gBill(e); return [...b.head, ...b.also].join(", "); }
+/** One line for plain-text uses (plan text, calendar, export): "A, B, support: C". */
+function gBillText(ev) {
+  const sup = ev.bill && ev.bill.support.length ? "support: " + ev.bill.support.join(", ") : "";
+  return [ev.performer, sup].filter(Boolean).join(", ");
 }
-function gPerformers(e) { return gPerformerNames(e).join(", "); }
+/** Fold a duplicate record's bill into the one we keep, so no act is lost. */
+function gMergeBill(keep, other) {
+  if (!keep.bill || !other.bill) return;
+  ["head", "support", "also"].forEach((r) => other.bill[r].forEach((n) => {
+    if (!keep.bill.all.includes(n)) { keep.bill[r].push(n); keep.bill.all.push(n); keep.performerList = keep.bill.all; }
+  }));
+  keep.performer = [...keep.bill.head, ...keep.bill.also].join(", ");
+}
 function gEventUrl(rec, date) {
   try {
     const id = rec.eventId || resolveEventId(rec, date);
@@ -70,7 +113,7 @@ function gCollect(from, to) {
       if (typeof clubIsActiveOn === "function" && list === "clubs" && !clubIsActiveOn(rec, o.date)) return;
       push({
         id: `rec:${list}:${rec.club || rec.folk_id || rec.name}:${gKey(o.date)}`, cat, kind: "recurring",
-        title: rec.name, performer: "", performerList: [], group: list === "clubs" ? "clubs" : "folk", date: o.date, time: rec.time || "",
+        title: rec.name, performer: "", performerList: [], bill: null, group: list === "clubs" ? "clubs" : "folk", date: o.date, time: rec.time || "",
         venue_id: list === "clubs" ? resolveClubVenueId(rec, o.date) : rec.venue_id,
         url: rec.club ? `storyclub.html?club=${encodeURIComponent(rec.club)}` : "",
         ext: rec.link || rec.facebook || "", price: rec.price || "", soldOut: false,
@@ -82,9 +125,10 @@ function gCollect(from, to) {
   dated.forEach(([list, cat]) => (ed[list] || []).forEach((e) => {
     const d = parseDateString(e.date);
     if (!d || d < from || d > to || e.online || e.cancelled || e.isCancelled) return;
+    const bill = gBill(e);
     push({
       id: `ev:${e.eventId || e.name + gKey(d)}`, cat: e.isMusic ? "music" : e.isPoetry ? "poetry" : cat, kind: "event",
-      title: e.showname || e.name, performer: gPerformers(e), performerList: gPerformerNames(e), group: null, date: d, time: e.time || "",
+      title: e.showname || e.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: e.time || "",
       venue_id: e.venue_id, url: gEventUrl(e, d), ext: e.ticket_url || e.event_url || e.fb_event || e.link || "",
       price: e.price || "", soldOut: !!e.isSoldOut,
     });
@@ -93,10 +137,11 @@ function gCollect(from, to) {
   Object.values(ed.tours || {}).forEach((t) => (t.tour_dates || []).forEach((td) => {
     const d = parseDateString(td.date);
     if (!d || d < from || d > to || td.cancelled || td.isCancelled) return;
+    const bill = gBill({ ...t, ...td });
     push({
       id: `ev:${td.eventId || (t.tour_name || t.name) + gKey(d) + td.venue_id}`,
       cat: t.isMusic ? "music" : t.isPoetry ? "poetry" : "story", kind: "event",
-      title: t.tour_name || t.name, performer: gPerformers({ ...t, ...td }), performerList: gPerformerNames({ ...t, ...td }), group: null, date: d, time: td.time || t.time || "",
+      title: t.tour_name || t.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: td.time || t.time || "",
       venue_id: td.venue_id, url: gEventUrl(td, d), ext: td.ticket_url || td.fb_event || "",
       price: td.price || t.price || "", soldOut: !!td.isSoldOut,
     });
@@ -110,9 +155,9 @@ function gCollect(from, to) {
   out.forEach((ev) => {
     const k1 = ev.id;
     const k2 = `${ev.venue_id}|${gKey(ev.date)}`;
-    if (seen.has(k1)) return;
+    if (seen.has(k1)) { gMergeBill(seen.get(k1), ev); return; }
     const prior = seen.get(k2);
-    if (prior && (ev.kind === "recurring" || prior.title.toLowerCase() === ev.title.toLowerCase())) return;
+    if (prior && (ev.kind === "recurring" || prior.title.toLowerCase() === ev.title.toLowerCase())) { gMergeBill(prior, ev); return; }
     seen.set(k1, ev); seen.set(k2, ev);
     keep.push(ev);
   });
@@ -179,6 +224,7 @@ function gCard(ev, opts) {
   if (ev.soldOut) t.appendChild(gEl("span", "gc-badge", "sold out"));
   card.appendChild(t);
   if (ev.performer) card.appendChild(gEl("div", "gc-card-perf", ev.performer));
+  if (ev.bill && ev.bill.support.length) card.appendChild(gEl("div", "gc-card-support", "with " + ev.bill.support.join(", ") + " (support)"));
   card.appendChild(gEl("div", "gc-card-meta", [opts.showDate ? formatDate(ev.date) : "", ev.time, gPlace(v)].filter(Boolean).join(" · ")));
   const dist = [];
   if (opts.hop != null) dist.push(`${gFmtMi(opts.hop)} (${gFmtDrive(opts.hop)}) from ${opts.refName || "previous stop"}`);
@@ -216,7 +262,7 @@ function gRenderBrowse() {
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
   const q = document.getElementById("gcSearch").value.trim().toLowerCase();
   let list = GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo && gPasses(e, cats, maxHome));
-  if (q) list = list.filter((e) => `${e.title} ${e.performer} ${(GC.venues[e.venue_id] || {}).name} ${(GC.venues[e.venue_id] || {}).city}`.toLowerCase().includes(q));
+  if (q) list = list.filter((e) => `${e.title} ${e.performer} ${(e.performerList || []).join(" ")} ${(GC.venues[e.venue_id] || {}).name} ${(GC.venues[e.venue_id] || {}).city}`.toLowerCase().includes(q));
   GC.browseList = list;
   if (!list.length) { box.appendChild(gEl("p", "ts-hint", "No events match — try widening the dates, categories or distance.")); return; }
   const total = list.length;
@@ -308,16 +354,17 @@ function gRenderNearby() {
   }
 
   // Filter buttons: all story clubs / folk nights in one go, then each performer in reach
-  const counts = { clubs: 0, folk: 0 }, perf = new Map();
+  const counts = { clubs: 0, folk: 0 }, perf = new Map(), nonSupport = new Set();
   nights.forEach((n) => (n.cands || []).forEach(({ e }) => {
     if (e.group) counts[e.group]++;
     (e.performerList || []).forEach((p) => perf.set(p, (perf.get(p) || 0) + 1));
+    if (e.bill) [...e.bill.head, ...e.bill.also].forEach((p) => nonSupport.add(p));
   }));
   const chips = [];
   if (counts.clubs) chips.push({ key: "g:clubs", label: `📖 All story clubs (${counts.clubs})` });
   if (counts.folk) chips.push({ key: "g:folk", label: `🎻 All folk nights & sessions (${counts.folk})` });
   [...perf.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .forEach(([name, n]) => chips.push({ key: "p:" + name, label: `${name} (${n})` }));
+    .forEach(([name, n]) => chips.push({ key: "p:" + name, label: nonSupport.has(name) ? `${name} (${n})` : `${name} — support (${n})` }));
   GC.filters = new Set([...GC.filters].filter((k) => chips.some((c) => c.key === k))); // drop filters no longer in scope
   if (chips.length) {
     const box = gEl("div", "gc-filters");
@@ -377,7 +424,7 @@ function gStops() {
 
 function gStopLine(c, leg) {
   const v = GC.venues[c.venue_id] || {};
-  return `${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${c.title}${c.performer ? " (" + c.performer + ")" : ""}, ${gPlace(v)}` +
+  return `${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${c.title}${gBillText(c) ? " (" + gBillText(c) + ")" : ""}, ${gPlace(v)}` +
     (leg != null ? `  [${gFmtMi(leg)}, ${gFmtDrive(leg)}]` : "");
 }
 
@@ -421,7 +468,7 @@ function gRenderPlan() {
       const v = GC.venues[c.venue_id] || {};
       const ll = gLL(c);
       return {
-        title: c.title, kind: c.kind || "", performer: c.performer || "",
+        title: c.title, kind: c.kind || "", performer: gBillText(c),
         venue: v.name, address: v.full_address || "", town: v.city || "", postcode: v.postcode || "",
         latitude: ll ? ll[0] : null, longitude: ll ? ll[1] : null,
         link: c.url ? new URL(c.url, location.href).href : (c.ext || ""),
@@ -441,7 +488,7 @@ function gDownloadIcs(stops) {
     return {
       date: c.date, uid: c.id, title: c.title,
       location: TourSupport.icsLocation(v),
-      description: [c.time ? "Time: " + c.time : "", c.performer, href].filter(Boolean).join("\n"),
+      description: [c.time ? "Time: " + c.time : "", gBillText(c), href].filter(Boolean).join("\n"),
     };
   }), "gig-planner.ics", "Gig Planner");
 }
@@ -463,7 +510,7 @@ function gVenuePopup(vid, events) {
   [...events].sort((a, b) => a.date - b.date).forEach((e) => {
     const row = gEl("div", "map-popup-row");
     if (GC.anchor) row.appendChild(gEl("span", "map-popup-day", gDayLabel(e.date)));
-    row.appendChild(gEl("span", null, ` ${formatDate(e.date)}${e.time ? ", " + e.time : ""} — ${e.title}${e.performer ? " (" + e.performer + ")" : ""}`));
+    row.appendChild(gEl("span", null, ` ${formatDate(e.date)}${e.time ? ", " + e.time : ""} — ${e.title}${gBillText(e) ? " (" + gBillText(e) + ")" : ""}`));
     const b = gEl("button", "map-popup-btn");
     b.type = "button";
     if (!GC.anchor) {
