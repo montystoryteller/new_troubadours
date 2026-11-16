@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plan a gig-going trip: pick a period, choose a storytelling, music or poetry gig you want to see, and find other events on nearby nights within easy reach.">
+    <meta name="description" content="Find a storytelling, music or poetry gig by performer, place or date, then plan a few days around it with other events on nearby nights.">
     <title>Gig Planner - New Troubadours</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css?v=202611132118">
-    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611161250">
+    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611162221">
 </head>
 
 <body class="page-gig-planner">
@@ -33,64 +33,101 @@
     </nav>
 
     <h1>Gig Planner</h1>
-    <h2 class="tour-page-subtitle">Pick a gig you want to see, then find more events on nearby nights.</h2>
+    <h2 class="tour-page-subtitle">Find a gig by who, where or when, then build a few days around it.</h2>
 
     <p id="gcLoading" class="loading-state">Loading events…</p>
 
-    <div id="gcApp" style="display:none;">
+    <div id="gcApp" class="gc-layout" style="display:none;">
 
-        <section class="ts-panel">
-            <h3>When, and where are you?</h3>
-            <div class="ts-grid">
-                <label class="ts-field">From
-                    <input id="gcFrom" type="date">
-                </label>
-                <label class="ts-field">To (up to 60 days)
-                    <input id="gcTo" type="date">
-                </label>
-                <label class="ts-field">Only within … miles of home (0 = anywhere)
-                    <input id="gcMaxHome" type="number" min="0" max="1000" value="0">
-                </label>
+        <div class="gc-col-main">
+        <!-- 1. Find: search first; where / when / type are optional refinements -->
+        <section id="gcFind" class="ts-panel gc-find">
+            <h3>Find a gig</h3>
+            <div class="gc-starts" role="group" aria-label="Where would you like to start?">
+                <button type="button" class="gc-start-btn" data-start="gig">🔎 I know who or what I want to see</button>
+                <button type="button" class="gc-start-btn" data-start="place">📍 I'm going somewhere</button>
+                <button type="button" class="gc-start-btn" data-start="dates">📅 I'm free on certain dates</button>
             </div>
-            <div class="ts-row">
-                <label class="ts-field" style="flex:1 1 240px;">Your town or postcode (optional)
-                    <input id="gcStartInput" type="text" placeholder="e.g. Norwich, or NR1 3JU" autocomplete="off">
-                </label>
-                <button id="gcStartFind" type="button" class="gc-btn">Find</button>
-                <button id="gcStartLocate" type="button" class="gc-btn">📍 Use my location</button>
-                <button id="gcStartClear" type="button" class="gc-btn" style="display:none;">✕ Clear</button>
-            </div>
-            <div id="gcStartChoices"></div>
-            <div id="gcStartCurrent" class="ts-hint"></div>
-            <div class="ts-checks" id="gcCats">
-                <label><input type="checkbox" value="story" checked> 📖 Storytelling</label>
-                <label><input type="checkbox" value="music" checked> 🎸 Music</label>
-                <label><input type="checkbox" value="poetry" checked> ✒️ Poetry</label>
-                <label><input type="checkbox" value="folk" checked> 🎻 Folk nights &amp; sessions</label>
-            </div>
-            <div class="ts-checks">
-                <label><input type="checkbox" id="gcShowScope" checked> 🗺️ Show the venues in scope on the map (grey; click one for its gigs)</label>
-            </div>
+            <label class="ts-field">Search
+                <input id="gcSearch" type="search" placeholder="performer, show, theme or town…" autocomplete="off">
+            </label>
+            <div id="gcSearchHint" class="ts-hint"></div>
+
+            <details id="gcRefine" class="gc-refine">
+                <summary>Refine: where · when · type <span id="gcRefineSummary" class="gc-refine-sum"></span></summary>
+
+                <div class="gc-refine-group">
+                    <h4>📍 Where</h4>
+                    <div class="ts-row">
+                        <label class="ts-field" style="flex:1 1 240px;">Near (town, postcode or venue)
+                            <input id="gcStartInput" type="text" list="gcVenueList" placeholder="e.g. Whitby, NR1 3JU or a venue name" autocomplete="off">
+                        </label>
+                        <button id="gcStartFind" type="button" class="gc-btn">Find</button>
+                        <button id="gcStartLocate" type="button" class="gc-btn">📍 Use my location</button>
+                        <button id="gcStartClear" type="button" class="gc-btn" style="display:none;">✕ Clear</button>
+                    </div>
+                    <datalist id="gcVenueList"></datalist>
+                    <div id="gcStartChoices"></div>
+                    <div id="gcStartCurrent" class="ts-hint"></div>
+                    <label class="ts-field gc-narrow-field">Only within … miles of there (0 = anywhere)
+                        <input id="gcMaxHome" type="number" min="0" max="1000" value="0">
+                    </label>
+                </div>
+
+                <div class="gc-refine-group">
+                    <h4>📅 When</h4>
+                    <div class="ts-grid">
+                        <label class="ts-field">From
+                            <input id="gcFrom" type="date">
+                        </label>
+                        <label class="ts-field">To (up to 60 days)
+                            <input id="gcTo" type="date">
+                        </label>
+                    </div>
+                    <div class="gc-presets" role="group" aria-label="Quick date ranges">
+                        <button type="button" class="gc-chip" data-preset="weekend">This weekend</button>
+                        <button type="button" class="gc-chip" data-preset="week">Next 7 days</button>
+                        <button type="button" class="gc-chip" data-preset="month">Next 30 days</button>
+                        <button type="button" class="gc-chip" data-preset="sixty">Next 60 days</button>
+                    </div>
+                </div>
+
+                <div class="gc-refine-group">
+                    <h4>🎭 Type</h4>
+                    <div class="ts-checks" id="gcCats">
+                        <label><input type="checkbox" value="story" checked> 📖 Storytelling</label>
+                        <label><input type="checkbox" value="music" checked> 🎸 Music</label>
+                        <label><input type="checkbox" value="poetry" checked> ✒️ Poetry</label>
+                        <label><input type="checkbox" value="folk" checked> 🎻 Folk nights &amp; sessions</label>
+                    </div>
+                    <div class="ts-checks">
+                        <label><input type="checkbox" id="gcSpecialOnly"> ⭐ One-off and touring shows only (hide regular club nights)</label>
+                        <label><input type="checkbox" id="gcShowScope" checked> 🗺️ Show venues on the map (grey; click one for its gigs)</label>
+                    </div>
+                </div>
+            </details>
             <div id="gcStatus" class="ts-status" role="status"></div>
         </section>
 
-        <div id="gcSummaryRow" class="ts-summary-row" hidden>
-            <section id="gcPlan" class="ts-panel ts-plan"></section>
-            <section id="gcMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
-                <div id="gcMap" class="ts-map"></div>
-            </section>
-        </div>
+        <!-- 2. Your trip (appears once a gig is picked) -->
+        <section id="gcPlan" class="ts-panel ts-plan"></section>
 
+        <!-- 3. Add more nights around the chosen gig -->
         <section id="gcNearby" class="ts-panel" hidden></section>
 
-        <section class="ts-panel">
-            <h3 id="gcBrowseHead">Pick a gig you want to see</h3>
-            <div class="ts-row">
-                <label class="ts-field" style="flex:1 1 260px;">Search
-                    <input id="gcSearch" type="text" placeholder="performer, show, club or town…" autocomplete="off">
-                </label>
-            </div>
+        <!-- 4. Results -->
+        <section id="gcResults" class="ts-panel gc-results">
+            <h3 id="gcBrowseHead">Pick a gig to plan around</h3>
+            <div id="gcDays" class="gc-days"></div>
             <div id="gcBrowse"></div>
+        </section>
+        </div>
+
+        <!-- Map: results before a gig is picked, the trip afterwards.
+             Pinned beside the results on wide screens; on phones it sits between the trip and
+             the results, and the shared initMap() makes it two-finger-to-pan so it never traps scrolling. -->
+        <section id="gcMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
+            <div id="gcMap" class="ts-map"></div>
         </section>
     </div>
 
@@ -103,8 +140,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611162159"></script>
-    <script src="/js/gig_planner.js?v=202611161250"></script>
+    <script src="/js/tour_support.js?v=202611151214"></script>
+    <script src="/js/gig_planner.js?v=202611162221"></script>
 </body>
 
 </html>

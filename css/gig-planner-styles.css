@@ -35,3 +35,57 @@
 .gc-chip:hover { background: var(--theme-green-bg, #f1f8f1); }
 .gc-chip.on { background: #2e7d32; border-color: #2e7d32; color: #fff; font-weight: 700; }
 .gc-chip.clear { border-style: dashed; color: #b91c1c; }
+
+/* ── page layout ───────────────────────────────────────────────────────
+   Phones: one column in the order find → trip → add nights → map → results.
+   Wide screens (1000px+): panels in a left column, map pinned on the right.
+   The map is created by the shared initMap(), which on touch screens turns off
+   one-finger drag and flashes "Use two fingers to move the map", so an inline
+   map never traps page scrolling. */
+/* shared-styles.css gives <body> overflow-x: hidden, which makes body a scroll container and
+   stops position: sticky (the pinned map) from working. clip stops sideways overflow the same
+   way without that side effect. Scoped to this page only. */
+body.page-gig-planner { overflow-x: clip; overflow-y: visible; }
+.page-gig-planner .gc-layout { display: flex; flex-direction: column; }
+.page-gig-planner .gc-col-main { display: contents; }
+.page-gig-planner .gc-layout .ts-panel { margin-bottom: 16px; min-width: 0; }
+.page-gig-planner #gcFind { order: 1; }
+.page-gig-planner #gcPlan { order: 2; max-height: none; }
+.page-gig-planner #gcNearby { order: 3; }
+.page-gig-planner #gcMapWrap { order: 4; height: 280px; padding: 8px; box-sizing: border-box; }
+.page-gig-planner #gcResults { order: 5; }
+
+@media (min-width: 1000px) {
+  .page-gig-planner .gc-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: 20px; align-items: start; }
+  .page-gig-planner .gc-layout.no-map { grid-template-columns: minmax(0, 1fr); }
+  .page-gig-planner .gc-col-main { display: block; grid-column: 1; min-width: 0; }
+  .page-gig-planner #gcMapWrap { grid-column: 2; position: sticky; top: 12px; height: min(calc(100vh - 24px), 780px); margin-bottom: 0; }
+}
+
+/* ── find panel ────────────────────────────────────────────────────── */
+.gc-starts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin: 4px 0 14px; }
+.gc-start-btn { color: #222; background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px 12px; font-size: .92em; text-align: left; cursor: pointer; }
+.gc-start-btn:hover { background: var(--theme-green-bg, #f1f8f1); }
+.gc-start-btn.on { border-color: #2e7d32; box-shadow: 0 0 0 2px rgba(46,125,50,.25); font-weight: 700; }
+.page-gig-planner #gcSearch { font-size: 16px; padding: 11px; } /* 16px stops iOS zooming in on focus */
+.gc-link { background: none; border: none; color: #1565c0; text-decoration: underline; padding: 0; font: inherit; cursor: pointer; }
+
+.gc-refine { margin-top: 12px; border-top: 1px solid #eee; padding-top: 10px; }
+.gc-refine > summary { cursor: pointer; font-weight: 700; color: #333; }
+.gc-refine-sum { display: block; font-weight: 400; font-size: .85em; color: #2e7d32; margin-top: 2px; }
+.gc-refine-group { margin-top: 14px; }
+.gc-refine-group h4 { margin: 0 0 6px; font-size: .95em; }
+.gc-narrow-field { max-width: 280px; margin-top: 10px; }
+.gc-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+/* ── results: dates with gigs, shaded by how busy they are ───────── */
+.gc-days { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; margin-bottom: 4px; }
+.gc-day { flex: 0 0 auto; color: #222; background: rgba(46,125,50,var(--heat, 0)); border: 1px solid #c8d8c8; border-radius: 14px; padding: 4px 11px; font-size: .8em; white-space: nowrap; cursor: pointer; }
+.gc-day:hover { border-color: #2e7d32; }
+.gc-day.on { background: #2e7d32; border-color: #2e7d32; color: #fff; font-weight: 700; }
+@media (min-width: 1000px) { .gc-days { flex-wrap: wrap; overflow-x: visible; } }
+
+.gc-find .ts-status:empty, .gc-find .ts-hint:empty { display: none; }
+.page-gig-planner #gcPlan, .page-gig-planner #gcNearby { scroll-margin-top: 8px; }
+.gc-collapsed { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.gc-hide-list { margin-bottom: 8px; }

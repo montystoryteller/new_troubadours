@@ -22,6 +22,9 @@ const GC = {
   before: 2, after: 2, radius: 40,
   chosen: new Map(), // dateKey -> event
   filters: new Set(), // active night filters: "g:clubs", "g:folk", "p:<performer>"
+  browseOpen: false, // after a gig is picked the results collapse to one line; this reopens them
+  day: null, // results narrowed to one date (a "YYYY-MM-DD" key), from the day strip
+  venueByLabel: new Map(), // typed venue name -> venue, so "Near" accepts a venue as well as a town
   limit: 120,
 };
 let gcMap = null, gcLayer = null;
@@ -37,6 +40,9 @@ const gPlace = TourSupport.placeLabel;
 function gParseInput(v) { if (!v) return null; const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d); }
 function gLL(e) { const v = GC.venues[e.venue_id]; return v && Array.isArray(v.latlon) ? v.latlon : null; }
 function gHome() { return GC.start ? [GC.start.lat, GC.start.lon] : null; }
+function gShortDate(d) { return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); }
+function gStartName() { return GC.start && GC.start.label ? String(GC.start.label).split(",")[0].trim() : ""; }
+function gDesc(x) { return typeof x === "string" ? x.slice(0, 1500) : ""; }
 function gStatus(msg, err) { const s = document.getElementById("gcStatus"); s.textContent = msg || ""; s.className = "ts-status" + (err ? " error" : ""); }
 function gVenueOk(vid) { return TourSupport.venueUsable(GC.venues, vid); }
 function gArr(x) { return Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []; }
@@ -130,7 +136,7 @@ function gCollect(from, to) {
       id: `ev:${e.eventId || e.name + gKey(d)}`, cat: e.isMusic ? "music" : e.isPoetry ? "poetry" : cat, kind: "event",
       title: e.showname || e.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: e.time || "",
       venue_id: e.venue_id, url: gEventUrl(e, d), ext: e.ticket_url || e.event_url || e.fb_event || e.link || "",
-      price: e.price || "", soldOut: !!e.isSoldOut,
+      price: e.price || "", soldOut: !!e.isSoldOut, desc: gDesc(e.description),
     });
   }));
 
@@ -143,7 +149,7 @@ function gCollect(from, to) {
       cat: t.isMusic ? "music" : t.isPoetry ? "poetry" : "story", kind: "event",
       title: t.tour_name || t.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: td.time || t.time || "",
       venue_id: td.venue_id, url: gEventUrl(td, d), ext: td.ticket_url || td.fb_event || "",
-      price: td.price || t.price || "", soldOut: !!td.isSoldOut,
+      price: td.price || t.price || "", soldOut: !!td.isSoldOut, desc: gDesc(td.description || t.tour_description),
     });
   }));
 
@@ -180,7 +186,7 @@ function gSetStart(s) {
   GC.start = s;
   const currentDiv = document.getElementById("gcStartCurrent");
   const clearBtn = document.getElementById("gcStartClear");
-  currentDiv.textContent = s ? `Start: ${s.label}` : "";
+  currentDiv.textContent = s ? `Near: ${s.label}` : "";
   if (clearBtn) clearBtn.style.display = s ? "" : "none";
   gRenderAll();
 }
@@ -191,11 +197,20 @@ function gClearStart() {
   gStatus("Start location cleared.");
 }
 function gFindStart() {
+  // A venue name picked from the list is used directly (and is not saved as the shared start point).
+  const typed = document.getElementById("gcStartInput").value.trim().toLowerCase();
+  const venue = GC.venueByLabel.get(typed);
+  if (venue) {
+    document.getElementById("gcStartChoices").replaceChildren();
+    gStatus("");
+    gSetStart({ lat: venue.latlon[0], lon: venue.latlon[1], label: venue.name });
+    return Promise.resolve();
+  }
   return TourSupport.findPlace({
     input: document.getElementById("gcStartInput"),
     choices: document.getElementById("gcStartChoices"),
     onPick: gSetStart, setStatus: gStatus,
-    failHint: "You can still browse without a start point.",
+    failHint: "You can still browse without a place.",
   });
 }
 function gLocate() { TourSupport.locate({ onPick: gSetStart, setStatus: gStatus }); }
@@ -209,7 +224,7 @@ function gReload() {
   if (to < from) { gStatus("The end date is before the start date.", true); return; }
   if ((to - from) / 86400000 > 59) { to = gAdd(from, 59); gStatus("Period limited to 60 days."); } else gStatus("");
   // pad by the nights-around window so neighbours of edge gigs are available
-  GC.periodFrom = from; GC.periodTo = to;
+  GC.periodFrom = from; GC.periodTo = to; GC.day = null;
   const padFrom = gAdd(from, -(GC.before + 1));
   GC.events = gCollect(padFrom < today ? today : padFrom, gAdd(to, GC.after + 1));
   gRenderAll();
@@ -229,7 +244,7 @@ function gCard(ev, opts) {
   const dist = [];
   if (opts.hop != null) dist.push(`${gFmtMi(opts.hop)} (${gFmtDrive(opts.hop)}) from ${opts.refName || "previous stop"}`);
   const h = gHome();
-  if (h) dist.push(`${gFmtMi(gMiles(h, gLL(ev)))} from home`);
+  if (h) dist.push(`${gFmtMi(gMiles(h, gLL(ev)))} from ${gStartName() || "your start point"}`);
   if (dist.length) card.appendChild(gEl("div", "gc-card-dist", dist.join(" · ")));
   const act = gEl("div", "gc-card-actions");
   const href = ev.url || (/^https?:\/\//i.test(ev.ext) ? ev.ext : "");
@@ -254,16 +269,47 @@ function gRenderAll() {
 }
 
 function gRenderBrowse() {
-  const box = document.getElementById("gcBrowse");
-  box.replaceChildren();
+  const box = document.getElementById("gcBrowse"), strip = document.getElementById("gcDays");
+  box.replaceChildren(); strip.replaceChildren();
   GC.browseList = [];
   if (!GC.periodFrom) return;
+  gRefineSummary(); gSearchHint();
   const cats = gCats();
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
-  const q = document.getElementById("gcSearch").value.trim().toLowerCase();
-  let list = GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo && gPasses(e, cats, maxHome));
-  if (q) list = list.filter((e) => `${e.title} ${e.performer} ${(e.performerList || []).join(" ")} ${(GC.venues[e.venue_id] || {}).name} ${(GC.venues[e.venue_id] || {}).city}`.toLowerCase().includes(q));
+  const words = document.getElementById("gcSearch").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const special = document.getElementById("gcSpecialOnly").checked;
+  let list = GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo && gPasses(e, cats, maxHome) && !(special && e.kind === "recurring"));
+  if (words.length) {
+    list = list.filter((e) => {
+      const v = GC.venues[e.venue_id] || {};
+      const hay = `${e.title} ${e.performer} ${(e.performerList || []).join(" ")} ${v.name || ""} ${v.city || ""} ${e.desc || ""}`.toLowerCase();
+      return words.every((w) => hay.includes(w)); // every word must appear somewhere (title, anyone on the bill, venue, town, blurb)
+    });
+  }
+  if (GC.anchor && !GC.browseOpen) {
+    GC.browseList = list;
+    document.getElementById("gcBrowseHead").textContent = "Your gig";
+    const row = gEl("p", "gc-collapsed");
+    row.append(`Planning around “${GC.anchor.title}”. `);
+    const b = gEl("button", "gc-btn", `Change gig (${list.length} to choose from)`); b.type = "button";
+    b.addEventListener("click", () => { GC.browseOpen = true; gRenderBrowse(); });
+    row.appendChild(b);
+    box.appendChild(row);
+    return;
+  }
+  if (GC.anchor) {
+    const hide = gEl("button", "gc-btn gc-hide-list", "▲ Hide this list"); hide.type = "button";
+    hide.addEventListener("click", () => { GC.browseOpen = false; gRenderBrowse(); });
+    box.appendChild(hide);
+  }
+  // Day strip: how many gigs on each date, ignoring the day filter itself
+  const counts = new Map();
+  list.forEach((e) => { const k = gKey(e.date); counts.set(k, (counts.get(k) || 0) + 1); });
+  if (GC.day && !counts.has(GC.day)) GC.day = null;
+  gRenderDays(strip, counts, list.length);
+  if (GC.day) list = list.filter((e) => gKey(e.date) === GC.day);
   GC.browseList = list;
+  document.getElementById("gcBrowseHead").textContent = `Pick a gig to plan around${list.length ? ` (${list.length})` : ""}`;
   if (!list.length) { box.appendChild(gEl("p", "ts-hint", "No events match — try widening the dates, categories or distance.")); return; }
   const total = list.length;
   list = list.slice(0, GC.limit);
@@ -287,6 +333,79 @@ function gRenderBrowse() {
   }
 }
 
+/** Dates with gigs, shaded by how busy they are; click one to narrow the results (and map) to it. */
+function gRenderDays(strip, counts, total) {
+  if (counts.size < 2) return;
+  const max = Math.max(...counts.values());
+  const mk = (label, key, heat) => {
+    const b = gEl("button", "gc-day" + ((GC.day || "") === key ? " on" : ""), label); b.type = "button";
+    b.setAttribute("aria-pressed", (GC.day || "") === key ? "true" : "false");
+    b.style.setProperty("--heat", String(heat));
+    b.addEventListener("click", () => { GC.day = GC.day === key ? null : key; GC.limit = 120; gRenderAll(); });
+    strip.appendChild(b);
+  };
+  mk(`All dates (${total})`, "", 0);
+  [...counts.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1))
+    .forEach(([k, n]) => mk(`${gShortDate(gParseInput(k))} · ${n}`, k, (0.08 + 0.42 * (n / max)).toFixed(2)));
+}
+
+/** One line under "Refine" so the active filters are visible while it is collapsed. */
+function gRefineSummary() {
+  const el = document.getElementById("gcRefineSummary");
+  const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
+  const cats = [...gCats()];
+  const bits = [
+    GC.start ? `near ${gStartName()}${maxHome ? ` (within ${maxHome} mi)` : ""}` : "anywhere",
+    `${gShortDate(GC.periodFrom)} – ${gShortDate(GC.periodTo)}`,
+    cats.length === 4 ? "all types" : cats.map((c) => (GC_CAT[c] || c).replace(/^\S+\s/, "")).join(", ") || "no types selected",
+  ];
+  if (document.getElementById("gcSpecialOnly").checked) bits.push("one-offs only");
+  el.textContent = bits.join(" · ");
+}
+
+/** When a search is short of the 60-day maximum, offer to look further ahead. */
+function gSearchHint() {
+  const h = document.getElementById("gcSearchHint");
+  h.replaceChildren();
+  if (!document.getElementById("gcSearch").value.trim()) return;
+  if ((GC.periodTo - GC.periodFrom) / 86400000 >= 59) return;
+  h.append(`Searching ${gShortDate(GC.periodFrom)} – ${gShortDate(GC.periodTo)} only. `);
+  const b = gEl("button", "gc-link", "Search the next 60 days instead"); b.type = "button";
+  b.addEventListener("click", () => gPreset("sixty"));
+  h.appendChild(b);
+}
+
+/** Quick date ranges. */
+function gPreset(kind) {
+  const t = getTodayMidnight();
+  let from = t, to;
+  if (kind === "weekend") {
+    const dow = t.getDay(); // 0 = Sunday
+    to = gAdd(t, (7 - dow) % 7);
+    from = dow === 0 || dow >= 5 ? t : gAdd(to, -2);
+  } else to = gAdd(t, { week: 6, month: 29, sixty: 59 }[kind] || 13);
+  document.getElementById("gcFrom").value = gKey(from);
+  document.getElementById("gcTo").value = gKey(to);
+  gReload();
+}
+
+/** The three starting points only choose what to open and focus; every control stays available. */
+function gStartMode(kind) {
+  document.querySelectorAll(".gc-start-btn").forEach((b) => b.classList.toggle("on", b.dataset.start === kind));
+  const refine = document.getElementById("gcRefine");
+  if (kind === "gig") {
+    if ((GC.periodTo - GC.periodFrom) / 86400000 < 59) gPreset("sixty"); // a named gig can be months away
+    document.getElementById("gcSearch").focus();
+  } else if (kind === "place") {
+    refine.open = true;
+    if (!(parseInt(document.getElementById("gcMaxHome").value, 10) > 0)) { document.getElementById("gcMaxHome").value = 25; gRenderAll(); }
+    document.getElementById("gcStartInput").focus();
+  } else {
+    refine.open = true;
+    document.getElementById("gcFrom").focus();
+  }
+}
+
 function gSetAnchor(ev) {
   if (!GC.anchor || GC.anchor.id !== ev.id) GC.filters = new Set();
   GC.anchor = ev;
@@ -297,8 +416,11 @@ function gSetAnchor(ev) {
   GC.events = gCollect(from < today ? today : from, to).concat(GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo))
     .reduce((acc, e) => (acc.some((x) => x.id === e.id) ? acc : (acc.push(e), acc)), [])
     .sort((a, b) => a.date - b.date || a.title.localeCompare(b.title));
+  GC.browseOpen = false;
   gRenderAll();
-  document.getElementById("gcSummaryRow").scrollIntoView({ behavior: "smooth", block: "start" });
+  // Straight to the nights columns (the trip so far sits just above them)
+  const target = document.getElementById("gcNearby");
+  (target.hidden ? document.getElementById("gcPlan") : target).scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function gRefFor(date) {
@@ -429,10 +551,8 @@ function gStopLine(c, leg) {
 }
 
 function gRenderPlan() {
-  const row = document.getElementById("gcSummaryRow");
   const box = document.getElementById("gcPlan");
   box.replaceChildren();
-  row.hidden = false;
   if (!GC.anchor) { gRenderMap([]); return; }
   const stops = gStops(), home = gHome();
   box.appendChild(gEl("h3", null, "Your trip"));
@@ -532,7 +652,8 @@ function gVenuePopup(vid, events) {
 async function gRenderMap(stops) {
   const wrap = document.getElementById("gcMapWrap");
   wrap.style.display = "";
-  try { await TourSupport.loadLeaflet(); } catch (e) { wrap.style.display = "none"; return; }
+  document.getElementById("gcApp").classList.remove("no-map");
+  try { await TourSupport.loadLeaflet(); } catch (e) { wrap.style.display = "none"; document.getElementById("gcApp").classList.add("no-map"); return; }
   if (!gcMap) gcMap = initMap("gcMap");
   gcMap.invalidateSize();
   if (gcLayer) gcLayer.remove();
@@ -584,7 +705,24 @@ async function gInit() {
   document.getElementById("gcMaxHome").addEventListener("change", gRenderAll);
   document.getElementById("gcShowScope").addEventListener("change", () => gRenderMap(gStops()));
   document.querySelectorAll("#gcCats input").forEach((i) => i.addEventListener("change", gRenderAll));
-  document.getElementById("gcSearch").addEventListener("input", () => { GC.limit = 120; gRenderBrowse(); });
+  let searchTimer = null;
+  document.getElementById("gcSearch").addEventListener("input", () => {
+    GC.limit = 120; GC.day = null;
+    if (GC.anchor) GC.browseOpen = true;
+    clearTimeout(searchTimer);
+    // Before a gig is picked the map shows the results, so it follows the search; afterwards only the list does.
+    searchTimer = setTimeout(() => (GC.anchor ? gRenderBrowse() : gRenderAll()), 250);
+  });
+  document.getElementById("gcSpecialOnly").addEventListener("change", gRenderAll);
+  document.querySelectorAll(".gc-start-btn").forEach((b) => b.addEventListener("click", () => gStartMode(b.dataset.start)));
+  document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => gPreset(b.dataset.preset)));
+  // Venues can be typed into "Near" as well as towns and postcodes
+  const dl = document.getElementById("gcVenueList");
+  Object.entries(GC.venues).forEach(([id, v]) => {
+    if (!gVenueOk(id) || !v.name) return;
+    GC.venueByLabel.set(v.name.toLowerCase(), v);
+    const o = document.createElement("option"); o.value = v.name; dl.appendChild(o);
+  });
   document.getElementById("gcStartFind").addEventListener("click", gFindStart);
   document.getElementById("gcStartInput").addEventListener("keydown", (e) => { if (e.key === "Enter") gFindStart(); });
   document.getElementById("gcStartLocate").addEventListener("click", gLocate);
