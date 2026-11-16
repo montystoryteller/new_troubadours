@@ -1,5 +1,5 @@
 /**
- * gig_crawl.js — fan-facing "gig crawl" planner.
+ * gig_planner.js — fan-facing gig planner.
  *
  * Pick a period, pick a gig you want to go to, and see other events on the
  * nights either side within reach of it; add the ones you fancy to build a
@@ -416,7 +416,7 @@ function gRenderPlan() {
   reset.addEventListener("click", () => { GC.anchor = null; GC.chosen = new Map(); gRenderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); });
   act.append(copy, ics);
   TourSupport.addExportButtons(act, {
-    className: "gc-btn", basename: "gig-crawl",
+    className: "gc-btn", basename: "gig-planner",
     getRecords: () => TourSupport.buildRecords(stops, (c) => {
       const v = GC.venues[c.venue_id] || {};
       const ll = gLL(c);
@@ -427,7 +427,7 @@ function gRenderPlan() {
         link: c.url ? new URL(c.url, location.href).href : (c.ext || ""),
       };
     }, home),
-    getMeta: () => ({ page: "gig_crawl", start: GC.start ? { label: GC.start.label, latitude: GC.start.lat, longitude: GC.start.lon } : null }),
+    getMeta: () => ({ page: "gig_planner", start: GC.start ? { label: GC.start.label, latitude: GC.start.lat, longitude: GC.start.lon } : null }),
   });
   act.append(reset);
   box.appendChild(act);
@@ -443,7 +443,7 @@ function gDownloadIcs(stops) {
       location: TourSupport.icsLocation(v),
       description: [c.time ? "Time: " + c.time : "", c.performer, href].filter(Boolean).join("\n"),
     };
-  }), "gig-crawl.ics", "Gig Crawl");
+  }), "gig-planner.ics", "Gig Planner");
 }
 
 // ── map ─────────────────────────────────────────────────────────────────

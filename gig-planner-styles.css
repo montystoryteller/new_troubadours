@@ -1,4 +1,4 @@
-/* Gig crawl planner — extends shared-styles.css */
+/* Gig planner — extends shared-styles.css */
 .gc-btn { padding: 9px 14px; }
 
 .gc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
