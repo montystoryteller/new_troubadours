@@ -1208,6 +1208,19 @@
             </div>
 
             <div class="field-row">
+                <label>Activity category</label>
+                <div>
+                    <select id="club-category">
+                        <option value="">Not specified / not applicable</option>
+                        <option value="folk-club">Folk club</option>
+                        <option value="folk-session">Folk session</option>
+                        <option value="open-mic">Open mic</option>
+                    </select>
+                    <div class="field-hint">Optional category for folk listings. A folk session that includes an open-mic element should remain Folk session; use Open mic for a standalone open-mic night.</div>
+                </div>
+            </div>
+
+            <div class="field-row">
                 <label>Schedule</label>
                 <div>
                     <input type="text" id="club-schedule" placeholder="e.g. 3rd tuesday, Every Thursday">
@@ -5881,7 +5894,7 @@
         // form manages itself; anything else on an edited record
         // (feature_slots, location, geocode_missing, themes, legacy flyers…)
         // is carried over untouched.
-        const CLUB_FORM_KEYS = ["id", "name", "club", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "ticketing_url", "email", "online", "isPromoter"];
+        const CLUB_FORM_KEYS = ["id", "name", "club", "category", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "ticketing_url", "email", "online", "isPromoter"];
         let clubKeyAutoValue = "";
         let clubVenueField;
 
@@ -5917,6 +5930,7 @@
             clubKeyAutoValue = suggestedId;
             document.getElementById("club-name").value = match.name || "";
             document.getElementById("club-description").value = decodeParagraphBreaksForEdit(match.description || "");
+            document.getElementById("club-category").value = match.category || "";
             document.getElementById("club-schedule").value = scheduleToText(match.schedule);
             document.getElementById("club-exceptions").value = (match.exceptions || []).join(", ");
             document.getElementById("club-time").value = match.time || "";
@@ -5976,6 +5990,8 @@
             if (!editing && allClubIds().includes(clubId)) clubId = uniqueId(clubId, k => allClubIds().includes(k));
 
             const record = { name, club: clubId };
+            const category = document.getElementById("club-category").value;
+            if (category) record.category = category;
             const schedule = textToSchedule(document.getElementById("club-schedule").value);
             const exceptions = document.getElementById("club-exceptions").value.split(",").map(x => x.trim()).filter(Boolean);
             const time = document.getElementById("club-time").value.trim();
@@ -6024,6 +6040,7 @@
             ["club-key", "club-name", "club-description", "club-schedule", "club-exceptions", "club-time", "club-price", "club-promoter",
                 "club-link", "club-facebook", "club-instagram", "club-tickets-url", "club-email", "club-flyer"]
                 .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("club-category").value = "";
             document.getElementById("club-online").checked = false;
             document.getElementById("club-is-promoter").checked = false;
             document.getElementById("club-name-status").innerHTML = "";

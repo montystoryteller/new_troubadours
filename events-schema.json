@@ -32,7 +32,8 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/recurringClubEvent"
-      }
+      },
+      "description": "Recurring folk clubs, folk sessions and (when category=\"open-mic\") open-mic listings. Each record uses recurringClubEvent; category distinguishes folk-club, folk-session and open-mic. Kept as one array for compatibility with existing club-directory consumers."
     },
     "podcasts": {
       "type": "array",
@@ -1324,9 +1325,21 @@
         "name"
       ],
       "anyOf": [
-        { "required": ["date"] },
-        { "required": ["dates"] },
-        { "required": ["datetimes"] }
+        {
+          "required": [
+            "date"
+          ]
+        },
+        {
+          "required": [
+            "dates"
+          ]
+        },
+        {
+          "required": [
+            "datetimes"
+          ]
+        }
       ],
       "additionalProperties": true
     },
@@ -1599,7 +1612,7 @@
       "additionalProperties": true
     },
     "recurringClubEvent": {
-      "description": "A recurring story-club/open-mic night (events[] array) — the home record for a `club` id referenced elsewhere via specificEvents[].club, show_dates[].club, etc.",
+      "description": "A recurring folk club, folk session, or open-mic listing. category distinguishes these activity types; club is the stable cross-reference id.",
       "type": "object",
       "properties": {
         "name": {
@@ -1727,7 +1740,10 @@
         "end_date": {
           "type": "string",
           "description": "When a lapsed/ending club's meetings stop: 'MM/YYYY' (runs to the END of that month, e.g. '11/2026') or 'DD/MM/YYYY' (to the end of that day). No meetings are generated after it. An end_date already in the past marks the club lapsed even without isLapsed.",
-          "examples": ["11/2026", "30/11/2026"]
+          "examples": [
+            "11/2026",
+            "30/11/2026"
+          ]
         },
         "video_trailer": {
           "$ref": "#/$defs/youtubeUrl",
@@ -1778,6 +1794,15 @@
           "type": "boolean",
           "default": false,
           "description": "true when this club also acts as a promoter in its own right. It is then listed in the promoters directory (promoters.html) under its `club` id even with no `promoters` entry, and the promoter page links back to this club's page. If a `promoters[club]` record exists (ideally with isClub: true) the two are merged, promoter fields winning."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "folk-club",
+            "folk-session",
+            "open-mic"
+          ],
+          "description": "Primary category for this listing. folk-club = organised folk club/night; folk-session = folk/traditional/acoustic session, singaround or tune session; open-mic = standalone open-mic or open-stage listing. If a folk session includes an open-mic element, classify it as folk-session and note the open-mic element in description. Optional for compatibility with legacy story-club records; supply it on all new Folk Roundabout directory records."
         }
       },
       "required": [
