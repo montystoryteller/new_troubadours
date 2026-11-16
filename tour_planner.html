@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162330">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611162212">
 </head>
 
 <body class="page-tour-planner">
@@ -77,9 +77,6 @@
                     <label><input type="checkbox" id="poolAll_poet"> All poets</label>
                     <label><input type="checkbox" id="poolAllClubs"> Also include every active story club</label>
                 </div>
-                <div class="ts-checks">
-                    <label><input type="checkbox" id="poolWeekday" checked> Only use a venue on a day of the week these artists have played it</label>
-                </div>
             </section>
 
             <section id="blkPoolPreview" data-step="venue-pool" class="flow-card" data-modes="pool" hidden>
@@ -93,7 +90,7 @@
             </section>
 
             <section id="blkDates" data-step="dates" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step" data-modes="pool" hidden>Tour shape</h3>
+                <h3 class="flow-step" data-modes="pool" hidden>Dates and tour shape <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button></h3>
                 <div class="ts-grid">
                     <label class="ts-field">From
                         <input id="periodStart" type="date">
@@ -104,6 +101,9 @@
                     <label class="ts-field" data-modes="pool" hidden>Gigs wanted
                         <input id="gigsWanted" type="number" min="1" max="14" value="5">
                     </label>
+                </div>
+                <div class="ts-checks" data-modes="pool" hidden>
+                    <label><input type="checkbox" id="poolWeekday" checked> Only use a venue on a day of the week these artists have played it</label>
                 </div>
             </section>
 
@@ -285,7 +285,7 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611162330"></script>
+    <script src="/js/tour_support.js?v=202611162400"></script>
     <script src="/js/tour_planner.js?v=202611162212"></script>
 </body>
 

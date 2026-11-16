@@ -391,6 +391,7 @@ function setMode() {
   if (PLANNER._lastMode && PLANNER._lastMode !== m) resetPoolState();
   PLANNER._lastMode = m;
   numberSteps();
+  if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   if (PLANNER._help) PLANNER._help.refresh();
   if (m === "venue" && !PLANNER._venueRows) buildVenueRows();
   fillAnchorDates();
@@ -2031,13 +2032,25 @@ function setupCollapsibles() {
   });
   const summaryOf = {
     blkPool: () => { const n = document.querySelectorAll("#poolPerfChips .picker-chip, #poolTourChips .picker-chip").length; const types = document.querySelectorAll("#blkPool .ts-checks input[type=checkbox]:checked:not(#poolWeekday)").length; return n || types ? `${n} artist/tour selection${n === 1 ? "" : "s"}${types ? ` + ${types} type-of-act option${types === 1 ? "" : "s"}` : ""}.` : "Nothing chosen yet."; },
+    blkDates: () => {
+      const v = (id) => document.getElementById(id).value;
+      const f = (s) => { const d = s ? new Date(s + "T00:00:00") : null; return d && !isNaN(d) ? formatDate(d) : "?"; };
+      return `${f(v("periodStart"))} to ${f(v("periodEnd"))} · ${v("gigsWanted") || "?"} gigs` + (document.getElementById("poolWeekday").checked ? " · usual weekdays only" : " · any weekday");
+    },
     blkPoolPreview: () => (document.getElementById("poolSummary") || {}).textContent || "",
   };
+  const sums = [];
+  PLANNER._refreshSummaries = () => sums.forEach(([card, sum, fn]) => { if (card.classList.contains("collapsed")) sum.textContent = fn(); });
+  ["periodStart", "periodEnd", "gigsWanted", "poolWeekday"].forEach((i) => {
+    const n = document.getElementById(i);
+    if (n) { n.addEventListener("input", () => PLANNER._refreshSummaries()); n.addEventListener("change", () => PLANNER._refreshSummaries()); }
+  });
   Object.keys(summaryOf).forEach((id) => {
     const card = document.getElementById(id), btn = card && card.querySelector(".flow-collapse");
     if (!btn) return;
     const sum = el("div", "flow-summary ts-hint"); sum.hidden = true;
     card.querySelector(":scope > h3").after(sum);
+    sums.push([card, sum, summaryOf[id]]);
     btn.addEventListener("click", () => {
       const collapse = !card.classList.contains("collapsed");
       card.classList.toggle("collapsed", collapse);
@@ -2045,6 +2058,7 @@ function setupCollapsibles() {
       btn.setAttribute("aria-expanded", String(!collapse)); btn.textContent = collapse ? "Expand" : "Collapse";
       if (!collapse && poolMap) setTimeout(() => poolMap.invalidateSize(), 50);
     });
+    if (id === "blkDates") btn.click(); // dates have sensible defaults: start tucked away (pool mode only)
   });
 }
 
