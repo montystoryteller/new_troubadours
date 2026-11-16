@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css?v=202611132118">
-    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611162221">
+    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611162235">
 </head>
 
 <body class="page-gig-planner">
@@ -41,7 +41,7 @@
 
         <div class="gc-col-main">
         <!-- 1. Find: search first; where / when / type are optional refinements -->
-        <section id="gcFind" class="ts-panel gc-find">
+        <section id="gcFind" class="ts-panel gc-find" data-help-id="find">
             <h3>Find a gig</h3>
             <div class="gc-starts" role="group" aria-label="Where would you like to start?">
                 <button type="button" class="gc-start-btn" data-start="gig">🔎 I know who or what I want to see</button>
@@ -56,8 +56,8 @@
             <details id="gcRefine" class="gc-refine">
                 <summary>Refine: where · when · type <span id="gcRefineSummary" class="gc-refine-sum"></span></summary>
 
-                <div class="gc-refine-group">
-                    <h4>📍 Where</h4>
+                <div class="gc-refine-group" data-help-id="where">
+                    <h3>📍 Where</h3>
                     <div class="ts-row">
                         <label class="ts-field" style="flex:1 1 240px;">Near (town, postcode or venue)
                             <input id="gcStartInput" type="text" list="gcVenueList" placeholder="e.g. Whitby, NR1 3JU or a venue name" autocomplete="off">
@@ -74,8 +74,8 @@
                     </label>
                 </div>
 
-                <div class="gc-refine-group">
-                    <h4>📅 When</h4>
+                <div class="gc-refine-group" data-help-id="when">
+                    <h3>📅 When</h3>
                     <div class="ts-grid">
                         <label class="ts-field">From
                             <input id="gcFrom" type="date">
@@ -92,8 +92,8 @@
                     </div>
                 </div>
 
-                <div class="gc-refine-group">
-                    <h4>🎭 Type</h4>
+                <div class="gc-refine-group" data-help-id="type">
+                    <h3>🎭 Type</h3>
                     <div class="ts-checks" id="gcCats">
                         <label><input type="checkbox" value="story" checked> 📖 Storytelling</label>
                         <label><input type="checkbox" value="music" checked> 🎸 Music</label>
@@ -110,13 +110,19 @@
         </section>
 
         <!-- 2. Your trip (appears once a gig is picked) -->
-        <section id="gcPlan" class="ts-panel ts-plan"></section>
+        <section id="gcPlan" class="ts-panel ts-plan" data-help-id="trip" hidden>
+            <h3>Your trip</h3>
+            <div id="gcPlanBody"></div>
+        </section>
 
         <!-- 3. Add more nights around the chosen gig -->
-        <section id="gcNearby" class="ts-panel" hidden></section>
+        <section id="gcNearby" class="ts-panel" data-help-id="nights" hidden>
+            <h3>Add more nights around your gig</h3>
+            <div id="gcNearbyBody"></div>
+        </section>
 
         <!-- 4. Results -->
-        <section id="gcResults" class="ts-panel gc-results">
+        <section id="gcResults" class="ts-panel gc-results" data-help-id="results">
             <h3 id="gcBrowseHead">Pick a gig to plan around</h3>
             <div id="gcDays" class="gc-days"></div>
             <div id="gcBrowse"></div>
@@ -141,7 +147,7 @@
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
     <script src="/js/tour_support.js?v=202611151214"></script>
-    <script src="/js/gig_planner.js?v=202611162221"></script>
+    <script src="/js/gig_planner.js?v=202611162235"></script>
 </body>
 
 </html>

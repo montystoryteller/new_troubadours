@@ -23,6 +23,8 @@ const GC = {
   chosen: new Map(), // dateKey -> event
   filters: new Set(), // active night filters: "g:clubs", "g:folk", "p:<performer>"
   browseOpen: false, // after a gig is picked the results collapse to one line; this reopens them
+  entry: null, // which starting point was chosen ("gig" | "place" | "dates"); lets a help record vary by it
+  help: null, // handle from TourSupport.setupHelp ("Explain this step")
   day: null, // results narrowed to one date (a "YYYY-MM-DD" key), from the day strip
   venueByLabel: new Map(), // typed venue name -> venue, so "Near" accepts a venue as well as a town
   limit: 120,
@@ -391,6 +393,8 @@ function gPreset(kind) {
 
 /** The three starting points only choose what to open and focus; every control stays available. */
 function gStartMode(kind) {
+  GC.entry = kind;
+  if (GC.help) GC.help.refresh(); // help records may carry "modes": ["gig" | "place" | "dates"]
   document.querySelectorAll(".gc-start-btn").forEach((b) => b.classList.toggle("on", b.dataset.start === kind));
   const refine = document.getElementById("gcRefine");
   if (kind === "gig") {
@@ -438,12 +442,13 @@ function gPassesFilter(e) {
 }
 
 function gRenderNearby() {
-  const sec = document.getElementById("gcNearby");
+  // #gcNearby is a fixed shell (its heading and "Explain this step" button are set up once);
+  // only #gcNearbyBody is rebuilt on each render.
+  const host = document.getElementById("gcNearby"), sec = document.getElementById("gcNearbyBody");
   sec.replaceChildren();
   GC.scope = []; // gigs in reach of the plan (after filters), for the map
-  if (!GC.anchor) { sec.hidden = true; return; }
-  sec.hidden = false;
-  sec.appendChild(gEl("h3", null, "Add more nights around your gig"));
+  host.hidden = !GC.anchor;
+  if (!GC.anchor) return;
   const ctl = gEl("div", "ts-grid");
   const mk = (label, id, val, min, max) => {
     const l = gEl("label", "ts-field", label);
@@ -551,11 +556,11 @@ function gStopLine(c, leg) {
 }
 
 function gRenderPlan() {
-  const box = document.getElementById("gcPlan");
+  const host = document.getElementById("gcPlan"), box = document.getElementById("gcPlanBody");
   box.replaceChildren();
+  host.hidden = !GC.anchor;
   if (!GC.anchor) { gRenderMap([]); return; }
   const stops = gStops(), home = gHome();
-  box.appendChild(gEl("h3", null, "Your trip"));
   const ol = gEl("ol", "ts-list");
   const lines = [];
   let prev = home, total = 0;
@@ -729,6 +734,9 @@ async function gInit() {
   document.getElementById("gcStartClear").addEventListener("click", gClearStart);
   document.getElementById("gcLoading").style.display = "none";
   document.getElementById("gcApp").style.display = "";
+  // "Explain this step": one record per step in gig_planner_help.json, rendered by the shared
+  // TourSupport markdown code. Harmless if the file is missing.
+  TourSupport.setupHelp("gig_planner_help.json", () => GC.entry).then((h) => { GC.help = h; });
   gReload();
 }
 document.addEventListener("DOMContentLoaded", gInit);

@@ -1,0 +1,37 @@
+[
+  {
+    "step": "find",
+    "title": "Why start here?",
+    "text": "Most people arrive with one of three things in mind, and the planner can work from whichever you know.\n\n- **A gig, performer or theme** – you know who or what you want to see, even if it is only the support act you half-remember. Type it in the search box and the planner finds the dates.\n- **A place** – you are going somewhere and want to know what is on nearby.\n- **Some dates** – you are free on certain days and want to see what is on.\n\nThe three buttons only open the right controls first. You can combine them, for example search for a performer *and* narrow it to one part of the country."
+  },
+  {
+    "step": "where",
+    "title": "Why say where?",
+    "text": "A gig is only useful if you can get to it, so this keeps the list to a sensible distance.\n\n- Type a **town or postcode**, or a **venue** if you know it.\n- Set how many **miles** you are happy to travel from there. If you are visiting an area rather than travelling from home, use the place you will be staying.\n\nDistances are straight-line estimates scaled up for roads, not a routed journey."
+  },
+  {
+    "step": "when",
+    "title": "Why choose dates?",
+    "text": "Gigs happen on particular nights, so the dates you choose decide what you see.\n\n- Use the **quick buttons** for this weekend or the next week or month.\n- Or set exact **From** and **To** dates, up to 60 days at a time.\n\nIf you are looking for one particular act, choose a longer range: their next date may be weeks away."
+  },
+  {
+    "step": "type",
+    "title": "Why filter by type?",
+    "text": "The listings mix storytelling, music, poetry and folk nights, and not everyone wants all of them.\n\n- Untick the types you are not interested in.\n- **One-off and touring shows only** hides regular club nights, which can otherwise crowd out special events when you are searching for a theme.\n- The map can also show the other venues in reach as grey pins."
+  },
+  {
+    "step": "results",
+    "title": "Why pick a gig?",
+    "text": "A few days of gigs works best when it is built around one you really want to see: the **anchor**. Everything else is arranged around it.\n\n- Use the **date strip** to jump to one day. Darker days have more on.\n- Choose **Plan around this gig** on the one you want. The list then folds away (use *Change gig* to bring it back) and you move on to filling in the nights around it."
+  },
+  {
+    "step": "trip",
+    "title": "What is the trip?",
+    "text": "This is your plan so far: one gig a night, in date order.\n\n- You can **copy** the plan, add it to your **calendar**, or download it to share.\n- The travel figures are straight-line estimates scaled up for roads, so treat them as a guide.\n\nEvery stop is a suggestion. Check the event's own page for times and booking before you travel."
+  },
+  {
+    "step": "nights",
+    "title": "Why add nights around it?",
+    "text": "A trip is more worthwhile when each night has something on. These columns show the nights before and after your gig, with gigs within reach of the *previous stop*.\n\n- Set **how many nights** either side and **how far** you will go between stops.\n- Click performers to narrow down who you would like to see.\n- **Add to plan** puts one event on a night. The next night's distances are then measured from it, so the trip stays practical."
+  }
+]
