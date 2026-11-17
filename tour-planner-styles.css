@@ -167,7 +167,7 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 
 /* collapsible cards, map options under the map */
 .flow-collapse { margin-left: 8px; font-size: .78em; font-weight: 600; color: #1b5e20; background: #fff; border: 1px solid #a5d6a7; border-radius: 12px; padding: 1px 10px; cursor: pointer; }
-.mode-pool .flow-card.collapsed > *:not(h3):not(.help-btn):not(.flow-summary) { display: none !important; }
+.flow-card.collapsed > *:not(h3):not(.help-btn):not(.flow-summary) { display: none !important; }
 .flow-card .flow-summary[hidden] { display: none; }
 #plannerMapWrap { display: flex; flex-direction: column; gap: 8px; height: auto; align-self: flex-start; }
 #plannerMapWrap > #plannerMap { flex: none; height: 440px; }
@@ -242,3 +242,8 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
   #plannerLeft:has(#plannerRefine:not([hidden])):hover { scrollbar-color: #bdbdbd transparent; }
 }
 #plannerLeft > * { flex-shrink: 0; }
+
+/* all modes: collapsible panels, venue mode asks for the kinds of event before the anchor */
+#plannerLive.collapsed > *:not(h3):not(.help-btn):not(.flow-summary) { display: none !important; }
+#plannerLive .flow-summary[hidden] { display: none; }
+#plannerFlow.mode-venue #blkOther { order: 2; }

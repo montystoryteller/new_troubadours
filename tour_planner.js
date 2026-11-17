@@ -238,7 +238,7 @@ function clearResults() {
 /** The distance-limits panel sits between the map and the columns once a tour has been built. */
 function updateLivePanel() {
   const live = document.getElementById("plannerLive");
-  if (live) live.hidden = !PLANNER.days.length || PLANNER.mode !== currentMode();
+  if (live) live.hidden = false; // the filters are useful before the first build too
 }
 let liveTimer = null;
 /** Re-read the limits and rebuild the options, keeping the user's picks that still exist. */
@@ -424,6 +424,7 @@ function numberSteps() {
     if (h.hidden || !numbered) { delete h.dataset.num; return; }
     h.dataset.num = String(++n);
   });
+  if (n <= 1) document.querySelectorAll("#plannerFlow h3.flow-step[data-num]").forEach((h) => { delete h.dataset.num; });
 }
 
 /** Changing what the tour is built around starts afresh: forget the artists, pool and must-visits. */
@@ -439,24 +440,30 @@ function resetPoolState() {
   renderPoolList(); renderPoolMap(false);
 }
 
-/** Venue-pool mode: area, must-visits, dates and start/end always live in collapsible panels beside the map
- *  (so nothing jumps when you click Develop tour); in the other modes they stay in the step list. */
-const REFINE_IDS = ["blkArea", "blkMust", "blkDates", "blkStart"];
+/** Which cards live in the step list ("flow") and which in the panels beside the map, per mode.
+ *  Required choices stay in the flow; everything you would fiddle with while looking at the map goes beside it. */
+const LAYOUT = {
+  club: { flow: ["blkAnchor"], side: ["blkOther", "blkStart"] },
+  venue: { flow: ["blkOther", "blkAnchor"], side: ["blkStart"] },
+  period: { flow: [], side: ["blkDates", "blkArea", "blkOther", "blkStart"] },
+  pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkDates", "blkStart"] },
+};
+const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkStart"];
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
   if (!box || !flow) return;
-  const side = currentMode() === "pool";
-  const built = side && PLANNER.days.length > 0 && PLANNER.mode === "pool";
-  box.hidden = !side; box.classList.toggle("mode-pool", side);
-  const hint = document.getElementById("plannerMapHint"); if (hint) hint.hidden = !(side && !built);
-  REFINE_IDS.forEach((id) => {
-    const c = document.getElementById(id);
-    if (!c) return;
-    if (side) { if (c.parentElement !== box) box.appendChild(c); }
-    else if (c.parentElement !== flow) flow.insertBefore(c, document.getElementById("blkBuild"));
+  const m = currentMode(), lay = LAYOUT[m] || LAYOUT.club;
+  const built = PLANNER.days.length > 0 && PLANNER.mode === m;
+  const get = (id) => document.getElementById(id);
+  const side = lay.side.map(get).filter(Boolean);
+  box.hidden = !side.length;
+  side.forEach((c, i) => { if (box.children[i] !== c) box.insertBefore(c, box.children[i] || null); });
+  MOVABLE.forEach((id) => {
+    if (lay.side.includes(id)) return;
+    const c = get(id);
+    if (c && c.parentElement !== flow) flow.insertBefore(c, get("blkBuild"));
   });
-  const b = document.getElementById("buildTour");
-  if (b) { if (!b.dataset.label) b.dataset.label = b.textContent; b.textContent = side ? "Develop tour" : b.dataset.label; }
+  const hint = get("plannerMapHint"); if (hint) hint.hidden = built;
 }
 
 function setMode() {
@@ -470,8 +477,10 @@ function setMode() {
   // changing what we build around invalidates everything downstream: clear it until rebuilt
   if (PLANNER.days.length && PLANNER.mode && PLANNER.mode !== m) clearResults();
   updateLivePanel();
-  if (PLANNER._lastMode && PLANNER._lastMode !== m) resetPoolState();
+  const modeChanged = PLANNER._lastMode !== m;
+  if (PLANNER._lastMode && modeChanged) resetPoolState();
   PLANNER._lastMode = m;
+  if (modeChanged && PLANNER._applyDefaults) PLANNER._applyDefaults(m);
   placeRefine();
   drSync();
   numberSteps();
@@ -1528,6 +1537,7 @@ function onBuild() {
 /** Make it obvious that Build did something: say what was built and bring the results into view. */
 function announceBuilt(tip) {
   if (PLANNER._rebuilding) return;
+  collapseAfterBuild();
   const n = [...PLANNER.byDay.values()].reduce((t, a) => t + a.length, 0);
   setStatus(`✓ ${n} option${n === 1 ? "" : "s"} over ${PLANNER.days.length} days — your tour, the map and the filters are below, with the day columns underneath.${tip ? " " + tip : ""}`);
   const row = document.getElementById("plannerSummaryRow");
@@ -2273,13 +2283,26 @@ function setupCollapsibles() {
       return `${f(v("periodStart"))} to ${f(v("periodEnd"))} · ${v("gigsWanted") || "?"} gigs` + (document.getElementById("poolWeekday").checked ? " · usual weekdays only" : " · any weekday");
     },
     blkPoolPreview: () => (document.getElementById("poolSummary") || {}).textContent || "",
+    blkAnchor: () => {
+      const t = (id) => { const s = document.getElementById(id); return s && s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : "?"; };
+      return currentMode() === "venue" ? `${t("anchorVenue")} · ${t("anchorDate")}` : `${t("anchorClub")} · ${t("anchorDate")}`;
+    },
+    blkOther: () => {
+      const on = [...document.querySelectorAll("#eventKinds input:checked")].map((c) => c.parentElement.textContent.trim());
+      return on.length ? on.join(", ") + "." : "Nothing ticked: tick at least one kind.";
+    },
+    plannerLive: () => {
+      const v = (id) => document.getElementById(id).value.trim();
+      const mi = currentMode() === "pool" ? v("minHop") : v("minSpread");
+      let s = `Between stops: ${Number(mi) > 0 ? mi + " mi minimum" : "no minimum"}, ${v("maxHop") ? v("maxHop") + " mi maximum" : "no limit"}`;
+      if (currentMode() === "club" || currentMode() === "venue") s += ` · ${v("daysBefore")} days before, ${v("daysAfter")} after`;
+      if (currentMode() === "pool") s += document.getElementById("poolWeekday").checked ? " · usual weekdays only" : " · any weekday";
+      return s + ".";
+    },
   };
   const sums = [];
   PLANNER._refreshSummaries = () => sums.forEach(([card, sum, fn]) => { if (card.classList.contains("collapsed")) sum.textContent = fn(); });
-  ["periodStart", "periodEnd", "gigsWanted", "poolWeekday"].forEach((i) => {
-    const n = document.getElementById(i);
-    if (n) { n.addEventListener("input", () => PLANNER._refreshSummaries()); n.addEventListener("change", () => PLANNER._refreshSummaries()); }
-  });
+  ["input", "change"].forEach((t) => document.addEventListener(t, () => PLANNER._refreshSummaries()));
   Object.keys(summaryOf).forEach((id) => {
     const card = document.getElementById(id), btn = card && card.querySelector(".flow-collapse");
     if (!btn) return;
@@ -2293,8 +2316,33 @@ function setupCollapsibles() {
       btn.setAttribute("aria-expanded", String(!collapse)); btn.textContent = collapse ? "Expand" : "Collapse";
       if (!collapse && poolMap) setTimeout(() => poolMap.invalidateSize(), 50);
     });
-    if (id === "blkArea" || id === "blkMust") btn.click(); // optional extras start tucked away (pool mode only)
   });
+  PLANNER._setCollapsed = (id, want) => {
+    if (id === "blkStart") {
+      if (body && body.hidden !== want) st.click();
+      return;
+    }
+    const card = document.getElementById(id), btn = card && card.querySelector(":scope > h3 .flow-collapse");
+    if (btn && card.classList.contains("collapsed") !== want) btn.click();
+  };
+  PLANNER._applyDefaults = (m) => {
+    const d = COLLAPSE_DEFAULTS[m] || {};
+    Object.keys(d).forEach((id) => PLANNER._setCollapsed(id, d[id]));
+    PLANNER._setCollapsed("plannerLive", window.matchMedia && window.matchMedia("(max-width: 820px)").matches);
+  };
+  PLANNER._applyDefaults(currentMode());
+}
+/** Starting state of each panel per mode (true = collapsed). Required steps start open. */
+const COLLAPSE_DEFAULTS = {
+  club: { blkAnchor: false, blkOther: true, blkStart: true },
+  venue: { blkOther: false, blkAnchor: false, blkStart: true },
+  period: { blkDates: false, blkArea: false, blkOther: true, blkStart: true },
+  pool: { blkPool: false, blkPoolPreview: false, blkArea: true, blkMust: true, blkDates: false, blkStart: true },
+};
+/** After Develop tour, fold the required steps away (with summaries) so the map and columns come up the page. */
+function collapseAfterBuild() {
+  const lay = LAYOUT[currentMode()];
+  if (lay && PLANNER._setCollapsed) lay.flow.forEach((id) => PLANNER._setCollapsed(id, true));
 }
 
 // ── init ────────────────────────────────────────────────────────────────
@@ -2318,8 +2366,8 @@ async function initPlanner() {
   document.getElementById("anchorVenue").addEventListener("change", fillAnchorDates);
   document.querySelectorAll("#eventKinds input").forEach((cb) => cb.addEventListener("change", () => {
     PLANNER._venueRows = null;
-    if (currentMode() === "venue") { buildVenueRows(); fillAnchorDates(); }
-    if (PLANNER.days.length) clearResults();
+    if (currentMode() === "venue") { buildVenueRows(); fillAnchorDates(); if (PLANNER.days.length) clearResults(); }
+    else liveRebuild();
   }));
   document.getElementById("startFind").addEventListener("click", onFindStart);
   document.getElementById("startInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onFindStart(); });
@@ -2342,11 +2390,6 @@ async function initPlanner() {
     e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
   });
   attachDualRange();
-  { // the weekday rule is also offered beside the map once a tour is built; the two boxes stay in step
-    const a = document.getElementById("poolWeekday"), b = document.getElementById("poolWeekdayLive");
-    a.addEventListener("change", () => { b.checked = a.checked; });
-    b.addEventListener("change", () => { a.checked = b.checked; a.dispatchEvent(new Event("change", { bubbles: true })); });
-  }
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
     if (!r.checked) return;

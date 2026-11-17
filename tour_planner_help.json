@@ -7,7 +7,7 @@
   {
     "step": "start-end",
     "title": "Why set a start and end?",
-    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from.\n\n- The **start** is used to measure the first leg and to keep the search local.\n- Tick **Finish back at the start** for a round trip, or give a different **end** if you are not going home.\n\nNothing is stored on a server: your start point stays in your own browser."
+    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from.\n\n- The **start** is used to measure the first leg and to keep the search local.\n- Tick **Finish back at the start** for a round trip, or give a different **end** if you are not going home.\n\nNothing is stored on a server: your start point stays in your own browser.\n\nThe distance limits from your start (and, in pool mode, to the first and from the last gig) sit in this panel, next to the start itself."
   },
   {
     "step": "start-end",
@@ -15,7 +15,7 @@
       "pool"
     ],
     "title": "Why set a start and end?",
-    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from and where you need to end up.\n\n- The **start** and **end** are used to cost the journey to the first gig and home again.\n- Use the **first gig** and **last gig** limits if you have to get there after work, or must get home after the last show.\n\nNothing is stored on a server: your start point stays in your own browser."
+    "text": "Travel is the real cost of a tour, so the planner needs to know where you are leaving from and where you need to end up.\n\n- The **start** and **end** are used to cost the journey to the first gig and home again.\n- Use the **first gig** and **last gig** limits if you have to get there after work, or must get home after the last show.\n\nNothing is stored on a server: your start point stays in your own browser.\n\nThe distance limits from your start (and, in pool mode, to the first and from the last gig) sit in this panel, next to the start itself."
   },
   {
     "step": "anchor",
@@ -50,12 +50,12 @@
   {
     "step": "other-events",
     "title": "Why choose kinds of event?",
-    "text": "By default the planner uses story club nights and their specials.\n\nTick other kinds to use venues and gigs from:\n\n- one-off story events\n- music events\n- poetry events\n- folk nights\n- Irish sessions\n\nIn \"a venue\" mode the same choice decides which venues appear in the list, so you can build around a music or poetry venue as easily as a story club."
+    "text": "By default the planner uses story club nights and their specials.\n\nTick other kinds to use venues and gigs from:\n\n- one-off story events\n- music events\n- poetry events\n- folk nights\n- Irish sessions\n\nIn \"a venue\" mode the same choice decides which venues appear in the list, so you can build around a music or poetry venue as easily as a story club.\n\nIn club and period modes, changing the kinds updates the options straight away. In venue mode this step comes first, because it decides which venues you can choose."
   },
   {
     "step": "build",
     "title": "What happens when I build?",
-    "text": "The planner gathers every gig that fits your choices and shows them as day columns, with a suggested shortest route.\n\nYou can then pick gigs yourself, change the filters and watch the map update. Nothing is booked – this is a planning tool."
+    "text": "**Develop tour** finds every gig that fits what you have set up and lays them out day by day, with the map beside them.\n\nThe required steps fold away afterwards (with a summary line you can expand). The panels beside the map, and the Filters, apply straight away, so you can keep adjusting while you look at the map and the day columns. Your picks are kept where they still fit."
   },
   {
     "step": "filters",
