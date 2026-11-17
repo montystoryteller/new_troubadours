@@ -357,7 +357,7 @@ function numberSteps() {
   const cards = [...document.querySelectorAll("#plannerFlow > .flow-card")].filter((c) => !c.hidden);
   cards.sort((a, b) => (parseInt(getComputedStyle(a).order, 10) || 0) - (parseInt(getComputedStyle(b).order, 10) || 0));
   let n = 0;
-  const numbered = currentMode() === "pool";
+  const numbered = true;
   cards.forEach((c) => {
     const h = c.querySelector(":scope > h3.flow-step");
     if (!h) return;
@@ -381,6 +381,7 @@ function resetPoolState() {
 
 function setMode() {
   const m = currentMode();
+  document.querySelectorAll('input[name="buildMode"]').forEach((r) => { r.checked = r.value === m; r.closest(".mode-card").classList.toggle("selected", r.value === m); });
   const flow = document.getElementById("plannerFlow");
   if (flow) { flow.classList.remove("mode-club", "mode-venue", "mode-period", "mode-pool"); flow.classList.add("mode-" + m); }
   document.querySelectorAll("[data-modes]").forEach((n) => {
@@ -2163,6 +2164,12 @@ async function initPlanner() {
   attachScaleSlider("minSpread", "minSpreadSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
   attachScaleSlider("minHop", "minHopSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
   document.getElementById("plannerMode").addEventListener("change", setMode);
+  document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
+    if (!r.checked) return;
+    const sel = document.getElementById("plannerMode");
+    sel.value = r.value;
+    sel.dispatchEvent(new Event("change", { bubbles: true }));
+  }));
   document.getElementById("areaFind").addEventListener("click", () => findPlace("areaInput", "areaChoices", setArea));
   document.getElementById("areaInput").addEventListener("keydown", (e) => { if (e.key === "Enter") findPlace("areaInput", "areaChoices", setArea); });
   document.getElementById("areaClear").addEventListener("click", () => { setArea(null); document.getElementById("areaInput").value = ""; });

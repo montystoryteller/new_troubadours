@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170935">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170942">
 </head>
 
 <body class="page-tour-planner">
@@ -42,17 +42,39 @@
         <div class="ts-panel ts-flow" id="plannerFlow">
 
             <section id="blkMode" data-step="build-around" class="flow-card">
-                <h3 class="flow-step" data-modes="pool" hidden>Build around</h3>
-                <div class="ts-grid">
-                    <label class="ts-field">Build around
-                        <select id="plannerMode">
-                            <option value="club">A club</option>
-                            <option value="venue">A venue</option>
-                            <option value="period">A period (and optionally an area)</option>
-                            <option value="pool">A venue pool from artists / tours</option>
-                        </select>
+                <h3 class="flow-step">Build around</h3>
+                <div class="mode-cards" role="radiogroup" aria-label="What to build the tour around">
+                    <label class="mode-card" data-mode="club">
+                        <input type="radio" name="buildMode" value="club">
+                        <span class="mode-title">A club</span>
+                        <span class="mode-desc">Fill the days around one story club night.</span>
+                        <span class="mode-more">Pick a club and one of its dates; the planner finds gigs nearby on the days either side. Good when you are already booked at a club.</span>
+                    </label>
+                    <label class="mode-card" data-mode="venue">
+                        <input type="radio" name="buildMode" value="venue">
+                        <span class="mode-title">A venue</span>
+                        <span class="mode-desc">Fill the days around a gig at one venue.</span>
+                        <span class="mode-more">Pick any venue with a gig coming up (story, music, poetry, folk or session, as ticked below) and build around it. Good for a booking that is not at a story club.</span>
+                    </label>
+                    <label class="mode-card" data-mode="period">
+                        <input type="radio" name="buildMode" value="period">
+                        <span class="mode-title">A period</span>
+                        <span class="mode-desc">Look at everything in a date window, optionally in an area.</span>
+                        <span class="mode-more">Choose up to 21 days and, if you like, an area; every gig in range is offered. Good when you know when you are free but not where you are going.</span>
+                    </label>
+                    <label class="mode-card" data-mode="pool">
+                        <input type="radio" name="buildMode" value="pool">
+                        <span class="mode-title">A venue pool</span>
+                        <span class="mode-desc">Tour the venues that chosen artists have played.</span>
+                        <span class="mode-more">Choose artists or tours, discover similar artists' venues, and build a route from that pool. Good for copying what already works for acts like yours.</span>
                     </label>
                 </div>
+                <select id="plannerMode" class="sr-only" aria-hidden="true" tabindex="-1">
+                    <option value="club">A club</option>
+                    <option value="venue">A venue</option>
+                    <option value="period">A period (and optionally an area)</option>
+                    <option value="pool">A venue pool from artists / tours</option>
+                </select>
             </section>
 
             <section id="blkPool" data-step="artists" class="flow-card" data-modes="pool" hidden>
@@ -90,7 +112,7 @@
             </section>
 
             <section id="blkDates" data-step="dates" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step" data-modes="pool" hidden>Dates and tour shape <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button></h3>
+                <h3 class="flow-step">Dates<span data-modes="pool" hidden> and tour shape</span> <button type="button" class="flow-collapse" data-modes="pool" hidden aria-expanded="true">Collapse</button></h3>
                 <div class="ts-grid">
                     <label class="ts-field">From
                         <input id="periodStart" type="date">
@@ -108,6 +130,7 @@
             </section>
 
             <section id="blkAnchor" data-step="anchor" class="flow-card" data-modes="club venue" hidden>
+                <h3 class="flow-step">Choose the anchor gig</h3>
                 <div class="ts-grid">
                     <label class="ts-field" data-modes="club">Anchor club
                         <select id="anchorClub"></select>
@@ -174,7 +197,7 @@
             </section>
 
             <section id="blkArea" data-step="area" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step" data-modes="pool" hidden>Area (optional)</h3>
+                <h3 class="flow-step">Area (optional)</h3>
                 <div class="ts-grid">
                     <label class="ts-field">Area radius (miles)
                         <input id="areaRadius" type="number" min="5" max="500" value="60">
@@ -202,7 +225,8 @@
             </section>
 
             <section id="blkOther" data-step="other-events" class="flow-card" data-modes="club venue period" hidden>
-                <div class="ts-hint">Kinds of event to use (for the venue list and the gigs around it):</div>
+                <h3 class="flow-step">Kinds of event</h3>
+                <div class="ts-hint">Which kinds of event to use (for the venue list and the gigs around it):</div>
                 <div class="ts-checks" id="eventKinds">
                     <label><input type="checkbox" id="catClub" checked> Story clubs</label>
                     <label><input type="checkbox" id="catStoryEvent"> One-off story events</label>
@@ -285,8 +309,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611162400"></script>
-    <script src="/js/tour_planner.js?v=202611170935"></script>
+    <script src="/js/tour_support.js?v=202611170940"></script>
+    <script src="/js/tour_planner.js?v=202611170942"></script>
 </body>
 
 </html>
