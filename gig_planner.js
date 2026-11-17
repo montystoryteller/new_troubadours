@@ -347,6 +347,16 @@ function gRenderDays(strip, counts, total) {
   view.forEach(([k, n]) => mk(`${gShortDate(gParseInput(k))} · ${n}`, k, heat(n, max)));
 }
 
+/** Wide screens: the date strip gets its own full-width row, between the map row and the results.
+ *  Narrow screens: it stays inside the results card, above the list. Re-placed if the window is resized across 1000px. */
+function gPlaceDayStrip() {
+  const strip = document.getElementById("gcDays"), results = document.getElementById("gcResults");
+  const wide = window.matchMedia("(min-width: 1000px)").matches;
+  if (wide) results.parentNode.insertBefore(strip, results);
+  else results.insertBefore(strip, document.getElementById("gcBrowse"));
+  strip.classList.toggle("gc-days-bar", wide);
+}
+
 /** One line under "Refine" so the active filters are visible while it is collapsed. */
 function gRefineSummary() {
   const el = document.getElementById("gcRefineSummary");
@@ -563,6 +573,7 @@ function gRenderPlan() {
   const host = document.getElementById("gcPlan"), box = document.getElementById("gcPlanBody");
   box.replaceChildren();
   host.hidden = !GC.anchor;
+  document.getElementById("gcApp").classList.toggle("has-anchor", !!GC.anchor); // lets the wide-screen map change height
   if (!GC.anchor) { gRenderMap([]); return; }
   const stops = gStops(), home = gHome();
   const ol = gEl("ol", "ts-list");
@@ -780,6 +791,9 @@ async function gInit() {
     GC.venueByLabel.set(v.name.toLowerCase(), v);
     const o = document.createElement("option"); o.value = v.name; dl.appendChild(o);
   });
+  gPlaceDayStrip();
+  const stripMq = window.matchMedia("(min-width: 1000px)");
+  if (stripMq.addEventListener) stripMq.addEventListener("change", gPlaceDayStrip); else stripMq.addListener(gPlaceDayStrip);
   const saved = gLoadNear();
   if (saved) { GC.start = saved; document.getElementById("gcStartInput").value = saved.label; gShowStart(saved); }
   document.getElementById("gcStartFind").addEventListener("click", gFindStart);

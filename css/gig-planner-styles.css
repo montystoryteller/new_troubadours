@@ -60,10 +60,15 @@ body.page-gig-planner { overflow-x: clip; overflow-y: visible; }
 .page-gig-planner #gcResults { order: 5; }
 
 @media (min-width: 1000px) {
-  .page-gig-planner .gc-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: 20px; align-items: start; }
+  .page-gig-planner .gc-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: 20px; row-gap: 16px; align-items: start; }
   .page-gig-planner .gc-layout.no-map { grid-template-columns: minmax(0, 1fr); }
-  .page-gig-planner .gc-col-main { display: block; grid-column: 1; min-width: 0; }
-  .page-gig-planner #gcMapWrap { grid-column: 2; position: sticky; top: 12px; height: min(calc(100vh - 24px), 780px); margin-bottom: 0; }
+  .page-gig-planner .gc-col-main { display: block; grid-column: 1; grid-row: 1; min-width: 0; }
+  .page-gig-planner #gcMapWrap { grid-column: 2; grid-row: 1; position: sticky; top: 12px; height: min(calc(100vh - 24px), 440px); margin-bottom: 0; }
+  /* Once a gig is picked the left side holds the trip and the nights, so the map can be taller. */
+  .page-gig-planner .gc-layout.has-anchor #gcMapWrap { height: min(calc(100vh - 24px), 620px); }
+  /* Row 2: the date strip, across the full width under the map. Row 3: the results, also full width. */
+  .page-gig-planner .gc-layout > #gcDays,
+  .page-gig-planner .gc-layout > #gcResults { grid-column: 1 / -1; }
 }
 
 /* ── find panel ────────────────────────────────────────────────────── */
@@ -88,6 +93,9 @@ body.page-gig-planner { overflow-x: clip; overflow-y: visible; }
 .gc-day:hover { border-color: #2e7d32; }
 .gc-day.on { background: #2e7d32; border-color: #2e7d32; color: #fff; font-weight: 700; }
 @media (min-width: 1000px) { .gc-days { flex-wrap: wrap; overflow-x: visible; } }
+/* Wide screens: the strip is moved (see gPlaceDayStrip) out of the results card into its own full-width bar. */
+.gc-days.gc-days-bar { background: #fff; padding: 12px 14px; margin: 0 0 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+.gc-days:empty { display: none; }
 
 .gc-find .ts-status:empty, .gc-find .ts-hint:empty { display: none; }
 .page-gig-planner #gcPlan, .page-gig-planner #gcNearby { scroll-margin-top: 8px; }
