@@ -429,7 +429,7 @@ function numberSteps() {
 function resetPoolState() {
   PLANNER.pickPerf.clear(); PLANNER.pickTour.clear();
   PLANNER.extraVenues = new Map(); PLANNER.primary = null; PLANNER.pool = [];
-  PLANNER.exp.focus = new Set(); PLANNER.exp.scope = "all"; PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
+  PLANNER.exp.focus = new Set(); PLANNER.exp.scope = "all"; PLANNER.exp.discover = false; PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
   ["poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"].forEach((id) => { const c = document.getElementById(id); if (c) c.checked = false; });
   ["poolPerfChips", "poolTourChips", "poolPerfResults", "poolTourResults"].forEach((id) => { const n = document.getElementById(id); if (n) n.replaceChildren(); });
   ["poolPerfFilter", "poolTourFilter"].forEach((id) => { const n = document.getElementById(id); if (n) n.value = ""; });
@@ -657,7 +657,7 @@ function refreshPool() {
 }
 
 // ── venue explorer: who has played the pool's venues, and what is new to you ──
-PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, focus: new Set(), scope: "all", hover: null };
+PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, discover: false, focus: new Set(), scope: "all", hover: null };
 PLANNER.extraVenues = new Map(); // venue id -> Set(artist ids) added from a suggested artist
 PLANNER.primary = null;
 const ART_COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]; // colour-blind friendly
@@ -702,7 +702,8 @@ function similarArtists() {
 function expModel() {
   const idx = performerVenueIndex();
   const sel = selectedArtistIds(), prim = primaryId();
-  const sim = similarArtists().slice(0, 8);
+  // suggestions are opt-in: the pool is just the chosen artists' venues until you ask to discover more
+  const sim = PLANNER.exp.discover ? similarArtists().slice(0, 8) : [];
   // an artist you are focused on stays in the model even if they stop being suggested
   const ext = [...PLANNER.exp.focus].filter((id) => !sel.includes(id) && !sim.some((o) => o.id === id));
   const colour = new Map();
@@ -793,6 +794,18 @@ function renderPoolList() {
   head.addEventListener("click", () => { e.open = !e.open; renderPoolList(); });
   box.appendChild(head);
   if (!e.open) return;
+
+  const disc = el("div", "exp-discover");
+  const db = el("button", "exp-chip" + (e.discover ? " on" : ""), e.discover ? "Discovering: showing venues of similar artists ✓" : "Discover more: also show venues played by similar artists");
+  db.type = "button"; db.setAttribute("aria-pressed", String(e.discover));
+  db.addEventListener("click", () => {
+    e.discover = !e.discover;
+    if (!e.discover) { e.focus = new Set([...e.focus].filter((id) => selectedArtistIds().includes(id))); if (e.scope === "out") e.scope = "all"; }
+    renderPoolList(); renderPoolMap(false);
+  });
+  disc.appendChild(db);
+  disc.appendChild(el("span", "ts-hint", e.discover ? " Suggested artists and their venues are shown as extra options; add the ones you like to the pool." : " Off: this list is only the venues of the artists you chose above."));
+  box.appendChild(disc);
 
   // artists: colour key, ★ primary, hover to highlight, click to solo
   const arts = el("div", "exp-artists");
