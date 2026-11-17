@@ -1782,6 +1782,7 @@ function renderAll() {
     if (pickHere) {
       const tog = el("button", "col-collapse", PLANNER.collapsed.has(k) ? "show all" : "only my pick");
       tog.type = "button";
+      tog.setAttribute("aria-pressed", String(PLANNER.collapsed.has(k)));
       tog.addEventListener("click", () => { if (PLANNER.collapsed.has(k)) PLANNER.collapsed.delete(k); else PLANNER.collapsed.add(k); renderAll(); });
       col.appendChild(tog);
     }
@@ -1837,6 +1838,7 @@ function renderAll() {
     });
     if (hiddenClose) col.appendChild(el("div", "graph-none", `${hiddenClose} hidden by the column filters`));
     if (hiddenOther) col.appendChild(el("div", "graph-none", `${hiddenOther} other option${hiddenOther > 1 ? "s" : ""} hidden`));
+    col.addEventListener("scroll", () => { if (!PLANNER._edgeRaf) PLANNER._edgeRaf = requestAnimationFrame(() => { PLANNER._edgeRaf = 0; drawEdges(); }); }, { passive: true });
     inner.appendChild(col);
   });
   if (endPoint()) inner.appendChild(colHome(PLANNER.endSame === false ? "End" : "Return", "home-end", endPoint()));
@@ -1867,7 +1869,11 @@ function drawEdges() {
     const e = nodeEls.get(id);
     if (!e) return null;
     const r = e.getBoundingClientRect();
-    return { x: (side === "r" ? r.right : r.left) - ir.left, y: r.top + r.height / 2 - ir.top };
+    // a node scrolled out of its column keeps its line, pinned to the column's visible edge
+    const cr = e.parentElement ? e.parentElement.getBoundingClientRect() : null;
+    let y = r.top + r.height / 2;
+    if (cr && cr.height > 0 && e.parentElement.classList.contains("graph-col")) y = Math.min(Math.max(y, cr.top + 28), cr.bottom - 6);
+    return { x: (side === "r" ? r.right : r.left) - ir.left, y: y - ir.top };
   };
   const chosenIds = new Set([...PLANNER.chosen.values()].map((c) => c.id));
   const bestIds = new Set(PLANNER.best ? PLANNER.best.stops.map((c) => c.id) : []);
