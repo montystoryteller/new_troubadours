@@ -10,15 +10,15 @@
       "description": "Husband and wife award winning independent music promoters, Wroot Rocks have been organising grass roots music events in the North Lincolnshire and South Yorkshire area since 2011.\n\n\n\nWroot Rocks are passionate about live music and making it accessible and affordable to all in a welcoming, friendly, inclusive, and safe environment. They are committed to grassroots ethos, to finding emerging acts, supporting artists, curating diverse and interesting line-ups, and creating genuine experiences, rather than just gigs for profit.\n\n\n\nWhere large venues are more likely to book bands on tour, with management, agents, and PR companies, Wroot Rocks seek out the interesting and the unusual (whether that be folk, alternative, punk or independent), and persuade them to bring their music to small venues in North Lincolnshire and South Yorkshire.\n\n\n\nIn addition to their two festivals, Ey Up Mi Duck and Gig in a Field, and their gigs in Wroot Village Hall, they are continually looking for new fun and innovative ways to share their love of music with the Wroot Rocks family. In 2025 they introduced Folk on the Water — three hour trips on a historic passenger riverboat with live music. They are also excited about our Day Gigging — their usual Village Hall gigs with amazing bands, bar, and food, but during the day, so everyine can all still have an early night!!",
       "promoter_link": "https://www.wrootrocks.com/"
     },
-        "songs-of-anger-and-redemption": {
-          "promoter_id": "songs-of-anger-and-redemption",
-          "name": "Songs of Anger and Redemption",
-          "ticketing_url": "https://wegottickets.com/SongsofAngerandRedemption",
-          "facebook": "https://www.facebook.com/groups/1770062253116087/",
-          "promoter_venues": [
-            "katie-fitzgeralds-stourbridge"
-          ]
-        },
+    "songs-of-anger-and-redemption": {
+      "promoter_id": "songs-of-anger-and-redemption",
+      "name": "Songs of Anger and Redemption",
+      "ticketing_url": "https://wegottickets.com/SongsofAngerandRedemption",
+      "facebook": "https://www.facebook.com/groups/1770062253116087/",
+      "promoter_venues": [
+        "katie-fitzgeralds-stourbridge"
+      ]
+    },
     "50rpm": {
       "promoter_id": "50rpm",
       "name": "50rpm, Coatbridge",
@@ -5758,185 +5758,185 @@
         }
       ]
     },
-      "sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour": {
-        "tour_name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
-        "tour_dates": [
-          {
-            "date": "15/01/2027",
-            "venue_id": "chapel-arts-centre-bath",
-            "time": "Doors 7.30pm, Start 8pm",
-            "price": "£18.50 (+ £1.90)",
-            "ticket_url": "https://wegottickets.com/af/671/f/25663",
-            "isSpecial": true,
-            "event_flyer": "2027_01_15_sound_sirens_bath.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270115-chapel-arts-centre-bath"
-          },
-          {
-            "date": "16/01/2027",
-            "venue_id": "marine-theatre-lyme-regis",
-            "time": "8pm",
-            "price": "£19.50 (+ £1.95) / Advance (members) £17.55 (+ £1.76)",
-            "ticket_url": "https://www.ticketsource.com/booking/select/lmvqnozkkamn",
-            "isSpecial": true,
-            "event_flyer": "2027_01_16_sound_sirens_lyme_regis.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270116-marine-theatre-lyme-regis"
-          },
-          {
-            "date": "23/01/2027",
-            "venue_id": "tree-house-frome",
-            "time": "19:00",
-            "price": "£18.50 (+ £2)",
-            "ticket_url": "https://www.cheeseandgrain.com/events/sound-of-the-sirens/",
-            "isSpecial": true,
-            "event_flyer": "2027_01_23_sound_sirens_frome.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270123-tree-house-frome"
-          },
-          {
-            "date": "29/01/2027",
-            "venue_id": "folklore-rooms-brighton",
-            "time": "20:00",
-            "price": "£16.50 (+ £1.75)",
-            "ticket_url": "https://meltingvinyl.seetickets.com/event/sound-of-sirens-special-guests/the-folklore-rooms/3705498",
-            "isSpecial": true,
-            "event_flyer": "2027_01_29_sound_sirens_brighton.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270129-folklore-rooms-brighton"
-          },
-          {
-            "date": "06/02/2027",
-            "venue_id": "the-quay-sudbury",
-            "time": "7.30pm",
-            "price": "£18.50 (+ £1.50)",
-            "ticket_url": "https://quaysudbury.com/events/sound-of-the-sirens/",
-            "isSpecial": true,
-            "event_flyer": "2027_02_06_sound_sirens_sudbury.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270206-the-quay-sudbury"
-          },
-          {
-            "date": "07/02/2027",
-            "venue_id": "green-note-london",
-            "time": "Doors open 7pm, Music starts 8.30pm",
-            "price": "£18.50",
-            "ticket_url": "https://www.greennote.co.uk/production/sound-of-the-sirens/",
-            "isSpecial": true,
-            "event_flyer": "2027_02_07_sound_sirens_green_note.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270207-green-note-london"
-          },
-          {
-            "date": "12/02/2027",
-            "venue_id": "rother-st-arts-house-stratford",
-            "time": "First Set 8pm - 8:45pm; Second Set 9:05pm - 9:50pm",
-            "price": "£19.00 (+ £1.00)",
-            "ticket_url": "https://rotherstreetarts.ticketsolve.com/ticketbooth/shows/1173692308",
-            "isSpecial": true,
-            "event_flyer": "2027_02_12_sound_sirens_stratford.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270212-rother-st-arts-house-stratford"
-          },
-          {
-            "date": "21/02/2027",
-            "venue_id": "alberts-shed-shrewsbury",
-            "time": "7pm",
-            "price": "£18.50",
-            "ticket_url": "https://albertsshed.co.uk/events/shrewsbury-sound-of-the-sirens-21-02-2027/",
-            "isSpecial": true,
-            "event_flyer": "2027_02_21_sound_sirens_alberts_shed.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270221-alberts-shed-shrewsbury"
-          },
-          {
-            "date": "16/04/2027",
-            "venue_id": "the-ruze-chippenham",
-            "time": "Doors & bar open at 6:30pm",
-            "price": "£19 in advance, £24 on the door",
-            "ticket_url": "https://theruze.co.uk/product/sound-of-the-sirens-friday-16th-april/",
-            "isSpecial": true,
-            "event_flyer": "2027_04_16_sound_sirens_chippenham.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270416-the-ruze-chippenham"
-          },
-          {
-            "date": "17/04/2027",
-            "venue_id": "bridgwater-arts-centre-bridgwater",
-            "time": "Bar Open 18.30, Theatre Doors 19.00, Show Starts 19.30",
-            "price": "£18.50 (+ £1.00)",
-            "ticket_url": "https://bridgwatertheatres.ticketsolve.com/ticketbooth/shows/1173692279",
-            "isSpecial": true,
-            "event_flyer": "2027_04_17_sound_sirens_bridgwater.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270417-bridgwater-arts-centre-bridgwater"
-          },
-          {
-            "date": "24/04/2027",
-            "venue_id": "reeth-memorial-hall-richmond",
-            "time": "Door time: 7:30pm, start time: 8:00pm",
-            "price": "£18.50 (+ £1.90)",
-            "ticket_url": "https://wegottickets.com/af/671/f/25663",
-            "isSpecial": true,
-            "event_flyer": "2027_04_24_sound_sirens_reeth.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270424-reeth-memorial-hall-richmond"
-          },
-          {
-            "date": "25/04/2027",
-            "venue_id": "the-cluny-newcastle",
-            "time": "Doors 7.30pm",
-            "price": "£18.50 (+ £1.85)",
-            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-cluny-2/3705311",
-            "isSpecial": true,
-            "event_flyer": "2027_04_25_sound_sirens_newcastle.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270425-the-cluny-newcastle"
-          },
-          {
-            "date": "01/05/2027",
-            "venue_id": "star-inn-guildford",
-            "time": "20:00",
-            "price": "£18.50 (+ £1.85)",
-            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-star-inn/3702056",
-            "isSpecial": true,
-            "event_flyer": "2027_05_01_sound_sirens_guildford.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270501-star-inn-guildford"
-          },
-          {
-            "date": "07/05/2027",
-            "venue_id": "the-acorn-penzance",
-            "time": "8:00 pm",
-            "price": "£18.50 (+ £1)",
-            "ticket_url": "https://www.theacornpenzance.com/events/sound-of-the-sirens/",
-            "isSpecial": true,
-            "event_flyer": "2027_05_07_sound_sirens_penzance.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270507-the-acorn-penzance"
-          },
-          {
-            "date": "08/05/2027",
-            "venue_id": "caryford-community-hall-somerset",
-            "time": "Doors 7pm, Start 7.30pm",
-            "price": "£18 (+ £1.80)",
-            "ticket_url": "https://wegottickets.com/af/671/f/26107",
-            "isSpecial": true,
-            "event_flyer": "2027_05_08_sound_sirens_somerset.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270508-caryford-community-hall-somerset"
-          },
-          {
-            "date": "14/05/2027",
-            "venue_id": "otford-memorial-hall-sevenoaks",
-            "time": "Doors 7pm, Start 7.30pm",
-            "ticket_url": "https://wegottickets.com/af/671/f/26049",
-            "isSpecial": true,
-            "event_flyer": "2027_05_14_sound_sirens_sevenoaks.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270514-otford-memorial-hall-sevenoaks"
-          },
-          {
-            "date": "21/05/2027",
-            "venue_id": "heartbreakers-southampton",
-            "time": "Door: 19:30, Start: 20:00",
-            "price": "£18.50 (+ £1.85)",
-            "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/heartbreakers/3702586",
-            "isSpecial": true,
-            "event_flyer": "2027_05_21_sound_sirens_southampton.jpg",
-            "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270521-heartbreakers-southampton"
-          }
-        ],
-        "name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
-        "performer_id": "sound-of-the-sirens",
-        "tour_description": "'The house that I grew in' Tour\n\n\n\nSound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood.\n\n\n\nHoning their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as 'one of the UK’s finest folk acts' not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.\n\n\n\nMartin & Wood are two of the hardest working musicians on the scene and wear their hearts very much on their sleeves in terms of their songwriting. The pair glide gracefully through laments of past relationships, and life experiences, as well as highlighting the important topics of the day, namely mental health awareness, and homelessness.\n\n\n\nWithout being pigeonholed into any stereotypical genre, the instrumentation of the band is vast, and varied. Martin (stage right) plays acoustic and high-strung (Nashville tuning) guitar, mandolin, and bass drum, while partner in crime Wood (stage left) plays acoustic and electric guitar, tambourine, snare drum, and the piano.",
-        "touring_event_flyer": "tour_sound_sirens_album_launch_2027.jpg",
-        "isMusic": true
-      },
+    "sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour": {
+      "tour_name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
+      "tour_dates": [
+        {
+          "date": "15/01/2027",
+          "venue_id": "chapel-arts-centre-bath",
+          "time": "Doors 7.30pm, Start 8pm",
+          "price": "£18.50 (+ £1.90)",
+          "ticket_url": "https://wegottickets.com/af/671/f/25663",
+          "isSpecial": true,
+          "event_flyer": "2027_01_15_sound_sirens_bath.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270115-chapel-arts-centre-bath"
+        },
+        {
+          "date": "16/01/2027",
+          "venue_id": "marine-theatre-lyme-regis",
+          "time": "8pm",
+          "price": "£19.50 (+ £1.95) / Advance (members) £17.55 (+ £1.76)",
+          "ticket_url": "https://www.ticketsource.com/booking/select/lmvqnozkkamn",
+          "isSpecial": true,
+          "event_flyer": "2027_01_16_sound_sirens_lyme_regis.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270116-marine-theatre-lyme-regis"
+        },
+        {
+          "date": "23/01/2027",
+          "venue_id": "tree-house-frome",
+          "time": "19:00",
+          "price": "£18.50 (+ £2)",
+          "ticket_url": "https://www.cheeseandgrain.com/events/sound-of-the-sirens/",
+          "isSpecial": true,
+          "event_flyer": "2027_01_23_sound_sirens_frome.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270123-tree-house-frome"
+        },
+        {
+          "date": "29/01/2027",
+          "venue_id": "folklore-rooms-brighton",
+          "time": "20:00",
+          "price": "£16.50 (+ £1.75)",
+          "ticket_url": "https://meltingvinyl.seetickets.com/event/sound-of-sirens-special-guests/the-folklore-rooms/3705498",
+          "isSpecial": true,
+          "event_flyer": "2027_01_29_sound_sirens_brighton.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270129-folklore-rooms-brighton"
+        },
+        {
+          "date": "06/02/2027",
+          "venue_id": "the-quay-sudbury",
+          "time": "7.30pm",
+          "price": "£18.50 (+ £1.50)",
+          "ticket_url": "https://quaysudbury.com/events/sound-of-the-sirens/",
+          "isSpecial": true,
+          "event_flyer": "2027_02_06_sound_sirens_sudbury.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270206-the-quay-sudbury"
+        },
+        {
+          "date": "07/02/2027",
+          "venue_id": "green-note-london",
+          "time": "Doors open 7pm, Music starts 8.30pm",
+          "price": "£18.50",
+          "ticket_url": "https://www.greennote.co.uk/production/sound-of-the-sirens/",
+          "isSpecial": true,
+          "event_flyer": "2027_02_07_sound_sirens_green_note.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270207-green-note-london"
+        },
+        {
+          "date": "12/02/2027",
+          "venue_id": "rother-st-arts-house-stratford",
+          "time": "First Set 8pm - 8:45pm; Second Set 9:05pm - 9:50pm",
+          "price": "£19.00 (+ £1.00)",
+          "ticket_url": "https://rotherstreetarts.ticketsolve.com/ticketbooth/shows/1173692308",
+          "isSpecial": true,
+          "event_flyer": "2027_02_12_sound_sirens_stratford.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270212-rother-st-arts-house-stratford"
+        },
+        {
+          "date": "21/02/2027",
+          "venue_id": "alberts-shed-shrewsbury",
+          "time": "7pm",
+          "price": "£18.50",
+          "ticket_url": "https://albertsshed.co.uk/events/shrewsbury-sound-of-the-sirens-21-02-2027/",
+          "isSpecial": true,
+          "event_flyer": "2027_02_21_sound_sirens_alberts_shed.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270221-alberts-shed-shrewsbury"
+        },
+        {
+          "date": "16/04/2027",
+          "venue_id": "the-ruze-chippenham",
+          "time": "Doors & bar open at 6:30pm",
+          "price": "£19 in advance, £24 on the door",
+          "ticket_url": "https://theruze.co.uk/product/sound-of-the-sirens-friday-16th-april/",
+          "isSpecial": true,
+          "event_flyer": "2027_04_16_sound_sirens_chippenham.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270416-the-ruze-chippenham"
+        },
+        {
+          "date": "17/04/2027",
+          "venue_id": "bridgwater-arts-centre-bridgwater",
+          "time": "Bar Open 18.30, Theatre Doors 19.00, Show Starts 19.30",
+          "price": "£18.50 (+ £1.00)",
+          "ticket_url": "https://bridgwatertheatres.ticketsolve.com/ticketbooth/shows/1173692279",
+          "isSpecial": true,
+          "event_flyer": "2027_04_17_sound_sirens_bridgwater.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270417-bridgwater-arts-centre-bridgwater"
+        },
+        {
+          "date": "24/04/2027",
+          "venue_id": "reeth-memorial-hall-richmond",
+          "time": "Door time: 7:30pm, start time: 8:00pm",
+          "price": "£18.50 (+ £1.90)",
+          "ticket_url": "https://wegottickets.com/af/671/f/25663",
+          "isSpecial": true,
+          "event_flyer": "2027_04_24_sound_sirens_reeth.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270424-reeth-memorial-hall-richmond"
+        },
+        {
+          "date": "25/04/2027",
+          "venue_id": "the-cluny-newcastle",
+          "time": "Doors 7.30pm",
+          "price": "£18.50 (+ £1.85)",
+          "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-cluny-2/3705311",
+          "isSpecial": true,
+          "event_flyer": "2027_04_25_sound_sirens_newcastle.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270425-the-cluny-newcastle"
+        },
+        {
+          "date": "01/05/2027",
+          "venue_id": "star-inn-guildford",
+          "time": "20:00",
+          "price": "£18.50 (+ £1.85)",
+          "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/the-star-inn/3702056",
+          "isSpecial": true,
+          "event_flyer": "2027_05_01_sound_sirens_guildford.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270501-star-inn-guildford"
+        },
+        {
+          "date": "07/05/2027",
+          "venue_id": "the-acorn-penzance",
+          "time": "8:00 pm",
+          "price": "£18.50 (+ £1)",
+          "ticket_url": "https://www.theacornpenzance.com/events/sound-of-the-sirens/",
+          "isSpecial": true,
+          "event_flyer": "2027_05_07_sound_sirens_penzance.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270507-the-acorn-penzance"
+        },
+        {
+          "date": "08/05/2027",
+          "venue_id": "caryford-community-hall-somerset",
+          "time": "Doors 7pm, Start 7.30pm",
+          "price": "£18 (+ £1.80)",
+          "ticket_url": "https://wegottickets.com/af/671/f/26107",
+          "isSpecial": true,
+          "event_flyer": "2027_05_08_sound_sirens_somerset.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270508-caryford-community-hall-somerset"
+        },
+        {
+          "date": "14/05/2027",
+          "venue_id": "otford-memorial-hall-sevenoaks",
+          "time": "Doors 7pm, Start 7.30pm",
+          "ticket_url": "https://wegottickets.com/af/671/f/26049",
+          "isSpecial": true,
+          "event_flyer": "2027_05_14_sound_sirens_sevenoaks.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270514-otford-memorial-hall-sevenoaks"
+        },
+        {
+          "date": "21/05/2027",
+          "venue_id": "heartbreakers-southampton",
+          "time": "Door: 19:30, Start: 20:00",
+          "price": "£18.50 (+ £1.85)",
+          "ticket_url": "https://www.seetickets.com/event/sound-of-the-sirens/heartbreakers/3702586",
+          "isSpecial": true,
+          "event_flyer": "2027_05_21_sound_sirens_southampton.jpg",
+          "eventId": "T-sound-of-the-sirens-the-house-that-i-grew-in-album-launch-tour-20270521-heartbreakers-southampton"
+        }
+      ],
+      "name": "Sound of the Sirens — The House That I Grew In Album Launch Tour",
+      "performer_id": "sound-of-the-sirens",
+      "tour_description": "'The house that I grew in' Tour\n\n\n\nSound of the Sirens are a singer-songwriting duo based in Exeter, Devon comprising of Abbe Martin & Hannah Wood.\n\n\n\nHoning their craft over the past decade, Martin & Wood have cemented themselves as firm favourites as 'one of the UK’s finest folk acts' not only on the Westcountry scene, but nationally, and internationally too. Their status, and fast-growing fan-base is not only testament to the pair’s prowess as songwriters and musicians, but as people too.\n\n\n\nMartin & Wood are two of the hardest working musicians on the scene and wear their hearts very much on their sleeves in terms of their songwriting. The pair glide gracefully through laments of past relationships, and life experiences, as well as highlighting the important topics of the day, namely mental health awareness, and homelessness.\n\n\n\nWithout being pigeonholed into any stereotypical genre, the instrumentation of the band is vast, and varied. Martin (stage right) plays acoustic and high-strung (Nashville tuning) guitar, mandolin, and bass drum, while partner in crime Wood (stage left) plays acoustic and electric guitar, tambourine, snare drum, and the piano.",
+      "touring_event_flyer": "tour_sound_sirens_album_launch_2027.jpg",
+      "isMusic": true
+    },
     "sound-of-the-sirens-autumn-winter-2026": {
       "tour_name": "Sound of the Sirens Autumn/Winter Tour 2026",
       "tour_dates": [
@@ -6024,7 +6024,10 @@
           "price": "£16.65-£25",
           "ticket_url": "https://www.tickettailor.com/events/reaperevents/2257366",
           "isSpecial": true,
-          "event_flyers": ["2026_11_21_sound_of_the_sirens_samantics.webp", "2026_12_12_samantics_last_few.jpg"],
+          "event_flyers": [
+            "2026_11_21_sound_of_the_sirens_samantics.webp",
+            "2026_12_12_samantics_last_few.jpg"
+          ],
           "other_performer_ids": [
             "samantics"
           ],
@@ -13551,7 +13554,10 @@
       "showname": "AwenRasa: A Collaboration Beyond Borders",
       "date": "18/11/2026",
       "venue_id": "university-of-south-wales-cardiff",
-      "performer_ids": ["michael-harvey", "shereen-saif"],
+      "performer_ids": [
+        "michael-harvey",
+        "shereen-saif"
+      ],
       "eventId": "20261118-michael-harvey-university-of-south-wales-cardiff",
       "date_added": "15/11/2026",
       "time": "3:30 PM - 5 PM",
@@ -14523,7 +14529,10 @@
       "date_added": "13/11/2026",
       "time": "7-9.45pm",
       "price": "£12 (+ £1.20)",
-      "event_flyers": ["2026_12_12_samantics_exeter.jpg", "2026_12_12_samantics_last_few.jpg"],
+      "event_flyers": [
+        "2026_12_12_samantics_exeter.jpg",
+        "2026_12_12_samantics_last_few.jpg"
+      ],
       "ticket_url": "https://wegottickets.com/af/671/f/22649",
       "isMusic": true
     },
@@ -15255,23 +15264,23 @@
         -2.250251
       ]
     },
-      "bridgwater-arts-centre-bridgwater": {
-        "id": "bridgwater-arts-centre-bridgwater",
-        "name": "Bridgwater Arts Centre, Bridgwater",
-        "venue_type": "Arts centre / venue",
-        "city": "Bridgwater",
-        "postcode": "TA6 3DD",
-        "full_address": "Bridgwater Arts Centre, 11-13 Castle St, Bridgwater, TA6 3DD",
-        "url": "https://www.bridgwaterartscentre.co.uk/",
-        "email": "BAC@bridgwater-tc.gov.uk",
-        "facebook": "BridgwaterArtsCentre",
-        "instagram": "bridgwaterartscentre",
-        "description": "Situated in the heart of Bridgwater...\n\n\n\nThe Arts Centre has been in existence on the Castle Street site since 1946.\n\n\n\nWe run a vast programme of events, activities and community groups in a wide range of arts disciplines. Our facilities are available to hire, for professional and community organisations.\n\n\n\nThe Bar hosts a variety of groups and activities throughout the week including a quiz, acoustic and music history evenings.",
-        "latlon": [
-          51.12945,
-          -3.00231
-        ]
-      },
+    "bridgwater-arts-centre-bridgwater": {
+      "id": "bridgwater-arts-centre-bridgwater",
+      "name": "Bridgwater Arts Centre, Bridgwater",
+      "venue_type": "Arts centre / venue",
+      "city": "Bridgwater",
+      "postcode": "TA6 3DD",
+      "full_address": "Bridgwater Arts Centre, 11-13 Castle St, Bridgwater, TA6 3DD",
+      "url": "https://www.bridgwaterartscentre.co.uk/",
+      "email": "BAC@bridgwater-tc.gov.uk",
+      "facebook": "BridgwaterArtsCentre",
+      "instagram": "bridgwaterartscentre",
+      "description": "Situated in the heart of Bridgwater...\n\n\n\nThe Arts Centre has been in existence on the Castle Street site since 1946.\n\n\n\nWe run a vast programme of events, activities and community groups in a wide range of arts disciplines. Our facilities are available to hire, for professional and community organisations.\n\n\n\nThe Bar hosts a variety of groups and activities throughout the week including a quiz, acoustic and music history evenings.",
+      "latlon": [
+        51.12945,
+        -3.00231
+      ]
+    },
     "avalon-archaeology": {
       "id": "avalon-archaeology",
       "name": "Avalon Archaeology",
@@ -15344,21 +15353,21 @@
         -2.44342
       ]
     },
-        "marine-theatre-lyme-regis": {
-          "id": "marine-theatre-lyme-regis",
-          "name": "Marine Theatre, Lyme Regis",
-          "venue_type": "Theatre",
-          "city": "Lyme Regis",
-          "postcode": "DT7 3QB",
-          "full_address": "Marine Theatre, Church St, Lyme Regis, DT7 3QB",
-          "url": "https://www.marinetheatre.com/",
-          "facebook": "marinetheatrelymeregis",
-          "instagram": "marinetheatrelymeregis",
-          "latlon": [
-            50.72509,
-            -2.93143
-          ]
-        },
+    "marine-theatre-lyme-regis": {
+      "id": "marine-theatre-lyme-regis",
+      "name": "Marine Theatre, Lyme Regis",
+      "venue_type": "Theatre",
+      "city": "Lyme Regis",
+      "postcode": "DT7 3QB",
+      "full_address": "Marine Theatre, Church St, Lyme Regis, DT7 3QB",
+      "url": "https://www.marinetheatre.com/",
+      "facebook": "marinetheatrelymeregis",
+      "instagram": "marinetheatrelymeregis",
+      "latlon": [
+        50.72509,
+        -2.93143
+      ]
+    },
     "galley-lyme-regis": {
       "id": "galley-lyme-regis",
       "name": "Galley, Lyme Regis",
@@ -15409,7 +15418,7 @@
     },
     "cilgerran-village-hall": {
       "id": "cilgerran-village-hall",
-      "name": "cilgerran Village Hall",
+      "name": "Cilgerran Village Hall",
       "city": "Cilgerran, Pembrokeshire",
       "postcode": "SA43 2SQ",
       "full_address": "Cilgerran Village Hall, High Street, Cilgerran, Pembrokeshire, SA43 2SQ",
@@ -17437,22 +17446,22 @@
         -3.52944
       ]
     },
-        "duke-of-wellington-shoreham-by-sea": {
-          "id": "duke-of-wellington-shoreham-by-sea",
-          "name": "Duke of Wellington, Shoreham-by-Sea",
-          "venue_type": "Other / unknown",
-          "city": "Shoreham-by-Sea",
-          "postcode": "BN43 6RE",
-          "full_address": "Duke of Wellington, 368 Brighton Road, Shoreham-by-Sea, BN43 6RE",
-          "url": "https://www.thewelly.co.uk/",
-          "email": "info@thewelly.co.uk",
-          "telephone": "01273 441297",
-          "description": "The Duke of Wellington is a vibrant and friendly local committed to safeguarding the traditions of fine beer and grassroots live music. As a freehold pub it stands out as a welcoming space extending into covered areas and a lovely beer garden at the back.\n\n\n\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nhome of live music\nThe home of live music in Shoreham-by-Sea\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nview what's on\nlocal legends\nFrom Local Legends to Rising Stars\nDrawing from a vibrant local music scene and bands from further afield, it has been an honor to platform a superb range of music that reflects our diverse customer base. From the promising young bands of the Shoreham Allstars, to veteran musicians who have been performing since the 70's ; our legendary sea shanty group 'the Wellington Wailers'; and, even the occasional celebrity... For full listings of events please check the Event calendar and find us on Facebook and Instagram for regular updates.",
-          "latlon": [
-            50.83288,
-            -0.2689
-          ]
-        },
+    "duke-of-wellington-shoreham-by-sea": {
+      "id": "duke-of-wellington-shoreham-by-sea",
+      "name": "Duke of Wellington, Shoreham-by-Sea",
+      "venue_type": "Other / unknown",
+      "city": "Shoreham-by-Sea",
+      "postcode": "BN43 6RE",
+      "full_address": "Duke of Wellington, 368 Brighton Road, Shoreham-by-Sea, BN43 6RE",
+      "url": "https://www.thewelly.co.uk/",
+      "email": "info@thewelly.co.uk",
+      "telephone": "01273 441297",
+      "description": "The Duke of Wellington is a vibrant and friendly local committed to safeguarding the traditions of fine beer and grassroots live music. As a freehold pub it stands out as a welcoming space extending into covered areas and a lovely beer garden at the back.\n\n\n\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nhome of live music\nThe home of live music in Shoreham-by-Sea\nThe pub's reputation as 'The home of live music in Shoreham-by-Sea' goes back to at least the early '80s and today, it goes from strength to strength. The lineup is eclectic with something for everyone across a busy timetable of weekly, monthly, and seasonal events, including long weekend beer festivals held twice a year.\n\n\n\nview what's on\nlocal legends\nFrom Local Legends to Rising Stars\nDrawing from a vibrant local music scene and bands from further afield, it has been an honor to platform a superb range of music that reflects our diverse customer base. From the promising young bands of the Shoreham Allstars, to veteran musicians who have been performing since the 70's ; our legendary sea shanty group 'the Wellington Wailers'; and, even the occasional celebrity... For full listings of events please check the Event calendar and find us on Facebook and Instagram for regular updates.",
+      "latlon": [
+        50.83288,
+        -0.2689
+      ]
+    },
     "ropetackle-arts-centre-shoreham": {
       "id": "ropetackle-arts-centre-shoreham",
       "name": "Ropetackle Arts Centre",
@@ -18015,21 +18024,21 @@
         -1.33597
       ]
     },
-        "charlbury-corner-house-memorial-hall": {
-          "id": "charlbury-corner-house-memorial-hall",
-          "name": "Charlbury Corner House & Memorial Hall",
-          "venue_type": "Village / community hall",
-          "city": "Charlbury, Oxford",
-          "postcode": "OX7 3PN",
-          "full_address": "Charlbury Corner House & Memorial Hall, Market Street, Charlbury, OX7 3PN",
-          "url": "https://charlburycornerhouse.co.uk/",
-          "email": "charlburycornerhouse@outlook.com",
-          "description": "Located in the heart of Charlbury only three minutes walk from the main car park. The Corner House is the ideal venue for meetings and group activities. A distinctive, historic building that was gifted to the town for recreational and educational purposes, it is home to the Cornerstone, The Garden Cafe and Charlbury Community Bookshop. The Memorial Hall, opened in 1956 in honour of those who served and those who lost their lives in two World Wars, is used on a daily basis for all manner of activities and events.\n\n\n\nOccupying a key position in the town centre, The Corner House is Grade II listed. It dates in part from the 17th Century or even earlier, with the Market Street facade added probably in the 1720s. In 1938, The Corner House was bought by Mr and Mrs C H Morris, then living at Lee Place, who in an act of great generosity gave it to the town at the end of the Second World War. Their intention to build a hall in what was then The Corner House garden as a memorial to Charlburians lost in the World Wars was realised about ten years later, bringing together the complex of buildings that we see today.",
-          "latlon": [
-            51.87302,
-            -1.48257
-          ]
-        },
+    "charlbury-corner-house-memorial-hall": {
+      "id": "charlbury-corner-house-memorial-hall",
+      "name": "Charlbury Corner House & Memorial Hall",
+      "venue_type": "Village / community hall",
+      "city": "Charlbury, Oxford",
+      "postcode": "OX7 3PN",
+      "full_address": "Charlbury Corner House & Memorial Hall, Market Street, Charlbury, OX7 3PN",
+      "url": "https://charlburycornerhouse.co.uk/",
+      "email": "charlburycornerhouse@outlook.com",
+      "description": "Located in the heart of Charlbury only three minutes walk from the main car park. The Corner House is the ideal venue for meetings and group activities. A distinctive, historic building that was gifted to the town for recreational and educational purposes, it is home to the Cornerstone, The Garden Cafe and Charlbury Community Bookshop. The Memorial Hall, opened in 1956 in honour of those who served and those who lost their lives in two World Wars, is used on a daily basis for all manner of activities and events.\n\n\n\nOccupying a key position in the town centre, The Corner House is Grade II listed. It dates in part from the 17th Century or even earlier, with the Market Street facade added probably in the 1720s. In 1938, The Corner House was bought by Mr and Mrs C H Morris, then living at Lee Place, who in an act of great generosity gave it to the town at the end of the Second World War. Their intention to build a hall in what was then The Corner House garden as a memorial to Charlburians lost in the World Wars was realised about ten years later, bringing together the complex of buildings that we see today.",
+      "latlon": [
+        51.87302,
+        -1.48257
+      ]
+    },
     "burton-taylor-studio-oxford": {
       "id": "burton-taylor-studio-oxford",
       "name": "Burton Taylor Studio",
@@ -18099,22 +18108,22 @@
       "url": "",
       "latlon": []
     },
-      "wheatsheaf-inn-chetwynd-aston": {
-        "id": "wheatsheaf-inn-chetwynd-aston",
-        "name": "Wheatsheaf Inn, Chetwynd Aston",
-        "venue_type": "Pub / bar / café",
-        "city": "Shropshire",
-        "postcode": "TF10 9LF",
-        "full_address": "Wheatsheaf Inn, Chetwynd Aston, Shropshire, TF10 9LF",
-        "url": "https://wheatsheafinn.co.uk/",
-        "facebook": "Wheatsheaf.TF10",
-        "instagram": "wheatsheaf.tf10",
-        "description": "While we like some cover songs that \"everybody\" knows, we do love supporting singer songwriters making and touring their own music.",
-        "latlon": [
-          52.75464,
-          -2.36724
-        ]
-      },
+    "wheatsheaf-inn-chetwynd-aston": {
+      "id": "wheatsheaf-inn-chetwynd-aston",
+      "name": "Wheatsheaf Inn, Chetwynd Aston",
+      "venue_type": "Pub / bar / café",
+      "city": "Shropshire",
+      "postcode": "TF10 9LF",
+      "full_address": "Wheatsheaf Inn, Chetwynd Aston, Shropshire, TF10 9LF",
+      "url": "https://wheatsheafinn.co.uk/",
+      "facebook": "Wheatsheaf.TF10",
+      "instagram": "wheatsheaf.tf10",
+      "description": "While we like some cover songs that \"everybody\" knows, we do love supporting singer songwriters making and touring their own music.",
+      "latlon": [
+        52.75464,
+        -2.36724
+      ]
+    },
     "ludlow-assembly-rooms-shropshire": {
       "id": "ludlow-assembly-rooms-shropshire",
       "name": "Ludlow Assembly Rooms",
@@ -21480,21 +21489,21 @@
         -4.14288
       ]
     },
-      "nunney-village-hall-frome": {
-        "id": "nunney-village-hall-frome",
-        "name": "Nunney Village Hall, Frome",
-        "venue_type": "Village / community hall",
-        "city": "Frome",
-        "postcode": "BA11 4NR",
-        "full_address": "Nunney Village Hall, Berry Hill, Nunney, Frome, BA11 4NR",
-        "email": "bookings@nunneyvillagehall.com",
-        "facebook": "NunneyVillageHall",
-        "description": "The hall is available for (approximate figures):\n\n\n\n120 seated at tables\n160 mixed occupancy tables and dance\n120 comfortably-seated audience\n\n\n\nWe have a projector and screen plus blackout blinds on the windows, perfect for small film shows.\n\n\n\nWe also have a modern audio system which accepts multiple inputs and links with the display system for DVDs/Laptop output etc.\n\n\n\nThere is a professional DMX lighting rig for the stage (you need to supply your own control desk), and associated sound system (separate to the one mentioned above).\n\n\n\nDimensions: For reference, the Main Hall area is at least 8 metres across and around 14 metres long. The stage area is 6 metres across by 4 metres deep (excluding the front stage apron). Bouncy castles of up to 15-18 feet tend to work well.",
-        "latlon": [
-          51.20812,
-          -2.37623
-        ]
-      },
+    "nunney-village-hall-frome": {
+      "id": "nunney-village-hall-frome",
+      "name": "Nunney Village Hall, Frome",
+      "venue_type": "Village / community hall",
+      "city": "Frome",
+      "postcode": "BA11 4NR",
+      "full_address": "Nunney Village Hall, Berry Hill, Nunney, Frome, BA11 4NR",
+      "email": "bookings@nunneyvillagehall.com",
+      "facebook": "NunneyVillageHall",
+      "description": "The hall is available for (approximate figures):\n\n\n\n120 seated at tables\n160 mixed occupancy tables and dance\n120 comfortably-seated audience\n\n\n\nWe have a projector and screen plus blackout blinds on the windows, perfect for small film shows.\n\n\n\nWe also have a modern audio system which accepts multiple inputs and links with the display system for DVDs/Laptop output etc.\n\n\n\nThere is a professional DMX lighting rig for the stage (you need to supply your own control desk), and associated sound system (separate to the one mentioned above).\n\n\n\nDimensions: For reference, the Main Hall area is at least 8 metres across and around 14 metres long. The stage area is 6 metres across by 4 metres deep (excluding the front stage apron). Bouncy castles of up to 15-18 feet tend to work well.",
+      "latlon": [
+        51.20812,
+        -2.37623
+      ]
+    },
     "tree-house-frome": {
       "id": "tree-house-frome",
       "name": "Tree House, Frome",
