@@ -25,6 +25,7 @@ const PLANNER = {
   reachMode: "grey", // venues out of range of the picks: show | grey | hide
   hideUsed: false, // hide venues already on the tour (when each venue is visited once)
   mapFollowsFilters: true, // map markers follow the column filters
+  autoCollapse: false,
   collapsed: new Set(), // day keys showing only their pick
   hideClose: false, // hide (rather than grey out) venues too close to a chosen stop
   eventsData: null,
@@ -369,7 +370,7 @@ function numberSteps() {
 function resetPoolState() {
   PLANNER.pickPerf.clear(); PLANNER.pickTour.clear();
   PLANNER.extraVenues = new Map(); PLANNER.primary = null; PLANNER.pool = [];
-  PLANNER.exp.solo = null; PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
+  PLANNER.exp.focus = new Set(); PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
   ["poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"].forEach((id) => { const c = document.getElementById(id); if (c) c.checked = false; });
   ["poolPerfChips", "poolTourChips", "poolPerfResults", "poolTourResults"].forEach((id) => { const n = document.getElementById(id); if (n) n.replaceChildren(); });
   ["poolPerfFilter", "poolTourFilter"].forEach((id) => { const n = document.getElementById(id); if (n) n.value = ""; });
@@ -578,7 +579,7 @@ function refreshPool() {
 }
 
 // ── venue explorer: who has played the pool's venues, and what is new to you ──
-PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, solo: null, hover: null };
+PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, focus: new Set(), hover: null };
 PLANNER.extraVenues = new Map(); // venue id -> Set(artist ids) added from a suggested artist
 PLANNER.primary = null;
 const ART_COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]; // colour-blind friendly
@@ -631,7 +632,8 @@ function expModel() {
   const rows = pool.map((r) => {
     const by = sel.filter((id) => has(id, r.vid));
     const group = !prim ? "all" : by.includes(prim) ? (by.length > 1 ? "shared" : "mine") : "new";
-    return { key: r.key, vid: r.vid, r, by, group, suggested: false, sources: [] };
+    const who = [...sel, ...sim.map((o) => o.id)].filter((id) => has(id, r.vid));
+    return { key: r.key, vid: r.vid, r, by, who, group, suggested: false, sources: [] };
   });
   const poolVids = new Set(pool.map((r) => r.vid));
   const sugg = new Map();
@@ -640,7 +642,7 @@ function expModel() {
     if (!sugg.has(vid)) sugg.set(vid, new Set());
     sugg.get(vid).add(o.id);
   }));
-  const suggested = [...sugg.entries()].map(([vid, src]) => ({ key: "s:" + vid, vid, r: null, by: [], group: "new", suggested: true, sources: [...src] }));
+  const suggested = [...sugg.entries()].map(([vid, src]) => ({ key: "s:" + vid, vid, r: null, by: [], who: [...src], group: "new", suggested: true, sources: [...src] }));
   return { sel, prim, sim, colour, rows, suggested };
 }
 function expLabel(x) {
@@ -651,11 +653,22 @@ function expLabel(x) {
 /** Apply the lens (set operation, soloed artist, sort); counts per group are taken before the group filter. */
 function expVisible(m) {
   const e = PLANNER.exp, n = m.sel.length;
+  const F = [...e.focus];
   let all = [...m.rows, ...m.suggested].filter((x) => {
+    if (F.length) {
+      const k = x.who.filter((id) => F.includes(id)).length;
+      if (!k) return false;
+      if (F.length > 1) {
+        if (e.setop === "all" && k !== F.length) return false;
+        if (e.setop === "two" && k < 2) return false;
+        if (e.setop === "one" && k !== 1) return false;
+      }
+      return true;
+    }
+    if (n < 2) return true; // the "played by" control only exists with 2+ artists
     if (e.setop === "all" && !(!x.suggested && n > 0 && x.by.length === n)) return false;
     if (e.setop === "two" && !(!x.suggested && x.by.length >= 2)) return false;
     if (e.setop === "one" && !(!x.suggested && x.by.length === 1)) return false;
-    if (e.solo && !x.by.includes(e.solo) && !x.sources.includes(e.solo)) return false;
     return true;
   });
   const counts = { all: all.length, mine: 0, shared: 0, new: 0 };
@@ -669,6 +682,11 @@ function expVisible(m) {
   return { shown, counts };
 }
 let expCardEls = new Map();
+/** The artists to show for a venue: just the focused ones when some are focused, else the selected ones (or the suggesting artists). */
+function artsOf(x) {
+  const F = PLANNER.exp.focus;
+  return F.size ? x.who.filter((id) => F.has(id)) : x.suggested ? x.sources : x.by;
+}
 
 function renderPoolList() {
   const box = document.getElementById("poolList");
@@ -698,17 +716,27 @@ function renderPoolList() {
   const arts = el("div", "exp-artists");
   [...m.sel, ...m.sim.slice(0, 5).map((o) => o.id)].forEach((id) => {
     const isSel = m.sel.includes(id);
-    const b = el("button", "exp-art" + (e.solo === id ? " solo" : "") + (isSel ? "" : " suggested"), "");
+    const b = el("button", "exp-art" + (e.focus.has(id) ? " solo" : "") + (isSel ? "" : " suggested"), "");
     b.type = "button";
     const dot = el("span", "exp-dot", (artistName(id) || "?").charAt(0).toUpperCase());
     dot.style.background = m.colour.get(id) || ART_OTHER;
     b.append(dot, " " + artistName(id) + (id === m.prim ? " ★" : isSel ? "" : " (suggested)"));
-    b.title = (isSel ? "Click to show only this artist's venues" : "Suggested: has played venues you have") + " · hover to highlight";
-    b.addEventListener("click", () => { e.solo = e.solo === id ? null : id; renderPoolList(); renderPoolMap(false); });
+    b.title = (isSel ? "Click to focus on this artist's venues (click several to compare)" : "Suggested: has played venues you have. Click to focus") + " · hover to highlight";
+    b.setAttribute("aria-pressed", String(e.focus.has(id)));
+    b.addEventListener("click", () => {
+      if (e.focus.has(id)) e.focus.delete(id); else { e.focus.add(id); if (e.focus.size === 1) e.colour = "artist"; }
+      renderPoolList(); renderPoolMap(false);
+    });
     b.addEventListener("mouseenter", () => { e.hover = id; markExpHover(); renderPoolMap(false); });
     b.addEventListener("mouseleave", () => { e.hover = null; markExpHover(); renderPoolMap(false); });
     arts.appendChild(b);
   });
+  if (e.focus.size) {
+    const clr = el("button", "exp-chip", `Focused on ${e.focus.size} artist${e.focus.size === 1 ? "" : "s"} — show all`);
+    clr.type = "button";
+    clr.addEventListener("click", () => { e.focus = new Set(); renderPoolList(); renderPoolMap(false); });
+    arts.appendChild(clr);
+  } else if (m.sel.length + m.sim.length > 1) arts.appendChild(el("span", "ts-hint", " Click artists to compare their venues on the list and map."));
   box.appendChild(arts);
 
   // lens controls
@@ -729,7 +757,7 @@ function renderPoolList() {
     lab.appendChild(s);
     return lab;
   };
-  if (m.sel.length > 1) bar.appendChild(sel("Played by", "setop", [["any", "any selected artist"], ["all", "all selected artists"], ["two", "2 or more artists"], ["one", "only one artist"]]));
+  if (m.sel.length > 1 || e.focus.size > 1) bar.appendChild(sel("Played by", "setop", [["any", e.focus.size ? "any of the focused artists (union)" : "any selected artist"], ["all", e.focus.size ? "all of the focused artists (overlap)" : "all selected artists"], ["two", "2 or more of them"], ["one", "only one of them"]]));
   bar.appendChild(sel("Map colours", "colour", [["state", "included / excluded"], ["artist", "by artist"]]));
   bar.appendChild(sel("Sort", "sort", [["count", "most played"], ["near", "nearest to start"], ["az", "A–Z"]]));
   bar.appendChild(sel("View", "view", [["cards", "cards"], ["list", "compact list"]]));
@@ -752,7 +780,7 @@ function renderPoolList() {
     const card = el("div", "exp-card" + (x.suggested ? " suggested" : "") + (x.r && !x.r.on ? " off" : ""));
     card.dataset.key = x.key;
     expCardEls.set(x.key, card);
-    const names = (x.suggested ? x.sources : x.by).map((id) => artistName(id));
+    const names = artsOf(x).map((id) => artistName(id));
     const top = el("div", "exp-card-top");
     if (!x.suggested) {
       const cb = el("input"); cb.type = "checkbox"; cb.checked = x.r.on;
@@ -761,7 +789,7 @@ function renderPoolList() {
       top.appendChild(cb);
     }
     const dots = el("span", "exp-dots");
-    (x.suggested ? x.sources : x.by).forEach((id) => {
+    artsOf(x).forEach((id) => {
       const d = el("span", "exp-dot sm", (artistName(id) || "?").charAt(0).toUpperCase());
       d.style.background = m.colour.get(id) || ART_OTHER; d.title = artistName(id);
       dots.appendChild(d);
@@ -805,7 +833,7 @@ function markExpHover() {
   const m = expModel();
   expCardEls.forEach((card, key) => {
     const x = [...m.rows, ...m.suggested].find((r) => r.key === key);
-    card.classList.toggle("dim", !!(h && x && !x.by.includes(h) && !x.sources.includes(h)));
+    card.classList.toggle("dim", !!(h && x && !x.who.includes(h)));
   });
 }
 /** Bring a suggested venue into the pool (using that artist's gigs there for its weekdays). */
@@ -842,13 +870,13 @@ async function renderPoolMap(fit) {
     const v = PLANNER.venues[x.vid];
     if (!v || !Array.isArray(v.latlon)) return;
     pts.push(v.latlon);
-    const fade = hov && !x.by.includes(hov) && !x.sources.includes(hov);
+    const fade = hov && !x.who.includes(hov);
     const firstCol = (id) => m.colour.get(id) || ART_OTHER;
     let opts;
     if (x.suggested) {
       opts = { radius: 8, color: firstCol(x.sources[0]), weight: 3, dashArray: "3 3", fillColor: "#fff", fillOpacity: 0.2, opacity: fade ? 0.25 : 1 };
     } else if (e.colour === "artist") {
-      const cols = x.by.map(firstCol);
+      const cols = artsOf(x).map(firstCol);
       opts = { radius: x.r.kind === "club" ? 9 : 7, fillColor: cols[0] || ART_OTHER, fillOpacity: x.r.on ? 0.95 : 0.3,
         color: cols.length > 1 ? cols[1] : "#fff", weight: cols.length > 1 ? 4 : 1.5, opacity: fade ? 0.25 : 1 };
       if (fade) opts.fillOpacity = 0.15;
@@ -857,7 +885,7 @@ async function renderPoolMap(fit) {
         fillColor: x.r.on ? (x.r.kind === "club" ? "#1b5e20" : "#43a047") : "#bdbdbd", fillOpacity: fade ? 0.2 : 0.95 };
     }
     const mk = L.circleMarker(v.latlon, opts);
-    const who = (x.suggested ? x.sources : x.by).map(artistName).join(", ");
+    const who = artsOf(x).map(artistName).join(", ");
     mk.bindTooltip(`${expLabel(x)}${who ? " — " + who : ""}${x.suggested ? " · new to you (click to add)" : x.r.on ? "" : " (excluded)"}`);
     mk.on("click", () => {
       if (x.suggested) addExtraVenue(x);
@@ -1363,7 +1391,9 @@ function onBuild() {
     if (PLANNER.anchor) {
       // reachable from the anchor at all: maxHop x days away
       const steps = Math.abs(Math.round((d - PLANNER.anchor.date) / 86400000));
-      nodes = nodes.filter((c) => roadMiles(aLL, latlonOf(c)) <= PLANNER.maxHop * steps)
+      // venues beyond maxHop x days from the anchor are no longer dropped here: the column filter
+      // ("out of range of my picks": show / grey out / hide) decides, so greyed-out venues can be seen
+      nodes = nodes
         .sort((x, y) => roadMiles(aLL, latlonOf(x)) - roadMiles(aLL, latlonOf(y)));
     } else if (centre) {
       nodes = nodes.filter((c) => roadMiles(centre, latlonOf(c)) <= PLANNER.radius)
@@ -1518,6 +1548,25 @@ function nodeState(c, stops) {
   return { near, used, unreach, hide: !!hide };
 }
 
+/** Distance from a gig to the nearest earlier and later picked stop (other days). */
+function neighbourLegs(c, stops) {
+  if (!stops.length) return {};
+  const cl = latlonOf(c), k = dkey(c.date);
+  let prev = null, next = null;
+  for (const s of stops) {
+    if (dkey(s.date) === k) continue;
+    if (s.date < c.date) prev = s; else if (!next) next = s;
+  }
+  const leg = (s, dir) => {
+    const m = roadMiles(latlonOf(s), cl);
+    if (m == null) return null;
+    const v = venueOf(s) || {};
+    const days = Math.round(Math.abs(s.date - c.date) / 86400000);
+    return { miles: m, label: `${v.city || s.name}${days > 1 ? ` (${days} days ${dir})` : ""}` };
+  };
+  return { prev: prev ? leg(prev, "earlier") : null, next: next ? leg(next, "later") : null };
+}
+
 function renderAll() {
   updateLivePanel();
   const wrap = document.getElementById("plannerResults");
@@ -1561,6 +1610,7 @@ function renderAll() {
   reachLbl.appendChild(reachSel);
   filters.appendChild(reachLbl);
   if (PLANNER.minSpread > 0) filters.appendChild(chk(`hide venues within ${PLANNER.minSpread} mi of a stop`, PLANNER.hideClose, (v) => { PLANNER.hideClose = v; renderAll(); }));
+  filters.appendChild(chk("collapse a day to my pick once I choose", PLANNER.autoCollapse, (v) => { PLANNER.autoCollapse = v; }));
   if (PLANNER.distinct && PLANNER.mode === "pool") filters.appendChild(chk("hide venues already on the tour", PLANNER.hideUsed, (v) => { PLANNER.hideUsed = v; renderAll(); }));
   const pickedDays = PLANNER.days.map(dkey).filter((k) => PLANNER.chosen.has(k));
   if (pickedDays.length) {
@@ -1641,6 +1691,9 @@ function renderAll() {
       if (c.note) n.appendChild(el("div", "graph-node-note", c.note));
       const h = homeLL();
       if (h) n.appendChild(el("div", "graph-node-home", `${fmtMiles(roadMiles(h, latlonOf(c)))} from start`));
+      const legs = neighbourLegs(c, stopsNow);
+      if (legs.prev) n.appendChild(el("div", "graph-node-leg", `← ${fmtMiles(legs.prev.miles)} from ${legs.prev.label}`));
+      if (legs.next) n.appendChild(el("div", "graph-node-leg", `→ ${fmtMiles(legs.next.miles)} to ${legs.next.label}`));
       if (c.link && /^https?:\/\//i.test(c.link)) {
         const a = el("a", "graph-node-link", "details ↗");
         a.href = c.link; a.target = "_blank"; a.rel = "noopener noreferrer";
@@ -1908,7 +1961,8 @@ function dayLabel(date) {
 function toggleNode(c) {
   const k = dkey(c.date);
   const cur = PLANNER.chosen.get(k);
-  if (cur && cur.id === c.id) PLANNER.chosen.delete(k); else PLANNER.chosen.set(k, c);
+  if (cur && cur.id === c.id) { PLANNER.chosen.delete(k); PLANNER.collapsed.delete(k); }
+  else { PLANNER.chosen.set(k, c); if (PLANNER.autoCollapse) PLANNER.collapsed.add(k); }
   renderAll();
 }
 

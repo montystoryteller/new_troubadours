@@ -172,3 +172,5 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 #plannerMapWrap { display: flex; flex-direction: column; gap: 8px; height: auto; align-self: flex-start; }
 #plannerMapWrap > #plannerMap { flex: none; height: 440px; }
 #plannerMapOpts .planner-filters { border-top: 0; padding-top: 0; }
+.graph-node-leg { font-size: .72em; color: #555; margin-top: 2px; }
+.exp-art.solo { outline: 2px solid #1b5e20; background: #e8f5e9; }
