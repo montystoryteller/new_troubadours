@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170942">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170947">
 </head>
 
 <body class="page-tour-planner">
@@ -264,10 +264,19 @@
             </div>
             <div class="live-group">
                 <h4>Where</h4>
+                <div class="dual-range-wrap" id="hopRange">
+                    <div class="dr-line"><span>Furthest between stops:</span> <strong id="drMaxTxt"></strong></div>
+                    <div class="dual-range">
+                        <div class="dr-fill" id="drFill"></div>
+                        <input type="range" id="drMin" aria-label="Minimum miles between stops">
+                        <input type="range" id="drMax" aria-label="Maximum miles between stops">
+                    </div>
+                    <div class="dr-line"><span>Closest between stops:</span> <strong id="drMinTxt"></strong></div>
+                    <div class="ts-hint">Drag the left handle for the closest two stops may be, the right handle for the furthest. Far left = no minimum; far right = no limit.</div>
+                </div>
                 <div class="ts-grid">
                     <label class="ts-field" data-modes="pool" hidden>Keep stops at least this many miles apart (0 = no minimum)
                         <input id="minHop" type="number" min="0" max="300" value="25">
-                        <input id="minHopSlider" class="ts-slider" type="range" aria-label="Minimum miles apart">
                     </label>
                     <label class="ts-field" data-modes="pool" hidden>…measured between
                         <select id="minScope">
@@ -277,14 +286,12 @@
                     </label>
                     <label class="ts-field">Max miles between stops (blank = no limit)
                         <input id="maxHop" type="number" min="5" max="500" value="60">
-                        <input id="maxHopSlider" class="ts-slider" type="range" aria-label="Maximum miles between gigs">
                     </label>
                     <label class="ts-field">Max miles from start (0 = no limit)
                         <input id="maxHome" type="number" min="0" max="1000" value="0">
                     </label>
                     <label class="ts-field" data-modes="club venue period" hidden>Keep stops at least this many miles apart (0 = no minimum)
                         <input id="minSpread" type="number" min="0" max="200" value="25">
-                        <input id="minSpreadSlider" class="ts-slider" type="range" aria-label="Minimum miles apart">
                     </label>
                 </div>
                 <div class="ts-checks" data-modes="pool" hidden>
@@ -309,8 +316,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611170940"></script>
-    <script src="/js/tour_planner.js?v=202611170942"></script>
+    <script src="/js/tour_support.js?v=202611171010"></script>
+    <script src="/js/tour_planner.js?v=202611170947"></script>
 </body>
 
 </html>

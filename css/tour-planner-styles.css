@@ -187,3 +187,25 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .mode-desc { font-size: .85em; color: #444; }
 .mode-more { display: none; font-size: .8em; color: #555; margin-top: 4px; border-top: 1px dashed #c8e6c9; padding-top: 4px; }
 .mode-card.selected .mode-more { display: block; }
+
+/* one slider for min and max miles between stops */
+.dual-range-wrap { margin: 4px 0 12px; max-width: 520px; }
+.dr-line { font-size: .85em; color: #444; display: flex; gap: 6px; }
+.dr-line strong { color: #1b5e20; }
+.dual-range { position: relative; height: 28px; margin: 4px 0; }
+.dual-range::before { content: ""; position: absolute; left: 0; right: 0; top: 12px; height: 4px; border-radius: 2px; background: #ddd; }
+.dr-fill { position: absolute; top: 12px; height: 4px; border-radius: 2px; background: #2e7d32; }
+.dual-range input[type=range] { position: absolute; left: 0; top: 0; width: 100%; height: 28px; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; accent-color: #2e7d32; padding: 0; border: 0; }
+.dual-range input[type=range]::-webkit-slider-runnable-track { background: transparent; }
+.dual-range input[type=range]::-moz-range-track { background: transparent; }
+.dual-range input[type=range]::-webkit-slider-thumb { pointer-events: auto; -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #2e7d32; border: 2px solid #fff; box-shadow: 0 0 0 1px #2e7d32; cursor: grab; margin-top: 0; }
+.dual-range input[type=range]::-moz-range-thumb { pointer-events: auto; width: 14px; height: 14px; border-radius: 50%; background: #2e7d32; border: 2px solid #fff; cursor: grab; }
+#drMin::-webkit-slider-thumb { background: #1565c0; box-shadow: 0 0 0 1px #1565c0; }
+#drMin::-moz-range-thumb { background: #1565c0; }
+.dual-range input[type=range]:focus-visible { outline: 2px solid #1565c0; outline-offset: 1px; }
+
+/* day preview buttons above the columns */
+.day-bar { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin: 8px 0; }
+.day-btn { border: 1px solid #a5d6a7; background: #fff; color: #1b5e20; border-radius: 14px; padding: 2px 10px; font-size: .82em; cursor: pointer; }
+.day-btn:hover { background: #e8f5e9; }
+.day-btn.on { background: #2e7d32; color: #fff; border-color: #2e7d32; }

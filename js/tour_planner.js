@@ -26,6 +26,8 @@ const PLANNER = {
   hideUsed: false, // hide venues already on the tour (when each venue is visited once)
   mapFollowsFilters: true, // map markers follow the column filters
   autoCollapse: false,
+  mapDay: null, // day key being previewed on the tour map (null = whole tour)
+  mapSides: true, // while previewing a day, also show the picks either side
   collapsed: new Set(), // day keys showing only their pick
   hideClose: false, // hide (rather than grey out) venues too close to a chosen stop
   eventsData: null,
@@ -219,6 +221,7 @@ function clearResults() {
   PLANNER.byDay = new Map();
   PLANNER.chosen = new Map();
   PLANNER.collapsed = new Set();
+  PLANNER.mapDay = null;
   PLANNER.best = null;
   PLANNER.anchor = null;
   PLANNER.musts = [];
@@ -257,6 +260,58 @@ function liveRebuild() {
 /** Range slider over a stepped scale, kept in sync with a number input.
  *  atEnd: what the far-right position means ("" = blank/no limit for a max,
  *  or the first scale value for a minimum). */
+/** One slider for both limits between stops: right handle = furthest (far right = no limit), left handle =
+ *  closest (far left = no minimum). The handles can never cross; the number fields stay in step. */
+const DR_SCALE = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 150, 200, 300, 500];
+function drMinInput() { return document.getElementById(currentMode() === "pool" ? "minHop" : "minSpread"); }
+function drSync() {
+  const a = document.getElementById("drMin"), b = document.getElementById("drMax");
+  if (!a || !b) return;
+  const n = DR_SCALE.length;
+  const near = (v) => { let best = 0; DR_SCALE.forEach((x, i) => { if (Math.abs(x - v) < Math.abs(DR_SCALE[best] - v)) best = i; }); return best; };
+  const mi = drMinInput(), ma = document.getElementById("maxHop");
+  const minV = Number(mi.value) || 0;
+  const maxRaw = ma.value.trim();
+  let lo = near(minV), hi = maxRaw === "" ? n : Math.max(1, near(Number(maxRaw)));
+  if (lo >= hi) lo = hi - 1;
+  a.value = String(lo); b.value = String(hi);
+  const lt = minV <= 0 ? "no minimum" : `${minV} mi`, ht = maxRaw === "" ? "no limit" : `${Number(maxRaw)} mi`;
+  document.getElementById("drMinTxt").textContent = lt; document.getElementById("drMaxTxt").textContent = ht;
+  a.setAttribute("aria-valuetext", lt); b.setAttribute("aria-valuetext", ht);
+  const f = document.getElementById("drFill");
+  f.style.left = (lo / n) * 100 + "%"; f.style.width = ((hi - lo) / n) * 100 + "%";
+}
+function attachDualRange() {
+  const a = document.getElementById("drMin"), b = document.getElementById("drMax");
+  if (!a || !b) return;
+  const n = DR_SCALE.length;
+  [a, b].forEach((s) => { s.min = 0; s.max = n; s.step = 1; });
+  const fire = (id) => document.getElementById(id).dispatchEvent(new Event("input", { bubbles: true }));
+  a.addEventListener("input", () => {
+    let lo = Number(a.value); const hi = Number(b.value);
+    if (lo >= hi) lo = hi - 1;
+    a.value = String(Math.max(0, lo));
+    drMinInput().value = String(DR_SCALE[Number(a.value)]);
+    fire(drMinInput().id); drSync();
+  });
+  b.addEventListener("input", () => {
+    let hi = Number(b.value); const lo = Number(a.value);
+    if (hi <= lo) hi = lo + 1;
+    hi = Math.max(1, hi); b.value = String(hi);
+    document.getElementById("maxHop").value = hi >= n ? "" : String(DR_SCALE[hi]);
+    fire("maxHop"); drSync();
+  });
+  // typed values: keep min below max (the value just edited is the one pulled back)
+  const settle = (edited) => {
+    const mi = drMinInput(), ma = document.getElementById("maxHop");
+    const lo = Number(mi.value) || 0, hi = ma.value.trim() === "" ? Infinity : Number(ma.value);
+    if (lo > hi) { if (edited === "min") mi.value = String(hi); else ma.value = String(Math.max(lo, 5)); }
+    drSync();
+  };
+  ["minHop", "minSpread"].forEach((id) => { const x = document.getElementById(id); x.addEventListener("input", drSync); x.addEventListener("change", () => settle("min")); });
+  const mx = document.getElementById("maxHop"); mx.addEventListener("input", drSync); mx.addEventListener("change", () => settle("max"));
+  drSync();
+}
 function attachScaleSlider(inputId, sliderId, scale, isMax) {
   const input = document.getElementById(inputId), sl = document.getElementById(sliderId);
   if (!input || !sl) return;
@@ -370,7 +425,7 @@ function numberSteps() {
 function resetPoolState() {
   PLANNER.pickPerf.clear(); PLANNER.pickTour.clear();
   PLANNER.extraVenues = new Map(); PLANNER.primary = null; PLANNER.pool = [];
-  PLANNER.exp.focus = new Set(); PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
+  PLANNER.exp.focus = new Set(); PLANNER.exp.scope = "all"; PLANNER.exp.group = "all"; PLANNER.exp.setop = "any"; PLANNER.exp.hover = null;
   ["poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"].forEach((id) => { const c = document.getElementById(id); if (c) c.checked = false; });
   ["poolPerfChips", "poolTourChips", "poolPerfResults", "poolTourResults"].forEach((id) => { const n = document.getElementById(id); if (n) n.replaceChildren(); });
   ["poolPerfFilter", "poolTourFilter"].forEach((id) => { const n = document.getElementById(id); if (n) n.value = ""; });
@@ -392,6 +447,7 @@ function setMode() {
   updateLivePanel();
   if (PLANNER._lastMode && PLANNER._lastMode !== m) resetPoolState();
   PLANNER._lastMode = m;
+  drSync();
   numberSteps();
   if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   if (PLANNER._help) PLANNER._help.refresh();
@@ -580,7 +636,7 @@ function refreshPool() {
 }
 
 // ── venue explorer: who has played the pool's venues, and what is new to you ──
-PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, focus: new Set(), hover: null };
+PLANNER.exp = { view: "cards", colour: "state", group: "all", setop: "any", sort: "count", open: true, focus: new Set(), scope: "all", hover: null };
 PLANNER.extraVenues = new Map(); // venue id -> Set(artist ids) added from a suggested artist
 PLANNER.primary = null;
 const ART_COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]; // colour-blind friendly
@@ -626,25 +682,27 @@ function expModel() {
   const idx = performerVenueIndex();
   const sel = selectedArtistIds(), prim = primaryId();
   const sim = similarArtists().slice(0, 8);
+  // an artist you are focused on stays in the model even if they stop being suggested
+  const ext = [...PLANNER.exp.focus].filter((id) => !sel.includes(id) && !sim.some((o) => o.id === id));
   const colour = new Map();
-  [...sel, ...sim.map((o) => o.id)].forEach((id, i) => colour.set(id, i < ART_COLOURS.length ? ART_COLOURS[i] : ART_OTHER));
+  [...sel, ...sim.map((o) => o.id), ...ext].forEach((id, i) => colour.set(id, i < ART_COLOURS.length ? ART_COLOURS[i] : ART_OTHER));
   const has = (id, vid) => (idx.get(id) || new Map()).has(vid);
   const pool = PLANNER.pool || [];
   const rows = pool.map((r) => {
     const by = sel.filter((id) => has(id, r.vid));
     const group = !prim ? "all" : by.includes(prim) ? (by.length > 1 ? "shared" : "mine") : "new";
-    const who = [...sel, ...sim.map((o) => o.id)].filter((id) => has(id, r.vid));
+    const who = [...sel, ...sim.map((o) => o.id), ...ext].filter((id) => has(id, r.vid));
     return { key: r.key, vid: r.vid, r, by, who, group, suggested: false, sources: [] };
   });
   const poolVids = new Set(pool.map((r) => r.vid));
   const sugg = new Map();
-  sim.forEach((o) => (idx.get(o.id) || new Map()).forEach((n, vid) => {
+  [...sim.map((o) => o.id), ...ext].forEach((aid) => (idx.get(aid) || new Map()).forEach((n, vid) => {
     if (poolVids.has(vid)) return;
     if (!sugg.has(vid)) sugg.set(vid, new Set());
-    sugg.get(vid).add(o.id);
+    sugg.get(vid).add(aid);
   }));
   const suggested = [...sugg.entries()].map(([vid, src]) => ({ key: "s:" + vid, vid, r: null, by: [], who: [...src], group: "new", suggested: true, sources: [...src] }));
-  return { sel, prim, sim, colour, rows, suggested };
+  return { sel, prim, sim, ext, colour, rows, suggested };
 }
 function expLabel(x) {
   const v = PLANNER.venues[x.vid] || {};
@@ -672,6 +730,8 @@ function expVisible(m) {
     if (e.setop === "one" && !(!x.suggested && x.by.length === 1)) return false;
     return true;
   });
+  if (e.scope === "in") all = all.filter((x) => !x.suggested && x.r.on);
+  else if (e.scope === "out") all = all.filter((x) => x.suggested || !x.r.on);
   const counts = { all: all.length, mine: 0, shared: 0, new: 0 };
   all.forEach((x) => { if (counts[x.group] !== undefined) counts[x.group]++; });
   let shown = e.group === "all" || !m.prim ? all : all.filter((x) => x.group === e.group);
@@ -715,7 +775,7 @@ function renderPoolList() {
 
   // artists: colour key, ★ primary, hover to highlight, click to solo
   const arts = el("div", "exp-artists");
-  [...m.sel, ...m.sim.slice(0, 5).map((o) => o.id)].forEach((id) => {
+  [...m.sel, ...m.sim.slice(0, 5).map((o) => o.id), ...m.ext.filter((id) => !m.sim.slice(0, 5).some((o) => o.id === id))].forEach((id) => {
     const isSel = m.sel.includes(id);
     const b = el("button", "exp-art" + (e.focus.has(id) ? " solo" : "") + (isSel ? "" : " suggested"), "");
     b.type = "button";
@@ -740,6 +800,17 @@ function renderPoolList() {
   } else if (m.sel.length + m.sim.length > 1) arts.appendChild(el("span", "ts-hint", " Click artists to compare their venues on the list and map."));
   box.appendChild(arts);
 
+  // scope: everything / what is in the pool / what is not
+  const inN = m.rows.filter((x) => x.r.on).length, outN = m.rows.length - inN + m.suggested.length;
+  const scopeBar = el("div", "exp-bar");
+  scopeBar.appendChild(el("span", "exp-sel", "Show: "));
+  [["all", `Everything (${m.rows.length + m.suggested.length})`], ["in", `In my pool (${inN})`], ["out", `Not in my pool (${outN})`]].forEach(([k, t]) => {
+    const b = el("button", "exp-chip" + (e.scope === k ? " on" : ""), t); b.type = "button";
+    b.setAttribute("aria-pressed", String(e.scope === k));
+    b.addEventListener("click", () => { e.scope = k; renderPoolList(); renderPoolMap(false); });
+    scopeBar.appendChild(b);
+  });
+  box.appendChild(scopeBar);
   // lens controls
   const bar = el("div", "exp-bar");
   if (m.prim) {
@@ -1264,6 +1335,7 @@ function onBuild() {
   PLANNER.endSame = document.getElementById("endSame").checked;
   PLANNER.maxHome = clamp(document.getElementById("maxHome").value, 0, 1000, 0);
   PLANNER.minSpread = clamp(document.getElementById("minSpread").value, 0, 200, 0);
+  if (PLANNER.maxHop < Infinity) { PLANNER.minHop = Math.min(PLANNER.minHop, PLANNER.maxHop); PLANNER.minSpread = Math.min(PLANNER.minSpread, PLANNER.maxHop); }
   if (isPoolMode) { // one setting: apart from consecutive gigs only, or from any stop
     PLANNER.minSpread = minAny ? PLANNER.minHop : 0;
     if (minAny) PLANNER.minHop = 0;
@@ -1549,6 +1621,38 @@ function nodeState(c, stops) {
   return { near, used, unreach, hide: !!hide };
 }
 
+/** Buttons above the day columns: preview one day's options on the map (with the picks either side). */
+function buildDayBar() {
+  const row = el("div", "day-bar");
+  row.appendChild(el("span", "planner-filter-title", "Show on map:"));
+  const mk = (label, key) => {
+    const b = el("button", "day-btn" + (PLANNER.mapDay === key ? " on" : ""), label);
+    b.type = "button"; b.dataset.day = key || "";
+    b.setAttribute("aria-pressed", String(PLANNER.mapDay === key));
+    b.addEventListener("click", () => setMapDay(PLANNER.mapDay === key ? null : key));
+    return b;
+  };
+  row.appendChild(mk("whole tour", null));
+  PLANNER.days.forEach((d) => {
+    const k = dkey(d), n = (PLANNER.byDay.get(k) || []).length;
+    if (!n) return;
+    row.appendChild(mk(`${formatDate(d).replace(/ \d{4}$/, "")} (${n})`, k));
+  });
+  const lbl = el("label", "planner-inline"), cb = el("input"); cb.type = "checkbox"; cb.checked = PLANNER.mapSides;
+  cb.addEventListener("change", () => { PLANNER.mapSides = cb.checked; renderMap(); });
+  lbl.append(cb, " with the picks either side");
+  row.appendChild(lbl);
+  return row;
+}
+function setMapDay(k) {
+  PLANNER.mapDay = k;
+  document.querySelectorAll(".day-bar .day-btn").forEach((b) => {
+    const on = (b.dataset.day || null) === k;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+  });
+  renderMap();
+}
+
 /** Distance from a gig to the nearest earlier and later picked stop (other days). */
 function neighbourLegs(c, stops) {
   if (!stops.length) return {};
@@ -1650,6 +1754,7 @@ function renderAll() {
   }
   if (!PLANNER.start) bar.appendChild(el("span", "ts-hint", "Set a start point to include the journey home."));
   wrap.appendChild(bar);
+  wrap.appendChild(buildDayBar());
 
   const scroll = el("div", "graph-scroll");
   const inner = el("div", "graph-inner");
@@ -2010,23 +2115,30 @@ async function renderMap() {
   if (plannerMapLayer) plannerMapLayer.remove();
   plannerMapLayer = L.layerGroup().addTo(plannerMap);
   mapMarkers = new Map();
-  const stops = orderedStops();
+  const allStops = orderedStops();
+  const dayKey = PLANNER.mapDay && PLANNER.byDay.has(PLANNER.mapDay) ? PLANNER.mapDay : null;
+  const dayDate = dayKey ? PLANNER.days.find((d) => dkey(d) === dayKey) : null;
+  // previewing a day: only its own pick and (optionally) the nearest pick either side stay on the map
+  let prevPick = null, nextPick = null;
+  if (dayDate) allStops.forEach((s) => { if (dkey(s.date) === dayKey) return; if (s.date < dayDate) prevPick = s; else if (!nextPick) nextPick = s; });
+  const stops = dayDate ? allStops.filter((s) => dkey(s.date) === dayKey || (PLANNER.mapSides && (s === prevPick || s === nextPick))) : allStops;
   const chosenIds = new Set(stops.map((c) => c.id));
   const pts = [];
 
   // Other possible venues: one grey marker per venue, labelled with the day
   // offset(s) it has a gig on. Click for the list of gigs and add/remove.
   const venuesWithStop = new Set(stops.map((c) => c.venue_id));
+  const dayLines = [];
   const candPts = [];
   if (PLANNER.showCands) {
     const byVenue = new Map();
-    PLANNER.days.forEach((d) => (PLANNER.byDay.get(dkey(d)) || []).forEach((c) => {
+    PLANNER.days.forEach((d) => (dayKey && dkey(d) !== dayKey ? [] : PLANNER.byDay.get(dkey(d)) || []).forEach((c) => {
       if (!byVenue.has(c.venue_id)) byVenue.set(c.venue_id, []);
       byVenue.get(c.venue_id).push(c);
     }));
     byVenue.forEach((nodes0, vid) => {
       if (venuesWithStop.has(vid)) return; // shown as a numbered stop below
-      const nodes = PLANNER.mapFollowsFilters ? nodes0.filter((c) => !nodeState(c, stops).hide) : nodes0;
+      const nodes = PLANNER.mapFollowsFilters ? nodes0.filter((c) => !nodeState(c, allStops).hide) : nodes0;
       if (!nodes.length) return;
       const ll = latlonOf(nodes[0]);
       candPts.push(ll);
@@ -2034,7 +2146,7 @@ async function renderMap() {
       // small pin: the day offset when there is just one, else a count; full list on hover
       const short = labs.length === 1 ? labs[0] : `${labs.length}×`;
       const isMust = nodes.some((c) => c.must && c.must.length);
-      const faded = nodes.every((c) => { const st = nodeState(c, stops); return st.near || st.used || st.unreach; });
+      const faded = nodes.every((c) => { const st = nodeState(c, allStops); return st.near || st.used || st.unreach; });
       const m = L.marker(ll, { icon: L.divIcon({ className: "ts-pin cand sm" + (isMust ? " must" : "") + (faded ? " faded" : ""), html: short, iconSize: [24, 24], iconAnchor: [12, 12] }) })
         .bindTooltip(`${(PLANNER.venues[vid] || {}).name || vid} — ${labs.join(" ")}`)
         .bindPopup(venuePopup(vid, nodes))
@@ -2047,12 +2159,13 @@ async function renderMap() {
 
   if (PLANNER.start) {
     const h = [PLANNER.start.lat, PLANNER.start.lon];
-    pts.push(h);
+    if (!dayKey) pts.push(h);
     L.marker(h, { icon: L.divIcon({ className: "ts-pin home", html: "⌂", iconSize: [26, 26] }) })
       .bindTooltip(PLANNER.start.label).addTo(plannerMapLayer);
   }
   const ePt = endPoint();
-  stops.forEach((c, i) => {
+  stops.forEach((c) => {
+    const i = allStops.indexOf(c);
     const ll = latlonOf(c);
     pts.push(ll);
     const allHere = [];
@@ -2065,13 +2178,25 @@ async function renderMap() {
   });
   if (ePt && stops.length) {
     const eLL = [ePt.lat, ePt.lon];
-    pts.push(eLL);
+    if (!dayKey) pts.push(eLL);
     if (PLANNER.endSame === false) {
       L.marker(eLL, { icon: L.divIcon({ className: "ts-pin home", html: "⚑", iconSize: [26, 26] }) }).bindTooltip("End: " + ePt.label).addTo(plannerMapLayer);
     }
   }
-  if (stops.length + (PLANNER.start ? 1 : 0) > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);
-  if (PLANNER.showBestOnMap && PLANNER.best && PLANNER.best.stops.length > 1) {
+  if (!dayKey && stops.length + (PLANNER.start ? 1 : 0) > 1) L.polyline(pts, { color: "#2e7d32", weight: 3, dashArray: "6 6" }).addTo(plannerMapLayer);
+  if (dayKey && PLANNER.mapSides) {
+    // thin lines from each option to the picks either side, with the miles on hover
+    (PLANNER.byDay.get(dayKey) || []).forEach((c) => {
+      if (PLANNER.mapFollowsFilters && nodeState(c, allStops).hide) return;
+      [prevPick, nextPick].forEach((s) => {
+        if (!s) return;
+        const mi = roadMiles(latlonOf(s), latlonOf(c));
+        L.polyline([latlonOf(s), latlonOf(c)], { color: "#757575", weight: 1.5, opacity: 0.55, dashArray: "3 5" })
+          .bindTooltip(`${c.name}: ${fmtMiles(mi)} ${s === prevPick ? "from" : "to"} ${s.name}`).addTo(plannerMapLayer);
+      });
+    });
+  }
+  if (!dayKey && PLANNER.showBestOnMap && PLANNER.best && PLANNER.best.stops.length > 1) {
     L.polyline(PLANNER.best.stops.map(latlonOf), { color: "#f9a825", weight: 3, dashArray: "2 7" }).addTo(plannerMapLayer);
   }
   const all = pts.concat(candPts);
@@ -2160,9 +2285,7 @@ async function initPlanner() {
     const e = document.getElementById(id);
     e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
   });
-  attachScaleSlider("maxHop", "maxHopSlider", [10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 150, 200, 300, 500], true);
-  attachScaleSlider("minSpread", "minSpreadSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
-  attachScaleSlider("minHop", "minHopSlider", [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150], false);
+  attachDualRange();
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
     if (!r.checked) return;
