@@ -359,6 +359,7 @@ function setArea(a) {
   PLANNER.area = a;
   document.getElementById("areaCurrent").textContent = a ? `Area centre: ${a.label}` : "";
   if (currentMode() === "pool") renderPoolMap(false);
+  if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   liveRebuild();
 }
 
@@ -438,20 +439,24 @@ function resetPoolState() {
   renderPoolList(); renderPoolMap(false);
 }
 
-/** Venue-pool mode: before the first build the refining options (area, must-visits, dates, start/end) sit in the
- *  step list; once a tour is built they move into panels beside the map, where changes apply live. */
+/** Venue-pool mode: area, must-visits, dates and start/end always live in collapsible panels beside the map
+ *  (so nothing jumps when you click Develop tour); in the other modes they stay in the step list. */
 const REFINE_IDS = ["blkArea", "blkMust", "blkDates", "blkStart"];
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
   if (!box || !flow) return;
-  const built = currentMode() === "pool" && PLANNER.days.length > 0 && PLANNER.mode === "pool";
-  box.hidden = !built;
+  const side = currentMode() === "pool";
+  const built = side && PLANNER.days.length > 0 && PLANNER.mode === "pool";
+  box.hidden = !side; box.classList.toggle("mode-pool", side);
+  const hint = document.getElementById("plannerMapHint"); if (hint) hint.hidden = !(side && !built);
   REFINE_IDS.forEach((id) => {
     const c = document.getElementById(id);
     if (!c) return;
-    if (built) { if (c.parentElement !== box) box.appendChild(c); }
+    if (side) { if (c.parentElement !== box) box.appendChild(c); }
     else if (c.parentElement !== flow) flow.insertBefore(c, document.getElementById("blkBuild"));
   });
+  const b = document.getElementById("buildTour");
+  if (b) { if (!b.dataset.label) b.dataset.label = b.textContent; b.textContent = side ? "Develop tour" : b.dataset.label; }
 }
 
 function setMode() {
@@ -1186,6 +1191,7 @@ function initMustPicker() {
   });
 }
 function drawMustRows() {
+  if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   const box = document.getElementById("mustRows");
   box.replaceChildren();
   PLANNER.mustRows.forEach((m, idx) => {
@@ -1710,6 +1716,7 @@ function neighbourLegs(c, stops) {
 function renderAll() {
   updateLivePanel();
   placeRefine();
+  if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   numberSteps();
   const wrap = document.getElementById("plannerResults");
   wrap.replaceChildren();
@@ -2255,6 +2262,11 @@ function setupCollapsibles() {
   });
   const summaryOf = {
     blkPool: () => { const n = document.querySelectorAll("#poolPerfChips .picker-chip, #poolTourChips .picker-chip").length; const types = document.querySelectorAll("#blkPool .ts-checks input[type=checkbox]:checked:not(#poolWeekday)").length; return n || types ? `${n} artist/tour selection${n === 1 ? "" : "s"}${types ? ` + ${types} type-of-act option${types === 1 ? "" : "s"}` : ""}.` : "Nothing chosen yet."; },
+    blkArea: () => {
+      if (!PLANNER.area) return "Anywhere (no area set).";
+      return `Within ${document.getElementById("areaRadius").value || "?"} mi of ${PLANNER.area.label}.`;
+    },
+    blkMust: () => (PLANNER.mustRows.length ? `${PLANNER.mustRows.length} must-visit${PLANNER.mustRows.length === 1 ? "" : "s"}: ${PLANNER.mustRows.map((m) => m.label).join(", ")}` : "None set."),
     blkDates: () => {
       const v = (id) => document.getElementById(id).value;
       const f = (s) => { const d = s ? new Date(s + "T00:00:00") : null; return d && !isNaN(d) ? formatDate(d) : "?"; };
@@ -2281,6 +2293,7 @@ function setupCollapsibles() {
       btn.setAttribute("aria-expanded", String(!collapse)); btn.textContent = collapse ? "Expand" : "Collapse";
       if (!collapse && poolMap) setTimeout(() => poolMap.invalidateSize(), 50);
     });
+    if (id === "blkArea" || id === "blkMust") btn.click(); // optional extras start tucked away (pool mode only)
   });
 }
 

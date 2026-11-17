@@ -229,3 +229,16 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .refine-panels { display: flex; flex-direction: column; gap: 12px; }
 .refine-panels > .flow-card { margin: 0; }
 @media (min-width: 821px) { #plannerSummaryRow > #plannerMapWrap { position: sticky; top: 8px; } }
+
+/* venue pool: balanced explorer, map that stays put, side panels as tall as the map */
+.pool-mapwrap { height: 500px; align-self: flex-start; }
+@media (min-width: 821px) { .pool-mapwrap { position: sticky; top: 8px; } }
+.exp-cards { max-height: min(46vh, 380px); scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.exp-cards:hover, .exp-cards:focus-within { scrollbar-color: #bdbdbd transparent; }
+.map-hint { display: flex; align-items: center; justify-content: center; text-align: center; color: #555; min-height: 200px; }
+.refine-panels .flow-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; background: #fff; }
+@media (min-width: 821px) {
+  #plannerLeft:has(#plannerRefine:not([hidden])) { max-height: 560px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: transparent transparent; padding-right: 4px; }
+  #plannerLeft:has(#plannerRefine:not([hidden])):hover { scrollbar-color: #bdbdbd transparent; }
+}
+#plannerLeft > * { flex-shrink: 0; }

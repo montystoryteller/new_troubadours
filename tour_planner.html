@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170956">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611172157">
 </head>
 
 <body class="page-tour-planner">
@@ -197,7 +197,7 @@
             </section>
 
             <section id="blkArea" data-step="area" class="flow-card" data-modes="period pool" hidden>
-                <h3 class="flow-step">Area (optional)</h3>
+                <h3 class="flow-step">Area (optional) <button type="button" class="flow-collapse" data-modes="pool" hidden aria-expanded="true">Collapse</button></h3>
                 <div class="ts-grid">
                     <label class="ts-field">Area radius (miles)
                         <input id="areaRadius" type="number" min="5" max="500" value="60">
@@ -215,7 +215,7 @@
             </section>
 
             <section id="blkMust" data-step="must-visits" class="flow-card" data-modes="pool" hidden>
-                <h3 class="flow-step">Must-visit places (optional)</h3>
+                <h3 class="flow-step">Must-visit places (optional) <button type="button" class="flow-collapse" data-modes="pool" hidden aria-expanded="true">Collapse</button></h3>
                 <div class="ts-field">
                     <input id="mustFilter" type="text" placeholder="search a venue or town, then click to add…" autocomplete="off">
                     <div id="mustResults" class="picker-results" hidden></div>
@@ -307,6 +307,9 @@
         </section>
         <div id="plannerRefine" class="refine-panels" data-modes="pool" hidden></div>
         </div>
+        <div id="plannerMapHint" class="ts-panel map-hint" data-modes="pool" hidden>
+            <strong>Your tour map appears here.</strong> Choose your venues above, adjust the options on the left if you like, then click “Develop tour”. The day columns will appear underneath, across the full width.
+        </div>
         <div id="plannerMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
             <div id="plannerMap" class="ts-map"></div>
             <div id="plannerMapOpts" class="map-opts"></div>
@@ -323,8 +326,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611171100"></script>
-    <script src="/js/tour_planner.js?v=202611171557"></script>
+    <script src="/js/tour_support.js?v=202611171800"></script>
+    <script src="/js/tour_planner.js?v=202611172157"></script>
 </body>
 
 </html>
