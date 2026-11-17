@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css?v=202611132118">
-    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611162235">
+    <link rel="stylesheet" href="/css/gig-planner-styles.css?v=202611170952">
 </head>
 
 <body class="page-gig-planner">
@@ -80,7 +80,7 @@
                         <label class="ts-field">From
                             <input id="gcFrom" type="date">
                         </label>
-                        <label class="ts-field">To (up to 60 days)
+                        <label class="ts-field">To (up to 12 months)
                             <input id="gcTo" type="date">
                         </label>
                     </div>
@@ -88,7 +88,8 @@
                         <button type="button" class="gc-chip" data-preset="weekend">This weekend</button>
                         <button type="button" class="gc-chip" data-preset="week">Next 7 days</button>
                         <button type="button" class="gc-chip" data-preset="month">Next 30 days</button>
-                        <button type="button" class="gc-chip" data-preset="sixty">Next 60 days</button>
+                        <button type="button" class="gc-chip" data-preset="quarter">Next 3 months</button>
+                        <button type="button" class="gc-chip" data-preset="year">Next 12 months</button>
                     </div>
                 </div>
 
@@ -102,7 +103,6 @@
                     </div>
                     <div class="ts-checks">
                         <label><input type="checkbox" id="gcSpecialOnly"> ⭐ One-off and touring shows only (hide regular club nights)</label>
-                        <label><input type="checkbox" id="gcShowScope" checked> 🗺️ Show venues on the map (grey; click one for its gigs)</label>
                     </div>
                 </div>
             </details>
@@ -133,21 +133,26 @@
              Pinned beside the results on wide screens; on phones it sits between the trip and
              the results, and the shared initMap() makes it two-finger-to-pan so it never traps scrolling. -->
         <section id="gcMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
+            <div id="gcMapCaption" class="gc-map-caption" aria-live="polite"></div>
             <div id="gcMap" class="ts-map"></div>
+            <div class="gc-map-opts">
+                <label><input type="checkbox" id="gcShowScope" checked> Show other venues (grey pins)</label>
+            </div>
         </section>
     </div>
 
     <div class="about" id="colophon">
         <p><em>Distances are straight-line estimates scaled for roads, not routed journeys — check a route planner and
-                the event's own page before you travel. Start-point lookups use <a
-                    href="https://postcodes.io/">postcodes.io</a>; your start point is kept only in your own
+                the event's own page before you travel. Place lookups use <a
+                    href="https://postcodes.io/">postcodes.io</a>; the place you choose is remembered only in your own
                 browser.</em></p>
     </div>
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
+    <script src="/js/event_helpers.js?v=202611170953"></script>
     <script src="/js/tour_support.js?v=202611151214"></script>
-    <script src="/js/gig_planner.js?v=202611162235"></script>
+    <script src="/js/gig_planner.js?v=202611170953"></script>
 </body>
 
 </html>

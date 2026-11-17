@@ -12,12 +12,12 @@
   {
     "step": "when",
     "title": "Why choose dates?",
-    "text": "Gigs happen on particular nights, so the dates you choose decide what you see.\n\n- Use the **quick buttons** for this weekend or the next week or month.\n- Or set exact **From** and **To** dates, up to 60 days at a time.\n\nIf you are looking for one particular act, choose a longer range: their next date may be weeks away."
+    "text": "Gigs happen on particular nights, so the dates you choose decide what you see.\n\n- Use the **quick buttons** for this weekend or the next week or month.\n- Or set exact **From** and **To** dates, up to a year ahead.\n\nIf you are looking for one particular act, choose a longer range (the **Next 12 months** button is handy): their next date may be months away."
   },
   {
     "step": "type",
     "title": "Why filter by type?",
-    "text": "The listings mix storytelling, music, poetry and folk nights, and not everyone wants all of them.\n\n- Untick the types you are not interested in.\n- **One-off and touring shows only** hides regular club nights, which can otherwise crowd out special events when you are searching for a theme.\n- The map can also show the other venues in reach as grey pins."
+    "text": "The listings mix storytelling, music, poetry and folk nights, and not everyone wants all of them.\n\n- Untick the types you are not interested in.\n- **One-off and touring shows only** hides regular club nights, which can otherwise crowd out special events when you are searching for a theme.\n- The checkbox under the map shows or hides the other venues in reach as grey pins."
   },
   {
     "step": "results",
@@ -27,7 +27,7 @@
   {
     "step": "trip",
     "title": "What is the trip?",
-    "text": "This is your plan so far: one gig a night, in date order.\n\n- You can **copy** the plan, add it to your **calendar**, or download it to share.\n- The travel figures are straight-line estimates scaled up for roads, so treat them as a guide.\n\nEvery stop is a suggestion. Check the event's own page for times and booking before you travel."
+    "text": "This is your plan so far: one gig a night, in date order.\n\n- You can **copy** the plan, add it to your **calendar**, or download it to share.\n- **Copy link** gives you a link that reopens this plan, so you can send it to a friend. It does not include the place you entered.\n- The travel figures are straight-line estimates scaled up for roads, so treat them as a guide.\n\nEvery stop is a suggestion. Check the event's own page for times and booking before you travel."
   },
   {
     "step": "nights",

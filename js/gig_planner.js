@@ -10,8 +10,12 @@
  * RecurrenceEngine), specificEvents, musicEvents, poetryEvents and every
  * tour date. Geocoding: postcodes.io (browser-callable).
  *
- * Shared helpers (distance, geocoding, saved start point, Leaflet loader)
- * live in tour_support.js, shared with tour_planner.js.
+ * Shared helpers (distance, geocoding, Leaflet loader, export, help text) live in
+ * tour_support.js, shared with tour_planner.js. Pure event helpers (bill roles, troupes,
+ * multi-night runs) live in event_helpers.js, which only this page loads.
+ *
+ * This page keeps its own remembered place (key below) and never reads, writes or clears
+ * the tour planner's saved start point.
  */
 
 const GC_CAT = { story: "📖 Story", music: "🎸 Music", poetry: "✒️ Poetry", folk: "🎻 Folk" };
@@ -43,63 +47,20 @@ function gParseInput(v) { if (!v) return null; const [y, m, d] = v.split("-").ma
 function gLL(e) { const v = GC.venues[e.venue_id]; return v && Array.isArray(v.latlon) ? v.latlon : null; }
 function gHome() { return GC.start ? [GC.start.lat, GC.start.lon] : null; }
 function gShortDate(d) { return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); }
+/** "Tue, 17 Nov – Mon, 30 Nov", or with years once the range is long or crosses a year ("17 Nov 2026 – 16 Nov 2027"). */
+function gRangeText(from, to) {
+  const long = from.getFullYear() !== to.getFullYear() || (to - from) / 86400000 > 180;
+  const f = (d) => (long ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : gShortDate(d));
+  return `${f(from)} – ${f(to)}`;
+}
 function gStartName() { return GC.start && GC.start.label ? String(GC.start.label).split(",")[0].trim() : ""; }
 function gDesc(x) { return typeof x === "string" ? x.slice(0, 1500) : ""; }
 function gStatus(msg, err) { const s = document.getElementById("gcStatus"); s.textContent = msg || ""; s.className = "ts-status" + (err ? " error" : ""); }
 function gVenueOk(vid) { return TourSupport.venueUsable(GC.venues, vid); }
-function gArr(x) { return Array.isArray(x) ? x : typeof x === "string" && x ? [x] : []; }
-
-/**
- * Who is on the bill, by role.
- *   head    – performer_id + performer_ids (co-headline), plus other_performer_ids
- *             when the record is flagged isDoubleHeadline
- *   support – support_performer_ids (a lesser billing than the headliner)
- *   also    – other_performer_ids (no billing relationship assumed)
- * A performer appears once, in the highest role they hold. A troupe's members
- * are not repeated on the card beside the troupe itself (they stay in `all`,
- * so searching or filtering by a member's name still works).
- * Callers pass a merged record for tour dates ({ ...tour, ...tourDate }), so a
- * date's own support_performer_ids overrides the tour's, as the schema says.
- * Returns { head, support, also, all } as display names, and { ids } with the
- * performer ids per role (the hook for "played with" relationships later).
- */
-function gBill(e) {
-  const P = (GC.data && GC.data.performers) || {};
-  const nameOf = (id) => (P[id] && P[id].name) || null;
-  const members = (id) => (P[id] && Array.isArray(P[id].performer_ids) ? P[id].performer_ids : []);
-  const co = !!e.isDoubleHeadline;
-  const seen = new Set();
-  const take = (list) => list.filter((id) => id && !seen.has(id) && seen.add(id));
-  const ids = {
-    head: take([e.performer_id, ...gArr(e.performer_ids), ...(co ? gArr(e.other_performer_ids) : [])]),
-    support: take(gArr(e.support_performer_ids)),
-    also: take(co ? [] : gArr(e.other_performer_ids)),
-  };
-  const hidden = new Set(); // troupe members shown via their troupe's own name
-  ids.head.forEach((id) => members(id).forEach((m) => { if (m !== id && ids.head.includes(m)) hidden.add(m); }));
-  const names = (list, skip) => [...new Set(list.filter((id) => !(skip && skip.has(id))).map(nameOf).filter(Boolean))];
-  const bill = {
-    head: names(ids.head, hidden), support: names(ids.support), also: names(ids.also),
-    all: names([...ids.head, ...ids.support, ...ids.also]), ids,
-  };
-  if (!bill.all.length && typeof e.performer === "string" && e.performer) { bill.head = [e.performer]; bill.all = [e.performer]; }
-  return bill;
-}
-function gPerformerNames(e) { return gBill(e).all; }
-function gPerformers(e) { const b = gBill(e); return [...b.head, ...b.also].join(", "); }
-/** One line for plain-text uses (plan text, calendar, export): "A, B, support: C". */
-function gBillText(ev) {
-  const sup = ev.bill && ev.bill.support.length ? "support: " + ev.bill.support.join(", ") : "";
-  return [ev.performer, sup].filter(Boolean).join(", ");
-}
-/** Fold a duplicate record's bill into the one we keep, so no act is lost. */
-function gMergeBill(keep, other) {
-  if (!keep.bill || !other.bill) return;
-  ["head", "support", "also"].forEach((r) => other.bill[r].forEach((n) => {
-    if (!keep.bill.all.includes(n)) { keep.bill[r].push(n); keep.bill.all.push(n); keep.performerList = keep.bill.all; }
-  }));
-  keep.performer = [...keep.bill.head, ...keep.bill.also].join(", ");
-}
+// Bill roles, troupe handling and multi-night runs: pure helpers in event_helpers.js.
+const gBill = (e) => EventHelpers.buildBill(e, (GC.data && GC.data.performers) || {});
+const gBillText = EventHelpers.billText;
+const gMergeBill = EventHelpers.mergeBill;
 function gEventUrl(rec, date) {
   try {
     const id = rec.eventId || resolveEventId(rec, date);
@@ -131,27 +92,31 @@ function gCollect(from, to) {
 
   const dated = [["specificEvents", "story"], ["musicEvents", "music"], ["poetryEvents", "poetry"]];
   dated.forEach(([list, cat]) => (ed[list] || []).forEach((e) => {
-    const d = parseDateString(e.date);
-    if (!d || d < from || d > to || e.online || e.cancelled || e.isCancelled) return;
-    const bill = gBill(e);
-    push({
-      id: `ev:${e.eventId || e.name + gKey(d)}`, cat: e.isMusic ? "music" : e.isPoetry ? "poetry" : cat, kind: "event",
-      title: e.showname || e.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: e.time || "",
-      venue_id: e.venue_id, url: gEventUrl(e, d), ext: e.ticket_url || e.event_url || e.fb_event || e.link || "",
-      price: e.price || "", soldOut: !!e.isSoldOut, desc: gDesc(e.description),
+    if (e.online || e.cancelled || e.isCancelled) return;
+    const all = EventHelpers.eventDates(e, parseDateString), multi = all.length > 1; // a multi-night run is one gig per night
+    all.filter((d) => d >= from && d <= to).forEach((d) => {
+      const bill = gBill(e);
+      push({
+        id: `ev:${e.eventId ? e.eventId + (multi ? ":" + gKey(d) : "") : e.name + gKey(d)}`, cat: e.isMusic ? "music" : e.isPoetry ? "poetry" : cat, kind: "event",
+        title: e.showname || e.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: e.time || "",
+        venue_id: e.venue_id, url: gEventUrl(e, d), ext: e.ticket_url || e.event_url || e.fb_event || e.link || "",
+        price: e.price || "", soldOut: !!e.isSoldOut, desc: gDesc(e.description),
+      });
     });
   }));
 
   Object.values(ed.tours || {}).forEach((t) => (t.tour_dates || []).forEach((td) => {
-    const d = parseDateString(td.date);
-    if (!d || d < from || d > to || td.cancelled || td.isCancelled) return;
-    const bill = gBill({ ...t, ...td });
-    push({
-      id: `ev:${td.eventId || (t.tour_name || t.name) + gKey(d) + td.venue_id}`,
-      cat: t.isMusic ? "music" : t.isPoetry ? "poetry" : "story", kind: "event",
-      title: t.tour_name || t.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: td.time || t.time || "",
-      venue_id: td.venue_id, url: gEventUrl(td, d), ext: td.ticket_url || td.fb_event || "",
-      price: td.price || t.price || "", soldOut: !!td.isSoldOut, desc: gDesc(td.description || t.tour_description),
+    if (td.cancelled || td.isCancelled) return;
+    const all = EventHelpers.eventDates(td, parseDateString), multi = all.length > 1;
+    all.filter((d) => d >= from && d <= to).forEach((d) => {
+      const bill = gBill({ ...t, ...td });
+      push({
+        id: `ev:${td.eventId ? td.eventId + (multi ? ":" + gKey(d) : "") : (t.tour_name || t.name) + gKey(d) + td.venue_id}`,
+        cat: t.isMusic ? "music" : t.isPoetry ? "poetry" : "story", kind: "event",
+        title: t.tour_name || t.name, performer: [...bill.head, ...bill.also].join(", "), performerList: bill.all, bill, group: null, date: d, time: td.time || t.time || "",
+        venue_id: td.venue_id, url: gEventUrl(td, d), ext: td.ticket_url || td.fb_event || "",
+        price: td.price || t.price || "", soldOut: !!td.isSoldOut, desc: gDesc(td.description || t.tour_description),
+      });
     });
   }));
 
@@ -184,22 +149,38 @@ function gPasses(ev, cats, maxHome) {
 }
 
 // ── start point ─────────────────────────────────────────────────────────
+const G_NEAR_KEY = "gigPlannerNear"; // this page's own key; the tour planner's saved start is never touched
+function gSaveNear(s) {
+  try {
+    if (s) localStorage.setItem(G_NEAR_KEY, JSON.stringify({ lat: s.lat, lon: s.lon, label: s.label }));
+    else localStorage.removeItem(G_NEAR_KEY);
+  } catch (e) { /* storage is optional */ }
+}
+function gLoadNear() {
+  try {
+    const s = JSON.parse(localStorage.getItem(G_NEAR_KEY) || "null");
+    if (s && typeof s.lat === "number" && typeof s.lon === "number" && s.label) return s;
+  } catch (e) { /* ignore */ }
+  return null;
+}
+function gShowStart(s) {
+  const clearBtn = document.getElementById("gcStartClear");
+  document.getElementById("gcStartCurrent").textContent = s ? `Near: ${s.label}` : "";
+  if (clearBtn) clearBtn.style.display = s ? "" : "none";
+}
 function gSetStart(s) {
   GC.start = s;
-  const currentDiv = document.getElementById("gcStartCurrent");
-  const clearBtn = document.getElementById("gcStartClear");
-  currentDiv.textContent = s ? `Near: ${s.label}` : "";
-  if (clearBtn) clearBtn.style.display = s ? "" : "none";
+  gSaveNear(s);
+  gShowStart(s);
   gRenderAll();
 }
 function gClearStart() {
   gSetStart(null);
   document.getElementById("gcStartInput").value = "";
-  TourSupport.clearStart();
-  gStatus("Start location cleared.");
+  gStatus("Place cleared.");
 }
 function gFindStart() {
-  // A venue name picked from the list is used directly (and is not saved as the shared start point).
+  // A venue name picked from the list is used directly.
   const typed = document.getElementById("gcStartInput").value.trim().toLowerCase();
   const venue = GC.venueByLabel.get(typed);
   if (venue) {
@@ -224,7 +205,7 @@ function gReload() {
   let to = gParseInput(document.getElementById("gcTo").value) || gAdd(from, 13);
   if (from < today) from = today;
   if (to < from) { gStatus("The end date is before the start date.", true); return; }
-  if ((to - from) / 86400000 > 59) { to = gAdd(from, 59); gStatus("Period limited to 60 days."); } else gStatus("");
+  if ((to - from) / 86400000 > 364) { to = gAdd(from, 364); gStatus("Period limited to 12 months."); } else gStatus("");
   // pad by the nights-around window so neighbours of edge gigs are available
   GC.periodFrom = from; GC.periodTo = to; GC.day = null;
   const padFrom = gAdd(from, -(GC.before + 1));
@@ -307,9 +288,9 @@ function gRenderBrowse() {
   // Day strip: how many gigs on each date, ignoring the day filter itself
   const counts = new Map();
   list.forEach((e) => { const k = gKey(e.date); counts.set(k, (counts.get(k) || 0) + 1); });
-  if (GC.day && !counts.has(GC.day)) GC.day = null;
+  if (GC.day && ![...counts.keys()].some((k) => k.startsWith(GC.day))) GC.day = null;
   gRenderDays(strip, counts, list.length);
-  if (GC.day) list = list.filter((e) => gKey(e.date) === GC.day);
+  if (GC.day) list = list.filter((e) => gKey(e.date).startsWith(GC.day)); // a "YYYY-MM-DD" day or a "YYYY-MM" month
   GC.browseList = list;
   document.getElementById("gcBrowseHead").textContent = `Pick a gig to plan around${list.length ? ` (${list.length})` : ""}`;
   if (!list.length) { box.appendChild(gEl("p", "ts-hint", "No events match — try widening the dates, categories or distance.")); return; }
@@ -335,20 +316,35 @@ function gRenderBrowse() {
   }
 }
 
-/** Dates with gigs, shaded by how busy they are; click one to narrow the results (and map) to it. */
+/** Dates with gigs, shaded by how busy they are; click one to narrow the results (and map) to it.
+ *  Over a long range the strip shows months first, then that month's days. */
 function gRenderDays(strip, counts, total) {
-  if (counts.size < 2) return;
-  const max = Math.max(...counts.values());
-  const mk = (label, key, heat) => {
-    const b = gEl("button", "gc-day" + ((GC.day || "") === key ? " on" : ""), label); b.type = "button";
-    b.setAttribute("aria-pressed", (GC.day || "") === key ? "true" : "false");
-    b.style.setProperty("--heat", String(heat));
+  const entries = [...counts.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  const long = entries.length > 45;
+  const month = long && GC.day ? GC.day.slice(0, 7) : null;
+  const heat = (n, max) => (0.08 + 0.42 * (n / max)).toFixed(2);
+  const mk = (label, key, h) => {
+    const on = (GC.day || "") === key;
+    const b = gEl("button", "gc-day" + (on && key ? " on" : ""), label); b.type = "button";
+    b.setAttribute("aria-pressed", on && key ? "true" : "false");
+    b.style.setProperty("--heat", String(h));
     b.addEventListener("click", () => { GC.day = GC.day === key ? null : key; GC.limit = 120; gRenderAll(); });
     strip.appendChild(b);
   };
-  mk(`All dates (${total})`, "", 0);
-  [...counts.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1))
-    .forEach(([k, n]) => mk(`${gShortDate(gParseInput(k))} · ${n}`, k, (0.08 + 0.42 * (n / max)).toFixed(2)));
+  const monthName = (m) => { const [y, mo] = m.split("-").map(Number); return new Date(y, mo - 1, 1).toLocaleDateString("en-GB", { month: "short", year: "numeric" }); };
+  if (long && !month) {
+    const byMonth = new Map();
+    entries.forEach(([k, n]) => byMonth.set(k.slice(0, 7), (byMonth.get(k.slice(0, 7)) || 0) + n));
+    const max = Math.max(...byMonth.values());
+    mk(`All dates (${total})`, "", 0);
+    [...byMonth.entries()].forEach(([m, n]) => mk(`${monthName(m)} · ${n}`, m, heat(n, max)));
+    return;
+  }
+  const view = month ? entries.filter(([k]) => k.startsWith(month)) : entries;
+  if (!month && view.length < 2) return;
+  mk(month ? `‹ All months (${monthName(month)})` : `All dates (${total})`, "", 0);
+  const max = Math.max(...view.map(([, n]) => n));
+  view.forEach(([k, n]) => mk(`${gShortDate(gParseInput(k))} · ${n}`, k, heat(n, max)));
 }
 
 /** One line under "Refine" so the active filters are visible while it is collapsed. */
@@ -357,8 +353,8 @@ function gRefineSummary() {
   const maxHome = parseInt(document.getElementById("gcMaxHome").value, 10) || 0;
   const cats = [...gCats()];
   const bits = [
-    GC.start ? `near ${gStartName()}${maxHome ? ` (within ${maxHome} mi)` : ""}` : "anywhere",
-    `${gShortDate(GC.periodFrom)} – ${gShortDate(GC.periodTo)}`,
+    !GC.start ? "anywhere" : maxHome ? `within ${maxHome} mi of ${gStartName()}` : `distances from ${gStartName()}`,
+    gRangeText(GC.periodFrom, GC.periodTo),
     cats.length === 4 ? "all types" : cats.map((c) => (GC_CAT[c] || c).replace(/^\S+\s/, "")).join(", ") || "no types selected",
   ];
   if (document.getElementById("gcSpecialOnly").checked) bits.push("one-offs only");
@@ -370,10 +366,10 @@ function gSearchHint() {
   const h = document.getElementById("gcSearchHint");
   h.replaceChildren();
   if (!document.getElementById("gcSearch").value.trim()) return;
-  if ((GC.periodTo - GC.periodFrom) / 86400000 >= 59) return;
-  h.append(`Searching ${gShortDate(GC.periodFrom)} – ${gShortDate(GC.periodTo)} only. `);
-  const b = gEl("button", "gc-link", "Search the next 60 days instead"); b.type = "button";
-  b.addEventListener("click", () => gPreset("sixty"));
+  if ((GC.periodTo - GC.periodFrom) / 86400000 >= 364) return;
+  h.append(`Searching ${gRangeText(GC.periodFrom, GC.periodTo)} only. `);
+  const b = gEl("button", "gc-link", "Search the next 12 months instead"); b.type = "button";
+  b.addEventListener("click", () => gPreset("year"));
   h.appendChild(b);
 }
 
@@ -385,7 +381,7 @@ function gPreset(kind) {
     const dow = t.getDay(); // 0 = Sunday
     to = gAdd(t, (7 - dow) % 7);
     from = dow === 0 || dow >= 5 ? t : gAdd(to, -2);
-  } else to = gAdd(t, { week: 6, month: 29, sixty: 59 }[kind] || 13);
+  } else to = gAdd(t, { week: 6, month: 29, quarter: 89, year: 364 }[kind] || 13);
   document.getElementById("gcFrom").value = gKey(from);
   document.getElementById("gcTo").value = gKey(to);
   gReload();
@@ -398,7 +394,7 @@ function gStartMode(kind) {
   document.querySelectorAll(".gc-start-btn").forEach((b) => b.classList.toggle("on", b.dataset.start === kind));
   const refine = document.getElementById("gcRefine");
   if (kind === "gig") {
-    if ((GC.periodTo - GC.periodFrom) / 86400000 < 59) gPreset("sixty"); // a named gig can be months away
+    if ((GC.periodTo - GC.periodFrom) / 86400000 < 364) gPreset("year"); // a named gig can be months away
     document.getElementById("gcSearch").focus();
   } else if (kind === "place") {
     refine.open = true;
@@ -410,16 +406,20 @@ function gStartMode(kind) {
   }
 }
 
-function gSetAnchor(ev) {
-  if (!GC.anchor || GC.anchor.id !== ev.id) GC.filters = new Set();
-  GC.anchor = ev;
-  GC.chosen = new Map([[gKey(ev.date), ev]]);
-  // make sure neighbours are loaded for this anchor even if near the period edge
+/** Make sure the anchor's neighbouring nights are loaded, even near the edge of the period. */
+function gLoadAround() {
+  const ev = GC.anchor;
   const from = gAdd(ev.date, -GC.before - 1), to = gAdd(ev.date, GC.after + 1);
   const today = getTodayMidnight();
   GC.events = gCollect(from < today ? today : from, to).concat(GC.events.filter((e) => e.date >= GC.periodFrom && e.date <= GC.periodTo))
     .reduce((acc, e) => (acc.some((x) => x.id === e.id) ? acc : (acc.push(e), acc)), [])
     .sort((a, b) => a.date - b.date || a.title.localeCompare(b.title));
+}
+function gSetAnchor(ev) {
+  if (!GC.anchor || GC.anchor.id !== ev.id) GC.filters = new Set();
+  GC.anchor = ev;
+  GC.chosen = new Map([[gKey(ev.date), ev]]);
+  gLoadAround();
   GC.browseOpen = false;
   gRenderAll();
   // Straight to the nights columns (the trip so far sits just above them)
@@ -457,7 +457,11 @@ function gRenderNearby() {
       GC.before = Math.min(7, Math.max(0, parseInt(document.getElementById("gcBefore").value, 10) || 0));
       GC.after = Math.min(7, Math.max(0, parseInt(document.getElementById("gcAfter").value, 10) || 0));
       GC.radius = Math.min(300, Math.max(5, parseInt(document.getElementById("gcRadius").value, 10) || 40));
-      gSetAnchor(GC.anchor);
+      gLoadAround();
+      // keep the stops already added, dropping only any that now fall outside the window
+      const lo = gKey(gAdd(GC.anchor.date, -GC.before)), hi = gKey(gAdd(GC.anchor.date, GC.after));
+      GC.chosen.forEach((_, k) => { if (k < lo || k > hi) GC.chosen.delete(k); });
+      gRenderAll();
     });
     l.appendChild(i); return l;
   };
@@ -582,11 +586,16 @@ function gRenderPlan() {
   copy.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(lines.join("\n")); copy.textContent = "Copied ✓"; } catch (e) { copy.textContent = "Copy failed"; }
   });
+  const link = gEl("button", "gc-btn", "🔗 Copy link"); link.type = "button";
+  link.title = "Copies a link that reopens this plan. It does not include the place you entered.";
+  link.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(gPlanLink()); link.textContent = "Link copied ✓"; } catch (e) { link.textContent = "Copy failed"; }
+  });
   const ics = gEl("button", "gc-btn", "📅 Download calendar (.ics)"); ics.type = "button";
   ics.addEventListener("click", () => gDownloadIcs(stops));
   const reset = gEl("button", "gc-btn", "Start again"); reset.type = "button";
   reset.addEventListener("click", () => { GC.anchor = null; GC.chosen = new Map(); gRenderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); });
-  act.append(copy, ics);
+  act.append(copy, link, ics);
   TourSupport.addExportButtons(act, {
     className: "gc-btn", basename: "gig-planner",
     getRecords: () => TourSupport.buildRecords(stops, (c) => {
@@ -604,6 +613,35 @@ function gRenderPlan() {
   act.append(reset);
   box.appendChild(act);
   gRenderMap(stops);
+}
+
+/** A link that reopens this plan. It carries the gigs, not the visitor's own place. */
+function gPlanLink() {
+  const p = new URLSearchParams();
+  p.set("plan", GC.anchor.id);
+  gStops().forEach((c) => { if (c.id !== GC.anchor.id) p.append("s", c.id); });
+  p.set("b", GC.before); p.set("a", GC.after); p.set("r", GC.radius);
+  return `${location.href.split("#")[0]}#${p.toString()}`;
+}
+/** Open straight onto a shared plan (#plan=…). Returns true if restored, "missing" if its gig has gone, else false. */
+function gRestoreFromHash() {
+  const p = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const id = p.get("plan");
+  if (!id) return false;
+  const today = getTodayMidnight();
+  const anchor = gCollect(today, gAdd(today, 372)).find((e) => e.id === id);
+  if (!anchor) return "missing";
+  const num = (k, d, lo, hi) => Math.min(hi, Math.max(lo, parseInt(p.get(k), 10) || d));
+  GC.before = num("b", 2, 0, 7); GC.after = num("a", 2, 0, 7); GC.radius = num("r", 40, 5, 300);
+  const last = gAdd(today, 364), to = gAdd(anchor.date, 14);
+  document.getElementById("gcFrom").value = gKey(today);
+  document.getElementById("gcTo").value = gKey(to > last ? last : to);
+  gReload();
+  gSetAnchor(GC.events.find((e) => e.id === id) || anchor);
+  p.getAll("s").forEach((sid) => { const e = GC.events.find((x) => x.id === sid); if (e && e.id !== id) GC.chosen.set(gKey(e.date), e); });
+  gRenderAll();
+  try { history.replaceState(null, "", location.href.split("#")[0]); } catch (e) { /* ignore */ } // the link was a starting point, not live state
+  return true;
 }
 
 function gDownloadIcs(stops) {
@@ -654,9 +692,23 @@ function gVenuePopup(vid, events) {
   return box;
 }
 
+function gMapCaption() {
+  const cap = document.getElementById("gcMapCaption");
+  const scope = document.getElementById("gcShowScope").checked;
+  if (GC.anchor) {
+    cap.textContent = "Your trip: numbered pins are your stops" + (scope ? "; grey pins are other gigs within reach (−1, +1 … are days from your gig)." : ".");
+    return;
+  }
+  const list = GC.browseList || [], v = new Set(list.map((e) => e.venue_id)).size;
+  cap.textContent = list.length
+    ? `${list.length} gig${list.length === 1 ? "" : "s"} at ${v} venue${v === 1 ? "" : "s"}${scope ? " — each grey pin shows how many; click one for details." : "."}`
+    : "No gigs to show — widen the dates or filters.";
+}
+
 async function gRenderMap(stops) {
   const wrap = document.getElementById("gcMapWrap");
   wrap.style.display = "";
+  gMapCaption();
   document.getElementById("gcApp").classList.remove("no-map");
   try { await TourSupport.loadLeaflet(); } catch (e) { wrap.style.display = "none"; document.getElementById("gcApp").classList.add("no-map"); return; }
   if (!gcMap) gcMap = initMap("gcMap");
@@ -702,7 +754,7 @@ async function gInit() {
   const res = await loadEventsData();
   if (!res) { document.getElementById("gcLoading").textContent = "Couldn't load events data."; return; }
   GC.data = res.eventsData; GC.venues = res.venuesLookup || {};
-  // No home location is assumed: it's only used once the visitor gives one on this page.
+  // No place is assumed: only one the visitor gave on this page before (kept in their own browser) is restored.
   const t0 = getTodayMidnight();
   document.getElementById("gcFrom").value = gKey(t0);
   document.getElementById("gcTo").value = gKey(gAdd(t0, 13));
@@ -728,6 +780,8 @@ async function gInit() {
     GC.venueByLabel.set(v.name.toLowerCase(), v);
     const o = document.createElement("option"); o.value = v.name; dl.appendChild(o);
   });
+  const saved = gLoadNear();
+  if (saved) { GC.start = saved; document.getElementById("gcStartInput").value = saved.label; gShowStart(saved); }
   document.getElementById("gcStartFind").addEventListener("click", gFindStart);
   document.getElementById("gcStartInput").addEventListener("keydown", (e) => { if (e.key === "Enter") gFindStart(); });
   document.getElementById("gcStartLocate").addEventListener("click", gLocate);
@@ -737,6 +791,8 @@ async function gInit() {
   // "Explain this step": one record per step in gig_planner_help.json, rendered by the shared
   // TourSupport markdown code. Harmless if the file is missing.
   TourSupport.setupHelp("gig_planner_help.json", () => GC.entry).then((h) => { GC.help = h; });
-  gReload();
+  const restored = gRestoreFromHash(); // a shared #plan=… link opens straight onto that plan
+  if (restored !== true) gReload(); // true = a shared plan was restored (that already loaded events)
+  if (restored === "missing") gStatus("That shared plan's gig is no longer listed, or has already happened.", true);
 }
 document.addEventListener("DOMContentLoaded", gInit);
