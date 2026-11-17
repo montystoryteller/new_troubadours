@@ -6070,6 +6070,130 @@
       "touring_event_flyer": "tour_sound_sirens_autumn_winter_2026.jpg",
       "isMusic": true
     },
+    "black-water-county-spring-2027": {
+      "tour_name": "Black Water County — Spring 2027",
+      "tour_dates": [
+        {
+          "date": "03/03/3037",
+          "venue_id": "bodega-nottingham",
+          "time": "7pm",
+          "price": "£19.00 (+ £2.28)",
+          "ticket_url": "https://www.seetickets.com/event/black-water-county/the-bodega/3743683",
+          "date_added": "17/11/2026",
+          "isSpecial": true,
+          "eventId": "T-black-water-county-spring-2027-30370303-bodega-nottingham"
+        },
+        {
+          "date": "04/03/2027",
+          "venue_id": "bristol-thekla",
+          "time": "18:30",
+          "price": "£19.00 (+ £2.28)",
+          "ticket_url": "https://www.seetickets.com/event/black-water-county/thekla/3743718",
+          "isSpecial": true,
+          "eventId": "T-black-water-county-spring-2027-20270304-bristol-thekla"
+        },
+        {
+          "date": "05/03/2027",
+          "venue_id": "papillon-southampton",
+          "time": "Doors Open: 20:00, Starts: 20:15",
+          "price": "£20 (+ £3)",
+          "ticket_url": "https://www.seetickets.com/event/black-water-county/papillon/3744005",
+          "isSpecial": true,
+          "eventId": "T-black-water-county-spring-2027-20270305-papillon-southampton"
+        },
+        {
+          "date": "06/03/2027",
+          "venue_id": "barfly-camden",
+          "time": "7pm",
+          "price": "£22.00 (+ £3.84)",
+          "ticket_url": "https://www.seetickets.com/event/black-water-county/barfly-camden/3743752",
+          "isSpecial": true,
+          "eventId": "T-black-water-county-spring-2027-20270306-barfly-camden"
+        }
+      ],
+      "name": "Black Water County — Spring 2027",
+      "performer_id": "black-water-county",
+      "isMusic": true
+    },
+    "noble-jacks-reforged-anniversary-tour": {
+      "tour_name": "Noble Jacks — ReForged Anniversary tour",
+      "tour_dates": [
+        {
+          "date": "06/05/2027",
+          "venue_id": "chapel-arts-centre-bath",
+          "time": "Door time: 7:30pm, start time: 8:00pm",
+          "price": "£18.50 (+ £1.90)",
+          "ticket_url": "https://wegottickets.com/af/671/f/29502",
+          "other_performer_ids": [
+            "sorrel-nation"
+          ],
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270506-chapel-arts-centre-bath"
+        },
+        {
+          "date": "07/05/2027",
+          "venue_id": "exeter-phoenix",
+          "time": "Doors 7.30pm",
+          "price": "£20 (+ £1.50)",
+          "ticket_url": "https://exeterphoenix.org.uk/events/noble-jacks/",
+          "other_performer_ids": [
+            "sorrel-nation"
+          ],
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270507-exeter-phoenix"
+        },
+        {
+          "date": "08/05/2027",
+          "venue_id": "strings-bar-venue-isle-of-wight",
+          "time": "Doors at 19:30",
+          "price": "£22 (+ £2)",
+          "ticket_url": "https://www.gigantic.com/noble-jacks-tickets/isle-of-wight-strings-bar-venue/2027-05-08-19-30-66238",
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270508-strings-bar-venue-isle-of-wight"
+        },
+        {
+          "date": "09/05/2027",
+          "venue_id": "the-half-moon-putney",
+          "time": "8:00 PM",
+          "price": "£22.50 (+ £2.25)",
+          "ticket_url": "https://tickets.halfmoon.co.uk/events/bcf78c91-f4d9-4b3c-9439-f20e270dd928",
+          "isSpecial": true,
+          "event_flyer": "2027_05_09-noble-jacks-half-moon-putney",
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270509-the-half-moon-putney"
+        },
+        {
+          "date": "21/05/2027",
+          "venue_id": "bodega-nottingham",
+          "time": "19:00",
+          "price": "£18.50 (+ £2.31)",
+          "ticket_url": "https://www.alttickets.com/noble-jacks-tickets/nottingham-the-bodega/2027-05-21-19-00",
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270521-bodega-nottingham"
+        },
+        {
+          "date": "22/05/2027",
+          "venue_id": "the-cluny-newcastle",
+          "time": "19:30",
+          "price": "£16.50 (+ £1.65)",
+          "ticket_url": "https://www.seetickets.com/event/noble-jacks-re-forged-anniversary-tour/the-cluny/3733500",
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270522-the-cluny-newcastle"
+        },
+        {
+          "date": "23/05/2027",
+          "venue_id": "voodoo-rooms-edinburgh",
+          "time": "Doors Open: 19:30 Starts: 20:00",
+          "price": "£17.50 (+ £2.36)",
+          "ticket_url": "https://www.seetickets.com/event/noble-jacks/the-voodoo-rooms/3732760",
+          "isSpecial": true,
+          "eventId": "T-noble-jacks-reforged-anniversary-tour-20270523-voodoo-rooms-edinburgh"
+        }
+      ],
+      "name": "Noble Jacks —  ReForged Anniversary tour",
+      "performer_id": "noble-jacks",
+      "tour_description": "Gearing up for their biggest milestone yet, the Noble Jacks are officially celebrating the 10-year anniversary of their explosive debut album by hitting the road for a massive celebratory UK and European tour!",
+      "isMusic": true
+    },
     "samantics-spoiler-alert-spring-2027": {
       "tour_name": "Spoiler Alert, Spring Tour 2027",
       "tour_dates": [
@@ -14585,6 +14709,19 @@
       "ticket_url": "https://www.wrootrocks.com/store/p/sound-of-the-sirens",
       "event_flyer": "2027_04_23_sound_sirens_wroot.jpg",
       "isMusic": true
+    },
+    {
+      "name": "Noble Jacks [Noble Jacks]",
+      "showname": "Noble Jacks",
+      "date": "16/10/2027",
+      "venue_id": "assembly-hall-theatre-tunbridge-wells",
+      "performer_id": "noble-jacks",
+      "eventId": "20271016-noble-jacks-assembly-hall-theatre-tunbridge-wells",
+      "date_added": "17/11/2026",
+      "time": "7.30pm",
+      "price": "£29.25",
+      "ticket_url": "https://www.assemblyhalltheatre.co.uk/whats-on/noble-jacks.html",
+      "isMusic": true
     }
   ],
   "folkNights": [
@@ -14815,6 +14952,21 @@
       "latlon": [
         55.94151,
         -3.18175
+      ]
+    },
+    "voodoo-rooms-edinburgh": {
+      "id": "voodoo-rooms-edinburgh",
+      "name": "Voodoo Rooms, Edinburgh",
+      "venue_type": "Other / unknown",
+      "city": "Edinburgh",
+      "postcode": "EH2 2AA",
+      "full_address": "Voodoo Rooms, 19A West Register Street, Edinburgh, EH2 2AA",
+      "url": "https://thevoodoorooms.com/",
+      "instagram": "thevoodoorooms",
+      "description": "Legendary Edinburgh city centre Cocktail Bar, Restaurant, Live Music & Events Venue that has been providing great times since 2007!\n\n\n\nBy way of a history lesson: for some years we had been looking for a central venue that we could combine live entertainment with dining and next-level cocktails. Eventually we struck gold in 2006 with our site visit to this well-known but dilapidated Edinburgh building (formerly The Cafe Royal Bistro Bar), with its lush history, numerous spaces and glaring potential.",
+      "latlon": [
+        55.95369,
+        -3.19066
       ]
     },
     "winchburgh-community-centre": {
@@ -20370,10 +20522,26 @@
         -2.21156
       ]
     },
+    "barfly-camden": {
+      "id": "barfly-camden",
+      "name": "Barfly, Camden",
+      "venue_type": "Other / unknown",
+      "city": "49 Chalk Farm Rd, Chalk Farm, London, NW1 8AN",
+      "postcode": "NW1 8AN",
+      "full_address": "Barfly, 49 Chalk Farm Rd, Chalk Farm, Camden, NW1 8AN",
+      "url": "https://www.barflycamden.com/",
+      "facebook": "Barflycamden",
+      "instagram": "barflycamden",
+      "description": "Before the BRIT Awards. Before the festival headline slots. Before the arena tours. Before the world knew their names.\n\n\n\nThey played Barfly.\n\n\n\nWhat began in Camden in the mid 1990s with Nick Moore, Jeremy Ledlin and Be Rozzo would grow into one of the most influential grassroots music venues in history.\n\n\n\nAn intimate venue above a pub on Chalk Farm Road, Barfly sat at the heart of Camden's music scene for two decades. It became a rite of passage for emerging artists, helping launch the careers of countless musicians who would go on to headline festivals, top charts and sell out arenas around the world.",
+      "latlon": [
+        51.54311,
+        -0.14924
+      ]
+    },
     "dublin-castle-camden": {
       "id": "dublin-castle-camden",
       "name": "Dublin Castle, Camden",
-      "city": "Cambden",
+      "city": "Camden",
       "postcode": "NW1 7AN",
       "full_address": "Dublin Castle, 94 Parkway, Camden, London, NW1 7AN",
       "url": "https://thedublincastle.com/",
@@ -20594,6 +20762,22 @@
       "latlon": [
         51.5062,
         -0.09033
+      ]
+    },
+    "assembly-hall-theatre-tunbridge-wells": {
+      "id": "assembly-hall-theatre-tunbridge-wells",
+      "name": "Assembly Hall Theatre, Tunbridge Wells",
+      "venue_type": "Theatre",
+      "city": "Tunbridge Wells",
+      "postcode": "TN1 2LU",
+      "full_address": "Assembly Hall Theatre, Crescent Road, Tunbridge Wells, TN1 2LU",
+      "url": "https://www.assemblyhalltheatre.co.uk/",
+      "facebook": "AssemblyHallTheatre",
+      "instagram": "assemblyhalltheatre",
+      "description": "Assembly Hall Theatre brings an exhilarating range of theatre, music, comedy, dance, family and entertainment events from around the world to south east England - encouraging everyone in our thriving community to participate in the arts.\n\n\n\nCollaborating with local, national and international organisations, our vision is to entertain, educate and enrich.",
+      "latlon": [
+        51.13257,
+        0.26455
       ]
     },
     "trinity-theatre-tunbridge-wells": {
@@ -22188,6 +22372,21 @@
         -1.1534678
       ]
     },
+    "papillon-southampton": {
+      "id": "papillon-southampton",
+      "name": "Papillon, Southampton",
+      "venue_type": "Other / unknown",
+      "city": "Southampton",
+      "postcode": "SO15 1GG",
+      "full_address": "Papillon, 61 Commercial Rd, Southampton, SO15 1GG",
+      "url": "https://papillon-southampton.co.uk/",
+      "facebook": "papillonsouthampton",
+      "description": "Papillon, a true landmark consisting of a restaurant and bar housed in a stunning renovated church that exudes style and sophistication.\n\n\n\nThis historic venue is a Southampton icon, and a unique place to enjoy a drink. Situated directly opposite the Mayflower Theatre, Papillon is open 7 days a week for lunch, dinner or simply to sample an extensive cocktail menu anytime throughout the day or night.",
+      "latlon": [
+        50.90908,
+        -1.4115
+      ]
+    },
     "platform-tavern-southampton": {
       "id": "platform-tavern-southampton",
       "name": "Platform Tavern, Southampton",
@@ -22235,6 +22434,22 @@
       "latlon": [
         51.0798,
         -1.86326
+      ]
+    },
+    "bristol-thekla": {
+      "id": "bristol-thekla",
+      "name": "Bristol Thekla",
+      "venue_type": "Other / unknown",
+      "city": "Bristol",
+      "postcode": "BS1 4RB",
+      "full_address": "Thekla, The Grove, East Mud Dock, Bristol, BS1 4RB",
+      "url": "https://www.theklabristol.co.uk/",
+      "facebook": "theklabristol",
+      "instagram": "theklabris",
+      "description": "World famous multi-award winning floating live music venue & night club.",
+      "latlon": [
+        51.44926,
+        -2.59497
       ]
     },
     "knowle-constitutional-club-bristol": {
@@ -24931,6 +25146,36 @@
       "name": "Tom Robinson",
       "url": "https://tomrobinson.com/",
       "bio": "Tom Robinson is a song-writer and broadcaster, who first became known in the 1970s as a touring musician, LGBT activist and recording artist with the Tom Robinson Band. In 1977 their Top 5 debut release 2-4-6-8 Motorway became one of the landmark singles of the UK punk era.",
+      "musician": true
+    },
+    "noble-jacks": {
+      "id": "noble-jacks",
+      "name": "Noble Jacks",
+      "url": "https://noblejacks.com/",
+      "bio": "With the fiddle leading the charge, Noble Jacks take no prisoners with their crowd-storming, high-energy, footstompin' rhythms.",
+      "facebook": "noblejacksofficial",
+      "youtube_videos": [
+        {
+          "story_name": "GB  Skip navigation noble jacks full set     Create   Avatar image Noble Jacks LIVE 2022 at Beautiful Days Festival - Dreams Carry Me On",
+          "yt_url": "https://www.youtube.com/watch?v=imeAmCjHeYk"
+        }
+      ],
+      "instagram": "noblejacksmusic",
+      "musician": true
+    },
+    "black-water-county": {
+      "id": "black-water-county",
+      "name": "Black Water County",
+      "url": "https://blackwatercounty.co.uk/",
+      "bio": "Mashing their own brew of pop-punk and folk since 2013, the five-piece continue on their mission to provide merriment and moshing to the masses by relentlessly touring the UK and Europe.\n\n\n\nDrawing inspiration from their favourite pop punk bands growing up, such as Green Day, Sum 41 and The Offspring as well as their self-discovered affinity to folk legends such as The Pogues, Flogging Molly and Bellowhead, the fusion of folk melody and instrumentation with driving, high energy drums and guitar have continued to forge the distinctive sound through the years.",
+      "facebook": "BlackWaterCounty",
+      "youtube_videos": [
+        {
+          "story_name": "Black Water County — Questions (Live Performance)",
+          "yt_url": "https://www.youtube.com/watch?v=RhEuPbQ9PBI"
+        }
+      ],
+      "instagram": "blackwatercounty",
       "musician": true
     },
     "samantics": {
