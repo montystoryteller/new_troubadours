@@ -224,3 +224,8 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .graph-col::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
 .graph-col:hover::-webkit-scrollbar-thumb, .graph-col:focus-within::-webkit-scrollbar-thumb { background: #bdbdbd; }
 .graph-col > h4 { position: sticky; top: 0; background: #fff; z-index: 2; }
+
+/* venue-pool mode: refining panels beside the map; the map follows the page while you tinker */
+.refine-panels { display: flex; flex-direction: column; gap: 12px; }
+.refine-panels > .flow-card { margin: 0; }
+@media (min-width: 821px) { #plannerSummaryRow > #plannerMapWrap { position: sticky; top: 8px; } }

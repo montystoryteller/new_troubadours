@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170949">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611170956">
 </head>
 
 <body class="page-tour-planner">
@@ -251,6 +251,12 @@
             <div id="plannerItinerary" class="ts-panel ts-plan"></div>
         <section id="plannerLive" data-step="filters" class="ts-panel" hidden>
             <h3>Filters <span class="ts-hint">— changes apply straight away to the map and columns; your picks are kept</span></h3>
+            <div class="live-group" data-modes="pool" hidden>
+                <h4>When</h4>
+                <div class="ts-checks">
+                    <label><input type="checkbox" id="poolWeekdayLive" checked> Only use a venue on a day of the week these artists have played it</label>
+                </div>
+            </div>
             <div class="live-group" data-modes="club venue" hidden>
                 <h4>When</h4>
                 <div class="ts-grid">
@@ -299,6 +305,7 @@
                 </div>
             </div>
         </section>
+        <div id="plannerRefine" class="refine-panels" data-modes="pool" hidden></div>
         </div>
         <div id="plannerMapWrap" class="ts-panel ts-map-wrap" style="display:none;">
             <div id="plannerMap" class="ts-map"></div>
@@ -316,8 +323,8 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
-    <script src="/js/tour_support.js?v=202611171010"></script>
-    <script src="/js/tour_planner.js?v=202611170949"></script>
+    <script src="/js/tour_support.js?v=202611171100"></script>
+    <script src="/js/tour_planner.js?v=202611170956"></script>
 </body>
 
 </html>

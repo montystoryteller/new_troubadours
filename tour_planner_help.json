@@ -35,7 +35,7 @@
   {
     "step": "dates",
     "title": "Why set dates and weekdays?",
-    "text": "The planner can only offer gigs that fall inside your window, so keep it as tight as you realistically can (at most 21 days).\n\nIn pool mode, **Gigs wanted** is how many dates you want the route to contain.\n\n**Only use a venue on a day of the week these artists have played it** keeps the suggestions realistic: if an artist has only ever played a venue on Fridays, only Fridays are offered there. Untick it to try any weekday.\n\nThis step starts tucked away in pool mode because the defaults are usually fine; the summary line shows what is set."
+    "text": "The planner can only offer gigs that fall inside your window, so keep it as tight as you realistically can (at most 21 days).\n\nIn pool mode, **Gigs wanted** is how many dates you want the route to contain.\n\n**Only use a venue on a day of the week these artists have played it** keeps the suggestions realistic: if an artist has only ever played a venue on Fridays, only Fridays are offered there. Untick it to try any weekday.\n\nIn pool mode, once you have built options, the dates, area, must-visits and start/end move into panels beside the map and apply straight away, so you can tighten the tour while watching the options change. The weekday rule is also in the Filters panel."
   },
   {
     "step": "area",

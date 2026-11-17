@@ -175,6 +175,7 @@ function setStart(s) {
   if (!s) PLANNER._endTouched = false;
   syncEndSame();
   renderAll();
+  liveRebuild();
   if (poolMap || currentMode() === "pool") renderPoolMap(false);
 }
 
@@ -183,6 +184,7 @@ function setEnd(e) {
   document.getElementById("endCurrent").textContent = e ? `End: ${e.label}` : "";
   document.getElementById("endClear").style.display = e ? "" : "none";
   updateStartSummary();
+  liveRebuild();
   renderAll();
   renderMap();
   if (currentMode() === "pool") renderPoolMap(false);
@@ -357,6 +359,7 @@ function setArea(a) {
   PLANNER.area = a;
   document.getElementById("areaCurrent").textContent = a ? `Area centre: ${a.label}` : "";
   if (currentMode() === "pool") renderPoolMap(false);
+  liveRebuild();
 }
 
 function onUseLocation() {
@@ -411,6 +414,7 @@ function currentMode() {
 function numberSteps() {
   const cards = [...document.querySelectorAll("#plannerFlow > .flow-card")].filter((c) => !c.hidden);
   cards.sort((a, b) => (parseInt(getComputedStyle(a).order, 10) || 0) - (parseInt(getComputedStyle(b).order, 10) || 0));
+  document.querySelectorAll("#plannerRefine h3.flow-step").forEach((h) => { delete h.dataset.num; });
   let n = 0;
   const numbered = true;
   cards.forEach((c) => {
@@ -434,6 +438,22 @@ function resetPoolState() {
   renderPoolList(); renderPoolMap(false);
 }
 
+/** Venue-pool mode: before the first build the refining options (area, must-visits, dates, start/end) sit in the
+ *  step list; once a tour is built they move into panels beside the map, where changes apply live. */
+const REFINE_IDS = ["blkArea", "blkMust", "blkDates", "blkStart"];
+function placeRefine() {
+  const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
+  if (!box || !flow) return;
+  const built = currentMode() === "pool" && PLANNER.days.length > 0 && PLANNER.mode === "pool";
+  box.hidden = !built;
+  REFINE_IDS.forEach((id) => {
+    const c = document.getElementById(id);
+    if (!c) return;
+    if (built) { if (c.parentElement !== box) box.appendChild(c); }
+    else if (c.parentElement !== flow) flow.insertBefore(c, document.getElementById("blkBuild"));
+  });
+}
+
 function setMode() {
   const m = currentMode();
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => { r.checked = r.value === m; r.closest(".mode-card").classList.toggle("selected", r.value === m); });
@@ -447,6 +467,7 @@ function setMode() {
   updateLivePanel();
   if (PLANNER._lastMode && PLANNER._lastMode !== m) resetPoolState();
   PLANNER._lastMode = m;
+  placeRefine();
   drSync();
   numberSteps();
   if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
@@ -1140,7 +1161,7 @@ function initMustPicker() {
       b.addEventListener("click", () => {
         const ps = document.getElementById("periodStart").value;
         PLANNER.mustRows.push({ ...i, date: ps || "", flex: 0 });
-        input.value = ""; draw(); drawMustRows();
+        input.value = ""; draw(); drawMustRows(); liveRebuild();
       });
       results.appendChild(b);
     });
@@ -1159,13 +1180,13 @@ function drawMustRows() {
     row.appendChild(el("span", "must-label", "★ " + m.label));
     const d = el("input"); d.type = "date"; d.value = m.date;
     d.setAttribute("aria-label", "Target date for " + m.label);
-    d.addEventListener("change", () => { m.date = d.value; });
+    d.addEventListener("change", () => { m.date = d.value; liveRebuild(); });
     const f = el("select");
     f.setAttribute("aria-label", "Flexibility for " + m.label);
     MUST_FLEX.forEach(([n, t]) => { const o = el("option", null, t); o.value = n; if (n === m.flex) o.selected = true; f.appendChild(o); });
-    f.addEventListener("change", () => { m.flex = Number(f.value); });
+    f.addEventListener("change", () => { m.flex = Number(f.value); liveRebuild(); });
     const x = el("button", "must-x", "×"); x.type = "button"; x.setAttribute("aria-label", "Remove " + m.label);
-    x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); drawMustRows(); });
+    x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); drawMustRows(); liveRebuild(); });
     row.append(d, f, x);
     box.appendChild(row);
   });
@@ -1450,6 +1471,7 @@ function onBuild() {
     PLANNER.hover = null;
     setStatus("");
     renderAll();
+    announceBuilt("");
     return;
   }
   const centre = PLANNER.area ? [PLANNER.area.lat, PLANNER.area.lon] : h;
@@ -1674,6 +1696,8 @@ function neighbourLegs(c, stops) {
 
 function renderAll() {
   updateLivePanel();
+  placeRefine();
+  numberSteps();
   const wrap = document.getElementById("plannerResults");
   wrap.replaceChildren();
   nodeEls = new Map();
@@ -2244,7 +2268,6 @@ function setupCollapsibles() {
       btn.setAttribute("aria-expanded", String(!collapse)); btn.textContent = collapse ? "Expand" : "Collapse";
       if (!collapse && poolMap) setTimeout(() => poolMap.invalidateSize(), 50);
     });
-    if (id === "blkDates") btn.click(); // dates have sensible defaults: start tucked away (pool mode only)
   });
 }
 
@@ -2287,11 +2310,17 @@ async function initPlanner() {
     document.getElementById(id).addEventListener("change", () => { if (PLANNER.days.length) clearResults(); });
   });
   document.getElementById("anchorMonth").addEventListener("change", fillAnchorDates);
-  ["maxHop", "minHop", "minScope", "maxHome", "minSpread", "poolDistinct", "daysBefore", "daysAfter"].forEach((id) => {
+  ["maxHop", "minHop", "minScope", "maxHome", "minSpread", "poolDistinct", "daysBefore", "daysAfter",
+    "periodStart", "periodEnd", "gigsWanted", "areaRadius", "poolWeekday", "maxFirst", "maxLast", "endSame"].forEach((id) => {
     const e = document.getElementById(id);
     e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
   });
   attachDualRange();
+  { // the weekday rule is also offered beside the map once a tour is built; the two boxes stay in step
+    const a = document.getElementById("poolWeekday"), b = document.getElementById("poolWeekdayLive");
+    a.addEventListener("change", () => { b.checked = a.checked; });
+    b.addEventListener("change", () => { a.checked = b.checked; a.dispatchEvent(new Event("change", { bubbles: true })); });
+  }
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
     if (!r.checked) return;
