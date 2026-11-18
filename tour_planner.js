@@ -438,7 +438,7 @@ function resetPoolState() {
   ["poolPerfChips", "poolTourChips", "poolPerfResults", "poolTourResults"].forEach((id) => { const n = document.getElementById(id); if (n) n.replaceChildren(); });
   ["poolPerfFilter", "poolTourFilter"].forEach((id) => { const n = document.getElementById(id); if (n) n.value = ""; });
   const sim = document.getElementById("poolSimilar"); if (sim) { sim.hidden = true; sim.replaceChildren(); }
-  PLANNER.mustRows = []; drawMustRows();
+  PLANNER.mustRows = []; PLANNER.released = new Set(); drawMustRows();
   renderPoolList(); renderPoolMap(false);
 }
 
@@ -1189,7 +1189,7 @@ function initMustPicker() {
       b.type = "button";
       b.addEventListener("click", () => {
         const ps = document.getElementById("periodStart").value;
-        PLANNER.mustRows.push({ ...i, date: ps || "", flex: 0 });
+        PLANNER.mustRows.push({ ...i, date: ps || "", flex: 0, status: "wish" });
         input.value = ""; draw(); drawMustRows(); liveRebuild();
       });
       results.appendChild(b);
@@ -1201,54 +1201,111 @@ function initMustPicker() {
     if (e.key === "Enter") { e.preventDefault(); const f = results.querySelector("button"); if (f) f.click(); }
   });
 }
+/** How firm a must-visit is. wish: any day in a range; queried: one of a few dates, yet to confirm;
+ *  pencilled: a date held, not confirmed (the planner plans around it, but you can release it);
+ *  booked: confirmed (locked). Only a specific venue can be queried-with-nights, pencilled or booked. */
+const MUST_STATUS = [["wish", "★ wish"], ["queried", "? queried"], ["pencilled", "✎ pencilled"], ["booked", "✓ booked"]];
+const mustStatus = (m) => (MUST_STATUS.some(([k]) => k === m.status) ? m.status : "wish");
+PLANNER.released = new Set(); // pencilled gigs you've taken off the tour (kept off when the options refresh)
 function drawMustRows() {
   if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
   const box = document.getElementById("mustRows");
   box.replaceChildren();
   PLANNER.mustRows.forEach((m, idx) => {
     const venueRow = m.type === "v";
-    if (!venueRow) m.booked = false; // a booking is at one specific venue, not "a town"
-    if (m.booked) m.flex = 0; // a booked gig is on its date, exactly
-    const row = el("div", "must-row" + (m.booked ? " booked" : ""));
-    row.appendChild(el("span", "must-label", (m.booked ? "✓ " : "★ ") + m.label));
-    const d = el("input"); d.type = "date"; d.value = m.date;
-    d.setAttribute("aria-label", "Target date for " + m.label);
-    d.addEventListener("change", () => { m.date = d.value; liveRebuild(); });
-    const f = el("select");
-    f.setAttribute("aria-label", "Flexibility for " + m.label);
-    f.disabled = !!m.booked;
-    MUST_FLEX.forEach(([n, t]) => { const o = el("option", null, t); o.value = n; if (n === m.flex) o.selected = true; f.appendChild(o); });
-    f.addEventListener("change", () => { m.flex = Number(f.value); liveRebuild(); });
-    const bk = el("label", "must-booked");
-    const bkc = el("input"); bkc.type = "checkbox"; bkc.checked = !!m.booked; bkc.disabled = !venueRow;
-    bkc.setAttribute("aria-label", "Already booked: " + m.label);
-    if (!venueRow) bk.title = "Choose a specific venue to mark it as booked";
-    bkc.addEventListener("change", () => { m.booked = bkc.checked; if (m.booked) m.flex = 0; drawMustRows(); liveRebuild(); });
-    bk.append(bkc, " booked");
+    if (!venueRow && (m.status === "pencilled" || m.status === "booked")) m.status = "wish"; // a town can't be booked
+    const st = mustStatus(m);
+    m.status = st;
+    if (st !== "wish") m.flex = 0; // only a wish has a flexible date
+    if (st !== "queried") m.alt = [];
+    if (st !== "pencilled" && st !== "booked") m.nights = 1;
+    const row = el("div", "must-row " + st);
+    row.appendChild(el("span", "must-label", { wish: "★ ", queried: "? ", pencilled: "✎ ", booked: "✓ " }[st] + m.label));
+    const sel = el("select", "must-status");
+    sel.setAttribute("aria-label", "How firm is " + m.label);
+    MUST_STATUS.forEach(([k, t]) => {
+      const o = el("option", null, t); o.value = k; o.selected = k === st;
+      if (!venueRow && (k === "pencilled" || k === "booked")) o.disabled = true;
+      sel.appendChild(o);
+    });
+    if (!venueRow) sel.title = "Choose a specific venue (not a town) to pencil in or book it";
+    sel.addEventListener("change", () => { m.status = sel.value; PLANNER.released = new Set(); drawMustRows(); liveRebuild(); });
+    const dateIn = (val, label, onSet) => {
+      const d = el("input"); d.type = "date"; d.value = val || ""; d.setAttribute("aria-label", label);
+      d.addEventListener("change", () => { onSet(d.value); PLANNER.released = new Set(); liveRebuild(); });
+      return d;
+    };
+    row.append(sel, dateIn(m.date, (st === "queried" ? "First possible date for " : "Target date for ") + m.label, (v) => { m.date = v; }));
+    if (st === "queried") {
+      m.alt = (m.alt || []).slice(0, 2);
+      while (m.alt.length < 2) m.alt.push("");
+      m.alt.forEach((a, ai) => {
+        row.appendChild(el("span", "must-or", "or"));
+        row.appendChild(dateIn(a, `Another possible date for ${m.label}`, (v) => { m.alt[ai] = v; }));
+      });
+    }
+    if (st === "wish") {
+      const f = el("select");
+      f.setAttribute("aria-label", "Flexibility for " + m.label);
+      MUST_FLEX.forEach(([n, t]) => { const o = el("option", null, t); o.value = n; if (n === m.flex) o.selected = true; f.appendChild(o); });
+      f.addEventListener("change", () => { m.flex = Number(f.value); liveRebuild(); });
+      row.appendChild(f);
+    }
+    if (st === "pencilled" || st === "booked") {
+      const nl = el("label", "must-nights");
+      const ni = el("input"); ni.type = "number"; ni.min = "1"; ni.max = "7"; ni.value = String(m.nights || 1);
+      ni.setAttribute("aria-label", "Number of nights at " + m.label);
+      ni.addEventListener("change", () => { m.nights = Math.min(7, Math.max(1, parseInt(ni.value, 10) || 1)); ni.value = String(m.nights); PLANNER.released = new Set(); liveRebuild(); });
+      nl.append(ni, " night" + ((m.nights || 1) === 1 ? "" : "s"));
+      nl.title = "A run of consecutive nights at this venue counts as one visit";
+      row.appendChild(nl);
+    }
     const x = el("button", "must-x", "×"); x.type = "button"; x.setAttribute("aria-label", "Remove " + m.label);
-    x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); drawMustRows(); liveRebuild(); });
-    row.append(d, f, bk, x);
+    x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); PLANNER.released = new Set(); drawMustRows(); liveRebuild(); });
+    row.appendChild(x);
     box.appendChild(row);
   });
 }
-/** Resolve the rows into {label, ids:Set, dayKeys:Set, lastIdx}; string = error. */
+/** Resolve the rows into must-visits {label, status, ids:Set, dayKeys:Set, lastIdx, runId?}; string = error.
+ *  A run of N nights becomes N must-visits (one per night) sharing a runId. */
 function resolveMusts() {
   const out = [];
-  const bookedDays = new Map();
-  for (const m of PLANNER.mustRows) {
+  const fixedDays = new Map();
+  const parse = (iso) => { const [y, mo, dd] = iso.split("-").map(Number); return new Date(y, mo - 1, dd); };
+  const dayIdx = (t) => { const k = dkey(t); return PLANNER.days.findIndex((d) => dkey(d) === k); };
+  for (const [ri, m] of PLANNER.mustRows.entries()) {
+    const st = mustStatus(m);
     if (!m.date) return `Choose a target date for “${m.label}”.`;
-    if (m.booked && m.type === "v") {
-      if (bookedDays.has(m.date)) return `Two booked gigs on the same day (“${bookedDays.get(m.date)}” and “${m.label}”).`;
-      bookedDays.set(m.date, m.label);
-    }
-    const [y, mo, dd] = m.date.split("-").map(Number);
-    const t = new Date(y, mo - 1, dd);
-    const idxs = [];
-    PLANNER.days.forEach((day, i) => { if (Math.abs(Math.round((day - t) / 86400000)) <= m.flex) idxs.push(i); });
-    if (!idxs.length) return `“${m.label}” (${formatDate(t)}${m.flex ? " ± " + m.flex : ""}) falls outside the tour period.`;
     const ids = new Set(mustMatchIds(m));
     if (!ids.size) return `No usable venue found for “${m.label}”.`;
-    out.push({ label: m.label, booked: !!m.booked && m.type === "v", ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: idxs[idxs.length - 1] });
+    if (st === "booked" || st === "pencilled") {
+      if (![...ids].some((id) => Array.isArray(PLANNER.venues[id].latlon))) return `“${m.label}” has no map position, so it can't be planned around.`;
+      const nights = Math.min(7, Math.max(1, parseInt(m.nights, 10) || 1));
+      const t0 = parse(m.date);
+      for (let k = 0; k < nights; k++) {
+        const t = addDays(t0, k);
+        const idx = dayIdx(t);
+        const what = nights > 1 ? `“${m.label}” night ${k + 1} (${formatDate(t)})` : `“${m.label}” (${formatDate(t)})`;
+        if (idx < 0) return `${what} falls outside the tour period.`;
+        const dk = dkey(t);
+        if (fixedDays.has(dk)) return `Two fixed gigs on the same day: “${fixedDays.get(dk)}” and “${m.label}”.`;
+        fixedDays.set(dk, m.label);
+        out.push({ label: nights > 1 ? `${m.label} (night ${k + 1} of ${nights})` : m.label, status: st, ids, dayKeys: new Set([dk]), lastIdx: idx,
+          runId: nights > 1 ? `run:${ri}` : null, night: k + 1, nights });
+      }
+    } else if (st === "queried") {
+      const dates = [...new Set([m.date, ...(m.alt || [])].filter(Boolean))];
+      const idxs = dates.map((iso) => dayIdx(parse(iso))).filter((i) => i >= 0);
+      if (!idxs.length) return `None of the possible dates for “${m.label}” fall inside the tour period.`;
+      out.push({ label: m.label, status: "queried", ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: Math.max(...idxs),
+        dateLabels: idxs.sort((a, b) => a - b).map((i) => formatDate(PLANNER.days[i]).replace(/ \d{4}$/, "")) });
+    } else {
+      const t = parse(m.date);
+      const idxs = [];
+      PLANNER.days.forEach((day, i) => { if (Math.abs(Math.round((day - t) / 86400000)) <= m.flex) idxs.push(i); });
+      if (!idxs.length) return `“${m.label}” (${formatDate(t)}${m.flex ? " ± " + m.flex : ""}) falls outside the tour period.`;
+      out.push({ label: m.label, status: "wish", ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: idxs[idxs.length - 1] });
+    }
   }
   return out;
 }
@@ -1263,7 +1320,7 @@ function crowMiles(a, b) {
 /** First stop (on a different day) within `miles` of gig c, or null. */
 function nearStop(c, stops, miles) {
   if (!(miles > 0)) return null;
-  return stops.find((s) => dkey(s.date) !== dkey(c.date) && crowMiles(s, c) < miles) || null;
+  return stops.find((s) => dkey(s.date) !== dkey(c.date) && !(c.runId && s.runId === c.runId) && crowMiles(s, c) < miles) || null;
 }
 
 function bestKRoute(G, relax, relaxSpread) {
@@ -1279,6 +1336,7 @@ function beamKRoute(G, relax, relaxSpread) {
   const FULL = (1 << musts.length) - 1;
   if (musts.length) G = Math.max(G, musts.length);
   const bits = (n) => (n.must || []).reduce((m, i) => m | (1 << i), 0);
+  const QMASK = musts.reduce((m, x, i) => (x.status === "queried" ? m | (1 << i) : m), 0); // "one of these dates": only once
   const pop = (m) => { let c = 0; while (m) { c += m & 1; m >>= 1; } return c; };
   const days = PLANNER.days.map((d) => ({ d, nodes: PLANNER.byDay.get(dkey(d)) || [] }));
   const MAXGAP = 4, BEAM = 400, PER_NODE = 8, MUST_BONUS = 1000;
@@ -1316,11 +1374,13 @@ function beamKRoute(G, relax, relaxSpread) {
         const gap = i2 - st.i;
         const from = st.stops[st.stops.length - 1];
         days[i2].nodes.forEach((n, j) => {
-          if (PLANNER.distinct && st.seen.has(venueKey(n))) return;
+          if (bits(n) & st.mask & QMASK) return; // a queried venue already has its date
+          const sameRun = !!n.runId && n.runId === from.runId && gap === 1; // next night of a run: one visit, no travel
+          if (PLANNER.distinct && st.seen.has(venueKey(n)) && !sameRun) return;
           if (!relaxSpread && nearStop(n, st.stops, PLANNER.minSpread)) return;
           const leg = roadMiles(latlonOf(from), latlonOf(n));
           if (!relax && leg > PLANNER.maxHop * gap) return;
-          if (!relaxSpread && leg < PLANNER.minHop) return;
+          if (!relaxSpread && leg < PLANNER.minHop && !sameRun) return;
           next.push({ i: i2, j, mask: st.mask | bits(n), cost: st.cost + leg, stops: [...st.stops, n], seen: new Set([...st.seen, venueKey(n)]) });
         });
       }
@@ -1507,7 +1567,10 @@ function onBuild() {
             nodes.push(n);
           } else if (!/must-visit/.test(n.note || "")) n.note = "★ must-visit · " + (n.note || "");
           n.must = [...(n.must || []), mi];
-          if (m.booked) { const cl = clashes.get(vid); n.booked = true; n.note = "✓ booked" + (cl ? ` · ⚠ also on: ${cl}` : "") + " · fixed date"; }
+          if (m.status === "booked") { const cl = clashes.get(vid); n.booked = true; n.note = "✓ booked" + (cl ? ` · ⚠ also on: ${cl}` : "") + " · fixed date"; }
+          else if (m.status === "pencilled") { const cl = clashes.get(vid); n.pencilled = true; n.note = "✎ pencilled · date held" + (cl ? ` · ⚠ also on: ${cl}` : ""); }
+          else if (m.status === "queried") { n.queried = true; n.note = "? queried · one of: " + m.dateLabels.join(" / "); }
+          if (m.runId) { n.runId = m.runId; n.night = m.night; n.nights = m.nights; n.note += ` · night ${m.night} of ${m.nights}`; }
         });
       });
       // a booked gig fixes its day: it is the only option that day, and already part of the tour
@@ -1661,15 +1724,19 @@ let nodeEls = new Map(); // node id -> element
 let mapMarkers = new Map(); // venue id -> leaflet marker (for hover linking)
 
 /** Picks that are part of the tour whatever else is chosen: the anchor gig, or the booked gigs (pool mode). */
-function basePicks() {
+function basePicks(lockedOnly) {
   if (PLANNER.anchor) return new Map([[dkey(PLANNER.anchor.date), PLANNER.anchor]]);
   const m = new Map();
-  if (PLANNER.mode === "pool") PLANNER.byDay.forEach((nodes, k) => { const b = nodes.find((n) => n.booked); if (b) m.set(k, b); });
+  if (PLANNER.mode === "pool") PLANNER.byDay.forEach((nodes, k) => {
+    // booked gigs are locked; pencilled ones start on the tour but can be released (and stay released)
+    const b = nodes.find((n) => n.booked) || (lockedOnly ? null : nodes.find((n) => n.pencilled && !PLANNER.released.has(n.id)));
+    if (b) m.set(k, b);
+  });
   return m;
 }
 /** Is gig c out of range of the picks either side of it (max/min between gigs)? */
 function outOfReach(c, stops) {
-  if (c.isAnchor || c.booked || !stops.length) return false;
+  if (c.isAnchor || c.booked || c.runId || !stops.length) return false;
   const cl = latlonOf(c), k = dkey(c.date);
   let prev = null, next = null;
   for (const s of stops) {
@@ -1686,7 +1753,7 @@ function outOfReach(c, stops) {
 /** Another stop (on a different day) already at this venue, when each venue is visited once. */
 function usedElsewhere(c, stops) {
   if (!PLANNER.distinct || PLANNER.mode !== "pool") return null;
-  return stops.find((s) => dkey(s.date) !== dkey(c.date) && s.venue_id === c.venue_id) || null;
+  return stops.find((s) => dkey(s.date) !== dkey(c.date) && s.venue_id === c.venue_id && !(c.runId && s.runId === c.runId)) || null;
 }
 /** One verdict per gig for the column list and the map. */
 function nodeState(c, stops) {
@@ -1770,13 +1837,13 @@ function renderAll() {
   bestBtn.disabled = !PLANNER.best;
   bestBtn.addEventListener("click", () => {
     PLANNER.chosen = new Map();
-    if (bestPressed) { PLANNER.chosen = basePicks(); }
+    if (bestPressed) { PLANNER.chosen = basePicks(true); }
     else PLANNER.best.stops.forEach((c) => PLANNER.chosen.set(dkey(c.date), c));
     renderAll();
   });
   const clearBtn = el("button", "btn-secondary", PLANNER.anchor ? "Reset to anchor only" : "Clear choices");
   clearBtn.type = "button";
-  clearBtn.addEventListener("click", () => { PLANNER.chosen = basePicks(); renderAll(); });
+  clearBtn.addEventListener("click", () => { PLANNER.chosen = basePicks(true); PLANNER.byDay.forEach((nodes) => nodes.forEach((n) => { if (n.pencilled) PLANNER.released.add(n.id); })); renderAll(); });
   const chk = (label, val, onChange) => {
     const lbl = el("label", "planner-inline");
     const cb = el("input"); cb.type = "checkbox"; cb.checked = !!val;
@@ -1872,7 +1939,7 @@ function renderAll() {
       if (PLANNER.collapsed.has(k) && pickHere && pickHere.id !== c.id) { hiddenOther++; return; }
       if (st.hide) { hiddenClose++; return; }
       const v = venueOf(c) || {};
-      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : "") + (c.booked ? " booked" : ""));
+      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : "") + (c.booked ? " booked" : "") + (c.pencilled ? " pencilled" : "") + (c.queried ? " queried" : ""));
       n.dataset.nid = c.id;
       n.appendChild(el("div", "graph-node-name", c.name));
       n.appendChild(el("div", "graph-node-meta", [c.time, v.city || v.name].filter(Boolean).join(" · ")));
@@ -2024,6 +2091,10 @@ function drawEdges() {
 }
 window.addEventListener("resize", () => { try { drawEdges(); } catch (e) { /* ignore */ } });
 
+/** How firm a stop is: booked | pencilled | queried | proposed (a venue to arrange) | listed (a real listed event). */
+function nodeStatus(c) {
+  return c.booked ? "booked" : c.pencilled ? "pencilled" : c.queried ? "queried" : c.kind === "venue" ? "proposed" : "listed";
+}
 /** "Name, venue, city" without repeating a city (or venue) already named. */
 function placeParts(c, v) {
   const parts = [c.name];
@@ -2068,7 +2139,7 @@ function renderItinerary() {
     const ll = latlonOf(c);
     const leg = roadMiles(prev, ll);
     const v = venueOf(c) || {};
-    lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}${c.booked ? "  ✓ booked" : ""}` +
+    lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}${{ booked: "  ✓ booked", pencilled: "  ✎ pencilled", queried: "  ? queried" }[nodeStatus(c)] || ""}${c.runId ? ` (night ${c.night} of ${c.nights})` : ""}` +
       (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : "") + warn(leg, i === 0, c));
     prev = ll; prevStop = c;
   });
@@ -2107,13 +2178,14 @@ function renderItinerary() {
       const ll = latlonOf(c);
       const leg = roadMiles(prevLL, ll);
       prevLL = ll;
-      const proposed = c.kind === "venue" && !c.booked;
+      const stt = nodeStatus(c);
+      const proposed = stt === "proposed";
       const href = c.link ? new URL(c.link, location.href).href : "";
       return {
         date: c.date, uid: c.id,
-        title: (proposed ? "Gig (to arrange): " : "") + placeParts(c, v).join(", "),
+        title: ({ proposed: "Gig (to arrange): ", queried: "Gig (to confirm): ", pencilled: "Gig (pencilled): " }[stt] || "") + placeParts(c, v).join(", "),
         location: TourSupport.icsLocation(v),
-        description: [c.time ? "Time: " + c.time : "", proposed ? "Proposed — not yet booked" : c.booked ? "Booked" : "",
+        description: [c.time ? "Time: " + c.time : "", { proposed: "Proposed — not yet booked", queried: "Queried — awaiting confirmation", pencilled: "Pencilled — date held, not yet confirmed", booked: "Booked" }[stt] || "",
           c.note || "", leg != null ? `Leg: ${fmtMiles(leg)}, ${fmtDrive(leg)}` : "", href].filter(Boolean).join("\n"),
       };
     }), "tour.ics", "Tour Planner");
@@ -2121,9 +2193,9 @@ function renderItinerary() {
   const records = () => TourSupport.buildRecords(stops, (c) => {
     const v = venueOf(c) || {};
     const ll = latlonOf(c);
-    const proposed = c.kind === "venue" && !c.booked;
+    const stt = nodeStatus(c);
     return {
-      title: c.name, kind: proposed ? "proposed venue" : c.booked ? "booked venue" : c.kind, status: proposed ? "proposed" : c.booked ? "booked" : "listed",
+      title: c.name, kind: stt === "listed" ? c.kind : stt + " venue", status: stt,
       venue: v.name, address: v.full_address || "", town: v.city || "", postcode: v.postcode || "",
       latitude: ll ? ll[0] : null, longitude: ll ? ll[1] : null,
       link: c.link ? new URL(c.link, location.href).href : "", notes: c.note || "",
@@ -2155,8 +2227,9 @@ function toggleNode(c) {
   const k = dkey(c.date);
   const cur = PLANNER.chosen.get(k);
   if (cur && cur.booked) return; // a booked gig can't be taken off the tour here: untick "booked" in the must-visit list
+  if (cur && cur.pencilled) PLANNER.released.add(cur.id); // taking a pencilled gig off the tour (or swapping it) releases it
   if (cur && cur.id === c.id) { PLANNER.chosen.delete(k); PLANNER.collapsed.delete(k); }
-  else { PLANNER.chosen.set(k, c); if (PLANNER.autoCollapse) PLANNER.collapsed.add(k); }
+  else { PLANNER.chosen.set(k, c); PLANNER.released.delete(c.id); if (PLANNER.autoCollapse) PLANNER.collapsed.add(k); }
   renderAll();
 }
 
@@ -2412,7 +2485,9 @@ function gatherPlan() {
       extraVenues: [...PLANNER.extraVenues].map(([vid, set]) => [vid, [...set]]),
       excluded: (PLANNER.pool || []).filter((r) => !r.on).map((r) => r.key),
     };
-    plan.mustVisits = PLANNER.mustRows.map((m) => ({ type: m.type, key: m.key, label: m.label, date: m.date || "", flex: m.flex || 0, booked: !!m.booked }));
+    plan.mustVisits = PLANNER.mustRows.map((m) => ({ type: m.type, key: m.key, label: m.label, status: mustStatus(m), date: m.date || "",
+      alt: (m.alt || []).filter(Boolean), flex: m.flex || 0, nights: m.nights || 1 }));
+    plan.released = [...PLANNER.released];
   }
   plan.picks = [...PLANNER.chosen.entries()].filter(([, c]) => !c.isAnchor)
     .map(([k, c]) => ({ date: k, id: c.id, venue_id: c.venue_id, name: c.name, booked: !!c.booked }));
@@ -2500,8 +2575,12 @@ function applyPlan(plan) {
     const items = new Map(mustItems().map((i) => [i.type + ":" + i.key, i]));
     PLANNER.mustRows = (plan.mustVisits || []).filter((m) => items.has(m.type + ":" + m.key)).map((m) => ({
       type: m.type, key: m.key, label: items.get(m.type + ":" + m.key).label, date: m.date || "",
-      flex: MUST_FLEX.some(([n]) => n === Number(m.flex)) ? Number(m.flex) : 0, booked: !!m.booked && m.type === "v",
+      flex: MUST_FLEX.some(([n]) => n === Number(m.flex)) ? Number(m.flex) : 0,
+      status: MUST_STATUS.some(([k]) => k === m.status) ? m.status : m.booked ? "booked" : "wish", // older files had a booked flag
+      alt: Array.isArray(m.alt) ? m.alt.filter((a) => typeof a === "string").slice(0, 2) : [],
+      nights: Math.min(7, Math.max(1, parseInt(m.nights, 10) || 1)),
     }));
+    PLANNER.released = new Set(Array.isArray(plan.released) ? plan.released : []);
     if (PLANNER.mustRows.length < (plan.mustVisits || []).length) notes.push("some must-visit places are no longer in the data");
     drawMustRows();
   }
@@ -2568,7 +2647,7 @@ async function initPlanner() {
   document.getElementById("startInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onFindStart(); });
   document.getElementById("startLocate").addEventListener("click", onUseLocation);
   document.getElementById("startClear").addEventListener("click", clearStart);
-  document.getElementById("buildTour").addEventListener("click", onBuild);
+  document.getElementById("buildTour").addEventListener("click", () => { PLANNER.released = new Set(); onBuild(); });
   document.getElementById("planSave").addEventListener("click", savePlan);
   document.getElementById("planLoad").addEventListener("click", () => document.getElementById("planFile").click());
   document.getElementById("planFile").addEventListener("change", (e) => { loadPlanFile(e.target.files[0]); e.target.value = ""; });

@@ -250,5 +250,13 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 
 /* booked (fixed) gigs in the must-visit list and day columns */
 .must-row.booked { background: #e8f5e9; border-color: #a5d6a7; border-left-color: #2e7d32; }
-.must-row .must-booked { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; cursor: pointer; }
 .graph-node.booked { border-left-color: #2e7d32; background: #f1f8e9; cursor: default; }
+
+/* must-visit statuses: queried (dates to confirm), pencilled (held, soft-locked), booked (locked) */
+.must-row.queried { background: #f3e5f5; border-color: #ce93d8; border-left-color: #8e24aa; }
+.must-row.pencilled { background: #e3f2fd; border-color: #90caf9; border-left-color: #1976d2; border-left-style: dashed; }
+.must-row .must-or { font-size: .85em; color: #666; }
+.must-row .must-nights { display: inline-flex; align-items: center; gap: 4px; font-size: .9em; }
+.must-row .must-nights input { width: 3.2em; }
+.graph-node.pencilled { border-left: 4px dashed #1976d2; background: #f3f9ff; }
+.graph-node.queried { border-left-color: #8e24aa; background: #faf3fc; }
