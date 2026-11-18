@@ -9,7 +9,7 @@
  * Choose a stop per day (or leave rest days) and get an itinerary + map.
  *
  * Depends on: recurrence-engine.js, shared_utils.js (loadEventsData,
- * haversineKm, formatDate, parseDateString, getTodayMidnight,
+ * haversineKm, formatDate, parseDateString, getTodayMidnight, EventHelpers (event_helpers.js),
  * resolveClubVenueId, clubIsActiveOn, initMap). Leaflet loads on demand.
  * Geocoding: postcodes.io (browser-callable, CORS-enabled, free).
  */
@@ -134,30 +134,32 @@ function gatherCandidates(from, to, cats) {
   if (C.poetry) oneOffs.push({ list: ed.poetryEvents || [], kind: "poetry" });
   oneOffs.forEach(({ list, kind }) => {
     list.forEach((ev) => {
-      const d = parseDateString(ev.date);
-      if (!d || d < from || d > to) return;
       if (kind === "event" && (ev.club ? !C.club : !C.storyEvent)) return;
       if (ev.cancelled || ev.isCancelled) return;
-      const k = dkey(d);
-      const vid = ev.venue_id;
-      if (vid && out.has(k)) {
-        out.set(
-          k,
-          out.get(k).filter(
-            (c) => !(c.venue_id === vid && c.kind !== "event" && c.kind !== "music" && c.kind !== "poetry" &&
-              (!ev.club || c.clubId === ev.club)),
-          ),
-        );
-      }
-      add({
-        id: `${kind}:${ev.eventId || ev.name}:${k}`,
-        kind,
-        name: ev.showname || ev.name,
-        date: d,
-        time: ev.time || "",
-        venue_id: vid,
-        link: ev.link || ev.tickets || "",
-        clubId: ev.club || null,
+      // A multi-night run has an array of dates: one candidate per night in range.
+      EventHelpers.eventDates(ev, parseDateString).forEach((d) => {
+        if (d < from || d > to) return;
+        const k = dkey(d);
+        const vid = ev.venue_id;
+        if (vid && out.has(k)) {
+          out.set(
+            k,
+            out.get(k).filter(
+              (c) => !(c.venue_id === vid && c.kind !== "event" && c.kind !== "music" && c.kind !== "poetry" &&
+                (!ev.club || c.clubId === ev.club)),
+            ),
+          );
+        }
+        add({
+          id: `${kind}:${ev.eventId || ev.name}:${k}`,
+          kind,
+          name: ev.showname || ev.name,
+          date: d,
+          time: ev.time || "",
+          venue_id: vid,
+          link: ev.link || ev.tickets || "",
+          clubId: ev.club || null,
+        });
       });
     });
   });
@@ -583,13 +585,13 @@ function poolEvidence(perfIds, tourIds, cats) {
   const wanted = (cls) => [...cls].some((x) => cats.has(x));
   const lists = [["specificEvents", false, false], ["musicEvents", true, false], ["poetryEvents", false, true]];
   lists.forEach(([list, fm, fp]) => (ed[list] || []).forEach((e) => {
-    const d = parseDateString(e.date);
-    if (!d || !e.venue_id || e.online || e.cancelled || e.isCancelled) return;
+    const dates = EventHelpers.eventDates(e, parseDateString); // several for a multi-night run
+    if (!dates.length || !e.venue_id || e.online || e.cancelled || e.isCancelled) return;
     const ids = idsOf(e);
     const explicit = ids.find((id) => perfIds.has(id));
     const cls = classesFor(ids, fm || e.isMusic, fp || e.isPoetry);
     if (!explicit && !wanted(cls)) return;
-    out.push({ vid: e.venue_id, date: d, pid: explicit || ids[0] || null, club: e.club || null });
+    dates.forEach((d) => out.push({ vid: e.venue_id, date: d, pid: explicit || ids[0] || null, club: e.club || null }));
   }));
   Object.entries(ed.tours || {}).forEach(([tid, t]) => {
     const ids = idsOf(t);
@@ -597,8 +599,8 @@ function poolEvidence(perfIds, tourIds, cats) {
     const cls = classesFor(ids, t.isMusic, t.isPoetry);
     if (!explicit && !tourIds.has(tid) && !wanted(cls)) return;
     (t.tour_dates || []).forEach((td) => {
-      const d = parseDateString(td.date);
-      if (d && td.venue_id && !td.cancelled && !td.isCancelled) out.push({ vid: td.venue_id, date: d, pid: explicit || t.performer_id || tid, club: null });
+      if (!td.venue_id || td.cancelled || td.isCancelled) return;
+      EventHelpers.eventDates(td, parseDateString).forEach((d) => out.push({ vid: td.venue_id, date: d, pid: explicit || t.performer_id || tid, club: null }));
     });
   });
   return out;
