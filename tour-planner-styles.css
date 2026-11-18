@@ -260,3 +260,17 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .must-row .must-nights input { width: 3.2em; }
 .graph-node.pencilled { border-left: 4px dashed #1976d2; background: #f3f9ff; }
 .graph-node.queried { border-left-color: #8e24aa; background: #faf3fc; }
+
+/* clash finder */
+.clash-badge { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 10px; border: 1px solid; font-size: .8em; font-weight: 600; cursor: pointer; background: #fff; }
+.clash-badge.red { color: #b71c1c; border-color: #e57373; background: #ffebee; }
+.clash-badge.amber { color: #8a5a00; border-color: #ffb74d; background: #fff4e0; }
+.clash-badge.grey { color: #555; border-color: #bbb; background: #f2f2f2; font-weight: 500; }
+.clash-why { margin-top: 4px; padding: 4px 6px; border-left: 3px solid; font-size: .82em; line-height: 1.35; cursor: default; }
+.clash-why.red { border-color: #e57373; background: #fff6f6; }
+.clash-why.amber { border-color: #ffb74d; background: #fffaf0; }
+.clash-why.grey { border-color: #bbb; background: #f8f8f8; }
+.clash-key { padding: 0 6px; border-radius: 8px; font-weight: 600; }
+.clash-key.red { background: #ffebee; color: #b71c1c; }
+.clash-key.amber { background: #fff4e0; color: #8a5a00; }
+.clash-key.grey { background: #eee; color: #555; }

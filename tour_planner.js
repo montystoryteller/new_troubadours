@@ -445,12 +445,12 @@ function resetPoolState() {
 /** Which cards live in the step list ("flow") and which in the panels beside the map, per mode.
  *  Required choices stay in the flow; everything you would fiddle with while looking at the map goes beside it. */
 const LAYOUT = {
-  club: { flow: ["blkAnchor"], side: ["blkOther", "blkStart"] },
-  venue: { flow: ["blkOther", "blkAnchor"], side: ["blkStart"] },
-  period: { flow: [], side: ["blkDates", "blkArea", "blkOther", "blkStart"] },
-  pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkDates", "blkStart"] },
+  club: { flow: ["blkAnchor"], side: ["blkOther", "blkClash", "blkStart"] },
+  venue: { flow: ["blkOther", "blkAnchor"], side: ["blkClash", "blkStart"] },
+  period: { flow: [], side: ["blkDates", "blkArea", "blkOther", "blkClash", "blkStart"] },
+  pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkClash", "blkDates", "blkStart"] },
 };
-const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkStart"];
+const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkClash", "blkStart"];
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
   if (!box || !flow) return;
@@ -1944,6 +1944,7 @@ function renderAll() {
       n.appendChild(el("div", "graph-node-name", c.name));
       n.appendChild(el("div", "graph-node-meta", [c.time, v.city || v.name].filter(Boolean).join(" · ")));
       if (c.note) n.appendChild(el("div", "graph-node-note", c.note));
+      appendClash(n, c);
       const h = homeLL();
       if (h) n.appendChild(el("div", "graph-node-home", `${fmtMiles(roadMiles(h, latlonOf(c)))} from start`));
       const legs = neighbourLegs(c, stopsNow);
@@ -2140,7 +2141,7 @@ function renderItinerary() {
     const leg = roadMiles(prev, ll);
     const v = venueOf(c) || {};
     lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}${{ booked: "  ✓ booked", pencilled: "  ✎ pencilled", queried: "  ? queried" }[nodeStatus(c)] || ""}${c.runId ? ` (night ${c.night} of ${c.nights})` : ""}` +
-      (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : "") + warn(leg, i === 0, c));
+      (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : "") + warn(leg, i === 0, c) + clashText(c));
     prev = ll; prevStop = c;
   });
   if (endP && prev) {
@@ -2383,6 +2384,11 @@ function setupCollapsibles() {
       const f = (s) => { const d = s ? new Date(s + "T00:00:00") : null; return d && !isNaN(d) ? formatDate(d) : "?"; };
       return `${f(v("periodStart"))} to ${f(v("periodEnd"))} · ${v("gigsWanted") || "?"} gigs` + (document.getElementById("poolWeekday").checked ? " · usual weekdays only" : " · any weekday");
     },
+    blkClash: () => {
+      if (!PLANNER.clash.on) return "Off.";
+      const on = CLASH_CHIPS.filter(([k]) => PLANNER.clash.chips.has(k)).map(([, t]) => t.toLowerCase());
+      return on.length ? `Watching for ${on.join(", ")} clashes.` : "On, but no kinds ticked.";
+    },
     blkPoolPreview: () => (document.getElementById("poolSummary") || {}).textContent || "",
     blkAnchor: () => {
       const t = (id) => { const s = document.getElementById(id); return s && s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : "?"; };
@@ -2435,15 +2441,158 @@ function setupCollapsibles() {
 }
 /** Starting state of each panel per mode (true = collapsed). Required steps start open. */
 const COLLAPSE_DEFAULTS = {
-  club: { blkAnchor: false, blkOther: true, blkStart: true },
-  venue: { blkOther: false, blkAnchor: false, blkStart: true },
-  period: { blkDates: false, blkArea: false, blkOther: true, blkStart: true },
-  pool: { blkPool: false, blkPoolPreview: false, blkArea: true, blkMust: true, blkDates: false, blkStart: true },
+  club: { blkAnchor: false, blkOther: true, blkClash: true, blkStart: true },
+  venue: { blkOther: false, blkAnchor: false, blkClash: true, blkStart: true },
+  period: { blkDates: false, blkArea: false, blkOther: true, blkClash: true, blkStart: true },
+  pool: { blkPool: false, blkPoolPreview: false, blkArea: true, blkMust: true, blkClash: true, blkDates: false, blkStart: true },
 };
 /** After Develop tour, fold the required steps away (with summaries) so the map and columns come up the page. */
 function collapseAfterBuild() {
   const lay = LAYOUT[currentMode()];
   if (lay && PLANNER._setCollapsed) lay.flow.forEach((id) => PLANNER._setCollapsed(id, true));
+}
+
+// ── clash finder ────────────────────────────────────────────────────────
+// Other events (of the kinds you choose) on the same night at the same venue, or in the same town, and
+// in the same town the day before or after. Opt-in; it only warns, never hides or blocks. Only events
+// listed in the directory are known, so "no clash shown" is not proof that nothing else is on.
+const CLASH_CHIPS = [["story", "Story"], ["music", "Music"], ["poetry", "Poetry"], ["folk", "Folk nights"], ["sessions", "Irish sessions"]];
+PLANNER.clash = { on: false, touched: false, chips: new Set(["story"]), cache: null, cacheKey: "", open: new Set() };
+
+/** The kinds you are touring, as clash kinds: from the kind ticks, or (pool mode) from the artists chosen. */
+function touringChips() {
+  const out = new Set();
+  const tick = (id) => { const e = document.getElementById(id); return !!(e && e.checked); };
+  if (currentMode() === "pool") {
+    const ed = PLANNER.eventsData || {};
+    PLANNER.pickPerf.forEach((id) => { const p = (ed.performers || {})[id] || {}; out.add(p.musician ? "music" : p.poet ? "poetry" : "story"); });
+    PLANNER.pickTour.forEach((id) => { const t = (ed.tours || {})[id] || {}; out.add(t.isMusic ? "music" : t.isPoetry ? "poetry" : "story"); });
+    if (!out.size) out.add("story");
+  } else {
+    if (tick("catClub") || tick("catStoryEvent")) out.add("story");
+    if (tick("catMusic")) out.add("music");
+    if (tick("catPoetry")) out.add("poetry");
+    if (tick("catFolk")) out.add("folk");
+    if (tick("catSession")) out.add("sessions");
+  }
+  return out;
+}
+function syncClashBoxes() {
+  document.querySelectorAll("#clashKinds input").forEach((b) => { b.checked = PLANNER.clash.chips.has(b.value); });
+  const on = document.getElementById("clashOn"); if (on) on.checked = PLANNER.clash.on;
+  const wrap = document.getElementById("clashKindsWrap"); if (wrap) wrap.hidden = !PLANNER.clash.on;
+}
+const townOf = (vid) => String(((PLANNER.venues[vid] || {}).city) || "").trim().toLowerCase();
+function sameTown(a, b) {
+  if (a === b) return true;
+  const ta = townOf(a), tb = townOf(b);
+  if (ta && ta === tb) return true;
+  const va = PLANNER.venues[a], vb = PLANNER.venues[b];
+  return !!(va && vb && TourSupport.crowMiles(va.latlon, vb.latlon) <= 1.5); // a different spelling of the same place
+}
+/** Every watched event across the tour period (plus a day either side), by day. Cached until the period or kinds change. */
+function clashIndex() {
+  const C = PLANNER.clash;
+  if (!C.on || !PLANNER.days.length || typeof EventCollect === "undefined") return null;
+  if (!C.touched) { // follow what you're touring until you choose the kinds yourself
+    const def = touringChips();
+    if ([...def].sort().join() !== [...C.chips].sort().join()) { C.chips = def; syncClashBoxes(); }
+  }
+  const d0 = addDays(PLANNER.days[0], -1), d1 = addDays(PLANNER.days[PLANNER.days.length - 1], 1);
+  const key = [dkey(d0), dkey(d1), [...C.chips].sort().join(","), PLANNER.mode, [...PLANNER.pickPerf].sort().join(","), [...PLANNER.pickTour].sort().join(",")].join("|");
+  if (C.cache && C.cacheKey === key) return C.cache;
+  const ed = PLANNER.eventsData || {};
+  const ownTours = new Set([...PLANNER.pickTour].map((id) => (ed.tours || {})[id]).filter(Boolean));
+  const ownPerf = PLANNER.mode === "pool" ? PLANNER.pickPerf : new Set();
+  const ownNames = new Set([...ownPerf].map((id) => String(((ed.performers || {})[id] || {}).name || "").trim().toLowerCase()).filter(Boolean));
+  // a record's bill lists display names in `all` and performer ids per role in `ids`
+  const byYou = (r) => !!r.bill && (
+    ["head", "support", "also"].some((role) => ((r.bill.ids || {})[role] || []).some((id) => ownPerf.has(id))) ||
+    (r.bill.all || []).some((n) => ownNames.has(String(n).trim().toLowerCase())));
+  const recs = EventCollect.collect(ed, d0, d1, { venueOk: (v) => TourSupport.venueUsable(PLANNER.venues, v) })
+    .filter((r) => C.chips.has(r.chip))
+    // the artists you are touring (and their own tour's dates) are not competition for themselves
+    .filter((r) => !(r.source.tour && ownTours.has(r.source.tour)) && !(ownPerf.size && byYou(r)));
+  const byDate = new Map();
+  recs.forEach((r) => { const k = dkey(r.date); if (!byDate.has(k)) byDate.set(k, []); byDate.get(k).push(r); });
+  C.cache = { byDate, memo: new Map() }; C.cacheKey = key;
+  return C.cache;
+}
+const sameTitle = (a, b) => String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
+/** {venue, town, near, level} for one option, or null when the finder is off / nothing shows. */
+function clashesFor(c) {
+  const idx = clashIndex();
+  if (!idx || !c.venue_id || !c.date) return null;
+  if (idx.memo.has(c.id)) return idx.memo.get(c.id);
+  const isOwn = (r) => r.venue_id === c.venue_id && (sameTitle(r.title, c.name) || (c.clubId && r.club === c.clubId));
+  const res = { venue: [], town: [], near: [] };
+  (idx.byDate.get(dkey(c.date)) || []).forEach((r) => {
+    if (isOwn(r)) return;
+    if (r.venue_id === c.venue_id) res.venue.push(r);
+    else if (sameTown(r.venue_id, c.venue_id)) res.town.push(r);
+  });
+  [-1, 1].forEach((o) => (idx.byDate.get(dkey(addDays(c.date, o))) || []).forEach((r) => {
+    if (r.venue_id === c.venue_id || sameTown(r.venue_id, c.venue_id)) res.near.push({ r, off: o });
+  }));
+  res.level = res.venue.length ? "red" : res.town.length ? "amber" : res.near.length ? "grey" : null;
+  const out = res.level ? res : null;
+  idx.memo.set(c.id, out);
+  return out;
+}
+const CLASH_KIND = { story: "story", music: "music", poetry: "poetry", folk: "folk night", sessions: "Irish session" };
+function clashLines(c, cl) {
+  const vn = (r) => (PLANNER.venues[r.venue_id] || {}).name || r.venue_id;
+  const what = (r) => `${r.title} (${CLASH_KIND[r.chip] || r.chip}${r.time ? ", " + r.time : ""})`;
+  const lines = [];
+  cl.venue.forEach((r) => lines.push(`Same night, same venue: ${what(r)}`));
+  cl.town.forEach((r) => lines.push(`Same night, ${(PLANNER.venues[c.venue_id] || {}).city || "same town"}: ${what(r)} at ${vn(r)}`));
+  cl.near.forEach(({ r, off }) => lines.push(`${off < 0 ? "Night before" : "Night after"}${r.venue_id === c.venue_id ? ", same venue" : ""}: ${what(r)}${r.venue_id === c.venue_id ? "" : " at " + vn(r)}`));
+  return lines;
+}
+/** A coloured badge on an option; click it to see why. */
+function appendClash(n, c) {
+  const cl = clashesFor(c);
+  if (!cl) return;
+  const text = cl.level === "red" ? `⚠ clash here (${cl.venue.length})` : cl.level === "amber" ? `⚠ ${cl.town.length} nearby, same night` : `ℹ ${cl.near.length} the night before/after`;
+  const lines = clashLines(c, cl);
+  const open = PLANNER.clash.open.has(c.id);
+  const b = el("button", "clash-badge " + cl.level, text);
+  b.type = "button"; b.setAttribute("aria-expanded", String(open));
+  b.title = "Click to see why";
+  const why = el("div", "clash-why " + cl.level);
+  why.hidden = !open;
+  lines.slice(0, 6).forEach((t) => why.appendChild(el("div", null, t)));
+  if (lines.length > 6) why.appendChild(el("div", "ts-hint", `+${lines.length - 6} more`));
+  const stop = (e) => e.stopPropagation();
+  why.addEventListener("click", stop);
+  b.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const nowOpen = why.hidden;
+    why.hidden = !nowOpen;
+    b.setAttribute("aria-expanded", String(nowOpen));
+    if (nowOpen) PLANNER.clash.open.add(c.id); else PLANNER.clash.open.delete(c.id);
+  });
+  b.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") e.stopPropagation(); });
+  n.append(b, why);
+}
+/** One-line note for a stop in "Your tour". */
+function clashText(c) {
+  const cl = clashesFor(c);
+  if (!cl || cl.level === "grey") return "";
+  const first = (cl.venue[0] || cl.town[0]);
+  return `  ⚠ known clash: ${first.title}${cl.venue.length ? " (same venue)" : " (same town)"}${cl.venue.length + cl.town.length > 1 ? ` +${cl.venue.length + cl.town.length - 1} more` : ""}`;
+}
+function initClash() {
+  const on = document.getElementById("clashOn");
+  if (!on) return;
+  on.addEventListener("change", () => { PLANNER.clash.on = on.checked; PLANNER.clash.cache = null; if (!PLANNER.clash.touched) PLANNER.clash.chips = touringChips(); syncClashBoxes(); if (PLANNER._refreshSummaries) PLANNER._refreshSummaries(); if (PLANNER.days.length) renderAll(); });
+  document.querySelectorAll("#clashKinds input").forEach((b) => b.addEventListener("change", () => {
+    PLANNER.clash.touched = true;
+    PLANNER.clash.chips = new Set([...document.querySelectorAll("#clashKinds input:checked")].map((x) => x.value));
+    if (PLANNER._refreshSummaries) PLANNER._refreshSummaries();
+    if (PLANNER.days.length) renderAll();
+  }));
+  syncClashBoxes();
 }
 
 // ── save / load a work-in-progress plan (JSON file) ─────────────────────
@@ -2489,6 +2638,7 @@ function gatherPlan() {
       alt: (m.alt || []).filter(Boolean), flex: m.flex || 0, nights: m.nights || 1 }));
     plan.released = [...PLANNER.released];
   }
+  plan.clash = { on: PLANNER.clash.on, touched: PLANNER.clash.touched, chips: [...PLANNER.clash.chips] };
   plan.picks = [...PLANNER.chosen.entries()].filter(([, c]) => !c.isAnchor)
     .map(([k, c]) => ({ date: k, id: c.id, venue_id: c.venue_id, name: c.name, booked: !!c.booked }));
   return plan;
@@ -2585,6 +2735,15 @@ function applyPlan(plan) {
     drawMustRows();
   }
 
+  // clash finder
+  if (plan.clash && typeof plan.clash === "object") {
+    PLANNER.clash.on = !!plan.clash.on;
+    PLANNER.clash.touched = !!plan.clash.touched;
+    if (PLANNER.clash.touched) PLANNER.clash.chips = new Set((plan.clash.chips || []).filter((k) => CLASH_CHIPS.some(([c]) => c === k)));
+    PLANNER.clash.cache = null; PLANNER.clash.open = new Set();
+    syncClashBoxes();
+  }
+
   // rebuild, then put the picks back
   let kept = 0;
   const want = (plan.picks || []).length;
@@ -2667,6 +2826,7 @@ async function initPlanner() {
     e.addEventListener(e.type === "checkbox" || e.tagName === "SELECT" ? "change" : "input", liveRebuild);
   });
   attachDualRange();
+  initClash();
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
     if (!r.checked) return;
