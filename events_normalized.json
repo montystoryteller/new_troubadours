@@ -3408,6 +3408,7 @@
           "time": "6.30pm",
           "price": "£19.13",
           "ticket_url": "https://www.alttickets.com/gaz-brookfield-and-the-company-of-thieves-tickets/nottingham-rescue-rooms/2026-12-04-18-30",
+          "event_flyer": "2026_12_04_gaz_brookfield_rescue_rooms.jpg",
           "isSpecial": true,
           "eventId": "T-gaz-brookfield-autumn-2026-20261204-rescue-rooms-nottingham"
         },
@@ -5596,6 +5597,7 @@
           "venue_id": "ventnor-arts-club",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_12_04_sorrel_nation_ventnor.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261204-ventnor-arts-club"
         }
       ],
