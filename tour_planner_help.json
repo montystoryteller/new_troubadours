@@ -45,7 +45,7 @@
   {
     "step": "must-visits",
     "title": "Why must-visits?",
-    "text": "Sometimes a tour has fixed points: a friend's gig, a venue that has invited you, a festival.\n\nAdd a **venue** or a **town**, set the date and how flexible you are (**exactly** or **± a few days**). The route is built so every must-visit is included."
+    "text": "Sometimes a tour has fixed points: a friend's gig, a venue that has invited you, a festival.\n\nAdd a **venue** or a **town**, set the date and how flexible you are (**exactly** or **± a few days**). The route is built so every must-visit is included.\n\nTick **booked** on a venue you have already agreed: it is pinned to that exact date, is the only option that day, is already part of your tour, and is exported as booked rather than “to arrange”."
   },
   {
     "step": "other-events",
@@ -55,7 +55,7 @@
   {
     "step": "build",
     "title": "What happens when I build?",
-    "text": "**Develop tour** finds every gig that fits what you have set up and lays them out day by day, with the map beside them.\n\nThe required steps fold away afterwards (with a summary line you can expand). The panels beside the map, and the Filters, apply straight away, so you can keep adjusting while you look at the map and the day columns. Your picks are kept where they still fit."
+    "text": "**Develop tour** finds every gig that fits what you have set up and lays them out day by day, with the map beside them.\n\nThe required steps fold away afterwards (with a summary line you can expand). The panels beside the map, and the Filters, apply straight away, so you can keep adjusting while you look at the map and the day columns. Your picks are kept where they still fit.\n\n**Save plan** downloads a small file with your set-up, picks and must-visits; **Load plan** puts it all back, so you can build a tour over several sittings."
   },
   {
     "step": "filters",

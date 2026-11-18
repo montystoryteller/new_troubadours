@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611172206">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611181009">
 </head>
 
 <body class="page-tour-planner">
@@ -243,6 +243,11 @@
                 <div class="ts-row">
                     <button id="buildTour" type="button" class="btn-primary">Develop tour</button>
                 </div>
+                <div class="ts-row plan-file">
+                    <button id="planSave" type="button" class="btn-secondary" title="Download your set-up and picks as a file">💾 Save plan</button>
+                    <button id="planLoad" type="button" class="btn-secondary" title="Restore a plan you saved earlier">📂 Load plan</button>
+                    <input id="planFile" type="file" accept="application/json,.json" hidden>
+                </div>
                 <div id="plannerStatus" class="ts-status" role="status"></div>
             </section>
         </div>
@@ -327,7 +332,7 @@
     <script src="/js/shared_utils.js"></script>
     <script src="/js/event_helpers.js?v=202611170953"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_planner.js?v=202611180955"></script>
+    <script src="/js/tour_planner.js?v=202611181009"></script>
 </body>
 
 </html>

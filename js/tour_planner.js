@@ -1140,7 +1140,7 @@ function fillPoolSelectors() {
   PLANNER._perfPicker = makePicker("poolPerf",
     [...perfs.entries()].map(([id, label]) => ({ id, label })).sort((a, b) => a.label.localeCompare(b.label)),
     PLANNER.pickPerf, refreshPool, { get: primaryId, set: (id) => { PLANNER.primary = id; } });
-  makePicker("poolTour",
+  PLANNER._tourPicker = makePicker("poolTour",
     Object.entries(ed.tours || {})
       .filter(([, t]) => (t.tour_dates || []).length)
       .map(([id, t]) => ({ id, label: `${t.isMusic ? "♪ " : ""}${t.tour_name || t.name || id}` }))
@@ -1206,26 +1206,41 @@ function drawMustRows() {
   const box = document.getElementById("mustRows");
   box.replaceChildren();
   PLANNER.mustRows.forEach((m, idx) => {
-    const row = el("div", "must-row");
-    row.appendChild(el("span", "must-label", "★ " + m.label));
+    const venueRow = m.type === "v";
+    if (!venueRow) m.booked = false; // a booking is at one specific venue, not "a town"
+    if (m.booked) m.flex = 0; // a booked gig is on its date, exactly
+    const row = el("div", "must-row" + (m.booked ? " booked" : ""));
+    row.appendChild(el("span", "must-label", (m.booked ? "✓ " : "★ ") + m.label));
     const d = el("input"); d.type = "date"; d.value = m.date;
     d.setAttribute("aria-label", "Target date for " + m.label);
     d.addEventListener("change", () => { m.date = d.value; liveRebuild(); });
     const f = el("select");
     f.setAttribute("aria-label", "Flexibility for " + m.label);
+    f.disabled = !!m.booked;
     MUST_FLEX.forEach(([n, t]) => { const o = el("option", null, t); o.value = n; if (n === m.flex) o.selected = true; f.appendChild(o); });
     f.addEventListener("change", () => { m.flex = Number(f.value); liveRebuild(); });
+    const bk = el("label", "must-booked");
+    const bkc = el("input"); bkc.type = "checkbox"; bkc.checked = !!m.booked; bkc.disabled = !venueRow;
+    bkc.setAttribute("aria-label", "Already booked: " + m.label);
+    if (!venueRow) bk.title = "Choose a specific venue to mark it as booked";
+    bkc.addEventListener("change", () => { m.booked = bkc.checked; if (m.booked) m.flex = 0; drawMustRows(); liveRebuild(); });
+    bk.append(bkc, " booked");
     const x = el("button", "must-x", "×"); x.type = "button"; x.setAttribute("aria-label", "Remove " + m.label);
     x.addEventListener("click", () => { PLANNER.mustRows.splice(idx, 1); drawMustRows(); liveRebuild(); });
-    row.append(d, f, x);
+    row.append(d, f, bk, x);
     box.appendChild(row);
   });
 }
 /** Resolve the rows into {label, ids:Set, dayKeys:Set, lastIdx}; string = error. */
 function resolveMusts() {
   const out = [];
+  const bookedDays = new Map();
   for (const m of PLANNER.mustRows) {
     if (!m.date) return `Choose a target date for “${m.label}”.`;
+    if (m.booked && m.type === "v") {
+      if (bookedDays.has(m.date)) return `Two booked gigs on the same day (“${bookedDays.get(m.date)}” and “${m.label}”).`;
+      bookedDays.set(m.date, m.label);
+    }
     const [y, mo, dd] = m.date.split("-").map(Number);
     const t = new Date(y, mo - 1, dd);
     const idxs = [];
@@ -1233,7 +1248,7 @@ function resolveMusts() {
     if (!idxs.length) return `“${m.label}” (${formatDate(t)}${m.flex ? " ± " + m.flex : ""}) falls outside the tour period.`;
     const ids = new Set(mustMatchIds(m));
     if (!ids.size) return `No usable venue found for “${m.label}”.`;
-    out.push({ label: m.label, ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: idxs[idxs.length - 1] });
+    out.push({ label: m.label, booked: !!m.booked && m.type === "v", ids, dayKeys: new Set(idxs.map((i) => dkey(PLANNER.days[i]))), lastIdx: idxs[idxs.length - 1] });
   }
   return out;
 }
@@ -1492,12 +1507,15 @@ function onBuild() {
             nodes.push(n);
           } else if (!/must-visit/.test(n.note || "")) n.note = "★ must-visit · " + (n.note || "");
           n.must = [...(n.must || []), mi];
+          if (m.booked) { const cl = clashes.get(vid); n.booked = true; n.note = "✓ booked" + (cl ? ` · ⚠ also on: ${cl}` : "") + " · fixed date"; }
         });
       });
+      // a booked gig fixes its day: it is the only option that day, and already part of the tour
+      if (nodes.some((x) => x.booked)) nodes = nodes.filter((x) => x.booked);
       nodes.sort((x, y) => (centre0 ? roadMiles(centre0, latlonOf(x)) - roadMiles(centre0, latlonOf(y)) : 0));
       PLANNER.byDay.set(k, nodes);
     });
-    PLANNER.chosen = new Map();
+    PLANNER.chosen = basePicks();
     PLANNER.hover = null;
     setStatus("");
     renderAll();
@@ -1642,9 +1660,16 @@ function routeMiles(stops) {
 let nodeEls = new Map(); // node id -> element
 let mapMarkers = new Map(); // venue id -> leaflet marker (for hover linking)
 
+/** Picks that are part of the tour whatever else is chosen: the anchor gig, or the booked gigs (pool mode). */
+function basePicks() {
+  if (PLANNER.anchor) return new Map([[dkey(PLANNER.anchor.date), PLANNER.anchor]]);
+  const m = new Map();
+  if (PLANNER.mode === "pool") PLANNER.byDay.forEach((nodes, k) => { const b = nodes.find((n) => n.booked); if (b) m.set(k, b); });
+  return m;
+}
 /** Is gig c out of range of the picks either side of it (max/min between gigs)? */
 function outOfReach(c, stops) {
-  if (c.isAnchor || !stops.length) return false;
+  if (c.isAnchor || c.booked || !stops.length) return false;
   const cl = latlonOf(c), k = dkey(c.date);
   let prev = null, next = null;
   for (const s of stops) {
@@ -1667,8 +1692,8 @@ function usedElsewhere(c, stops) {
 function nodeState(c, stops) {
   const chosen = PLANNER.chosen.get(dkey(c.date));
   if (chosen && chosen.id === c.id) return { hide: false };
-  const near = !c.isAnchor ? nearStop(c, stops, PLANNER.minSpread) : null;
-  const used = !c.isAnchor ? usedElsewhere(c, stops) : null;
+  const near = !c.isAnchor && !c.booked ? nearStop(c, stops, PLANNER.minSpread) : null;
+  const used = !c.isAnchor && !c.booked ? usedElsewhere(c, stops) : null;
   const unreach = PLANNER.reachMode !== "show" && outOfReach(c, stops);
   const hide = (near && PLANNER.hideClose) || (used && PLANNER.hideUsed) || (unreach && PLANNER.reachMode === "hide");
   return { near, used, unreach, hide: !!hide };
@@ -1745,13 +1770,13 @@ function renderAll() {
   bestBtn.disabled = !PLANNER.best;
   bestBtn.addEventListener("click", () => {
     PLANNER.chosen = new Map();
-    if (bestPressed) { if (PLANNER.anchor) PLANNER.chosen.set(dkey(PLANNER.anchor.date), PLANNER.anchor); }
+    if (bestPressed) { PLANNER.chosen = basePicks(); }
     else PLANNER.best.stops.forEach((c) => PLANNER.chosen.set(dkey(c.date), c));
     renderAll();
   });
   const clearBtn = el("button", "btn-secondary", PLANNER.anchor ? "Reset to anchor only" : "Clear choices");
   clearBtn.type = "button";
-  clearBtn.addEventListener("click", () => { PLANNER.chosen = PLANNER.anchor ? new Map([[dkey(PLANNER.anchor.date), PLANNER.anchor]]) : new Map(); renderAll(); });
+  clearBtn.addEventListener("click", () => { PLANNER.chosen = basePicks(); renderAll(); });
   const chk = (label, val, onChange) => {
     const lbl = el("label", "planner-inline");
     const cb = el("input"); cb.type = "checkbox"; cb.checked = !!val;
@@ -1847,7 +1872,7 @@ function renderAll() {
       if (PLANNER.collapsed.has(k) && pickHere && pickHere.id !== c.id) { hiddenOther++; return; }
       if (st.hide) { hiddenClose++; return; }
       const v = venueOf(c) || {};
-      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : ""));
+      const n = el("div", "graph-node" + (c.isAnchor ? " anchor" : "") + (c.must && c.must.length ? " must" : "") + (c.booked ? " booked" : ""));
       n.dataset.nid = c.id;
       n.appendChild(el("div", "graph-node-name", c.name));
       n.appendChild(el("div", "graph-node-meta", [c.time, v.city || v.name].filter(Boolean).join(" · ")));
@@ -1880,7 +1905,7 @@ function renderAll() {
         n.appendChild(el("div", "graph-node-note", "out of range of your picks"));
       }
       if (PLANNER.showBest && PLANNER.best && PLANNER.best.stops.some((s) => s.id === c.id)) n.classList.add("on-best");
-      if (!c.isAnchor && !near && !used) {
+      if (!c.isAnchor && !c.booked && !near && !used) {
         n.tabIndex = 0;
         n.setAttribute("role", "button");
         const toggle = () => toggleNode(c);
@@ -2043,7 +2068,7 @@ function renderItinerary() {
     const ll = latlonOf(c);
     const leg = roadMiles(prev, ll);
     const v = venueOf(c) || {};
-    lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}` +
+    lines.push(`${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${placeParts(c, v).join(", ")}${c.booked ? "  ✓ booked" : ""}` +
       (leg != null ? `  [${fmtMiles(leg)}, ${fmtDrive(leg)}]` : "") + warn(leg, i === 0, c));
     prev = ll; prevStop = c;
   });
@@ -2082,13 +2107,13 @@ function renderItinerary() {
       const ll = latlonOf(c);
       const leg = roadMiles(prevLL, ll);
       prevLL = ll;
-      const proposed = c.kind === "venue";
+      const proposed = c.kind === "venue" && !c.booked;
       const href = c.link ? new URL(c.link, location.href).href : "";
       return {
         date: c.date, uid: c.id,
         title: (proposed ? "Gig (to arrange): " : "") + placeParts(c, v).join(", "),
         location: TourSupport.icsLocation(v),
-        description: [c.time ? "Time: " + c.time : "", proposed ? "Proposed — not yet booked" : "",
+        description: [c.time ? "Time: " + c.time : "", proposed ? "Proposed — not yet booked" : c.booked ? "Booked" : "",
           c.note || "", leg != null ? `Leg: ${fmtMiles(leg)}, ${fmtDrive(leg)}` : "", href].filter(Boolean).join("\n"),
       };
     }), "tour.ics", "Tour Planner");
@@ -2096,9 +2121,9 @@ function renderItinerary() {
   const records = () => TourSupport.buildRecords(stops, (c) => {
     const v = venueOf(c) || {};
     const ll = latlonOf(c);
-    const proposed = c.kind === "venue";
+    const proposed = c.kind === "venue" && !c.booked;
     return {
-      title: c.name, kind: proposed ? "proposed venue" : c.kind, status: proposed ? "proposed" : "listed",
+      title: c.name, kind: proposed ? "proposed venue" : c.booked ? "booked venue" : c.kind, status: proposed ? "proposed" : c.booked ? "booked" : "listed",
       venue: v.name, address: v.full_address || "", town: v.city || "", postcode: v.postcode || "",
       latitude: ll ? ll[0] : null, longitude: ll ? ll[1] : null,
       link: c.link ? new URL(c.link, location.href).href : "", notes: c.note || "",
@@ -2129,6 +2154,7 @@ function dayLabel(date) {
 function toggleNode(c) {
   const k = dkey(c.date);
   const cur = PLANNER.chosen.get(k);
+  if (cur && cur.booked) return; // a booked gig can't be taken off the tour here: untick "booked" in the must-visit list
   if (cur && cur.id === c.id) { PLANNER.chosen.delete(k); PLANNER.collapsed.delete(k); }
   else { PLANNER.chosen.set(k, c); if (PLANNER.autoCollapse) PLANNER.collapsed.add(k); }
   renderAll();
@@ -2150,7 +2176,7 @@ function venuePopup(vid, nodes) {
     const row = el("div", "map-popup-row");
     row.appendChild(el("span", "map-popup-day", dayLabel(c.date)));
     row.appendChild(el("span", null, ` ${formatDate(c.date)}${c.time ? ", " + c.time : ""} — ${c.name}`));
-    if (!c.isAnchor) {
+    if (!c.isAnchor && !c.booked) {
       const ch = PLANNER.chosen.get(dkey(c.date));
       const on = ch && ch.id === c.id;
       const near = !on ? nearStop(c, orderedStops(), PLANNER.minSpread) : null;
@@ -2347,6 +2373,173 @@ function collapseAfterBuild() {
   if (lay && PLANNER._setCollapsed) lay.flow.forEach((id) => PLANNER._setCollapsed(id, true));
 }
 
+// ── save / load a work-in-progress plan (JSON file) ─────────────────────
+// A plan file holds what you have set up (not the venue data, which is always read fresh), so a tour
+// can be built over several sittings, shared, or kept. Unknown or missing fields are ignored on load.
+const PLAN_FORMAT = "new-troubadours-tour-plan";
+const PLAN_VERSION = 1;
+const PLAN_VALUES = ["periodStart", "periodEnd", "gigsWanted", "daysBefore", "daysAfter", "areaRadius", "maxFirst", "maxLast",
+  "maxHome", "minHop", "minScope", "maxHop", "minSpread"];
+const PLAN_CHECKS = ["catClub", "catStoryEvent", "catMusic", "catPoetry", "catFolk", "catSession", "poolWeekday", "poolDistinct",
+  "poolAll_storyteller", "poolAll_musician", "poolAll_poet", "poolAllClubs"];
+const placeOut = (p) => (p && Number.isFinite(p.lat) && Number.isFinite(p.lon) ? { lat: p.lat, lon: p.lon, label: String(p.label || "") } : null);
+const placeIn = (p) => (p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lon)) ? { lat: Number(p.lat), lon: Number(p.lon), label: String(p.label || "") } : null);
+
+/** Everything needed to rebuild the current set-up, as plain data. */
+function gatherPlan() {
+  const mode = currentMode();
+  const plan = {
+    format: PLAN_FORMAT, version: PLAN_VERSION, saved: new Date().toISOString(), mode,
+    built: !!PLANNER.days.length && PLANNER.mode === mode,
+    settings: { values: {}, checks: {} },
+    start: placeOut(PLANNER.start), end: placeOut(PLANNER.end), area: placeOut(PLANNER.area),
+    endSame: !!document.getElementById("endSame").checked,
+  };
+  PLAN_VALUES.forEach((id) => { const e = document.getElementById(id); if (e) plan.settings.values[id] = e.value; });
+  PLAN_CHECKS.forEach((id) => { const e = document.getElementById(id); if (e) plan.settings.checks[id] = e.checked; });
+  if (mode === "club") {
+    const row = (PLANNER._anchorRows || [])[Number(document.getElementById("anchorClub").value)];
+    const d = document.getElementById("anchorDate").value;
+    if (row && d) plan.anchor = { club: row.rec.club || row.rec.name, date: d };
+  } else if (mode === "venue") {
+    const row = (PLANNER._venueRows || [])[Number(document.getElementById("anchorVenue").value)];
+    const c = row && row.cands[Number(document.getElementById("anchorDate").value)];
+    if (c) plan.anchor = { venue_id: row.vid, date: dkey(c.date), id: c.id };
+  }
+  if (mode === "pool") {
+    plan.pool = {
+      artists: [...PLANNER.pickPerf], tours: [...PLANNER.pickTour], primary: PLANNER.primary || null,
+      extraVenues: [...PLANNER.extraVenues].map(([vid, set]) => [vid, [...set]]),
+      excluded: (PLANNER.pool || []).filter((r) => !r.on).map((r) => r.key),
+    };
+    plan.mustVisits = PLANNER.mustRows.map((m) => ({ type: m.type, key: m.key, label: m.label, date: m.date || "", flex: m.flex || 0, booked: !!m.booked }));
+  }
+  plan.picks = [...PLANNER.chosen.entries()].filter(([, c]) => !c.isAnchor)
+    .map(([k, c]) => ({ date: k, id: c.id, venue_id: c.venue_id, name: c.name, booked: !!c.booked }));
+  return plan;
+}
+
+function savePlan() {
+  const plan = gatherPlan();
+  TourSupport.saveText(JSON.stringify(plan, null, 2), `tour-plan-${dkey(getTodayMidnight())}.json`, "application/json");
+  setStatus(`Plan saved (${plan.picks.length} stop${plan.picks.length === 1 ? "" : "s"} picked). Load it later with “Load plan”.`);
+}
+
+/** Put a plan back: form values, places, artists/pool, must-visits, then rebuild and re-pick. Returns a summary string. */
+function applyPlan(plan) {
+  if (!plan || plan.format !== PLAN_FORMAT) throw new Error("This doesn't look like a tour plan file.");
+  if (!(plan.version >= 1) || plan.version > PLAN_VERSION) throw new Error("This plan was saved by a newer version of the planner.");
+  const mode = ["club", "venue", "period", "pool"].includes(plan.mode) ? plan.mode : null;
+  if (!mode) throw new Error("The plan doesn't say what the tour is built around.");
+  const notes = [];
+  const $ = (id) => document.getElementById(id);
+
+  clearResults();
+  $("plannerMode").value = mode;
+  setMode();
+  resetPoolState();
+
+  const st = plan.settings || {};
+  Object.entries(st.values || {}).forEach(([id, v]) => {
+    if (!PLAN_VALUES.includes(id) || !$(id)) return;
+    if ($(id).tagName === "SELECT" && ![...$(id).options].some((o) => o.value === String(v))) return;
+    $(id).value = String(v);
+  });
+  Object.entries(st.checks || {}).forEach(([id, v]) => { if (PLAN_CHECKS.includes(id) && $(id)) $(id).checked = !!v; });
+  $("areaRadius").dataset.touched = "1";
+  if (mode === "venue") { PLANNER._venueRows = null; buildVenueRows(); }
+
+  // places
+  PLANNER.start = placeIn(plan.start);
+  $("startCurrent").textContent = PLANNER.start ? `Start: ${PLANNER.start.label}` : "";
+  $("startClear").style.display = PLANNER.start ? "" : "none";
+  PLANNER.end = placeIn(plan.end);
+  $("endCurrent").textContent = PLANNER.end ? `End: ${PLANNER.end.label}` : "";
+  $("endClear").style.display = PLANNER.end ? "" : "none";
+  PLANNER.area = placeIn(plan.area);
+  $("areaCurrent").textContent = PLANNER.area ? `Area centre: ${PLANNER.area.label}` : "";
+  PLANNER._endTouched = true;
+  syncEndSame();
+  if (PLANNER.start) { $("endSame").checked = plan.endSame !== false; syncEndSame(); }
+  drSync();
+
+  // anchor (club / venue modes)
+  let anchorOk = true;
+  if (mode === "club" || mode === "venue") {
+    anchorOk = false;
+    const a = plan.anchor || {};
+    if (mode === "club") {
+      const i = (PLANNER._anchorRows || []).findIndex((r) => (r.rec.club || r.rec.name) === a.club);
+      if (i >= 0) { $("anchorClub").value = String(i); $("anchorMonth").value = ""; fillAnchorDates(); $("anchorDate").value = a.date; anchorOk = $("anchorDate").value === a.date; }
+    } else {
+      const i = (PLANNER._venueRows || []).findIndex((r) => r.vid === a.venue_id);
+      if (i >= 0) {
+        $("anchorVenue").value = String(i); $("anchorMonth").value = ""; fillAnchorDates();
+        const j = PLANNER._venueRows[i].cands.findIndex((c) => c.id === a.id || dkey(c.date) === a.date);
+        if (j >= 0) { $("anchorDate").value = String(j); anchorOk = true; }
+      }
+    }
+    if (!anchorOk) notes.push("the club/venue and date it was built around are no longer on offer, so pick them again");
+  }
+
+  // pool + must-visits (pool mode)
+  if (mode === "pool") {
+    const ed = PLANNER.eventsData, pl = plan.pool || {};
+    (pl.artists || []).forEach((id) => { if ((ed.performers || {})[id]) PLANNER.pickPerf.add(id); });
+    (pl.tours || []).forEach((id) => { if ((ed.tours || {})[id]) PLANNER.pickTour.add(id); });
+    PLANNER.primary = PLANNER.pickPerf.has(pl.primary) ? pl.primary : null;
+    (pl.extraVenues || []).forEach(([vid, who]) => { if (PLANNER.venues[vid]) PLANNER.extraVenues.set(vid, new Set(Array.isArray(who) ? who : [])); });
+    if (PLANNER._perfPicker) PLANNER._perfPicker.redraw();
+    if (PLANNER._tourPicker) PLANNER._tourPicker.redraw();
+    buildPool();
+    const off = new Set(pl.excluded || []);
+    PLANNER.pool.forEach((r) => { r.on = !off.has(r.key); });
+    renderPoolList(); renderPoolMap(true); renderSimilar();
+    const lost = (pl.artists || []).length - PLANNER.pickPerf.size + (pl.tours || []).length - PLANNER.pickTour.size;
+    if (lost > 0) notes.push(`${lost} artist${lost > 1 ? "s" : ""}/tour${lost > 1 ? "s" : ""} no longer in the data`);
+    const items = new Map(mustItems().map((i) => [i.type + ":" + i.key, i]));
+    PLANNER.mustRows = (plan.mustVisits || []).filter((m) => items.has(m.type + ":" + m.key)).map((m) => ({
+      type: m.type, key: m.key, label: items.get(m.type + ":" + m.key).label, date: m.date || "",
+      flex: MUST_FLEX.some(([n]) => n === Number(m.flex)) ? Number(m.flex) : 0, booked: !!m.booked && m.type === "v",
+    }));
+    if (PLANNER.mustRows.length < (plan.mustVisits || []).length) notes.push("some must-visit places are no longer in the data");
+    drawMustRows();
+  }
+
+  // rebuild, then put the picks back
+  let kept = 0;
+  const want = (plan.picks || []).length;
+  if (plan.built && anchorOk) {
+    onBuild();
+    PLANNER.days.forEach((d) => {
+      const k = dkey(d);
+      const pk = (plan.picks || []).find((x) => x.date === k);
+      if (!pk) return;
+      const node = (PLANNER.byDay.get(k) || []).find((n) => n.id === pk.id) ||
+        (PLANNER.byDay.get(k) || []).find((n) => n.venue_id === pk.venue_id);
+      if (node) { PLANNER.chosen.set(k, node); kept++; }
+    });
+    // picks the rebuilt tour already holds (booked gigs) count too
+    renderAll();
+  } else if (plan.built) {
+    notes.push("the tour wasn't rebuilt");
+  }
+  return `Plan loaded${plan.built && anchorOk ? ` — ${kept} of ${want} picked stop${want === 1 ? "" : "s"} restored` : ""}${notes.length ? " (" + notes.join("; ") + ")" : ""}.`;
+}
+
+function loadPlanFile(file) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onerror = () => setStatus("Couldn't read that file.", true);
+  rd.onload = () => {
+    let plan;
+    try { plan = JSON.parse(String(rd.result)); } catch (e) { return setStatus("That file isn't valid JSON.", true); }
+    try { const msg = applyPlan(plan); setStatus(msg); }
+    catch (e) { setStatus("Couldn't load the plan: " + (e && e.message ? e.message : e), true); }
+  };
+  rd.readAsText(file);
+}
+
 // ── init ────────────────────────────────────────────────────────────────
 async function initPlanner() {
   const result = await loadEventsData();
@@ -2376,6 +2569,9 @@ async function initPlanner() {
   document.getElementById("startLocate").addEventListener("click", onUseLocation);
   document.getElementById("startClear").addEventListener("click", clearStart);
   document.getElementById("buildTour").addEventListener("click", onBuild);
+  document.getElementById("planSave").addEventListener("click", savePlan);
+  document.getElementById("planLoad").addEventListener("click", () => document.getElementById("planFile").click());
+  document.getElementById("planFile").addEventListener("change", (e) => { loadPlanFile(e.target.files[0]); e.target.value = ""; });
   document.getElementById("endSame").addEventListener("change", onEndSameChange);
   document.getElementById("endFind").addEventListener("click", () => findPlace("endInput", "endChoices", setEnd));
   document.getElementById("endInput").addEventListener("keydown", (e) => { if (e.key === "Enter") findPlace("endInput", "endChoices", setEnd); });

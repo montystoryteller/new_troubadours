@@ -247,3 +247,8 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 #plannerLive.collapsed > *:not(h3):not(.help-btn):not(.flow-summary) { display: none !important; }
 #plannerLive .flow-summary[hidden] { display: none; }
 #plannerFlow.mode-venue #blkOther { order: 2; }
+
+/* booked (fixed) gigs in the must-visit list and day columns */
+.must-row.booked { background: #e8f5e9; border-color: #a5d6a7; border-left-color: #2e7d32; }
+.must-row .must-booked { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; cursor: pointer; }
+.graph-node.booked { border-left-color: #2e7d32; background: #f1f8e9; cursor: default; }
