@@ -233,6 +233,7 @@ function clearResults() {
   renderAll();
   renderItinerary();
   renderMap();
+  syncQuickStart();
   const st = document.getElementById("plannerStatus");
   if (st) st.textContent = "";
 }
@@ -451,6 +452,20 @@ const LAYOUT = {
   pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkDates", "blkStart"] },
 };
 const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkStart"];
+/** Quick start: before the first build only the essentials show (what to build around, dates, Develop tour).
+ *  Area, must-visit places, start & end and filters wait behind one "More options" button, and appear on their
+ *  own once a tour is built. Nothing is removed: it only hides until wanted. */
+function syncQuickStart() {
+  const row = document.getElementById("plannerSummaryRow"), more = document.getElementById("moreOptionsRow");
+  if (!row || !more) return;
+  const quick = !PLANNER.moreOptions && !PLANNER.days.length;
+  row.classList.toggle("quick-start", quick);
+  more.hidden = !quick;
+}
+function showMoreOptions() {
+  PLANNER.moreOptions = true;
+  syncQuickStart();
+}
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
   if (!box || !flow) return;
@@ -466,6 +481,7 @@ function placeRefine() {
     if (c && c.parentElement !== flow) flow.insertBefore(c, get("blkBuild"));
   });
   const hint = get("plannerMapHint"); if (hint) hint.hidden = built;
+  syncQuickStart();
 }
 
 function setMode() {
@@ -1619,6 +1635,7 @@ function onBuild() {
 
 /** Make it obvious that Build did something: say what was built and bring the results into view. */
 function announceBuilt(tip) {
+  syncQuickStart(); // a built tour brings the refine panels in
   if (PLANNER._rebuilding) return;
   collapseAfterBuild();
   const n = [...PLANNER.byDay.values()].reduce((t, a) => t + a.length, 0);
@@ -2654,6 +2671,7 @@ function applyPlan(plan) {
   const notes = [];
   const $ = (id) => document.getElementById(id);
 
+  PLANNER.moreOptions = true; // a saved plan may use the optional panels, so show them
   clearResults();
   $("plannerMode").value = mode;
   setMode();
@@ -2822,6 +2840,8 @@ async function initPlanner() {
   });
   attachDualRange();
   initClash();
+  document.getElementById("moreOptions").addEventListener("click", showMoreOptions);
+  syncQuickStart();
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {
     if (!r.checked) return;

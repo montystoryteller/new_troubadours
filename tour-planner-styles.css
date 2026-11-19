@@ -276,3 +276,20 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .clash-key.grey { background: #eee; color: #555; }
 .live-clash { margin-top: 6px; }
 .live-clash .ts-check { display: flex; align-items: center; gap: 6px; }
+
+/* quick start: until the first build, the optional panels wait behind "More options" */
+#plannerSummaryRow.quick-start #blkArea,
+#plannerSummaryRow.quick-start #blkMust,
+#plannerSummaryRow.quick-start #blkStart,
+#plannerSummaryRow.quick-start #plannerLive { display: none !important; }
+.more-options-row { margin: 0; }
+.more-options-row[hidden] { display: none; }
+.btn-link { background: none; border: 0; padding: 4px 2px; color: #1565c0; font-weight: 600; cursor: pointer; text-align: left; }
+.btn-link:hover { text-decoration: underline; }
+.btn-link:focus-visible { outline: 2px solid #1565c0; outline-offset: 2px; }
+/* Develop tour is the main action; saving and loading a plan are quieter */
+.plan-file button { background: #fff; color: #2e7d32; border: 1px solid #81c784; font-size: .85em; padding: 5px 12px; }
+.plan-file button:hover { background: #f1f8e9; }
+/* keep the Filters heading and its hint clear of the Explain button */
+#plannerLive > h3 { padding-right: 10em; }
+#plannerLive > h3 .ts-hint { display: block; font-weight: normal; margin-top: 2px; }
