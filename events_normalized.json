@@ -2898,6 +2898,7 @@
           "date": "29/11/2026",
           "venue_id": "st-saviours-hall",
           "eventId": "20261129-lisa-schneidau-st-saviours-hall",
+          "previous_id": "20261119-lisa-schneidau-st-saviours-hall",
           "date_added": "21/10/2026",
           "time": "6pm",
           "price": "£6",
@@ -6143,7 +6144,8 @@
           "ticket_url": "https://www.seetickets.com/event/black-water-county/the-bodega/3743683",
           "date_added": "17/11/2026",
           "isSpecial": true,
-          "eventId": "T-black-water-county-spring-2027-20270303-bodega-nottingham"
+          "eventId": "T-black-water-county-spring-2027-20270303-bodega-nottingham",
+          "previous_id": "T-black-water-county-spring-2027-30370303-bodega-nottingham"
         },
         {
           "date": "04/03/2027",
@@ -13957,7 +13959,8 @@
       "ticket_url": "https://www.thepriceiswight.co.uk/product/the-sun-christmas-ghost-talk/",
       "isSpecial": true,
       "isDinner": true,
-      "eventId": "20261201-marc-tuckey-sun-inn-calbourne"
+      "eventId": "20261201-marc-tuckey-sun-inn-calbourne",
+      "previous_id": "20261201-marc-tuckey-sun-inn-shanklin"
     },
     {
       "name": "Midwinter Open Tellers' Night [Feast of Fools]",
