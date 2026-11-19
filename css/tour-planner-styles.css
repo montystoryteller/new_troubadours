@@ -274,3 +274,5 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .clash-key.red { background: #ffebee; color: #b71c1c; }
 .clash-key.amber { background: #fff4e0; color: #8a5a00; }
 .clash-key.grey { background: #eee; color: #555; }
+.live-clash { margin-top: 6px; }
+.live-clash .ts-check { display: flex; align-items: center; gap: 6px; }

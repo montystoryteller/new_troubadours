@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611182113">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611191034">
 </head>
 
 <body class="page-tour-planner">
@@ -239,22 +239,6 @@
                 </div>
             </section>
 
-            <section id="blkClash" data-step="clashes" class="flow-card" data-modes="club venue period pool" hidden>
-                <h3 class="flow-step">Clashes <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button></h3>
-                <label class="ts-check"><input type="checkbox" id="clashOn"> Show known clashes on the options</label>
-                <div id="clashKindsWrap" hidden>
-                    <div class="ts-hint">Count these kinds of event as competition:</div>
-                    <div class="ts-checks" id="clashKinds">
-                        <label><input type="checkbox" value="story"> Story</label>
-                        <label><input type="checkbox" value="music"> Music</label>
-                        <label><input type="checkbox" value="poetry"> Poetry</label>
-                        <label><input type="checkbox" value="folk"> Folk nights</label>
-                        <label><input type="checkbox" value="sessions"> Irish sessions</label>
-                    </div>
-                    <div class="ts-hint"><span class="clash-key red">red</span> another event at the same venue that night · <span class="clash-key amber">amber</span> one in the same town · <span class="clash-key grey">grey</span> the night before or after. Only events listed in the directory are known.</div>
-                </div>
-            </section>
-
             <section id="blkBuild" data-step="build" class="flow-card">
                 <div class="ts-row">
                     <button id="buildTour" type="button" class="btn-primary">Develop tour</button>
@@ -325,6 +309,20 @@
                     <label><input type="checkbox" id="poolDistinct" checked> Visit each venue only once</label>
                 </div>
             </div>
+            <div class="live-group live-clash">
+                <label class="ts-check"><input type="checkbox" id="clashOn"> Show known clashes <span class="ts-hint">(other events the same night nearby)</span></label>
+                <div id="clashKindsWrap" hidden>
+                    <div class="ts-hint">Count these kinds of event as competition:</div>
+                    <div class="ts-checks" id="clashKinds">
+                        <label><input type="checkbox" value="story"> Story</label>
+                        <label><input type="checkbox" value="music"> Music</label>
+                        <label><input type="checkbox" value="poetry"> Poetry</label>
+                        <label><input type="checkbox" value="folk"> Folk nights</label>
+                        <label><input type="checkbox" value="sessions"> Irish sessions</label>
+                    </div>
+                    <div class="ts-hint"><span class="clash-key red">red</span> same venue that night · <span class="clash-key amber">amber</span> same town that night · <span class="clash-key grey">grey</span> the night before or after. Only events listed in the directory are known.</div>
+                </div>
+            </div>
         </section>
                 </div>
         <div id="plannerMapHint" class="ts-panel map-hint" hidden>
@@ -347,9 +345,9 @@
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
     <script src="/js/event_helpers.js?v=202611170953"></script>
-    <script src="/js/event_collect.js?v=202611182113"></script>
+    <script src="/js/event_collect.js?v=202611182130"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_planner.js?v=202611182113"></script>
+    <script src="/js/tour_planner.js?v=202611191034"></script>
 </body>
 
 </html>

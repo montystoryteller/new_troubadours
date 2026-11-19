@@ -63,16 +63,11 @@
       "pool"
     ],
     "title": "Why these filters?",
-    "text": "These limits shape which routes are sensible, and they apply straight away.\n\n- **Keep stops apart** avoids playing to the same audience twice.\n- **Max miles between stops** keeps each hop drivable.\n- **Max miles from start** keeps the whole tour local.\n- **Visit each venue only once** stops the route returning to the same place."
+    "text": "These limits shape which routes are sensible, and they apply straight away.\n\n- **Keep stops apart** avoids playing to the same audience twice.\n- **Max miles between stops** keeps each hop drivable.\n- **Max miles from start** keeps the whole tour local.\n- **Visit each venue only once** stops the route returning to the same place.\n\n**Show known clashes** (optional) marks options where something else is on that could split the audience: **red** another event at the same venue that night, **amber** one in the same town that night, **grey** one in the same town the night before or after. Click a badge to see which events. It only warns: nothing is hidden or blocked. By default the kinds counted match what you're touring, and the artists you're touring never count as competition for themselves. Only events listed in the directory are known, so no badge doesn't prove nothing else is on."
   },
   {
     "step": "filters",
     "title": "Why these filters?",
-    "text": "These limits shape which gigs are sensible around your anchor, and they apply straight away.\n\n- **When** sets how many days either side of the anchor to look at.\n- **Where** limits how far apart gigs can be, and how far from your start.\n- **Don't revisit** hides places too close to ones you have already chosen."
-  },
-  {
-    "step": "clashes",
-    "title": "Why watch for clashes?",
-    "text": "Turn this on to see, on each option, whether something else is on that could split the audience:\n\n- **red** – another event at the same venue that night\n- **amber** – another event in the same town that night\n- **grey** – an event in the same town the night before or after\n\nClick a badge to see which events. It only warns: nothing is hidden or blocked.\n\nChoose which kinds of event count. By default they match the kinds you're touring, so a music tour watches for music and a story tour for story. The artists you're touring are never counted as competition for themselves.\n\nOnly events listed in the directory are known, so no badge doesn't prove nothing else is on."
+    "text": "These limits shape which gigs are sensible around your anchor, and they apply straight away.\n\n- **When** sets how many days either side of the anchor to look at.\n- **Where** limits how far apart gigs can be, and how far from your start.\n- **Don't revisit** hides places too close to ones you have already chosen.\n\n**Show known clashes** (optional) marks options where something else is on that could split the audience: **red** another event at the same venue that night, **amber** one in the same town that night, **grey** one in the same town the night before or after. Click a badge to see which events. It only warns: nothing is hidden or blocked. By default the kinds counted match what you're touring, and the artists you're touring never count as competition for themselves. Only events listed in the directory are known, so no badge doesn't prove nothing else is on."
   }
 ]

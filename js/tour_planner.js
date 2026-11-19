@@ -445,12 +445,12 @@ function resetPoolState() {
 /** Which cards live in the step list ("flow") and which in the panels beside the map, per mode.
  *  Required choices stay in the flow; everything you would fiddle with while looking at the map goes beside it. */
 const LAYOUT = {
-  club: { flow: ["blkAnchor"], side: ["blkOther", "blkClash", "blkStart"] },
-  venue: { flow: ["blkOther", "blkAnchor"], side: ["blkClash", "blkStart"] },
-  period: { flow: [], side: ["blkDates", "blkArea", "blkOther", "blkClash", "blkStart"] },
-  pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkClash", "blkDates", "blkStart"] },
+  club: { flow: ["blkAnchor"], side: ["blkOther", "blkStart"] },
+  venue: { flow: ["blkOther", "blkAnchor"], side: ["blkStart"] },
+  period: { flow: [], side: ["blkDates", "blkArea", "blkOther", "blkStart"] },
+  pool: { flow: ["blkPool", "blkPoolPreview"], side: ["blkArea", "blkMust", "blkDates", "blkStart"] },
 };
-const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkClash", "blkStart"];
+const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blkStart"];
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
   if (!box || !flow) return;
@@ -2384,11 +2384,6 @@ function setupCollapsibles() {
       const f = (s) => { const d = s ? new Date(s + "T00:00:00") : null; return d && !isNaN(d) ? formatDate(d) : "?"; };
       return `${f(v("periodStart"))} to ${f(v("periodEnd"))} · ${v("gigsWanted") || "?"} gigs` + (document.getElementById("poolWeekday").checked ? " · usual weekdays only" : " · any weekday");
     },
-    blkClash: () => {
-      if (!PLANNER.clash.on) return "Off.";
-      const on = CLASH_CHIPS.filter(([k]) => PLANNER.clash.chips.has(k)).map(([, t]) => t.toLowerCase());
-      return on.length ? `Watching for ${on.join(", ")} clashes.` : "On, but no kinds ticked.";
-    },
     blkPoolPreview: () => (document.getElementById("poolSummary") || {}).textContent || "",
     blkAnchor: () => {
       const t = (id) => { const s = document.getElementById(id); return s && s.selectedIndex >= 0 ? s.options[s.selectedIndex].text : "?"; };
@@ -2441,10 +2436,10 @@ function setupCollapsibles() {
 }
 /** Starting state of each panel per mode (true = collapsed). Required steps start open. */
 const COLLAPSE_DEFAULTS = {
-  club: { blkAnchor: false, blkOther: true, blkClash: true, blkStart: true },
-  venue: { blkOther: false, blkAnchor: false, blkClash: true, blkStart: true },
-  period: { blkDates: false, blkArea: false, blkOther: true, blkClash: true, blkStart: true },
-  pool: { blkPool: false, blkPoolPreview: false, blkArea: true, blkMust: true, blkClash: true, blkDates: false, blkStart: true },
+  club: { blkAnchor: false, blkOther: true, blkStart: true },
+  venue: { blkOther: false, blkAnchor: false, blkStart: true },
+  period: { blkDates: false, blkArea: false, blkOther: true, blkStart: true },
+  pool: { blkPool: false, blkPoolPreview: false, blkArea: true, blkMust: true, blkDates: false, blkStart: true },
 };
 /** After Develop tour, fold the required steps away (with summaries) so the map and columns come up the page. */
 function collapseAfterBuild() {
