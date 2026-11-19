@@ -3449,6 +3449,7 @@
           "ticket_url": "https://www.gigantic.com/tony-wright-tickets/isle-of-wight-strings-bar-venue/2026-11-19-19-30",
           "date_added": "29/08/2026",
           "isSpecial": true,
+          "event_flyer": "2026_11_19_tony_wright_strings.jpg",
           "eventId": "T-tony-wright-winter-2026-20261119-strings-bar-venue-isle-of-wight"
         },
         {
@@ -3459,6 +3460,7 @@
           "ticket_url": "https://www.seetickets.com/event/tony-wright-terrorvision-/the-ridgemont-pavilion/3638624",
           "date_added": "29/08/2026",
           "isSpecial": true,
+          "event_flyer": "2026_11_21_tony_wright_ridgmont.webp",
           "eventId": "T-tony-wright-winter-2026-20261121-ridgmount-pavilion-tunbridge-wells"
         },
         {
@@ -3478,6 +3480,7 @@
           "price": "£25",
           "ticket_url": "https://www.goldenhinde.co.uk/whats-on/10-music/781-tony-wright-terrorvision-live-on-the-golden-hinde",
           "isSpecial": true,
+          "event_flyer": "2026_12_02_tony_wright_golden_hinde.webp",
           "eventId": "T-tony-wright-winter-2026-20261202-the-golden-hinde-london"
         },
         {
@@ -3540,6 +3543,7 @@
           "price": "£15 (+ £1.50)",
           "ticket_url": "https://www.seetickets.com/event/tony-wright/amped/3688560",
           "isSpecial": true,
+          "event_flyer": "2026_12_11_tony_wright_amped.jpg",
           "eventId": "T-tony-wright-winter-2026-20261211-amped-huddersfield"
         },
         {
@@ -6076,7 +6080,7 @@
       "tour_name": "Black Water County — Spring 2027",
       "tour_dates": [
         {
-          "date": "03/03/3037",
+          "date": "03/03/2027",
           "venue_id": "bodega-nottingham",
           "time": "7pm",
           "price": "£19.00 (+ £2.28)",
@@ -25429,6 +25433,10 @@
         {
           "story_name": "The Dirt in Leeds 02.10.26 at Wharf chambers",
           "yt_url": "https://www.youtube.com/watch?v=Sqtyb2V8lpY"
+        },
+        {
+          "story_name": "The Dirt, Live@ Cafe Etch, Middlesbrough",
+          "yt_url": "https://www.youtube.com/watch?v=WIfMu037w4A"
         }
       ]
     },
