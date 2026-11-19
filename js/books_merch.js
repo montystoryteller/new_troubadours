@@ -729,6 +729,45 @@ function applyScopedMode() {
   document.getElementById("everythingPanel").style.display = "";
 }
 
+// Normalize legacy "name:..." publisher keys to registry ids when available.
+// Legacy URLs used "name:mercier press" (spaces preserved, lowercase);
+// we now have "mercier-press" in the registry.
+// @param {string} publisherKey - the publisher key from the URL
+// @param {object} publishers - the publishers registry
+// @returns {string|null} - the normalized key if found, otherwise null
+function normalizeLegacyPublisherKey(publisherKey, publishers) {
+  if (!publisherKey || !publisherKey.startsWith("name:")) {
+    return null; // Not a legacy key
+  }
+
+  // Extract the name part after "name:"
+  let name = publisherKey.slice(5); // Remove "name:" prefix
+  
+  // Remove leading "The " (case-insensitive) which often appears in publisher names
+  name = name.trim().replace(/^the\s+/i, "");
+  
+  // Look for a matching registry entry by converting the name to registry format
+  // (lowercase, spaces/punctuation -> hyphens)
+  const normalized = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+
+  // Check if this normalized name matches any publisher registry id
+  if (publishers[normalized]) {
+    console.log(
+      `[normalizeLegacyPublisherKey] Found match: "${publisherKey}" → "${normalized}"`,
+    );
+    return normalized;
+  }
+
+  console.log(
+    `[normalizeLegacyPublisherKey] No match found for "${publisherKey}" (normalized to "${normalized}")`,
+  );
+  return null; // No matching registry entry
+}
+
 // ---------------------------------------------------------------------------
 // Bootstrap
 // ---------------------------------------------------------------------------
@@ -737,12 +776,6 @@ const urlParams = new URLSearchParams(window.location.search);
 scopePerformerId = urlParams.get("performer");
 scopePublisherKey = scopePerformerId ? null : urlParams.get("publisher");
 const requestedView = urlParams.get("view");
-
-// A ?performer= / ?publisher= page is its own canonical page; on the
-// directory the canonical URL keeps ?view= (each tab is a different page).
-setCanonical(
-  scopePerformerId ? "performer" : scopePublisherKey ? "publisher" : "view",
-);
 
 (async () => {
   const loaded = await loadEventsData();
@@ -753,6 +786,41 @@ setCanonical(
   publishers = eventsData.publishers || {};
   displayDataLastUpdated(loaded.lastUpdateTime);
   initNavFeedback();
+
+  // An old/alternate performer id (record with `same_as`) — redirect to the
+  // canonical performer's page, keeping any other query params.
+  if (scopePerformerId) {
+    const canonicalId = resolvePerformerAlias(scopePerformerId);
+    if (canonicalId && canonicalId !== scopePerformerId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("performer", canonicalId);
+      window.location.replace(url.toString());
+      return;
+    }
+  }
+
+  // A legacy "name:..." publisher key (from an old URL) — redirect to the
+  // canonical registry id when available, keeping any other query params.
+  if (scopePublisherKey) {
+    const normalizedKey = normalizeLegacyPublisherKey(scopePublisherKey, publishers);
+    if (normalizedKey && normalizedKey !== scopePublisherKey) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("publisher", normalizedKey);
+      window.location.replace(url.toString());
+      return;
+    } else if (scopePublisherKey.startsWith("name:")) {
+      console.warn(
+        `Legacy publisher key "${scopePublisherKey}" has no matching registry entry`,
+      );
+    }
+  }
+
+  // Now that redirects are done, set the canonical URL
+  // A ?performer= / ?publisher= page is its own canonical page; on the
+  // directory the canonical URL keeps ?view= (each tab is a different page).
+  setCanonical(
+    scopePerformerId ? "performer" : scopePublisherKey ? "publisher" : "view",
+  );
 
   const all = collectAllBooksAndMerch(performersLookup);
   allBooks = all.books;
