@@ -1544,6 +1544,9 @@ function onBuild() {
     const musts = resolveMusts();
     if (typeof musts === "string") return setStatus(musts, true);
     PLANNER.musts = musts;
+    const stageUsed = stageBlockedVenues();
+    const overlap = stageClash(PLANNER.days[0], PLANNER.days[PLANNER.days.length - 1]);
+    if (overlap) return setStatus(`These dates overlap stage ${PLANNER.stages.indexOf(overlap) + 1} (${stageLabel(overlap.plan)}). Choose dates that don't.`, true);
     PLANNER.byDay = new Map();
     PLANNER.days.forEach((d) => {
       const k = dkey(d);
@@ -1569,6 +1572,7 @@ function onBuild() {
         .concat(clubNodes)
         .filter((c) => !PLANNER.maxHome || !h || roadMiles(h, latlonOf(c)) <= PLANNER.maxHome);
       if (centre0) nodes = nodes.filter((c) => roadMiles(centre0, latlonOf(c)) <= PLANNER.radius);
+      if (stageUsed.size) nodes = nodes.filter((c) => !stageUsed.has(c.venue_id)); // taken by another stage
       // must-visit venues: always on offer within their date window, whatever the filters said
       musts.forEach((m, mi) => {
         if (!m.dayKeys.has(k)) return;
@@ -2657,7 +2661,9 @@ function gatherPlan() {
 }
 
 function savePlan() {
+  commitCurrentStage();
   const plan = gatherPlan();
+  if (PLANNER.stageIdx >= 0) plan.stages = { idx: PLANNER.stageIdx, list: PLANNER.stages };
   TourSupport.saveText(JSON.stringify(plan, null, 2), `tour-plan-${dkey(getTodayMidnight())}.json`, "application/json");
   setStatus(`Plan saved (${plan.picks.length} stop${plan.picks.length === 1 ? "" : "s"} picked). Load it later with “Load plan”.`);
 }
@@ -2785,10 +2791,180 @@ function loadPlanFile(file) {
   rd.onload = () => {
     let plan;
     try { plan = JSON.parse(String(rd.result)); } catch (e) { return setStatus("That file isn't valid JSON.", true); }
-    try { const msg = applyPlan(plan); setStatus(msg); }
+    try {
+      const sg = plan && plan.stages && Array.isArray(plan.stages.list) ? plan.stages : null;
+      PLANNER.stages = sg ? sg.list.filter((x) => x && x.plan && x.plan.format === PLAN_FORMAT).map((x) => ({ plan: x.plan, gigs: Number(x.gigs) || 0, miles: Number(x.miles) || 0 })) : [];
+      PLANNER.stageIdx = sg ? Math.min(Math.max(parseInt(sg.idx, 10) || 0, 0), PLANNER.stages.length) : -1;
+      const msg = applyPlan(plan); renderStages(); setStatus(msg);
+    }
     catch (e) { setStatus("Couldn't load the plan: " + (e && e.message ? e.message : e), true); }
   };
   rd.readAsText(file);
+}
+
+// ── stages: a longer tour planned as several separate weekends / periods ──
+// Optional and quiet: nothing shows until "Plan it in stages" is pressed. A stage is a saved snapshot of one
+// plan (dates, area, must-visits, gigs wanted, picks). The venue pool, home start/end, limits and clash
+// settings are shared by every stage. Venues already used in another stage are not offered again
+// (when "each venue once" is on), and stage dates may not overlap. Pool mode only.
+PLANNER.stages = [];   // saved stages: { plan, gigs, miles }
+PLANNER.stageIdx = -1; // -1 = not staging; i = the stage being worked on (stages.length = a new one)
+const STAGE_VALUES = ["periodStart", "periodEnd", "gigsWanted", "areaRadius"];
+const sgParse = (s) => { const [y, m, d] = String(s || "").split("-").map(Number); return y ? new Date(y, m - 1, d) : null; };
+const sgShort = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+function stageRange(plan) {
+  const v = (plan && plan.settings && plan.settings.values) || {};
+  return [sgParse(v.periodStart), sgParse(v.periodEnd)];
+}
+function stageLabel(plan) {
+  const [a, b] = stageRange(plan);
+  if (!a || !b) return "";
+  return a.getTime() === b.getTime() ? sgShort(a) : a.getMonth() === b.getMonth() ? `${a.getDate()}–${sgShort(b)}` : `${sgShort(a)} – ${sgShort(b)}`;
+}
+function otherStages() { return PLANNER.stages.filter((s, i) => i !== PLANNER.stageIdx); }
+/** Venues taken by the other stages, to leave out of this one (only when each venue is to be used once). */
+function stageBlockedVenues() {
+  const out = new Set();
+  if (PLANNER.stageIdx < 0 || !PLANNER.distinct) return out;
+  otherStages().forEach((s) => (s.plan.picks || []).forEach((p) => p.venue_id && out.add(p.venue_id)));
+  return out;
+}
+/** The other stage that these dates run into, if any. */
+function stageClash(from, to) {
+  if (PLANNER.stageIdx < 0 || !from || !to) return null;
+  return otherStages().find((s) => { const [a, b] = stageRange(s.plan); return a && b && from <= b && to >= a; }) || null;
+}
+function currentStageSnapshot() {
+  const plan = gatherPlan();
+  const stops = [...PLANNER.chosen.entries()].sort().map(([, c]) => c).filter((c) => !c.isAnchor || true);
+  return { plan, gigs: plan.picks.length, miles: stops.length ? Math.round(routeMiles(stops)) : 0 };
+}
+const hasPicks = () => PLANNER.mode === "pool" && PLANNER.chosen.size > 0;
+/** Keep the stage being worked on up to date in the list (a new stage with picks is added), so switching loses nothing. */
+function commitCurrentStage() {
+  if (PLANNER.stageIdx < 0 || currentMode() !== "pool" || !hasPicks()) return false;
+  const snap = currentStageSnapshot();
+  if (PLANNER.stageIdx < PLANNER.stages.length) PLANNER.stages[PLANNER.stageIdx] = snap;
+  else { PLANNER.stages.push(snap); PLANNER.stageIdx = PLANNER.stages.length - 1; }
+  return true;
+}
+function nextStageDates() {
+  const ends = PLANNER.stages.map((s) => stageRange(s.plan)[1]).filter(Boolean);
+  const [cf, ct] = [sgParse(document.getElementById("periodStart").value), sgParse(document.getElementById("periodEnd").value)];
+  if (ct) ends.push(ct);
+  const span = cf && ct ? Math.max(0, Math.round((ct - cf) / 86400000)) : 2;
+  let d = addDays(new Date(Math.max(...ends.map((e) => e.getTime()), getTodayMidnight().getTime())), 1);
+  while (d.getDay() !== 5) d = addDays(d, 1); // the next Friday after everything planned so far
+  return [dkey(d), dkey(addDays(d, span))];
+}
+/** Fresh stage-level state for the next stage; shared settings stay. */
+function resetForNewStage(dates, keepMusts) {
+  const $ = (id) => document.getElementById(id);
+  clearResults();
+  PLANNER.released = new Set();
+  if (!keepMusts) PLANNER.mustRows = [];
+  setArea(null); $("areaInput").value = "";
+  if (dates) { $("periodStart").value = dates[0]; $("periodEnd").value = dates[1]; }
+  drawMustRows();
+}
+function stageSaveNext() {
+  if (!hasPicks()) return setStatus("Build the stage and pick at least one gig before saving it.", true);
+  const idx = PLANNER.stageIdx, wasNew = idx >= PLANNER.stages.length;
+  commitCurrentStage();
+  if (wasNew || idx === PLANNER.stages.length - 1) {
+    PLANNER.stageIdx = PLANNER.stages.length;
+    resetForNewStage(nextStageDates());
+    setStatus(`Stage ${PLANNER.stages.length} saved. Plan stage ${PLANNER.stages.length + 1} below — dates are set to the next free weekend.`);
+  } else setStatus(`Stage ${idx + 1} updated.`);
+  renderStages();
+}
+function stageOpen(i) {
+  if (i === PLANNER.stageIdx) return;
+  commitCurrentStage();
+  if (i >= PLANNER.stages.length) { PLANNER.stageIdx = PLANNER.stages.length; resetForNewStage(nextStageDates()); renderStages(); return; }
+  const snap = PLANNER.stages[i].plan, cur = gatherPlan();
+  const values = { ...cur.settings.values };
+  STAGE_VALUES.forEach((id) => { if (snap.settings.values[id] != null) values[id] = snap.settings.values[id]; });
+  PLANNER.stageIdx = i;
+  try {
+    applyPlan({ ...snap, pool: cur.pool, start: cur.start, end: cur.end, endSame: cur.endSame, clash: cur.clash,
+      settings: { values, checks: cur.settings.checks } });
+    setStatus(`Stage ${i + 1} — ${stageLabel(snap)}.`);
+  } catch (e) { setStatus("Couldn't open that stage: " + e.message, true); }
+  renderStages();
+}
+function stageRemove(i) {
+  PLANNER.stages.splice(i, 1);
+  if (PLANNER.stageIdx === i) { PLANNER.stageIdx = PLANNER.stages.length; resetForNewStage(nextStageDates()); }
+  else if (PLANNER.stageIdx > i) PLANNER.stageIdx--;
+  setStatus("Stage removed.");
+  renderStages();
+}
+/** A copy of a stage's set-up (area, must-visits, size) on the next free weekend, without its picks — for "the same again somewhere else". */
+function stageDuplicate(i) {
+  commitCurrentStage();
+  const src = PLANNER.stages[i]; if (!src) return;
+  const dates = nextStageDates();
+  const plan = JSON.parse(JSON.stringify(src.plan));
+  plan.settings.values.periodStart = dates[0]; plan.settings.values.periodEnd = dates[1];
+  plan.picks = []; plan.built = false; plan.released = [];
+  plan.mustVisits = (plan.mustVisits || []).map((m) => ({ ...m, date: "", alt: [] }));
+  PLANNER.stages.push({ plan, gigs: 0, miles: 0 });
+  stageOpen(PLANNER.stages.length - 1);
+  setStatus(`Copied stage ${i + 1}: same area and settings on ${stageLabel(plan)}. Must-visit dates were cleared.`);
+}
+function stageExport() {
+  commitCurrentStage();
+  const venues = PLANNER.venues || {};
+  const lines = ["Tour in stages", ""];
+  PLANNER.stages.forEach((s, i) => {
+    lines.push(`Stage ${i + 1} (${stageLabel(s.plan)}) — ${s.gigs} gig${s.gigs === 1 ? "" : "s"}${s.miles ? `, about ${s.miles} miles` : ""}`);
+    (s.plan.picks || []).forEach((p) => {
+      const d = sgParse(p.date), v = venues[p.venue_id];
+      lines.push(`  ${d ? d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : p.date}  ${p.name || (v && v.name) || p.venue_id}${v && v.town ? ", " + v.town : ""}`);
+    });
+    lines.push("");
+  });
+  TourSupport.saveText(lines.join("\n"), "tour-stages.txt", "text/plain");
+}
+function renderStages() {
+  const box = document.getElementById("stageBox");
+  if (!box) return;
+  box.textContent = "";
+  const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const btn = (txt, fn, cls) => { const b = mk("button", cls || "btn-link", txt); b.type = "button"; b.addEventListener("click", fn); return b; };
+  if (PLANNER.stageIdx < 0) {
+    const p = mk("p", "ts-hint stage-hint", "Planning several separate weekends or periods from one home? ");
+    p.appendChild(btn("Plan it in stages", () => { PLANNER.stageIdx = PLANNER.stages.length; renderStages(); }));
+    box.appendChild(p);
+    return;
+  }
+  const idx = PLANNER.stageIdx, isNew = idx >= PLANNER.stages.length;
+  box.appendChild(mk("div", "stage-title", "Tour in stages"));
+  const chips = mk("div", "stage-chips");
+  PLANNER.stages.forEach((s, i) => {
+    const b = btn(`Stage ${i + 1} · ${stageLabel(s.plan)} · ${s.gigs} gig${s.gigs === 1 ? "" : "s"}`, () => stageOpen(i), "stage-chip");
+    b.setAttribute("aria-pressed", String(i === idx));
+    if (i === idx) b.classList.add("current");
+    chips.appendChild(b);
+  });
+  if (isNew) { const b = mk("span", "stage-chip current new", `Stage ${PLANNER.stages.length + 1} · planning now`); chips.appendChild(b); }
+  else chips.appendChild(btn("＋ New stage", () => stageOpen(PLANNER.stages.length), "stage-chip add"));
+  box.appendChild(chips);
+  const row = mk("div", "stage-actions");
+  row.appendChild(btn(isNew ? `Save stage ${idx + 1} & start the next` : `Update stage ${idx + 1}`, stageSaveNext, "btn-secondary"));
+  if (!isNew) row.appendChild(btn("Copy to a new weekend", () => stageDuplicate(idx)));
+  if (!isNew) row.appendChild(btn("Remove this stage", () => stageRemove(idx)));
+  if (PLANNER.stages.length) row.appendChild(btn("Export all stages", stageExport));
+  if (!PLANNER.stages.length) row.appendChild(btn("Not in stages after all", () => { PLANNER.stageIdx = -1; renderStages(); }));
+  box.appendChild(row);
+  if (PLANNER.stages.length) {
+    const g = PLANNER.stages.reduce((t, s) => t + s.gigs, 0), m = PLANNER.stages.reduce((t, s) => t + s.miles, 0);
+    box.appendChild(mk("div", "ts-hint", `${PLANNER.stages.length} stage${PLANNER.stages.length === 1 ? "" : "s"} saved · ${g} gig${g === 1 ? "" : "s"}${m ? ` · about ${m} miles from home and back` : ""}`));
+  }
+  const used = [...stageBlockedVenues()].map((v) => (PLANNER.venues[v] || {}).name || v);
+  if (used.length) box.appendChild(mk("div", "ts-hint stage-used", `Left out here, already used in other stages: ${used.join(", ")}`));
+  else if (PLANNER.stages.length && !document.getElementById("poolDistinct").checked) box.appendChild(mk("div", "ts-hint stage-used", "“Each venue once” is off, so venues can repeat across stages."));
 }
 
 // ── init ────────────────────────────────────────────────────────────────
@@ -2840,6 +3016,7 @@ async function initPlanner() {
   });
   attachDualRange();
   initClash();
+  renderStages();
   document.getElementById("moreOptions").addEventListener("click", showMoreOptions);
   syncQuickStart();
   document.getElementById("plannerMode").addEventListener("change", setMode);

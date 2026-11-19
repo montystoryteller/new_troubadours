@@ -293,3 +293,15 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 /* keep the Filters heading and its hint clear of the Explain button */
 #plannerLive > h3 { padding-right: 10em; }
 #plannerLive > h3 .ts-hint { display: block; font-weight: normal; margin-top: 2px; }
+
+/* stages: a quiet one-line hint until used */
+.stage-box { margin-top: 8px; }
+.stage-hint { margin: 4px 0 0; }
+.stage-title { font-weight: 700; margin-bottom: 6px; }
+.stage-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.stage-chip { border: 1px solid #b0bec5; background: #fff; border-radius: 999px; padding: 4px 12px; font-size: .88em; cursor: pointer; color: inherit; }
+.stage-chip.current { border-color: #2e7d32; background: #e8f5e9; font-weight: 600; }
+.stage-chip.add { border-style: dashed; color: #1565c0; }
+.stage-chip.new { cursor: default; }
+.stage-actions { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin-bottom: 6px; }
+.stage-used { font-style: italic; }

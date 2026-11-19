@@ -13,6 +13,7 @@ tests/run_new.sh quickstart    # one test (file name in tests/new/, without .js)
 |---|---|
 | `quickstart` | Before the first build only dates + a "More options" button show; the button, a build, or loading a plan brings the rest in |
 | `collect` | The shared collector (`js/event_collect.js`) returns exactly what the gig planner's own collector does, over four date ranges |
+| `stages` | The stage hint stays one quiet link until used; stage 2 starts on the next free Friday, avoids stage 1's venues, refuses overlapping dates; plan file round trip, reopen and remove |
 | `gigs_and_plan` | Booked / queried / pencilled must-visits, a 3-night run, Save plan and Load plan round trip |
 
 Some counts depend on today's date, so these tests assert behaviour, not fixed numbers.
@@ -28,7 +29,8 @@ Say what you expected to happen before each step and note where the tool surpris
 5. **Three-night run.** Book a venue for 3 nights. Success: consecutive nights at one venue, labelled "night 1 of 3" and so on.
 6. **Save and come back.** Save plan, reload the page, Load plan. Success: statuses, dates and the route return.
 7. **Clash finder.** Under Filters tick "Show known clashes". Success: nights with another event at the same venue (red) or in the same town (amber) are flagged, and unticking removes every badge.
-8. **Phone.** Repeat 1 and 2 on a phone. Note anything cut off or hard to tap. (Not covered by the automated tests.)
+8. **Three weekends from home.** Pick your acts, set a home start, choose a weekend, build and pick gigs, then "Plan it in stages" and "Save stage 1 & start the next". Repeat for two more. Success: no venue repeats across stages, the totals line adds up, and Save plan / Load plan brings all stages back.
+9. **Phone.** Repeat 1 and 2 on a phone. Note anything cut off or hard to tap. (Not covered by the automated tests.)
 
 ## 3. Not covered here
 
