@@ -2914,7 +2914,8 @@
           "date": "27/09/2026",
           "venue_id": "toms-tap-brewhouse",
           "isSpecial": true,
-          "eventId": "T-mexican-dave-autumn-winter-2026-20261027-toms-tap-brewhouse"
+          "eventId": "T-mexican-dave-autumn-winter-2026-20261027-toms-tap-brewhouse",
+          "previous_id": "T-mexican-dave-mexican-dave-20261027-toms-tap-brewhouse"
         },
         {
           "date": "22/10/2026",
@@ -6565,6 +6566,7 @@
         {
           "date": "22/11/2026",
           "venue_id": "queens-hall-narberth",
+          "previous_id": "queen-s-hall-narberth",
           "time": "Doors 7.30pm",
           "price": "£18",
           "ticket_url": "https://thequeenshall.org.uk/events/beans-on-toast-in-your-neck-of-the-woods-2026",
@@ -9929,7 +9931,8 @@
       "ticket_url": "https://stephen-gill.sumupstore.com/product/tales-and-ales-valentine-special-12th-feb",
       "event_flyer": "2026_02_12_tales_ales_valentine.png",
       "isSpecial": true,
-      "eventId": "20260212-p-d-brown-angels-cut-darlington"
+      "eventId": "20260212-p-d-brown-angels-cut-darlington",
+      "previous_id": "20260212-p-d-brown-angles-cut-darlington"
     },
     {
       "name": "Dark Tales of Cornish Smuggling [Keith Wallis]",
@@ -12879,6 +12882,7 @@
       "venue_id": "horse-groom-st-leonards-on-sea",
       "performer_id": "kate-corkery",
       "eventId": "20261020-kate-corkery-horse-groom-st-leonards-on-sea",
+      "previous_id": "event=20261020-kate-corkery-horse-groom-st-leonard-s-on-sea",
       "date_added": "11/10/2026",
       "time": "7pm",
       "ticket_url": "https://www.hastingsstoryfest.org.uk/2026",
