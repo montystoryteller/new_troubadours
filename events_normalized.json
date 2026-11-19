@@ -2665,6 +2665,59 @@
       "description": "An atmospheric retelling of a classic English folk tale, The Dead Moon tells of the time when the moon descended from the sky, to illuminate the marshes where local people live in fear of the horrors lurking in the darkness.\n\n\n\nThis brand new telling of a strange and eerie tale expands on the original to explore the life of the woman who first recorded the The Dead Moon, the uncanny circumstances of its origins  and the claims that within the tale is the folk memory of an ancient ritual.",
       "isSpecial": true
     },
+    "riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time": {
+      "name": "Of Stars, Bears And The Beginning Of Time",
+      "showname": "Of Stars, Bears And The Beginning Of Time",
+      "show_dates": [
+        {
+          "date": "10/03/2026",
+          "venue_id": "stromness-town-hall",
+          "time": "3pm",
+          "price": "£10",
+          "event_flyer": "2026-03-22-stromness.jpg",
+          "ticket_url": "https://buy.stripe.com/aFa7sL8EidPF8R62NgeIw03",
+          "club": "orcadiantrust",
+          "previous_id": "20260310-riikka-polonen-stromness-town-hall",
+          "eventId": "R-riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time-20260310-stromness-town-hall"
+        },
+        {
+          "date": "31/10/2026",
+          "venue_id": "cornerstone-st-johns-edinburgh",
+          "time": "7pm",
+          "price": "£10 (+ £1.55)",
+          "event_flyer": "2026_10_21_riikka-palonen-stars.webp",
+          "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-and-the-beginning-of-time-tickets-2000460700807",
+          "eventId": "R-riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time-20261031-cornerstone-st-johns-edinburgh",
+          "previous_id": "20261031-riika-polonen-cornerstone-st-johns-edinburgh",
+                "age_rating": "12+",
+                "min_age": 12,
+          "date_added": "19/10/2026"
+        },
+        {
+          "date": "02/10/2026",
+          "venue_id": "skye-bridge-studios-123",
+          "time": "7:30 PM - 8:30 PM",
+          "price": "£10",
+          "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-the-beginning-of-time-rikka-palonen-richard-clarke-tickets-1992127340502",
+          "eventId": "R-riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time-20261002-skye-bridge-studios-123"
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "birks-cinema-aberfeidy",
+          "time": "7pm",
+          "price": "£10",
+          "date_added": "19/11/2026",
+          "event_flyer": "2026_11_20_riikka_polonen_aberfeldy.webp",
+          "eventId": "R-riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time-2-20261120-birks-cinema-aberfeidy"
+        }
+      ],
+      "performer_ids": [
+        "riikka-polonen",
+        "richard-clarke"
+      ],
+      "description": "Celestial origin myths from the Fenno Baltic Tradition. Told by Riikka Polonen, musical accompaniment from Richard Clarke.\n\n\n\nOf Stars, Bears and the Beginning of Time\n\n\n\nAn enchanting mythical journey through the celestial origin stories of the Fenno-Baltic tradition, told by Finnish-born storyteller Riikka Palonen and accompanied by folk musician Richard Clarke.\n\n\n\nModern science tells us we were born from star dust — but how did the ancient people in the north know that? Who told them these first stories? What is the origin of iron? Who married the girl from the golden egg? How was the first oak cut down? Elemental stories like these are extremely important as they remind us that we are still equally part of this planet, alongside bears, cranes and wolves.",
+      "isSpecial": true
+    },
     "sarah-liisa-wilkinson-how-not-die-finland": {
       "name": "HOW (NOT) TO DIE long ago in Finland [Sarah Liisa Wilkinson]",
       "showname": "HOW (NOT) TO DIE long ago in Finland",
@@ -8523,8 +8576,8 @@
           "yt_url": "https://www.youtube.com/watch?v=8Bg06CV4QDY"
         },
         {
-          "performer_id": "riika-polonen",
-          "title": "Debut performance from Riika Polonen",
+          "performer_id": "riikka-polonen",
+          "title": "Debut performance from Riikka Polonen",
           "yt_url": "https://www.youtube.com/watch?v=t6t7RWFYyoY"
         },
         {
@@ -10160,20 +10213,6 @@
       "fb_event": 1227875168809603,
       "performer_id": "ian-douglas",
       "eventId": "20260306-ian-douglas-imperial-rooms-matlock"
-    },
-    {
-      "name": "Of Stars, Bears And The Beginning Of Time [Riika Polonen]",
-      "showname": "Of Stars, Bears And The Beginning Of Time",
-      "date": "10/03/2026",
-      "time": "3pm",
-      "price": "£10",
-      "description": "Celestial origin myths from the Fenno Baltic Tradition. Told by Riika Polonen, musical accompaniment from Richard Clarke.",
-      "event_flyer": "2026-03-22-stromness.jpg",
-      "venue_id": "stromness-town-hall",
-      "performer_id": "riika-polonen",
-      "ticket_url": "https://buy.stripe.com/aFa7sL8EidPF8R62NgeIw03",
-      "club": "orcadiantrust",
-      "eventId": "20260310-riika-polonen-stromness-town-hall"
     },
     {
       "name": "The Sin-Eater of Ross & Other Tradtitional Tales [Tony 'Monty' Hirst]",
@@ -13373,23 +13412,6 @@
       "isSpecial": true
     },
     {
-      "name": "Of Stars, Bears And The Beginning Of Time [Riika Polonen]",
-      "showname": "Of Stars, Bears And The Beginning Of Time",
-      "date": "31/10/2026",
-      "venue_id": "cornerstone-st-johns-edinburgh",
-      "performer_id": "riika-polonen",
-      "eventId": "20261031-riika-polonen-cornerstone-st-johns-edinburgh",
-      "date_added": "19/10/2026",
-      "time": "7pm",
-      "price": "£10 (+ £1.55)",
-      "description": "Of Stars, Bears and the Beginning of Time\n\n\n\nAn enchanting mythical journey through the celestial origin stories of the Fenno-Baltic tradition, told by Finnish-born storyteller Riikka Palonen and accompanied by folk musician Richard Clarke.\n\n\n\nModern science tells us we were born from star dust – but how did the ancient people in the north know that? Who told them these first stories? What is the origin of iron? Who married the girl from the golden egg? How was the first oak cut down? Elemental stories like these are extremely important as they remind us that we are still equally part of this planet, alongside bears, cranes and wolves.",
-      "age_rating": "12+",
-      "min_age": 12,
-      "event_flyer": "2026_10_21_riikka-palonen-stars.webp",
-      "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-and-the-beginning-of-time-tickets-2000460700807",
-      "isSpecial": true
-    },
-    {
       "name": "Forvie's Terrifying Tales from the North East - Adults only storytelling [Pauline Cordiner]",
       "showname": "Forvie's Terrifying Tales from the North East - Adults only storytelling",
       "date": "01/11/2026",
@@ -13499,6 +13521,21 @@
       "age_rating": "12+",
       "min_age": 12,
       "eventId": "20261106-peter-chand-imperial-rooms-matlock"
+    },
+    {
+      "name": "Old Yule Tales [Riikka Polonen]",
+      "showname": "Old Yule Tales",
+      "date": "06/11/2026",
+      "venue_id": "crail-community-hall",
+      "performer_ids": [
+        "riikka-polonen",
+        "richard-clarke"
+      ],
+      "eventId": "20261106-riikka-polonen-crail-community-hall",
+      "time": "7pm",
+      "price": "£10",
+      "event_flyer": "2026_11_06_riikka_polonen_yule_tales.webp",
+      "isSpecial": true
     },
     {
       "name": "Irish Legends & Living Stories [Eddie Lenihan]",
@@ -20631,6 +20668,56 @@
         -4.15562
       ]
     },
+    "crail-community-hall": {
+      "id": "crail-community-hall",
+      "name": "Crail Community Hall",
+      "venue_type": "Village / community hall",
+      "city": "Crail, St Andrews",
+      "postcode": "KY10 3UH",
+      "full_address": "Crail Community Hall, St Andrews Road, Crail, KY10 3UH",
+      "url": "https://www.crailcommunityhall.co.uk/",
+      "email": "crailcommunityhall@gmail.com",
+      "facebook": "CrailCommunityHall",
+      "instagram": "crailcommunityhall",
+      "description": "Crail Community Hall in Fife offers venue hire and facilities for a multitude of events. With a fully operational kitchen, two halls available for hire and a stage sound and lighting system, our space is adaptable for all occasions.",
+      "latlon": [
+        56.26199,
+        -2.62935
+      ]
+    },
+    "birks-cinema-aberfeidy": {
+      "id": "birks-cinema-aberfeidy",
+      "name": "Birks Cinema, Aberfeidy",
+      "venue_type": "Other / unknown",
+      "city": "Aberfeldy, Dundee",
+      "postcode": "PH15 2DA",
+      "full_address": "The Birks Cinema Trust, 1 Dunkeld St, Aberfeldy, PH15 2DA",
+      "url": "https://birkscinema.co.uk/",
+      "email": "support@birkscinema.co.uk",
+      "facebook": "birkscinema",
+      "instagram": "birkscinema",
+      "description": "The Birks Cinema offers a distinctive space for private bookings, whether you are planning a birthday celebration, a school or community event, a corporate presentation, or a private film screening.\n\n\n\nWith a warm atmosphere, helpful team, and flexible options, private hire at The Birks can be tailored to suit a wide range of occasions.\n\n\n\nSituated in the heart of Aberfeldy, the perfect place for your next special event. We have three areas for hire throughout the building: A 104 seat auditorium, a meeting room that can fit up to 12 people, and a new first floor space with a 50 person capacity, all of which are available for a variety of different private functions. We can accommodate corporate events, product launches, private screenings, cast and crew screenings, conferences, gaming parties, meetings, and more.",
+      "latlon": [
+        56.61989,
+        -3.86461
+      ]
+    },
+    "skye-bridge-studios-123": {
+      "id": "skye-bridge-studios-123",
+      "name": "Skye Bridge Studios 123,",
+      "venue_type": "Other / unknown",
+      "city": "Kyle of Lochalsh",
+      "postcode": "IV40 8DA",
+      "full_address": "Skye Bridge Studios 123, The Old School, Main Street, Kyle of Lochalsh, IV40 8DA",
+      "url": "https://www.skyebridgestudios123.com/",
+      "facebook": "skyebridgestudios",
+      "instagram": "skyebridgestudios",
+      "description": "At Skye Bridge Studios, we are passionate about the principles of life-long learning and the arts. We believe that people of all ages and backgrounds should be welcomed and encouraged to continually learn and acquire new skills through a mix of tutor-led and immersive experiences. Our aim is to provide a broad range of learning, training, developmental, social and artistic experiences through residential and day courses, workshops, seminars, exhibitions, performances, presentations and festivals.\n\n\n\nThere are 3 studios available to hire:\n\n\n\nStudio 1 is a small exhibition and conference space.\nStudio 2 is a large conference space and large exhibition space.\nStudio 3 is a fully lecture space and performance space.",
+      "latlon": [
+        57.28743,
+        -5.7184
+      ]
+    },
     "clarks-on-lindsay-street-dundee": {
       "id": "clarks-on-lindsay-street-dundee",
       "name": "Clarks on Lindsay Street, Dundee",
@@ -22929,11 +23016,20 @@
       "url": "https://amhellbergmoberg.co.uk/",
       "bio": "UK-based, Swedish author, journalist and storyteller Anna Maria Vilhelmina Hellberg Moberg (formerly Anna Maria Espsäter). She is the author of 25+ books, including five works of fiction, numerous travel books, three books about cats and, most recently, a book of Swedish folk tales (published October 2024 by the History Press).\n\n\n\nIn recent years, as Vilhelmina Hellberg Moberg, she has branched out into live storytelling for adults. She is multilingual, both as a writer and speaker/storyteller, and a keen photographer who's had several solo exhibitions in the UK and Sweden."
     },
-    "riika-polonen": {
-      "id": "riika-polonen",
-      "name": "Riika Polonen",
+    "richard-clarke": {
+      "id": "richard-clarke",
+      "name": "Richard Clarke",
+      "bio": "Musician; often collaborates with his wife, storyteller Riikka Polonen.",
+      "type": "musician",
+      "facebook": "richard.rajaaho",
+      "musician": true
+    },
+    "riikka-polonen": {
+      "id": "riikka-polonen",
+      "previous_id": "riikka-polonen",
+      "name": "Riikka Polonen",
       "url": "https://riikkapalonen.com/",
-      "bio": "As a child Riika discovered that storybooks could transport her to other worlds of fairytale, myth and magic. To this day she still enjoys visiting those faraway places, and as a storyteller she is able to take others with her on that journey.\n\n\n\nFor over 15 years Riika has been performing as a storyteller in Finland and in recent years in venues across the UK from Oxford to Orkney, and internationally from Morocco to Lapland.\n\n\n\nRiika also works in collaberation with her husband, folk musician Richard Clarke to create their very popular song and story performances.",
+      "bio": "As a child Riikka discovered that storybooks could transport her to other worlds of fairytale, myth and magic. To this day she still enjoys visiting those faraway places, and as a storyteller she is able to take others with her on that journey.\n\n\n\nFor over 15 years Riikka has been performing as a storyteller in Finland and in recent years in venues across the UK from Oxford to Orkney, and internationally from Morocco to Lapland.\n\n\n\nRiikka also works in collaberation with her husband, folk musician Richard Clarke to create their very popular song and story performances.",
       "youtube_videos": [
         {
           "story_name": "A Hospitable Hostess",
