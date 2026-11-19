@@ -2689,8 +2689,8 @@
           "ticket_url": "https://www.eventbrite.co.uk/e/of-stars-bears-and-the-beginning-of-time-tickets-2000460700807",
           "eventId": "R-riikka-polonen-richard-clarke-of-stars-bears-and-the-beginning-of-time-20261031-cornerstone-st-johns-edinburgh",
           "previous_id": "20261031-riika-polonen-cornerstone-st-johns-edinburgh",
-                "age_rating": "12+",
-                "min_age": 12,
+          "age_rating": "12+",
+          "min_age": 12,
           "date_added": "19/10/2026"
         },
         {
@@ -3608,7 +3608,8 @@
           "ticket_url": "https://www.ticketsource.com/livewireeventsandpromotions/livewire-presents-tony-wright-of-terrorvision/e-rggbmk?ref=montystoryteller.org",
           "event_flyer": "2026_12_12_tony_wright_giffard_arms.jpg",
           "isSpecial": true,
-          "eventId": "T-tony-wright-winter-2026-20261212-the-giffard-arms-wolverhampton"
+          "eventId": "T-tony-wright-winter-2026-20261212-the-giffard-arms-wolverhampton",
+          "previous_id": "T-tony-wright-winter-2026-20261212-the-giffard-wolverhampton"
         },
         {
           "date": "17/12/2026",
@@ -4923,7 +4924,8 @@
           "date": "22/01/2027",
           "venue_id": "ustinov-theatre-royal",
           "ticket_url": "https://www.theatreroyal.org.uk/events/lilith/",
-          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270122-ustinov-theatre-royal"
+          "eventId": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270122-ustinov-theatre-royal",
+          "previous_id": "T-katy-cawkwell-lilith-autumn-winter-2026-2027-20270128-ustinov-theatre-royal"
         },
         {
           "date": "23/01/2027",
