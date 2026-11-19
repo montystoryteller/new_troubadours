@@ -6566,7 +6566,6 @@
         {
           "date": "22/11/2026",
           "venue_id": "queens-hall-narberth",
-          "previous_id": "queen-s-hall-narberth",
           "time": "Doors 7.30pm",
           "price": "£18",
           "ticket_url": "https://thequeenshall.org.uk/events/beans-on-toast-in-your-neck-of-the-woods-2026",
@@ -15685,6 +15684,7 @@
     },
     "sun-inn-calbourne": {
       "id": "sun-inn-calbourne",
+      "previous_id": "sun-inn-shanklin",
       "name": "Sun Inn, Calbourne",
       "city": "Calbourne",
       "postcode": "PO30 4JA",
@@ -21534,6 +21534,7 @@
     },
     "queens-hall-narberth": {
       "id": "queens-hall-narberth",
+      "previous_id": "queen-s-hall-narberth",
       "name": "Queen's Hall, Narberth",
       "venue_type": "Other / unknown",
       "city": "Narberth",
