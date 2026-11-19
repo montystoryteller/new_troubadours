@@ -5569,6 +5569,7 @@
           "venue_id": "black-dyke-mills-bradford",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "event_flyer": "2026_11_22_sorrel_nation_bradford.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261122-black-dyke-mills-bradford"
         },
         {
@@ -5601,6 +5602,7 @@
           "venue_id": "ventnor-arts-club",
           "date_added": "11/08/2026",
           "isSpecial": false,
+          "isSoldOut": true,
           "event_flyer": "2026_12_04_sorrel_nation_ventnor.jpg",
           "eventId": "T-sorrel-nation-creeping-thyme-2026-20261204-ventnor-arts-club"
         }
@@ -6087,7 +6089,7 @@
           "ticket_url": "https://www.seetickets.com/event/black-water-county/the-bodega/3743683",
           "date_added": "17/11/2026",
           "isSpecial": true,
-          "eventId": "T-black-water-county-spring-2027-30370303-bodega-nottingham"
+          "eventId": "T-black-water-county-spring-2027-20270303-bodega-nottingham"
         },
         {
           "date": "04/03/2027",
