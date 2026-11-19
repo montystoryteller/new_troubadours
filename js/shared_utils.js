@@ -2793,6 +2793,7 @@ async function loadEventsData(cacheBuster) {
           applyRepertoireInheritance(eventsData);
           applyClubPreviousIds(eventsData);
           applyVenueAndPromoterPreviousIds(eventsData, { toursLookup });
+          applyEventPreviousIds(eventsData, { toursLookup });
           applyClubInheritance(eventsData);
           applyDatesAlias(eventsData);
           applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -2847,6 +2848,7 @@ async function loadEventsData(cacheBuster) {
     applyRepertoireInheritance(eventsData);
     applyClubPreviousIds(eventsData);
     applyVenueAndPromoterPreviousIds(eventsData);
+    applyEventPreviousIds(eventsData);
     applyClubInheritance(eventsData);
     applyDatesAlias(eventsData);
     applyPerformerAliases(eventsData);
@@ -2923,6 +2925,7 @@ function handleEventsLoadFailure(reason) {
       applyRepertoireInheritance(eventsData);
       applyClubPreviousIds(eventsData);
       applyVenueAndPromoterPreviousIds(eventsData, { toursLookup });
+      applyEventPreviousIds(eventsData, { toursLookup });
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData, { performersLookup, toursLookup });
@@ -3185,6 +3188,8 @@ function applyClubPreviousIds(eventsData) {
 let VENUE_PREVIOUS_ID_MAP = {};
 /** old promoter id -> current promoter id, rebuilt on every events-data load. */
 let PROMOTER_PREVIOUS_ID_MAP = {};
+/** old event id -> current event id, rebuilt on every events-data load. */
+let EVENT_PREVIOUS_ID_MAP = {};
 
 // Keys that hold a venue / promoter id (or a list of them) anywhere in the
 // events data: venue_id on events, clubs, tour/show dates, festivals and
@@ -3212,6 +3217,15 @@ function resolveVenueId(id) {
  */
 function resolvePromoterId(id) {
   return (id && PROMOTER_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * Current event id for `id` (see resolveVenueId). Forwards old ?event= links.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolveEventIdByPreviousId(id) {
+  return (id && EVENT_PREVIOUS_ID_MAP[id]) || id;
 }
 
 /**
@@ -3316,6 +3330,72 @@ function applyVenueAndPromoterPreviousIds(eventsData, lookups = {}) {
     );
   }
 }
+
+/**
+ * Lets an event be identified by an old previous_id without breaking old links.
+ * Flat events (specificEvents, musicEvents, poetryEvents) and tour dates / show dates
+ * may carry `previous_id`. Builds EVENT_PREVIOUS_ID_MAP (old -> current)
+ * so pages can forward old ?event= URLs with resolveEventIdByPreviousId().
+ * Idempotent and safe to call repeatedly.
+ * @param {object} eventsData
+ * @param {{toursLookup?: object}} [lookups] - a separate copy of eventsData.tours
+ */
+function applyEventPreviousIds(eventsData, lookups = {}) {
+  const eventRegistry = {};
+  
+  // Collect all flat events
+  ["specificEvents", "musicEvents", "poetryEvents"].forEach((key) => {
+    (eventsData?.[key] || []).forEach((event) => {
+      if (event && event.eventId) {
+        eventRegistry[event.eventId] = event;
+      }
+    });
+  });
+  
+  // Collect all tour dates
+  if (lookups.toursLookup) {
+    Object.entries(lookups.toursLookup).forEach(([tourId, tour]) => {
+      if (tour?.tour_dates) {
+        tour.tour_dates.forEach((date) => {
+          if (date && date.eventId) {
+            eventRegistry[date.eventId] = date;
+          }
+        });
+      }
+    });
+  } else if (eventsData?.tours) {
+    Object.entries(eventsData.tours).forEach(([tourId, tour]) => {
+      if (tour?.tour_dates) {
+        tour.tour_dates.forEach((date) => {
+          if (date && date.eventId) {
+            eventRegistry[date.eventId] = date;
+          }
+        });
+      }
+    });
+  }
+  
+  // Collect all show dates
+  if (eventsData?.repertoire_shows) {
+    Object.entries(eventsData.repertoire_shows).forEach(([tsId, show]) => {
+      if (show?.dates) {
+        show.dates.forEach((date) => {
+          if (date && date.eventId) {
+            eventRegistry[date.eventId] = date;
+          }
+        });
+      }
+    });
+  }
+  
+  EVENT_PREVIOUS_ID_MAP = buildPreviousIdMap(eventRegistry, "Event");
+  if (Object.keys(EVENT_PREVIOUS_ID_MAP).length) {
+    console.log(
+      `Loaded ${Object.keys(EVENT_PREVIOUS_ID_MAP).length} event previous id mappings`,
+    );
+  }
+}
+
 
 // Top-level arrays whose entries can reference a club via `.club` and so
 // are eligible for this inheritance (once they also opt in with
@@ -3636,6 +3716,7 @@ async function checkForNewerEventsDataBackground() {
       applyRepertoireInheritance(eventsData);
       applyClubPreviousIds(eventsData);
       applyVenueAndPromoterPreviousIds(eventsData);
+      applyEventPreviousIds(eventsData);
       applyClubInheritance(eventsData);
       applyDatesAlias(eventsData);
       applyPerformerAliases(eventsData);

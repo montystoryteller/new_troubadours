@@ -1108,14 +1108,20 @@ let initialSearchTerm = "";
   // );
   //document.body.appendChild(debugComment);
 
-  eventRecord = eventIdParam
-    ? findEventById(eventIdParam) || findTourOrShowDateEventById(eventIdParam)
+  // Resolve old event ids via previous_id mapping
+  const resolvedEventIdParam = eventIdParam
+    ? resolveEventIdByPreviousId(eventIdParam)
+    : eventIdParam;
+
+  eventRecord = resolvedEventIdParam
+    ? findEventById(resolvedEventIdParam) ||
+      findTourOrShowDateEventById(resolvedEventIdParam)
     : null;
 
   // Old `${name}-${getTime()}` ids that didn't match exactly (see
   // findEventByLegacyId()).
-  if (!eventRecord && eventIdParam) {
-    eventRecord = findEventByLegacyId(eventIdParam);
+  if (!eventRecord && resolvedEventIdParam) {
+    eventRecord = findEventByLegacyId(resolvedEventIdParam);
   }
 
   // Still nothing: try to work out what was meant (see findEventIdMatches()).
@@ -1124,8 +1130,8 @@ let initialSearchTerm = "";
   // notice tells the visitor the link they followed was out of date.
   let idMatches = null;
   let resolvedByFuzzyMatch = false;
-  if (!eventRecord && eventIdParam) {
-    idMatches = findEventIdMatches(eventIdParam);
+  if (!eventRecord && resolvedEventIdParam) {
+    idMatches = findEventIdMatches(resolvedEventIdParam);
     if (idMatches.auto) {
       eventRecord = idMatches.auto.build();
       resolvedByFuzzyMatch = true;
