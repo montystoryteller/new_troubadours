@@ -1783,7 +1783,10 @@ function nodeState(c, stops) {
   const near = !c.isAnchor && !c.booked ? nearStop(c, stops, PLANNER.minSpread) : null;
   const used = !c.isAnchor && !c.booked ? usedElsewhere(c, stops) : null;
   const unreach = PLANNER.reachMode !== "show" && outOfReach(c, stops);
-  const hide = (near && PLANNER.hideClose) || (used && PLANNER.hideUsed) || (unreach && PLANNER.reachMode === "hide");
+  // a venue you asked for (must-visit) that is already in the tour needn't be listed again on other days,
+  // unless this day is one of its own allowed dates (flexible / queried), which are real alternatives
+  const mustAgain = !!(used && used.must && used.must.length && !(c.must && c.must.length));
+  const hide = (near && PLANNER.hideClose) || (used && PLANNER.hideUsed) || mustAgain || (unreach && PLANNER.reachMode === "hide");
   return { near, used, unreach, hide: !!hide };
 }
 
