@@ -231,6 +231,9 @@ function buildPromoterRegistry(data) {
         description: rec.description || performer.bio,
         promoter_link: rec.promoter_link || rec.url || performer.url,
         facebook: rec.facebook || normaliseFacebookUrl(performer.facebook),
+        email: rec.email || performer.email,
+        phone: rec.phone || performer.phone,
+        contact_form: rec.contact_form || performer.contact_form,
         ticketing_url:
           rec.ticketing_url || performer.ticketing_url || performer.tickets_url,
         promoter_artists: uniq(rec.promoter_artists || [], [id]),
@@ -253,6 +256,8 @@ function buildPromoterRegistry(data) {
       promoter_link: rec.promoter_link || rec.url || club.link,
       facebook: rec.facebook || normaliseFacebookUrl(club.facebook),
       email: rec.email || club.email,
+      phone: rec.phone || club.phone,
+      contact_form: rec.contact_form || club.contact_form,
       ticketing_url:
         rec.ticketing_url || club.ticketing_url || club.tickets_url,
       promoter_venues: uniq(
