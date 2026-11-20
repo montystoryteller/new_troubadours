@@ -326,7 +326,16 @@
           "type": "string"
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "facebook": {
           "type": "string",
@@ -384,7 +393,7 @@
         "isPromoter": {
           "type": "boolean",
           "default": false,
-          "description": "true when this performer also promotes events in their own right. They are then listed in the promoters directory (promoters.html) under their performer id even with no `promoters` entry, with name, bio (as description), url, facebook and ticketing_url filled in from this record. If a `promoters[id]` record exists the two are merged, promoter fields winning. The performer is listed among the promoter's artists, linking back to their performer page. Events only count as promoted when they carry the matching `promoter_id`. If the id is also a club, the club takes precedence."
+          "description": "true when this performer also promotes events in their own right. They are then listed in the promoters directory (promoters.html) under their performer id even with no `promoters` entry, with name, bio (as description), url, facebook, ticketing_url, email, phone and contact_form filled in from this record. If a `promoters[id]` record exists the two are merged, promoter fields winning. The performer is listed among the promoter's artists, linking back to their performer page. Events only count as promoted when they carry the matching `promoter_id`. If the id is also a club, the club takes precedence."
         },
         "bio": {
           "type": "string"
@@ -442,6 +451,18 @@
         },
         "instagram": {
           "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "podcast": {
           "$ref": "#/$defs/podcastUrls"
@@ -1231,7 +1252,16 @@
           "type": "string"
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "online": {
           "type": "string"
@@ -1750,7 +1780,16 @@
           "description": "Club-level YouTube trailer/promo video, shown inline in the header of the club's page in storyclub.html (after the About section). Not inherited by events at this club — specificEvents/show_dates carry their own video_trailer."
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "geocode_missing": {
           "type": "boolean"
@@ -1857,7 +1896,16 @@
           "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "url": {
           "type": "string",
@@ -1866,7 +1914,7 @@
         "isClub": {
           "type": "boolean",
           "default": false,
-          "description": "true when this promoter IS a story club: the promoters registry key is then also a `clubs[].club` id, and the club record supplies anything this record leaves out (name, description, website/facebook/tickets link, email), plus its venue and its feature_slots performers, and the venue/performers of any specific/tour/repertoire events tagged with that club, are folded into this promoter's Venues/Artists lists. A record may be as sparse as `{ \"isClub\": true }`. The reverse link is `clubs[].isPromoter`; either side alone is enough to join the two. Fields set on the promoter record itself always win over the club's."
+          "description": "true when this promoter IS a story club: the promoters registry key is then also a `clubs[].club` id, and the club record supplies anything this record leaves out (name, description, website/facebook/tickets link, email, phone, contact form), plus its venue and its feature_slots performers, and the venue/performers of any specific/tour/repertoire events tagged with that club, are folded into this promoter's Venues/Artists lists. A record may be as sparse as `{ \"isClub\": true }`. The reverse link is `clubs[].isPromoter`; either side alone is enough to join the two. Fields set on the promoter record itself always win over the club's."
         }
       },
       "additionalProperties": true
@@ -1908,6 +1956,18 @@
         "facebook_group": {
           "type": "string",
           "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "description": {
           "type": "string"
@@ -2144,6 +2204,18 @@
           "type": "string",
           "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
         },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
+        },
         "tickets_url": {
           "type": "string"
         },
@@ -2180,6 +2252,18 @@
         "facebook_group": {
           "type": "string",
           "description": "Facebook group: a bare handle/id, \"groups/Handle\", a full https://www.facebook.com/groups/... URL, or markdown \"[Handle](https://www.facebook.com/groups/Handle)\". Normalised by normaliseFacebookGroupUrl() in shared_utils.js. Independent of `facebook` — either, or both, may be set; all are shown via facebookLinkSpecs()."
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         }
       },
       "required": [
@@ -2209,6 +2293,18 @@
         },
         "venue_url": {
           "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         },
         "exceptions": {
           "type": "array",
@@ -2364,6 +2460,18 @@
         "url": {
           "type": "string",
           "description": "Publisher's website."
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address: a plain address (no `mailto:` prefix), one address only."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact telephone number as free text, e.g. \"01234 567890\" or \"+44 1234 567890\". One number only."
+        },
+        "contact_form": {
+          "type": "string",
+          "description": "URL of an online contact or enquiry form (a full https:// address), for contacts with no public email address."
         }
       },
       "required": [

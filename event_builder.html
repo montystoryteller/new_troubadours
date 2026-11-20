@@ -713,6 +713,21 @@
             </div>
 
             <div class="field-row">
+                <label>Email</label>
+                <input type="text" id="festival-email">
+            </div>
+
+            <div class="field-row">
+                <label>Phone</label>
+                <input type="tel" id="festival-phone">
+            </div>
+
+            <div class="field-row">
+                <label>Contact form</label>
+                <input type="url" id="festival-contact-form" placeholder="(optional) link to an online contact / enquiry form">
+            </div>
+
+            <div class="field-row">
                 <label>Price</label>
                 <input type="text" id="festival-price" placeholder="e.g. £45 weekend / £15 day">
             </div>
@@ -822,6 +837,21 @@
             <div class="field-row">
                 <label>Instagram</label>
                 <input type="url" id="perf-instagram">
+            </div>
+
+            <div class="field-row">
+                <label>Email</label>
+                <input type="text" id="perf-email">
+            </div>
+
+            <div class="field-row">
+                <label>Phone</label>
+                <input type="tel" id="perf-phone">
+            </div>
+
+            <div class="field-row">
+                <label>Contact form</label>
+                <input type="url" id="perf-contact-form" placeholder="(optional) link to an online contact / enquiry form">
             </div>
 
             <div class="field-row">
@@ -983,6 +1013,16 @@
             </div>
 
             <div class="field-row">
+                <label>Phone</label>
+                <input type="tel" id="venue-phone">
+            </div>
+
+            <div class="field-row">
+                <label>Contact form</label>
+                <input type="url" id="venue-contact-form" placeholder="(optional) link to an online contact / enquiry form">
+            </div>
+
+            <div class="field-row">
                 <label>Facebook</label>
                 <input type="url" id="venue-facebook">
             </div>
@@ -1138,6 +1178,16 @@
             </div>
 
             <div class="field-row">
+                <label>Phone</label>
+                <input type="tel" id="promoter-phone">
+            </div>
+
+            <div class="field-row">
+                <label>Contact form</label>
+                <input type="url" id="promoter-contact-form" placeholder="(optional) link to an online contact / enquiry form">
+            </div>
+
+            <div class="field-row">
                 <label>Venues</label>
                 <div>
                     <div id="promoter-venues-field"></div>
@@ -1164,7 +1214,7 @@
                     </div>
                     <div class="field-hint">Saved as <code>isClub</code>. The promoter id above must also be a club id
                         (<code>clubs[].club</code>): the club then supplies any name, description, website, Facebook,
-                        tickets link and email left blank here, and its venue, guest performers and tagged events feed
+                        tickets link, email, phone and contact form left blank here, and its venue, guest performers and tagged events feed
                         this promoter's Venues/Artists on the promoters page. A record can be as sparse as just the id
                         plus this flag.</div>
                     <div class="field-hint" id="promoter-isclub-hint" style="display:none;"></div>
@@ -1299,6 +1349,16 @@
             <div class="field-row">
                 <label>Email</label>
                 <input type="text" id="club-email">
+            </div>
+
+            <div class="field-row">
+                <label>Phone</label>
+                <input type="tel" id="club-phone">
+            </div>
+
+            <div class="field-row">
+                <label>Contact form</label>
+                <input type="url" id="club-contact-form" placeholder="(optional) link to an online contact / enquiry form">
             </div>
 
             <div class="field-row">
@@ -1636,7 +1696,7 @@
                     <code>festival_url</code>, <code>venue_url</code>, <code>video_trailer</code>,
                     <code>podcast_url</code>, <code>audio_url</code>, <code>episode_url</code>,
                     <code>enclosureUrl</code>, <code>yt_url</code>, <code>buy_url</code>,
-                    <code>publication_url</code>) is a full <code>http(s)://host.tld/…</code> address with no
+                    <code>publication_url</code>, <code>contact_form</code>) is a full <code>http(s)://host.tld/…</code> address with no
                     spaces. <code>facebook</code>, <code>facebook_group</code> and <code>instagram</code> may
                     also be a bare username (or <code>groups/name</code> for Facebook). Flyer and cover
                     fields are filenames and aren't checked. Report only — same rules as the pre-commit
@@ -1645,6 +1705,21 @@
                 <button class="btn-add-batch" id="enrich-urlcheck-scan-btn" disabled>Scan for malformed
                     URLs</button>
                 <div id="enrich-urlcheck-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>☎️ Malformed contact details</h3>
+                <p class="field-hint">
+                    Checks every <code>email</code> and <code>phone</code> value anywhere in the data is usable:
+                    an email should be one plain address (no <code>mailto:</code> prefix, no spaces, not a
+                    list), and a phone number should be one number made of digits, spaces and
+                    <code>+ ( ) - .</code> with 9&ndash;15 digits (an extension such as <code>ext 12</code> is
+                    allowed). <code>contact_form</code> is checked as a link by the Malformed URLs check above.
+                    Blank values are not flagged here; use Missing contact details for those.
+                </p>
+                <button class="btn-add-batch" id="enrich-contactcheck-scan-btn" disabled>Scan for malformed
+                    contact details</button>
+                <div id="enrich-contactcheck-results"></div>
             </div>
 
             <div class="enrich-section">
@@ -1846,6 +1921,25 @@
                 <button class="btn-add-batch" id="enrich-description-scan-btn" disabled>Scan for missing
                     descriptions &amp; bios</button>
                 <div id="enrich-description-results"></div>
+            </div>
+
+            <div class="enrich-section">
+                <h3>📞 Missing contact details</h3>
+                <p class="field-hint">
+                    Report only. Lists <code>venues</code>, <code>promoters</code>, <code>clubs</code>,
+                    <code>performers</code> and <code>festivals</code> that have no <code>email</code>,
+                    <code>phone</code> and/or <code>contact_form</code>. Tick which of the three to check and
+                    which record types to include, and choose whether to flag a record that is missing
+                    <em>any</em> of the ticked fields or only one that is missing <em>all</em> of them (i.e.
+                    there is no way to contact them at all). A promoter marked <code>isClub</code> inherits
+                    anything its club (or, for a performer who also promotes, that performer) already has, so it
+                    isn't flagged for a field that record supplies.
+                    Editing a flagged record means going to its own tab, same as the other gap checks.
+                </p>
+                <div id="enrich-contact-options" style="margin-bottom:8px;"></div>
+                <button class="btn-add-batch" id="enrich-contact-scan-btn" disabled>Scan for missing contact
+                    details</button>
+                <div id="enrich-contact-results"></div>
             </div>
         </div>
 
@@ -4886,6 +4980,9 @@
             ticketUrlLinkUpdaters["festival-ticket-url"]?.();
             document.getElementById("festival-website").value = match.website || "";
             document.getElementById("festival-facebook").value = match.facebook || "";
+            document.getElementById("festival-email").value = match.email || "";
+            document.getElementById("festival-phone").value = match.phone || "";
+            document.getElementById("festival-contact-form").value = match.contact_form || "";
             document.getElementById("festival-price").value = match.price || "";
             document.getElementById("festival-age-bands").value = (match.age_bands || []).join(", ");
             document.getElementById("festival-description").value = decodeParagraphBreaksForEdit(match.description);
@@ -5014,6 +5111,12 @@
             if (ticketUrl) record.ticket_url = ticketUrl;
             if (website) record.website = website;
             if (facebook) record.facebook = facebook;
+            const festivalEmailVal = document.getElementById("festival-email").value.trim();
+            if (festivalEmailVal) record.email = festivalEmailVal;
+            const festivalPhoneVal = document.getElementById("festival-phone").value.trim();
+            if (festivalPhoneVal) record.phone = festivalPhoneVal;
+            const festivalContactFormVal = document.getElementById("festival-contact-form").value.trim();
+            if (festivalContactFormVal) record.contact_form = festivalContactFormVal;
             if (price) record.price = price;
             if (ageBands) record.age_bands = ageBands.split(",").map(s => s.trim()).filter(Boolean);
             if (description) record.description = description;
@@ -5045,7 +5148,7 @@
 
         function clearFestivalForm() {
             ["festival-key", "festival-name", "festival-short-name", "festival-start-date", "festival-end-date",
-                "festival-primary-type", "festival-ticket-url", "festival-website", "festival-facebook",
+                "festival-primary-type", "festival-ticket-url", "festival-website", "festival-facebook", "festival-email", "festival-phone", "festival-contact-form",
                 "festival-price", "festival-age-bands", "festival-description"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("festival-performers-tbc").checked = false;
@@ -5412,6 +5515,9 @@
             document.getElementById("perf-facebook").value = record.facebook || "";
             document.getElementById("perf-facebook-group").value = record.facebook_group || "";
             document.getElementById("perf-instagram").value = record.instagram || "";
+            document.getElementById("perf-email").value = record.email || "";
+            document.getElementById("perf-phone").value = record.phone || "";
+            document.getElementById("perf-contact-form").value = record.contact_form || "";
             document.getElementById("perf-tickets-url").value = record.ticketing_url || "";
             ticketUrlLinkUpdaters["perf-tickets-url"]?.();
             document.getElementById("perf-aliases").value = (record.aliases || []).join(", ");
@@ -5486,6 +5592,12 @@
             if (Object.keys(merch).length) record.merch = merch;
             batch.podcastEpisodeAdditions.push(...podcastEpisodeAdditions);
             if (instagram) record.instagram = instagram;
+            const perfEmailVal = document.getElementById("perf-email").value.trim();
+            if (perfEmailVal) record.email = perfEmailVal;
+            const perfPhoneVal = document.getElementById("perf-phone").value.trim();
+            if (perfPhoneVal) record.phone = perfPhoneVal;
+            const perfContactFormVal = document.getElementById("perf-contact-form").value.trim();
+            if (perfContactFormVal) record.contact_form = perfContactFormVal;
             if (ticketsUrl) record.ticketing_url = ticketsUrl;
             if (aliasesRaw) record.aliases = aliasesRaw.split(",").map(s => s.trim()).filter(Boolean);
             if (document.getElementById("perf-musician").checked) record.musician = true;
@@ -5514,7 +5626,7 @@
 
         function clearPerformerForm() {
             ["perf-name", "perf-url", "perf-bio", "perf-type", "perf-facebook", "perf-facebook-group",
-                "perf-instagram", "perf-tickets-url", "perf-aliases"]
+                "perf-instagram", "perf-email", "perf-phone", "perf-contact-form", "perf-tickets-url", "perf-aliases"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("perf-musician").checked = false;
             document.getElementById("perf-poet").checked = false;
@@ -5536,6 +5648,8 @@
             document.getElementById("venue-tickets-url").value = record.ticketing_url || "";
             ticketUrlLinkUpdaters["venue-tickets-url"]?.();
             document.getElementById("venue-email").value = record.email || "";
+            document.getElementById("venue-phone").value = record.phone || "";
+            document.getElementById("venue-contact-form").value = record.contact_form || "";
             document.getElementById("venue-facebook").value = record.facebook || "";
             document.getElementById("venue-instagram").value = record.instagram || "";
             document.getElementById("venue-description").value = decodeParagraphBreaksForEdit(record.description);
@@ -5605,6 +5719,10 @@
             if (url) record.url = url;
             if (ticketsUrl) record.ticketing_url = ticketsUrl;
             if (email) record.email = email;
+            const venuePhoneVal = document.getElementById("venue-phone").value.trim();
+            if (venuePhoneVal) record.phone = venuePhoneVal;
+            const venueContactFormVal = document.getElementById("venue-contact-form").value.trim();
+            if (venueContactFormVal) record.contact_form = venueContactFormVal;
             if (facebook) record.facebook = facebook;
             if (instagram) record.instagram = instagram;
             if (description) record.description = description;
@@ -5627,7 +5745,7 @@
 
         function clearVenueForm() {
             ["venue-name", "venue-type", "venue-city", "venue-postcode", "venue-full-address", "venue-url",
-                "venue-tickets-url", "venue-email", "venue-facebook", "venue-instagram",
+                "venue-tickets-url", "venue-email", "venue-phone", "venue-contact-form", "venue-facebook", "venue-instagram",
                 "venue-description", "venue-latlon"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("venue-name-status").innerHTML = "";
@@ -5736,7 +5854,7 @@
         // Keys the form manages itself; anything else on an edited record
         // (e.g. a field added by hand) is carried over untouched. The legacy
         // `url` (an alias of promoter_link) is folded into promoter_link.
-        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "promoter_venues", "promoter_artists", "isClub"];
+        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "phone", "contact_form", "promoter_venues", "promoter_artists", "isClub"];
         let promoterKeyAutoValue = "";
         let promoterVenuesField, promoterArtistsField;
 
@@ -5786,6 +5904,8 @@
             document.getElementById("promoter-ticketing-url").value = match.ticketing_url || "";
             document.getElementById("promoter-facebook").value = match.facebook || "";
             document.getElementById("promoter-email").value = match.email || "";
+            document.getElementById("promoter-phone").value = match.phone || "";
+            document.getElementById("promoter-contact-form").value = match.contact_form || "";
             ["promoter-link", "promoter-ticketing-url", "promoter-facebook"].forEach(id => ticketUrlLinkUpdaters[id]?.());
             buildPromoterListFields();
             populatePerformerIdListField(promoterVenuesField, match.promoter_venues, "venue");
@@ -5854,6 +5974,10 @@
             if (link) record.promoter_link = link;
             if (facebook) record.facebook = facebook;
             if (email) record.email = email;
+            const promoterPhoneVal = document.getElementById("promoter-phone").value.trim();
+            if (promoterPhoneVal) record.phone = promoterPhoneVal;
+            const promoterContactFormVal = document.getElementById("promoter-contact-form").value.trim();
+            if (promoterContactFormVal) record.contact_form = promoterContactFormVal;
             const venues = readPerformerIdListField(promoterVenuesField);
             const artists = readPerformerIdListField(promoterArtistsField);
             if (venues.length) record.promoter_venues = venues;
@@ -5879,7 +6003,7 @@
         }
 
         function clearPromoterForm() {
-            ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-email"]
+            ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-email", "promoter-phone", "promoter-contact-form"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("promoter-name-status").innerHTML = "";
             document.getElementById("promoter-isclub").checked = false;
@@ -5894,7 +6018,7 @@
         // form manages itself; anything else on an edited record
         // (feature_slots, location, geocode_missing, themes, legacy flyers…)
         // is carried over untouched.
-        const CLUB_FORM_KEYS = ["id", "name", "club", "category", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "ticketing_url", "email", "online", "isPromoter"];
+        const CLUB_FORM_KEYS = ["id", "name", "club", "category", "schedule", "exceptions", "time", "price", "venue_id", "description", "club_flyer", "promoter_id", "link", "facebook", "instagram", "ticketing_url", "email", "phone", "contact_form", "online", "isPromoter"];
         let clubKeyAutoValue = "";
         let clubVenueField;
 
@@ -5943,6 +6067,8 @@
             document.getElementById("club-instagram").value = match.instagram || "";
             document.getElementById("club-tickets-url").value = match.tickets_url || match.ticketing_url || "";
             document.getElementById("club-email").value = match.email || "";
+            document.getElementById("club-phone").value = match.phone || "";
+            document.getElementById("club-contact-form").value = match.contact_form || "";
             document.getElementById("club-flyer").value = match.club_flyer || "";
             document.getElementById("club-online").checked = !!match.online;
             document.getElementById("club-is-promoter").checked = !!match.isPromoter;
@@ -6014,6 +6140,8 @@
             if (text("club-instagram")) record.instagram = text("club-instagram");
             if (text("club-tickets-url")) record.ticketing_url = text("club-tickets-url");
             if (text("club-email")) record.email = text("club-email");
+            if (text("club-phone")) record.phone = text("club-phone");
+            if (text("club-contact-form")) record.contact_form = text("club-contact-form");
             if (document.getElementById("club-online").checked) record.online = true;
             if (document.getElementById("club-is-promoter").checked) record.isPromoter = true;
             if (editing && editing.original) {
@@ -6038,7 +6166,7 @@
 
         function clearClubForm() {
             ["club-key", "club-name", "club-description", "club-schedule", "club-exceptions", "club-time", "club-price", "club-promoter",
-                "club-link", "club-facebook", "club-instagram", "club-tickets-url", "club-email", "club-flyer"]
+                "club-link", "club-facebook", "club-instagram", "club-tickets-url", "club-email", "club-phone", "club-contact-form", "club-flyer"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("club-category").value = "";
             document.getElementById("club-online").checked = false;
@@ -7063,12 +7191,14 @@
             { group: "Problems", label: "Unparseable or implausible dates", btn: "enrich-datequality-scan-btn", boxes: ["enrich-datequality-results"] },
             { group: "Problems", label: "Invalid dates in other fields", btn: "enrich-datefields-scan-btn", boxes: ["enrich-datefields-results"] },
             { group: "Problems", label: "Malformed URLs", btn: "enrich-urlcheck-scan-btn", boxes: ["enrich-urlcheck-results"] },
+            { group: "Problems", label: "Malformed contact details", btn: "enrich-contactcheck-scan-btn", boxes: ["enrich-contactcheck-results"] },
             { group: "Problems", label: "Missing or malformed coordinates", btn: "enrich-latlon-scan-btn", boxes: ["enrich-latlon-results"] },
             { group: "Problems", label: "Missing postcodes", btn: "enrich-postcode-scan-btn", boxes: ["enrich-postcode-results", "enrich-postcode-unresolved"] },
             { group: "Problems", label: "Possible duplicate venues", btn: "enrich-dupe-scan-btn", boxes: ["enrich-dupe-results"] },
             { group: "Gaps to fill", label: "Missing event IDs", btn: "enrich-eventid-scan-btn", boxes: ["enrich-eventid-results"] },
             { group: "Gaps to fill", label: "Missing tour & show date event IDs", btn: "enrich-tourdate-eventid-scan-btn", boxes: ["enrich-tourdate-eventid-results"] },
             { group: "Gaps to fill", label: "Missing descriptions & bios", btn: "enrich-description-scan-btn", boxes: ["enrich-description-results"] },
+            { group: "Gaps to fill", label: "Missing contact details (email / phone / contact form)", btn: "enrich-contact-scan-btn", boxes: ["enrich-contact-results"] },
             { group: "Gaps to fill", label: "Promoter venue/performer references", btn: "enrich-promoter-scan-btn", boxes: ["enrich-promoter-results"] },
             { group: "Gaps to fill", label: "Missing promoter venues & artists", btn: "enrich-promoter-fill-scan-btn", boxes: ["enrich-promoter-fill-results"] },
             { group: "Suggestions", label: "Formatting cleanup", btn: "enrich-format-scan-btn", boxes: ["enrich-format-results"] },
@@ -7221,6 +7351,7 @@
                 document.getElementById("enrich-datequality-scan-btn").disabled = false;
                 document.getElementById("enrich-datefields-scan-btn").disabled = false;
                 document.getElementById("enrich-urlcheck-scan-btn").disabled = false;
+                document.getElementById("enrich-contactcheck-scan-btn").disabled = false;
                 document.getElementById("enrich-age-scan-btn").disabled = false;
                 document.getElementById("enrich-price-scan-btn").disabled = false;
                 document.getElementById("enrich-format-scan-btn").disabled = false;
@@ -7228,6 +7359,7 @@
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = false;
                 document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = false;
                 document.getElementById("enrich-description-scan-btn").disabled = false;
+                document.getElementById("enrich-contact-scan-btn").disabled = false;
                 document.getElementById("enrich-dupkeys-scan-btn").disabled = false;
                 document.getElementById("enrich-health-btn").disabled = false;
                 document.getElementById("enrich-multidate-eventid-scan-btn").disabled = false;
@@ -7250,6 +7382,7 @@
                 document.getElementById("enrich-datequality-scan-btn").disabled = true;
                 document.getElementById("enrich-datefields-scan-btn").disabled = true;
                 document.getElementById("enrich-urlcheck-scan-btn").disabled = true;
+                document.getElementById("enrich-contactcheck-scan-btn").disabled = true;
                 document.getElementById("enrich-age-scan-btn").disabled = true;
                 document.getElementById("enrich-price-scan-btn").disabled = true;
                 document.getElementById("enrich-format-scan-btn").disabled = true;
@@ -7257,6 +7390,7 @@
                 document.getElementById("enrich-eventid-clash-scan-btn").disabled = true;
                 document.getElementById("enrich-tourdate-eventid-scan-btn").disabled = true;
                 document.getElementById("enrich-description-scan-btn").disabled = true;
+                document.getElementById("enrich-contact-scan-btn").disabled = true;
                 document.getElementById("enrich-dupkeys-scan-btn").disabled = true;
                 document.getElementById("enrich-health-btn").disabled = true;
                 document.getElementById("enrich-multidate-eventid-scan-btn").disabled = true;
@@ -8343,7 +8477,7 @@
 
         const URL_SCAN_KEYS = new Set(["url", "link", "website", "ticket_url", "ticketing_url", "ticketing_url",
             "promoter_link", "event_url", "festival_url", "venue_url", "video_trailer", "podcast_url",
-            "audio_url", "episode_url", "enclosureUrl", "yt_url", "buy_url", "publication_url"]);
+            "audio_url", "episode_url", "enclosureUrl", "yt_url", "buy_url", "publication_url", "contact_form"]);
         const SOCIAL_SCAN_KEYS = new Set(["facebook", "facebook_group", "instagram"]);
         const FB_PATH_RE = /^(?:groups|pages|people)\/[\w.\-%]+\/?$/i;
 
@@ -8398,6 +8532,69 @@
                 return;
             }
             renderValidationResults(resultsEl, collectUrlIssues(enrichedData), "No malformed URLs found.");
+        });
+
+        // -- Malformed contact details (email / phone shape) -----------------
+        function emailScanProblem(value) {
+            if (value === null || value === undefined || value === "") return "";
+            if (typeof value !== "string") return `should be a string, not ${Array.isArray(value) ? "an array" : typeof value}`;
+            const v = value.trim();
+            if (!v) return "";
+            if (v !== value) return "has leading/trailing whitespace";
+            if (/^mailto:/i.test(v)) return "has a mailto: prefix (store the plain address)";
+            if (/[,;]|\s+(?:and|or|\/)\s+/i.test(v)) return "looks like more than one address (keep one)";
+            if (/\s/.test(v)) return "contains a space";
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@.]{2,}$/.test(v)) return "not a valid email address";
+            return "";
+        }
+
+        function phoneScanProblem(value) {
+            if (value === null || value === undefined || value === "") return "";
+            if (typeof value !== "string") return `should be a string, not ${Array.isArray(value) ? "an array" : typeof value}`;
+            const v = value.trim();
+            if (!v) return "";
+            if (v !== value) return "has leading/trailing whitespace";
+            if (/^tel:/i.test(v)) return "has a tel: prefix (store the plain number)";
+            if (/[,;\/]|\s+(?:and|or)\s+/i.test(v)) return "looks like more than one number (keep one)";
+            const main = v.replace(/\s*(?:ext\.?|extension|x)\s*\d+\s*$/i, "");
+            if (/[A-Za-z]/.test(main)) return "contains letters";
+            if (/[^\d\s+().\-]/.test(main)) return "contains unexpected characters";
+            const digits = main.replace(/\D/g, "").length;
+            if (digits < 9 || digits > 15) return `has ${digits} digits (expected 9–15)`;
+            return "";
+        }
+
+        function collectContactIssues(data) {
+            const out = [];
+            const walk = (node, where, name) => {
+                if (Array.isArray(node)) {
+                    node.forEach((v, i) => walk(v, `${where}[${i}]`, name));
+                } else if (node && typeof node === "object") {
+                    Object.entries(node).forEach(([k, v]) => {
+                        if (k === "email" || k === "phone") {
+                            const issue = k === "email" ? emailScanProblem(v) : phoneScanProblem(v);
+                            if (issue) out.push({ where, name, field: k, value: v, issue });
+                        } else {
+                            walk(v, `${where}.${k}`, name);
+                        }
+                    });
+                }
+            };
+            Object.entries(data).forEach(([bucket, coll]) => {
+                if (coll && typeof coll === "object") {
+                    scanEntries(coll).forEach(([key, rec]) => walk(rec, `${bucket}[${key}]`, scanName(rec)));
+                }
+            });
+            return out;
+        }
+
+        document.getElementById("enrich-contactcheck-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-contactcheck-results");
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            renderValidationResults(resultsEl, collectContactIssues(enrichedData), "No malformed emails or phone numbers found.");
         });
 
         // -- Possible age ratings (report only — events have no stable id) ------
@@ -9697,6 +9894,139 @@
                 return;
             }
             addResultsCollapseToggle(resultsEl, totalMissing, "missing description");
+        });
+
+        // -- Missing contact details (email / phone / contact_form) ---------
+        // Report only. Which fields and record types to check is chosen in
+        // #enrich-contact-options (built just below). A promoter flagged
+        // isClub inherits what its club record has (see promoters.js), so
+        // it's checked against the merged record rather than on its own.
+        const CONTACT_SCAN_FIELDS = [
+            { key: "email", label: "email" },
+            { key: "phone", label: "phone" },
+            { key: "contact_form", label: "contact form" },
+        ];
+        const CONTACT_SCAN_GROUPS = [
+            { key: "venues", label: "Venues", isDict: true, name: r => r.name },
+            { key: "promoters", label: "Promoters", isDict: true, name: r => r.name },
+            { key: "clubs", label: "Clubs", isDict: false, name: r => r.name },
+            { key: "performers", label: "Performers", isDict: true, name: r => r.name },
+            { key: "festivals", label: "Festivals", isDict: true, name: r => r.name },
+        ];
+
+        (function buildContactScanOptions() {
+            const box = document.getElementById("enrich-contact-options");
+            const addRow = (title, items, idPrefix) => {
+                const row = document.createElement("div");
+                row.style.cssText = "display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:4px 0;";
+                const t = document.createElement("strong");
+                t.textContent = title;
+                row.appendChild(t);
+                items.forEach(it => {
+                    const lab = document.createElement("label");
+                    lab.style.cssText = "font-weight:normal;display:inline-flex;align-items:center;gap:4px;";
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.checked = true;
+                    cb.id = `${idPrefix}-${it.key}`;
+                    lab.appendChild(cb);
+                    lab.appendChild(document.createTextNode(it.label));
+                    row.appendChild(lab);
+                });
+                box.appendChild(row);
+            };
+            addRow("Check for:", CONTACT_SCAN_FIELDS, "enrich-contact-field");
+            addRow("Record types:", CONTACT_SCAN_GROUPS, "enrich-contact-type");
+            const modeRow = document.createElement("div");
+            modeRow.style.cssText = "margin:4px 0;";
+            modeRow.innerHTML = '<strong>Flag a record if it is missing:</strong> ' +
+                '<select id="enrich-contact-mode">' +
+                '<option value="any">any of the ticked fields</option>' +
+                '<option value="all">all of the ticked fields</option></select>';
+            box.appendChild(modeRow);
+        })();
+
+        document.getElementById("enrich-contact-scan-btn").addEventListener("click", () => {
+            const resultsEl = document.getElementById("enrich-contact-results");
+            resultsEl.innerHTML = "";
+            if (!enrichedData) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No data to scan.</div>';
+                return;
+            }
+            const fields = CONTACT_SCAN_FIELDS.filter(f => document.getElementById(`enrich-contact-field-${f.key}`).checked);
+            const groups = CONTACT_SCAN_GROUPS.filter(g => document.getElementById(`enrich-contact-type-${g.key}`).checked);
+            const mode = document.getElementById("enrich-contact-mode").value;
+            if (!fields.length || !groups.length) {
+                resultsEl.innerHTML = '<div class="enrich-empty">Tick at least one field and one record type to scan.</div>';
+                return;
+            }
+            const present = v => (typeof v === "string" ? !!v.trim() : !!v);
+            const clubsBySlug = {};
+            (enrichedData.clubs || []).forEach(c => { if (c && c.club) clubsBySlug[c.club] = c; });
+            const performersById = enrichedData.performers || {};
+            const effective = (g, id, r) => {
+                if (g.key !== "promoters") return r;
+                // Same inheritance as buildPromoterRegistry() in promoters.js: a club (via isClub on the
+                // promoter or isPromoter on the club) wins, otherwise a performer with isPromoter.
+                const club = (r.isClub || (clubsBySlug[id] && clubsBySlug[id].isPromoter)) ? clubsBySlug[id] : null;
+                const perf = !club && performersById[id] && performersById[id].isPromoter ? performersById[id] : null;
+                const base = club || perf;
+                if (!base) return r;
+                const merged = Object.assign({}, base);
+                Object.keys(r).forEach(k => { if (present(r[k])) merged[k] = r[k]; });
+                return merged;
+            };
+            let total = 0;
+            groups.forEach(g => {
+                const coll = enrichedData[g.key];
+                if (!coll) return;
+                const entries = g.isDict ? Object.entries(coll) : coll.map((r, i) => [i, r]);
+                if (!entries.length) return;
+                const flagged = [];
+                entries.forEach(([id, r]) => {
+                    if (!r || typeof r !== "object") return;
+                    const eff = effective(g, id, r);
+                    const lacking = fields.filter(f => !present(eff[f.key]));
+                    if (mode === "all" ? lacking.length === fields.length : lacking.length > 0) {
+                        flagged.push([id, r, lacking]);
+                    }
+                });
+                if (!flagged.length) return;
+                total += flagged.length;
+
+                const header = document.createElement("div");
+                header.className = "enrich-result-group-header";
+                header.textContent = `${g.label} — ${flagged.length} of ${entries.length} missing ` +
+                    fields.map(f => f.label).join(mode === "all" ? " and " : " / ") +
+                    (mode === "all" ? "" : " (any)");
+                resultsEl.appendChild(header);
+
+                flagged.forEach(([id, r, lacking]) => {
+                    const row = document.createElement("div");
+                    row.className = "enrich-result-row";
+                    const main = document.createElement("div");
+                    main.className = "enrich-result-main";
+                    const nm = document.createElement("div");
+                    nm.className = "enrich-result-name";
+                    nm.textContent = (g.name(r) || "(untitled)") + " ";
+                    const idSpan = document.createElement("span");
+                    idSpan.style.cssText = "font-weight:normal;color:#999;";
+                    idSpan.textContent = `(${g.isDict ? id : (r.club || "#" + id)})`;
+                    nm.appendChild(idSpan);
+                    const miss = document.createElement("div");
+                    miss.className = "field-hint";
+                    miss.textContent = "Missing: " + lacking.map(f => f.label).join(", ");
+                    main.appendChild(nm);
+                    main.appendChild(miss);
+                    row.appendChild(main);
+                    resultsEl.appendChild(row);
+                });
+            });
+            if (!total) {
+                resultsEl.innerHTML = '<div class="enrich-empty">No records are missing the selected contact details.</div>';
+                return;
+            }
+            addResultsCollapseToggle(resultsEl, total, "flagged record");
         });
 
         // -- Possible structured pricing (writes into loaded data directly — --
