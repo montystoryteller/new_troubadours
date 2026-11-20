@@ -14,7 +14,7 @@ const { roadMiles, fmtMiles, AVG_MPH } = TourSupport;
 
 const MGR = {
   venues: {}, plan: null, groups: [], hotels: null,
-  pickups: [], dropHome: false, stays: {},
+  pickups: [], dropHome: false, stays: {}, notes: {}, anyGap: false, mph: AVG_MPH,
   after: 60, trigger: 90, brands: { PI: true, TL: true },
   routed: new Map(), useRouted: false, // "lat,lon>lat,lon" -> { miles, mins }
 };
@@ -31,7 +31,7 @@ function leg(a, b) {
   const r = MGR.useRouted ? MGR.routed.get(pkey(a, b)) : null;
   if (r) return { miles: r.miles, mins: r.mins, routed: true };
   const miles = roadMiles(a, b);
-  return miles == null ? null : { miles, mins: (miles / AVG_MPH) * 60, routed: false };
+  return miles == null ? null : { miles, mins: (miles / MGR.mph) * 60, routed: false };
 }
 const legText = (l) => (l ? `${fmtMiles(l.miles)}, ${fmtMins(l.mins)}${l.routed ? " (routed)" : ""}` : "");
 
@@ -57,10 +57,14 @@ function loadPlan(plan, from) {
   const m = plan.manager || {};
   MGR.pickups = Array.isArray(m.pickups) ? m.pickups.filter((p) => placeLL(p)).map((p) => ({ label: String(p.label || ""), lat: Number(p.lat), lon: Number(p.lon), place: String(p.place || ""), time: String(p.time || "") })) : [];
   MGR.dropHome = !!m.dropHome;
+  MGR.notes = m.notes && typeof m.notes === "object" ? m.notes : {};
   MGR.stays = m.stays && typeof m.stays === "object" ? m.stays : {};
   const s = m.settings || {};
   MGR.after = Math.min(240, Math.max(15, parseInt(s.after, 10) || 60));
   MGR.trigger = Math.min(600, Math.max(30, parseInt(s.trigger, 10) || 90));
+  MGR.anyGap = !!s.anyGap;
+  MGR.mph = Math.min(80, Math.max(20, parseInt(s.mph, 10) || AVG_MPH));
+  $("anyGap").checked = MGR.anyGap; $("mphIn").value = MGR.mph;
   MGR.brands = { PI: s.brands ? s.brands.PI !== false : true, TL: s.brands ? s.brands.TL !== false : true };
   $("afterMins").value = MGR.after; $("triggerMins").value = MGR.trigger;
   $("brandPI").checked = MGR.brands.PI; $("brandTL").checked = MGR.brands.TL; $("dropHome").checked = MGR.dropHome;
@@ -102,7 +106,7 @@ function stayOptions(a, b) {
   const brandOn = (h) => MGR.brands[h.b];
   const scored = MGR.hotels.filter(brandOn).map((h) => {
     const ll = [h.lat, h.lon], ah = roadMiles(a, ll), hb = roadMiles(ll, b);
-    return { h, ah, hb, ahMins: (ah / AVG_MPH) * 60, hbMins: (hb / AVG_MPH) * 60 };
+    return { h, ah, hb, ahMins: (ah / MGR.mph) * 60, hbMins: (hb / MGR.mph) * 60 };
   });
   const towards = scored.filter((x) => x.hb < ab && x.ah + x.hb <= ab * 1.3 + 3);
   const list = towards.filter((x) => x.ahMins <= MGR.after).sort((x, y) => x.hb - y.hb).slice(0, 3);
@@ -135,7 +139,7 @@ function buildGroup(g) {
       const a = llOf(prevPick.venue_id), l = leg(a, ll), stay = MGR.stays[prevPick.date];
       const d1 = parseKey(prevPick.date), d2 = parseKey(pk.date);
       const nights = d1 && d2 ? Math.round((d2 - d1) / 86400000) : 0;
-      const needed = nights >= 1 && l && l.mins > MGR.trigger && a && ll && a[0] !== ll[0];
+      const needed = nights >= 1 && (nights === 1 || MGR.anyGap) && l && l.mins > MGR.trigger && a && ll && a[0] !== ll[0];
       if (stay && nights >= 1) {
         const h = [stay.lat, stay.lon];
         dayOf(prevPick.date).items.push({ type: "sleep", stay, date: prevPick.date, l1: leg(a, h), l2: leg(h, ll), to: pk });
@@ -159,13 +163,18 @@ function buildGroup(g) {
 function addrOf(v) { return [v.full_address || v.name, v.city, v.postcode].filter(Boolean).join(", "); }
 const dayName = (k) => { const d = parseKey(k); return d ? d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) : k; };
 
+const noteKey = (pk) => `${pk.date}|${pk.venue_id}`;
+const runText = () => MGR.groups.map((g) => groupText(g, buildGroup(g))).join("\n");
 function groupText(g, days) {
   const lines = [`${g.name}`, ""];
   days.forEach((d) => {
     lines.push(dayName(d.date));
     d.items.forEach((it) => {
       const lg = (l) => (l ? ` [${legText(l)}]` : "");
-      if (it.type === "gig") lines.push(`  ${it.pk.time ? it.pk.time + " " : ""}GIG: ${it.pk.name || it.v.name} — ${addrOf(it.v)}${lg(it.leg)}${it.pk.booked ? " ✓ booked" : ""}`);
+      if (it.type === "gig") {
+        lines.push(`  ${it.pk.time ? it.pk.time + " " : ""}GIG: ${it.pk.name || it.v.name} — ${addrOf(it.v)}${lg(it.leg)}${it.pk.booked ? " ✓ booked" : ""}`);
+        const note = MGR.notes[noteKey(it.pk)]; if (note) lines.push(`      Notes: ${note}`);
+      }
       else if (it.type === "sleep") lines.push(`  SLEEP: ${it.stay.n}${it.stay.t ? ", " + it.stay.t : ""} (${legText(it.l1)} after the gig; then ${legText(it.l2)} to the next gig)`);
       else if (it.type === "suggest") lines.push(`  (long leg to the next gig: ${legText(it.leg)} — overnight not chosen yet)`);
       else lines.push(`  ${it.text}${lg(it.leg)}`);
@@ -180,11 +189,9 @@ function renderAll() {
   box.textContent = "";
   $("runActions").textContent = "";
   if (!MGR.plan || !MGR.groups.length) return;
-  const texts = [];
   let totalMiles = 0, totalGigs = 0;
   MGR.groups.forEach((g) => {
     const days = buildGroup(g);
-    texts.push(groupText(g, days));
     const wrap = el("div", "run-group");
     if (MGR.groups.length > 1) wrap.appendChild(el("h4", null, g.name));
     days.forEach((d) => {
@@ -199,6 +206,11 @@ function renderAll() {
           lineEl.appendChild(document.createTextNode(` — ${addrOf(it.v)}`));
           if (it.leg) day.appendChild(el("div", "run-leg", `↳ from ${it.from || "start"}: ${legText(it.leg)}`));
           day.appendChild(lineEl);
+          const nk = noteKey(it.pk), note = el("input", "run-note"); note.type = "text"; note.value = MGR.notes[nk] || "";
+          note.placeholder = "Notes: load-in, soundcheck, contact…"; note.setAttribute("aria-label", `Notes for ${it.pk.name || it.v.name}`);
+          const printed = el("div", "run-note-print", MGR.notes[nk] ? "Notes: " + MGR.notes[nk] : "");
+          note.addEventListener("input", () => { if (note.value.trim()) MGR.notes[nk] = note.value; else delete MGR.notes[nk]; printed.textContent = note.value.trim() ? "Notes: " + note.value : ""; });
+          day.appendChild(note); day.appendChild(printed);
         } else if (it.type === "suggest") renderSuggest(day, it);
         else if (it.type === "sleep") renderSleep(day, it);
         else {
@@ -212,10 +224,9 @@ function renderAll() {
   });
   box.appendChild(el("div", "run-totals", `${totalGigs} gig${totalGigs === 1 ? "" : "s"} · ${fmtMiles(totalMiles)} of driving${MGR.useRouted ? " (routed where fetched)" : " (estimates)"}`));
   const act = $("runActions");
-  const full = texts.join("\n");
   const mk = (t, fn) => { const b = el("button", "mgr-btn", t); b.type = "button"; b.addEventListener("click", fn); act.appendChild(b); return b; };
-  const copy = mk("📋 Copy run sheet", async () => { try { await navigator.clipboard.writeText(full); copy.textContent = "Copied ✓"; } catch (e) { copy.textContent = "Copy failed"; } });
-  mk("⬇ Download run sheet (.txt)", () => TourSupport.saveText(full, "run-sheet.txt", "text/plain"));
+  const copy = mk("📋 Copy run sheet", async () => { try { await navigator.clipboard.writeText(runText()); copy.textContent = "Copied ✓"; } catch (e) { copy.textContent = "Copy failed"; } });
+  mk("⬇ Download run sheet (.txt)", () => TourSupport.saveText(runText(), "run-sheet.txt", "text/plain"));
   mk("🖨 Print", () => window.print());
   mk("💾 Save plan with logistics", saveManagerPlan);
 }
@@ -227,7 +238,7 @@ function renderSuggest(day, it) {
   it.opts.list.forEach((x) => {
     const b = el("button", "mgr-btn small", `Stay: ${x.h.n}${x.h.t ? ", " + x.h.t : ""} — ${fmtMins(x.ahMins)} then ${fmtMins(x.hbMins)}`);
     b.type = "button";
-    b.addEventListener("click", () => { MGR.stays[it.date] = { b: x.h.b, n: x.h.n, t: x.h.t || "", lat: x.h.lat, lon: x.h.lon }; renderAll(); });
+    b.addEventListener("click", () => { MGR.stays[it.date] = { b: x.h.b, n: x.h.n, t: x.h.t || "", lat: x.h.lat, lon: x.h.lon }; renderAll(); routeMissing(); });
     box.appendChild(b);
   });
   day.appendChild(box);
@@ -239,7 +250,7 @@ function renderSleep(day, it) {
   const a = el("a", null, "Find on the hotel's site / map ↗"); a.href = `https://www.google.com/maps/search/?api=1&query=${q}`; a.target = "_blank"; a.rel = "noopener";
   box.appendChild(a); box.appendChild(document.createTextNode(" "));
   const rm = el("button", "mgr-btn small", "Remove"); rm.type = "button";
-  rm.addEventListener("click", () => { delete MGR.stays[it.date]; renderAll(); });
+  rm.addEventListener("click", () => { delete MGR.stays[it.date]; renderAll(); routeMissing(); });
   box.appendChild(rm);
   day.appendChild(box);
 }
@@ -247,8 +258,8 @@ function renderSleep(day, it) {
 // ── save / handover ───────────────────────────────────────────────────────
 function saveManagerPlan() {
   const out = { ...MGR.plan, manager: {
-    pickups: MGR.pickups, dropHome: MGR.dropHome, stays: MGR.stays,
-    settings: { after: MGR.after, trigger: MGR.trigger, brands: MGR.brands },
+    pickups: MGR.pickups, dropHome: MGR.dropHome, stays: MGR.stays, notes: MGR.notes,
+    settings: { after: MGR.after, trigger: MGR.trigger, brands: MGR.brands, anyGap: MGR.anyGap, mph: MGR.mph },
   } };
   TourSupport.saveText(JSON.stringify(out, null, 2), `tour-plan-with-logistics.json`, "application/json");
 }
@@ -290,6 +301,8 @@ function allLegPairs() {
   });
   return [...pairs.entries()];
 }
+/** When real times are in use, fetch any legs that have appeared since (e.g. around a newly chosen hotel). */
+function routeMissing() { if (MGR.useRouted && $("orsKey").value.trim()) getRoutes(); }
 async function getRoutes() {
   const key = $("orsKey").value.trim(), st = $("orsStatus");
   if (!key) { st.textContent = "Paste your OpenRouteService key first."; return; }
@@ -336,12 +349,15 @@ async function initManager() {
   try { handover = JSON.parse(localStorage.getItem(HANDOVER_KEY) || "null"); } catch (e) { /* ignore */ }
   if (handover && handover.format === "new-troubadours-tour-plan") {
     $("mgrFromPlanner").hidden = false;
-    $("mgrFromPlanner").addEventListener("click", () => { try { loadPlan(handover, "Plan loaded from the Tour Planner."); } catch (e) { setStatus(e.message, true); } });
-    if (/[?&]from=planner/.test(location.search)) { try { loadPlan(handover, "Plan loaded from the Tour Planner."); } catch (e) { setStatus(e.message, true); } }
+    const useHandover = () => { try { loadPlan(handover, "Plan loaded from the Tour Planner."); localStorage.removeItem(HANDOVER_KEY); } catch (e) { setStatus(e.message, true); } };
+    $("mgrFromPlanner").addEventListener("click", useHandover);
+    if (/[?&]from=planner/.test(location.search)) useHandover(); // the copy kept in browser storage is removed once used
   }
   $("mgrFile").addEventListener("change", (e) => readFile(e.target.files[0], (p) => loadPlan(p, "Plan file loaded.")));
   $("hotelFile").addEventListener("change", (e) => readFile(e.target.files[0], (l) => setHotels(l, "your file")));
   const num = (id, key, lo, hi) => $(id).addEventListener("input", () => { const n = parseInt($(id).value, 10); if (Number.isFinite(n)) { MGR[key] = Math.min(hi, Math.max(lo, n)); renderAll(); } });
+  num("mphIn", "mph", 20, 80);
+  $("anyGap").addEventListener("change", () => { MGR.anyGap = $("anyGap").checked; renderAll(); });
   num("afterMins", "after", 15, 240); num("triggerMins", "trigger", 30, 600);
   $("brandPI").addEventListener("change", () => { MGR.brands.PI = $("brandPI").checked; renderAll(); });
   $("brandTL").addEventListener("change", () => { MGR.brands.TL = $("brandTL").checked; renderAll(); });

@@ -17,6 +17,7 @@ tests/run_new.sh quickstart    # one test (file name in tests/new/, without .js)
 | `manager` | Tour Manager: plan handover from the planner, pickups, hotel suggestions (drive up to N min towards the next gig, wrong-way hotels never offered, clear message when nothing fits), routed times (OpenRouteService stubbed), save/reload with logistics, staged plans |
 | `rail` | Constraint rail: chips add one panel each before a build, jump and show counts after, pool-only chips hidden elsewhere |
 | `must_once` | A required venue already in the tour isn't listed again on other days |
+| `improvements` | Save plan doesn't change the stages on screen; phone action bar; handover copy cleared; overnights only for next-day gigs unless ticked; mph setting; gig notes saved and exported; real drive times refetched around a newly chosen hotel |
 | `gigs_and_plan` | Booked / queried / pencilled must-visits, a 3-night run, Save plan and Load plan round trip |
 
 Some counts depend on today's date, so these tests assert behaviour, not fixed numbers.

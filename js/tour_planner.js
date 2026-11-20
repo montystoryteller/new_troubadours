@@ -463,6 +463,12 @@ function syncQuickStart() {
   more.hidden = false; // the rail of "add to your tour" chips stays; only "Show all" goes once everything is showing
   if (all) all.hidden = !quick;
   syncRail();
+  syncActionBar();
+}
+/** The small-screen action bar: Develop (or "Develop stage N") and Save plan, always in reach. */
+function syncActionBar() {
+  const b = document.getElementById("barBuild");
+  if (b) b.textContent = currentMode() === "pool" && PLANNER.stageIdx >= 0 ? `Develop stage ${PLANNER.stageIdx + 1}` : "Develop tour";
 }
 function showMoreOptions() {
   PLANNER.moreOptions = true;
@@ -2709,9 +2715,14 @@ function gatherPlan() {
 
 /** The plan as saved to a file: the current set-up plus, when staging, every stage. */
 function planForFile() {
-  commitCurrentStage();
   const plan = gatherPlan();
-  if (PLANNER.stageIdx >= 0) plan.stages = { idx: PLANNER.stageIdx, list: PLANNER.stages };
+  if (PLANNER.stageIdx >= 0) {
+    // saving a file must not change what is on screen: a stage already in the list is refreshed in the copy;
+    // a new stage in progress stays the file's working state (it is not turned into a saved stage)
+    const list = PLANNER.stages.slice();
+    if (currentMode() === "pool" && hasPicks() && PLANNER.stageIdx < list.length) list[PLANNER.stageIdx] = currentStageSnapshot();
+    plan.stages = { idx: PLANNER.stageIdx, list };
+  }
   return plan;
 }
 /** Hand the plan to the Tour Manager page (same browser, via local storage) and open it. */
@@ -2990,6 +3001,8 @@ function stageExport() {
   TourSupport.saveText(lines.join("\n"), "tour-stages.txt", "text/plain");
 }
 function renderStages() {
+  syncActionBar();
+  syncRail();
   const box = document.getElementById("stageBox");
   if (!box) return;
   box.textContent = "";
@@ -3080,6 +3093,8 @@ async function initPlanner() {
   attachDualRange();
   initClash();
   document.getElementById("openManager").addEventListener("click", openInManager);
+  document.getElementById("barBuild").addEventListener("click", () => document.getElementById("buildTour").click());
+  document.getElementById("barSave").addEventListener("click", () => document.getElementById("planSave").click());
   renderStages();
   document.getElementById("moreOptions").addEventListener("click", showMoreOptions);
   document.querySelectorAll("#constraintRail .rail-chip").forEach((b) => b.addEventListener("click", () => railClick(b.dataset.rail)));

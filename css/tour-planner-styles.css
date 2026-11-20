@@ -313,3 +313,12 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .rail-chip:hover { background: #f5f7f8; }
 .rail-chip.on { border-color: #2e7d32; background: #e8f5e9; font-weight: 600; }
 .rail-chip:focus-visible { outline: 2px solid #1565c0; outline-offset: 2px; }
+
+/* small screens: the main actions stay in reach at the bottom */
+.action-bar { display: none; }
+@media (max-width: 700px) {
+  .action-bar { display: flex; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; padding: 8px 12px; background: #fff; border-top: 1px solid #cfd8dc; z-index: 50; }
+  .action-bar button { flex: 1 1 auto; }
+  body.page-tour-planner { padding-bottom: 64px; }
+}
+.action-bar #barSave { background: #fff; color: #2e7d32; border: 1px solid #81c784; flex: 0 1 38%; }

@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611200100">
+    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611201901">
 </head>
 
 <body class="page-tour-manager">
@@ -35,6 +35,15 @@
     <h1>Tour Manager</h1>
     <h2 class="tour-page-subtitle">Take a tour plan from the Tour Planner and work out the logistics: pickups, drive times,
         overnight stops and a run sheet.</h2>
+
+    <details class="mgr-help">
+        <summary>How this works</summary>
+        <p>The Tour Planner decides <em>where and when</em>; the Tour Manager works out <em>how you get there</em>. Build your tour in the planner, press
+            <strong>Open in tour manager</strong> (or save the plan file and open it here). Add pickups if you're collecting people, and the run sheet shows each
+            day's legs with miles and drive times. If a leg to tomorrow's gig is long, it suggests a Premier Inn or Travelodge up to your chosen drive time
+            after the gig, towards the next one. Everything you add is saved into the plan file with <strong>Save plan with logistics</strong>, and the planner
+            ignores it. Nothing here is a booking, and drive times are estimates unless you fetch real ones.</p>
+    </details>
 
     <p id="mgrLoading" class="loading-state">Loading venues…</p>
 
@@ -71,6 +80,7 @@
                 <label>Drive up to <input id="afterMins" type="number" min="15" max="240" value="60"> min after a gig</label>
                 <label>when the next leg is over <input id="triggerMins" type="number" min="30" max="600" value="90"> min</label>
             </div>
+            <label class="mgr-check"><input type="checkbox" id="anyGap"> Also suggest a stay when the next gig is more than a day away</label>
             <div class="mgr-row">
                 <label class="mgr-check"><input type="checkbox" id="brandPI" checked> Premier Inn</label>
                 <label class="mgr-check"><input type="checkbox" id="brandTL" checked> Travelodge</label>
@@ -81,6 +91,7 @@
 
         <section class="mgr-card" id="mgrRoute">
             <h3>4 · Route and run sheet</h3>
+            <div class="mgr-row"><label>Estimate drive times at <input id="mphIn" type="number" min="20" max="80" value="45"> mph <span class="mgr-hint">(motorway-heavy tours: try 55; rural: 35)</span></label></div>
             <div id="runSheet"></div>
             <div class="mgr-row" id="runActions"></div>
         </section>
@@ -108,7 +119,7 @@
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_manager.js?v=202611200100"></script>
+    <script src="/js/tour_manager.js?v=202611201901"></script>
 </body>
 
 </html>

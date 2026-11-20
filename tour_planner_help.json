@@ -35,7 +35,7 @@
   {
     "step": "dates",
     "title": "Why set dates and weekdays?",
-    "text": "The planner can only offer gigs that fall inside your window, so keep it as tight as you realistically can (at most 21 days).\n\nIn pool mode, **Gigs wanted** is how many dates you want the route to contain.\n\n**Only use a venue on a day of the week these artists have played it** keeps the suggestions realistic: if an artist has only ever played a venue on Fridays, only Fridays are offered there. Untick it to try any weekday.\n\nIn pool mode, once you have built options, the dates, area, must-visits and start/end move into panels beside the map and apply straight away, so you can tighten the tour while watching the options change. The weekday rule is also in the Filters panel."
+    "text": "The planner can only offer gigs that fall inside your window, so keep it as tight as you realistically can (at most 21 days).\n\nIn pool mode, **Gigs wanted** is how many dates you want the route to contain.\n\n**Only use a venue on a day of the week these artists have played it** keeps the suggestions realistic: if an artist has only ever played a venue on Fridays, only Fridays are offered there. Untick it to try any weekday.\n\nIn pool mode, once you have built options, the dates, area, must-visits and start/end move into panels beside the map and apply straight away, so you can tighten the tour while watching the options change. The weekday rule is also in the Filters panel.\n\n**Several separate weekends?** In pool mode, **Plan it in stages** (under the dates) lets you plan each weekend or period as its own stage. The artists, venue pool and home start/end are shared; dates, area, must-visits and picks are per stage. **Save stage & start the next** sets the next free weekend, and a venue used in one stage is not offered in another while \"each venue once\" is on."
   },
   {
     "step": "area",
@@ -55,7 +55,7 @@
   {
     "step": "build",
     "title": "What happens when I build?",
-    "text": "**Develop tour** finds every gig that fits what you have set up and lays them out day by day, with the map beside them.\n\nThe required steps fold away afterwards (with a summary line you can expand). The panels beside the map, and the Filters, apply straight away, so you can keep adjusting while you look at the map and the day columns. Your picks are kept where they still fit.\n\n**Save plan** downloads a small file with your set-up, picks and must-visits; **Load plan** puts it all back, so you can build a tour over several sittings."
+    "text": "**Develop tour** finds every gig that fits what you have set up and lays them out day by day, with the map beside them.\n\nThe required steps fold away afterwards (with a summary line you can expand). The panels beside the map, and the Filters, apply straight away, so you can keep adjusting while you look at the map and the day columns. Your picks are kept where they still fit.\n\n**Save plan** downloads a small file with your set-up, picks and must-visits; **Load plan** puts it all back, so you can build a tour over several sittings.\n\nThe **Add to your tour** chips bring in the optional parts (area, must-visits, start and end, filters, stages) only when you want them, and show what is already set. **Open in tour manager** hands the finished tour to the Tour Manager page for pickups, drive times, overnights and a run sheet."
   },
   {
     "step": "filters",

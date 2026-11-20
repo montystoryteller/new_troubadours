@@ -30,3 +30,9 @@
   .site-nav, #mgrLoad, #mgrPickups, #mgrStay, #mgrOrs, .mgr-row, .run-stay .mgr-btn { display: none !important; }
   .mgr-card { border: 0; }
 }
+
+.mgr-help { margin: 8px 0 14px; color: #37474f; }
+.mgr-help summary { cursor: pointer; font-weight: 600; }
+.run-note { display: block; width: calc(100% - 14px); margin: 4px 0 4px 14px; padding: 4px 8px; border: 1px solid #cfd8dc; border-radius: 6px; font: inherit; font-size: .92em; }
+.run-note-print { display: none; margin-left: 14px; }
+@media print { .run-note { display: none !important; } .run-note-print { display: block; } .mgr-help { display: none; } }
