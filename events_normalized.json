@@ -4,6 +4,25 @@
     "wegottickets": "671"
   },
   "promoters": {
+    "north-coast-arts": {
+      "promoter_id": "north-coast-arts",
+      "name": "North Coast Arts",
+      "description": "North Coast Arts is based in Bude, Cornwall. It promotes an exciting menu of high quality arts events around the North Coast of Cornwall, at a range of lovely open-air and indoor venues. Become a Friend for free via our website and be the first to know about our events.",
+      "ticketing_url": "https://wegottickets.com/northcoastarts",
+      "promoter_link": "https://northcoastarts.co.uk/",
+      "facebook": "NorthCoastArts",
+      "instagram": "northcoastarts",
+      "email": "info@northcoastarts.co.uk"
+    },
+    "edge-street-live": {
+      "promoter_id": "edge-street-live",
+      "name": "Edge Street Live",
+      "description": "Event Management\nWe handle every aspect of live event production – from venue sourcing and technical riders to marketing, box office, and on-the-night operations. Whether it's an intimate venue or a theatre tour, we've got it covered.\n\n\n\nConcert Promotion\nPromoting artists across live music and the spoken word, we work with venues, festivals, and ticketing partners to build audiences and sell shows across the UK.\n\n\n\nManagement & Consultancy\nOffering strategic management and consultancy services for artists and organisations. From career planning and booking strategy to touring logistics and partnerships.\n\n\n\nArtist Management\nDedicated artist management for a curated roster of performers. We work closely with our artists to develop their careers, grow their audiences, and make great things happen.",
+      "ticketing_url": "https://edgestreetlive.com/shows/",
+      "promoter_link": "https://edgestreetlive.com/",
+      "facebook": "edgestreetlive",
+      "instagram": "edge_street_live"
+    },
     "wroot-rocks": {
       "promoter_id": "wroot-rocks",
       "name": "Wroot Rocks",
@@ -3933,15 +3952,74 @@
           "venue_id": "pound-arts-corsham",
           "isSpecial": true,
           "isSoldOut": true,
-          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261030-pound-arts-corsham"
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261030-pound-arts-corsham",
+          "promoter_id": "edge-street-live"
+        },
+        {
+          "date": "19/11/2026",
+          "venue_id": "sub-rooms-stroud",
+          "time": "Doors: 18:30, Start: 19:30",
+          "price": "£28 - £32.50",
+          "ticket_url": "https://thesubrooms.co.uk/whats-on/brian-bilston/",
+          "promoter_id": "edge-street-live",
+          "isSpecial": true,
+          "isSoldOut": true,
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261119-sub-rooms-stroud"
+        },
+        {
+          "date": "20/11/2026",
+          "venue_id": "electric-palace-bridport",
+          "time": "Doors 6:30pm Starts 7:30pm",
+          "price": "£24.50 (+ £2)",
+          "ticket_url": "https://www.electricpalace.org.uk/book/?webEventId=20/11/26BB",
+          "promoter_id": "edge-street-live",
+          "isSpecial": true,
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261120-electric-palace-bridport"
+        },
+        {
+          "date": "21/11/2026",
+          "venue_id": "exeter-corn-exchange",
+          "time": "7.30pm (doors 6.45)",
+          "price": "£19.50 (incl. £1.00 booking fee)",
+          "ticket_url": "https://www.exetercornexchange.co.uk/whats-on/brian-bilston-how-to-lay-an-egg-with-a-horse-inside/",
+          "promoter_id": "edge-street-live",
+          "isSpecial": true,
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261121-exeter-corn-exchange"
+        },
+        {
+          "date": "22/11/2026",
+          "venue_id": "parkhouse-centre-bude",
+          "time": "7:30 pm",
+          "ticket_url": "https://wegottickets.com/af/671/f/15734",
+          "promoter_id": "north-coast-arts",
+          "isSpecial": true,
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261122-parkhouse-centre-bude"
+        },
+        {
+          "date": "30/11/2026",
+          "venue_id": "st-georges-bristol",
+          "time": "7.30pm",
+          "price": "From £15 (+ 9% booking fee)",
+          "ticket_url": "https://www.stgeorgesbristol.co.uk/whats-on/brian-bilston-2/",
+          "promoter_id": "edge-street-live",
+          "event_flyer": "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+          "isSpecial": true,
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261130-st-georges-bristol"
         }
       ],
       "name": "How to Lay an Egg with a Horse Inside",
       "performer_id": "brian-bilston",
       "tour_description": "Touring to support the book \"How to Lay an Egg with a Horse Inside\".\n\n\n\nThis is a book to help people overcome their suspicion (or loathing) of poetry, and maybe even encourage a few to write it. Well, maybe that’s a bit ambitious. You might just want to read the poems instead, of which there are 140, on subjects as diverse as pedantry, climate change, boogie management, beekeeping, procrastination, Mondays, Elon Musk and death.",
       "touring_event_flyers": [
-        "tour_brian_bilston_how_to_lay_egg_horse_2026.jpg",
-        "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg"
+        "tour_brian_bilston_how_to_lay_egg_horse_e_2026.jpg",
+        "tour_brian_bilston_how_to_lay_egg_horse_scot_2026.jpg",
+        "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg",
+        "tour_brian_bilston_how_to_lay_egg_horse_2026.jpg"
       ],
       "isPoetry": true
     },
@@ -15154,6 +15232,18 @@
         -2.2469884
       ]
     },
+    "parkhouse-centre-bude": {
+      "id": "parkhouse-centre-bude",
+      "name": "Parkhouse Centre, Bude",
+      "venue_type": "Other / unknown",
+      "url": "https://www.bude-stratton.gov.uk/about-the-parkhouse/",
+      "facebook": "ParkhouseCentreBude",
+      "description": "Located in the heart of Bude, The Parkhouse Community Centre is a popular choice for events and room hire. Originally Bude’s local school, the centre is now a modern, adaptable space for community events, business meetings, and social gatherings.\n\n\n\nThe Parkhouse offers a variety of spaces for hire, including four modern meeting rooms, the Ivor Potter Hall, and the Conference Room. Each space is equipped with free WiFi, hearing loops, and large screens – ideal for presentations, workshops, and meetings.\n\n\n\nThe largest space, the multi-functional Ivor Potter Hall, can be set up for a range of events, including parties, dinners, dances, conferences, and performances. It features a theatre-style stage, lighting room, and dressing room, allowing for professional presentations, performances, and large celebrations. The hall also includes an adjoining fully-equipped kitchen and a spacious foyer area, making it ideal for events with catering or social gatherings.",
+      "latlon": [
+        50.82799,
+        -4.54699
+      ]
+    },
     "falcon-hotel-bude": {
       "id": "falcon-hotel-bude",
       "name": "Falcon Hotel, Bude",
@@ -18182,6 +18272,22 @@
         -5.17492
       ]
     },
+    "st-georges-bristol": {
+      "id": "st-georges-bristol",
+      "name": "St George's, Bristol",
+      "venue_type": "Other / unknown",
+      "city": "St George’s Bristol Great George Street (off Park Street) Bristol",
+      "postcode": "BS1 5RR",
+      "full_address": "St George’s, Great George Street, Bristol, BS1 5RR",
+      "url": "https://www.stgeorgesbristol.co.uk/",
+      "facebook": "stgeorgesbris",
+      "instagram": "stgeorgesbris",
+      "description": "A world-class, independent music venue in the heart of Bristol.\n\n\n\nThe 580-seat concert hall was converted from a 200-year-old Georgian church, and is a truly special space where we welcome the finest performances from the world’s greatest artists. The hall also has what Sir Simon Rattle called ‘the best acoustic for chamber music in Europe’ – meaning you can experience every note, riff, song, or symphony with perfect clarity (and often, no amplification at all!)\n\n\n\nAs well as a space for music, St George's is a space for performance, learning and ideas, offering a philosophy season, lots of events for children and families, lunchtime concerts, plus author talks and comedians. A contemporary pavilion-style extension houses a Café Bar and Glass Studio space.",
+      "latlon": [
+        51.45383,
+        -2.60393
+      ]
+    },
     "the-croft-bristol": {
       "id": "the-croft-bristol",
       "name": "The Croft, Bristol",
@@ -19022,6 +19128,20 @@
       "latlon": [
         50.73295,
         -2.75792
+      ]
+    },
+    "electric-palace-bridport": {
+      "id": "electric-palace-bridport",
+      "name": "Electric Palace, Bridport",
+      "venue_type": "Other / unknown",
+      "city": "Bridport",
+      "postcode": "DT6 3NY",
+      "full_address": "Electric Palace, 35 South Street, Bridport, DT6 3NY",
+      "url": "https://www.electricpalace.org.uk/",
+      "description": "Bridport Electric Palace is an elegant 1920s theatre presenting a varied programme of film, theatre, music and comedy.\n\n\n\nThe Electric Palace has been operating almost continuously since 1926. It has recently undergone extensive renovation retaining and enhancing the original features. The structural integrity of the building has been improved and the cinema technology, stage equipment and other facilities have been brought into the 21st century. It is still owned by a local family, and the building continues to provide first-class film and live entertainment for the people of Bridport, West Dorset and beyond.",
+      "latlon": [
+        50.73181,
+        -2.75783
       ]
     },
     "bridport-community-orchard": {
@@ -21379,6 +21499,21 @@
       "latlon": [
         52.08675,
         -0.2644
+      ]
+    },
+    "exeter-corn-exchange": {
+      "id": "exeter-corn-exchange",
+      "name": "Exeter Corn Exchange",
+      "venue_type": "Arts centre / venue",
+      "city": "Exeter",
+      "postcode": "EX1 1BW",
+      "full_address": "Exeter Corn Exchange, Market Street, Exeter, EX1 1BW",
+      "url": "https://www.exetercornexchange.co.uk/",
+      "facebook": "exetercornexchange",
+      "description": "Exeter Corn Exchange is a versatile multi-purpose venue that is situated in the centre of Exeter. Being located in the city centre means we’re in walking distance of hotels, shops, restaurants, car parks, bus routes and train stations.\n\n\n\nMade up of a 500 capacity auditorium, two meeting rooms, a bar and foyer area. Our auditorium is a totally flexible space that can adapt to host conferences, concerts, comedy, dance and theatre shows and with our committed team on standby to help you to make your event a success.\n\n\n\nWe can provide refreshments and catering for groups and tastes of any size, prices and sample menus available on request.",
+      "latlon": [
+        50.72164,
+        -3.53278
       ]
     },
     "bomba-exeter": {
@@ -25641,22 +25776,22 @@
       "url": "https://undercoverhippy.com/",
       "bio": "If you've not been to an Undercover Hippy gig before, you are in for a treat. By the encore you will be exalted and exhausted; entertained and educated; energised and inspired. The music combines meaningful lyrics with upbeat, bass soaked, reggae and hip-hop infused rhythms, bringing like minded people together to both acknowledge the darkness and celebrate life."
     },
-      "brian-bilston": {
-        "id": "brian-bilston",
-        "name": "Brian Bilston",
-        "url": "https://brianbilston.com/",
-        "bio": "Brian Bilston is a poet who knows it. He writes about the human condition, relationships, and buses.",
-        "type": "poet",
-        "facebook": "BrianBilston",
-        "youtube_videos": [
-          {
-            "story_name": "Brian Bilston: The John Robb interview",
-            "yt_url": "https://www.youtube.com/watch?v=BTFk0VEE1Uc"
-          }
-        ],
-        "instagram": "brian_bilston",
-        "poet": true
-      },
+    "brian-bilston": {
+      "id": "brian-bilston",
+      "name": "Brian Bilston",
+      "url": "https://brianbilston.com/",
+      "bio": "Brian Bilston is a poet who knows it. He writes about the human condition, relationships, and buses.",
+      "type": "poet",
+      "facebook": "BrianBilston",
+      "youtube_videos": [
+        {
+          "story_name": "Brian Bilston: The John Robb interview",
+          "yt_url": "https://www.youtube.com/watch?v=BTFk0VEE1Uc"
+        }
+      ],
+      "instagram": "brian_bilston",
+      "poet": true
+    },
     "bassie-gracie": {
       "id": "bassie-gracie",
       "name": "Bassie Gracie",
