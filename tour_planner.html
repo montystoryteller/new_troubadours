@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611191616">
+    <link rel="stylesheet" href="/css/tour-planner-styles.css?v=202611200052">
 </head>
 
 <body class="page-tour-planner">
@@ -246,6 +246,7 @@
                 </div>
                 <div class="ts-row plan-file">
                     <button id="planSave" type="button" class="btn-secondary" title="Download your set-up and picks as a file">💾 Save plan</button>
+                    <button id="openManager" type="button" class="btn-secondary" title="Work out pickups, drive times, hotels and a run sheet for this tour">🧳 Open in tour manager</button>
                     <button id="planLoad" type="button" class="btn-secondary" title="Restore a plan you saved earlier">📂 Load plan</button>
                     <input id="planFile" type="file" accept="application/json,.json" hidden>
                 </div>
@@ -259,7 +260,15 @@
             <div id="plannerItinerary" class="ts-panel ts-plan"></div>
         <div id="plannerRefine" class="refine-panels" hidden></div>
         <div id="moreOptionsRow" class="more-options-row" hidden>
-            <button id="moreOptions" type="button" class="btn-link">＋ More options: area, must-visit places, start &amp; end, filters</button>
+            <div id="constraintRail" class="constraint-rail" role="group" aria-label="Add to your tour">
+                <span class="rail-label">Add to your tour:</span>
+                <button type="button" class="rail-chip" data-rail="blkArea">Area</button>
+                <button type="button" class="rail-chip" data-rail="blkMust">Must-visits</button>
+                <button type="button" class="rail-chip" data-rail="blkStart">Start &amp; end</button>
+                <button type="button" class="rail-chip" data-rail="plannerLive">Filters</button>
+                <button type="button" class="rail-chip" data-rail="stageBox">Stages</button>
+                <button id="moreOptions" type="button" class="btn-link">Show all</button>
+            </div>
         </div>
         <section id="plannerLive" data-step="filters" class="ts-panel">
             <h3>Filters <button type="button" class="flow-collapse" aria-expanded="true">Collapse</button> <span class="ts-hint">— changes apply straight away to the map and columns; your picks are kept</span></h3>
@@ -351,7 +360,7 @@
     <script src="/js/event_helpers.js?v=202611170953"></script>
     <script src="/js/event_collect.js?v=202611182130"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_planner.js?v=202611191623"></script>
+    <script src="/js/tour_planner.js?v=202611200052"></script>
 </body>
 
 </html>

@@ -278,10 +278,10 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .live-clash .ts-check { display: flex; align-items: center; gap: 6px; }
 
 /* quick start: until the first build, the optional panels wait behind "More options" */
-#plannerSummaryRow.quick-start #blkArea,
-#plannerSummaryRow.quick-start #blkMust,
-#plannerSummaryRow.quick-start #blkStart,
-#plannerSummaryRow.quick-start #plannerLive { display: none !important; }
+#plannerSummaryRow.quick-start #blkArea:not(.rail-open),
+#plannerSummaryRow.quick-start #blkMust:not(.rail-open),
+#plannerSummaryRow.quick-start #blkStart:not(.rail-open),
+#plannerSummaryRow.quick-start #plannerLive:not(.rail-open) { display: none !important; }
 .more-options-row { margin: 0; }
 .more-options-row[hidden] { display: none; }
 .btn-link { background: none; border: 0; padding: 4px 2px; color: #1565c0; font-weight: 600; cursor: pointer; text-align: left; }
@@ -305,3 +305,11 @@ h3.flow-step[data-num]::before{content:attr(data-num) " \00b7  ";}
 .stage-chip.new { cursor: default; }
 .stage-actions { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin-bottom: 6px; }
 .stage-used { font-style: italic; }
+
+/* the constraint rail: chips that add, or jump to, each optional part of the tour */
+.constraint-rail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 4px 0; }
+.rail-label { font-size: .9em; color: #546e7a; }
+.rail-chip { border: 1px solid #b0bec5; background: #fff; border-radius: 999px; padding: 3px 12px; font-size: .88em; cursor: pointer; color: inherit; }
+.rail-chip:hover { background: #f5f7f8; }
+.rail-chip.on { border-color: #2e7d32; background: #e8f5e9; font-weight: 600; }
+.rail-chip:focus-visible { outline: 2px solid #1565c0; outline-offset: 2px; }

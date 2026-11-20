@@ -16,6 +16,7 @@ run("tour in stages", async (t) => {
   t.ok(picks1.length > 0, `stage 1 has ${picks1.length} picked gigs`);
   await p.click("#stageBox button:has-text('Plan it in stages')"); await p.waitForTimeout(200);
   t.ok(await t.vis(".stage-chips"), "stage strip appears after opting in");
+  t.ok(await t.vis("#stageBox .stage-develop"), "a Develop stage button sits in the stage strip");
   await p.click("#stageBox button:has-text('Save stage 1')"); await p.waitForTimeout(800);
   t.eq(await p.evaluate(() => PLANNER.stages.length), 1, "stage 1 saved");
   const d = await p.evaluate(() => ({ s: document.getElementById("periodStart").value, e: document.getElementById("periodEnd").value, chosen: PLANNER.chosen.size, musts: PLANNER.mustRows.length, st: PLANNER.stages[0].plan.settings.values }));
@@ -28,7 +29,7 @@ run("tour in stages", async (t) => {
   t.ok(/overlap stage 1/i.test(await p.textContent("#plannerStatus")), "overlapping dates are refused");
   // stage 2 builds without stage 1 venues
   await p.evaluate((v) => { document.getElementById("periodStart").value = v[0]; document.getElementById("periodEnd").value = v[1]; }, [d.s, d.e]);
-  await build();
+  await p.click("#stageBox .stage-develop"); await p.waitForTimeout(2500); // no scrolling up to the main Develop tour button
   const offered = await p.evaluate(() => [...new Set([...PLANNER.byDay.values()].flat().map((n) => n.venue_id))]);
   t.ok(offered.length > 0, `stage 2 offers ${offered.length} venues`);
   t.eq(offered.filter((v) => picks1.includes(v)), [], "none of stage 1's venues are offered again");

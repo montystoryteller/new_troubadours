@@ -1,0 +1,1394 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="description" content="Online ordering from Shademakers UK" />
+	<!-- Inject accent colour -->
+	<meta name="theme-color" content="#C63826" />
+	<meta name="application-name" content="Shademakers UK SHADEMAKERS UK ARTS (TRADING AS SHADEMAKERS UK) CIC" />
+	<meta name="msapplication-TileColor" content="#FFFFFF" />
+	<meta name="msapplication-square150x150logo" content="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon150.png" />
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="mobile-web-app-capable" content="yes">
+	<title>Shademakers UK SHADEMAKERS UK ARTS (TRADING AS SHADEMAKERS UK) CIC</title>
+	<link rel="stylesheet" href="https://department.byretail.net/modern_theme/assets/css/jquery-ui.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/modern_theme/assets/css/select2.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/assets/default/css/style.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/assets/default/css/sweetalert.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/assets/_common/fa-pro/css/all.min.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/modern_theme/assets/css/ani.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/modern_theme/assets/css/style.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+	<link rel="stylesheet" href="https://department.byretail.net/modern_theme/assets/css/customer.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css" />
+
+	<!-- 6 Icon sizes to render: 512, 192, 180, 150, 32, 16 -->
+	<link rel="icon" type="image/png" sizes="512x512" href="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon512.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon192.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon180.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/icon16.png">
+	<link rel="manifest" href="https://department.byretail.net/application/third_party/department.touchtakeaway.net/assets/manifest.json?5cc099ccf3ade32ffe6a4efa6eb943c7">
+
+	<script>var csrf_token = "57f4861f527d9cfe441b13ed1b361656";</script>
+
+	<script src="https://department.byretail.net/modern_theme/assets/js/jquery.min.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+		<script src="https://department.byretail.net/modern_theme/assets/js/handlebars.min.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/jquery.touchSwipe.min.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/jquery-ui.min.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/sweetalert.min.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/functions.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/modern.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/handlebars_helper.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/cart.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+		
+			<script src="https://department.byretail.net/modern_theme/assets/js/ticketingStart.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+		<script src="https://department.byretail.net/modern_theme/assets/js/tickets.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+			<script src="https://department.byretail.net/modern_theme/assets/js/menu.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+		<script src="https://department.byretail.net/modern_theme/assets/js/session_storage.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/modals.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+			<script src="https://department.byretail.net/modern_theme/assets/js/customer.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+		<script src="https://department.byretail.net/modern_theme/assets/js/vouchers.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	<script src="https://department.byretail.net/modern_theme/assets/js/select2.js?5cc099ccf3ade32ffe6a4efa6eb943c7"></script>
+	
+	<script>
+    
+		$(document).on('click', 'a.ticket-download-link', (e) => {
+			//get the link href
+			var in_app = false;
+			var session_in_app = false;
+
+			//detect in the javascript to see if we are in app
+			if('webkit' in window)
+			{
+				if(window.webkit.messageHandlers != undefined)
+				{
+					if('cordova_iab' in window.webkit.messageHandlers)
+					{
+						//we are in the app
+						in_app = true;
+					}
+				} 
+			}
+			var href = $(e.target).attr('href');
+			var target = $(e.target).attr('target');
+			//if no href, get the parent href
+			if (!href)
+			{
+				href = $(e.target).parent().attr('href');
+				target = $(e.target).parent().attr('target');
+			}
+			
+			//if we are in the javascript app env and the session thinks we are in app.
+			if(in_app && session_in_app)
+			{
+				//if the link domain name is not the current url domain
+				if (href && href.indexOf(window.location.hostname) == -1 || target == "_blank")
+				{
+					//prevent the default action
+					e.preventDefault();
+					
+					//create the message to send to the app
+					let message = {action:"open_url_default_browser", value:href};
+					let stringifiedMessageObj = JSON.stringify(message);
+					//send it
+					window.webkit.messageHandlers.cordova_iab.postMessage(stringifiedMessageObj);
+
+				}
+			}
+		})
+
+	</script>
+
+
+
+
+	<!-- Root variables. Grab from theme.json? -->
+	<style>:root {--primary-color:#333;--accent-color:#C63826;--secondary-color:#FAFAFA;--p-font:'Roboto', sans-serif;--h-font:'Roboto', sans-serif;}</style><script id="event_reservation_timer" type="text/x-handlebars-template">
+    <div  style="" class="event-reservation-timer">
+        <span class="event-res-timer-arrow"></span>
+        <span class="fa fa-clock"></span> {{ timer }}
+    </div>
+</script>	</head>
+
+<body class="page-menu method-index site-shademakers-uk-arts-trading-as-shademakers-uk-cic">
+		<div id="content-fill"></div>
+	<div id="dialog-container"><div class="dialog"></div></div>
+	<div id="cover">
+				<div class="sprite-loader loader-ticketing" style="background-image: url('/assets/default/img/loading_icons/ticketing.png');"></div>
+	</div>
+	<div id="slide_in_panel"></div>
+
+	<div id="t-and-c">
+	<div class="t-and-c-wrap">
+		<header>
+			<h1>Terms and Conditions</h1>
+		</header>
+			<div id="container">
+				<label><strong>General Policy</strong></label><br/><p>If you pay by Credit or Debit card, you may be required to show the card at the time of delivery or collection as proof of identification and so that we can check that the card corresponds with the receipt data for the order. Shademakers UK - Department</p><label><strong>Privacy Policy</strong></label><br/><p>We do not store credit card details nor do we share customer details with any 3rd parties.<br/>We do not store credit card details nor do we share customers details with any 3rd parties. You acknowledge and agree that any personal data that you provide and/or we collect when you use this website shall be processed in accordance with our Privacy policy and in accordance with relevant data protection laws which include, without limitation, the data protection act 2019 and the EU General Data protection regulation 2016/279</p><label><strong>Delivery Policy</strong></label><br/><p>Times for deliveries and collections provided by the Business are only estimates. The Business makes no guarantee that orders will be delivered or will be available for collection within the estimated times. All products and offers are subject to availability. Alternative products or refunds may be offered where appropriate as per the businesses discretion.</p><label><strong>Refund Policy</strong></label><br/><p>Any refunds due will be processed through the till during the same day or can be refunded via the Payment Gateway provider merchant portal. Refunded sums will be returned to the originating card within 72 hours, but may be dependent on your bank. Shademakers UK - Department</p><label><strong>Age Policy</strong></label><br/><p>If alcoholic or age restricted products are purchased the purchaser and any intended consumer must be over 18 and able to provide valid ID upon request.</p><label><strong>Contact Us</strong></label><br/><p>We apologise but it is not possible to amend or cancel orders once placed. For anything else please contact us.</p>			</div>
+		</div>
+	</div>
+
+		<div id="main-wrapper" class="">
+		<header class="topheader main ">
+			<div class="topheader-wrap">
+									<div class="left-wrap">
+						<svg id="open-menu-button" version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+						x="0px" y="0px" viewBox="0 0 50 50" xml:space="preserve"><line class="line line1" fill="none" stroke="currentColor" stroke-dasharray="50" stroke-dashoffset="0" stroke-width="10" stroke-miterlimit="10" x1="0" y1="5" x2="50" y2="5"/><line class="line line2" fill="none" stroke="currentColor" stroke-dasharray="50" stroke-dashoffset="0" stroke-width="10" stroke-miterlimit="10" x1="0" y1="25" x2="50" y2="25"/><line class="line line3" fill="none" stroke="currentColor" stroke-dasharray="50" stroke-dashoffset="0" stroke-width="10" stroke-miterlimit="10" x1="0" y1="45" x2="50" y2="45"/></svg>
+												<svg onclick="navigate_menu_back()" id="back" aria-hidden="true" data-prefix="fas" data-icon="chevron-left" class="svg-inline--fa fa-chevron-left fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"></path></svg>
+										</div>
+				
+				<div class="centre-wrap">
+					<a class="logo" href="/">
+													<img src="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/logo_site_1.png" alt="Shademakers UK">
+											</a>
+				</div>
+								<div class="right-wrap" onclick="window.location='/cart';">
+					<div id="header-cart-mini" class="clickable">
+						<div id="shopping-cart-button">
+							<span class="fa fa-shopping-basket icon-18px"></span>
+						</div>
+						<span class="value noSelect">&#163;0.00</span>
+					</div>
+					<div class="event_reservation_timer_container" id="event_reservation_timer_container">
+						
+					</div>
+				</div>
+							</div>
+		</header>
+		<div class="menu-wrap">
+			<div class="topheader menu">
+				<div class="topheader-wrap">
+					<div class="centre-wrap">
+						<a class="logo" href="/">
+															<img src="https://department.byretail.net/third_party_assets/department.touchtakeaway.net/img/logo_site_1.png" alt="Shademakers UK">
+													</a>
+					</div>
+					<div class="right-wrap close-menu-button">
+						<svg aria-hidden="true" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+					</div>
+				</div>
+			</div>
+			<div class="menu-inner">
+				<nav class="menu-side">
+					<nav class="nav-mainmenu">
+						<ul>
+															<li id="menu-sidebar-option">
+									<a href="/menu">
+										<div class="fa-aligned">
+											<span class="fa fa-memo icon-20px"></span>
+										</div>
+										<div class="nav-mainmenu-text">
+											Menu										</div>
+										<div class="nav-mainmenu-chevron">
+											<svg aria-hidden="true" data-prefix="fas" data-icon="chevron-right" class="svg-inline--fa fa-chevron-right fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+											<path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"></path>
+											</svg>
+										</div>
+									</a>
+								</li>
+																																											<li>
+									<a href="/account">
+										<div class="fa-aligned">
+											<span class="fa fa-user icon-20px"></span>
+										</div>
+										<div class="nav-mainmenu-text">
+											My Account										</div>
+										<div class="nav-mainmenu-chevron">
+											<svg aria-hidden="true" data-prefix="fas" data-icon="chevron-right" class="svg-inline--fa fa-chevron-right fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+											<path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"></path>
+											</svg>
+										</div>
+									</a>
+								</li>
+													</ul>
+					</nav>
+				</nav>
+				
+										<div class="current-times">
+	Opens at 8:00	</div>
+
+<div class="opening-times-container show-flex">
+		<section>
+		<div class="opening-times">
+							<h2>Opening times</h2>
+				
+				<table>
+											<tr >
+							<td class="day">
+								Sunday							</td>
+							<td>
+								08:00 - 23:00<br/>							</td>
+						</tr>
+												<tr >
+							<td class="day">
+								Monday							</td>
+							<td>
+								08:00 - 23:00<br/>							</td>
+						</tr>
+												<tr >
+							<td class="day">
+								Tuesday							</td>
+							<td>
+								08:00 - 23:00<br/>							</td>
+						</tr>
+												<tr >
+							<td class="day">
+								Wednesday							</td>
+							<td>
+								08:00 - 23:00<br/>							</td>
+						</tr>
+												<tr >
+							<td class="day">
+								Thursday							</td>
+							<td>
+								08:00 - 23:00<br/>							</td>
+						</tr>
+												<tr class="today">
+							<td class="day">
+								Friday							</td>
+							<td>
+								08:00 - 23:59<br/>							</td>
+						</tr>
+												<tr >
+							<td class="day">
+								Saturday							</td>
+							<td>
+								08:00 - 23:59<br/>							</td>
+						</tr>
+										</table>
+					</div>
+
+		
+		<!--<small>(Times in Europe/London timezone)</small>-->
+	</section>
+</div>				
+				<div class="footer-wrap">
+					<div class="site-store-name">
+											</div>
+											<div class="company-info">
+							
+	<address>
+		<span><strong>SHADEMAKERS UK ARTS (TRADING AS SHADEMAKERS UK) CIC</strong></span>
+		<span>29-30 Cross Street</span>
+		<span>Ryde</span>
+		<span>Isle of Wight</span>
+		<span>PO33 2AA</span>
+	</address>
+
+						</div>
+															
+					<div class="icrtouch">
+						<a class="t-and-c-link">Read our T&C's, privacy and data protection policies</a>
+																			<a class="logo" href="https://www.icrtouch.com" target="_blank">
+								<img src="/assets/_common/logos/icrtouch/logo-black/0.5x/icrtouch-logo-black-fullcolour-small.png">
+							</a>
+											</div>
+				</div>
+			</div>
+	</div>
+	<section class="messages">
+			</section>
+	
+		
+	
+	<main><section id="cart-mini">
+	<div class="cart-mini-wrap">
+		<h2>Your order</h2>
+		<ul class="cart-list">
+				</ul>
+		<div class="cart-controls">
+					<div class="cart">
+				0 items			</div>
+			<div class="total">
+				<span class="title">Total:</span>
+				<span class="value">&#163;0.00</span>
+			</div> 
+			<a id="checkout-button" class="button">Checkout</a>
+		</div>
+	</div>
+</section><style>
+#menu_placeholder {
+	height: calc(var(--vh, 1vh) * 100 - 70px);
+}
+#associated_items_placeholder {
+	max-height: calc(var(--vh, 1vh) * 100 - 70px);
+}
+@media (min-width: 800px) {
+	#menu_placeholder {
+		height: auto;
+	}
+}
+</style>
+<div class="menu_desc no-img">
+	</div>
+<div id="menu_placeholder"></div>
+<div id="associated_items_placeholder" style="display: none;"></div>
+<span id="site_id" data-site-id="1" style="display: none;"></span>
+<script id="categories-template" type="text/x-handlebars-template">
+	{{#each categories}}
+		<section id="category-{{id}}" class="products {{#if ../has_category_images}}has_category_images{{/if}}">
+			<div data-category-id="{{id}}" data-sub-categories="{{sub_categories}}" data-category-name="{{name}}" class="category-wrap {{#if style}}{{style}}{{/if}} {{#if clickable}}clickable{{/if}}" style="{{#if ../has_category_images}}{{#if image}}background: linear-gradient(90deg, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.20) 50%), url({{image_path}}{{image}}){{else}}background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3981793400954131) 100%), var(--accent-color);{{/if}}{{/if}}">
+				<h2>{{display_name}}</h2>
+				<div class="expand-cat">
+					{{#if clickable}}
+						<svg aria-hidden="true" data-prefix="fas" data-icon="chevron-right" class="svg-inline--fa fa-chevron-right fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"></path></svg>
+					{{/if}}
+					<svg width="200px" class="loader" height="200px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" preserveAspectRatio="xMidYMid" class="lds-ring" style="background: none;"><circle cx="50" cy="50" fill="none" r="30" stroke="#FFFFFF" stroke-opacity="0" stroke-width="10"></circle><circle cx="50" cy="50" fill="none" r="30" stroke="#FFF" stroke-width="10" stroke-linecap="square" transform="rotate(392.257 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;180 50 50;720 50 50" keyTimes="0;0.5;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><animate attributeName="stroke-dasharray" calcMode="linear" values="18.84955592153876 169.64600329384882;94.2477796076938 94.24777960769377;18.84955592153876 169.64600329384882" keyTimes="0;0.5;1" dur="1" begin="0s" repeatCount="indefinite"></animate></circle></svg>
+				</div>
+			</div>
+			{{#if show_category_description}}
+				<div class="category-description"><p>{{{description}}}</p></div>
+			{{/if}}
+		</section>
+	{{/each}}
+</script><script id="products-template" type="text/x-handlebars-template">
+	<section class="expand products">
+		<ul class="product-list"><!-- DO NOT ALLOW WHITESPACE BETWEEN <li>'s (The ~ in Handlebars js is whitespace control) -->
+		{{#each products ~}}
+			<li id="plu-{{record}}" class="product product-{{name}} {{#if product_has_image}}{{else}}no-img{{/if}}">
+				<a class="prod-wrap onSelect"></a>
+
+				{{! Product image }}
+				{{#if product_has_image}}
+					<div class="product-image">
+						{{#each image}}
+							<img class="product-image-container" src="{{../image_path}}{{this}}" alt="{{name}}">
+						{{/each}}
+					</div>
+				{{/if}}
+
+				{{! Product details }}
+				<div class="product-details">
+					
+					{{! Product name and price (or out of stock message) }}
+					<div class="title-wrap">
+						<h3>{{name}}</h3>
+						{{#if out_of_stock}}
+							<span class="price out-of-stock">{{../language.out_of_stock}}</span>
+						{{else}}
+							{{#if price_and_no_options}}
+								<div class="price">{{{../currency_symbol}}}<span>{{display_price}}</span></div>
+							{{else}}
+								<div class="price" style="display: none">{{{../currency_symbol}}}<span></span></div>
+							{{/if}}
+						{{/if}}
+					</div>
+					
+					{{! Calories and servings }}
+					{{#if (isOneTrue display_calories display_servings)}}
+						<div class="calories_and_servings">
+							{{#if display_calories}}
+								<span>{{energy}} kcal </span>
+							{{/if}}
+							{{#if display_servings}}
+								<span>({{../language.serves}} {{portions}})</span>
+							{{/if}}
+						</div>
+					{{/if}}
+
+					{{! Description }}
+					{{#if shortdesc_formatted}}
+						<div class="description">
+							<p>{{{shortdesc_formatted}}}</p>
+						</div>
+					{{/if}}
+
+					{{! Allergens }}
+					{{#if has_allergens}}
+						<div class="product-properties">
+							<a class="button allergen-info" id="plu_{{record}}">
+								<div class="allergen-icon"></div>
+								<span class="warning-text">{{../language.contain_allergen}}</span>
+							</a>
+							<div class="allergen-dialog" id="allergen-dialog-{{record}}">
+								<div class="dialog-container">
+									<!-- If the icon file exists, print icons of checked allergens -->
+									{{#each allergen_list}}
+										{{#if image_exists}}
+											<div class="dialog-content">
+												<img title="{{this.text}}" src="/assets/_common/icons/allergens/png/0.5x/{{name}}-small.png" />
+											</div>
+										{{/if}}
+									{{/each}}
+									<p class="allergen_list">{{allergen_list_text}}</p>
+								</div>
+							</div>
+						</div>
+					{{/if}}
+
+					{{! Stock count }}
+					{{#if ../stock_enabled}}
+						<input type="hidden" class="stock" value="{{stock}}"/>
+						{{#if in_stock_but_lower_than_threshold}}
+							<div class="stock">
+								<span class="in-stock">{{stock_level_text}}</span>
+							</div>
+						{{/if}}
+					{{/if}}
+					
+					{{! Do a different options if a voucher }}
+					{{#if voucher}}
+						<form class="add_product" method="post" accept-charset="utf-8">
+							<input type="hidden" name="pid" value="{{record}}" />
+							<input type="hidden" name="qty" value="1" />
+							<input type="hidden" name="price" value="{{display_price}}" />
+							<input type="hidden" name="modern_theme" value="1" />
+							<input type="hidden" name="alt_recipient" value="0" />
+							<input type="hidden" name="alt_recipient_email" value="" />
+							<input type="hidden" name="alt_recipient_message" value="" maxlength="50"/>
+							<div class="options">
+								<div class="options-inner">
+
+									{{! Header }}
+									<div class="topheader options-header">
+										<div class="topheader-wrap">
+											<div class="left-wrap close-menu-button">
+												<svg aria-hidden="true" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+											</div>
+											<div class="centre-wrap">
+												<a class="logo" href="{{../site_url}}">
+													{{#if ../store_logo_path}}
+														<img src="{{../store_logo_path}}" alt="{{../site_name}}">
+													{{else}}
+														<h1>{{../site_name}}</h1>
+													{{/if}}
+												</a>
+											</div>
+											<div class="right-wrap close-menu-button">
+												<svg aria-hidden="true" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+											</div>
+										</div>
+									</div>
+
+									{{! Product image }}
+									{{#if product_has_image}}
+										<div class="product-image">
+											{{#each image}}
+												<img class="product-image-container" src="{{../image_path}}{{this}}" alt="{{name}}">
+											{{/each}}
+										</div>
+									{{/if}}
+
+									{{! Product name and price }}
+									{{#if zero_price}}
+										<div class="name-and-price">
+											<h2>{{name}}</h2>
+										</div>
+										<div class="voucher_price">
+											<input type="hidden" class="price"/> <!-- Kind of a bodgy fix to keep update_subtotal happy -->
+											<input type="number" name="meta_data[voucher_price]" min="{{../voucher_min}}" step="0.01" placeholder="{{../language.custom_voucher_value}}" required/>
+										</div>
+									{{else}}
+										<div class="name-and-price">
+											<h2>{{name}}</h2>
+											<div class="price">{{{../currency_symbol}}}<span>{{display_price}}</span></div>
+										</div>
+									{{/if}}
+
+									{{! Email destination }}
+									<div class="voucher-email-wrapper">
+										<div class="voucher-email selected">
+											<span class="radio"><span></span></span>
+											<input type="hidden" class="alt-recipient" value="0"/>
+											<h4>{{../language.send_to_me}}</h4>
+										</div>
+										<div class="voucher-email">
+											<span class="radio"><span></span></span>
+											<input type="hidden" class="alt-recipient" value="1"/>
+											<h4>{{../language.send_as_gift}}</h4>
+										</div>
+									</div>
+
+									{{! Recipient details }}
+									<div class="voucher-email-details">
+										<h3>{{../language.recipient_details}}</h3>
+										<div>
+											<h4>{{../language.email_address}}</h4>
+											<input name="alt_recipient_email" data-input="alt_recipient_email" type="email"/>
+										</div>
+										<div>
+											<h4>{{../language.optional_message}}</h4>
+											<input name="alt_recipient_message" data-input="alt_recipient_message" maxlength="50"/>
+										</div>
+									</div>
+								</div>
+
+								{{! Quantity and Add to order buttons }}
+								<div class="actions-container">
+									<div class="product-qty-container">
+										<a class="qty-minus low-opacity" rel="tab"><span>-</span></a><span><span>{{../language.product_qty}}</span><span class="qty-value">1</span></span><a class="qty-plus" rel="tab"><span>+</span></a>
+									</div>
+									<button class="btn btn-primary new-add-customised add-to-order">{{../language.add}} <span>-</span> {{{../currency_symbol}}}<div class="btn_price"><span>{{display_price}}</span></div></button>
+								</div>
+							</div>
+							
+							{{! Hidden button which gets clicked when prod-wrap anchor above is clicked }}
+							<button class="customise" data-site="{{../site_id}}" data-plu="{{record}}" data-category="{{../category_id}}"><span>{{../language.customise}}</span></button>
+						</form>
+					{{else}}
+						<form class="add_product" method="post" accept-charset="utf-8">
+							<input type="hidden" name="pid" value="{{record}}" />
+							<input type="hidden" name="qty" value="1" />
+							<input type="hidden" name="price" value="{{display_price}}" />
+							<input type="hidden" name="price_at" value="{{display_level}}" />
+							<input type="hidden" name="default_at_qty" value="{{default_at_qty}}" />
+							<div class="options {{#if full_height_options}}{{else}}no-options{{/if}}">
+								<div class="options-inner">
+
+									{{! Header }}
+									<div class="topheader options-header">
+										<div class="topheader-wrap">
+											<div class="left-wrap close-menu-button">
+												<svg aria-hidden="true" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+											</div>
+											<div class="centre-wrap">
+												<a class="logo" href="{{../site_url}}">
+													{{#if ../store_logo_path}}
+														<img src="{{../store_logo_path}}" alt="{{../site_name}}">
+													{{else}}
+														<h1>{{../site_name}}</h1>
+													{{/if}}
+												</a>
+											</div>
+											<div class="right-wrap close-menu-button">
+												<svg aria-hidden="true" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+											</div>
+										</div>
+									</div>
+
+									{{! Product image }}
+									{{#if product_has_image}}
+										<div class="product-image">
+											{{#each image}}
+												<img class="product-image-container" src="{{../image_path}}{{this}}" alt="{{name}}">
+											{{/each}}
+										</div>
+									{{/if}}
+
+									{{! Product name and price }}
+									<div class="name-and-price">
+										<h2>{{name}}</h2>
+										{{#if price_and_no_options}}
+											<div class="price">{{{../currency_symbol}}}<span>{{display_price}}</span></div>
+										{{else}}
+											<div class="price" style="display: none">{{{../currency_symbol}}}<span></span></div>
+										{{/if}}
+									</div>
+									
+									{{! Calories and servings }}
+									{{#if (isOneTrue display_calories display_servings)}}
+										<div class="calories_and_servings">
+											{{#if display_calories}}
+												{{#unless price_shifts_enabled_and_has_prices_for_level}}
+													<span>{{energy}} kcal </span>
+												{{/unless}}
+											{{/if}}
+											{{#if display_servings}}
+												<span>({{../language.serves}} {{portions}})</span>
+											{{/if}}
+										</div>
+									{{/if}}
+
+									{{! At prices }}
+									{{#if price_shifts_enabled_and_has_prices_for_level}}
+										<div class="product-price-wrapper">
+											{{#each prices_to_display}}
+												<div class="product-price {{#if enabled}}enabled{{else}}disabled low-opacity{{/if}} {{#if selected}}selected{{/if}}" data-price-at="{{price_at}}" data-price="{{price}}">
+													<span class="radio"><span></span></span>
+													<input type="hidden" class="at-price-qty" value="{{price_qty}}"/>
+													<div>
+														<h4>{{altmodtext}}</h4>
+
+														{{! Calories }}
+														{{#if ../display_calories}}
+															<small>{{energy}} kcal</small>
+														{{/if}}
+													</div>
+
+													{{! Price or Out of stock message }}
+													{{#if enabled}}
+														<span>{{{../../currency_symbol}}}{{price}}</span>
+													{{else}}
+														<span class="out-of-stock at">{{../../language.out_of_stock}}</span>
+													{{/if}}
+												</div>
+											{{/each}}
+										</div>
+									{{/if}}
+
+									{{! Options wrapper - Gets populated by js }}
+									{{#if has_options}}
+										<div class="options-wrap"></div>
+									{{/if}}
+									
+									{{! Product notes input }}
+									{{#if ../show_product_notes}}
+										<div class="product_notes">
+											<input placeholder="{{../language.message_to_kitchen}}" name="notes" maxlength="40"/>
+										</div>
+									{{/if}}
+								</div>
+								
+								{{! Quantity and Add to order buttons }}
+								<div class="actions-container">
+									<div class="product-qty-container">
+										<a class="qty-minus low-opacity" rel="tab"><span>-</span></a><span><span>{{../language.product_qty}}</span><span class="qty-value">1</span></span><a class="qty-plus" rel="tab"><span>+</span></a>
+									</div>
+									<button class="btn btn-primary new-add-customised add-to-order">{{../language.add}} <span>-</span> {{{../currency_symbol}}}<div class="btn_price"><span>{{display_price}}</span></div></button>
+								</div>
+							</div>
+							
+							{{! Hidden button which gets clicked when prod-wrap anchor above is clicked }}
+							<button class="customise" data-site="{{../site_id}}" data-plu="{{record}}" data-category="{{../category_id}}"><span>{{../language.customise}}</span></button>
+						</form>
+					{{/if}}
+				</div>
+				<!-- DO NOT ALLOW WHITESPACE BETWEEN <li>'s (The ~ in Handlebars js is whitespace control) -->
+			</li>
+		{{~/each}}
+		</ul>
+	</section>
+	<section class="calorie_statement" style="display: none">{{language.calorie_statement}}</section>
+</script><script id="associated-items-template" type="text/x-handlebars-template">
+	{{! Header }}
+	<div class="associated-items-header">
+		<h1>{{language.extras}}</h1>
+	</div>
+	<form id="associated_items" class="associated-item-container {{#unless has_allergens_or_cals}}no-allergens-or-cals{{/unless}}" action="{{window.location.origin}}/cart/add_associated_items" method="POST"><!-- DO NOT ALLOW WHITESPACE BETWEEN <li>'s (The ~ in Handlebars js is whitespace control) -->
+	{{#each products ~}}
+		<div class="associated-item" id="plu-{{record}}">
+			<!-- Hidden stuff -->
+			<input type="hidden" name="products[{{record}}][index]" value="{{index}}" />
+			<input type="hidden" name="products[{{record}}][pid]" value="{{record}}" />
+			<input type="hidden" name="products[{{record}}][qty]" value="0" />
+			<input type="hidden" name="products[{{record}}][price]" value="{{price}}" />
+			<input type="hidden" name="products[{{record}}][modern_theme]" value="1" />
+			<input type="hidden" name="products[{{record}}][sum_price]" value="0" />
+			<!-- Product Image -->
+			{{#if image}}
+				<div class="associated-item-image-{{record}}" style="background-image: url('{{image_path}}{{image}}');"></div>
+			{{else}}
+				<div class="associated-item-image-{{record}} no-image">
+					<!-- Placeholder SVG -->
+					<div class="svg-wrapper">
+						{{{random_svg}}}
+					</div>
+					<style>
+						.circles .colour-1, .triangles .colour-1, .waves .colour-1, .stripes .colour-1{
+							fill: {{../colour1}};
+						}
+						.circles .colour-2, .triangles .colour-2, .waves .colour-2, .stripes .colour-2{
+							fill: {{../colour2}};
+						}
+						.circles .colour-3, .triangles .colour-3, .waves .colour-3, .stripes .colour-3{
+							fill: {{../colour3}};
+						}
+						.circles .colour-4, .triangles .colour-4, .waves .colour-4, .stripes .colour-4{
+							fill: {{../colour4}};
+						}
+					</style>
+				</div>
+			{{/if}}
+
+			<div class="details">
+				<!--- Product Name and Price -->
+				<div class="product-name-price">
+					<h2 class="name">{{name}}</h2>
+					{{#if out_of_stock}}
+						<span class="price out-of-stock">{{../language.out_of_stock}}</span>
+					{{else}}
+						<h2>
+						{{!-- Price Formatted --}}
+						{{#if price}}
+							{{{../currency_symbol}}}{{price}}
+						{{else}}
+							{{../language.free}}
+						{{/if}}
+						</h2>
+					{{/if}}
+				</div>
+
+				{{!-- Allergens and Calories --}}
+				<div class="allergens-calories{{#unless (isOneTrue allergens.length energy display_servings)}} no-content{{/unless}}">
+					{{!-- If the allergens array contains anything --}}
+						<div class="product-properties">
+						{{#if allergens.length ~}} 
+							<!-- Allergen Info Button -->
+							<a class="button allergen-info" id="plu_{{record}}">
+								<div class="allergen-icon"></div>
+								<span class="warning-text" >{{../language.contain_allergen}}</span>
+							</a>
+							<!-- Allergen Dialog -->
+							<div class="allergen-dialog" id="allergen-dialog-{{record}}">
+								<div class="dialog-container">
+									<!-- If the icon file exists, print icons of checked allergens -->
+									{{#each allergens}}
+										{{#if image_exists}}
+											<div class="dialog-content">
+												<img title="{{name}}" src="/assets/_common/icons/allergens/png/0.5x/{{name}}-small.png" />
+											</div>
+										{{/if}}
+									{{/each}}
+									<p class="allergen_list">{{allergen_list_text}}</p>
+								</div>
+							</div>
+						{{/if}}
+						</div>
+						<div class="calories">
+							{{#if energy}}
+								{{energy}} {{../language.calories_symbol}}
+							{{/if}}
+							<br/>
+							{{#if display_servings}}
+								({{../language.serves}} {{portions}})
+							{{/if}}
+						</div>
+				</div>
+
+				<!-- Product Quantity picker -->
+				<div class="quantity">
+					<a class="associated-qty-minus qty-minus low-opacity" data-quantity="-1"><span>-</span></a>
+						<span id="associated-item-quantity">0</span>
+					<a class="associated-qty-plus qty-plus" data-quantity="1"><span>+</span></a>
+				</div>
+			</div>
+		</div>
+	{{~/each}}
+	</form>
+	<div class="nav-buttons-solid-background">
+		{{!-- No Thanks - straight to cart --}}
+		<a href="/cart" class="btn btn-outline">{{language.skip}}</a>
+		<!-- Continue to cart -->
+		<button id="add-associated-items" class="btn btn-primary associated-items-to-order" type="submit" form="associated_items">
+			{{language.add_to_order}} - {{{currency_symbol}}}<span id="total-price">0.00</span>
+		</button>
+	</div>
+</script><script id="options-template" type="text/x-handlebars-template">
+	<fieldset class="option-container" data-min-choices="{{option.option_min_choices}}" data-max-choices="{{option.option_max_choices}}">
+		<h3 class="option_name">{{option.option_name}}</h3>{{#if option.option_restriction_text}}<small>{{option.option_restriction_text}}</small>{{/if}}
+		{{#each option.choices}}
+			<div class="option plu-{{choice_id}} {{#if out_of_stock}}out-of-stock-option{{/if}}">
+				<div class="product-name-and-price {{#if allergen_list}}inc_allergens{{/if}} {{#if choice_free}}{{else}}inc_price{{/if}}">
+					<div class="product-details">
+						<label for="plu-{{choice_id}}-list-{{../option.list_index}}-parent-{{../option.plu}}">{{choice_name}}</label>
+						
+						{{#if allergen_list}}
+							<a class="button allergen-info" id="plu_{{choice_id}}">
+								<div class="allergen-icon"></div>
+							</a>
+							<div class="allergen-dialog" id="allergen-dialog-{{choice_id}}">
+								<div class="dialog-container">
+									{{#each allergen_list}}
+										{{#if image_exists}}
+											<div class="dialog-content">
+												<img title="{{this.text}}" src="/assets/_common/icons/allergens/png/0.5x/{{name}}-small.png" />
+											</div>
+										{{/if}}
+									{{/each}}
+									<p class="allergen_list">{{allergen_list_text}}</p>
+								</div>
+							</div>
+						{{/if}}
+
+						<div class="calories_and_servings">
+							{{#if display_calories}}
+								<span>{{energy}} kcal </span>
+							{{/if}}
+							{{#if display_servings}}
+								<span>({{../language.serves}} {{portions}})</span>
+							{{/if}}
+						</div>
+					</div>
+					
+					{{#if (isEqualTo choice_free false)}}
+						<div class="price">+ {{{currency_symbol}}}{{choice_price}}</div>
+					{{/if}}
+				</div>
+
+				{{#if (isEqualTo ../option.selection_type 'radio')}}
+					<div class="qty-container">
+						{{#if out_of_stock}}
+							<span class="out-of-stock">{{../language.out_of_stock}}</span>
+						{{else}}
+							<div class="qty-radio-box">
+								<input class="qty-radio-button" type="radio" id="option" rel="tab" name="radio-button-{{../option.list_index}}"/>
+								<svg class="x-hidden tick" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2025 Fonticons, Inc. --><path fill="currentColor" d="M493 88.9l-18.8 25.9-256 352-22 30.3c-.7-.7-52.2-52.2-154.5-154.5L19 320 64.3 274.7c1.9 1.9 43.3 43.3 124.1 124.1l234-321.7 18.8-25.9 51.8 37.6z"/></svg>
+							</div>
+						{{/if}}
+					</div>
+				{{/if}}
+				{{#if (isEqualTo ../option.selection_type 'checkbox')}}
+					<div class="qty-container">
+						{{#if out_of_stock}}
+							<span class="out-of-stock">{{../language.out_of_stock}}</span>
+						{{else}}
+							<a class="qty-checkbox-button" rel="tab">
+								<svg class="x-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2025 Fonticons, Inc. --><path fill="currentColor" d="M493 88.9l-18.8 25.9-256 352-22 30.3c-.7-.7-52.2-52.2-154.5-154.5L19 320 64.3 274.7c1.9 1.9 43.3 43.3 124.1 124.1l234-321.7 18.8-25.9 51.8 37.6z"/></svg>
+							</a>
+						{{/if}}
+					</div>
+				{{/if}}
+				{{#if (isEqualTo ../option.selection_type 'quantity')}}
+					<div class="qty-container">
+						{{#if out_of_stock}}
+							<span class="out-of-stock">{{../language.out_of_stock}}</span>
+						{{else}}
+							<a class="qty-minus low-opacity" rel="tab"><span>-</span></a><span class="qty-value low-opacity">0</span><a class="qty-plus {{#if out_of_stock}}low-opacity no-stock{{/if}}" rel="tab"><span>+</span></a>
+						{{/if}}
+					</div>
+				{{/if}}
+
+				<input type="hidden" class="option-stock" value="{{stock}}"/>
+				<input type="hidden" class="option-plu" value="{{choice_id}}"/>
+				<input type="hidden" class="checkbox plu-{{choice_id}}" value="0" data-price="{{choice_price}}" name="options[{{../option.list_index}}][{{choice_id}}]" id="plu-{{choice_id}}-list-{{../option.list_index}}-parent-{{../option.plu}}" min="0" max="{{../option.option_max_choices}}">
+			</div>
+		{{/each}}
+	</fieldset>
+</script><script id="events-template" type="text/x-handlebars-template">
+	<section class="expand events">
+		<ul class="event-list">
+		{{#each events ~}}
+			<li id="event-{{id}}" eventid="{{id}}" class="event {{#if (isSet image)}}{{else}}no-img{{/if}}" style="position: relative;">
+				<div class="li-event-cover-all"></div>
+
+				{{#if (isSet image)}}
+					<div class="event-image">
+						<img class="event-image-container" src="{{../image_path}}{{image}}" alt="{{name}}">
+					</div>
+				{{/if}}
+
+				<div class="event-details">
+					<div class="title-wrap">
+						<h3>{{name}}</h3>
+						<div class="price">
+							<span class="ticket-from-text">{{../language.ticketing_from}}</span>
+							{{#if show_from_free}}
+								<span>{{{../currency_symbol}}}{{from_price}}</span>
+							{{else}}
+								<span class="ticket-free-text">{{../language.ticketing_free}}</span>
+							{{/if}}
+						</div>
+					</div>
+					<div class="ticket-info">
+						{{#if date_window.dates_filled}}
+							<div class="ticket-date-range">
+								{{#if (isEqualTo date_window.start_date date_window.end_date)}}
+									{{date_window.start_date}}
+								{{else}}
+									{{date_window.start_date}} {{../language.ticketing_to}} {{date_window.end_date}}
+								{{/if}}
+							</div>
+						{{/if}}
+						{{#if description}}
+							<div class="ticket-description">
+								<p>{{{description}}}</p>
+							</div>
+						{{/if}}
+					</div>
+				</div>
+
+				<ticketing-controller 
+					:event_id                      = "{{id}}"
+					:seat_plan_id                  = "{{seat_plan_id}}"
+					:local_currency                = "'{{{../currency_symbol}}}'"
+					:local_currency_decimal_places = "2"
+					:locale                        = "'{{../language_code}}'"
+					:vertical                      = "true"
+					:accent                        = "'#{{../accent_colour}}'"
+					:site_url                      = "'{{../site_url}}'"
+					:site_name                     = "'{{ escapeForVue ../site_name }}'"
+					:store_logo_path               = "'{{ ../store_logo_path}}'"
+					:back_button_text              = "'{{ escapeForVue ../back_button_text }}'"
+					:price_level                   = "{{../price_level}}"
+				/>
+			</li>
+		{{~/each}}
+		</ul>
+	</section>
+</script><script id="menu-level-template" type="text/x-handlebars-template">
+<div class="menu_container {{css_class}}">
+	{{{html}}}
+	<div class="products_container" style="display: none">
+		<p class="loading">{{language.loading_products}}<svg width="200px" class="loader" height="200px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-ring" style="background: none;"><circle cx="50" cy="50" fill="none" r="30" stroke="#0D7AB6" stroke-opacity="0" stroke-width="10"></circle><circle cx="50" cy="50" fill="none" r="30" stroke-width="10" stroke-linecap="square" transform="rotate(392.257 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;180 50 50;720 50 50" keyTimes="0;0.5;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><animate attributeName="stroke-dasharray" calcMode="linear" values="18.84955592153876 169.64600329384882;94.2477796076938 94.24777960769377;18.84955592153876 169.64600329384882" keyTimes="0;0.5;1" dur="1" begin="0s" repeatCount="indefinite"></animate></circle></svg></p>
+	</div>
+	<div class="events_container" style="display: none">
+		<p class="loading">{{language.loading_events}}<svg width="200px" class="loader" height="200px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-ring" style="background: none;"><circle cx="50" cy="50" fill="none" r="30" stroke="#0D7AB6" stroke-opacity="0" stroke-width="10"></circle><circle cx="50" cy="50" fill="none" r="30" stroke-width="10" stroke-linecap="square" transform="rotate(392.257 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;180 50 50;720 50 50" keyTimes="0;0.5;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><animate attributeName="stroke-dasharray" calcMode="linear" values="18.84955592153876 169.64600329384882;94.2477796076938 94.24777960769377;18.84955592153876 169.64600329384882" keyTimes="0;0.5;1" dur="1" begin="0s" repeatCount="indefinite"></animate></circle></svg></p>
+	</div>
+</div>
+</script><script id="cart-mini-template" type="text/x-handlebars-template">
+    <div class="cart-mini-wrap">
+        <h2>{{language.minicart}}</h2>
+        <ul class="cart-list">
+            {{#each cart_data.contents ~}}
+            <li class="cart-item">
+                <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div style="display: inherit; flex-direction: row;">
+                <div class="qty">{{qty}} x</div>
+                <div class="name">{{{name}}}{{{price_at_text}}}</div></div>
+                {{#if contains_allergens}}
+                <a class="button allergen-info" id="plu_{{id}}"><div class="allergen-icon"></div></a></div>
+                <div class="allergen-dialog" id="allergen-dialog-{{id}}">
+                    <div class="dialog-container">
+                    {{#if (isSet allergens)}}
+                        {{#each allergens ~}}
+                            {{#if (isSet img_path)}}
+                                <div class="dialog-content">
+                                    <img title="{{{name}}}" src="{{img_path}}" />
+                                </div>
+                            {{/if}}
+                        {{~/each}}
+                        <p class="allergen_list">{{{allergen_list}}}</p>
+                    {{/if}}
+                    </div>
+                </div>
+                {{else}}
+                </div>
+                {{/if}}
+                {{#if (isSet options)}}
+                <ul class="cart-item-options">
+                    {{#each options ~}}
+                    <li>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div class="name">{{qty}} x {{{name}}}</div>
+                        {{#if contains_allergens}}
+                        <a class="button allergen-info" id="plu_{{id}}"><div class="allergen-icon"></div></a>
+                        </div>
+                        <div class="allergen-dialog" id="allergen-dialog-{{id}}">
+                            <div class="dialog-container">
+                                {{#if (isSet allergens)}}
+                                    {{#each allergens ~}}
+                                        {{#if (isSet img_path)}}
+                                        <div class="dialog-content">
+                                            <img title="{{{name}}}" src="{{img_path}}" />
+                                        </div>
+                                        {{/if}}
+                                    {{~/each}}
+                                    <p class="allergen_list">{{{allergen_list}}}</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                        {{else}}
+                        </div>
+                        {{/if}}
+                    </li>
+                    {{~/each}}
+                </ul>
+                {{/if}}
+                {{#if (isSet meta_data.voucher_alt_recipient)}}
+                <ul class="cart-item-options">
+                    <li>
+                        <div class="name">{{../language.send_to}}: {{meta_data.voucher_alt_recipient.email}}</div>
+                    </li>
+                </ul>
+                {{/if}}
+                {{#if (isSet notes)}}
+                <span class="cart_product_notes">{{notes}}</span>
+                {{/if}}
+            </li>
+            {{~/each}}
+        </ul>
+        <div class="cart-controls">
+            {{#if cart_data.order_contains_allergens}}
+            <div class="cart-mini-allergen-notice">
+                <div class="allergen-icon"></div>
+                <span>{{language.allergen_notice}}</span>
+            </div>
+            {{/if}}
+            <div class="cart">
+                {{cart_data.total_items}} {{language.items}}
+            </div>
+            <div class="total">
+                <span class="title">{{language.totalprice}}:</span>
+                <span class="value">{{{cart_data.cart_total_formatted}}}</span>
+            </div>
+            {{#if cart_data.associated_items_enabled}}
+            <a id="checkout-button" class="button">{{language.checkout}}</a>
+            {{else}}
+            <a href="/cart" class="button">{{language.checkout}}</a>
+            {{/if}}
+        </div>
+    </div>
+</script><script id="mini-checkout-template" type="text/x-handlebars-template">
+    <div id="shopping-cart-button">
+        <span class="fa fa-shopping-basket icon-18px"></span>
+    </div>
+    <span class="value noSelect">{{{cart_data.cart_total_formatted}}}</span>
+</script><script id="floating-checkout-button-template" type="text/x-handlebars-template">
+    {{#unless floating_checkout_button.hide}}
+        {{#if (isGreaterThan cart_data.total_items 0)}}
+            <style>
+                @media (max-width:1380px) {
+                    section.messages {
+                        bottom: 90px;
+                    }
+                    main {
+                        margin-bottom: 90px;
+                    }
+                }
+            </style>
+            <div class="buttonCont" id="buttonCont">
+                {{#if cart_data.associated_items_enabled}}
+                <a id="checkout-button" class="floatingCheckoutButton">
+                    {{#if (isGreaterThan cart_data.cart_total 0)}}
+                        {{language.view_basket}} <span>-</span> {{{cart_data.cart_total_formatted}}}
+                    {{else}}
+                        {{language.view_basket}}
+                    {{/if}}
+                </a>
+                {{else}}
+                <a href="/cart" class="floatingCheckoutButton">
+                    {{#if (isGreaterThan cart_data.cart_total 0)}}
+                        {{language.view_basket}} <span>-</span> {{{cart_data.cart_total_formatted}}}
+                    {{else}}
+                        {{language.view_basket}}
+                    {{/if}}
+                </a>
+                {{/if}}
+            </div>
+        {{/if}}
+    {{/unless}}
+</script><script id="menu-error-template" type="text/x-handlebars-template">
+	{{#if menu_load_error}}
+		<div class="menu_load_error">
+			<p>{{language.menu_load_error}}</p>
+			<button class="btn btn-secondary refresh" style="flex-grow: 0;height: auto;height: ;">{{language.refresh}}</button>
+		</div>
+	{{/if}}
+	{{#if menu_not_available}}
+		<span>{{language.menu_not_available}}</span>
+	{{/if}}
+</script><section class="info-slide-view" style="display: none;">
+   <div class="no-click-background">
+        <div class="slide-container">
+               
+                                    <div class="info-slides-prompt 4" data-type="customer_signup" style="display: none;">
+                
+                        <div class="skip 4">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+
+                    <div class="info-slides-text">
+                        <h2>Sign up now</h2>
+                        <p>Access all these exclusive features by creating an account.</p>
+                    </div>
+
+                    <div class="info-slides-image">
+                        <i class=""></i>
+                    </div>
+
+                    <div class="info-slides-controls">
+                                                                                    <button class="continue-btn btn btn-outline">Continue as guest</button> 
+                                <br>
+                                <button class="sign-up-btn btn btn-secondary">Login Or Sign Up</button>
+                                     
+                           
+                    </div>
+                      
+                </div>
+               
+                                    <div class="info-slides-prompt 3" data-type="customer_signup" style="display: none;">
+                
+                        <div class="skip 3">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+
+                    <div class="info-slides-text">
+                        <h2>Earn rewards</h2>
+                        <p>Collect points within your account to spend against future purchases.</p>
+                    </div>
+
+                    <div class="info-slides-image">
+                        <i class="fa-solid fa-hundred-points"></i>
+                    </div>
+
+                    <div class="info-slides-controls">
+                                                                                    <i class="fa-solid fa-arrow-left prev-arrow" data-index="2"></i> 
+                                                        <div class="pagination">
+                                                                    <i class="fa-solid fa-circle pagination-marker-0" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-1" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-2" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-3" style="color: black;"></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-4" style=""></i>
+                                                            </div>
+                            <i class="fa-solid fa-arrow-right next-arrow" data-index="3"></i>
+                           
+                    </div>
+                                        <div class="info-slides-signup">
+                        <button class="sign-up-btn btn btn-secondary">Login Or Sign Up</button>   
+                    </div>
+                      
+                </div>
+               
+                                    <div class="info-slides-prompt 2" data-type="customer_signup" style="display: none;">
+                
+                        <div class="skip 2">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+
+                    <div class="info-slides-text">
+                        <h2>Stay updated</h2>
+                        <p>Receive order status and promotional notifications.</p>
+                    </div>
+
+                    <div class="info-slides-image">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+
+                    <div class="info-slides-controls">
+                                                                                    <i class="fa-solid fa-arrow-left prev-arrow" data-index="1"></i> 
+                                                        <div class="pagination">
+                                                                    <i class="fa-solid fa-circle pagination-marker-0" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-1" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-2" style="color: black;"></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-3" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-4" style=""></i>
+                                                            </div>
+                            <i class="fa-solid fa-arrow-right next-arrow" data-index="2"></i>
+                           
+                    </div>
+                                        <div class="info-slides-signup">
+                        <button class="sign-up-btn btn btn-secondary">Login Or Sign Up</button>   
+                    </div>
+                      
+                </div>
+               
+                                    <div class="info-slides-prompt 1" data-type="customer_signup" style="display: none;">
+                
+                        <div class="skip 1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+
+                    <div class="info-slides-text">
+                        <h2>Keep tickets handy</h2>
+                        <p>Always have tickets close to hand by storing them digitally within your
+account.</p>
+                    </div>
+
+                    <div class="info-slides-image">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
+
+                    <div class="info-slides-controls">
+                                                                                    <i class="fa-solid fa-arrow-left prev-arrow" data-index="0"></i> 
+                                                        <div class="pagination">
+                                                                    <i class="fa-solid fa-circle pagination-marker-0" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-1" style="color: black;"></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-2" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-3" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-4" style=""></i>
+                                                            </div>
+                            <i class="fa-solid fa-arrow-right next-arrow" data-index="1"></i>
+                           
+                    </div>
+                                        <div class="info-slides-signup">
+                        <button class="sign-up-btn btn btn-secondary">Login Or Sign Up</button>   
+                    </div>
+                      
+                </div>
+               
+                                    <div class="info-slides-prompt 0" data-type="customer_signup" style="display: block;">
+                
+                        <div class="skip 0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+
+                    <div class="info-slides-text">
+                        <h2>Don't miss out</h2>
+                        <p>Create an account to access exclusive features.</p>
+                    </div>
+
+                    <div class="info-slides-image">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+
+                    <div class="info-slides-controls">
+                                                                                    <div class="spacer"></div>
+                                                        <div class="pagination">
+                                                                    <i class="fa-solid fa-circle pagination-marker-0" style="color: black;"></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-1" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-2" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-3" style=""></i>
+                                                                    <i class="fa-solid fa-circle pagination-marker-4" style=""></i>
+                                                            </div>
+                            <i class="fa-solid fa-arrow-right next-arrow" data-index="0"></i>
+                           
+                    </div>
+                                        <div class="info-slides-signup">
+                        <button class="sign-up-btn btn btn-secondary">Login Or Sign Up</button>   
+                    </div>
+                      
+                </div>
+               
+        </div>
+    </div>
+</section></main>
+<section id="checkout-button-container">
+	</section>
+</div>
+
+
+		<script type="text/javascript">
+			$(document).ready(function()
+			{
+				$(document).on('mousemove', 'span.allergen > img', function(e)
+				{
+					$(this).css({'cursor':'help'});
+				});
+				
+				$(document).on('click', 'span.allergen > img', function(e)
+				{
+					var tagname = $(this).attr('data-tagname');
+					
+					if(!$('#allergy-info-dialog').length)
+					{
+						$('body').append($('<div id="allergy-info-dialog"></div>'));
+						
+						var html = '';
+						html += '<div id="allergy-info-dialog-titlebar">';
+						html += '<span id="allergy-info-dialog-title">Allergy information</span>';
+						html += '<a id="allergy-info-dialog-close" href="#" alt="Close" title="Close">X</a>';
+						html += '</div>';
+						html += '<div id="allergy-info-dialog-container">';html += '<span id="allergy-info-icon-celery">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/celery.png" title="Celery"/>';
+									html += '	<span>';
+									html += '	<strong>Celery: </strong>';
+									html += '	<p>This includes celery stalks, leaves, seeds and the root called celeriac. You can find celery in celery salt, salads, some meat products, soups and stock cubes.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-crustaceans">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/crustaceans.png" title="Crustaceans"/>';
+									html += '	<span>';
+									html += '	<strong>Crustaceans: </strong>';
+									html += '	<p>Crabs, lobster, prawns and scampi are crustaceans. Shrimp paste, often used in Thai and south-east Asian curries or salads, is an ingredient to look out for.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-egg">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/eggs.png" title="Eggs"/>';
+									html += '	<span>';
+									html += '	<strong>Eggs: </strong>';
+									html += '	<p>Eggs are often found in cakes, some meat products, mayonnaise, mousses, pasta, quiche, sauces and pastries or foods brushed or glazed with egg.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-fish">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/fish.png" title="Fish"/>';
+									html += '	<span>';
+									html += '	<strong>Fish: </strong>';
+									html += '	<p>You will find this in some fish sauces, pizzas, relishes, salad dressings, stock cubes and Worcestershire sauce.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-gluten">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/gluten.png" title="Gluten"/>';
+									html += '	<span>';
+									html += '	<strong>Gluten: </strong>';
+									html += '	<p>Wheat (such as spelt and Khorasan wheat/Kamut), rye, barley and oats is often found in foods containing flour, such as some types of baking powder, batter, breadcrumbs, bread, cakes, couscous, meat products, pasta, pastry, sauces, soups and fried foods which are dusted with flour.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-lactose">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/lactose.png" title="Milk"/>';
+									html += '	<span>';
+									html += '	<strong>Milk: </strong>';
+									html += '	<p>Milk is a common ingredient in butter, cheese, cream, milk powders and yoghurt. It can also be found in foods brushed or glazed with milk, and in powdered soups and sauces.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-lupin">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/lupin.png" title="Lupin"/>';
+									html += '	<span>';
+									html += '	<strong>Lupin: </strong>';
+									html += '	<p>Yes, lupin is a flower, but it&#039;s also found in flour! Lupin flour and seeds can be used in some types of bread, pastries and even in pasta.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-molluscs">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/molluscs.png" title="Molluscs"/>';
+									html += '	<span>';
+									html += '	<strong>Molluscs: </strong>';
+									html += '	<p>These include mussels, land snails, squid and whelks, but can also be commonly found in oyster sauce or as an ingredient in fish stews.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-mustard">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/mustard.png" title="Mustard"/>';
+									html += '	<span>';
+									html += '	<strong>Mustard: </strong>';
+									html += '	<p>Liquid mustard, mustard powder and mustard seeds fall into this category. This ingredient can also be found in breads, curries, marinades, meat products, salad dressings, sauces and soups.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-nuts">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/nuts.png" title="Nuts"/>';
+									html += '	<span>';
+									html += '	<strong>Nuts: </strong>';
+									html += '	<p>Not to be mistaken with peanuts (which are actually a legume and grow underground), this ingrediend refers to nuts which grow on trees, like cashew nuts, almonds and hazelnuts. You can find nuts in breads, biscuits, crackers, desserts, nut powders (often used in Asian curries), stir-fried dishes, ice cream, marzipan (almond paste), nut oils and sauces.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-peanuts">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/peanuts.png" title="Peanuts"/>';
+									html += '	<span>';
+									html += '	<strong>Peanuts: </strong>';
+									html += '	<p>Peanuts are actually a legume and grow underground, which is why it&#039;s sometimes called a groundnut. Peanuts are often used as an ingredient in biscuits, cakes, curries, desserts, sauces (such as satay sauce), as well as in groundnut oil and peanut flour.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-sesame">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/sesame-seeds.png" title="Sesame seeds"/>';
+									html += '	<span>';
+									html += '	<strong>Sesame seeds: </strong>';
+									html += '	<p>These seeds can often be found in bread (sprinkled on hamburger buns for example), breadsticks, houmous, sesame oil and tahini. They are sometimes toasted and used in salads.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-soya">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/soya.png" title="Soybeans"/>';
+									html += '	<span>';
+									html += '	<strong>Soybeans: </strong>';
+									html += '	<p>Often found in bean curd, edamame beans, miso paste, textured soya protein, soya flour or tofu, soya is a staple ingredient in oriental food. It can also be found in desserts, ice cream, meat products, sauces and vegetarian products.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-sulphur">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/sulphur-dioxide.png" title="Sulphur Dioxide (sulphites)"/>';
+									html += '	<span>';
+									html += '	<strong>Sulphur Dioxide (sulphites): </strong>';
+									html += '	<p>This is an ingredient often used in dried fruit such as raisins, dried apricots and prunes. You might also find it in meat products, soft drinks vegetables as well as in wine and beer. If you have asthma, you have a higher risk of developing a reaction to sulphur dioxide.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-vegetarian">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/vegetarian.png" title="Vegetarian"/>';
+									html += '	<span>';
+									html += '	<strong>Vegetarian: </strong>';
+									html += '	<p>This meal is suitable for vegetarians.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-chilli">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/chilli.png" title="Chilli"/>';
+									html += '	<span>';
+									html += '	<strong>Chilli: </strong>';
+									html += '	<p>This is a spicy dish and may contain chillies.</p>';
+									html += '	</span>';
+									html += '</span>';html += '<span id="allergy-info-icon-free">';
+									html += '	<img src="/assets/default/img/allergy-icons-small/allergy-free.png" title="Allergy free"/>';
+									html += '	<span>';
+									html += '	<strong>Allergy free: </strong>';
+									html += '	<p>This meal is free from allergens.</p>';
+									html += '	</span>';
+									html += '</span>';		html += '</div>';
+		
+						$('#allergy-info-dialog').append(html);
+					}
+					
+					// Position dialog in middle of screen
+					var dBox = $('#allergy-info-dialog'), w = $(window);
+					var nTop = (w.height() / 4) - (dBox.height() / 4);
+					dBox.css({
+						top: (nTop <= 0) ? 0 : nTop, // Set top to zero if new top is off the screen
+					});
+					
+					// Show the dialog on screen
+					$('#allergy-info-dialog').show();
+					
+					// Remove all highlight styles from the spans
+					$('#allergy-info-dialog-container > span').removeAttr('style');
+					
+					// Scroll the selected icon into position on the dialog
+					var infoicon_top = $('#allergy-info-icon-'+tagname)[0].offsetTop;
+					var container_top = $('#allergy-info-dialog-container')[0].offsetTop;
+					$('#allergy-info-dialog-container')[0].scrollTop = (infoicon_top - container_top);
+					
+					// Highlight the selected icon with a coloured background
+					$('#allergy-info-icon-'+tagname).animate({backgroundColor:'#ff8'},'slow');
+				});
+				
+				$(document).on('click', '#allergy-info-dialog-close', function(e)
+				{
+					$('#allergy-info-dialog').hide();
+					return false;
+				});
+			});
+		</script><link rel="stylesheet" href="https://department.byretail.net/assets/default/css/allergy-info-dialog.css?5cc099ccf3ade32ffe6a4efa6eb943c7" type="text/css"/>						<script>
+				var stock_cart = {};
+				var tmp_cart   = {};
+			</script>
+			</body>
+
+</html>

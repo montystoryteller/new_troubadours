@@ -1,0 +1,790 @@
+﻿
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+        
+            <link rel="stylesheet" href="/content/resource/86c14f17-ecc2-4363-b833-9aaf50cbab24">
+        
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" ></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" ></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment.min.js" ></script>
+        <script src="/static/jquery.rwdImageMaps.min.js" ></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        
+    
+    <title>TheatreFest2026</title>
+</head>
+
+<body>
+
+    <div id="tf-container" class="container">
+        <div class="row">
+            <div class="col-xl-10 offset-xl-1">
+
+                
+                    <div id="tf-banner" class="mb-1">
+                        <a href="/home">
+                            
+                                <img class="d-none d-sm-block img-fluid" src="/media/uploads/images/2432bc34-4f73-43aa-b8f3-12a38f42574c.png" usemap="#banner-map" width="958" height="202" />
+                                <img class="d-block d-sm-none img-fluid" src="/media/uploads/images/58bee466-aeba-461b-9330-99a0d1259972.png" usemap="#banner-mobile-map" width="659" height="206"/>
+                            
+                        </a>
+                        
+                            <map name="banner-map">
+                                <area shape="rect" coords="1900,510,2433,315" href="https://www.lineal.co.uk/" target="_blank" />
+                            </map>
+                        
+                        
+                            <map name="banner-mobile-map">
+                                <area shape="rect" coords="410,155,641,200" href="https://www.lineal.co.uk/" target="_blank" />
+                            </map>
+                        
+                    </div>
+                
+                
+                <div id="tf-navigator" class="mb-2">
+                    <nav class="navbar navbar-dark navbar-expand-md py-1">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div id="navbar-collapse" class="collapse navbar-collapse">
+                            <ul class="navbar-nav mr-auto">
+                                
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/content/page/home">home</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/program/shows">shows</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/program/schedule">schedule</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/content/page/tickets">tickets</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/content/page/performers">perform</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/program/venues">venues</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                                    support
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    
+                                                        <a class="dropdown-item" href="/tickets/donations">donate</a>
+                                                    
+                                                        <a class="dropdown-item" href="/content/page/membership">members</a>
+                                                    
+                                                        <a class="dropdown-item" href="/content/page/sponsorship">sponsor</a>
+                                                    
+                                                </div>
+                                            </li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/content/page/volunteers">volunteer</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="/content/page/contact">contact</a></li>
+                                        
+                                    
+                                        
+                                            <li class="nav-item"><a class="nav-link" href="https://fringetheatrefestblog.wordpress.com/">reviews</a></li>
+                                        
+                                    
+                                
+                            </ul>
+                            <ul class="navbar-nav">
+                                
+                                    <li class="nav-item"><a class="nav-link" href="/login/">login/register</a></li>
+                                
+                            </ul>
+                        </div>
+                    </nav>
+                </div>    
+
+                
+
+                <div id="tf-header">
+                    <h3 id="tf-page-title">
+                        welcome to Fringe TheatreFest
+                        <div class="float-right mb-2">
+                            <a href="https://www.facebook.com/TheatrefestND/"><img src="/static/facebook.png"/></a>
+                            <a href="https://www.instagram.com/theatrefestND"><img src="/static/instagram.png"/></a>
+                        </div>
+                    </h3>
+                    <div class="clearfix"></div>
+                    <div id="tf-alerts">
+                        
+                            
+                        
+                    </div>
+                    <div id="tf-basket">
+                        
+                    </div>
+                </div>
+
+                <div id="tf-content">
+                    
+
+    <div class="row">
+  <div class="col-md-8">
+
+    <!------------------------------------------
+WELCOME AND HEADLINES
+------------------------------------------->
+
+    <h1 class="mt-4">thank you!</h1>
+    <p><strong>The <strong>20th</strong> Fringe TheatreFest</strong> was epic - 4 days of 50 shows, 181 performances!</strong></p>
+    <p>A huge thank you to everyone who made it happen!</p>
+    <p>Relive the magic through the reviews on the <a href="https://fringetheatrefestblog.wordpress.com/" target="_blank">review blog</a>.</p>
+    <p>Save next year's dates - <strong>24th to 27th June 2027</strong></p>
+
+    <!---------------
+CAROUSEL
+----------------->
+    <div class="card border-warning mt-4" style="background-color: #ffffff">
+
+      <div class="card-body">
+        <h1>the 2026 companies...</h1>
+
+        <div id="carouselSponsors" class="carousel slide carousel-fade" data-ride="carousel" data-interval="3000">
+          <div class="carousel-inner">
+
+            <div class="carousel-item active">
+              <a href="https://www.theatrefest.co.uk/program/show/a204ef10-f9f4-4c6c-badc-ecbd9054ce5b">
+                <img src="/media/uploads/images/44556cbd-679f-48d9-9c11-5e2800055a1b.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/27f310aa-cf1a-4720-a31b-26f20b123d63">
+                 <img src="/media/uploads/images/43755c21-1e08-46d3-8704-277dc735e955.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/e186e5b7-1190-4d1b-b6e5-8d0d3bdec1ae">
+                <img src="/media/uploads/images/da543533-3ed3-4f2c-a804-487855735aa6.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/1099f5f1-2be6-4f7d-a3d9-69fe3b5dfae7">
+                <img src="/media/uploads/images/59a8db9e-ba26-4f0b-9521-31948bbec1db.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/3f641f24-20af-4386-821f-2e0df7be6115">
+                <img src="/media/uploads/images/7dde5931-2219-46a0-b9df-a1e933ec6a61.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/25c18283-df9d-4ce4-96cd-1db1e988983b">
+                <img src="/media/uploads/images/51cd111f-819e-4ef9-902a-43f9d28af4e3.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/398493c7-5384-4749-9d38-6108f1fff4e7">
+                 <img src="/media/uploads/images/b9bf4e83-22d9-4117-a4fd-5226a32963be.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/cdf7c82d-d394-4b41-a2b9-653c0c215935">
+                 <img src="/media/uploads/images/0bb2beb1-d378-4271-ab57-6b1da40ae5e2.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/5df48fcd-a011-40ce-a4d2-61de5d33490c">
+                <img src="/media/uploads/images/66d5a0d3-1a18-4567-bdcc-03e6e7d06e65.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/70e2956c-2741-4745-ad26-49f5866b966e">
+                <img src="/media/uploads/images/791a248a-5c09-49ed-b2ad-93659ee70bcb.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/14bab20b-052a-4ffe-be00-4410d521f8fa">
+                <img src="/media/uploads/images/070c60a4-a1ca-4a6d-879f-6b99e43f07d9.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/2eb625ae-906f-4063-80d3-f8489d59699e">
+                 <img src="/media/uploads/images/b37de81a-64be-41f7-834a-f51d7b51ae79.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/7dbf5d1a-b046-45ec-862d-d3f8149a486f">
+                <img src="/media/uploads/images/f3f46f1b-30cf-452c-bdd1-78e09f833f6a.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/037014c0-3566-44ec-85c8-1ba2e1e9895b">
+                <img src="/media/uploads/images/2cc63e53-3431-4a41-be3c-02069e4b1fb7.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/048a8518-a742-464c-9a03-05cd4aa0c58c">
+                <img src="/media/uploads/images/e86aca00-b04c-4497-8ff4-acc2e354a5b7.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/4c09e1e8-89b5-41a1-a544-92e7c933fe2e">
+                <img src="/media/uploads/images/b4eca86d-e6c6-4993-b96c-e53e67596aad.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/31c6bafa-9c04-4fa9-8ef4-deb62e5bfa7b">
+                <img src="/media/uploads/images/85455610-d51c-4089-8772-c3c9a028b23f.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/1f6b6694-8dc2-42f1-b124-10cd361f99fd">
+                <img src="/media/uploads/images/fc9f9743-37ed-4e32-9293-560764a32cf1.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/bcc57c75-f8e8-41cb-96d4-7c212848b931">
+                <img src="/media/uploads/images/9dc6e04c-d494-4cbd-94f6-701d94de8308.png" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/22142c4c-19bf-461e-942b-f13fdc50ea3a">
+                <img src="/media/uploads/images/d76159d2-03b8-4dc5-9417-1585da38bd7b.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/0e9a3573-9dd2-4331-a7a6-578e9847fe54">
+                <img src="/media/uploads/images/e53a998f-356e-4330-ae90-cf2f2545aa48.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/94e1da7d-102d-4357-8218-58461f1e202e">
+                <img src="/media/uploads/images/20474fbc-da66-4469-aeed-0d44801eedfe.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/7ca5ab52-4676-4649-aa72-75cca7f87f63">
+                <img src="/media/uploads/images/c0d30f79-856e-450a-a271-0f913bdf652e.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/51557e08-82f2-4dcf-ad7a-062c0bfa4e65">
+                 <img src="/media/uploads/images/a7f8ec68-e8df-443e-99ef-7fef784010ca.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/ea9baae9-eeb5-4827-a78a-c732d5da254a">
+                 <img src="/media/uploads/images/0124b6d3-01ce-43fe-bd05-a388064bc17c.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/74873cce-a7f6-4698-85c0-5ea37558033b">
+                 <img src="/media/uploads/images/d81cb771-14fc-4dd6-b11f-dc0a6b787f9c.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/d0feb4c3-609a-4b99-a25f-cebc5e0cfdae">
+                 <img src="/media/uploads/images/69425676-67ed-4442-9bbe-9421ca9ed061.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/5e2e894c-e99c-426c-8d3d-b3e248cf0e23">
+                 <img src="/media/uploads/images/844a3d64-ae64-44d8-9712-8159b351af9c.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/aeff278a-355e-4638-aecc-d7029cc7cdb9">
+                 <img src="/media/uploads/images/8f089754-f66c-4319-8bda-9a4067d65e70.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/0383024f-38a8-4e45-a569-260124720977">
+                 <img src="/media/uploads/images/d48ed85c-de27-49b9-8953-40fc71081618.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/6b827f8b-c921-47a5-aeba-119f4b1ed5cb">
+                 <img src="/media/uploads/images/9a954ce5-62cb-44e4-b40d-9d1f75f6fa24.png" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/43c96a9f-fc01-4be8-879d-8d65777cd8bd">
+                 <img src="/media/uploads/images/0476735c-be76-4fbf-b91d-ffbc28ff2210.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/257c685f-fe35-4996-9f8c-68d52d3d7c41">
+                 <img src="/media/uploads/images/ab3c6389-a92c-4e7d-8e9c-9f24b0e48829.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/626e0d9e-b00f-4324-ae96-7d93047d7240">
+                 <img src="/media/uploads/images/4e00b3fc-a107-4765-9622-9077391da1b1.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/b282ca57-853b-41c4-9d13-551d4b687ef4">
+                 <img src="/media/uploads/images/43918ee5-1ad9-41da-b425-7b8272670c0e.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/15548f0a-a03a-4edc-8b68-2189d4b241c8">
+                 <img src="/media/uploads/images/a55d35dd-0f9c-4271-99a5-ed8e380ca9f9.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/7eb7c145-8855-4f52-9dfc-c05e1ec2c273">
+                 <img src="/media/uploads/images/a81c50e0-1ef7-4d84-80d4-0dab51469120.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/6e1843da-aaa2-4353-b610-1499120f944f">
+                 <img src="/media/uploads/images/8f19ff43-069b-4d4e-9790-eaa0db3f5e2e.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/659740a4-cf95-4f76-bcb3-0ed9ee0328ae">
+                <img src="/media/uploads/images/26b3df59-1619-4558-9d97-63cbceaed0f9.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/0536f00e-48fa-4977-bc50-08d753b5d02b">
+                 <img src="/media/uploads/images/e2671e50-99e4-4817-8437-52c8ed2d4da1.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/d529955c-d691-4e8c-a722-2c2dc7135427">
+                 <img src="/media/uploads/images/59142554-4324-4ecf-bf32-717f9732be1d.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/525dfa8f-a4a9-4328-b76d-42db18f5b820">
+                 <img src="/media/uploads/images/39209889-646c-44d8-8fe4-7acf95a230e9.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/c5430dfd-64ec-4c59-a648-34ebd45ebee0">
+                 <img src="/media/uploads/images/ad6ce519-1cf1-4fa1-8038-83db0803be3c.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/23833306-fd3f-48ac-a815-a9fbd0858471">
+                 <img src="/media/uploads/images/bfb064ae-d2c1-4b67-9c64-c000ce850dcd.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/9df87ec5-e1fd-43e4-ba57-d9e6056569d1">
+                 <img src="/media/uploads/images/4938332d-b733-4e8c-a989-c54f5448b999.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/ceb7e36a-91fe-4be2-b965-cd40f02c7f14">
+                 <img src="/media/uploads/images/1b5d35eb-212b-42c4-8fca-c6c243b444b6.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/4a8cf8d6-58f5-4319-a6e6-afd8d80dc2db">
+                 <img src="/media/uploads/images/b2878bb3-f3f9-493d-b0b2-758f5d08deb5.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/4ca02cf0-838a-4fd5-8c10-cd7277b94445">
+                 <img src="/media/uploads/images/cc95e8ef-486c-4679-876a-749aacbf9999.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/d305867c-15b9-40d0-819b-c64682ad789e">
+                <img src="/media/uploads/images/8eda10f5-5901-44e0-bacc-d01e6c31d03d.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/fa12fb21-4787-4939-ba82-28efd7f48a33">
+                 <img src="/media/uploads/images/500db91a-931f-4b78-9e08-d8968928ea4b.png" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/97a77e25-2464-4e02-8371-b093210fbd7d">
+                 <img src="/media/uploads/images/52f14dbe-7562-4789-8193-acb9c16698f4.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/27907929-8d7c-4def-a15a-078bbb959eb8">
+                 <img src="/media/uploads/images/8151dd81-ad0b-4eeb-98c4-61c831362bd4.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/e2e394ae-da60-4b39-b3a2-ccd1f669b53c">
+                 <img src="/media/uploads/images/0f802205-22ca-47b7-9ff9-77850eb65bf0.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/c9499b09-ab05-4485-92b3-ad974fd091b1">
+                 <img src="/media/uploads/images/6309c2cf-0947-463f-8e85-58cf4aca29f5.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/ca33022b-cb84-4e4a-be6f-0da92a704665">
+                 <img src="/media/uploads/images/ad280ec8-89ea-4b7a-924f-a964f2b80f8d.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+              <a href="https://www.theatrefest.co.uk/program/show/bf527a92-0500-43fc-a061-e7b7de422573">
+                <img src="/media/uploads/images/b72ad6c6-3258-410a-9d59-10f53e6682f9.jpg" class="d-block w-100" alt="..."> </a>
+            </div>
+
+            <div class="carousel-item">
+               <a href="https://www.theatrefest.co.uk/program/show/873772e8-4ef9-41cb-a351-8f048aa28b10">
+                 <img src="/media/uploads/images/0fb6aa71-6670-4538-9478-0a474c2f1ae3.jpg" class="d-block w-100" alt="..."></a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <p class="mt-4">You may want to look at <b><a href="/festival/archive/index" target="_blank">the
+          archive</a></b></p>
+
+    <!-------------------
+MEMBERSHIP
+--------------------->
+
+    <div class="card border-warning mt-4" style="background-color: #ffffff">
+      <div class="card-body">
+        <h1>the benefits of Fringe TheatreFest membership...</h1>
+        <p>A brochure and two free Fringe Badges (one for you and one to encourage a friend!) through the post. News and
+          updates through the year. The opportunity to help shape the future of Fringe TheatreFest.</p>
+        <p><a class="tf-link" href type="link" data-toggle="collapse" data-target="#collapseBoxOffice"
+            aria-expanded="false" aria-controls="collapseBoxOffice">details</a></p>
+
+        <div class="collapse" id="collapseBoxOffice">
+
+          <div class="card-body">
+            <ul>
+              <li>Fringe TheatreFest membership is an excellent way of supporting the event itself and potentially
+                guiding its future.</li>
+
+              <li>The £10 membership fee includes two free Fringe Badges (one for you and one to encourage a friend!)
+                and a brochure through the post. Membership fees help defray our eco- friendly printing costs -
+                brochures, badges, Frequent-Fringers, posters, leaflets and venue signage.</li>
+
+              <li>As a member, you receive email updates through the year and invitations to meetings and events.</li>
+
+              <li>You have the right to take part in the election of the committee that superintends the activities of
+                Fringe TheatreFest and you have the opportunity to contribute to the meetings of that committee.</li>
+
+              <li>If you would like to join as a member, please submit the form on our <a
+                  href="/content/page/membership"><strong>members page</strong></a>.</li>
+              </li>
+            </ul>
+            <button type="button" class="btn btn-warning btn-sm mb-0" style="background-color: #fd7f02"><a href
+                type="link" data-toggle="collapse" data-target="#collapseBoxOffice" aria-expanded="false"
+                aria-controls="collapseBoxOffice" style="color: #ffffff"><strong>close</strong></a></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div>
+
+      <!--------------
+PARTNERS
+---------------->
+
+      <h1 class="mt-4">our partners:</h1>
+      <div class="partnersgridrow">
+        <div class="partnersgridcolumn">
+          <a href="https://www.landmarktheatres.co.uk/" target="_blank"><img
+              src="/media/uploads/images/4f717fe0-294d-4fdf-88ae-1e6ce85dce50.png" class="d-block w-100" alt="..."></a>
+          <a href="https://www.barnstapletowncouncil.gov.uk/" target="_blank"><img src="/media/uploads/images/bfac502d-6843-4e87-ac75-44dc8a6c70c0.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://www.northdevon.gov.uk/" target="_blank"><img src="/media/uploads/images/80e7d92f-4ea3-4af4-897f-01ea73d8f500.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://www.theploughartscentre.org.uk/" target="_blank"><img
+              src="/media/uploads/images/7d879e77-9f7d-44c7-8a5f-72f9a89a3e85.png" class="d-block w-100" alt="..."></a>
+          <a href="http://www.swimbridgejubileehall.com/" target="_blank"><img src="/media/uploads/images/8f164c75-b979-433e-8b2a-ebce267c2f13.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="http://www.theatreworkhouse.co.uk/" target="_blank"><img src="/media/uploads/images/0283fd41-bfbf-400e-bb18-d46f64cc5799.png"
+              class="d-block w-100" alt="..."></a>
+        </div>
+        <div class="partnersgridcolumn">
+          <img src="/media/uploads/images/d11e4f28-9e6b-472e-8fb5-bb5d53a3697d.png" class="d-block w-100" alt="...">
+          <a href="https://www.northdevon.gov.uk/business/barnstaple-pannier-market" target="_blank"><img
+              src="/media/uploads/images/8bb95d05-47dd-4c49-a8f8-16df62543dd4.png" class="d-block w-100" alt="..."></a>
+          <a href="https://www.greenlanes.co.uk/" target="_blank"><img src="/media/uploads/images/c09d83d7-2651-43e6-b80d-c552eb82182c.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://discover.librariesunlimited.org.uk/-/barnstaple-library" target="_blank"><img
+              src="/media/uploads/images/74f4d39d-bb99-41fb-b3e5-173e8554a281.png" class="d-block w-100" alt="..."></a>
+          <a href="https://www.barnstaplebaptist.org.uk/welcome.htm" target="_blank"><img
+              src="/media/uploads/images/bf8f1395-87e4-43aa-839e-f1285af650bc.png" class="d-block w-100" alt="..."></a>
+        </div>
+        <div class="partnersgridcolumn">
+          <a href="https://upclose.radio/" target="_blank"><img src="/media/uploads/images/e5a321ec-5703-4a1a-9cf3-7091843b4622.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://cafeonthestrand.co.uk/" target="_blank"><img src="/media/uploads/images/d1b2767b-02a7-461a-a2e4-c15430ef14d2.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://www.matrixprintdesign.com/" target="_blank"><img src="/media/uploads/images/49f69e1d-2d03-4ef4-9afd-8bf20de8ca35.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://thefeelgoodlarder.co.uk/" target="_blank"><img src="/media/uploads/images/1e6955d0-c422-485d-812d-609ea62ad09b.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://www.multistorytheatre.co.uk/" target="_blank"><img src="/media/uploads/images/d8995936-03f1-4b08-bce9-bd9dc9fed405.png"
+              class="d-block w-100" alt="..."></a>
+        </div>
+        <div class="partnersgridcolumn">
+          <img src="/media/uploads/images/06948b45-7453-4de8-933d-bb74138447aa.png" class="d-block w-100" alt="...">
+          <img src="/media/uploads/images/65589daa-1495-469b-957a-4d6aa893b090.png" class="d-block w-100" alt="...">
+          <a href="https://barumbridgetrust.org/" target="_blank"><img src="/media/uploads/images/b67261e1-f4b1-4e20-87bc-fac1791affd3.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://barnstaplemuseum.org.uk/" target="_blank"><img src="/media/uploads/images/9d1e8d38-c3d8-42b1-82f2-f08b26c14245.png"
+              class="d-block w-100" alt="..."></a>
+          <a href="https://ndvs.org.uk/" target="_blank"><img src="/media/uploads/images/de7e4aff-29f6-4c09-9746-fc7d5b932a4b.png" class="d-block w-100"
+              alt="..."></a>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align: center" class="mt-5 mb-4"><a href="/content/page/governance"><strong>governance</strong></a>
+    </p>
+  </div>
+
+
+
+
+  <!-- COLUMN 2 -->
+
+  <div class="col-md-4">
+    <div class="card border-warning mt-2" style="background-color: #fdf3eb">
+      <div class="card-body" style="padding: 10px">
+
+
+        <!-- NEWSLETTER SIGNUP FORM -->
+
+        <div class="form-wrapper embedded">
+          <form id="newsletterForm" style="max-width: 500px; font-family: Arial; padding-bottom: 5px" novalidate>
+            <h1>sign up for newsletter and updates</h1>
+
+            <div class="form-card required">
+              <label for="firstName" class="label-text">first name</label>
+              <input id="firstName" class="text-field embedded" type="text" name="firstName" maxlength="50" required>
+            </div>
+
+            <div class="form-card required">
+              <label for="lastName" class="label-text">last name</label>
+              <input id="lastName" class="text-field embedded" type="text" name="lastName" maxlength="50" required>
+            </div>
+
+            <div class="form-card required">
+              <label for="email" class="label-text">email address</label>
+              <input id="email" class="text-field embedded" type="email" name="email" maxlength="50" required>
+            </div>
+
+            <button id="submitButton" style="display: block; margin: 0 auto; width: 50%;" type="submit"
+              class="form-btn">submit</button>
+            <input type="hidden" name="formType" value="newsletter">
+
+            <!-- Cloudflare Turnstile -->
+            <div class="turnstile-center">
+              <div style="scale: 0.7; display: block; align: center; transform-origin: center" class="cf-turnstile"
+                data-sitekey="0x4AAAAAACLSKblODEjOXemo" data-callback="onTurnstileSuccess">
+              </div>
+            </div>
+
+          </form>
+
+          <p class="text-center" style="font-size: .85rem; margin-top: 15px"><a class="tf-link"
+              href="/content/document/ac60ce03-8256-4820-b675-7f7f66924e0f" target="_blank">privacy policy</a></p>
+
+        </div>
+      </div>
+    </div>
+
+<!-- FESTIVAL SPONSOR -->
+   <div class="card border-warning text-center mt-2" style="background-color: #g9g6g3">
+         <h1 class="festival-title">festival sponsor</h1>
+
+      <div class="card-body" style="padding: 10; padding-bottom: 10">
+          <a href="https://www.lineal.co.uk/" target="_blank"><img src="/media/uploads/images/72d54e9c-4d97-47f3-b05c-594b7d24a764.png" class="d-block w-100"
+              alt="..."></a>
+      </div>
+
+    </div>
+
+
+<!--VENUE SPONSORS-->
+
+   <div class="card border-warning text-center mt-2" style="background-color: #g9g6g3">
+         <h1 class="venue-title">venue sponsors</h1>
+
+          <a href="https://rotary-ribi.org/clubs/homepage.php?ClubID=1017" target="_blank"><img src="/media/uploads/images/93a44e39-dcc5-482e-b0d1-fe356b6ab3e8.jpg"
+              class="sponsor-logo d-block w-100" alt="..." style="scale: 80%; margin-top: 20px"></a>
+
+      <div class="card-body" style="padding: 10; padding-bottom: 10">
+      </div>
+
+    </div>
+
+
+<!-- GOLD SPONSORS -->
+   <div class="card border-warning text-center mt-2" style="background-color: #g9g6g3">
+       <h1 class="gold-title">gold sponsors</h1>
+
+      <div class="card-body" style="padding: 10; padding-bottom: 10">
+          <a href="https://wollens.co.uk/" target="_blank"><img src="/media/uploads/images/602ce8c2-418b-4be4-8bc4-27cf14553153.png" class="sponsor-logo d-block w-100"
+              alt="..."></a>
+          <a href="https://www.rosiebracher.co.uk/" target="_blank"><img src="/media/uploads/images/beea09b2-7bca-4fec-9131-57ac3386d268.png"
+              class="sponsor-logo d-block w-100" alt="..."></a>
+          <a href="https://www.samuels-solicitors.co.uk/" target="_blank"><img src="/media/uploads/images/7d3047cf-b7b9-4de9-97d6-b19f13f553cf.png"
+              class="sponsor-logo d-block w-100" alt="..."></a>
+          <a href="https://www.emea.lambda.tdk.com/landing/en/" target="_blank"><img src="/media/uploads/images/13f8ba61-99c6-45fa-8233-368508f7fdc7.png"
+              class="sponsor-logo d-block w-100" alt="..." style="scale: 80%; margin-top: 20px"></a>
+       </div>
+
+  </div>
+
+
+<!-- SILVER SPONSORS -->
+   <div class="card border-warning text-center mt-2" style="background-color: #g9g6g3">
+       <h1 class="silver-title">silver sponsors</h1>
+
+          <a href="https://www.peninsulamanagement.co.uk/" target="_blank"><img src="/media/uploads/images/13e84350-bad6-4126-ac96-0d79056455f1.png"
+              class="sponsor-logo d-block w-100" alt="..." style="scale: 80%; margin-top: 20px"></a>
+      </div>
+
+   </div>
+
+
+
+
+    <!-- SCRIPT -->
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+
+    <script>
+      let turnstileToken = null;
+
+      function onTurnstileSuccess(token) {
+        turnstileToken = token;
+      }
+    </script>
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const forms = document.querySelectorAll(
+          "#newsletterForm"
+        );
+
+        forms.forEach(form => {
+          const submitButton = form.querySelector('button[type="submit"]');
+          if (!submitButton) return;
+
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (!form.checkValidity()) {
+              form.reportValidity();
+              return;
+            }
+
+            // ONLY enforce Turnstile on the comment form
+            if (form.id === "newsletterForm" && !turnstileToken) {
+              alert("Please verify you are human.");
+              return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Submitting…";
+
+            const payload = {
+              formType: form.elements.formType.value,
+              firstName: form.elements.firstName.value,
+              lastName: form.elements.lastName.value,
+              email: form.elements.email.value,
+              cfTurnstileToken: turnstileToken // include token
+            };
+
+            try {
+              const response = await fetch(
+                "https://default292b0eba460a4e40b6feb676350373.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/79f31f8b44a94ecb9e7b911d8d6067fc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YfnEZQcvugjar_C0DtM278qBHaG6ZeK0QoisqG34CNc",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload)
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+              }
+
+              submitButton.textContent = "submitted";
+              submitButton.classList.add("submitted");
+            } catch (err) {
+              console.error("submission failed:", err);
+
+              submitButton.disabled = false;
+              submitButton.textContent = "submit";
+
+              alert("There was a problem submitting the form. Please try again later.");
+            }
+          });
+        });
+      });
+    </script>
+
+
+
+  </div>
+
+</div>
+
+
+                </div>
+
+                <div id="tf-footer">
+                </div>
+
+            </div>
+        </div>
+    </div>  
+
+    <script lang="JavaScript">
+        $(document).ready(function(e) {
+             $('img[usemap]').rwdImageMaps();
+        });
+    </script>
+
+    
+    
+
+</body>
+
+</html>

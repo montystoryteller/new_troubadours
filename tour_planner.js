@@ -456,15 +456,57 @@ const MOVABLE = ["blkAnchor", "blkOther", "blkDates", "blkArea", "blkMust", "blk
  *  Area, must-visit places, start & end and filters wait behind one "More options" button, and appear on their
  *  own once a tour is built. Nothing is removed: it only hides until wanted. */
 function syncQuickStart() {
-  const row = document.getElementById("plannerSummaryRow"), more = document.getElementById("moreOptionsRow");
+  const row = document.getElementById("plannerSummaryRow"), more = document.getElementById("moreOptionsRow"), all = document.getElementById("moreOptions");
   if (!row || !more) return;
   const quick = !PLANNER.moreOptions && !PLANNER.days.length;
   row.classList.toggle("quick-start", quick);
-  more.hidden = !quick;
+  more.hidden = false; // the rail of "add to your tour" chips stays; only "Show all" goes once everything is showing
+  if (all) all.hidden = !quick;
+  syncRail();
 }
 function showMoreOptions() {
   PLANNER.moreOptions = true;
   syncQuickStart();
+}
+/** The constraint rail: chips that add (before a build) or jump to (after) each optional part of the tour.
+ *  A chip shows what is already set, e.g. "Must-visits (2)". */
+const RAIL = [
+  ["blkArea", "Area", () => (PLANNER.area ? "✓" : "")],
+  ["blkMust", "Must-visits", () => (PLANNER.mustRows.length ? `(${PLANNER.mustRows.length})` : "")],
+  ["blkStart", "Start & end", () => (PLANNER.start ? "✓" : "")],
+  ["plannerLive", "Filters", () => ""],
+  ["stageBox", "Stages", () => (PLANNER.stages.length ? `(${PLANNER.stages.length})` : "")],
+];
+function syncRail() {
+  const quick = document.getElementById("plannerSummaryRow") && document.getElementById("plannerSummaryRow").classList.contains("quick-start");
+  document.querySelectorAll("#constraintRail .rail-chip").forEach((b) => {
+    const spec = RAIL.find(([id]) => id === b.dataset.rail); if (!spec) return;
+    const target = document.getElementById(spec[0]);
+    const gone = !target || target.hidden || !!(target.closest("[hidden]") && target.id !== "plannerLive") || (spec[0] === "stageBox" && currentMode() !== "pool");
+    b.hidden = gone;
+    const mark = spec[2]();
+    b.textContent = spec[1] + (mark ? " " + mark : "");
+    const open = quick ? target && target.classList.contains("rail-open") : !!mark;
+    b.classList.toggle("on", !!open);
+    b.setAttribute("aria-pressed", String(!!(quick && open)));
+  });
+}
+function railClick(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const quick = document.getElementById("plannerSummaryRow").classList.contains("quick-start");
+  if (id === "stageBox") { // stages are part of the Dates card: opt in, then show it
+    if (PLANNER.stageIdx < 0) { PLANNER.stageIdx = PLANNER.stages.length; renderStages(); }
+    const dates = document.getElementById("blkDates"); if (dates) dates.classList.remove("collapsed");
+  } else if (quick) { // before a build: add (or take away again) just this panel
+    target.classList.toggle("rail-open");
+    syncRail();
+    if (!target.classList.contains("rail-open")) return;
+  } else if (target.classList.contains("collapsed")) {
+    const b = target.querySelector(".flow-collapse"); if (b) b.click();
+  }
+  if (target.scrollIntoView) target.scrollIntoView({ behavior: "smooth", block: "center" });
+  syncRail();
 }
 function placeRefine() {
   const box = document.getElementById("plannerRefine"), flow = document.getElementById("plannerFlow");
@@ -2428,6 +2470,8 @@ function setupCollapsibles() {
   };
   const sums = [];
   PLANNER._refreshSummaries = () => sums.forEach(([card, sum, fn]) => { if (card.classList.contains("collapsed")) sum.textContent = fn(); });
+  const refreshSums = PLANNER._refreshSummaries;
+  PLANNER._refreshSummaries = () => { refreshSums(); syncRail(); };
   ["input", "change"].forEach((t) => document.addEventListener(t, () => PLANNER._refreshSummaries()));
   Object.keys(summaryOf).forEach((id) => {
     const card = document.getElementById(id), btn = card && card.querySelector(".flow-collapse");
@@ -2663,10 +2707,23 @@ function gatherPlan() {
   return plan;
 }
 
-function savePlan() {
+/** The plan as saved to a file: the current set-up plus, when staging, every stage. */
+function planForFile() {
   commitCurrentStage();
   const plan = gatherPlan();
   if (PLANNER.stageIdx >= 0) plan.stages = { idx: PLANNER.stageIdx, list: PLANNER.stages };
+  return plan;
+}
+/** Hand the plan to the Tour Manager page (same browser, via local storage) and open it. */
+function openInManager() {
+  const plan = planForFile();
+  if (!plan.picks.length && !(plan.stages && plan.stages.list.some((s) => (s.plan.picks || []).length))) return setStatus("Pick some gigs first, then open the plan in the Tour Manager.", true);
+  try { localStorage.setItem("nt_tour_plan", JSON.stringify(plan)); }
+  catch (e) { return setStatus("Couldn't hand the plan over (browser storage is blocked). Save the plan and open the file in the Tour Manager instead.", true); }
+  window.open("tour_manager.html?from=planner", "_blank");
+}
+function savePlan() {
+  const plan = planForFile();
   TourSupport.saveText(JSON.stringify(plan, null, 2), `tour-plan-${dkey(getTodayMidnight())}.json`, "application/json");
   setStatus(`Plan saved (${plan.picks.length} stop${plan.picks.length === 1 ? "" : "s"} picked). Load it later with “Load plan”.`);
 }
@@ -2880,6 +2937,8 @@ function stageSaveNext() {
     setStatus(`Stage ${PLANNER.stages.length} saved. Plan stage ${PLANNER.stages.length + 1} below — dates are set to the next free weekend.`);
   } else setStatus(`Stage ${idx + 1} updated.`);
   renderStages();
+  const sb = document.getElementById("stageBox"); // bring the strip (with its Develop button) into view
+  if (sb && sb.scrollIntoView) sb.scrollIntoView({ block: "center" });
 }
 function stageOpen(i) {
   if (i === PLANNER.stageIdx) return;
@@ -2955,6 +3014,7 @@ function renderStages() {
   else chips.appendChild(btn("＋ New stage", () => stageOpen(PLANNER.stages.length), "stage-chip add"));
   box.appendChild(chips);
   const row = mk("div", "stage-actions");
+  row.appendChild(btn(`Develop stage ${idx + 1}`, () => document.getElementById("buildTour").click(), "btn-primary stage-develop"));
   row.appendChild(btn(isNew ? `Save stage ${idx + 1} & start the next` : `Update stage ${idx + 1}`, stageSaveNext, "btn-secondary"));
   if (!isNew) row.appendChild(btn("Copy to a new weekend", () => stageDuplicate(idx)));
   if (!isNew) row.appendChild(btn("Remove this stage", () => stageRemove(idx)));
@@ -3019,8 +3079,10 @@ async function initPlanner() {
   });
   attachDualRange();
   initClash();
+  document.getElementById("openManager").addEventListener("click", openInManager);
   renderStages();
   document.getElementById("moreOptions").addEventListener("click", showMoreOptions);
+  document.querySelectorAll("#constraintRail .rail-chip").forEach((b) => b.addEventListener("click", () => railClick(b.dataset.rail)));
   syncQuickStart();
   document.getElementById("plannerMode").addEventListener("change", setMode);
   document.querySelectorAll('input[name="buildMode"]').forEach((r) => r.addEventListener("change", () => {

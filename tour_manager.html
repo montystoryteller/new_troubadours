@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Take a tour plan and work out the logistics: pickup points, drive times between gigs, overnight hotels and a day-by-day run sheet.">
+    <title>Tour Manager - New Troubadours</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="/css/shared-styles.css">
+    <link rel="stylesheet" href="/css/tour-support.css">
+    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611200052">
+</head>
+
+<body class="page-tour-manager">
+
+    <nav class="site-nav" aria-label="Site navigation">
+        <a href="index.html">🏠 Home</a>
+        <a href="event_guide.html">🗺️ Calendar</a>
+        <a href="tour_guide.html">🎭 Tours &amp; Repertoire</a>
+        <a href="tour_planner.html">🧭 Tour Planner</a>
+        <a href="tour_manager.html" aria-current="page">🧳 Tour Manager</a>
+        <a href="storyclub.html">📖 Story Clubs</a>
+        <a href="performers.html">🎤 Performers</a>
+        <a href="venues.html">📍 Venues</a>
+        <a href="festival.html">🎪 Festivals</a>
+        <a href="event.html">Event Pages</a>
+        <a href="flyers.html">📋 Flyers</a>
+        <a href="media.html">🎥 Watch &amp; Listen</a>
+        <a href="books_merch.html">📚 Books &amp; Merch</a>
+        <a href="promoters.html">Promoters</a>
+        <a href="stats.html">📊 Stats</a>
+    </nav>
+
+    <h1>Tour Manager</h1>
+    <h2 class="tour-page-subtitle">Take a tour plan from the Tour Planner and work out the logistics: pickups, drive times,
+        overnight stops and a run sheet.</h2>
+
+    <p id="mgrLoading" class="loading-state">Loading venues…</p>
+
+    <main id="mgrMain" hidden>
+        <section class="mgr-card" id="mgrLoad">
+            <h3>1 · Your tour plan</h3>
+            <div class="mgr-row">
+                <button id="mgrFromPlanner" type="button" class="mgr-btn primary" hidden>Use the plan from the Tour Planner</button>
+                <label class="mgr-file">or open a saved plan file <input id="mgrFile" type="file" accept=".json,application/json"></label>
+            </div>
+            <p id="mgrStatus" class="mgr-status" role="status"></p>
+            <div id="mgrSummary" class="mgr-hint"></div>
+        </section>
+
+        <div id="mgrWork" hidden>
+        <section class="mgr-card" id="mgrPickups">
+            <h3>2 · Pickups <span class="mgr-hint">(optional)</span></h3>
+            <p class="mgr-hint">People or kit to collect before the first gig, in order, starting from the tour's start point.</p>
+            <ol id="pickupList" class="mgr-list"></ol>
+            <div class="mgr-row">
+                <input id="pickupLabel" type="text" placeholder="Who, e.g. Sam (fiddle)" aria-label="Who to pick up">
+                <input id="pickupPlace" type="text" placeholder="Town or postcode" aria-label="Pickup place">
+                <input id="pickupTime" type="time" aria-label="Pickup time (optional)">
+                <button id="pickupAdd" type="button" class="mgr-btn">Add pickup</button>
+            </div>
+            <div id="pickupChoices" class="mgr-choices"></div>
+            <label class="mgr-check"><input type="checkbox" id="dropHome"> Drop everyone home after the last gig (reverse order)</label>
+        </section>
+
+        <section class="mgr-card" id="mgrStay">
+            <h3>3 · Overnights <span class="mgr-hint">(optional)</span></h3>
+            <p class="mgr-hint">After a gig you drive up to a set time towards the next one, then stop. The manager suggests Premier Inns and Travelodges for that stop.</p>
+            <div class="mgr-row">
+                <label>Drive up to <input id="afterMins" type="number" min="15" max="240" value="60"> min after a gig</label>
+                <label>when the next leg is over <input id="triggerMins" type="number" min="30" max="600" value="90"> min</label>
+            </div>
+            <div class="mgr-row">
+                <label class="mgr-check"><input type="checkbox" id="brandPI" checked> Premier Inn</label>
+                <label class="mgr-check"><input type="checkbox" id="brandTL" checked> Travelodge</label>
+            </div>
+            <p id="hotelStatus" class="mgr-hint"></p>
+            <label class="mgr-file" id="hotelFileWrap" hidden>Load a hotels file <input id="hotelFile" type="file" accept=".json,application/json"></label>
+        </section>
+
+        <section class="mgr-card" id="mgrRoute">
+            <h3>4 · Route and run sheet</h3>
+            <div id="runSheet"></div>
+            <div class="mgr-row" id="runActions"></div>
+        </section>
+
+        <section class="mgr-card" id="mgrOrs">
+            <h3>5 · Real drive times <span class="mgr-hint">(optional)</span></h3>
+            <p class="mgr-hint">Times above are estimates from straight-line distance. With a free <a href="https://openrouteservice.org/dev/#/signup">OpenRouteService</a> key you can replace them with routed distances and times. The key stays in this browser and is only sent to OpenRouteService.</p>
+            <div class="mgr-row">
+                <input id="orsKey" type="password" placeholder="OpenRouteService API key" autocomplete="off" aria-label="OpenRouteService API key">
+                <button id="orsGo" type="button" class="mgr-btn">Get real drive times</button>
+                <button id="orsOff" type="button" class="mgr-btn" hidden>Back to estimates</button>
+            </div>
+            <p id="orsStatus" class="mgr-hint" role="status"></p>
+        </section>
+        </div>
+    </main>
+
+    <div class="about" id="colophon">
+        <p><em>Distances are straight-line estimates scaled for roads unless you fetch routed times. Hotel locations are
+            names and coordinates only (no prices or availability): check the hotel's own site to book. Hotel data © <a
+            href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>. Place lookups use
+            <a href="https://postcodes.io/">postcodes.io</a>.</em></p>
+    </div>
+
+    <script src="/js/recurrence-engine.js"></script>
+    <script src="/js/shared_utils.js"></script>
+    <script src="/js/tour_support.js?v=202611171930"></script>
+    <script src="/js/tour_manager.js?v=202611200052"></script>
+</body>
+
+</html>

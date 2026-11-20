@@ -3925,6 +3925,26 @@
       "touring_event_flyer": "dates_the_dirt_dec_2026.jpg",
       "isSpecial": true
     },
+    "brian-bilston-how-to-lay-an-egg-with-a-horse-inside": {
+      "tour_name": "How to Lay an Egg with a Horse Inside",
+      "tour_dates": [
+        {
+          "date": "30/10/2026",
+          "venue_id": "pound-arts-corsham",
+          "isSpecial": true,
+          "isSoldOut": true,
+          "eventId": "T-brian-bilston-how-to-lay-an-egg-with-a-horse-inside-20261030-pound-arts-corsham"
+        }
+      ],
+      "name": "How to Lay an Egg with a Horse Inside",
+      "performer_id": "brian-bilston",
+      "tour_description": "Touring to support the book \"How to Lay an Egg with a Horse Inside\".\n\n\n\nThis is a book to help people overcome their suspicion (or loathing) of poetry, and maybe even encourage a few to write it. Well, maybe that’s a bit ambitious. You might just want to read the poems instead, of which there are 140, on subjects as diverse as pedantry, climate change, boogie management, beekeeping, procrastination, Mondays, Elon Musk and death.",
+      "touring_event_flyers": [
+        "tour_brian_bilston_how_to_lay_egg_horse_2026.jpg",
+        "tour_brian_bilston_how_to_lay_egg_horse_sw_2026.jpg"
+      ],
+      "isPoetry": true
+    },
     "bassie_gracie-autumn-2026": {
       "tour_name": "Bassie Gracie Autum 2026",
       "name": "Bassie Gracie",
@@ -22272,6 +22292,22 @@
         -2.22504
       ]
     },
+    "sub-rooms-stroud": {
+      "id": "sub-rooms-stroud",
+      "name": "Sub rooms, Stroud",
+      "venue_type": "Other / unknown",
+      "city": "Stroud",
+      "postcode": "GL5 1AE",
+      "full_address": "The Subscription Rooms, George St, Stroud, GL5 1AE",
+      "url": "https://thesubrooms.co.uk/",
+      "facebook": "TheSubRooms",
+      "instagram": "thesubrooms",
+      "description": "The Sub Rooms is a vital community hub, Stroud’s home for creativity, music and joy.\n\n\n\nIt is a place for all people at all stages of their lives. It is a unique venue providing an innovative programme of music, dance, theatre, visual arts, spoken word, exhibitions and workshops. It is a vibrant public space that enables everyone to come together to form a community.\n\n\n\nWe provide an enhanced and varied programme of arts events and experiences that take place in a community-focused accessible venue with well-appointed flexible performance spaces and welcoming bar and cafe facilities.\n\n\n\nThe Subscription Rooms were originally built by public subscription and sit physically and culturally at the heart of the town. Maintaining and acknowledging this sense of community ownership is key to our success – and we invite everyone to come and be part of our journey.",
+      "latlon": [
+        51.74498,
+        -2.21703
+      ]
+    },
     "star-anise-cafe-stroud": {
       "id": "star-anise-cafe-stroud",
       "name": "Star Anise Cafe, Stroud",
@@ -25605,6 +25641,22 @@
       "url": "https://undercoverhippy.com/",
       "bio": "If you've not been to an Undercover Hippy gig before, you are in for a treat. By the encore you will be exalted and exhausted; entertained and educated; energised and inspired. The music combines meaningful lyrics with upbeat, bass soaked, reggae and hip-hop infused rhythms, bringing like minded people together to both acknowledge the darkness and celebrate life."
     },
+      "brian-bilston": {
+        "id": "brian-bilston",
+        "name": "Brian Bilston",
+        "url": "https://brianbilston.com/",
+        "bio": "Brian Bilston is a poet who knows it. He writes about the human condition, relationships, and buses.",
+        "type": "poet",
+        "facebook": "BrianBilston",
+        "youtube_videos": [
+          {
+            "story_name": "Brian Bilston: The John Robb interview",
+            "yt_url": "https://www.youtube.com/watch?v=BTFk0VEE1Uc"
+          }
+        ],
+        "instagram": "brian_bilston",
+        "poet": true
+      },
     "bassie-gracie": {
       "id": "bassie-gracie",
       "name": "Bassie Gracie",
