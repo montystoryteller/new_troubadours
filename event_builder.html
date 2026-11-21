@@ -1173,6 +1173,11 @@
             </div>
 
             <div class="field-row">
+                <label>Instagram</label>
+                <input type="url" id="promoter-instagram">
+            </div>
+
+            <div class="field-row">
                 <label>Email</label>
                 <input type="text" id="promoter-email">
             </div>
@@ -2145,7 +2150,7 @@
         const NOT_A_HANDLE = new Set(["groups", "pages", "events", "profile.php", "p", "reel", "reels", "explore", "stories"]);
         const HANDLE_RE = /^@?[\w.\-]+$/;
         const FB_FIELD_IDS = new Set(["ev-facebook", "festival-facebook", "perf-facebook", "venue-facebook", "promoter-facebook", "club-facebook"]);
-        const IG_FIELD_IDS = new Set(["perf-instagram", "venue-instagram", "club-instagram"]);
+        const IG_FIELD_IDS = new Set(["perf-instagram", "venue-instagram", "promoter-instagram", "club-instagram"]);
 
         function cleanUrlValue(input) {
             let v = input.value.trim();
@@ -5854,7 +5859,7 @@
         // Keys the form manages itself; anything else on an edited record
         // (e.g. a field added by hand) is carried over untouched. The legacy
         // `url` (an alias of promoter_link) is folded into promoter_link.
-        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "email", "phone", "contact_form", "promoter_venues", "promoter_artists", "isClub"];
+        const PROMOTER_FORM_KEYS = ["id", "promoter_id", "name", "description", "ticketing_url", "promoter_link", "url", "facebook", "instagram", "email", "phone", "contact_form", "promoter_venues", "promoter_artists", "isClub"];
         let promoterKeyAutoValue = "";
         let promoterVenuesField, promoterArtistsField;
 
@@ -5903,6 +5908,7 @@
             document.getElementById("promoter-link").value = match.promoter_link || match.url || "";
             document.getElementById("promoter-ticketing-url").value = match.ticketing_url || "";
             document.getElementById("promoter-facebook").value = match.facebook || "";
+            document.getElementById("promoter-instagram").value = match.instagram || "";
             document.getElementById("promoter-email").value = match.email || "";
             document.getElementById("promoter-phone").value = match.phone || "";
             document.getElementById("promoter-contact-form").value = match.contact_form || "";
@@ -5968,11 +5974,13 @@
             const link = document.getElementById("promoter-link").value.trim();
             const ticketing = document.getElementById("promoter-ticketing-url").value.trim();
             const facebook = document.getElementById("promoter-facebook").value.trim();
+            const instagram = document.getElementById("promoter-instagram").value.trim();
             const email = document.getElementById("promoter-email").value.trim();
             if (description) record.description = description;
             if (ticketing) record.ticketing_url = ticketing;
             if (link) record.promoter_link = link;
             if (facebook) record.facebook = facebook;
+            if (instagram) record.instagram = instagram;
             if (email) record.email = email;
             const promoterPhoneVal = document.getElementById("promoter-phone").value.trim();
             if (promoterPhoneVal) record.phone = promoterPhoneVal;
@@ -6003,7 +6011,7 @@
         }
 
         function clearPromoterForm() {
-            ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-email", "promoter-phone", "promoter-contact-form"]
+            ["promoter-key", "promoter-name", "promoter-description", "promoter-link", "promoter-ticketing-url", "promoter-facebook", "promoter-instagram", "promoter-email", "promoter-phone", "promoter-contact-form"]
                 .forEach(id => document.getElementById(id).value = "");
             document.getElementById("promoter-name-status").innerHTML = "";
             document.getElementById("promoter-isclub").checked = false;

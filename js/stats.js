@@ -2042,7 +2042,7 @@ function renderAllStats(data, venues, performers, tours) {
       ["musicEvents", "music"],
       ["poetryEvents", "poetry"],
       ["folkNights", "music"],
-      ["events", "clubs"],
+      ["clubs", "clubs"],
     ].forEach(([key, cat]) => {
       (data[key] || []).forEach((e) => {
         const p =

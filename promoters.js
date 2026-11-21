@@ -231,6 +231,7 @@ function buildPromoterRegistry(data) {
         description: rec.description || performer.bio,
         promoter_link: rec.promoter_link || rec.url || performer.url,
         facebook: rec.facebook || normaliseFacebookUrl(performer.facebook),
+        instagram: rec.instagram || performer.instagram,
         email: rec.email || performer.email,
         phone: rec.phone || performer.phone,
         contact_form: rec.contact_form || performer.contact_form,
@@ -255,6 +256,7 @@ function buildPromoterRegistry(data) {
       description: rec.description || club.description,
       promoter_link: rec.promoter_link || rec.url || club.link,
       facebook: rec.facebook || normaliseFacebookUrl(club.facebook),
+      instagram: rec.instagram || club.instagram,
       email: rec.email || club.email,
       phone: rec.phone || club.phone,
       contact_form: rec.contact_form || club.contact_form,
@@ -885,6 +887,11 @@ function displayPromoter(promoterId) {
     {
       url: promoter.facebook,
       label: "📘 Facebook",
+      cls: "",
+    },
+    {
+      url: promoter.instagram ? normaliseInstagramUrl(promoter.instagram) : "",
+      label: "📷 Instagram",
       cls: "",
     },
     {
