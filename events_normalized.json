@@ -125,6 +125,13 @@
         "fiona-eadie"
       ]
     },
+    "cabaret-voltaire": {
+      "promoter_id": "cabaret-voltaire",
+      "name": "Cabaret Voltaire",
+      "description": "Cultural events: mostly music, but sometimes poetry and other things.\n\n\n\nCabaret Voltaire is arts organisation curated by John Puckey. John works with communities across the South West to both bring in acts from across the country and around the globe. He likes to support grassroots acts with performance opportunities. It’s normally music but often poetry too.",
+      "facebook": "cabaretvoltaireevents",
+      "instagram": "cabaretvoltaireevents"
+    },
     "forgingfantastical": {
       "promoter_id": "forgingfantastical",
       "name": "Forging Fantastical",
@@ -15399,7 +15406,7 @@
     },
     "palace-theatre-westcliff": {
       "id": "palace-theatre-westcliff",
-      "name": "Palace Theatre",
+      "name": "Palace Theatre, Westcliff on Sea",
       "city": "Westcliff on Sea",
       "postcode": "SS0 9LA",
       "full_address": "Palace Theatre, Westcliff on Sea, SS0 9LA",
@@ -18399,7 +18406,7 @@
     },
     "the-assembly-rooms-glastonbury": {
       "id": "the-assembly-rooms-glastonbury",
-      "name": "The Assembly Rooms",
+      "name": "The Assembly Rooms, Glastonbury",
       "city": "Glastonbury",
       "postcode": "BA6 9DU",
       "full_address": "The Assembly Rooms, Glastonbury, BA6 9DU",
@@ -18470,6 +18477,23 @@
         -2.72057
       ]
     },
+    "birmingham-glee-club": {
+      "id": "birmingham-glee-club",
+      "name": "Birmingham Glee Club",
+      "venue_type": "Other / unknown",
+      "city": "Birmingham",
+      "postcode": "B5 4TD",
+      "full_address": "Glee Club Birmingham, The Arcadian, 70 Hurst St, Birmingham, B5 4TD",
+      "url": "https://www.glee.co.uk/Birmingham/",
+      "email": "info@glee.co.uk",
+      "facebook": "gleebirmingham",
+      "instagram": "gleeclubbham",
+      "description": "The venue offers 2 auditoriums with seated formats, are highly versatile and are fully equipped with professional in-house pa, lighting, projector screens and experienced technical staff. Glee also has an in-house box office for ticketing, experienced marketing team and full in-house catering and hospitality facilities (including dressing rooms). The Main Room is ideal for comedy due to its low ceiling, clean acoustics and theatre-style seating with (or without) tables. The intimate Studio Room has the flexibility of unallocated seating, along with being fully equipped, also with access to private dressing room.\n\n\n\nMAIN ROOM: 400 seated\nSTUDIO ROOM: 140 seated\n\n\n\nThese capacities can be tailored in a range of ways to facilitate all set-ups including small stage set-up, set-up with projector and full concert-stage set-up.",
+      "latlon": [
+        52.47468,
+        -1.89658
+      ]
+    },
     "merlins-cafe-bar-birmingham": {
       "id": "merlins-cafe-bar-birmingham",
       "name": "Merlin's Cafe Bar",
@@ -18504,6 +18528,23 @@
       "latlon": [
         53.4740106,
         -2.2381584
+      ]
+    },
+    "palace-theatre-newark": {
+      "id": "palace-theatre-newark",
+      "name": "Palace Theatre, Newark",
+      "venue_type": "Theatre",
+      "city": "Newark",
+      "postcode": "NG24 1JY",
+      "full_address": "Palace Theatre, Appleton Gate, Newark, NG24 1JY",
+      "url": "https://www.palacenewark.com/whats-on",
+      "email": "palace@newark-sherwooddc.gov.uk",
+      "facebook": "palacenewark",
+      "instagram": "PalaceNewark",
+      "description": "Set in the art-deco splendour of the Palace Theatre, our distinctive venue can host events large or small, formal or fun!",
+      "latlon": [
+        53.07661,
+        -0.80583
       ]
     },
     "bodega-nottingham": {
@@ -18934,6 +18975,24 @@
         -3.5315
       ]
     },
+    "northern-stage-newcastle": {
+      "id": "northern-stage-newcastle",
+      "name": "Northern Stage, Newcastle",
+      "venue_type": "Other / unknown",
+      "city": "Newcastle upon Tyne",
+      "postcode": "NE1 7RH",
+      "full_address": "Northern Stage, Barras Bridge, Newcastle upon Tyne, NE1 7RH",
+      "url": "https://northernstage.co.uk/",
+      "email": "info@northernstage.co.uk",
+      "phone": "0191 230 5151",
+      "facebook": "northernstage",
+      "instagram": "northern_stage",
+      "description": "Northern Stage is a theatre where everyone is welcome.\n\n\n\nWe make and present contemporary theatre, live performance and creative programmes that spark connections, provoke curiosity and joy, and explore new ways of seeing the world from our home in the heart of Newcastle upon Tyne.\n\n\n\nNorthern Stage is an Arts Council England National Portfolio Organisation, which means funding thanks to National Lottery players plays a huge part in supporting our work.\n\n\n\nNorthern Stage has a variety of spaces that can be hired to help create your perfect event.",
+      "latlon": [
+        54.97933,
+        -1.61411
+      ]
+    },
     "summerhill-bowling-club-newcastle": {
       "id": "summerhill-bowling-club-newcastle",
       "name": "Summerhill Bowling Club",
@@ -19115,6 +19174,21 @@
       "latlon": [
         53.36492,
         -1.4859
+      ]
+    },
+    "town-hall-bakewell": {
+      "id": "town-hall-bakewell",
+      "name": "Town Hall, Bakewell",
+      "venue_type": "Village / community hall",
+      "city": "Bakewell",
+      "postcode": "DE45 1BT",
+      "full_address": "Town Hall, The Square, Bakewell, DE45 1BT",
+      "url": "https://www.bakewelltownhall.co.uk/",
+      "email": "btct@bakewelltownhall.co.uk",
+      "description": "Operated by the charity Bakewell Town & Community Trust, the Town Hall is a vibrant and versatile venue at the heart of the Bakewell community.\n\n\n\nOffering a wide range of community groups and activities, a regular artisan fair and the best in theatre, live comedy and music from leading artists and musicians, there really is something for everyone.",
+      "latlon": [
+        53.21339,
+        -1.67527
       ]
     },
     "bridport-arts-centre": {
@@ -19883,6 +19957,22 @@
       "latlon": [
         53.41343,
         -2.96885
+      ]
+    },
+    "tung-auditorium": {
+      "id": "tung-auditorium-liverpool",
+      "name": "Tung Auditorium, Liverpool",
+      "venue_type": "Other / unknown",
+      "city": "Liverpool",
+      "postcode": "L7 3NY",
+      "full_address": "Tung Auditorium, 60 Oxford Street, on the corner of Grove Street. Yoko Ono Lennon Centre, University of Liverpool, 60 Oxford Street, Liverpool, L7 3NY",
+      "url": "https://thetungauditorium.com/",
+      "facebook": "TheTungAuditorium",
+      "instagram": "thetungauditorium",
+      "description": "Liverpool's state-of-the-art concert hall showcasing a diverse programme from classical and jazz, to electronica and spoken word.\n\n\n\nThe Tung Auditorium is situated in the Yoko Ono Lennon Centre and is part of the University of Liverpool.\n\n\n\n24-hour parking is available at Paddington Village Multi-Storey car park located at The Spine building, Grove St, Liverpool L7 3FA. The car park is approximately 5 - 10 minutes’ walk from the venue.\n\n\n\nParking is also available on the University of Liverpool campus:\n\n\n\nDaytime: Mount Pleasant;\nEvening and Weekend: Peach Street (off Brownlow Hill) and Cambridge Street.",
+      "latlon": [
+        53.4039,
+        -2.96282
       ]
     },
     "arborist-cafe-truro": {
@@ -20998,6 +21088,23 @@
         0.5914
       ]
     },
+    "union-chapel-london": {
+      "id": "union-chapel-london",
+      "name": "Union Chapel, London",
+      "venue_type": "Church / faith venue",
+      "city": "London",
+      "postcode": "N1 2UN",
+      "full_address": "Union Chapel, 19b Compton Terrace, London, N1 2UN",
+      "url": "https://unionchapel.org.uk/",
+      "email": "events@unionchapel.org.uk",
+      "facebook": "UniChapelChurch",
+      "instagram": "unichapelchurch",
+      "description": "Union Chapel, an architectural treasure that's home to a working church, an award winning venue, a unique organ and The Margins Project for those homeless and in crisis in London.\n\n\n\nThe profits from our wonderful shows, bar and space hire go towards our charitable work, supporting and empowering the hardest hit in our communities and saving the building for community use.",
+      "latlon": [
+        51.54427,
+        -0.10271
+      ]
+    },
     "the-golden-hinde-london": {
       "id": "the-golden-hinde-london",
       "name": "The Golden Hinde, London",
@@ -21050,6 +21157,24 @@
       "latlon": [
         51.41803,
         -3.46867
+      ]
+    },
+    "glee-club-cardiff": {
+      "id": "glee-club-cardiff",
+      "name": "Glee Club, Cardiff",
+      "venue_type": "Other / unknown",
+      "city": "Cardiff Bay",
+      "postcode": "CF10 5BZ",
+      "full_address": "Glee Club Cardiff, Mermaid Quay, Cardiff Bay, CF10 5BZ",
+      "url": "https://www.glee.co.uk/cardiff/",
+      "email": "info@glee.co.uk",
+      "phone": "0871 472 0400",
+      "facebook": "gleecardiff",
+      "instagram": "https://twitter.com/gleeclubcardiff",
+      "description": "e Glee Club Cardiff is available for a variety of purposes ranging from comedy, music, cabaret drag, and spoken word gigs, to bespoke corporate events. Whatever you need the space for, we can tailor it to your needs.\n\n\n\nThe venue offers an auditorium with seated formats, highly versatile and fully equipped with professional in-house pa, lighting, projector screens and experienced technical staff. Glee also has an in-house box office for ticketing, experienced marketing team and full in-house catering and hospitality facilities (including dressing room). The auditorium is ideal for comedy due to its low ceiling, clean acoustics and theatre-style seating with (or without) tables.\n\n\n\nCOMEDY MAX CAPACITY: 450 seated\n\n\n\nThis capacity can be tailored in a range of ways to facilitate all set-ups including small stage set-up, set-up with projector and full concert-stage set-up.\n\n\n\nWe can accommodate various music gigs and specialised event venue hire needs. Our Cardiff venue has been staging international and national music tour shows since 2002, as well as various cabaret, burlesque, drag, spoken word, talks, awards ceremonies, fashion shows, media/filming and a range of all other special events. Past shows include: BBC Music Awards, Ignite, RuPaul's Drag Race shows, Neil Hilborn (poet), John Cooper Clarke, Waterstones Book Events, The Gilded Merkin Burlesque & Cabaret.",
+      "latlon": [
+        51.46343,
+        -3.1653
       ]
     },
     "acapela-studio-cardiff": {
@@ -21630,6 +21755,22 @@
         -4.1379
       ]
     },
+    "st-petrocs-church-bodmin": {
+      "id": "st-petrocs-church-bodmin",
+      "name": "St Petroc’s Church, Bodmin",
+      "venue_type": "Other / unknown",
+      "city": "Bodmin",
+      "postcode": "PL31 2DP",
+      "full_address": "St Petroc’s Church, Priory Road, Bodmin, PL31 2DP",
+      "url": "https://www.bodminchurch.com/",
+      "email": "office@bodminway.org",
+      "phone": "01208 809601",
+      "description": "Bodmin Way provides events such as concerts, choirs, festivals, films, live bands, exhibitions, silent discos, lectures and conferences, faith events and services. Regular events are shown towards the bottom of this page.",
+      "latlon": [
+        50.47137,
+        -4.71678
+      ]
+    },
     "savoy-theatre-monmouth": {
       "id": "savoy-theatre-monmouth",
       "name": "Savoy Theatre, Monmouth",
@@ -21798,6 +21939,20 @@
       "latlon": [
         50.43127,
         -3.68659
+      ]
+    },
+    "civic-hall-totnes": {
+      "id": "civic-hall-totnes",
+      "name": "Civic Hall, Totnes",
+      "venue_type": "Other / unknown",
+      "city": "Totnes",
+      "postcode": "TQ9 5SF",
+      "full_address": "Civic Hall, High St, Totnes, TQ9 5SF",
+      "url": "https://www.totnestowncouncil.gov.uk/our-services/civic-hall/",
+      "description": "The Civic Hall is a great place to celebrate and host a wide range of events from weddings and birthday parties to talks, community suppers and live music.\n\n\n\nThe main hall (62ft x 41ft x 20ft high) now takes up to 520 people standing and 300 seated and is accessed either through the main foyer or from the disabled access foyer. Trestle tables and conference chairs are available free of charge for use at your event. There is a stage to one end of the hall with the options to hire stage lighting, rigging, sound system, radio microphones, and projector and screen. To the rear of the stage is a comfortable green room for performers to use in intervals. There is also a second green room downstairs (complete with its own toilet) which can be used as a dressing room.\n\n\n\nAdjacent to the hall and down some stairs is a bar area with comfortable seating. Behind the bar there is a drinks fridge, water boiler and coffee machine. Glasses are also available for hire.\n\n\n\nAdjoining the bar is a fully fitted commercial kitchen which includes a 6 ring gas hob and oven, warming cabinet, dishwasher, large fridge and freezer, and microwave. A range of crockery and kitchen utensils can be hired if required.\n\n\n\nOff the main entrance and downstairs are the ladies and gents toilets. The accessible toilet is in the ramp entrance foyer.",
+      "latlon": [
+        50.4312,
+        -3.68957
       ]
     },
     "the-master-shipwrights-house-deptford": {
@@ -22222,6 +22377,24 @@
         -1.20877
       ]
     },
+    "marsden-mechanics": {
+      "id": "marsden-mechanics",
+      "name": "Marsden Mechanics",
+      "venue_type": "Other / unknown",
+      "city": "Huddersfield",
+      "postcode": "HD7 6BW",
+      "full_address": "Marsden Mechanics, Peel Street, Marsden, HD7 6BW",
+      "url": "https://www.marsdenmechanics.co.uk/",
+      "email": "info@marsdenmechanics.co.uk",
+      "phone": "01484 844587",
+      "facebook": "marsdenmechanics",
+      "instagram": "marsdenmechanics",
+      "description": "A community-owned hub of the beautiful West Yorkshire village of Marsden. We play host to gigs, events, fairs, festivals, workshops, meetings – everything a vibrant community needs.\n\n\n\nThe 200 capacity Main Hall, with a full bar and professional kitchen, is great for weddings, concerts, larger workshops and meetings.",
+      "latlon": [
+        53.60072,
+        -1.92655
+      ]
+    },
     "northern-quarter-huddersfield": {
       "id": "northern-quarter-huddersfield",
       "name": "Northern Quarter, Huddersfield",
@@ -22457,6 +22630,22 @@
         -2.21702
       ]
     },
+    "the-assembly-rooms-alton": {
+      "id": "the-assembly-rooms-alton",
+      "name": "The Assembly Rooms, Alton",
+      "city": "Guildford",
+      "postcode": "GU34 1BA",
+      "full_address": "Assembly Rooms, High St, Alton, GU34 1BA",
+      "url": "https://altonassemblyrooms.com/",
+      "email": "enquiries@altonassemblyrooms.com",
+      "phone": "01420 551455",
+      "facebook": "AltonAssemblyRooms",
+      "description": "Alton’s most historic town center public venue, catering for wedding receptions, dances, parties, business meetings, conferences, seminars, exhibitions, drama and music performances, clubs and societies.\n\n\n\nComplete with sprung dance floor, stage, lighting/spotlighting, projection/control room, display screens, fully accessible sound system, Auracast assisted listening system, food preparation area.\n\n\n\nThe floor space measures 16 meters by 10 meters and is well-suited to holding dances, drama & music performances, wedding receptions, exhibitions, conferences and large meetings.\n\n\n\nThe main hall has a seated capacity of 208 in theatre style or 150 when seated around the banquet tables. Projector, flipchart, tables and chairs available on request – all included in hire.\n\n\n\nThe lower room is carpeted throughout and measuring 8 meters by 6.5 meters, and fitted with hot water coffee / bar area and fridge, large keyboard, this room is suited to many uses including small exhibitions, meetings and training days.",
+      "latlon": [
+        51.14956,
+        -0.97377
+      ]
+    },
     "west-horsley-place-guildford": {
       "id": "west-horsley-place-guildford",
       "name": "West Horsley Place, Guildford",
@@ -22520,6 +22709,24 @@
       "latlon": [
         53.59316,
         -2.29716
+      ]
+    },
+    "chorley-theatre": {
+      "id": "chorley-theatre",
+      "name": "Chorley Theatre",
+      "venue_type": "Theatre",
+      "city": "Chorley",
+      "postcode": "PR7 2RL",
+      "full_address": "Chorley Theatre, Dole Lane, Chorley, PR7 2RL",
+      "url": "https://chorleytheatre.com/",
+      "ticketing_url": "https://www.ticketsource.com/chorleytheatre",
+      "email": "cados@chorleytheatre.com",
+      "facebook": "chorleytheatre",
+      "instagram": "chorleytheatre",
+      "description": "Chorley Theatre is a volunteer-run independent venue staging plays, musicals, pantomimes, touring comedy, music and films.  Built in 1910, it has been owned and operated by amateur dramatic group CADOS since 1960 and produces at least 6 full shows per year, plus a show by Chorley Youth Theatre. It's an ideal venue for comedy shows by top stand-up comedians, and the regular film showings are digitally projected on to the big screen, with surround sound. There's a great-priced bar and the building has full disabled access. Any profits go back into the upkeep of the building, and all income comes from ticket and bar sales.\n\n\n\nSince 2021 the venue has included a Studio space, with more plays, comedy and music taking place in there. The space is flexible, with some shows 'in the round' and so events in here have unreserved seating. Pick your seats when you arrive on the night.",
+      "latlon": [
+        53.6532,
+        -2.6336
       ]
     },
     "gullivers-manchester": {
@@ -22592,6 +22799,23 @@
       "latlon": [
         51.90323,
         -2.07914
+      ]
+    },
+    "the-cockpit-london": {
+      "id": "the-cockpit-london",
+      "name": "The Cockpit, London",
+      "venue_type": "Other / unknown",
+      "city": "London",
+      "postcode": "NW8 8EH",
+      "full_address": "The Cockpit, Gateforth Street (off Church Street), Marylebone, London, NW8 8EH",
+      "url": "http://www.thecockpit.org.uk/",
+      "phone": "0207 258 2925",
+      "facebook": "CockpitTheatre",
+      "instagram": "cockpittheatre",
+      "description": "Our Auditorium is a large, versatile space seating up to 220 in-the-round, or 170 in thrust configuration.\n\n\n\nBut The Cockpit is so much more than just an auditorium. Head up the spiral staircase, and you’ll find not one, not two, but three studio spaces.\n\n\n\nStudio One: Flooded with natural light, our large dance studio has a full wall of mirrors, floor-to-ceiling windows (both with blackout curtains), a thick harlequin dance floor and a PA.\n\n\n\nPerfect for rehearsals, classes and any activities that need a lot of space.\n\n\n\nStudio Two: Once a recording studio, this acoustically treated room is our smallest and most intimate space.\n\n\n\nPerfect for table reads, meetings, and anything that needs a calm and quiet setting.\n\n\n\nStudio Three: Boasting four skylights in its tall ceiling, this is a bright, light space offering real versatility in its use.\n\n\n\nPerfect for meetings, readings and auditions, but also large enough for many rehearsals.",
+      "latlon": [
+        51.52445,
+        -0.16964
       ]
     },
     "green-note-london": {
@@ -25793,6 +26017,22 @@
         }
       ],
       "instagram": "brian_bilston",
+      "poet": true
+    },
+    "john-hegley": {
+      "id": "john-hegley",
+      "name": "John Hegley",
+      "url": "https://johnhegley.co.uk/",
+      "bio": "Performance poet, comedian, radio broadcaster, musician and songwriter.",
+      "facebook": "John.Hegley",
+      "youtube_videos": [
+        {
+          "story_name": "Introducing Poet John Hegley",
+          "yt_url": "https://www.youtube.com/watch?v=Rl1efoOEDzg"
+        }
+      ],
+      "instagram": "johnhegleyluton",
+      "email": "info@johnhegley.co.uk",
       "poet": true
     },
     "bassie-gracie": {
