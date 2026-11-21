@@ -3751,6 +3751,15 @@
       "tour_name": "Have It Tour 2026",
       "tour_dates": [
         {
+          "date": "17/10/2026",
+          "venue_id": "city-hall-sheffield",
+          "other_performer_ids": [
+            "henry-normal"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261017-city-hall-sheffield"
+        },
+        {
           "date": "20/10/2026",
           "venue_id": "pavilion-theatre-glasgow",
           "time": "7.30pm",
@@ -3763,13 +3772,31 @@
           "eventId": "T-john-cooper-clarke-have-it-2026-20261020-pavilion-theatre-glasgow"
         },
         {
+          "date": "23/10/2026",
+          "venue_id": "victoria-hall-stoke",
+          "other_performer_ids": [
+            "henry-normal"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261023-victoria-hall-stoke"
+        },
+        {
+          "date": "24/10/2026",
+          "venue_id": "town-hall-birmingham",
+          "other_performer_ids": [
+            "henry-normal"
+          ],
+          "isSpecial": true,
+          "eventId": "T-john-cooper-clarke-have-it-2026-20261024-town-hall-birmingham"
+        },
+        {
           "date": "06/11/2026",
           "venue_id": "grand-opera-house-york",
           "time": "7pm",
           "price": "£36 / £39.75",
           "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
           "other_performer_ids": [
-            "luke-wright"
+            "luke-wright", "henry-normal"
           ],
           "isSpecial": true,
           "eventId": "T-john-cooper-clarke-have-it-2026-20261106-grand-opera-house-york"
@@ -3781,7 +3808,7 @@
           "price": "£46 / £41 / £36",
           "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
           "other_performer_ids": [
-            "luke-wright"
+            "luke-wright", "henry-normal"
           ],
           "isSpecial": true,
           "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leicester"
@@ -18514,6 +18541,21 @@
         -1.89658
       ]
     },
+    "town-hall-birmingham": {
+      "id": "town-hall-birmingham",
+      "name": "Town Hall, Birmingham",
+      "city": "Birmingham",
+      "postcode": "B3 3DQ",
+      "full_address": "Town Hall, ﻿﻿Victoria Square, ﻿﻿Birmingham, ﻿﻿B3 3DQ",
+      "url": "https://bmusic.co.uk/your-visit/town-hall",
+      "facebook": "bmusicltd",
+      "instagram": "BMusic_Ltd",
+      "description": "B:Music has a mission to inspire a love of music, through performance, participation and learning. Our Birmingham City Centre venues, Town Hall and Symphony Hall, are places where communities come together, new ways of learning are developed and curious minds discover new music.\n\n\n\nCap: 880 fully seated, 1,200 standing/seated",
+      "latlon": [
+        52.47958,
+        -1.90369
+      ]
+    },
     "merlins-cafe-bar-birmingham": {
       "id": "merlins-cafe-bar-birmingham",
       "name": "Merlin's Cafe Bar",
@@ -20816,6 +20858,21 @@
         -1.54762
       ]
     },
+    "victoria-hall-stoke": {
+      "id": "victoria-hall-stoke",
+      "name": "Victoria Hall, Stoke",
+      "venue_type": "Other / unknown",
+      "city": "Stoke-on-Trent",
+      "postcode": "ST1 3AD",
+      "full_address": "Victoria Hall, Bagnall Street, Stoke-on-Trent, ST1 3AD",
+      "url": "https://www.stokeontrenttheatre.co.uk/venues/victoria-hall",
+      "ticketing_url": "https://www.atgtickets.com/venues/victoria-hall/whats-on/",
+      "description": "Built in 1888 to commemorate Queen Victoria’s Golden Jubilee, the Victoria Hall, Stoke-on-Trent was renovated in the late nineteen-nineties and has been at the heart of the Cultural Quarter. It has established itself as one of the most popular venues on the touring circuit playing host to the likes of Paul Weller, Morrissey and Jimmy Carr.\n\n\n\nSeating capacity: 1467",
+      "latlon": [
+        53.0231,
+        -2.17521
+      ]
+    },
     "artisan-tap-stoke": {
       "id": "artisan-tap-stoke",
       "name": "Artisan Tap, Stoke",
@@ -22063,6 +22120,22 @@
       "latlon": [
         53.38061,
         -1.47794
+      ]
+    },
+    "city-hall-sheffield": {
+      "id": "city-hall-sheffield",
+      "name": "City Hall, Sheffield",
+      "venue_type": "Other / unknown",
+      "city": "Sheffield",
+      "postcode": "S1 2JA",
+      "full_address": "Sheffield City Hall, Barker's Pool, Sheffield, S1 2JA",
+      "url": "https://www.sheffieldcityhall.co.uk/",
+      "facebook": "Sheffieldcityhall",
+      "instagram": "sheffieldcityhall",
+      "description": "Our unique flexible spaces, combined with our history and heritage, delivering prestigious events, in the heart of Sheffield City centre, Sheffield City Hall provides an exceptional location for your next event!\n\n\n\nWhether you are looking to host your conference, exhibition, or special event, we have forged a reputation of excellence, so you can trust us to deliver beyond your expectations.\n\n\n\nDesigned for public speaking the magnificent, atmospheric, visually stunning Oval Hall, tiered over three levels provides an unforgettable setting. You will join generations of icons who have taken to the stage to present since 1932. Cap. 2,271\n\n\n\nThe beautiful intimate Memorial Hall, over two levels, is perfect for conferences, AGM’s, networking, filming, press conferences, panel sessions, corporate hospitality, special events and social functions. This amazing space offers character and personality and over the decades has hosted some of the most prestigious events. Cap. 476\n\n\n\nOur art deco impressive Ballroom is an exceptional, adaptable, highly versatile, flexible space and the heart and soul of the venue. From banquets, to exhibitions, from special events to film sets and music videos, our Ballroom has seen it all and is an inspiration to National and International Event Organisers. Cap. 500 (Theatre Style) | 850 (Standing) | 400 (Banqueting)",
+      "latlon": [
+        53.38084,
+        -1.47243
       ]
     },
     "greystones-sheffield": {
@@ -23791,6 +23864,15 @@
         }
       ],
       "instagram": "johncooperclarke"
+    },
+    "henry-normal": {
+      "id": "henry-normal",
+      "name": "Henry Normal",
+      "url": "https://henrynormal.com/",
+      "bio": "Writer, poet and TV and Film producer and founder of the Manchester Poetry Festival (now the Literature festival) and co-founder of the Nottingham Poetry Festival.\n\n\n\nHenry performs poetry at Literature Festivals around the UK.",
+      "facebook": "henrynormal",
+      "instagram": "henrynormalpoetry",
+      "poet": true
     },
     "luke-wright": {
       "id": "luke-wright",
