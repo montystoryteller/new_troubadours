@@ -802,6 +802,15 @@ const requestedView = urlParams.get("view");
   // A legacy "name:..." publisher key (from an old URL) — redirect to the
   // canonical registry id when available, keeping any other query params.
   if (scopePublisherKey) {
+    // A declared publishers[id].previous_id (see shared_utils.js
+    // resolvePublisherId) wins over the "name:..." guess below.
+    const renamedKey = resolvePublisherId(scopePublisherKey);
+    if (renamedKey !== scopePublisherKey && publishers[renamedKey]) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("publisher", renamedKey);
+      window.location.replace(url.toString());
+      return;
+    }
     const normalizedKey = normalizeLegacyPublisherKey(scopePublisherKey, publishers);
     if (normalizedKey && normalizedKey !== scopePublisherKey) {
       const url = new URL(window.location.href);

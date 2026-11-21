@@ -3190,6 +3190,13 @@ let VENUE_PREVIOUS_ID_MAP = {};
 let PROMOTER_PREVIOUS_ID_MAP = {};
 /** old event id -> current event id, rebuilt on every events-data load. */
 let EVENT_PREVIOUS_ID_MAP = {};
+/**
+ * old publisher id -> current publisher id, rebuilt on every events-data
+ * load. Each old id is stored as written AND URL-decoded ("+" as a space), so
+ * `name%3Afirefly+press+ltd` also matches the `name:firefly press ltd` that
+ * URLSearchParams hands back from an old books_merch.html?publisher= link.
+ */
+let PUBLISHER_PREVIOUS_ID_MAP = {};
 
 // Keys that hold a venue / promoter id (or a list of them) anywhere in the
 // events data: venue_id on events, clubs, tour/show dates, festivals and
@@ -3199,6 +3206,7 @@ let EVENT_PREVIOUS_ID_MAP = {};
 const VENUE_REF_KEYS = ["venue_id"];
 const VENUE_REF_LIST_KEYS = ["promoter_venues"];
 const PROMOTER_REF_KEYS = ["promoter_id", "promoter"];
+const PUBLISHER_REF_KEYS = ["publisher_id"];
 
 /**
  * Current venue id for `id`: unchanged if already live, the replacement if it
@@ -3217,6 +3225,16 @@ function resolveVenueId(id) {
  */
 function resolvePromoterId(id) {
   return (id && PROMOTER_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * Current publisher id for `id` (see resolveVenueId). Forwards old
+ * books_merch.html?publisher= links, including legacy URL-encoded keys.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolvePublisherId(id) {
+  return (id && PUBLISHER_PREVIOUS_ID_MAP[id]) || id;
 }
 
 /**
@@ -3291,8 +3309,9 @@ function rewriteIdReferences(root, map, keys, listKeys) {
 }
 
 /**
- * Lets a venue or promoter be renamed without breaking anything that still
- * uses the old id. A record in `venues` / `promoters` may carry `previous_id`
+ * Lets a venue, promoter or publisher be renamed without breaking anything
+ * that still uses the old id (publishers: see PUBLISHER_PREVIOUS_ID_MAP).
+ * A record in `venues` / `promoters` / `publishers` may carry `previous_id`
  * (a string, or an array of strings for more than one rename). At load time
  * this
  *   1. builds VENUE_PREVIOUS_ID_MAP / PROMOTER_PREVIOUS_ID_MAP (old -> current),
@@ -3313,7 +3332,27 @@ function applyVenueAndPromoterPreviousIds(eventsData, lookups = {}) {
     promoterRegistryForPreviousIds(eventsData),
     "Promoter",
   );
+  // Publishers: same idea; legacy keys may be URL-encoded, so also index the
+  // decoded form of each old id.
+  PUBLISHER_PREVIOUS_ID_MAP = {};
+  Object.entries(
+    buildPreviousIdMap(eventsData?.publishers, "Publisher"),
+  ).forEach(([old, id]) => {
+    PUBLISHER_PREVIOUS_ID_MAP[old] = id;
+    try {
+      const decoded = decodeURIComponent(old.replace(/\+/g, " "));
+      if (decoded && decoded !== old && !eventsData.publishers[decoded])
+        PUBLISHER_PREVIOUS_ID_MAP[decoded] ??= id;
+    } catch (_) {
+      /* malformed escape: keep the raw form only */
+    }
+  });
   const roots = [eventsData, lookups.toursLookup].filter(Boolean);
+  if (Object.keys(PUBLISHER_PREVIOUS_ID_MAP).length) {
+    roots.forEach((r) =>
+      rewriteIdReferences(r, PUBLISHER_PREVIOUS_ID_MAP, PUBLISHER_REF_KEYS, []),
+    );
+  }
   if (Object.keys(VENUE_PREVIOUS_ID_MAP).length) {
     roots.forEach((r) =>
       rewriteIdReferences(
@@ -3555,6 +3594,21 @@ function applyPerformerAliases(eventsData, lookups = {}) {
         return;
       }
       map[id] = target;
+    });
+  });
+
+  // A performer record may also carry `previous_id` (string or array): an
+  // earlier id for the same person. Treated exactly like a same_as alias
+  // pointing the other way. An old id that is still a live performer is left
+  // alone, and the first record to claim an old id keeps it.
+  registries.forEach((reg) => {
+    Object.entries(reg).forEach(([id, rec]) => {
+      if (!rec || isBlankValue(rec.previous_id)) return;
+      [].concat(rec.previous_id).forEach((old) => {
+        if (typeof old !== "string" || !old || old === id) return;
+        if (registries.some((r) => r[old]) || map[old]) return;
+        map[old] = id;
+      });
     });
   });
 

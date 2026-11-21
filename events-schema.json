@@ -286,6 +286,16 @@
         "name": {
           "type": "string"
         },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this venue used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
+        },
         "venue_type": {
           "description": "Venue type category, resolved against the VENUE_TYPES dict in shared_guessers.js: a slug (e.g. \"pub-bar-cafe\", \"live-music-venue\"), the full label text of one (legacy data — every venue set before that dict existed stores the label directly, e.g. \"Pub / bar / café\", and resolveVenueType() in shared_guessers.js still matches those, so nothing needs to be migrated), or free text that matches neither. An unmatched value is displayed verbatim rather than collapsed into \"Other / unknown\", so nothing typed by hand is silently discarded. Current VENUE_TYPES slugs: pub-bar-cafe, village-hall, arts-centre, theatre, church, museum-historic, barn-rural-outdoor, online, bookshop, social-club, live-music-venue, other. A single value OR an array of values for a venue that's genuinely more than one thing, e.g. [\"pub-bar-cafe\", \"live-music-venue\"] — code reading this should normalize via Array.isArray(), same as dateOrDates/podcastUrls; see resolveVenueTypesForVenue() in shared_guessers.js, which always returns an array (of resolved {slug, label, colour} entries) and is what venues.js/stats.js call rather than reading this field raw. The event builder's Venue form offers the known labels via a datalist and can auto-suggest one from the venue name using classifyVenueType() in shared_guessers.js (the same heuristic the Stats page falls back to), but any string, or comma-separated list of strings, is valid, including ones outside VENUE_TYPES, and the field can be left unset. If unset, venue_type is effectively re-derived on the fly by that same heuristic wherever it's needed — setting it explicitly here just lets a person override or confirm that guess, and (as of this revision) that override is actually honoured by venues.js/stats.js rather than silently ignored.",
           "oneOf": [
@@ -386,6 +396,16 @@
         },
         "name": {
           "type": "string"
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this performer used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone. For performers this behaves like `same_as` in reverse: events filed under the old id show up on this performer."
         },
         "url": {
           "type": "string",
@@ -777,6 +797,16 @@
         },
         "eventId": {
           "$ref": "#/$defs/tourDateEventId"
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this tour date used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
         }
       },
       "required": [
@@ -1030,6 +1060,16 @@
         },
         "eventId": {
           "$ref": "#/$defs/showDateEventId"
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this show date used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
         }
       },
       "required": [
@@ -1181,6 +1221,16 @@
         },
         "eventId": {
           "$ref": "#/$defs/eventId"
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this event used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
         },
         "date_added": {
           "type": "string"
@@ -1391,6 +1441,16 @@
         "eventId": {
           "$ref": "#/$defs/eventId"
         },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this event used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
+        },
         "time": {
           "type": "string",
           "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time."
@@ -1527,6 +1587,16 @@
         "eventId": {
           "$ref": "#/$defs/eventId"
         },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this event used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
+        },
         "time": {
           "type": "string",
           "description": "Required unless `club` + `inheritClubData: true` resolve to an existing recurringClubEvent — in that case this can be left blank and applyClubInheritance() (shared_utils.js) copies the club's own `time` in at load time."
@@ -1653,6 +1723,16 @@
         "club": {
           "type": "string",
           "description": "Short slug/id used to cross-reference this club from other record types. Often (but not necessarily) the same id as a `promoters[]` entry's promoter_id, if the club is run by a promoter worth registering there."
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this club used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone. Also applies to the club's promoter record when the club is a promoter (isPromoter) and that record sets no `previous_id` of its own."
         },
         "schedule": {
           "type": "string",
@@ -1864,6 +1944,16 @@
         "name": {
           "type": "string",
           "description": "Display name. Optional for a club promoter (isClub) — falls back to the club's name, then to a humanised id."
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this promoter used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone."
         },
         "promoter_link": {
           "type": "string"
@@ -2463,6 +2553,16 @@
         },
         "name": {
           "type": "string"
+        },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this publisher used before it was renamed: a string, or an array of strings for more than one rename. Old links and references that still use an old id are forwarded to this record at load time (see shared_utils.js). An old id that is also a live id is ignored. Temporary: remove once old links are gone. Legacy `name:...` keys from old books_merch.html?publisher= URLs may be given in URL-encoded form, e.g. `name%3Afirefly+press+ltd`."
         },
         "url": {
           "type": "string",

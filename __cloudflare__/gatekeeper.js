@@ -425,7 +425,7 @@ const SYNC_KEYS_HEADER = "x-sync-keys";
 const KEYS_MEMORY_MS = 5 * 60 * 1000;
 // path (no .html) -> { url param -> index list name }
 const KEY_CHECKS = {
-  "/performers": { performer: "performers" },
+  "/performers": { performer: ["performers", "performers_previous"] },
   "/venues": { venue: ["venues", "venues_previous"] },
   // *_previous = retired ids (clubs/venues/promoters[].previous_id): known pages, but kept out of the main list so the sitemap never lists them
   "/storyclub": { club: ["clubs", "clubs_previous"] },
