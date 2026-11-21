@@ -1380,11 +1380,27 @@ function renderUpcomingRow(container, it) {
     main.appendChild(meta);
   }
 
-  const coLine = buildCoPerformerLine(
-    coPerformerIdsFor(it.record),
-    "upcoming-row-with",
-  );
-  if (coLine) main.appendChild(coLine);
+  if (it.supportingIds) {
+    // Page owner is a support act on this date: "Supporting: <headliner>",
+    // then "with <the other support acts>" — never "with <headliner>".
+    const supportingRow = buildBillingRow(
+      it.supportingIds,
+      "Supporting:",
+      "upcoming-row-with",
+    );
+    if (supportingRow) main.appendChild(supportingRow);
+    const withLine = buildCoPerformerLine(
+      it.withIds || [],
+      "upcoming-row-with",
+    );
+    if (withLine) main.appendChild(withLine);
+  } else {
+    const coLine = buildCoPerformerLine(
+      coPerformerIdsFor(it.record),
+      "upcoming-row-with",
+    );
+    if (coLine) main.appendChild(coLine);
+  }
 
   const ticketHref = it.ticketUrl ? sanitizeUrl(it.ticketUrl) : null;
   if (ticketHref) {
@@ -1446,6 +1462,18 @@ function renderUpcomingSection(
         title: tour.tour_name || tour.name,
         tag: isAdditional && isDoubleHeadlineForDate(tour, td)
           ? "Co-headline"
+          : null,
+        // Support act on this date: who they're supporting, and who else is
+        // on the support slot with them (see renderUpcomingRow()).
+        supportingIds: isSupport
+          ? (td.headliner ? [td.headliner] : [...getTourHeadlinerIds(tour)]).filter(
+              (id) => id !== performerId,
+            )
+          : null,
+        withIds: isSupport
+          ? getSupportPerformerIdsForDate(tour, td).filter(
+              (id) => id !== performerId,
+            )
           : null,
         href: `tour_guide.html?tour=${encodeURIComponent(tourId)}`,
         time: td.time || tour.time || null,
@@ -3739,6 +3767,12 @@ function tourDateToEventRow(tourId, tour, td) {
     _dateSupportIds: getSupportPerformerIdsForDate(tour, td),
     _dateIsDoubleHeadline: isDoubleHeadlineForDate(tour, td),
     _dateBillingFlip: billingFlip,
+    // Who is actually headlining this date (the date's own `headliner`, else
+    // the tour's headline performer(s)) — named in the "Supporting:" row when
+    // the page owner is a support act on it.
+    _dateHeadlinerIds: td.headliner
+      ? [td.headliner]
+      : [...getTourHeadlinerIds(tour)],
     // Rare per-date copy only — the tour's own description is already
     // shown on the tour card above, so it isn't repeated on every row.
     description: combineDescriptionWithPrefix(
@@ -4010,10 +4044,16 @@ function renderTourCard(container, tourId, tour, relationshipLabel = null) {
 
   // Co-performers line — other performers billed on this tour, seen from
   // one of their individual pages
-  const tourCoLine = buildCoPerformerLine(
-    coPerformerIdsFor(tour),
-    "listing-card-meta listing-card-with",
-  );
+  // A support act is not "with" the headliner — they're "Supporting:" them
+  // (row below) and "with" the other support acts, so skip this line for them.
+  const supportingHere =
+    !performerMatches(tour) && getTourSupportPerformerIds(tour).has(performerId);
+  const tourCoLine = supportingHere
+    ? null
+    : buildCoPerformerLine(
+        coPerformerIdsFor(tour),
+        "listing-card-meta listing-card-with",
+      );
   if (tourCoLine) card.appendChild(tourCoLine);
 
   // "Supporting:" — when the performer whose page this is is themselves a
@@ -4022,7 +4062,7 @@ function renderTourCard(container, tourId, tour, relationshipLabel = null) {
   // than only naming the headliner as plain text inside the relationship
   // badge above.
   const headlinerIdsForSupportingRow = getTourHeadlinerIds(tour);
-  if (getTourSupportPerformerIds(tour).has(performerId)) {
+  if (supportingHere) {
     const supportingRow = buildBillingRow(
       [...headlinerIdsForSupportingRow],
       "Supporting:",
@@ -4056,11 +4096,15 @@ function renderTourCard(container, tourId, tour, relationshipLabel = null) {
     "listing-card-meta listing-card-billing",
   );
   if (billAdditionalRow) card.appendChild(billAdditionalRow);
-  const billSupportRow = buildBillingRow(
-    billSupportIds,
-    "Support:",
-    "listing-card-meta listing-card-billing listing-card-billing-support",
-  );
+  // Seen from a support act's own page, the other support acts are who they
+  // share the bill with ("with A & B"); anyone else still sees "Support:".
+  const billSupportRow = supportingHere
+    ? buildCoPerformerLine(billSupportIds, "listing-card-meta listing-card-with")
+    : buildBillingRow(
+        billSupportIds,
+        "Support:",
+        "listing-card-meta listing-card-billing listing-card-billing-support",
+      );
   if (billSupportRow) card.appendChild(billSupportRow);
 
   // Description — collapsed by default (first paragraph, capped at
@@ -4332,10 +4376,15 @@ function renderEventRow(container, event) {
 
   // Co-performer credit for shared bills (e.g. "with Lucy Lill") — from an
   // explicit performer_ids[] list or a compound performer_id.
-  const eventCoLine = buildCoPerformerLine(
-    coPerformerIdsFor(event),
-    "event-row-time event-row-with",
-  );
+  // Not for a support act on this date: they're "Supporting:" the headliner
+  // (below), not "with" them.
+  const supportingHere = (event._dateSupportIds || []).includes(performerId);
+  const eventCoLine = supportingHere
+    ? null
+    : buildCoPerformerLine(
+        coPerformerIdsFor(event),
+        "event-row-time event-row-with",
+      );
   if (eventCoLine) detail.appendChild(eventCoLine);
 
   // Per-date tour billing relationship (tour dates only — see
@@ -4346,7 +4395,14 @@ function renderEventRow(container, event) {
   // overrides the tour's defaults. The page owner (performerId) is
   // filtered out of each row — no point telling someone they're on the
   // bill with themselves.
-  if (event._dateBillingFlip && event._dateBillingFlip !== performerId) {
+  if (supportingHere) {
+    const supportingRow = buildBillingRow(
+      (event._dateHeadlinerIds || []).filter((id) => id !== performerId),
+      "Supporting:",
+      "event-row-time event-row-with",
+    );
+    if (supportingRow) detail.appendChild(supportingRow);
+  } else if (event._dateBillingFlip && event._dateBillingFlip !== performerId) {
     const flipRow = buildBillingRow(
       [event._dateBillingFlip],
       "Supporting:",
@@ -4360,11 +4416,17 @@ function renderEventRow(container, event) {
     "event-row-time event-row-with",
   );
   if (dateAddlRow) detail.appendChild(dateAddlRow);
-  const dateSupportRow = buildBillingRow(
-    (event._dateSupportIds || []).filter((id) => id !== performerId),
-    "Support:",
-    "event-row-time event-row-with event-row-support",
+  const otherSupportIds = (event._dateSupportIds || []).filter(
+    (id) => id !== performerId,
   );
+  // A support act sees the other support acts as "with A & B".
+  const dateSupportRow = supportingHere
+    ? buildCoPerformerLine(otherSupportIds, "event-row-time event-row-with")
+    : buildBillingRow(
+        otherSupportIds,
+        "Support:",
+        "event-row-time event-row-with event-row-support",
+      );
   if (dateSupportRow) detail.appendChild(dateSupportRow);
 
   if (venue) {

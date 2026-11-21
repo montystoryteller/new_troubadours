@@ -3753,7 +3753,7 @@
         {
           "date": "17/10/2026",
           "venue_id": "city-hall-sheffield",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "henry-normal"
           ],
           "isSpecial": true,
@@ -3765,7 +3765,7 @@
           "time": "7.30pm",
           "price": "£36",
           "ticket_url": "https://trafalgartickets.com/pavilion-theatre-glasgow/en-GB/event/other/dr-john-cooper-clarke-tickets",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "luke-wright"
           ],
           "isSpecial": true,
@@ -3774,7 +3774,7 @@
         {
           "date": "23/10/2026",
           "venue_id": "victoria-hall-stoke",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "henry-normal"
           ],
           "isSpecial": true,
@@ -3783,7 +3783,7 @@
         {
           "date": "24/10/2026",
           "venue_id": "town-hall-birmingham",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "henry-normal"
           ],
           "isSpecial": true,
@@ -3795,7 +3795,7 @@
           "time": "7pm",
           "price": "£36 / £39.75",
           "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "luke-wright", "henry-normal"
           ],
           "isSpecial": true,
@@ -3807,7 +3807,8 @@
           "time": "7pm",
           "price": "£46 / £41 / £36",
           "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
-          "other_performer_ids": [
+          "event_flyer": "tour_henry_normal_collected_2026.jpg",
+          "support_performer_ids": [
             "luke-wright", "henry-normal"
           ],
           "isSpecial": true,
@@ -3819,7 +3820,7 @@
           "time": "7pm",
           "price": "£51.50 - £45.45  (including 10% booking fee per ticket, and £2 transaction fee)",
           "ticket_url": "https://www.thequeenshall.net/whats-on/dr-john-cooper-clarke-edinburgh-2026",
-          "other_performer_ids": [
+          "support_performer_ids": [
             "luke-wright"
           ],
           "isSpecial": true,
