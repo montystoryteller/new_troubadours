@@ -36,3 +36,18 @@
 .run-note { display: block; width: calc(100% - 14px); margin: 4px 0 4px 14px; padding: 4px 8px; border: 1px solid #cfd8dc; border-radius: 6px; font: inherit; font-size: .92em; }
 .run-note-print { display: none; margin-left: 14px; }
 @media print { .run-note { display: none !important; } .run-note-print { display: block; } .mgr-help { display: none; } }
+
+.mgr-map { height: 360px; border: 1px solid #cfd8dc; border-radius: 8px; margin: 8px 0 4px; }
+.mgr-pin { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; border-radius: 13px; background: #2e7d32; color: #fff; font-weight: 700; font-size: 13px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); padding: 0 3px; box-sizing: border-box; }
+.mgr-pin.pickup { background: #1565c0; } .mgr-pin.stay { background: #ef6c00; } .mgr-pin.home { background: #455a64; }
+.mgr-tabs { display: flex; gap: 6px; margin: 10px 0 6px; }
+.mgr-tab { color: #263238; border: 1px solid #b0bec5; background: #fff; border-radius: 999px; padding: 4px 16px; cursor: pointer; font: inherit; }
+.mgr-tab.on { border-color: #2e7d32; background: #e8f5e9; color: #1b5e20; font-weight: 600; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin: 6px 0 12px; }
+.gig-card { border: 1px solid #cfd8dc; border-left: 4px solid #2e7d32; border-radius: 8px; padding: 8px 10px; background: #fff; }
+.gig-card.mini { border-left-color: #1565c0; color: #455a64; font-size: .92em; }
+.gc-date { font-size: .88em; color: #546e7a; } .gc-title { font-weight: 700; margin: 2px 0; } .gc-badge { color: #b71c1c; font-size: .8em; }
+.gc-venue, .gc-bill, .gc-meta { font-size: .92em; } .gc-leg { font-size: .88em; color: #455a64; margin-top: 4px; }
+.gc-stay { background: #fff8e1; border-radius: 6px; padding: 4px 8px; margin-top: 6px; font-size: .9em; } .gc-stay.hint { color: #6d4c00; }
+.gc-actions { margin-top: 6px; }
+@media print { .mgr-map, .mgr-tabs { display: none !important; } #runSheet[hidden] { display: block !important; } #runCards { display: none !important; } }

@@ -12,10 +12,12 @@ const HOTEL_URL = "data/budget_hotels.json";
 const BRAND_NAME = { PI: "Premier Inn", TL: "Travelodge" };
 const { roadMiles, fmtMiles, AVG_MPH } = TourSupport;
 
+const PLAN_FORMAT = "new-troubadours-tour-plan";
 const MGR = {
   venues: {}, plan: null, groups: [], hotels: null,
   pickups: [], dropHome: false, stays: {}, notes: {}, anyGap: false, mph: AVG_MPH,
   after: 60, trigger: 90, brands: { PI: true, TL: true },
+  eventsData: null, recs: new Map(), view: "sheet", tourName: "",
   routed: new Map(), useRouted: false, // "lat,lon>lat,lon" -> { miles, mins }
 };
 const $ = (id) => document.getElementById(id);
@@ -23,6 +25,20 @@ const pkey = (a, b) => `${a[0].toFixed(4)},${a[1].toFixed(4)}>${b[0].toFixed(4)}
 const parseKey = (s) => { const [y, m, d] = String(s || "").split("-").map(Number); return y ? new Date(y, m - 1, d) : null; };
 const fmtMins = (m) => (m == null ? "" : m >= 60 ? `${Math.floor(m / 60)}h ${String(Math.round(m % 60)).padStart(2, "0")}m` : `${Math.round(m)}m`);
 
+/** Decode an encoded polyline (precision 5, as OpenRouteService returns) to [[lat, lon], …]. */
+function decodePoly(str) {
+  let i = 0, lat = 0, lon = 0; const out = [];
+  while (i < str.length) {
+    let b, shift = 0, res = 0;
+    do { b = str.charCodeAt(i++) - 63; res |= (b & 31) << shift; shift += 5; } while (b >= 32);
+    lat += res & 1 ? ~(res >> 1) : res >> 1;
+    shift = 0; res = 0;
+    do { b = str.charCodeAt(i++) - 63; res |= (b & 31) << shift; shift += 5; } while (b >= 32);
+    lon += res & 1 ? ~(res >> 1) : res >> 1;
+    out.push([lat / 1e5, lon / 1e5]);
+  }
+  return out;
+}
 function setStatus(msg, err) { const s = $("mgrStatus"); s.textContent = msg || ""; s.classList.toggle("err", !!err); }
 
 // ── legs: estimated, or routed when the user has fetched real times ─────────
@@ -50,10 +66,83 @@ function groupsOf(plan) {
 const llOf = (vid) => { const v = MGR.venues[vid]; return v && Array.isArray(v.latlon) && v.latlon.length === 2 ? v.latlon : null; };
 const placeLL = (p) => (p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lon)) ? [Number(p.lat), Number(p.lon)] : null);
 
+/** What the events data knows about a picked gig (time, price, bill, link); the plan file only holds id, venue and name. */
+function resolveRecs() {
+  MGR.recs = new Map();
+  const dates = MGR.groups.flatMap((g) => g.picks.map((p) => parseKey(p.date))).filter(Boolean);
+  if (!dates.length || !MGR.eventsData || typeof EventCollect === "undefined") return;
+  const dk = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  try {
+    // a pick is "this venue on this night"; if the events data has a gig there that night, that is the gig
+    EventCollect.collect(MGR.eventsData, new Date(Math.min(...dates)), new Date(Math.max(...dates)))
+      .forEach((r) => { const k = `${r.venue_id}|${dk(r.date)}`; if (!MGR.recs.has(k) || (r.kind === "event" && MGR.recs.get(k).kind !== "event")) MGR.recs.set(k, r); });
+  } catch (e) { /* details are a bonus */ }
+}
+function gigInfo(pk) {
+  const r = MGR.recs.get(`${pk.venue_id}|${pk.date}`), v = MGR.venues[pk.venue_id] || {};
+  let evId = "";
+  if (r && r.kind === "event" && r.source && r.source.rec) {
+    try { evId = r.source.rec.eventId || (r.source.list !== "tours" && typeof resolveEventId === "function" ? resolveEventId(r.source.rec, r.date) : ""); } catch (e) { evId = ""; }
+  }
+  return {
+    known: !!r, title: (r && r.title) || pk.name || v.name || "", time: (r && r.time) || pk.time || "", price: (r && r.price) || "", soldOut: !!(r && r.soldOut),
+    head: r && r.bill ? [...r.bill.head, ...r.bill.also] : [], support: r && r.bill ? r.bill.support : [],
+    url: evId ? `event.html?event=${encodeURIComponent(evId)}` : "",
+  };
+}
+const dkey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const slug = (t) => String(t || "tour").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "tour";
+/** A tour in the events-data format ({ tour_name, tour_dates: [{ date: "dd/mm/yyyy", venue_id, … }] }) as a plan with fixed gigs. */
+function tourToPlan(tour, id) {
+  const picks = [];
+  (tour.tour_dates || []).forEach((td) => {
+    if (!td || td.isCancelled || td.cancelled || td.online || !td.venue_id) return;
+    EventHelpers.eventDates(td, parseDateString).forEach((d) => picks.push({
+      date: dkey(d), id: `tour:${td.eventId || id}:${dkey(d)}`, venue_id: td.venue_id,
+      name: td.showname || td.name || td.title || tour.tour_name || "", time: td.time || tour.time || "", booked: true,
+    }));
+  });
+  return { format: PLAN_FORMAT, version: 1, mode: "tour", picks, settings: { values: {}, checks: {} }, start: null, end: null, endSame: true,
+    tourName: tour.tour_name || "", sourceTour: id || "", pool: { artists: [tour.performer_id].filter(Boolean), tours: [], primary: tour.performer_id || null } };
+}
+/** Whatever the user opens: a plan file, one tour, or a collection of tours keyed by id (the events-data shape). */
+function acceptJson(j, label) {
+  if (j && j.format === PLAN_FORMAT) return loadPlan(j, label);
+  if (j && Array.isArray(j.tour_dates)) return loadPlan(tourToPlan(j, slug(j.tour_name)), `${label} (a tour in the events format).`);
+  const tours = j && typeof j === "object" ? Object.entries(j).filter(([, t]) => t && Array.isArray(t.tour_dates)) : [];
+  if (tours.length === 1) return loadPlan(tourToPlan(tours[0][1], tours[0][0]), `${label} (a tour in the events format).`);
+  if (tours.length > 1) { fillTourSelect(Object.fromEntries(tours), `${tours.length} tours in that file`); return setStatus(`That file has ${tours.length} tours: choose one in the list below.`); }
+  throw new Error("This doesn't look like a Tour Planner plan file or a tour in the events format.");
+}
+function tourOption(id, t, today) {
+  const ds = (t.tour_dates || []).flatMap((td) => EventHelpers.eventDates(td, parseDateString)).sort((a, b) => a - b);
+  if (!ds.length) return null;
+  const f = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" });
+  const upcoming = ds.find((d) => d >= today);
+  return { id, upcoming: !!upcoming, sort: (upcoming || ds[ds.length - 1]).getTime(), label: `${t.tour_name || id} — ${f(ds[0])}${ds.length > 1 ? " to " + f(ds[ds.length - 1]) : ""} (${ds.length})` };
+}
+function fillTourSelect(tours, title) {
+  MGR.tourPool = tours;
+  const sel = $("mgrTourSel"), today = getTodayMidnight();
+  sel.textContent = "";
+  sel.appendChild(el("option", null, title || "Choose a tour…")).value = "";
+  const opts = Object.entries(tours).map(([id, t]) => tourOption(id, t, today)).filter(Boolean);
+  const group = (name, list) => { if (!list.length) return; const g = document.createElement("optgroup"); g.label = name; list.forEach((o) => { const op = el("option", null, o.label); op.value = o.id; g.appendChild(op); }); sel.appendChild(g); };
+  group("Upcoming and current", opts.filter((o) => o.upcoming).sort((a, b) => a.sort - b.sort));
+  group("Past tours", opts.filter((o) => !o.upcoming).sort((a, b) => b.sort - a.sort));
+}
+function openChosenTour() {
+  const id = $("mgrTourSel").value, t = MGR.tourPool && MGR.tourPool[id];
+  if (!t) return setStatus("Choose a tour from the list first.", true);
+  try { loadPlan(tourToPlan(t, id), `Opened "${t.tour_name || id}" from the listings. Set where you start from below.`); } catch (e) { setStatus(e.message, true); }
+}
 function loadPlan(plan, from) {
-  if (!plan || plan.format !== "new-troubadours-tour-plan") throw new Error("This doesn't look like a Tour Planner plan file.");
+  if (!plan || plan.format !== PLAN_FORMAT) throw new Error("This doesn't look like a Tour Planner plan file.");
   MGR.plan = plan;
   MGR.groups = groupsOf(plan);
+  resolveRecs();
+  MGR.tourName = String(plan.tourName || (plan.manager && plan.manager.tourName) || "");
+  $("tourName").value = MGR.tourName; showStart();
   const m = plan.manager || {};
   MGR.pickups = Array.isArray(m.pickups) ? m.pickups.filter((p) => placeLL(p)).map((p) => ({ label: String(p.label || ""), lat: Number(p.lat), lon: Number(p.lon), place: String(p.place || ""), time: String(p.time || "") })) : [];
   MGR.dropHome = !!m.dropHome;
@@ -160,9 +249,10 @@ function buildGroup(g) {
   if (e && prev) day.items.push({ type: "end", text: `${MGR.plan.endSame === false ? "Finish at" : "Back at"} ${endLabel()}`, leg: leg(prev, e), from: prevLabel });
   return days.sort((x, y) => (x.date < y.date ? -1 : 1));
 }
-function addrOf(v) { return [v.full_address || v.name, v.city, v.postcode].filter(Boolean).join(", "); }
+function addrOf(v) { return v.full_address || [v.name, v.city, v.postcode].filter(Boolean).join(", "); }
 const dayName = (k) => { const d = parseKey(k); return d ? d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) : k; };
 
+const billLine = (i) => [i.head.length ? "With " + i.head.join(", ") : "", i.support.length ? "support: " + i.support.join(", ") : ""].filter(Boolean).join(" · ");
 const noteKey = (pk) => `${pk.date}|${pk.venue_id}`;
 const runText = () => MGR.groups.map((g) => groupText(g, buildGroup(g))).join("\n");
 function groupText(g, days) {
@@ -172,7 +262,9 @@ function groupText(g, days) {
     d.items.forEach((it) => {
       const lg = (l) => (l ? ` [${legText(l)}]` : "");
       if (it.type === "gig") {
-        lines.push(`  ${it.pk.time ? it.pk.time + " " : ""}GIG: ${it.pk.name || it.v.name} — ${addrOf(it.v)}${lg(it.leg)}${it.pk.booked ? " ✓ booked" : ""}`);
+        const info = gigInfo(it.pk);
+        lines.push(`  ${info.time ? info.time + " " : ""}GIG: ${info.title} — ${addrOf(it.v)}${lg(it.leg)}${it.pk.booked ? " ✓ booked" : ""}`);
+        const bl = billLine(info); if (bl) lines.push(`      ${bl}`);
         const note = MGR.notes[noteKey(it.pk)]; if (note) lines.push(`      Notes: ${note}`);
       }
       else if (it.type === "sleep") lines.push(`  SLEEP: ${it.stay.n}${it.stay.t ? ", " + it.stay.t : ""} (${legText(it.l1)} after the gig; then ${legText(it.l2)} to the next gig)`);
@@ -202,10 +294,13 @@ function renderAll() {
         if (it.type === "gig") {
           totalGigs++;
           const lineEl = el("div", "run-line");
-          lineEl.appendChild(el("strong", null, `${it.pk.time ? it.pk.time + " · " : ""}${it.pk.name || it.v.name}`));
-          lineEl.appendChild(document.createTextNode(` — ${addrOf(it.v)}`));
+          const info = gigInfo(it.pk);
+          lineEl.appendChild(el("strong", null, `${info.time ? info.time + " · " : ""}${info.title}`));
+          lineEl.appendChild(document.createTextNode(` — ${addrOf(it.v)} `));
+          const onMap = el("button", "mgr-btn small", "📍 map"); onMap.type = "button"; onMap.addEventListener("click", () => focusGig(it.pk)); lineEl.appendChild(onMap);
           if (it.leg) day.appendChild(el("div", "run-leg", `↳ from ${it.from || "start"}: ${legText(it.leg)}`));
           day.appendChild(lineEl);
+          const billTxt = billLine(info); if (billTxt) day.appendChild(el("div", "run-leg", billTxt));
           const nk = noteKey(it.pk), note = el("input", "run-note"); note.type = "text"; note.value = MGR.notes[nk] || "";
           note.placeholder = "Notes: load-in, soundcheck, contact…"; note.setAttribute("aria-label", `Notes for ${it.pk.name || it.v.name}`);
           const printed = el("div", "run-note-print", MGR.notes[nk] ? "Notes: " + MGR.notes[nk] : "");
@@ -222,6 +317,8 @@ function renderAll() {
     });
     box.appendChild(wrap);
   });
+  renderCards();
+  drawMap();
   box.appendChild(el("div", "run-totals", `${totalGigs} gig${totalGigs === 1 ? "" : "s"} · ${fmtMiles(totalMiles)} of driving${MGR.useRouted ? " (routed where fetched)" : " (estimates)"}`));
   const act = $("runActions");
   const mk = (t, fn) => { const b = el("button", "mgr-btn", t); b.type = "button"; b.addEventListener("click", fn); act.appendChild(b); return b; };
@@ -229,6 +326,7 @@ function renderAll() {
   mk("⬇ Download run sheet (.txt)", () => TourSupport.saveText(runText(), "run-sheet.txt", "text/plain"));
   mk("🖨 Print", () => window.print());
   mk("💾 Save plan with logistics", saveManagerPlan);
+  mk("⬇ Download as tour (events format)", exportTour);
 }
 function renderSuggest(day, it) {
   const box = el("div", "run-stay");
@@ -255,9 +353,118 @@ function renderSleep(day, it) {
   day.appendChild(box);
 }
 
+// ── cards ─────────────────────────────────────────────────────────────────
+function renderCards() {
+  const box = $("runCards"); box.textContent = "";
+  MGR.groups.forEach((g) => {
+    if (MGR.groups.length > 1) box.appendChild(el("h4", "cards-heading", g.name));
+    const grid = el("div", "cards-grid"); let last = null, n = 0;
+    buildGroup(g).forEach((d) => d.items.forEach((it) => {
+      if (it.type === "gig") {
+        n++; const info = gigInfo(it.pk), card = el("div", "gig-card");
+        card.appendChild(el("div", "gc-date", `${n}. ${dayName(it.pk.date)}${info.time ? " · " + info.time : ""}`));
+        const t = el("div", "gc-title", info.title); if (info.soldOut) t.appendChild(el("span", "gc-badge", " SOLD OUT")); card.appendChild(t);
+        card.appendChild(el("div", "gc-venue", (info.title === it.v.name ? [it.v.full_address || it.v.city, it.v.postcode] : [it.v.name, it.v.city]).filter(Boolean).join(", ")));
+        const bl = billLine(info); if (bl) card.appendChild(el("div", "gc-bill", bl));
+        const meta = [info.price, it.pk.booked ? "✓ booked" : "", !info.known && /^pool:/.test(it.pk.id || "") ? "venue night — not in the events data yet" : ""].filter(Boolean).join(" · "); if (meta) card.appendChild(el("div", "gc-meta", meta));
+        if (it.leg) card.appendChild(el("div", "gc-leg", `↳ from ${it.from || "start"}: ${legText(it.leg)}`));
+        const acts = el("div", "gc-actions");
+        const m = el("button", "mgr-btn small", "📍 Show on map"); m.type = "button"; m.addEventListener("click", () => focusGig(it.pk)); acts.appendChild(m);
+        if (info.url) { const a = el("a", null, " Event details ↗"); a.href = info.url; a.target = "_blank"; a.rel = "noopener"; acts.appendChild(a); }
+        card.appendChild(acts);
+        grid.appendChild(card); last = card;
+      } else if (it.type === "sleep" && last) last.appendChild(el("div", "gc-stay", `🛏 Sleep: ${it.stay.n}${it.stay.t ? ", " + it.stay.t : ""} — then ${legText(it.l2)} to the next gig`));
+      else if (it.type === "suggest" && last) last.appendChild(el("div", "gc-stay hint", "🛏 Long leg to the next gig: see Run sheet for overnight options"));
+      else if (it.type !== "sleep" && it.type !== "suggest") grid.appendChild(el("div", "gig-card mini", `${it.text}${it.leg ? " — " + legText(it.leg) : ""}`));
+    }));
+    box.appendChild(grid);
+  });
+}
+function setView(v) {
+  MGR.view = v;
+  $("runSheet").hidden = v !== "sheet"; $("runCards").hidden = v !== "cards";
+  [["tabSheet", "sheet"], ["tabCards", "cards"]].forEach(([id, k]) => { $(id).classList.toggle("on", v === k); $(id).setAttribute("aria-selected", String(v === k)); });
+}
+
+// ── map ───────────────────────────────────────────────────────────────────
+let MAP = null, MAP_LAYER = null; const MARKERS = new Map();
+const popupFor = (title, lines) => { const d = document.createElement("div"); const b = document.createElement("strong"); b.textContent = title; d.appendChild(b); lines.filter(Boolean).forEach((t) => { const p = document.createElement("div"); p.textContent = t; d.appendChild(p); }); return d; };
+async function drawMap() {
+  const box = $("mgrMap");
+  if (!MGR.groups.length) { box.hidden = true; return; }
+  let L;
+  try { L = await TourSupport.loadLeaflet(); } catch (e) { box.hidden = true; $("mapNote").textContent = "The map couldn't load (no connection to the map library). Everything else still works."; return; }
+  box.hidden = false;
+  if (!MAP) { MAP = initMap("mgrMap"); MAP_LAYER = L.layerGroup().addTo(MAP); }
+  MAP_LAYER.clearLayers(); MARKERS.clear();
+  const all = [], seen = new Set(); let n = 0;
+  const pin = (txt, cls) => L.divIcon({ className: "", html: `<span class="mgr-pin ${cls}">${txt}</span>`, iconSize: [26, 26], iconAnchor: [13, 13] });
+  MGR.groups.forEach((g) => {
+    const pts = routePoints(g);
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1].ll, b = pts[i].ll, r = MGR.useRouted ? MGR.routed.get(pkey(a, b)) : null;
+      if (r && r.geometry) L.polyline(decodePoly(r.geometry), { color: "#2e7d32", weight: 4, opacity: 0.85 }).addTo(MAP_LAYER);
+      else L.polyline([a, b], { color: "#2e7d32", weight: 3, opacity: 0.6, dashArray: "6 8" }).addTo(MAP_LAYER);
+    }
+    pts.forEach((x) => {
+      all.push(x.ll);
+      const k = x.kind + x.ll.join(",");
+      if (x.kind !== "gig" && seen.has(k)) return; seen.add(k);
+      const icon = x.kind === "gig" ? pin(++n, "gig") : x.kind === "pickup" ? pin("P" + x.n, "pickup") : x.kind === "stay" ? pin("🛏", "stay") : pin(x.kind === "start" || x.kind === "end" ? "🏠" : "↩", "home");
+      const m = L.marker(x.ll, { icon }).addTo(MAP_LAYER);
+      if (x.kind === "gig") { const info = gigInfo(x.pk), v = MGR.venues[x.pk.venue_id] || {}; m.bindPopup(popupFor(info.title, [dayName(x.pk.date) + (info.time ? " · " + info.time : ""), addrOf(v)])); MARKERS.set(noteKey(x.pk), m); }
+      else m.bindPopup(popupFor(x.label, []));
+    });
+    buildGroup(g).forEach((d) => d.items.forEach((it) => { // hotels still to choose from, as small dots
+      if (it.type === "suggest") it.opts.list.forEach((o) => L.circleMarker([o.h.lat, o.h.lon], { radius: 5, color: "#ef6c00", fillOpacity: 0.7 }).bindPopup(popupFor(o.h.n, [`${fmtMins(o.ahMins)} after the gig, then ${fmtMins(o.hbMins)}`])).addTo(MAP_LAYER));
+    }));
+  });
+  if (all.length) MAP.fitBounds(L.latLngBounds(all).pad ? L.latLngBounds(all).pad(0.15) : L.latLngBounds(all));
+  setTimeout(() => MAP.invalidateSize(), 50);
+  $("mapNote").textContent = `● numbered = gigs in order · P = pickups · 🛏 = overnights · orange dots = hotel options · ${MGR.useRouted ? "solid line = road route" : "dashed line = straight line, not the road"}`;
+}
+function focusGig(pk) {
+  const m = MARKERS.get(noteKey(pk)); if (!m || !MAP) return;
+  $("mgrMap").scrollIntoView({ block: "center", behavior: "smooth" });
+  if (MAP.flyTo) MAP.flyTo(m.getLatLng ? m.getLatLng() : m.ll, 13);
+  if (m.openPopup) m.openPopup();
+}
+
+// ── start point, and export as a tour in the events format ──────────────
+function showStart() { const st = MGR.plan && MGR.plan.start; $("startNow").textContent = st && st.label ? `Starting from: ${st.label}` : "No start point yet: legs begin at the first gig."; }
+function setStart(place) {
+  MGR.plan.start = { lat: place.lat, lon: place.lon, label: place.label };
+  if (MGR.plan.endSame === undefined) MGR.plan.endSame = true;
+  $("startPlace").value = ""; $("startChoices").textContent = ""; showStart(); renderAll();
+}
+/** The plan as tours in the events-data format: one per stage. Required fields are filled; gigs matched to real events keep their ids, price and time. */
+function toursOut() {
+  const base = MGR.tourName.trim() || "My tour", out = {}, pool = (MGR.plan && MGR.plan.pool) || {};
+  const performer = pool.primary || (pool.artists && pool.artists[0]) || "";
+  MGR.groups.forEach((g, gi) => {
+    const name = MGR.groups.length > 1 ? `${base} — ${g.name}` : base;
+    const dateOut = (k) => { const d = parseKey(k); return d ? `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}` : k; };
+    const dates = g.picks.map((pk) => {
+      const info = gigInfo(pk), r = MGR.recs.get(`${pk.venue_id}|${pk.date}`), src = r && r.source && r.source.rec;
+      const td = { date: dateOut(pk.date), venue_id: pk.venue_id };
+      if (info.time) td.time = info.time;
+      if (info.price) td.price = info.price;
+      if (r && r.kind === "event" && src) { if (src.eventId) td.eventId = src.eventId; if (src.performer_id) td.performer_id = src.performer_id; if (info.title) td.title = info.title; }
+      return td;
+    });
+    out[slug(name)] = { tour_name: name, name, performer_id: performer, tour_dates: dates };
+  });
+  return { out, performer };
+}
+function exportTour() {
+  const { out, performer } = toursOut();
+  TourSupport.saveText(JSON.stringify(out, null, 2), `${slug(MGR.tourName || "tour")}-tour.json`, "application/json");
+  setStatus(performer ? "Tour downloaded in the events-data format." : "Tour downloaded. The format requires a performer_id and none is known: add one before using it in the events data.", !performer);
+}
+
 // ── save / handover ───────────────────────────────────────────────────────
 function saveManagerPlan() {
-  const out = { ...MGR.plan, manager: {
+  const out = { ...MGR.plan, tourName: MGR.tourName, manager: {
     pickups: MGR.pickups, dropHome: MGR.dropHome, stays: MGR.stays, notes: MGR.notes,
     settings: { after: MGR.after, trigger: MGR.trigger, brands: MGR.brands, anyGap: MGR.anyGap, mph: MGR.mph },
   } };
@@ -283,21 +490,26 @@ function drawPickups() {
 }
 
 // ── optional real drive times (OpenRouteService) ──────────────────────────
+/** The journey as ordered points: start, pickups, gigs (with any overnight stay between), drop-offs, end. */
+function routePoints(g) {
+  const pts = [], s0 = startLL();
+  if (s0) pts.push({ ll: s0, kind: "start", label: (MGR.plan.start && MGR.plan.start.label) || "Start" });
+  MGR.pickups.forEach((p, i) => pts.push({ ll: [p.lat, p.lon], kind: "pickup", label: `${p.label || "Passenger " + (i + 1)} — ${p.place}`, n: i + 1 }));
+  g.picks.forEach((pk, i) => {
+    const prev = i > 0 ? g.picks[i - 1] : null, st = prev ? MGR.stays[prev.date] : null;
+    const d1 = prev && parseKey(prev.date), d2 = parseKey(pk.date);
+    if (st && d1 && d2 && d2 - d1 >= 86400000) pts.push({ ll: [st.lat, st.lon], kind: "stay", label: st.n + (st.t ? ", " + st.t : "") });
+    pts.push({ ll: llOf(pk.venue_id), kind: "gig", label: pk.name, pk });
+  });
+  if (MGR.dropHome) [...MGR.pickups].reverse().forEach((p) => pts.push({ ll: [p.lat, p.lon], kind: "drop", label: `Drop ${p.label || "passenger"} — ${p.place}` }));
+  const e = endLL(); if (e) pts.push({ ll: e, kind: "end", label: endLabel() });
+  return pts.filter((x) => x.ll);
+}
 function allLegPairs() {
   const pairs = new Map();
-  // every consecutive pair in each group's route, including pickups, stays and the end
   MGR.groups.forEach((g) => {
-    const pts = [];
-    const s = startLL(); if (s) pts.push(s);
-    MGR.pickups.forEach((p) => pts.push([p.lat, p.lon]));
-    g.picks.forEach((pk, i) => {
-      const st = i > 0 ? MGR.stays[g.picks[i - 1].date] : null;
-      if (st) pts.push([st.lat, st.lon]);
-      pts.push(llOf(pk.venue_id));
-    });
-    if (MGR.dropHome) [...MGR.pickups].reverse().forEach((p) => pts.push([p.lat, p.lon]));
-    const e = endLL(); if (e) pts.push(e);
-    for (let i = 1; i < pts.length; i++) if (pts[i - 1] && pts[i] && pts[i - 1][0] !== pts[i][0]) pairs.set(pkey(pts[i - 1], pts[i]), [pts[i - 1], pts[i]]);
+    const pts = routePoints(g).map((x) => x.ll);
+    for (let i = 1; i < pts.length; i++) if (pts[i - 1][0] !== pts[i][0] || pts[i - 1][1] !== pts[i][1]) pairs.set(pkey(pts[i - 1], pts[i]), [pts[i - 1], pts[i]]);
   });
   return [...pairs.entries()];
 }
@@ -321,7 +533,7 @@ async function getRoutes() {
       if (r.status === 429) { failed = "OpenRouteService rate limit reached — try again in a minute."; break; }
       if (!r.ok) { failed = `OpenRouteService error (HTTP ${r.status}) for one leg; the rest are estimates.`; continue; }
       const j = await r.json(), s = j.routes && j.routes[0] && j.routes[0].summary;
-      if (s) { MGR.routed.set(k, { miles: s.distance / 1609.344, mins: s.duration / 60 }); done++; }
+      if (s) { MGR.routed.set(k, { miles: s.distance / 1609.344, mins: s.duration / 60, geometry: typeof j.routes[0].geometry === "string" ? j.routes[0].geometry : "" }); done++; }
     } catch (e) { failed = "Couldn't reach OpenRouteService: " + e.message; break; }
   }
   $("orsGo").disabled = false;
@@ -344,6 +556,7 @@ async function initManager() {
   $("mgrLoading").hidden = true;
   if (!result) { $("mgrLoading").hidden = false; $("mgrLoading").textContent = "Couldn't load events data."; return; }
   MGR.venues = result.venuesLookup || {};
+  MGR.eventsData = result.eventsData || null;
   $("mgrMain").hidden = false;
   let handover = null;
   try { handover = JSON.parse(localStorage.getItem(HANDOVER_KEY) || "null"); } catch (e) { /* ignore */ }
@@ -353,7 +566,17 @@ async function initManager() {
     $("mgrFromPlanner").addEventListener("click", useHandover);
     if (/[?&]from=planner/.test(location.search)) useHandover(); // the copy kept in browser storage is removed once used
   }
-  $("mgrFile").addEventListener("change", (e) => readFile(e.target.files[0], (p) => loadPlan(p, "Plan file loaded.")));
+  $("tabSheet").addEventListener("click", () => setView("sheet")); $("tabCards").addEventListener("click", () => setView("cards"));
+  $("mgrFile").addEventListener("change", (e) => readFile(e.target.files[0], (p) => acceptJson(p, "File loaded")));
+  fillTourSelect(MGR.eventsData && MGR.eventsData.tours ? MGR.eventsData.tours : {});
+  $("mgrTourOpen").addEventListener("click", openChosenTour);
+  const tid = (location.search.match(/[?&]tour=([^&]+)/) || [])[1];
+  if (tid && MGR.tourPool && MGR.tourPool[decodeURIComponent(tid)]) { $("mgrTourSel").value = decodeURIComponent(tid); openChosenTour(); }
+  $("tourName").addEventListener("input", () => { MGR.tourName = $("tourName").value; });
+  const findStart = () => TourSupport.findPlace({ input: $("startPlace"), choices: $("startChoices"), onPick: setStart,
+    setStatus: (m, err) => { if (m) { $("startChoices").textContent = m; $("startChoices").classList.toggle("err", !!err); } }, hintClass: "mgr-hint", choiceClass: "mgr-btn" });
+  $("startSet").addEventListener("click", findStart);
+  $("startPlace").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); findStart(); } });
   $("hotelFile").addEventListener("change", (e) => readFile(e.target.files[0], (l) => setHotels(l, "your file")));
   const num = (id, key, lo, hi) => $(id).addEventListener("input", () => { const n = parseInt($(id).value, 10); if (Number.isFinite(n)) { MGR[key] = Math.min(hi, Math.max(lo, n)); renderAll(); } });
   num("mphIn", "mph", 20, 80);

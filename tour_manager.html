@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611201901">
+    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611210013">
 </head>
 
 <body class="page-tour-manager">
@@ -33,7 +33,7 @@
     </nav>
 
     <h1>Tour Manager</h1>
-    <h2 class="tour-page-subtitle">Take a tour plan from the Tour Planner and work out the logistics: pickups, drive times,
+    <h2 class="tour-page-subtitle">Open a tour from the listings or a plan from the Tour Planner and work out the logistics: pickups, drive times,
         overnight stops and a run sheet.</h2>
 
     <details class="mgr-help">
@@ -54,13 +54,28 @@
                 <button id="mgrFromPlanner" type="button" class="mgr-btn primary" hidden>Use the plan from the Tour Planner</button>
                 <label class="mgr-file">or open a saved plan file <input id="mgrFile" type="file" accept=".json,application/json"></label>
             </div>
+            <div class="mgr-row">
+                <label>or a tour from the listings <select id="mgrTourSel"><option value="">Choose a tour…</option></select></label>
+                <button id="mgrTourOpen" type="button" class="mgr-btn">Open this tour</button>
+            </div>
             <p id="mgrStatus" class="mgr-status" role="status"></p>
             <div id="mgrSummary" class="mgr-hint"></div>
         </section>
 
         <div id="mgrWork" hidden>
+        <section class="mgr-card" id="mgrBasics">
+            <h3>2 · Tour basics</h3>
+            <div class="mgr-row"><label>Tour name <input id="tourName" type="text" placeholder="used when you export the tour"></label></div>
+            <div class="mgr-row">
+                <input id="startPlace" type="text" placeholder="Start from: town or postcode" aria-label="Start point">
+                <button id="startSet" type="button" class="mgr-btn">Set start</button>
+            </div>
+            <div id="startChoices" class="mgr-choices"></div>
+            <p id="startNow" class="mgr-hint"></p>
+        </section>
+
         <section class="mgr-card" id="mgrPickups">
-            <h3>2 · Pickups <span class="mgr-hint">(optional)</span></h3>
+            <h3>3 · Pickups <span class="mgr-hint">(optional)</span></h3>
             <p class="mgr-hint">People or kit to collect before the first gig, in order, starting from the tour's start point.</p>
             <ol id="pickupList" class="mgr-list"></ol>
             <div class="mgr-row">
@@ -74,7 +89,7 @@
         </section>
 
         <section class="mgr-card" id="mgrStay">
-            <h3>3 · Overnights <span class="mgr-hint">(optional)</span></h3>
+            <h3>4 · Overnights <span class="mgr-hint">(optional)</span></h3>
             <p class="mgr-hint">After a gig you drive up to a set time towards the next one, then stop. The manager suggests Premier Inns and Travelodges for that stop.</p>
             <div class="mgr-row">
                 <label>Drive up to <input id="afterMins" type="number" min="15" max="240" value="60"> min after a gig</label>
@@ -90,14 +105,21 @@
         </section>
 
         <section class="mgr-card" id="mgrRoute">
-            <h3>4 · Route and run sheet</h3>
+            <h3>5 · Route and run sheet</h3>
             <div class="mgr-row"><label>Estimate drive times at <input id="mphIn" type="number" min="20" max="80" value="45"> mph <span class="mgr-hint">(motorway-heavy tours: try 55; rural: 35)</span></label></div>
+            <div id="mgrMap" class="mgr-map" hidden role="img" aria-label="Map of the tour route and venues"></div>
+            <p id="mapNote" class="mgr-hint"></p>
+            <div class="mgr-tabs" role="tablist" aria-label="View">
+                <button id="tabSheet" type="button" role="tab" aria-selected="true" class="mgr-tab on">Run sheet</button>
+                <button id="tabCards" type="button" role="tab" aria-selected="false" class="mgr-tab">Cards</button>
+            </div>
             <div id="runSheet"></div>
+            <div id="runCards" class="mgr-cards" hidden></div>
             <div class="mgr-row" id="runActions"></div>
         </section>
 
         <section class="mgr-card" id="mgrOrs">
-            <h3>5 · Real drive times <span class="mgr-hint">(optional)</span></h3>
+            <h3>6 · Real drive times <span class="mgr-hint">(optional)</span></h3>
             <p class="mgr-hint">Times above are estimates from straight-line distance. With a free <a href="https://openrouteservice.org/dev/#/signup">OpenRouteService</a> key you can replace them with routed distances and times. The key stays in this browser and is only sent to OpenRouteService.</p>
             <div class="mgr-row">
                 <input id="orsKey" type="password" placeholder="OpenRouteService API key" autocomplete="off" aria-label="OpenRouteService API key">
@@ -118,8 +140,10 @@
 
     <script src="/js/recurrence-engine.js"></script>
     <script src="/js/shared_utils.js"></script>
+    <script src="/js/event_helpers.js?v=202611170953"></script>
+    <script src="/js/event_collect.js?v=202611182130"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_manager.js?v=202611201901"></script>
+    <script src="/js/tour_manager.js?v=202611210013"></script>
 </body>
 
 </html>

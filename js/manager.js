@@ -21,6 +21,19 @@ run("tour manager", async (t) => {
   t.ok(/gigs?/.test(await popup.textContent("#mgrSummary")), "summary line: " + (await popup.textContent("#mgrSummary")));
   const gigCount = await popup.locator(".run-line strong").count();
   t.eq(gigCount, picked, "every picked gig is in the run sheet");
+  // map, event details and cards
+  await popup.waitForTimeout(500);
+  const mp = await popup.evaluate(() => ({ markers: window.__markers.map((m) => String(m.icon && m.icon.html).replace(/<[^>]+>/g, "")), dashed: window.__lines.filter((l) => l.opts && l.opts.dashArray).length, recs: MGR.recs.size }));
+  t.ok(!(await popup.evaluate(() => document.getElementById("mgrMap").hidden)), "the route map is shown");
+  t.ok(mp.markers.includes("1") && mp.markers.includes(String(picked)), `gigs are numbered 1..${picked} on the map (${mp.markers.join(",")})`);
+  t.ok(mp.dashed > 0, "before real times are fetched the route is drawn as dashed straight lines");
+  t.ok(mp.recs > 0, `gig details were found in the events data (${mp.recs} records)`);
+  await popup.click("#tabCards"); await popup.waitForTimeout(200);
+  t.ok(await popup.evaluate(() => document.getElementById("runSheet").hidden && !document.getElementById("runCards").hidden), "the Cards tab swaps the run sheet for cards");
+  t.ok((await popup.locator(".gig-card:not(.mini)").count()) === picked, "one card per gig");
+  await popup.locator(".gig-card button:has-text('Show on map')").first().click(); await popup.waitForTimeout(300);
+  t.ok(await popup.evaluate(() => !!window.__opened), "Show on map opens that gig's marker");
+  await popup.click("#tabSheet"); await popup.waitForTimeout(200);
   t.ok(await popup.evaluate(() => /Hotel data isn't installed/.test(document.getElementById("hotelStatus").textContent)), "without data/budget_hotels.json the hotel part says so (no crash)");
   // 2. pickups
   await popup.route("https://api.postcodes.io/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ result: { postcode: "LS1 4AP", latitude: 53.7965, longitude: -1.5478 } }) }));
@@ -62,10 +75,11 @@ run("tour manager", async (t) => {
   t.ok(!/Premier Inn/.test((await popup.locator(".run-stay button").allTextContents()).join()), "untick Premier Inn removes them from the suggestions");
   await popup.check("#brandPI");
   // 4. routed times (stub the ORS API)
-  await popup.route("https://api.openrouteservice.org/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ routes: [{ summary: { distance: 160934, duration: 6000 } }] }) }));
+  await popup.route("https://api.openrouteservice.org/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ routes: [{ summary: { distance: 160934, duration: 6000 }, geometry: "_p~iF~ps|U_ulLnnqC_mqNvxq`@" }] }) }));
   await popup.fill("#orsKey", "test-key"); await popup.click("#orsGo"); await popup.waitForTimeout(2500);
   t.ok(/routed/.test(await popup.textContent("#runSheet")), "after fetching, legs are marked (routed)");
   t.ok(/100 mi/.test(await popup.textContent("#runSheet")), "routed distance is used (100 mi from the stub)");
+  t.ok(await popup.evaluate(() => window.__lines.some((l) => l.pts.length === 3 && !(l.opts && l.opts.dashArray) && Math.abs(l.pts[0][0] - 38.5) < 0.01 && Math.abs(l.pts[2][1] + 126.453) < 0.01)), "routed legs are drawn as a solid line following the decoded road geometry");
   await popup.click("#orsOff"); await popup.waitForTimeout(200);
   t.ok(!/routed\)/.test(await popup.textContent("#runSheet")), "Back to estimates restores the estimates");
   // 5. save with logistics, reload it in a fresh manager
@@ -95,5 +109,24 @@ run("tour manager", async (t) => {
   t.eq(staged.groups, ["Stage 1:2", "Stage 2:1"], "a staged plan becomes one group per stage (the current stage isn't counted twice)");
   t.eq(staged.backHome, 2, "each stage ends back at the start point");
   t.eq(staged.headings, 2, "stage headings shown");
+  // a pick that matches a real event (same venue, same night) shows its details and links to it
+  const real = await popup.evaluate(() => {
+    const d = new Date(); d.setDate(d.getDate() + 1);
+    const recs = EventCollect.collect(MGR.eventsData, d, new Date(d.getTime() + 150 * 86400000)).filter((r) => r.kind === "event" && r.bill && r.bill.all.length && r.venue_id && llOf(r.venue_id));
+    const r = recs[0]; if (!r) return null;
+    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, "0")}-${String(r.date.getDate()).padStart(2, "0")}`;
+    loadPlan({ format: "new-troubadours-tour-plan", version: 1, mode: "pool", picks: [{ date: key, id: "pool:" + r.venue_id + ":" + key, venue_id: r.venue_id, name: "A venue name" }], settings: { values: {}, checks: {} } }, "x");
+    return { title: r.title, head: r.bill.head.concat(r.bill.also)[0] || r.bill.support[0] };
+  });
+  t.ok(!!real, "found a real event to test details with");
+  if (real) {
+    await popup.click("#tabCards"); await popup.waitForTimeout(200);
+    const card = await popup.textContent(".gig-card:not(.mini)");
+    t.ok(card.includes(real.title), "the card shows the real event's title (" + real.title + ") instead of the venue name");
+    t.ok(real.head ? card.includes(real.head) : true, "and who is on the bill");
+    t.ok((await popup.locator(".gig-card a:has-text('Event details')").count()) === 1, "and links to the event page");
+    t.ok(/event\.html\?event=/.test(await popup.getAttribute(".gig-card a:has-text('Event details')", "href")), "link goes to event.html?event=…");
+  }
+  // restore the planner's own plan for the rest of the test
   t.ok(errs.length === 0, "no page errors in the manager" + (errs[0] ? ": " + errs[0] : ""));
 });

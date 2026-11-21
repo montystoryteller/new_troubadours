@@ -13346,7 +13346,8 @@
       "description": "When everyone has gone home, one light remains burning on the stage.\n\n\n\nThe Ghost Light.\n\n\n\nFor generations, it has stood watch in empty theatres, gathering stories in the silence until someone is ready to tell them.\n\n\n\nThis October, join Owen Staton, host of the Time Between Times Storytelling podcast, for The Ghost Light — an evening of live storytelling.\n\n\n\nOver the course of the evening, he'll share a collection of haunting tales rooted in the place we're gathered.\n\n\n\nEvery performance is unique, drawing on local ghost stories, forgotten folklore and strange true accounts from the surrounding area. From lonely roads and abandoned houses to ancient churches, quiet woodlands and restless spirits that refuse to leave the places they once called home, these are the stories that have shaped the landscape around us for generations.\n\n\n\nA storyteller. An audience. A theatre wrapped in darkness, save for the ghost light burning on the stage.\n\n\n\nAs the evening unfolds, you'll laugh, you'll wonder and, perhaps, you'll find yourself looking a little more carefully into the shadows as you leave. The stories will carry you through encounters with uncanny visitors, ancient curses, mysterious disappearances, spectral figures and moments when the ordinary world gives way to something altogether stranger. Each tale is told in the rich oral tradition that has made Time Between Times Storytelling one of Britain's most-loved folklore podcasts. These are stories shaped not by special effects, but by voice, imagination and the shared experience of sitting together — exactly as our ancestors have done for centuries.\n\n\n\nNo two performances are the same, because every town has its own ghosts.\n\n\n\nEvery theatre has its own silence.\n\n\n\nAnd every audience brings something different to the telling.\n\n\n\nSo when the house lights fade and the ghost light begins to glow, take your seat and listen carefully…\n\n\n\nThe stories are here.",
       "ticket_url": "https://thewelfare.co.uk/Shows/the-ghost-light-with-owen-staton/",
       "isSpecial": true,
-      "eventId": "20261029-owen-staton-horse-and-plough-bingham"
+      "eventId": "20261029-owen-staton-horse-and-plough-bingham",
+      "previous_id": "20261029-dave-brookes-horse-and-plough-bingham"
     },
     {
       "name": "In the Night Forest [Daniel Morden & Laura Sampson]",
@@ -23001,6 +23002,7 @@
       "name": "Firefly Press",
       "url": "https://fireflypress.co.uk/",
       "publisher_id": "firefly-press",
+      "previous_id": "name%3Afirefly+press+ltd",
       "description": "Firefly Press is an award-winning independent children's and YA publisher based in Wales, publishing quality fiction in all genres for 5-19 years olds."
     },
     "y-lolfa": {
