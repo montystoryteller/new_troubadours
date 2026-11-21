@@ -3864,6 +3864,7 @@
     "the-dirt-november-dates-2026": {
       "tour_name": "The Dirt — November Dates, 2026",
       "isPoetry": true,
+      "previous_id": "the-dirt-the-dirt-november-dates-2026",
       "tour_dates": [
         {
           "date": "06/11/2026",
@@ -6683,7 +6684,8 @@
             "deja-vu"
           ],
           "isSpecial": true,
-          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queens-hall-narberth"
+          "eventId": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queens-hall-narberth",
+          "previous_id": "T-beans-on-toast-in-your-neck-of-the-woods-2026-20261122-queen-s-hall-narberth"
         },
         {
           "date": "24/11/2026",
@@ -15040,6 +15042,24 @@
     }
   ],
   "venues": {
+    "the-fire-station-sunderland": {
+      "id": "the-fire-station-sunderland",
+      "name": "The Fire Station, Sunderland",
+      "venue_type": "Other / unknown",
+      "city": "Sunderland",
+      "postcode": "SR1 3HA",
+      "full_address": "The Fire Station, High Street West, Sunderland, SR1 3HA",
+      "url": "https://www.thefirestation.org.uk/",
+      "email": "info@thefirestation.org.uk",
+      "phone": "0191 5700 007",
+      "facebook": "FireStationSun",
+      "instagram": "firestationsun",
+      "description": "The Fire Station is an award-winning venue at the heart of Sunderland’s cultural quarter. Combining contemporary design, warmth and style, The Fire Station offers a unique and quality experience in the city centre, with excellent transport links for ease of access and plenty of accommodation nearby.\n\n\n\nWith state-of-the-art acoustics, sound, lighting and AV, the venue is perfect to host all manner of performances including indie rock, folk, americana, blues, soul, jazz, electronic, classical, world, pop/night out, theatre, comedy, dance, spoken word and family performances. Capacities: 550 seated / 800 standing.",
+      "latlon": [
+        54.90643,
+        -1.38863
+      ]
+    },
     "peacock-sunderland": {
       "id": "peacock-sunderland",
       "name": "The Peacock, Sunderland",
@@ -21490,6 +21510,22 @@
         -1.4704999
       ]
     },
+    "city-varieties-leeds": {
+      "id": "city-varieties-leeds",
+      "name": "City Varieties, Leeds",
+      "venue_type": "Other / unknown",
+      "city": "Leeds",
+      "postcode": "LS1 6LW",
+      "full_address": "City Varieties Music Hall, Swan St, Leeds, LS1 6LW",
+      "url": "https://leedsheritagetheatres.com/city-varieties-music-hall/",
+      "facebook": "leedsheritagetheatres",
+      "instagram": "leedstheatres",
+      "description": "A hidden gem. Leeds’ oldest working theatre and the Guinness World Record holder for the nation’s longest running music hall. Not bad for a once smoke-filled room above a pub, where the working class of Leeds would drink and be merry, shout vulgarities at performers and sing-along to pithy ditties.\n\n\n\nCity Varieties is around a 10 minutes’ walk from Leeds bus station and 15 minutes’ walk from Leeds train station. Buses to the centre also stop nearby on The Headrow, Vicar Lane and Boar Lane, all of which are within 5-10 minutes’ walk of the venue.",
+      "latlon": [
+        53.79896,
+        -1.54282
+      ]
+    },
     "hyde-park-book-club-leeds": {
       "id": "hyde-park-book-club-leeds",
       "name": "Hyde Park Book Club, Leeds",
@@ -22051,6 +22087,40 @@
       "latlon": [
         53.74069,
         -2.01405
+      ]
+    },
+    "pocklington-arts-centre": {
+      "id": "pocklington-arts-centre",
+      "name": "Pocklington Arts Centre",
+      "venue_type": "Arts centre / venue",
+      "city": "York",
+      "postcode": "YO42 2AR",
+      "full_address": "Pocklington Arts Centre, Market Place, Pocklington,York, YO42 2AR",
+      "url": "https://pocklingtonartscentre.co.uk/",
+      "email": "info@pocklingtonartscentre.co.uk",
+      "facebook": "pocklingtonartscentre",
+      "instagram": "pocklingtonartscentre",
+      "description": "Pocklington Arts Centre is a not-for-profit arts & entertainment Venue in the heart of East Yorkshire grateful to our funding partners – Pocklington Town Council, Arts Council England and East Riding of Yorkshire Council for their generous ongoing support.\n\n\n\nWe pride ourselves on extending a friendly, inclusive welcome and delivering a diverse programme of music, comedy, theatre productions and cinema to the people of Pocklington and beyond.",
+      "latlon": [
+        53.93034,
+        -0.7785
+      ]
+    },
+    "helmsley-arts-center": {
+      "id": "helmsley-arts-center",
+      "name": "Helmsley Arts Center",
+      "venue_type": "Arts centre / venue",
+      "city": "York",
+      "postcode": "YO62 5DW",
+      "full_address": "Helmsley Arts Centre, Meeting House Ct, Helmsley, York, YO62 5DW",
+      "url": "https://helmsleyarts.co.uk/",
+      "email": "mail@helmsleyarts.co.uk",
+      "facebook": "HelmsleyArtsCentre",
+      "instagram": "helmsleyarts",
+      "description": "Helmsley Arts Centre is a meeting place for the creatively curious — a community-led social hub where people of all ages can come together to create, connect and experience high-quality arts and culture.\n\n\n\nOur programme offers something for everyone, with an exciting and diverse mix of theatre, live music, comedy, spoken word, talks, exhibitions, classes, workshops, courses and cinema. We also screen world-class productions through National Theatre Live, alongside a packed programme of half-term, holiday and weekly activities for all ages.",
+      "latlon": [
+        54.24591,
+        -1.05944
       ]
     },
     "the-cyclist-york": {
