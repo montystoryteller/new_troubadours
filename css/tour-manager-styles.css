@@ -51,3 +51,11 @@
 .gc-stay { background: #fff8e1; border-radius: 6px; padding: 4px 8px; margin-top: 6px; font-size: .9em; } .gc-stay.hint { color: #6d4c00; }
 .gc-actions { margin-top: 6px; }
 @media print { .mgr-map, .mgr-tabs { display: none !important; } #runSheet[hidden] { display: block !important; } #runCards { display: none !important; } }
+
+.mgr-pin.stop { background: #6a1b9a; }
+.run-stop { background: #f3e5f5; border: 1px solid #ce93d8; border-radius: 6px; padding: 6px 10px; margin: 6px 0 6px 14px; }
+.stop-mins { width: 4em; padding: 2px 4px; }
+.along-list { list-style: none; padding: 0; margin: 6px 0; max-height: 420px; overflow: auto; }
+.along-item { border-bottom: 1px solid #eceff1; padding: 6px 2px; }
+.along-item .mgr-btn { margin: 4px 6px 0 0; }
+#alongMiles { vertical-align: middle; }

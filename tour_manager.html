@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="/css/shared-styles.css">
     <link rel="stylesheet" href="/css/tour-support.css">
-    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611210013">
+    <link rel="stylesheet" href="/css/tour-manager-styles.css?v=202611211019">
 </head>
 
 <body class="page-tour-manager">
@@ -118,8 +118,29 @@
             <div class="mgr-row" id="runActions"></div>
         </section>
 
+        <section class="mgr-card" id="mgrAlong">
+            <h3>6 · Along the route <span class="mgr-hint">(optional)</span></h3>
+            <p class="mgr-hint">Find pubs, cafés, fuel and more near a leg of the journey, then add one as a stop. Results come from OpenStreetMap, so opening hours may be missing or out of date.</p>
+            <div class="mgr-row"><label>Leg <select id="alongLeg"></select></label></div>
+            <div class="mgr-row" id="alongKinds"></div>
+            <div class="mgr-row">
+                <label>Within <input type="range" id="alongMiles" min="1" max="5" step="0.5" value="2"></label>
+                <output id="alongMilesOut" class="mgr-hint"></output>
+            </div>
+            <div class="mgr-row">
+                <label>Where on the leg
+                    <select id="alongWhere"><option value="all">the whole leg</option><option value="stretch">a stretch of it</option></select></label>
+                <span id="alongStretch" hidden>from <input id="alongFrom" type="number" min="0" value="40"> to <input id="alongTo" type="number" min="0" value="70">
+                    <select id="alongUnit" aria-label="Unit"><option value="mi">miles</option><option value="min">minutes</option></select> into the leg</span>
+            </div>
+            <p id="alongConv" class="mgr-hint"></p>
+            <div class="mgr-row"><button id="alongGo" type="button" class="mgr-btn primary">Search along this leg</button></div>
+            <p id="alongStatus" class="mgr-hint" role="status"></p>
+            <ul id="alongList" class="along-list"></ul>
+        </section>
+
         <section class="mgr-card" id="mgrOrs">
-            <h3>6 · Real drive times <span class="mgr-hint">(optional)</span></h3>
+            <h3>7 · Real drive times <span class="mgr-hint">(optional)</span></h3>
             <p class="mgr-hint">Times above are estimates from straight-line distance. With a free <a href="https://openrouteservice.org/dev/#/signup">OpenRouteService</a> key you can replace them with routed distances and times. The key stays in this browser and is only sent to OpenRouteService.</p>
             <div class="mgr-row">
                 <input id="orsKey" type="password" placeholder="OpenRouteService API key" autocomplete="off" aria-label="OpenRouteService API key">
@@ -143,7 +164,7 @@
     <script src="/js/event_helpers.js?v=202611170953"></script>
     <script src="/js/event_collect.js?v=202611182130"></script>
     <script src="/js/tour_support.js?v=202611171930"></script>
-    <script src="/js/tour_manager.js?v=202611210013"></script>
+    <script src="/js/tour_manager.js?v=202611211019"></script>
 </body>
 
 </html>

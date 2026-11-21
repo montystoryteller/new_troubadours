@@ -15,7 +15,7 @@ const { roadMiles, fmtMiles, AVG_MPH } = TourSupport;
 const PLAN_FORMAT = "new-troubadours-tour-plan";
 const MGR = {
   venues: {}, plan: null, groups: [], hotels: null,
-  pickups: [], dropHome: false, stays: {}, notes: {}, anyGap: false, mph: AVG_MPH,
+  pickups: [], dropHome: false, stays: {}, notes: {}, extras: [], anyGap: false, mph: AVG_MPH,
   after: 60, trigger: 90, brands: { PI: true, TL: true },
   eventsData: null, recs: new Map(), view: "sheet", tourName: "",
   routed: new Map(), useRouted: false, // "lat,lon>lat,lon" -> { miles, mins }
@@ -147,6 +147,7 @@ function loadPlan(plan, from) {
   MGR.pickups = Array.isArray(m.pickups) ? m.pickups.filter((p) => placeLL(p)).map((p) => ({ label: String(p.label || ""), lat: Number(p.lat), lon: Number(p.lon), place: String(p.place || ""), time: String(p.time || "") })) : [];
   MGR.dropHome = !!m.dropHome;
   MGR.notes = m.notes && typeof m.notes === "object" ? m.notes : {};
+  MGR.extras = Array.isArray(m.extras) ? m.extras.filter((e) => e && Number.isFinite(e.lat) && Number.isFinite(e.lon) && e.after).map((e) => ({ id: String(e.id || e.name), after: String(e.after), frac: Number(e.frac) || 0, name: String(e.name || "Stop"), kind: String(e.kind || ""), icon: String(e.icon || "📍"), lat: e.lat, lon: e.lon, mins: Math.min(240, Math.max(0, parseInt(e.mins, 10) || 30)) })) : [];
   MGR.stays = m.stays && typeof m.stays === "object" ? m.stays : {};
   const s = m.settings || {};
   MGR.after = Math.min(240, Math.max(15, parseInt(s.after, 10) || 60));
@@ -210,6 +211,8 @@ const endLL = () => (MGR.plan && MGR.plan.endSame === false ? placeLL(MGR.plan.e
 const endLabel = () => (MGR.plan && (MGR.plan.endSame === false ? MGR.plan.end : MGR.plan.start) || {}).label || "home";
 
 /** The journey for one group as an ordered list of events (also used for the plain-text run sheet). */
+const exAfter = (key) => MGR.extras.filter((e) => e.after === key).sort((a, b) => a.frac - b.frac);
+const exPts = (key) => exAfter(key).map((e) => ({ ll: [e.lat, e.lon], kind: "stop", label: `${e.name} (${e.mins} min)`, icon: e.icon, ex: e }));
 function buildGroup(g) {
   const days = [], first = g.picks[0].date;
   const dayOf = (k) => { let d = days.find((x) => x.date === k); if (!d) { d = { date: k, items: [] }; days.push(d); } return d; };
@@ -220,6 +223,12 @@ function buildGroup(g) {
     dayOf(first).items.push({ type: "pickup", text: `${p.time ? p.time + " " : ""}Pick up ${p.label || "passenger " + (i + 1)} — ${p.place}`, leg: l, from: prevLabel });
     prev = ll; prevLabel = p.place;
   });
+  const addStops = (key, k) => exAfter(key).forEach((ex) => {
+    const ll = [ex.lat, ex.lon];
+    dayOf(k).items.push({ type: "stop", ex, text: `${ex.icon} Stop: ${ex.name} (${ex.mins} min)`, leg: prev ? leg(prev, ll) : null, from: prevLabel });
+    prev = ll; prevLabel = ex.name;
+  });
+  addStops("start:" + g.name, first);
   let prevPick = null;
   g.picks.forEach((pk, i) => {
     const v = MGR.venues[pk.venue_id], ll = llOf(pk.venue_id);
@@ -231,7 +240,7 @@ function buildGroup(g) {
       const needed = nights >= 1 && (nights === 1 || MGR.anyGap) && l && l.mins > MGR.trigger && a && ll && a[0] !== ll[0];
       if (stay && nights >= 1) {
         const h = [stay.lat, stay.lon];
-        dayOf(prevPick.date).items.push({ type: "sleep", stay, date: prevPick.date, l1: leg(a, h), l2: leg(h, ll), to: pk });
+        dayOf(prevPick.date).items.push({ type: "sleep", stay, date: prevPick.date, l1: leg(prev, h), l2: leg(h, ll), to: pk });
         prev = h; prevLabel = stay.n;
       } else if (needed) {
         dayOf(prevPick.date).items.push({ type: "suggest", date: prevPick.date, a, b: ll, leg: l, to: pk, opts: stayOptions(a, ll) });
@@ -240,6 +249,7 @@ function buildGroup(g) {
     const l = prev && ll ? leg(prev, ll) : null;
     dayOf(pk.date).items.push({ type: "gig", pk, v, leg: l, from: prevLabel });
     prev = ll; prevLabel = v.name; prevPick = pk;
+    addStops(noteKey(pk), pk.date);
   });
   const last = g.picks[g.picks.length - 1], day = dayOf(last.date);
   if (MGR.dropHome && MGR.pickups.length) {
@@ -308,6 +318,7 @@ function renderAll() {
           day.appendChild(note); day.appendChild(printed);
         } else if (it.type === "suggest") renderSuggest(day, it);
         else if (it.type === "sleep") renderSleep(day, it);
+        else if (it.type === "stop") renderStop(day, it);
         else {
           if (it.leg) day.appendChild(el("div", "run-leg", `↳ from ${it.from || "start"}: ${legText(it.leg)}`));
           day.appendChild(el("div", "run-line", it.text));
@@ -319,6 +330,7 @@ function renderAll() {
   });
   renderCards();
   drawMap();
+  fillAlongLegs();
   box.appendChild(el("div", "run-totals", `${totalGigs} gig${totalGigs === 1 ? "" : "s"} · ${fmtMiles(totalMiles)} of driving${MGR.useRouted ? " (routed where fetched)" : " (estimates)"}`));
   const act = $("runActions");
   const mk = (t, fn) => { const b = el("button", "mgr-btn", t); b.type = "button"; b.addEventListener("click", fn); act.appendChild(b); return b; };
@@ -340,6 +352,17 @@ function renderSuggest(day, it) {
     box.appendChild(b);
   });
   day.appendChild(box);
+}
+function renderStop(day, it) {
+  if (it.leg) day.appendChild(el("div", "run-leg", `↳ from ${it.from || "start"}: ${legText(it.leg)}`));
+  const box = el("div", "run-stop");
+  box.appendChild(el("span", null, `${it.ex.icon} Stop: ${it.ex.name} — `));
+  const m = el("input", "stop-mins"); m.type = "number"; m.min = "0"; m.max = "240"; m.value = it.ex.mins; m.setAttribute("aria-label", `Minutes at ${it.ex.name}`);
+  m.addEventListener("input", () => { const n = parseInt(m.value, 10); if (Number.isFinite(n)) it.ex.mins = Math.min(240, Math.max(0, n)); });
+  box.appendChild(m); box.appendChild(document.createTextNode(" min "));
+  const rm = el("button", "mgr-btn small", "Remove"); rm.type = "button";
+  rm.addEventListener("click", () => { MGR.extras = MGR.extras.filter((e) => e !== it.ex); renderAll(); routeMissing(); });
+  box.appendChild(rm); day.appendChild(box);
 }
 function renderSleep(day, it) {
   const box = el("div", "run-stay chosen");
@@ -387,7 +410,7 @@ function setView(v) {
 }
 
 // ── map ───────────────────────────────────────────────────────────────────
-let MAP = null, MAP_LAYER = null; const MARKERS = new Map();
+let MAP = null, MAP_LAYER = null, SEARCH_LAYER = null; const MARKERS = new Map();
 const popupFor = (title, lines) => { const d = document.createElement("div"); const b = document.createElement("strong"); b.textContent = title; d.appendChild(b); lines.filter(Boolean).forEach((t) => { const p = document.createElement("div"); p.textContent = t; d.appendChild(p); }); return d; };
 async function drawMap() {
   const box = $("mgrMap");
@@ -395,7 +418,7 @@ async function drawMap() {
   let L;
   try { L = await TourSupport.loadLeaflet(); } catch (e) { box.hidden = true; $("mapNote").textContent = "The map couldn't load (no connection to the map library). Everything else still works."; return; }
   box.hidden = false;
-  if (!MAP) { MAP = initMap("mgrMap"); MAP_LAYER = L.layerGroup().addTo(MAP); }
+  if (!MAP) { MAP = initMap("mgrMap"); MAP_LAYER = L.layerGroup().addTo(MAP); SEARCH_LAYER = L.layerGroup().addTo(MAP); }
   MAP_LAYER.clearLayers(); MARKERS.clear();
   const all = [], seen = new Set(); let n = 0;
   const pin = (txt, cls) => L.divIcon({ className: "", html: `<span class="mgr-pin ${cls}">${txt}</span>`, iconSize: [26, 26], iconAnchor: [13, 13] });
@@ -410,7 +433,7 @@ async function drawMap() {
       all.push(x.ll);
       const k = x.kind + x.ll.join(",");
       if (x.kind !== "gig" && seen.has(k)) return; seen.add(k);
-      const icon = x.kind === "gig" ? pin(++n, "gig") : x.kind === "pickup" ? pin("P" + x.n, "pickup") : x.kind === "stay" ? pin("🛏", "stay") : pin(x.kind === "start" || x.kind === "end" ? "🏠" : "↩", "home");
+      const icon = x.kind === "gig" ? pin(++n, "gig") : x.kind === "pickup" ? pin("P" + x.n, "pickup") : x.kind === "stay" ? pin("🛏", "stay") : x.kind === "stop" ? pin(x.icon || "📍", "stop") : pin(x.kind === "start" || x.kind === "end" ? "🏠" : "↩", "home");
       const m = L.marker(x.ll, { icon }).addTo(MAP_LAYER);
       if (x.kind === "gig") { const info = gigInfo(x.pk), v = MGR.venues[x.pk.venue_id] || {}; m.bindPopup(popupFor(info.title, [dayName(x.pk.date) + (info.time ? " · " + info.time : ""), addrOf(v)])); MARKERS.set(noteKey(x.pk), m); }
       else m.bindPopup(popupFor(x.label, []));
@@ -462,10 +485,179 @@ function exportTour() {
   setStatus(performer ? "Tour downloaded in the events-data format." : "Tour downloaded. The format requires a performer_id and none is known: add one before using it in the events data.", !performer);
 }
 
+// ── search along the route (OpenStreetMap via Overpass) ────────────────────
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
+const KINDS = {
+  pub: { label: "Pubs", icon: "🍺", q: ['["amenity"="pub"]'] },
+  cafe: { label: "Cafés", icon: "☕", q: ['["amenity"="cafe"]'] },
+  food: { label: "Restaurants", icon: "🍽", q: ['["amenity"~"^(restaurant|fast_food)$"]'] },
+  fuel: { label: "Fuel", icon: "⛽", q: ['["amenity"="fuel"]'] },
+  services: { label: "Motorway services", icon: "🅿", q: ['["highway"="services"]'] },
+  ev: { label: "EV charging", icon: "🔌", q: ['["amenity"="charging_station"]'] },
+  hotel: { label: "Premier Inn / Travelodge", icon: "🛏", q: ['["tourism"="hotel"]["name"~"Premier Inn|Travelodge",i]'] },
+};
+const kindOf = (t) => (t.amenity === "pub" ? "pub" : t.amenity === "cafe" ? "cafe" : /^(restaurant|fast_food)$/.test(t.amenity || "") ? "food" : t.amenity === "fuel" ? "fuel" : t.highway === "services" ? "services" : t.amenity === "charging_station" ? "ev" : t.tourism === "hotel" ? "hotel" : "");
+const flatMi = (a, b) => { const k = Math.cos(((a[0] + b[0]) / 2) * Math.PI / 180); return Math.hypot((b[0] - a[0]) * 69.0, (b[1] - a[1]) * 69.17 * k); };
+function lineLen(line) { let t = 0; for (let i = 1; i < line.length; i++) t += flatMi(line[i - 1], line[i]); return t; }
+/** The part of a line between fractions f0 and f1 of its length. */
+function sliceLine(line, f0, f1) {
+  const cum = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1] + flatMi(line[i - 1], line[i]));
+  const T = cum[cum.length - 1]; if (!T) return line.slice();
+  const at = (d) => { let i = 1; while (i < cum.length - 1 && cum[i] < d) i++; const seg = cum[i] - cum[i - 1] || 1, t = (d - cum[i - 1]) / seg; return [line[i - 1][0] + (line[i][0] - line[i - 1][0]) * t, line[i - 1][1] + (line[i][1] - line[i - 1][1]) * t]; };
+  const s0 = f0 * T, e0 = f1 * T, out = [at(s0)];
+  for (let i = 1; i < line.length - 1; i++) if (cum[i] > s0 && cum[i] < e0) out.push(line[i]);
+  out.push(at(e0)); return out;
+}
+/** Thin a line to at most `max` points (Douglas–Peucker), keeping its shape. */
+function simplifyLine(pts, max) {
+  const perp = (p, a, b) => { const dx = b[1] - a[1], dy = b[0] - a[0], L = dx * dx + dy * dy; if (!L) return Math.hypot(p[0] - a[0], p[1] - a[1]); let t = ((p[1] - a[1]) * dx + (p[0] - a[0]) * dy) / L; t = Math.max(0, Math.min(1, t)); return Math.hypot(p[0] - (a[0] + dy * t), p[1] - (a[1] + dx * t)); };
+  const dp = (eps) => { const keep = new Array(pts.length).fill(false); keep[0] = keep[pts.length - 1] = true; const st = [[0, pts.length - 1]];
+    while (st.length) { const [a, b] = st.pop(); let md = 0, mi = -1; for (let i = a + 1; i < b; i++) { const d = perp(pts[i], pts[a], pts[b]); if (d > md) { md = d; mi = i; } } if (md > eps && mi > -1) { keep[mi] = true; st.push([a, mi], [mi, b]); } }
+    return pts.filter((_, i) => keep[i]); };
+  let eps = 0.0005, cur = pts; while (cur.length > max && eps < 5) { cur = dp(eps); eps *= 1.6; }
+  return cur.length > max ? cur.filter((_, i) => i % Math.ceil(cur.length / max) === 0 || i === cur.length - 1) : cur;
+}
+/** Distance in miles from a point to a line, and how far along (0–1) the nearest point is. */
+function nearOnLine(p, line) {
+  const k = Math.cos(p[0] * Math.PI / 180), xy = (q) => [(q[1] - p[1]) * 69.17 * k, (q[0] - p[0]) * 69.0];
+  let best = Infinity, bestAlong = 0, run = 0; const T = lineLen(line) || 1;
+  for (let i = 1; i < line.length; i++) {
+    const a = xy(line[i - 1]), b = xy(line[i]), dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy;
+    let t = L ? Math.max(0, Math.min(1, -(a[0] * dx + a[1] * dy) / L)) : 0;
+    const d = Math.hypot(a[0] + dx * t, a[1] + dy * t), seg = Math.sqrt(L);
+    if (d < best) { best = d; bestAlong = run + seg * t; }
+    run += seg;
+  }
+  return { d: best, frac: Math.min(1, bestAlong / T) };
+}
+/** Every leg that can be searched: start→first gig, gig→gig, last gig→end. */
+function legSpans() {
+  const out = [];
+  MGR.groups.forEach((g, gi) => {
+    const pts = routePoints(g), gigs = pts.map((x, i) => (x.kind === "gig" ? i : -1)).filter((i) => i >= 0);
+    for (let k = 0; k <= gigs.length; k++) {
+      const from = k === 0 ? 0 : gigs[k - 1], to = k === gigs.length ? pts.length - 1 : gigs[k];
+      if (from >= to) continue;
+      const first = pts[from], last = pts[to];
+      const nm = (x, dflt) => (x.kind === "gig" ? x.label : x.kind === "start" || x.kind === "end" ? dflt : x.label);
+      out.push({ value: `${gi}:${k}`, afterKey: k === 0 ? "start:" + g.name : noteKey(first.pk), pts: pts.slice(from, to + 1),
+        label: `${MGR.groups.length > 1 ? g.name + ": " : ""}${k === 0 ? "Start" : nm(first, "Start")} → ${k === gigs.length ? "Home" : nm(last, "Home")}` });
+    }
+  });
+  return out;
+}
+function spanGeometry(span) {
+  let line = [], miles = 0, mins = 0;
+  for (let i = 1; i < span.pts.length; i++) {
+    const a = span.pts[i - 1].ll, b = span.pts[i].ll, r = MGR.useRouted ? MGR.routed.get(pkey(a, b)) : null, l = leg(a, b);
+    const piece = r && r.geometry ? decodePoly(r.geometry) : [a, b];
+    line = line.concat(line.length ? piece.slice(1) : piece);
+    if (l) { miles += l.miles; mins += l.mins; }
+  }
+  return { line, miles, mins };
+}
+function fillAlongLegs() {
+  const sel = $("alongLeg"); if (!sel) return;
+  const keep = sel.value, spans = legSpans();
+  sel.textContent = "";
+  spans.forEach((sp) => { const o = el("option", null, sp.label); o.value = sp.value; sel.appendChild(o); });
+  if (spans.some((sp) => sp.value === keep)) sel.value = keep;
+  updateAlongConv();
+}
+function stretchFractions() {
+  const sp = legSpans().find((x) => x.value === $("alongLeg").value); if (!sp) return null;
+  const g = spanGeometry(sp);
+  if ($("alongWhere").value === "all" || !g.miles) return { sp, g, f0: 0, f1: 1 };
+  let a = Number($("alongFrom").value), b = Number($("alongTo").value);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return { sp, g, f0: 0, f1: 1 };
+  const total = $("alongUnit").value === "mi" ? g.miles : g.mins;
+  let f0 = Math.max(0, Math.min(1, Math.min(a, b) / total)), f1 = Math.max(0, Math.min(1, Math.max(a, b) / total));
+  return { sp, g, f0, f1 };
+}
+function updateAlongConv() {
+  const miles = Number($("alongMiles").value);
+  $("alongMilesOut").textContent = `${miles} mi from the road (about ${Math.round(miles * 2)} min detour)`;
+  $("alongStretch").hidden = $("alongWhere").value === "all";
+  const f = stretchFractions(), out = $("alongConv");
+  if (!f || $("alongWhere").value === "all") { out.textContent = f ? `This leg is ${fmtMiles(f.g.miles)}, ${fmtMins(f.g.mins)}.` : ""; return; }
+  const m0 = f.f0 * f.g.miles, m1 = f.f1 * f.g.miles, t0 = f.f0 * f.g.mins, t1 = f.f1 * f.g.mins;
+  out.textContent = `≈ ${Math.round(m0)}–${Math.round(m1)} mi, ${fmtMins(t0)}–${fmtMins(t1)} into a ${fmtMiles(f.g.miles)} leg`;
+}
+async function overpass(query) {
+  const key = "nt_op_" + [...query].reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 5381);
+  try { const c = sessionStorage.getItem(key); if (c) return { elements: JSON.parse(c), cached: true }; } catch (e) { /* no cache */ }
+  let last = "";
+  for (const url of OVERPASS) {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 35000);
+    try {
+      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "data=" + encodeURIComponent(query), signal: ctl.signal });
+      if (!r.ok) { last = `HTTP ${r.status}`; continue; }
+      const j = await r.json();
+      if (j.remark && /error|timed out|too many/i.test(j.remark) && !(j.elements || []).length) { last = "the server was too busy"; continue; }
+      const els = j.elements || [];
+      try { sessionStorage.setItem(key, JSON.stringify(els)); } catch (e) { /* too big to cache */ }
+      return { elements: els, cached: false };
+    } catch (e) { last = e.name === "AbortError" ? "it took too long" : e.message; } finally { clearTimeout(timer); }
+  }
+  throw new Error(last || "no response");
+}
+async function searchAlong() {
+  const st = $("alongStatus"), list = $("alongList"), f = stretchFractions();
+  list.textContent = "";
+  const kinds = [...document.querySelectorAll("#alongKinds input:checked")].map((i) => i.value);
+  if (!f) { st.textContent = "Load a tour first."; return; }
+  if (!kinds.length) { st.textContent = "Tick at least one kind of place."; return; }
+  if (f.f1 - f.f0 < 0.001) { st.textContent = "That stretch is empty: check the from and to values."; return; }
+  const miles = Number($("alongMiles").value), line = sliceLine(f.g.line, f.f0, f.f1);
+  const coords = simplifyLine(line, 80), around = `(around:${Math.round(miles * 1609.344)},${coords.map((c) => c[0].toFixed(5) + "," + c[1].toFixed(5)).join(",")})`;
+  const query = `[out:json][timeout:25];(${kinds.flatMap((k) => KINDS[k].q.map((q) => `nwr${q}${around};`)).join("")});out center tags 300;`;
+  st.textContent = "Searching OpenStreetMap…"; $("alongGo").disabled = true;
+  let res;
+  try { res = await overpass(query); } catch (e) { st.textContent = `The map data service didn't answer (${e.message}). Nothing else is affected: try again in a minute, or with a narrower stretch.`; $("alongGo").disabled = false; return; }
+  $("alongGo").disabled = false;
+  const a = f.sp.pts[0].ll, b = f.sp.pts[f.sp.pts.length - 1].ll, direct = roadMiles(a, b) || 0, seen = new Set(), items = [];
+  res.elements.forEach((e) => {
+    const lat = e.lat != null ? e.lat : e.center && e.center.lat, lon = e.lon != null ? e.lon : e.center && e.center.lon, t = e.tags || {}, kind = kindOf(t);
+    if (lat == null || lon == null || !kinds.includes(kind) || seen.has(e.type + e.id)) return; seen.add(e.type + e.id);
+    const n = nearOnLine([lat, lon], line); if (n.d > miles + 0.25) return;
+    const detour = Math.max(0, (roadMiles(a, [lat, lon]) + roadMiles([lat, lon], b) - direct) / MGR.mph * 60);
+    items.push({ id: `${e.type}${e.id}`, name: t.name || `${KINDS[kind].label.replace(/s$/, "")} (unnamed)`, kind, lat, lon, d: n.d, detour,
+      frac: f.f0 + n.frac * (f.f1 - f.f0), town: t["addr:city"] || t["addr:town"] || t["addr:suburb"] || "", street: t["addr:street"] || "", hours: t.opening_hours || "", web: t.website || t["contact:website"] || "" });
+  });
+  items.sort((x, y) => x.frac - y.frac);
+  const shown = items.slice(0, 80);
+  st.textContent = shown.length
+    ? `${items.length} place${items.length === 1 ? "" : "s"} within ${miles} mi${items.length > shown.length ? ` (showing the first ${shown.length} along the road)` : ""}${res.cached ? " (from this session's cache)" : ""}. Map data © OpenStreetMap contributors: opening hours may be missing or out of date.`
+    : `Nothing found within ${miles} mi of that stretch. Try a wider distance or more kinds.`;
+  drawSearch(shown, line);
+  shown.forEach((it) => {
+    const li = el("li", "along-item");
+    li.appendChild(el("strong", null, `${KINDS[it.kind].icon} ${it.name}`));
+    li.appendChild(el("span", "mgr-hint", ` ${[it.street, it.town].filter(Boolean).join(", ")}`));
+    li.appendChild(el("div", "mgr-hint", `${it.d.toFixed(1)} mi off the road · about ${Math.max(1, Math.round(it.detour))} min detour${it.hours ? " · " + it.hours.slice(0, 70) : ""}`));
+    const add = el("button", "mgr-btn small", "＋ Add as a stop"); add.type = "button";
+    add.addEventListener("click", () => { addStop(it, f.sp.afterKey); add.textContent = "✓ Added"; add.disabled = true; });
+    li.appendChild(add);
+    if (MAP) { const loc = el("button", "mgr-btn small", "📍"); loc.type = "button"; loc.addEventListener("click", () => { $("mgrMap").scrollIntoView({ block: "center", behavior: "smooth" }); if (MAP.flyTo) MAP.flyTo([it.lat, it.lon], 14); }); li.appendChild(loc); }
+    list.appendChild(li);
+  });
+}
+function drawSearch(items, line) {
+  if (!MAP || !SEARCH_LAYER || !window.L) return;
+  SEARCH_LAYER.clearLayers();
+  L.polyline(line, { color: "#ef6c00", weight: 8, opacity: 0.3 }).addTo(SEARCH_LAYER);
+  items.forEach((it) => L.circleMarker([it.lat, it.lon], { radius: 6, color: "#6a1b9a", fillOpacity: 0.75 }).bindPopup(popupFor(`${KINDS[it.kind].icon} ${it.name}`, [`${it.d.toFixed(1)} mi off the road`, it.hours])).addTo(SEARCH_LAYER));
+}
+function addStop(it, afterKey) {
+  if (MGR.extras.some((e) => e.id === it.id && e.after === afterKey)) return;
+  MGR.extras.push({ id: it.id, after: afterKey, frac: it.frac, name: it.name, kind: it.kind, icon: KINDS[it.kind].icon, lat: it.lat, lon: it.lon, mins: it.kind === "fuel" || it.kind === "ev" ? 15 : 30 });
+  renderAll(); routeMissing();
+}
+
 // ── save / handover ───────────────────────────────────────────────────────
 function saveManagerPlan() {
   const out = { ...MGR.plan, tourName: MGR.tourName, manager: {
-    pickups: MGR.pickups, dropHome: MGR.dropHome, stays: MGR.stays, notes: MGR.notes,
+    pickups: MGR.pickups, dropHome: MGR.dropHome, stays: MGR.stays, notes: MGR.notes, extras: MGR.extras,
     settings: { after: MGR.after, trigger: MGR.trigger, brands: MGR.brands, anyGap: MGR.anyGap, mph: MGR.mph },
   } };
   TourSupport.saveText(JSON.stringify(out, null, 2), `tour-plan-with-logistics.json`, "application/json");
@@ -495,11 +687,13 @@ function routePoints(g) {
   const pts = [], s0 = startLL();
   if (s0) pts.push({ ll: s0, kind: "start", label: (MGR.plan.start && MGR.plan.start.label) || "Start" });
   MGR.pickups.forEach((p, i) => pts.push({ ll: [p.lat, p.lon], kind: "pickup", label: `${p.label || "Passenger " + (i + 1)} — ${p.place}`, n: i + 1 }));
+  pts.push(...exPts("start:" + g.name));
   g.picks.forEach((pk, i) => {
     const prev = i > 0 ? g.picks[i - 1] : null, st = prev ? MGR.stays[prev.date] : null;
     const d1 = prev && parseKey(prev.date), d2 = parseKey(pk.date);
     if (st && d1 && d2 && d2 - d1 >= 86400000) pts.push({ ll: [st.lat, st.lon], kind: "stay", label: st.n + (st.t ? ", " + st.t : "") });
     pts.push({ ll: llOf(pk.venue_id), kind: "gig", label: pk.name, pk });
+    pts.push(...exPts(noteKey(pk)));
   });
   if (MGR.dropHome) [...MGR.pickups].reverse().forEach((p) => pts.push({ ll: [p.lat, p.lon], kind: "drop", label: `Drop ${p.label || "passenger"} — ${p.place}` }));
   const e = endLL(); if (e) pts.push({ ll: e, kind: "end", label: endLabel() });
@@ -566,6 +760,9 @@ async function initManager() {
     $("mgrFromPlanner").addEventListener("click", useHandover);
     if (/[?&]from=planner/.test(location.search)) useHandover(); // the copy kept in browser storage is removed once used
   }
+  $("alongKinds").append(...Object.entries(KINDS).map(([k, v]) => { const l = el("label", "mgr-check"); const i = document.createElement("input"); i.type = "checkbox"; i.value = k; i.checked = k === "pub" || k === "cafe"; l.appendChild(i); l.appendChild(document.createTextNode(" " + v.icon + " " + v.label)); return l; }));
+  ["alongLeg", "alongMiles", "alongWhere", "alongFrom", "alongTo", "alongUnit"].forEach((id) => $(id).addEventListener("input", updateAlongConv));
+  $("alongGo").addEventListener("click", searchAlong);
   $("tabSheet").addEventListener("click", () => setView("sheet")); $("tabCards").addEventListener("click", () => setView("cards"));
   $("mgrFile").addEventListener("change", (e) => readFile(e.target.files[0], (p) => acceptJson(p, "File loaded")));
   fillTourSelect(MGR.eventsData && MGR.eventsData.tours ? MGR.eventsData.tours : {});
