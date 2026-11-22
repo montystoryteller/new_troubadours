@@ -755,6 +755,29 @@ function handleTourChange() {
   }
 }
 
+// A renamed tour (tours[id].previous_id): swap the address bar to the current
+// id in place, and return it. Returns the input unchanged when there is
+// nothing to forward (or the new id isn't loaded).
+function forwardRenamedTourId(tourId) {
+  const current = typeof resolveTourId === "function" ? resolveTourId(tourId) : tourId;
+  if (!current || current === tourId || !toursLookup[current]) return tourId;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tour", current);
+    if (toursLookup[current].performer_id) {
+      params.set("performer", toursLookup[current].performer_id);
+    }
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${window.location.pathname}?${params.toString()}${window.location.hash}`,
+    );
+  } catch (e) {
+    /* non-fatal: the tour still renders under its current id */
+  }
+  return current;
+}
+
 function getTourURLParams() {
   const params = new URLSearchParams(window.location.search);
   const rawTourId = params.get("tour");
@@ -2172,6 +2195,7 @@ setCanonical("tour");
   console.log("Venues:", Object.keys(venuesLookup).length);
 
   if (singleTourMode) {
+    urlParams.tourId = forwardRenamedTourId(urlParams.tourId);
     const tour = toursLookup[urlParams.tourId];
 
     if (tour) {
@@ -2223,6 +2247,7 @@ window.addEventListener("popstate", () => {
     showBrowseLanding();
     return;
   }
+  urlParams.tourId = forwardRenamedTourId(urlParams.tourId);
 
   if (toursLookup[urlParams.tourId]) {
     document.getElementById("tourNotFoundState").style.display = "none";

@@ -250,6 +250,7 @@ build_index() {
       # unless that record sets its own (as shared_utils.js promoterRegistryForPreviousIds does).
       clubs_previous: (.clubs | prevs),
       venues_previous: (.venues | prevs),
+      tours_previous: (.tours | prevs),
       performers_previous: (.performers | prevs),
       promoters_previous: (
         ((.promoters | prevs)

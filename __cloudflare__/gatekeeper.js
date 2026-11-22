@@ -431,7 +431,7 @@ const KEY_CHECKS = {
   "/storyclub": { club: ["clubs", "clubs_previous"] },
   "/promoters": { promoter: ["promoters", "promoters_previous"] },
   "/festival": { festival: "festivals" },
-  "/tour_guide": { tour: "tours", performer: "performers" },
+  "/tour_guide": { tour: ["tours", "tours_previous"], performer: ["performers", "performers_previous"] },
 };
 let keyIndex = null; // { at, sets: { performers: Set, ... } }
 

@@ -826,6 +826,16 @@
             "Dauntless (2026)"
           ]
         },
+        "previous_id": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Earlier id(s) this tour used before it was renamed: a string, or an array of strings. Old tour_guide.html?tour= links are forwarded to this tour at load time (see shared_utils.js resolveTourId) and the gatekeeper lets them through via the tours_previous key list. An old id that is also a live tour id is ignored. Temporary: remove once old links are gone."
+        },
         "repertoire_id": {
           "type": "string",
           "description": "Key into the top-level `repertoire_shows` object, when this tour is a touring run of an already-registered repertoire show. When set, applyRepertoireInheritance() in shared_utils.js copies name, showname, performer_id, performer_ids, video_trailer and touring_event_flyer from that repertoire_shows entry onto this tour for any of those fields the tour doesn't set itself (each is overridden individually — a tour can set its own name but still inherit performer_id, for instance). tour_description is a special case: it falls back to the repertoire show's `description` specifically, rather than being listed as a plain inheritable field, since the two field names differ. This runs once when events_normalized.json is loaded, so every consumer (tour page, calendar, search, flyers) sees the already-resolved values without needing repertoire-aware logic of its own."

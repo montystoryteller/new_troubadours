@@ -3197,6 +3197,8 @@ let EVENT_PREVIOUS_ID_MAP = {};
  * URLSearchParams hands back from an old books_merch.html?publisher= link.
  */
 let PUBLISHER_PREVIOUS_ID_MAP = {};
+/** old tour id -> current tour id (tours[id].previous_id), rebuilt on every events-data load. */
+let TOUR_PREVIOUS_ID_MAP = {};
 
 // Keys that hold a venue / promoter id (or a list of them) anywhere in the
 // events data: venue_id on events, clubs, tour/show dates, festivals and
@@ -3225,6 +3227,16 @@ function resolveVenueId(id) {
  */
 function resolvePromoterId(id) {
   return (id && PROMOTER_PREVIOUS_ID_MAP[id]) || id;
+}
+
+/**
+ * Current tour id for `id` (see resolveVenueId). Forwards old
+ * tour_guide.html?tour= links to a renamed tour.
+ * @param {string} id
+ * @returns {string}
+ */
+function resolveTourId(id) {
+  return (id && TOUR_PREVIOUS_ID_MAP[id]) || id;
 }
 
 /**
@@ -3332,6 +3344,9 @@ function applyVenueAndPromoterPreviousIds(eventsData, lookups = {}) {
     promoterRegistryForPreviousIds(eventsData),
     "Promoter",
   );
+  // Tours: only the lookup map; nothing else refers to a tour by id in a way
+  // that needs rewriting, so pages just forward an old ?tour= (resolveTourId).
+  TOUR_PREVIOUS_ID_MAP = buildPreviousIdMap(eventsData?.tours, "Tour");
   // Publishers: same idea; legacy keys may be URL-encoded, so also index the
   // decoded form of each old id.
   PUBLISHER_PREVIOUS_ID_MAP = {};
