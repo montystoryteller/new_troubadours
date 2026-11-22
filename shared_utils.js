@@ -3432,8 +3432,10 @@ function applyEventPreviousIds(eventsData, lookups = {}) {
   // Collect all show dates
   if (eventsData?.repertoire_shows) {
     Object.entries(eventsData.repertoire_shows).forEach(([tsId, show]) => {
-      if (show?.dates) {
-        show.dates.forEach((date) => {
+      // The data key is `show_dates`; `dates` kept as a fallback.
+      const showDates = show?.show_dates || show?.dates;
+      if (showDates) {
+        showDates.forEach((date) => {
           if (date && date.eventId) {
             eventRegistry[date.eventId] = date;
           }
