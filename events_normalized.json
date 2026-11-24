@@ -3796,7 +3796,8 @@
           "price": "£36 / £39.75",
           "ticket_url": "https://www.atgtickets.com/shows/dr-john-cooper-clarke/grand-opera-house-york/",
           "support_performer_ids": [
-            "luke-wright", "henry-normal"
+            "luke-wright",
+            "henry-normal"
           ],
           "isSpecial": true,
           "eventId": "T-john-cooper-clarke-have-it-2026-20261106-grand-opera-house-york"
@@ -3809,7 +3810,8 @@
           "ticket_url": "https://www.demontforthall.co.uk/event/dr-john-cooper-clarke/",
           "event_flyer": "tour_henry_normal_collected_2026.jpg",
           "support_performer_ids": [
-            "luke-wright", "henry-normal"
+            "luke-wright",
+            "henry-normal"
           ],
           "isSpecial": true,
           "eventId": "T-john-cooper-clarke-have-it-2026-20261125-de-montfort-hall-leicester"
@@ -13805,6 +13807,16 @@
       "isDinner": true
     },
     {
+      "name": "Collected Poems and Other Landfill [Henry Normal]",
+      "showname": "Collected Poems and Other Landfill",
+      "date": "14/11/2026",
+      "venue_id": "village-hall-boston-spa",
+      "performer_id": "henry-normal",
+      "eventId": "20241114-henry-normal-village-hall-boston-spa",
+      "event_flyer": "tour_henry_normal_collected_2026.jpg",
+      "isPoetry": true
+    },
+    {
       "name": "Greek Myths and Legends [Maria Credali]",
       "showname": "Greek Myths and Legends",
       "date": "14/11/2026",
@@ -13861,6 +13873,17 @@
       "time": "7.30pm",
       "fb_event": "1688570812478773",
       "isSpecial": true
+    },
+    {
+      "name": "Collected Poems and Other Landfill [Henry Normal]",
+      "showname": "Collected Poems and Other Landfill",
+      "date": "15/11/2026",
+      "venue_id": "village-hall-newbald",
+      "performer_id": "henry-normal",
+      "eventId": "20261115-henry-normal-village-hall-newbald",
+      "time": "5pm",
+      "event_flyer": "tour_henry_normal_collected_2026.jpg",
+      "isPoetry": true
     },
     {
       "name": "AwenRasa: A Collaboration Beyond Borders [shereen-saif]",
@@ -14017,6 +14040,19 @@
       "eventId": "20261121-marion-leeper-rectory-cottages-bletchley"
     },
     {
+      "name": "Henry Normal — Collected Poems and Other Landfill [Henry Normal]",
+      "showname": "Collected Poems and Other Landfill",
+      "date": "24/11/2026",
+      "venue_id": "band-on-the-wall-manchester",
+      "performer_id": "henry-normal",
+      "eventId": "20261124-henry-normal-band-on-the-wall-manchester",
+      "time": "7.30pm",
+      "price": "£18-£22 (+ booking fee)",
+      "event_flyer": "tour_henry_normal_collected_2026.jpg",
+      "ticket_url": "https://bandonthewall.org/events/henry-normal-collected-poems-and-other-landfill/",
+      "isPoetry": true
+    },
+    {
       "name": "Snakes & Skins [Wonder Night Cafe]",
       "showname": "Snakes & Skins",
       "date": "25/11/2026",
@@ -14027,11 +14063,14 @@
       ],
       "eventId": "20261125-hannah-moore-star-anise-cafe-stroud",
       "date_added": "24/09/2026",
-      "description": "With Bronia Evers and her wondrous Crankie.",
+      "description": "An evening of stories on the theme of 'Snakes and Skins' told by fabulous resident storyteller Hannah Moore and guest crankie artist Bronia Evers.\n\n\n\nWhat is a crankie btw? It's a 'story box', with two crank rods inside, attached to a long illustrated scroll that turns as the story is told, like a movie without electricity. But...don't take our word for it...come and see for yourselves!",
       "time": "7:30-9:30pm",
       "promoter_id": "wondernightcafe",
       "price": "£13 / £10 inc drink (pay on the door)",
-      "event_flyer": "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+      "event_flyers": [
+        "hannah_moore_wonder_night_cafe_autumn_2026.jpg",
+        "2026_11_25_star_anise_tales.jpg"
+      ],
       "isSpecial": true
     },
     {
@@ -15275,6 +15314,22 @@
       "latlon": [
         53.3886156,
         -1.471777
+      ]
+    },
+    "band-on-the-wall-manchester": {
+      "id": "band-on-the-wall-manchester",
+      "name": "Band On The Wall, Manchester",
+      "venue_type": "Small music venue",
+      "city": "Manchester",
+      "postcode": "M4 5JZ",
+      "full_address": "Band On The Wall, 25 Swan Street, Northern Quarter, Manchester, M4 5JZ",
+      "url": "https://bandonthewall.org/",
+      "facebook": "bandonthewall",
+      "instagram": "bandonthewall",
+      "description": "Manchester’s Iconic Music Venue & Charity\nBand on the Wall is one of the UK’s most celebrated live music venues and a registered charity, dedicated to bringing people together through music.\n\n\n\nFor more than 50 years, we’ve been at the heart of Manchester’s musical life. From hosting jazz legends and helping shape the city’s post-punk scene, to welcoming today’s most exciting artists from around the world, we’ve built a reputation for presenting exceptional live music that crosses cultures, genres and generations.\n\n\n\nOur iconic name comes from the building’s early days, when musicians performed on a stage built high on the back wall of the venue.",
+      "latlon": [
+        53.48533,
+        -2.2343
       ]
     },
     "the-britons-protection-manchester": {
@@ -17135,6 +17190,39 @@
       "latlon": [
         52.40912,
         -1.50871
+      ]
+    },
+    "village-hall-boston-spa": {
+      "id": "village-hall-boston-spa",
+      "name": "Village Hall, Boston Spa",
+      "venue_type": "Village / community hall",
+      "city": "Boston Spa",
+      "postcode": "LS23 6AA",
+      "full_address": "Village Hall, 199 High Street,  Boston Spa, LS23 6AA",
+      "url": "https://www.bostonspavillagehall.co.uk/",
+      "email": "bsvhbookings@gmail.com",
+      "facebook": "Bostonspavillagehall",
+      "instagram": "bostonspavillagehall",
+      "description": "The Hall is a predominant feature in the centre of the Village with excellent parking facilities at the rear. The complex also includes:-\n\n\n\nThe Main Hall has its own stage area capable of hosting major musical and drama events.\n\n\n\nThe main hall has hosted several events, concerts and festivals. It has a capacity of 200 people standing, 160 theatre-stype seating, 120 tables and chairs or 100 for an exercise class. It measures 9.14m by 21.05m (17.6m if you exclude the stage)\n\n\n\nIt has a separate entrance, toilets (ladies, gents and disabled) and access to the kitchen area.",
+      "latlon": [
+        53.90407,
+        -1.34395
+      ]
+    },
+    "village-hall-newbald": {
+      "id": "village-hall-newbald",
+      "name": "Village Hall, Newbald",
+      "venue_type": "Village / community hall",
+      "city": "York",
+      "postcode": "YO43 4SL",
+      "full_address": "Newbald Village Hall, Townside Road, North Newbald, York, YO43 4SL",
+      "url": "https://newbaldvillagehall.co.uk/",
+      "email": "newbald.hall@gmail.com",
+      "facebook": "newbaldVH",
+      "description": "Newbald Village Hall is a modern, welcoming and versatile venue for your event with cost-effective hire rates.\n\n\n\nThe Main Hall has a capacity of 120 seated, with a full bar licence and a state of the art cinema/audio-visual system.\n\n\n\nThe Community Room has a capacity of 40 and is perfect for your meeting or presentation and also has a sophisticated A-V system.",
+      "latlon": [
+        53.81991,
+        -0.62017
       ]
     },
     "grand-opera-house-york": {
