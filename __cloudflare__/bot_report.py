@@ -42,6 +42,17 @@ def fetch(site, days, secret):
         sys.exit(f"Report request failed: {e}")
 
 
+def page_url(page):
+    """Full address for a report page key: "/venues?venue=x" -> ".../venues.html?venue=x".
+
+    The gatekeeper strips ".html" from page keys, so put it back (except on "/").
+    """
+    path, sep, query = page.partition("?")
+    if path != "/" and not path.endswith(".html"):
+        path += ".html"
+    return f"{DEFAULT_SITE}{path}{sep}{query}"
+
+
 def table(headers, rows):
     head = "".join(f"<th>{escape(h)}</th>" for h in headers)
     body = "".join(
@@ -141,7 +152,8 @@ def render(d):
         ],
     )
     never_tbl = table(
-        ["Page"], [[f"<code>{escape(p)}</code>"] for p in never.get("sample", [])]
+        ["Page"],
+        [[f'<code class="url">{escape(page_url(p))}</code>'] for p in never.get("sample", [])],
     )
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
@@ -165,6 +177,7 @@ table {{ border-collapse:collapse; width:100%; font-size:14px }}
 th,td {{ text-align:left; padding:.4rem .6rem; border-bottom:1px solid var(--line); vertical-align:middle }}
 th {{ color:var(--muted); font-weight:600 }}
 code {{ font-size:13px; word-break:break-all }}
+.url {{ user-select:all }}
 .bar {{ display:inline-block; width:110px; height:8px; background:var(--line); border-radius:4px; vertical-align:middle; overflow:hidden }}
 .bar div {{ height:100%; background:var(--accent) }}
 .pct {{ margin-left:.5rem }}
@@ -188,7 +201,7 @@ code {{ font-size:13px; word-break:break-all }}
 <h2>Hit by bots but not in the sitemap ({outside.get("count", 0):,})</h2>
 <p class="muted">Outdated event ids and bad or probed keys. Top 50 shown.</p>{out_tbl}
 <h2>Sitemap pages no bot has requested ({never.get("count", 0):,})</h2>
-<p class="muted">Sample of up to 200.</p>{never_tbl}
+<p class="muted">Sample of up to 200. Click an address to select it all, then copy.</p>{never_tbl}
 </body></html>
 """
 
