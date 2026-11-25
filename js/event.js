@@ -1539,9 +1539,25 @@ function renderPage() {
     null;
 
   const titleTown = venuesLookup[ev.venue_id]?.city || null;
-  const perfName = performerForTitle
-    ? `${name} — ${performerForTitle}${titleTown ? ` — ${titleTown}` : ""} — New Troubadours`
-    : `${nameWithTown(name, titleTown)} — New Troubadours`;
+  // "Artist: Show — Venue, Town, 12 Dec | New Troubadours". The artist prefix is
+  // skipped when the show name already includes it.
+  let titleShow = name;
+  if (performerForTitle) {
+    const show = name.toLowerCase();
+    const artist = performerForTitle.toLowerCase();
+    if (artist.includes(show)) titleShow = performerForTitle;
+    else if (!show.includes(artist)) titleShow = `${performerForTitle}: ${name}`;
+  }
+  const titleVenue = venuesLookup[ev.venue_id];
+  const titlePlace = [
+    titleVenue ? venueDisplayName(titleVenue) : null,
+    ev._date
+      ? `${ev._date.getDate()} ${MONTHS_SHORT[ev._date.getMonth()]}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const perfName = `${[titleShow, titlePlace].filter(Boolean).join(" — ")} | New Troubadours`;
   document.title = perfName;
   document.getElementById("eventName").textContent = name;
   const descVenue = venuesLookup[ev.venue_id];

@@ -201,9 +201,7 @@ function buildTourDropdownGroups(performerId) {
       },
     ];
     Object.entries(toursLookup)
-      .filter(
-        ([, t]) => t.repertoire_id === showId && tourMatches(t),
-      )
+      .filter(([, t]) => t.repertoire_id === showId && tourMatches(t))
       .sort((a, b) =>
         (a[1].tour_name || a[1].name).localeCompare(
           b[1].tour_name || b[1].name,
@@ -219,9 +217,7 @@ function buildTourDropdownGroups(performerId) {
   const orphanItems = Object.entries(toursLookup)
     .filter(
       ([id, t]) =>
-        !t.__repertoireShowId &&
-        !usedTourIds.has(id) &&
-        tourMatches(t),
+        !t.__repertoireShowId && !usedTourIds.has(id) && tourMatches(t),
     )
     .sort((a, b) =>
       (a[1].tour_name || a[1].name).localeCompare(b[1].tour_name || b[1].name),
@@ -308,7 +304,6 @@ function getTourLinkPerformerIds(tour) {
   return ids;
 }
 
-
 // Additional (non-headline) performers. tour.other_performer_ids lists
 // the other performers on the tour as a whole; a tour date's own
 // other_performer_ids, when it has at least one entry, REPLACES the
@@ -334,7 +329,12 @@ function getAdditionalPerformerIds(tour, tourDate) {
   const seen = new Set();
   const result = [];
   source.forEach((id) => {
-    if (seen.has(id) || headliners.has(id) || supportIds.has(id) || !performersLookup[id])
+    if (
+      seen.has(id) ||
+      headliners.has(id) ||
+      supportIds.has(id) ||
+      !performersLookup[id]
+    )
       return;
     seen.add(id);
     result.push(id);
@@ -759,7 +759,8 @@ function handleTourChange() {
 // id in place, and return it. Returns the input unchanged when there is
 // nothing to forward (or the new id isn't loaded).
 function forwardRenamedTourId(tourId) {
-  const current = typeof resolveTourId === "function" ? resolveTourId(tourId) : tourId;
+  const current =
+    typeof resolveTourId === "function" ? resolveTourId(tourId) : tourId;
   if (!current || current === tourId || !toursLookup[current]) return tourId;
   try {
     const params = new URLSearchParams(window.location.search);
@@ -848,7 +849,22 @@ function displayTour(tourId) {
   // Back/Forward), and the static page heading drops to H2.
   setPageHeadingMode(true, "tourTitle");
 
-  document.title = `${tour.name}${tour.tour_name ? ` — ${tour.tour_name}` : ""} — New Troubadours`;
+  // Browser tab: "tour_name — artist — New Troubadours". The artist part is
+  // skipped when tour_name already includes it.
+  const titleName = tour.tour_name || tour.name;
+  const titleArtist = performerIdsOf(tour)
+    .map((id) => performersLookup[id]?.name)
+    .filter(Boolean)
+    .join(" & ");
+  document.title = [
+    titleName,
+    titleName.toLowerCase().includes(titleArtist.toLowerCase())
+      ? ""
+      : titleArtist,
+    "New Troubadours",
+  ]
+    .filter(Boolean)
+    .join(" | ");
   // setMetaDescription() (not updateMeta()) so this REPLACES the
   // description each time rather than prepending to whatever the last
   // tour left there — displayTour() can run repeatedly in one page
@@ -860,8 +876,7 @@ function displayTour(tourId) {
   // tour has no description text of its own).
   setMetaDescription(
     `${tour.tour_name || tour.name} — ${
-      metaSnippet(tour.tour_description) ||
-      "tour dates, venues and map."
+      metaSnippet(tour.tour_description) || "tour dates, venues and map."
     }`,
   );
   prependMetaKeyword(tour.tour_name || tour.name);
@@ -926,8 +941,7 @@ function displayTour(tourId) {
     addlContainer.appendChild(tourSupportEl);
   }
 
-  addlContainer.style.display =
-    addlContainer.children.length > 0 ? "" : "none";
+  addlContainer.style.display = addlContainer.children.length > 0 ? "" : "none";
 
   // Performer websites & profile pages. For a tour with a combined/troupe
   // performer_id (e.g. "jess-silk-joe-solo"), we want links to each real
@@ -1654,7 +1668,12 @@ function updateMapView() {
 
   sortedDates.forEach((tourDate) => {
     const past = isDatePast(tourDate.date);
-    const dateItem = createTourDateElement(tourDate, currentTour, past, currentTourId);
+    const dateItem = createTourDateElement(
+      tourDate,
+      currentTour,
+      past,
+      currentTourId,
+    );
     datesContainer.appendChild(dateItem);
   });
 
@@ -2095,7 +2114,10 @@ function renderBrowseLandingPanels() {
     checks: [
       [
         "still showing a loading message",
-        () => !document.querySelector("#tourBrowseState .upcoming-tours-placeholder, #tourBrowseState .loading-state"),
+        () =>
+          !document.querySelector(
+            "#tourBrowseState .upcoming-tours-placeholder, #tourBrowseState .loading-state",
+          ),
       ],
     ],
   });
@@ -2117,7 +2139,7 @@ function showBrowseLanding() {
   setMetaDescription(DEFAULT_META_DESCRIPTION);
   const keywordsMeta = document.querySelector('meta[name="keywords"]');
   if (keywordsMeta) keywordsMeta.setAttribute("content", DEFAULT_META_KEYWORDS);
-  
+
   setCanonical("tour");
 
   currentTour = null;
@@ -2161,14 +2183,12 @@ setCanonical("tour");
         '<p class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</p>';
       document.getElementById("tourNotFoundState").style.display = "";
     } else {
-      ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach(
-        (id) => {
-          const el = document.getElementById(id);
-          if (el)
-            el.innerHTML =
-              '<div class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</div>';
-        },
-      );
+      ["nowTouringBody", "upcomingToursBody", "pastToursBody"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el)
+          el.innerHTML =
+            '<div class="no-tours">Couldn\'t load tour data. Please try refreshing the page.</div>';
+      });
     }
     PageHealth.markFailed("events data failed to load");
     return;
@@ -2206,9 +2226,7 @@ setCanonical("tour");
       displayTour(urlParams.tourId);
       PageHealth.markReady({ contentId: "tourContent" });
     } else {
-      console.warn(
-        `tour_guide.html: tour "${urlParams.tourId}" not found.`,
-      );
+      console.warn(`tour_guide.html: tour "${urlParams.tourId}" not found.`);
       document.getElementById("tourNotFoundState").style.display = "";
       PageHealth.markNotFound();
     }
