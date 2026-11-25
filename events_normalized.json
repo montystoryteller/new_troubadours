@@ -14347,6 +14347,20 @@
       "eventId": "20261218-jo-munton-town-hall-bishops-castle"
     },
     {
+      "name": "Rough Magic — Winter Solstice [Bernadette Russell]",
+      "showname": "Rough Magic — Winter Solstice",
+      "date": "19/12/2026",
+      "venue_id": "lesnes-abbey-lodge-bexley",
+      "performer_id": "bernadette-russell",
+      "eventId": "20261219-bernadette-russell-lesnes-abbey-lodge-bexley",
+      "date_added": "25/11/2026",
+      "time": "6:30-9 PM",
+      "price": "£10 (+ £1.55)",
+      "description": "An evening of stories, magic & celebrations of the Winter Solstice around a roaring fire in Lesnes Abbey Wood.\n\n\n\n\"Rough Magic\" fireside story telling for adults to celebrate the Winter Solstice\n\n\n\nIf you love gathering around a fire in the wooods to listen to stories, connecting with the green world, your own wild self, and having somewhere to celebrate the seasons- this is for you! Welcome to our second year of seasonal storytelling celebrations ! Everyone is welcome!\n\n\n\nI'm oral storyteller and author Bernadette Russell and I'm storyteller-in-residence at Lesnes Abbey Lodge - this Winter Solstice I invite you to an evening of fireside storytelling and celebration of the dark half of the year for adults. Come join us, it's magic!\n\n\n\nFor those who have been before - these will be all new stories you've never heard me tell before! of bear gods and fox spirits, of transformations and ice, of alchemy , Jack Frost and the strange dark magic of the winter , around a roaring fire amongst the ancient trees of this beautiful wood. There'll be lots of time to chat, opportunities to join in with the story if you'd like to (with no obligation to do so!), and we'll co-create a ritual to honour winter, light candles to welcome the return of the sun, plus you'll receive a Yule gift from me and leave ready to allow yourself to be held softly by the darker months. It'll be mysterious. fun and friendly!\n\n\n\nMeet at the Chesnut Kiosk at 6.30pm (18.30) and we will walk down together to The Clearing (Lesnes outdoor learning space) where a roaring fire will be there to welcome you, ready to start with stories at 7pm (1900)\n\n\n\nDirections and ways to get there can be found here https://www.lesnesabbeywoods.org/plan-your-visit/directions-contact/",
+      "ticket_url": "https://www.eventbrite.co.uk/e/rough-magic-winter-solstice-fireside-story-telling-for-adults-tickets-1994544078029",
+      "isSpecial": true
+    },
+    {
       "name": "Janet Crouch [ + Tales Tattled & Told tellers]",
       "showname": "Janet Crouch",
       "date": "19/12/2026",
@@ -23048,6 +23062,22 @@
       "latlon": [
         51.52445,
         -0.16964
+      ]
+    },
+    "lesnes-abbey-lodge-bexley": {
+      "id": "lesnes-abbey-lodge-bexley",
+      "name": "Lesnes Abbey Lodge, Bexley",
+      "venue_type": "Other / unknown",
+      "city": "London",
+      "postcode": "SE2 0AX",
+      "full_address": "Lesnes Abbey Lodge, New Rd, Bexley, London, SE2 0AX",
+      "url": "https://www.lesnesabbeywoods.org/",
+      "facebook": "lesnesabbey",
+      "instagram": "lesnesabbeywoods",
+      "description": "Situated in South East London, this unique site offers 88 hectares of ancient woodland, a park and a ruined abbey.",
+      "latlon": [
+        51.48864,
+        0.12792
       ]
     },
     "green-note-london": {
