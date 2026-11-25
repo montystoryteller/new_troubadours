@@ -7707,6 +7707,10 @@
       "schedule": "1st wednesday",
       "time": "2.30-3.30pm",
       "price": "£2 pay on the door",
+      "convenors": [
+        "peter-monk",
+        "george-bassett"
+      ],
       "venue_id": "palace-theatre-westcliff"
     },
     {
@@ -7899,10 +7903,15 @@
     {
       "name": "Storytelling with Bards Aloud",
       "schedule": "3rd tuesday",
+      "convenors": [
+        "gerry-donlon",
+        "veronica-chambers"
+      ],
       "time": "8pm",
       "price": "",
       "link": "https://dovestreetinn.co.uk/",
-      "facebook": "https://www.facebook.com/groups/378838935541646",
+      "facebookgroup": "https://www.facebook.com/groups/378838935541646",
+      "facebook": "bards.aloud",
       "club": "bardsaloud",
       "venue_id": "the-dove-st-inn-ipswich",
       "exceptions": [
@@ -8648,6 +8657,11 @@
       "url": "https://www.youtube.com/@worldstorytellingcafe86",
       "format": "telling",
       "items": [
+        {
+          "performer_id": "veronica-chambers",
+          "title": "Stories with Veronica Chambers",
+          "yt_url": "https://www.youtube.com/watch?v=CmgbbeMVPoA"
+        },
         {
           "performer_id": "justine-de-mierre",
           "title": "Debut performance from Justine de Mierre",
@@ -25690,6 +25704,29 @@
       "name": "Shonaleigh",
       "url": "https://shonaleigh.uk/",
       "bio": "Word weaver, tradition bearer and educator\n\n\n\nShonaleigh is a dedicated and committed storyteller actively working to expand and share the Drut'syla tradition. Brought up in the Drut'syla tradition by her Bubbe (grandmother) she has a repertoire of over three thousand stories which can be adapted as appropriate for the theme and audience with whom she is working."
+    },
+    "veronica-chambers": {
+      "id": "veronica-chambers",
+      "name": "Veronica Chambers"
+    },
+    "gerry-donlon": {
+      "id": "gerry-donlon",
+      "name": "Gerry Donlon",
+      "youtube_videos": [
+        {
+          "story_name": "Storyteller. The Hybrid",
+          "yt_url": "https: //www.youtube.com/watch?v=VFxCz3_DQCA",
+          "format": "performance"
+        }
+      ]
+    },
+    "peter-monk": {
+      "id": "peter-monk",
+      "name": "Peter Monk"
+    },
+    "george-basset": {
+      "id": "george-bassett",
+      "name": "George Bassett"
     },
     "tatterhoodtales": {
       "canonical": "mary-baxter",
