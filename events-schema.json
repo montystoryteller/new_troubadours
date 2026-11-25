@@ -1829,6 +1829,20 @@
           ],
           "description": "Who runs this club night: a performer_id (key into the top-level `performers` object) or a list of them. Shown on the club page as 'Convenor' / 'Convenors', linking to each performer's page. Unknown ids are skipped with a console warning."
         },
+        "convenors": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ],
+          "description": "Same meaning as `convenor`, for clubs with several. If both are set they are combined, without repeats."
+        },
         "regular_tellers": {
           "type": "array",
           "items": {

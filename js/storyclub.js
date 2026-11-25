@@ -791,11 +791,12 @@ async function renderPage(data, clubId) {
     });
     return div;
   }
-  const convenorList = Array.isArray(clubRecord.convenor)
-    ? clubRecord.convenor
-    : clubRecord.convenor
-      ? [clubRecord.convenor]
-      : [];
+  // `convenor` and `convenors` are both accepted, each an id or a list of ids.
+  const convenorList = [
+    ...new Set(
+      [clubRecord.convenor, clubRecord.convenors].flat().filter(Boolean),
+    ),
+  ];
   const convenorEl = performerRoleLine(
     convenorList.length > 1 ? "Convenors" : "Convenor",
     convenorList,

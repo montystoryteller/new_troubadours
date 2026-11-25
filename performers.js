@@ -25,8 +25,8 @@ let toursLookup = {};
 
 /**
  * Lines like "Convenor of: Island Storytellers" / "Regular teller at: …" for
- * a performer, worked out from clubs[].convenor (string or list of
- * performer ids) and clubs[].regular_tellers. Each club links to its
+ * a performer, worked out from clubs[].convenor / clubs[].convenors (string
+ * or list of performer ids) and clubs[].regular_tellers. Each club links to its
  * storyclub.html page. The two roles are independent, so a club can appear
  * under both. Returns an array of elements (empty if none).
  * @param {string} performerId
@@ -41,7 +41,8 @@ function clubRoleLines(performerId) {
     if (!c || !c.club) return;
     // Independent roles: someone can be both convenor and a regular teller
     // of the same club, and both lines are shown.
-    if (asList(c.convenor).includes(performerId)) convenes.push(c);
+    if ([...asList(c.convenor), ...asList(c.convenors)].includes(performerId))
+      convenes.push(c);
     if (asList(c.regular_tellers).includes(performerId)) tells.push(c);
   });
   const build = (label, list) => {
@@ -994,7 +995,7 @@ function renderPerformer() {
   const groupsLine = collaborationsLine(performerId, performersLookup);
   if (groupsLine) groupsDiv.appendChild(groupsLine);
   // Story clubs this performer convenes / is a regular teller at — the
-  // reverse of clubs[].convenor / clubs[].regular_tellers.
+  // reverse of clubs[].convenor(s) / clubs[].regular_tellers.
   clubRoleLines(performerId).forEach((line) => groupsDiv.appendChild(line));
 
   // Podcast(s) get their own collapsible section further down the page
